@@ -651,8 +651,13 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="external_dynamic_content_urls" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>External Dynamic Url</label>
-                <field id="passcode" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="passcode_title" translate="label" sortOrder="05" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Secure code for dynamic URLs</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="passcode" translate="label comment" type="text" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Passcode</label>
+                    <comment><![CDATA[Recommended: Set a passcode so that basket contents and coupon codes can only be viewed if the following passcode is sent with the request.]]></comment>
                 </field>
                 <field id="abandoned_cart_title" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Abandoned Carts</label>
@@ -660,10 +665,98 @@
                 </field>
                 <field id="abandoned_cart_url" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Cart Content URL</label>
-                    <frontend_model></frontend_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Abandoned</frontend_model>
+                </field>
+                <field id="review_title" translate="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reviews</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="review_url" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Review Contents URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Review</frontend_model>
+                </field>
+                <field id="coupon_code_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Coupon Codes</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="coupon_code_url" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Coupon Codes URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Couponcode</frontend_model>
+                </field>
+                <field id="order_dynamic_content_url" translate="label" sortOrder="80" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Order Recommendation</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="related_products_url" translate="label" sortOrder="90" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Related Products URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Related</frontend_model>
+                </field>
+                <field id="upsell_products_url" translate="label" sortOrder="100" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Upsell Products URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Upsell</frontend_model>
+                </field>
+                <field id="crosssell_products_url" translate="label" sortOrder="110" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Crosssell Products URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Crosssell</frontend_model>
+                </field>
+                <field id="cart_recommendation_title" translate="label" sortOrder="120" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Cart Recommendation</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="cart_related_products_url" translate="label" sortOrder="130" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Related Products URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Related</frontend_model>
+                </field>
+                <field id="cart_upsell_products_url" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Upsell Products URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Upsell</frontend_model>
+                </field>
+                <field id="cart_crosssell" translate="label" sortOrder="150" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Crosssell Products URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Crosssell</frontend_model>
+                </field>
+                <field id="product_recommendation_title" translate="label" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Recommendation</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="best_sellers_url" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Best Sellers URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>
+                </field>
+                <field id="most_viewed_url" translate="comment label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Most Viewed URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Mostviewed</frontend_model>
+                    <comment><![CDATA[add category_id/@CATEGORY_ID@ at the end of url to filter most viewed by category]]></comment>
+                </field>
+                <field id="product_push_url" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Push URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Productpush</frontend_model>
+                </field>
+                <field id="product_recently_viewed_url" translate="label" sortOrder="195" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Recently Viewed</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Recentlyviewed</frontend_model>
+                </field>
+                <field id="wishlist_title" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Wishlist</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="wishlist_product_url" translate="label" sortOrder="210" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Wishlist Content</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Content</frontend_model>
+                </field>
+                <field id="wishlist_related" translate="label" sortOrder="220" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Wishlist Related URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Related</frontend_model>
+                </field>
+                <field id="wishlist_upsell_url" translate="label" sortOrder="230" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Wishlist Upsell Products URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Upsell</frontend_model>
+                </field>
+                <field id="wishlist_crosssell_url" translate="label" sortOrder="240" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Wishlist Crosssell Products URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Crosssell</frontend_model>
                 </field>
             </group>
-
             <group id="products" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Dynamic Products</label>
                 <field id="wishlist" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
@@ -762,6 +855,371 @@
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>
+            </group>
+            <group id="manual_product_push" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Manual Product Push</label>
+                <field id="settings_title" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Settings</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="display_type" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Display Type</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
+                </field>
+                <field id="items_to_display" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Items To Display</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
+                </field>
+                <field id="product_push_title" translate="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Products</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="products_chooser_button" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Manualchooser</frontend_model>
+                    <comment><![CDATA[Click To Open Product Chooser. After Choosing Products Save Config.]]></comment>
+                </field>
+                <field id="products_push_items" translate="label" type="text" sortOrder="55" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Products</label>
+                    <comment><![CDATA[Comma Separated Product Id's]]></comment>
+                </field>
+                <field id="product_chooser_container" translate="comment label" type="text" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Manualcontainer</frontend_model>
+                </field>
+            </group>
+            <group id="fallback_products" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Fallback Products</label>
+                <field id="fallback_chooser" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Fallbackchooser</frontend_model>
+                </field>
+                <field id="product_ids" translate="comment label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Products</label>
+                    <comment><![CDATA[Comma Separated Product Id's]]></comment>
+                </field>
+                <field id="products_chooser_container" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Fallbackcontainer</frontend_model>
+                </field>
+            </group>
+            <group id="nosto_recommendation" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Nosto Recommendations</label>
+                <field id="api" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>API key</label>
+                </field>
+                <field id="dynamic_url" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Recommendation URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Nosto</frontend_model>
+                    <comment><![CDATA[Replace @SLOT_NAME@ with the slot name created in your Nosto account.]]></comment>
+                </field>
+            </group>
+        </section>
+        <section id="transactional_emails" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
+            <class>separator-top</class>
+            <label>Transactional Emails</label>
+            <tab>ddg_automation</tab>
+            <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="ddg_transactional" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>DDG Transactional</label>
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+            </group>
+        </section>
+        <section id="connector_configuration" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
+            <class>separator-top</class>
+            <label>Configuration</label>
+            <tab>ddg_automation</tab>
+            <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="data_fields" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Data Fields</label>
+                <field id="order_status" translate="comment label" sortOrder="10" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Data fields calculation with status</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
+                    <comment><![CDATA[Select multiple statuses by pressing Ctrl button while selecting]]></comment>
+                </field>
+            </group>
+            <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Tracking</label>
+                <field id="roi_enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>ROI Tracking Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="page_enabled" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Page Tracking Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+            </group>
+            <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Transactional Data</label>
+                <field id="order_statuses" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Import Order With Status</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
+                    <comment><![CDATA[Select multiple statuses by pressing Ctrl button while selecting]]></comment>
+                </field>
+                <field id="order_custom_attributes" translate="comment label" type="multiselect" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Order Custom Attributes</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Attributes</source_model>
+                    <comment><![CDATA[Select custom order attributes that you want to import with your order data. Select multiple by pressing Ctrl button while selecting.]]></comment>
+                </field>
+                <field id="quote_custom_attributes" translate="comment label" type="multiselect" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Quote Custom Attributes</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Quoteattributes</source_model>
+                    <comment><![CDATA[Select custom quote attributes that you want to import with your quote data. Select multiple by pressing Ctrl button while selecting.]]></comment>
+                </field>
+            </group>
+            <group id="abandoned_carts" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Abandoned Carts</label>
+                <field id="email_capture" translate="comment label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Easy Email Capture (Checkout)</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enable this if you have a checkout process that allows the visitor to
+                            enter their email address during the checkout, but it does not update quote table instantly.]]></comment>
+                </field>
+                <field id="easy_capture_newsletter" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Easy Email Capture (Newsletter)</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enable this if you would like to update update quote table with email entered in Newsletter Email Field.]]></comment>
+                </field>
+                <field id="cart_limit" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Abandoned Cart Limit</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Cartlimit</source_model>
+                    <comment><![CDATA[Do not send an abandoned cart email to a contact if they have received a previous abandoned cart email in previous x hours.]]></comment>
+                </field>
+                <field id="link_back_to_cart" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Link To Cart Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="link_text" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Link Text</label>
+                    <comment><![CDATA[Please provide the link text. If no text provided then default text "Take Me To My Basket" will be used.]]></comment>
+                </field>
+                <field id="cart_url" translate="comment label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Cart URL</label>
+                    <comment><![CDATA[Please provide the cart url. If no url provided then default cart url checkout/cart will be used. Only enter the url after base url. For example for http://www.localhost.com/checkout/cart only enter checkout/cart]]></comment>
+                </field>
+                <field id="login_url" translate="comment label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Customer Login URL</label>
+                    <comment><![CDATA[Please provide the customer login url. If no url provided then default login url customer/account/login will be used. Only enter the url after base url. For example for http://www.localhost.com/customer/account/login only enter customer/account/login]]></comment>
+                </field>
+            </group>
+            <group id="dynamic_content_style" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Dynamic Content Styling</label>
+                <field id="dynamic_styling" translate="comment label" sortOrder="10" type="textarea" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Dynamic Styling</label>
+                    <comment><![CDATA[Styling entered here will apply to all dynamic content areas pulled from Magento. Classes References Used : 'product-table', 'product-name', 'product-price', 'product-url', 'other-text']]></comment>
+                </field>
+                <field id="product_name_title" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Name</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="font_color" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Color</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
+                </field>
+                <field id="font_size" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Size</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
+                </field>
+                <field id="font_style" translate="label" sortOrder="50" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Style</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
+                </field>
+                <field id="price_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Price</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="price_color" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Price Color</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
+                </field>
+                <field id="price_font_size" translate="label" sortOrder="80" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Size</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
+                </field>
+                <field id="price_font_style" translate="label" sortOrder="90" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Style</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
+                </field>
+                <field id="product_link_title" translate="label" sortOrder="100" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Link</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="product_link_color" translate="label" sortOrder="110" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Color</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
+                </field>
+                <field id="product_link_font_size" translate="label" sortOrder="120" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Size</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
+                </field>
+                <field id="product_link_style" translate="label" sortOrder="130" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Size</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
+                </field>
+                <field id="body_title" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Applies To Whole Document</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="font" translate="label" sortOrder="150" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontpicker</source_model>
+                </field>
+                <field id="color" translate="label" sortOrder="160" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Backgroung Color</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
+                </field>
+                <field id="other_title" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Other Text (Will Apply To Other Remaning Text)</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="other_color" translate="label" sortOrder="180" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Color</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
+                </field>
+                <field id="other_font_size" translate="label" sortOrder="190" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Size</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
+                </field>
+                <field id="other_font_style" translate="label" sortOrder="200" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Style</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
+                </field>
+                <field id="coupon_code_title" translate="label" sortOrder="210" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Coupon Code</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="coupon_font_color" translate="label" sortOrder="220" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Color</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
+                </field>
+                <field id="coupon_font_size" translate="label" sortOrder="230" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Size</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
+                </field>
+                <field id="coupon_font_style" translate="label" sortOrder="240" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font Style</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
+                </field>
+                <field id="coupon_font_picker" translate="label" sortOrder="250" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Font</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontpicker</source_model>
+                </field>
+                <field id="coupon_background_color" translate="label" sortOrder="260" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Background Color</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
+                </field>
+            </group>
+            <group id="dynamic_content" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Dynamic Content</label>
+                <field id="link_text" translate="comment label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Link Text</label>
+                    <comment><![CDATA[Please provide the link text. If no text provided then default text will be used.]]></comment>
+                </field>
+            </group>
+            <group id="amdin" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Admin</label>
+                <field id="disable_newsletter_success" translate="label" type="select" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Disable Newsletter Success</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="disable_customer_success" translate="label" type="select" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Disable Customer Success</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="catalog_sync" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Catalog Sync Settings</label>
+                <field id="catalog_values" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Catalog Values</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogvalues</source_model>
+                </field>
+                <field id="catalog_visibility" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Catalog Visibility</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogvisibility</source_model>
+                </field>
+                <field id="catalog_type" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Catalog Type</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogtype</source_model>
+                </field>
+            </group>
+            <group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Customer Addressbook Preference</label>
+                <field id="show_addressbooks" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Show Addressbooks to Customer</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="addressbooks" translate="comment label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Addressbooks to Show</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Addressbooks</source_model>
+                    <comment><![CDATA[ Choose additional address books to show in addition to the Magento General Subscription list.]]></comment>
+                </field>
+                <field id="show_datafields" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Show Datafields To Customer?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="datafields" translate="comment label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Datafields To Show</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Publicdatafields</source_model>
+                    <comment><![CDATA[Only data fields with visibility public can be shown to customers. You can create more data fields within the Data Mapping section.]]></comment>
+                </field>
+            </group>
+        </section>
+        <section id="connector_developer_settings" translate="label" sortOrder="500" showInStore="1" showInWebsite="1" showInDefault="1">
+            <class>separator-top</class>
+            <label>Developer</label>
+            <tab>ddg_automation</tab>
+            <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="import_settings" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Import Settings</label>
+                <field id="memory_limit" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Sync Memory Limit</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="batch_size" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Contact Sync Size</label>
+                </field>
+                <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Transactional Data Sync Size</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
+                </field>
+            </group>
+            <group id="sync_settings" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Sync Settings</label>
+                <field id="admin_title" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Admin Task</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="setup_data_fields" translate="comment label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Automap Datafields</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Setupdatafields</frontend_model>
+                    <comment><![CDATA[Create Datafields In Connector And Map Them. Including Customer, Address And Sales Information.]]></comment>
+                </field>
+                <field id="delete_contact" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Delete All Contact Ids</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Deletecontactids</frontend_model>
+                </field>
+                <field id="suppressed_contacts" translate="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Refresh Suppression</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Suppressedcontacts</frontend_model>
+                </field>
+                <field id="reset_all" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Tables</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtmml\Config\Developer\Reset</frontend_model>
+                    <comment><![CDATA[All dotmailer tables will be removed, re-created and all data will be re-filled. Just like doing a fresh install.]]></comment>
+                </field>
+                <field id="manual_sync_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Manyally Run Sync</label>
+                    <source_model>Magento\Config\Block\System\Config\Form\Field\Heading</source_model>
+                </field>
+                <field id="contact_sync" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Contact Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Contactsync</frontend_model>
+                </field>
+                <field id="subscriber_sync" translate="label" sortOrder="80" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Subscriber Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Subscribersync</frontend_model>
+                </field>
+                
+
             </group>
         </section>
     </system>
