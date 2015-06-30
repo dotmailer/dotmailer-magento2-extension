@@ -1,0 +1,44 @@
+
+<script>
+	require(['prototype'], function(){
+
+//<![CDATA[
+		function validateVat() {
+			var validationMessage = $('validation_result');
+
+			params = {
+				country: $('<?php echo $block->getMerchantCountryField(); ?>').value,
+				vat: $('<?php echo $block->getMerchantVatNumberField(); ?>').value
+			};
+
+			new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+				parameters: params,
+				onSuccess: function(response) {
+					result = '<?php echo __('VAT Number is Invalid') ?>';
+					try {
+						response = response.responseText;
+						if (response == 1) {
+							result = '<?php echo __('VAT Number is Valid') ?>';
+							validationMessage.removeClassName('hidden').addClassName('success')
+						} else {
+							validationMessage.removeClassName('hidden').addClassName('error')
+						}
+					} catch (e) {
+						validationMessage.removeClassName('hidden').addClassName('error')
+					}
+					validationMessage.update(result);
+				}
+			});
+		}
+
+		window.validateVat = validateVat;
+//]]>
+
+	});
+</script>
+<div class="actions actions-validate-vat">
+	<div id="validation_result" class="message-validation hidden"></div>
+	<button onclick="javascript:validateVat(); return false;" class="action-validate-vat" type="button" id="<?php echo $block->getHtmlId() ?>">
+		<span><?php echo $block->escapeHtml($block->getButtonLabel()) ?></span>
+	</button>
+</div>
