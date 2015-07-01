@@ -1203,12 +1203,12 @@
                 </field>
                 <field id="reset_all" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Reset Tables</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtmml\Config\Developer\Reset</frontend_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Reset</frontend_model>
                     <comment><![CDATA[All dotmailer tables will be removed, re-created and all data will be re-filled. Just like doing a fresh install.]]></comment>
                 </field>
                 <field id="manual_sync_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Manyally Run Sync</label>
-                    <source_model>Magento\Config\Block\System\Config\Form\Field\Heading</source_model>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="contact_sync" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Contact Sync</label>
@@ -1218,8 +1218,120 @@
                     <label>Subscriber Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Subscribersync</frontend_model>
                 </field>
-                
-
+                <field id="oerder_sync" translate="label" sortOrder="90" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Order Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Ordersync</frontend_model>
+                </field>
+                <field id="wishlist_sync" translate="label" sortOrder="100" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Wishlist Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Wishlistsync</frontend_model>
+                </field>
+                <field id="review_sync" translate="label" sortOrder="110" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Review Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Reviewsync</frontend_model>
+                </field>
+                <field id="quote_sync" translate="label" sortOrder="120" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Quote Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Quotesync</frontend_model>
+                </field>
+                <field id="catalog_sync" translate="label" sortOrder="130" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Catalog Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Catalogsync</frontend_model>
+                </field>
+                <field id="reset_sync_title" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Sync Options</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="reset_customers" translate="label" sortOrder="150" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Customers</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetcustomers</frontend_model>
+                </field>
+                <field id="reset_subscribers" translate="label" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Subscribers</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetsubscribers</frontend_model>
+                </field>
+                <field id="reset_orders" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Order Data</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetorders</frontend_model>
+                </field>
+                <field id="reset_quotes" translate="label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Quote Data</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetquotes</frontend_model>
+                </field>
+                <field id="reset_reviews" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Review Data</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetreviews</frontend_model>
+                </field>
+                <field id="reset_wishlists" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Wishlist Data</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetwishlists</frontend_model>
+                </field>
+                <field id="reset_catalog" translate="label" sortOrder="210" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Catalog Data</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetcatalog</frontend_model>
+                </field>
+            </group>
+            <group id="debug" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Debug</label>
+                <field id="debug_enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Debug Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="api_log_time" translate="comment label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Debug Api calls time</label>
+                    <comment>Set the number in seconds that api calls greater will be logged.</comment>
+                </field>
+                <field id="raygun_code" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Raygun Application Code</label>
+                </field>
+                <field id="raygun_async" translate="comment label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Raygun async mode.</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Some env cannot use the async mode of sending.</comment>
+                </field>
+            </group>
+            <group id="feed_configuration" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Feed Configuration</label>
+                <field id="feed_enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="feed_url" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Feed URL</label>
+                </field>
+                <field id="feed_secure_url" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Use HTTPS to get the feed. </label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="frequency" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Update Frequency</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Frequency</source_model>
+                </field>
+                <field id="feed_last_update" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Last Update</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Notification</frontend_model>
+                </field>
+            </group>
+            <group id="oauth" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>OAUTH Credentials</label>
+                <field id="client_id" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Client Id</label>
+                </field>
+                <field id="client_key" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Client Secret Key</label>
+                </field>
+                <field id="oauth_connect" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Connection</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Connect</frontend_model>
+                </field>
+                <field id="custom_domain" translate="comment label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Custom OAUTH domain.</label>
+                    <comment><![CDATA[Enter the custom domain for authorization. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
+                </field>
+                <field id="custom_authorization" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Custom Authorization URI</label>
+                    <comment><![CDATA[Enter the custom authorization url. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
+                </field>
             </group>
         </section>
     </system>

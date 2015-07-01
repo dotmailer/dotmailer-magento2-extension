@@ -1,8 +1,10 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_System_Automation_Connect extends Mage_Adminhtml_Block_System_Config_Form_Field
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
+
+class Connect extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $this->setElement($element);
         return $this->_getAddRowButtonHtml();
@@ -10,6 +12,9 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Automation_Connect extends Ma
 
     protected function _getAddRowButtonHtml()
     {
+
+	    return 'connect element';
+
         $url = Mage::helper('ddg')->getAuthoriseUrl();
         $ssl = $this->_checkForSecureUrl();
         $disabled = false;
