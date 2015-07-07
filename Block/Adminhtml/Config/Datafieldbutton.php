@@ -1,10 +1,9 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
 class Datafieldbutton extends \Magento\Config\Block\System\Config\Form\Field
 {
-
-
 	protected $_vatButtonLabel = 'Create New Datafield';
 
 	/**

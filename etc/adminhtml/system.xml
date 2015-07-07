@@ -13,15 +13,24 @@
                 <label>Settings</label>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enabled</label>
+                    <comment><![CDATA[Dont' have an API? click <a href="http://www.dotmailer.com/resources/dev-tools-guides/getting-started-with-the-dotmailer-api/">here</a> to know how to create new one.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>API Username</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Wrapper</frontend_model>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
                 </field>
                 <field id="password" translate="label" type="password" sortOrder="3" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>API Password</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Ajaxvalidate</frontend_model>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
                 </field>
             </group>
         </section>
@@ -38,59 +47,59 @@
                 </field>
                 <field id="title" type="select" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Title</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="customer_id" type="select" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Id</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="firstname" type="select" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Firstname</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="lastname" type="select" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Lastname</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="dob" type="select" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>D.O.B</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="gender" type="select" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Gender</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="website_name" type="select" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Website Name</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="store_name" type="select" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Store Name</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="created_at" type="select" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Created At</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_logged_date" type="select" translate="label" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Logged In Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="customer_group" type="select" translate="label" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer Group</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="review_count" type="select" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Review Count</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_review_date" type="select" translate="label" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Review Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="subscriber_status" type="select" translate="label" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Subscriber Status</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="address_title" translate="label" sortOrder="160" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Address</label>
@@ -98,55 +107,55 @@
                 </field>
                 <field id="billing_address_1" type="select" translate="label" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Billing Address Line 1</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="billing_address_2" type="select" translate="label" sortOrder="180" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Billing Address Line 2</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="billing_state" type="select" translate="label" sortOrder="190" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Billing State</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="billing_country" type="select" translate="label" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Billing Country</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="billing_postcode" type="select" translate="label" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Billing Postcode</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="billing_telephone" type="select" translate="label" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Billing Telephone</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="delivery_address_1" type="select" translate="label" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery Address 1</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="delivery_address_2" type="select" translate="label" sortOrder="240" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery Address 2</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="delivery_city" type="select" translate="label" sortOrder="250" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery City</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="delivery_state" type="select" translate="label" sortOrder="260" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery State</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="delivery_country" type="select" translate="label" sortOrder="270" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery Country</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="delivery_postcode" type="select" translate="label" sortOrder="280" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery Postcode</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="delivery_telephone" type="select" translate="label" sortOrder="290" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery Telephone</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="sales" translate="label" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sales</label>
@@ -154,71 +163,71 @@
                 </field>
                 <field id="number_of_orders" type="select" translate="label" sortOrder="310" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Total Number of Orders</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="average_order_value" type="select" translate="label" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Average Order Value</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="total_spend" type="select" translate="label" sortOrder="330" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Total Spend</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_order_date" type="select" translate="label" sortOrder="340" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Purchase Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_order_id" type="select" translate="label" sortOrder="350" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Order ID</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_increment_id" type="select" translate="label" sortOrder="360" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Increment ID</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_quote_id" type="select" translate="label" sortOrder="370" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Quote ID</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="total_refund" type="select" translate="label" sortOrder="380" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Total Refund</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="most_pur_category" type="select" translate="label" sortOrder="390" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Most Purchased Category</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="most_pur_brand" type="select" translate="label" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Most Purchased Brand</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="most_freq_pur_day" type="select" translate="label" sortOrder="410" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Most Frequent Day Of Purchase</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="most_freq_pur_mon" type="select" translate="label" sortOrder="420" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Most Frequent Month Of Purchase</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="first_category_pur" type="select" translate="label" sortOrder="430" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>First Category Purchased</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_category_pur" type="select" translate="label" sortOrder="440" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Category Purchased</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="first_brand_pur" type="select" translate="label" sortOrder="450" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>First Brand Purchased</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_brand_pur" type="select" translate="label" sortOrder="460" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Brand PUrchased</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="abandoned_prod_name" type="select" translate="label" sortOrder="470" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Abandoned Product Name</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="custom_title" translate="label" sortOrder="480" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Custom Attributes</label>
@@ -236,19 +245,19 @@
                 </field>
                 <field id="reward_points" type="select" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Points</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="reward_amount" type="select" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Reward Amount</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="expiration_date" type="select" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Expiration Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="last_used_date" type="select" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Used Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="enterprise_header" translate="label" sortOrder="60" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Customer Information</label>
@@ -256,23 +265,27 @@
                 </field>
                 <field id="customer_segments" type="select" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Segments</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
             </group>
-            <group id="dynamic_datafield" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="dynamic_datafield" translate="comment label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Create Datafield</label>
                 <field id="datafield_name" type="text" translate="label" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Datafield Name</label>
+                    <comment><![CDATA[(Maximum of 20 characters)]]></comment>
                 </field>
                 <field id="datafield_type" translate="label" sortOrder="20" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Datafield Type</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafieldtype</source_model>
                 </field>
-                <field id="datafield_default" translate="label" type="text" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="datafield_default" translate="comment label" type="text" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Default Value</label>
+                    <comment><![CDATA[When sending a campaign that uses template personalisation, a default value ensures that a value is alwasy displayed even if a data field is blank.]]></comment>
                 </field>
-                <field id="datafield_access" translate="label" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="datafield_access" translate="comment label" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Visibility</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Visibility</source_model>
+                    <comment><![CDATA[Make the field public if you want to allow your contacts to view and amend the data you hold on them in this field.]]></comment>
                 </field>
                 <field id="datafield_button" translate="button_label" sortOrder="50" showInDefault="1" showInStore="1" showInWebsite="1">
                     <button_label>Create New Datafield</button_label>
@@ -292,27 +305,27 @@
                 </field>
                 <field id="reward_point_balance" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Current Point Balance</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="reward_point_pending" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Points Pending An Event</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="reward_pendig_time" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Points Pending A Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="reward_point_on_hold" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Current On Hold Points</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="reward_point_expiration" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Points Expire Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="reward_point_last_earn" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Date Points Earned</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Datamapping\Datafields</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="reward_point_last_spent" translate="label" sortOrder="90" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Last Date Points Spent</label>
@@ -331,15 +344,15 @@
                 <label>Address Book Mapping</label>
                 <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Add Customers To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Settings\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
                 </field>
                 <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Add Subscribers To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Settings\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
                 </field>
                 <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Add Guests To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Settings\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
                 </field>
             </group>
             <group id="sync" translate="label" type="text" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
@@ -385,7 +398,7 @@
                 </field>
                 <field id="visibility" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Visibility</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Settings\Visibility</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Visibility</source_model>
                 </field>
                 <field id="addressbook_button" translate="button_label"  sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
                     <button_label>Create New Addressbook</button_label>

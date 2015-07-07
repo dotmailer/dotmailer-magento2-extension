@@ -1,24 +1,32 @@
-
 <script>
-	require(['prototype'], function(){
+	require(['prototype', 'domReady'], function(){
 
 //<![CDATA[
-		function validateVat() {
+
+		function createdatafield() {
+			console.log('create datafields');
 			var validationMessage = $('validation_result');
+			var datafield_name  	= $('connector_data_mapping_dynamic_datafield_datafield_name').value;
+			var datafield_type  	= $('connector_data_mapping_dynamic_datafield_datafield_type').value;
+			var datafield_default  	= $('connector_data_mapping_dynamic_datafield_datafield_default').value;
+			var datafield_access    = $('connector_data_mapping_dynamic_datafield_datafield_access').value;
+
 
 			params = {
-				country: $('<?php echo $block->getMerchantCountryField(); ?>').value,
-				vat: $('<?php echo $block->getMerchantVatNumberField(); ?>').value
-			};
+				name : 'datafield_name',
+				type : 'datafield_type',
+				deafult : 'datafield_default',
+				access : 'datafield_access'
+			}
 
 			new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
 				parameters: params,
 				onSuccess: function(response) {
-					result = '<?php echo __('VAT Number is Invalid') ?>';
+					result = '<?php echo __('Datafield Created.') ?>';
 					try {
 						response = response.responseText;
 						if (response == 1) {
-							result = '<?php echo __('VAT Number is Valid') ?>';
+							result = '<?php echo __('Datafield Success') ?>';
 							validationMessage.removeClassName('hidden').addClassName('success')
 						} else {
 							validationMessage.removeClassName('hidden').addClassName('error')
@@ -31,14 +39,13 @@
 			});
 		}
 
-		window.validateVat = validateVat;
-//]]>
-
+//]]
 	});
+
 </script>
-<div class="actions actions-validate-vat">
+<div class="actions actions-create-datafield">
 	<div id="validation_result" class="message-validation hidden"></div>
-	<button onclick="javascript:validateVat(); return false;" class="action-validate-vat" type="button" id="<?php echo $block->getHtmlId() ?>">
+	<button onclick="javascript:createdatafield(); return false;" class="action-create-datafield" type="button" id="<?php echo $block->getHtmlId() ?>">
 		<span><?php echo $block->escapeHtml($block->getButtonLabel()) ?></span>
 	</button>
 </div>
