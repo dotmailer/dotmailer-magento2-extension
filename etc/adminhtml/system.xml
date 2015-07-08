@@ -949,9 +949,10 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="ddg_transactional" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>DDG Transactional</label>
-                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="enabled" translate="comment label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[<p id="smtp-warning" style="display:inline;" class="notice">DOTMAILER TRANSACTIONAL EMAIL EXTENSION HAS TO BE INSTALLED AND ENABLED IN ORDER TO USE THIS FEATURE.</p>]]></comment>
                 </field>
             </group>
         </section>
