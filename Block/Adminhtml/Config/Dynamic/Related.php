@@ -3,14 +3,23 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Related extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
 
-	    return 'test';
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
+		\Magento\Backend\Block\Template\Context $context
+	)
+	{
+		$this->_dataHelper = $dataHelper;
+
+		parent::__construct($context);
+	}
+
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
 	    //passcode to append for url
-	    $passcode = Mage::helper('ddg')->getPasscode();
+	    $passcode = $this->_dataHelper->getPasscode();
 	    //last order id witch information will be generated
-	    $lastOrderId = Mage::helper('ddg')->getLastOrderId();
+	    $lastOrderId = $this->_dataHelper->getLastOrderId();
 
 	    if(!strlen($passcode))
 		    $passcode = '[PLEASE SET UP A PASSCODE]';
@@ -18,7 +27,7 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
 		    $lastOrderId = '[PLEASE MAP THE LAST ORDER ID]';
 
 	    //generate the base url and display for default store id
-	    $baseUrl = Mage::helper('ddg')->generateDynamicUrl();
+	    $baseUrl = $this->_dataHelper->generateDynamicUrl();
 
 	    //display the full url
         $text = sprintf('%sconnector/products/related/code/%s/order_id/@%s@', $baseUrl, $passcode, $lastOrderId);

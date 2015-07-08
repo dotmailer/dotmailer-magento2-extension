@@ -5,17 +5,25 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
 {
 
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
+		\Magento\Backend\Block\Template\Context $context
+	)
+	{
+		$this->_dataHelper = $dataHelper;
+
+		parent::__construct($context);
+	}
+
     /** label */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-
-	    return 'text to display ';
 	    //base url for dynamic content
-        $baseUrl = Mage::helper('ddg')->generateDynamicUrl();
-        $passcode = Mage::helper('ddg')->getPasscode();
+        $baseUrl    = $this->_dataHelper->generateDynamicUrl();
+        $passcode   = $this->_dataHelper->getPasscode();
 
 	    //last quote id for dynamic page
-	    $lastQuoteId = Mage::helper('ddg')->getLastQuoteId();
+	    $lastQuoteId = $this->_dataHelper->getLastQuoteId();
 
 	    //config passcode
 	    if(!strlen($passcode))
@@ -25,7 +33,6 @@ class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
 		    $lastQuoteId = '[PLEASE MAP THE LAST QUOTE ID]';
 
 	    // full url
-
         $text =  sprintf("%sconnector/email/basket/code/%s/quote_id/@%s@", $baseUrl, $passcode, $lastQuoteId);
 
         $element->setData('value', $text);

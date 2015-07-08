@@ -3,15 +3,24 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart;
 
 class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
+		\Magento\Backend\Block\Template\Context $context
+	)
+	{
+		$this->_dataHelper = $dataHelper;
+
+		parent::__construct($context);
+	}
+
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-	    return 'crosssell';
         //base url
-	    $baseUrl = Mage::helper('ddg')->generateDynamicUrl();
+	    $baseUrl = $this->_dataHelper->generateDynamicUrl();
 	    //config passcode
-        $passcode = Mage::helper('ddg')->getPasscode();
+        $passcode = $this->_dataHelper->getPasscode();
         //last quote id for dynamic page
-	    $lastQuoteId = Mage::helper('ddg')->getLastQuoteId();
+	    $lastQuoteId = $this->_dataHelper->getLastQuoteId();
 
         if (!strlen($passcode))
 	        $passcode = '[PLEASE SET UP A PASSCODE]';

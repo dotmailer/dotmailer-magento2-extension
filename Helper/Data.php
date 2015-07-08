@@ -53,7 +53,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
 	    $websiteModel = new \Magento\Store\Model\Website();
 	    $website = $websiteModel->load($website);
-//$website = Mage::app()->getWebsite($website);
 
         return $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD);
     }
@@ -70,7 +69,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getMappedCustomerId()
     {
-        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_ID);
+	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_ID, 'default');
     }
 
     public function getMappedOrderId()
@@ -100,16 +99,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	    return $passcode;
     }
 
+	/**
+	 * Customer last order id.
+	 *
+	 * @return mixed
+	 */
     public function getLastOrderId()
     {
-        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID);
-
+	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID, 'default');
     }
 
     public function getLastQuoteId()
     {
-        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID);
-
+	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID, 'default');
     }
 
     public function log($data, $level = 'info', $filename = 'api.log')

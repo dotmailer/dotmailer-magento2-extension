@@ -3,13 +3,22 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Productpush extends \Magento\Config\Block\System\Config\Form\Field
 {
-    /** label */
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
+		\Magento\Backend\Block\Template\Context $context
+	)
+	{
+		$this->_dataHelper = $dataHelper;
+
+		parent::__construct($context);
+	}
+
+	/** label */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-	    return 'product push';
 	    //generate base url
-	    $baseUrl = Mage::helper('ddg')->generateDynamicUrl();
-        $passcode  = Mage::helper('ddg')->getPasscode();
+	    $baseUrl = $this->_dataHelper->generateDynamicUrl();
+        $passcode  = $this->_dataHelper->getPasscode();
 
         if (!strlen($passcode))
 	        $passcode = '[PLEASE SET UP A PASSCODE]';

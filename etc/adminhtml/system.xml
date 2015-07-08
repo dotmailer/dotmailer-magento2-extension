@@ -694,7 +694,7 @@
                     <label>Abandoned Carts</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="abandoned_cart_url" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="abandoned_cart_url" translate="label" sortOrder="30" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Cart Content URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Abandoned</frontend_model>
                 </field>
@@ -702,7 +702,7 @@
                     <label>Reviews</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="review_url" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="review_url" translate="label" sortOrder="50" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Review Contents URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Review</frontend_model>
                 </field>
@@ -710,7 +710,7 @@
                     <label>Coupon Codes</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="coupon_code_url" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_code_url" translate="label" sortOrder="70" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Coupon Codes URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Couponcode</frontend_model>
                 </field>
@@ -718,15 +718,15 @@
                     <label>Order Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="related_products_url" translate="label" sortOrder="90" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="related_products_url" translate="label" sortOrder="90" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Related Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Related</frontend_model>
                 </field>
-                <field id="upsell_products_url" translate="label" sortOrder="100" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="upsell_products_url" translate="label" sortOrder="100" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Upsell</frontend_model>
                 </field>
-                <field id="crosssell_products_url" translate="label" sortOrder="110" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="crosssell_products_url" translate="label" sortOrder="110" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Crosssell</frontend_model>
                 </field>
@@ -734,15 +734,15 @@
                     <label>Cart Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="cart_related_products_url" translate="label" sortOrder="130" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_related_products_url" translate="label" sortOrder="130" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Related Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Related</frontend_model>
                 </field>
-                <field id="cart_upsell_products_url" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_upsell_products_url" translate="label" sortOrder="140" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Upsell</frontend_model>
                 </field>
-                <field id="cart_crosssell" translate="label" sortOrder="150" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_crosssell" translate="label" sortOrder="150" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Crosssell</frontend_model>
                 </field>
@@ -750,20 +750,20 @@
                     <label>Product Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="best_sellers_url" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Best Sellers URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>
                 </field>
-                <field id="most_viewed_url" translate="comment label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="most_viewed_url" translate="comment label" sortOrder="180" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Most Viewed URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Mostviewed</frontend_model>
                     <comment><![CDATA[add category_id/@CATEGORY_ID@ at the end of url to filter most viewed by category]]></comment>
                 </field>
-                <field id="product_push_url" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_push_url" translate="label" sortOrder="190" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Product Push URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Productpush</frontend_model>
                 </field>
-                <field id="product_recently_viewed_url" translate="label" sortOrder="195" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_recently_viewed_url" translate="label" type="label" sortOrder="195" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Recently Viewed</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Recentlyviewed</frontend_model>
                 </field>
@@ -771,19 +771,19 @@
                     <label>Wishlist</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="wishlist_product_url" translate="label" sortOrder="210" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_product_url" translate="label" sortOrder="210" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Wishlist Content</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Content</frontend_model>
                 </field>
-                <field id="wishlist_related" translate="label" sortOrder="220" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_related" translate="label" sortOrder="220" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Wishlist Related URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Related</frontend_model>
                 </field>
-                <field id="wishlist_upsell_url" translate="label" sortOrder="230" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_upsell_url" translate="label" sortOrder="230" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Wishlist Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Upsell</frontend_model>
                 </field>
-                <field id="wishlist_crosssell_url" translate="label" sortOrder="240" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_crosssell_url" translate="label" sortOrder="240" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Wishlist Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Crosssell</frontend_model>
                 </field>
@@ -935,7 +935,7 @@
                 <field id="api" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>API key</label>
                 </field>
-                <field id="dynamic_url" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="dynamic_url" translate="comment label" sortOrder="20" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Recommendation URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Nosto</frontend_model>
                     <comment><![CDATA[Replace @SLOT_NAME@ with the slot name created in your Nosto account.]]></comment>

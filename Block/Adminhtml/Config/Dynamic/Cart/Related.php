@@ -3,14 +3,22 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart;
 class Related extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
-	    return 'cart related';
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
+		\Magento\Backend\Block\Template\Context $context
+	)
+	{
+		$this->_dataHelper = $dataHelper;
 
+		parent::__construct($context);
+	}
+
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
 	    //passcode to append for url
-        $passcode = Mage::helper('ddg')->getPasscode();
+        $passcode = $this->_dataHelper->getPasscode();
         //last quote id for dynamic page
-        $lastQuoteId = Mage::helper('ddg')->getLastQuoteId();
+        $lastQuoteId = $this->_dataHelper->getLastQuoteId();
 
         if (!strlen($passcode))
             $passcode = '[PLEASE SET UP A PASSCODE]';
@@ -19,7 +27,7 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
             $lastQuoteId = '[PLEASE MAP THE LAST QUOTE ID]';
 
 	    //generate the base url and display for default store id
-	    $baseUrl = Mage::helper('ddg')->generateDynamicUrl();
+	    $baseUrl = $this->_dataHelper->generateDynamicUrl();
 
 	    //display the full url
         $text = sprintf('%sconnector/quoteproducts/related/code/%s/quote_id/@%s@', $baseUrl, $passcode, $lastQuoteId);

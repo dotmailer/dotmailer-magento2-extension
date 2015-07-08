@@ -4,16 +4,24 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
+		\Magento\Backend\Block\Template\Context $context
+	)
+	{
+		$this->_dataHelper = $dataHelper;
 
-	    return 'crosssell';
+		parent::__construct($context);
+	}
+
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
         //base url
-	    $baseUrl = Mage::helper('ddg')->generateDynamicUrl();
+	    $baseUrl = $this->_dataHelper->generateDynamicUrl();
 	    //config passcode
-        $passcode = Mage::helper('ddg')->getPasscode();
+        $passcode = $this->_dataHelper->getPasscode();
         //last order id for dynamic page
-	    $lastOrderId = Mage::helper('ddg')->getLastOrderId();
+	    $lastOrderId = $this->_dataHelper->getLastOrderId();
 
         if (!strlen($passcode))
 	        $passcode = '[PLEASE SET UP A PASSCODE]';
