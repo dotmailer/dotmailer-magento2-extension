@@ -2,41 +2,56 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Automation;
 
-class Program
+class Program implements \Magento\Framework\Option\ArrayInterface
 {
+
+	public function __construct(
+		\Magento\Framework\Registry $registry,
+		\Dotdigitalgroup\Email\Model\Apiconnector\Rest $rest
+	)
+	{
+		$this->rest = $rest;
+		$this->_registry = $registry;
+	}
 
 	public function toOptionArray()
 	{
 		$fields = array();
 
+		//@todo get the website id
 
-		return $fields;
-		$websiteName = Mage::app()->getRequest()->getParam('website', false);
+		$fields[] = array('value' => '0', 'label' => '-- Disabled --');
 
-        $website = Mage::app()->getRequest()->getParam('website', false);
-        if ($website)
-            $website = Mage::app()->getWebsite($website);
-        else
-            $website = 0;
+		//@todo check if api is enabled
 
-		$fields[] = array('value' => '0', 'label' => Mage::helper('ddg')->__('-- Disabled --'));
-		if ($websiteName) {
-			$website = Mage::app()->getWebsite($websiteName);
+
+		$savedPrograms = $this->_registry->registry('programs');
+
+		//get saved datafileds from registry
+		if ( $savedPrograms ) {
+			$programs = $savedPrograms;
+		} else {
+			//grab the datafields request and save to register
+			$programs = $this->rest->getPrograms();
+			$this->_registry->register('programs', $programs);
 		}
 
-		if (Mage::helper('ddg')->isEnabled($website)) {
-
-			$client = Mage::helper( 'ddg' )->getWebsiteApiClient( $website );
-			$programmes = $client->getPrograms();
-
-			foreach ( $programmes as $one ) {
-				if ( isset( $one->id ) ) {
-                    if($one->status == 'Active'){
-					    $fields[] = array( 'value' => $one->id, 'label' => Mage::helper( 'ddg' )->__( $one->name ) );
-                    }
+		//set the api error message for the first option
+		if ( isset( $programs->message ) ) {
+			//message
+			$fields[] = array( 'value' => 0, 'label' => $programs->message);
+		} else {
+			//loop for all programs option
+			foreach ( $programs as $program ) {
+				if ( isset( $program->id ) && $program->status == 'Active' ) {
+					$fields[] = array(
+						'value' => $program->id,
+						'label' => $program->name
+					);
 				}
 			}
 		}
+
 
 		return $fields;
 	}

@@ -548,8 +548,8 @@
             </group>
             <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Order status automation enrolment</label>
-                <field id="status_to_automation" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label></label>
+                <field id="status_to_automation" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
                 </field>
             </group>
             <group id="review_settings" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -591,8 +591,9 @@
                     <label>Reviews Per Product</label>
                     <comment><![CDATA[Number of reviews to display per product.]]></comment>
                 </field>
-                <field id="template" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="template" translate="comment label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Logo Template (Optional)</label>
+                    <comment>Enter name of logo template.</comment>
                 </field>
                 <field id="service_score_url" translate="label" type="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Service Score URL</label>
@@ -654,6 +655,23 @@
                 <field id="sms_three_message" translate="label" type="textarea" sortOrder="120" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>SMS 3 Message</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Sms\Smsmessagethree</frontend_model>
+                </field>
+
+                <field id="sms_four_title" translate="label" sortOrder="130" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>SMS 4</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="sms_four_enabled" translate="label" type="select" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>SMS 4 Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="sms_four_status" translate="label" type="select" sortOrder="150" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>SMS 4 Order Status</label>
+                    <source_model>Magento\Sales\Model\Config\Source\Order\Status</source_model>
+                </field>
+                <field id="sms_four_message" translate="label" type="textarea" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>SMS 4 Message</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Sms\Smsmessagefour</frontend_model>
                 </field>
             </group>
         </section>

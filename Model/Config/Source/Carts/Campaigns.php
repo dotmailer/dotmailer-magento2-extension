@@ -17,10 +17,11 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
 	public function toOptionArray()
     {
         $fields = array();
-		//@todo check for website, and check if enabled before continue
+	    $fields[] = array('value' => '0', 'label' => '-- Please Select --');
+
+	    //@todo check for website, and check if enabled before continue
 
 	    $savedCampaigns = $this->_registry->registry('campaigns');
-
 
 	    if ( $savedCampaigns ) {
 		    $campaigns = $savedCampaigns;

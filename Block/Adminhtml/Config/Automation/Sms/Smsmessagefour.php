@@ -11,8 +11,8 @@ class Smsmessagefour extends \Magento\Config\Block\System\Config\Form\Field
 
 	    $element->setData('placeholder', self::DEFAULT_TEXT);
         $element->setData('after_element_html',
-            "<a href='#' onclick=\"injectText('connector_sms_sms_four_message', '{{var order_number}}');return false;\">Insert Order Number</a>
-            <a href='#' onclick=\"injectText('connector_sms_sms_four_message', '{{var customer_name}}');return false;\">Insert Customer Name</a>"
+            "<a href='#' onclick=\"injectText('connector_automation_sms_sms_four_message', '{{var order_number}}');return false;\">Insert Order Number</a>
+            <a href='#' onclick=\"injectText('connector_automation_sms_sms_four_message', '{{var customer_name}}');return false;\">Insert Customer Name</a>"
         );
         return parent::_getElementHtml($element);
     }

@@ -2,10 +2,34 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
-use Magento\Framework\App\Helper\AbstractHelper;
+class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
-class Data extends AbstractHelper
 {
+	/**
+	 * @var
+	 */
+	protected $_backendConfig;
+
+	protected $_context;
+
+
+	public function __construct(
+		\Magento\Framework\App\Helper\Context $context,
+		\Magento\Store\Model\StoreManagerInterface $store,
+		\Magento\Framework\UrlInterface $urlBuilder
+	)
+	{
+		$this->_store = $store;
+
+		parent::__construct($context);
+	}
+
+	protected function _getConfigValue($path, $contextScope, $contextScopeId = null) {
+
+		$config = $this->scopeConfig->getValue($path, $contextScope, $contextScopeId);
+
+		return $config;
+	}
 
     public function isEnabled($website = 0)
     {
@@ -19,6 +43,7 @@ class Data extends AbstractHelper
      */
     public function getApiUsername($website = 0)
     {
+
         $website = Mage::app()->getWebsite($website);
 
         return $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_USERNAME);
@@ -26,9 +51,11 @@ class Data extends AbstractHelper
 
     public function getApiPassword($website = 0)
     {
-        $website = Mage::app()->getWebsite($website);
+	    $websiteModel = new \Magento\Store\Model\Website();
+	    $website = $websiteModel->load($website);
+//$website = Mage::app()->getWebsite($website);
 
-        return $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_PASSWORD);
+        return $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD);
     }
 
     public function auth($authRequest)
@@ -51,9 +78,26 @@ class Data extends AbstractHelper
         return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID);
     }
 
+	/**
+	 *
+	 * @return mixed
+	 */
     public function getPasscode()
     {
-        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE);
+	    $websiteId = $this->_request->getParam('website', false);
+
+	    $scope = 'default';
+	    $scopeId = '0';
+	    if ($websiteId) {
+		    $scope = 'website';
+			$scopeId = $websiteId;
+	    }
+
+	    $passcode = $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE, $scope, $scopeId);
+
+	    $this->_logger->debug($passcode);
+
+	    return $passcode;
     }
 
     public function getLastOrderId()
@@ -68,8 +112,13 @@ class Data extends AbstractHelper
 
     }
 
-    public function log($data, $level = Zend_Log::DEBUG, $filename = 'api.log')
+    public function log($data, $level = 'info', $filename = 'api.log')
     {
+	    //@todo check if debug is enabled
+	    $this->_logger->info($data, $level);
+
+
+	    return ;
         if ($this->getDebugEnabled()) {
             $filename = 'connector_' . $filename;
 
@@ -498,10 +547,19 @@ class Data extends AbstractHelper
      * Generate the baseurl for the default store
      * dynamic content will be displayed
      * @return string
-     * @throws Mage_Core_Exception
      */
 	public function generateDynamicUrl()
 	{
+		$baseUrl = '';
+
+		//$website = $this->_getRequest()->getParam('website', null);
+
+
+		$url = $this->_urlBuilder->getBaseUrl();
+
+
+
+		return $url;
 		$website = Mage::app()->getRequest()->getParam('website', false);
 
 		//set website url for the default store id
