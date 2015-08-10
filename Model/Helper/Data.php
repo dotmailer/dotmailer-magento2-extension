@@ -1,37 +1,18 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Helper;
+namespace Dotdigitalgroup\Email\Model\Helper;
 
-class Data extends \Magento\Framework\App\Helper\AbstractHelper
+use Magento\Framework\App\Helper\AbstractHelper;
 
+class Data
 {
-	/**
-	 * @var
-	 */
-	protected $_backendConfig;
 
-	protected $_context;
-
-
-	public function __construct(
-		\Magento\Framework\App\Helper\Context $context,
-		\Magento\Store\Model\StoreManagerInterface $store,
-		\Magento\Framework\UrlInterface $urlBuilder,
-		\Magento\Framework\App\Resource $adapter
-	)
-	{
-		$this->_store = $store;
-		$this->_adapter = $adapter;
-
-		parent::__construct($context);
-	}
-
-	protected function _getConfigValue($path, $contextScope, $contextScopeId = null) {
-
-		$config = $this->scopeConfig->getValue($path, $contextScope, $contextScopeId);
-
-		return $config;
-	}
+//	protected function _construct(
+//		\Psr\Log\LoggerInterface $logger
+//	)
+//	{
+//		$this->logger = $logger;
+//	}
 
     public function isEnabled($website = 0)
     {
@@ -45,16 +26,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiUsername($website = 0)
     {
+		//load the website
+	    $websiteModel = new \Magento\Store\Model\Website();
+	    $website = $websiteModel->load($website);
 
-        $website = Mage::app()->getWebsite($website);
-
-        return $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_USERNAME);
+        return $website->getConfig(\Dotdigitalgroup\Email\Model\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME);
     }
 
     public function getApiPassword($website = 0)
     {
+	    $factory = \Magento\Store\Model\WebsiteFactory;
+
+	    //load the website
 	    $websiteModel = new \Magento\Store\Model\Website();
+
+
+
 	    $website = $websiteModel->load($website);
+//$website = Mage::app()->getWebsite($website);
 
         return $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD);
     }
@@ -71,7 +60,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getMappedCustomerId()
     {
-	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_ID, 'default');
+        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_ID);
     }
 
     public function getMappedOrderId()
@@ -79,41 +68,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID);
     }
 
-	/**
-	 *
-	 * @return mixed
-	 */
     public function getPasscode()
     {
-	    $websiteId = $this->_request->getParam('website', false);
-
-	    $scope = 'default';
-	    $scopeId = '0';
-	    if ($websiteId) {
-		    $scope = 'website';
-			$scopeId = $websiteId;
-	    }
-
-	    $passcode = $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE, $scope, $scopeId);
-
-	    $this->_logger->debug($passcode);
-
-	    return $passcode;
+        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE);
     }
 
-	/**
-	 * Customer last order id.
-	 *
-	 * @return mixed
-	 */
     public function getLastOrderId()
     {
-	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID, 'default');
+        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID);
+
     }
 
     public function getLastQuoteId()
     {
-	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID, 'default');
+        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID);
+
     }
 
     public function log($data, $level = 'info', $filename = 'api.log')
@@ -551,19 +520,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Generate the baseurl for the default store
      * dynamic content will be displayed
      * @return string
+     * @throws Mage_Core_Exception
      */
 	public function generateDynamicUrl()
 	{
-		$baseUrl = '';
-
-		//$website = $this->_getRequest()->getParam('website', null);
-
-
-		$url = $this->_urlBuilder->getBaseUrl();
-
-
-
-		return $url;
 		$website = Mage::app()->getRequest()->getParam('website', false);
 
 		//set website url for the default store id
@@ -600,12 +560,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getOrderTableDescription()
     {
+        $resource = Mage::getSingleton('core/resource');
+        $readConnection = $resource->getConnection('core_read');
+        $salesTable = $resource->getTableName('sales/order');
 
-	    $salesTable  = $this->_adapter->getTableName('sales_order');
-	    $adapter = $this->_adapter->getConnection('read');
-	    $columns = $adapter->describeTable($salesTable);
-
-	    return $columns;
+        return $readConnection->describeTable($salesTable);
     }
 
     /**
@@ -615,12 +574,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getQuoteTableDescription()
     {
-
-	    $quoteTable  = $this->_adapter->getTableName('quote');
-	    $adapter = $this->_adapter->getConnection('read');
-	    $columns = $adapter->describeTable($quoteTable);
-
-	    return $columns;
+        $resource = Mage::getSingleton('core/resource');
+        $readConnection = $resource->getConnection('core_read');
+        $table = $resource->getTableName('sales/quote');
+        return $readConnection->describeTable($table);
     }
 
     /**

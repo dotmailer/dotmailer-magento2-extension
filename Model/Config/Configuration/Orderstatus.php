@@ -20,7 +20,7 @@ class Orderstatus
 		// Remove the "please select" option if present
 		if(count($statuses) > 0 && $statuses[0]['value'] == '')
 			array_shift($statuses);
-		
+
         $options = array();
 		
 		foreach($statuses as $status) {

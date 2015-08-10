@@ -4,14 +4,27 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration;
 class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
 {
 
+	public function __construct(
+		\Magento\Backend\Block\Template\Context $context,
+		\Magento\Framework\UrlInterface $urlBuilder,
+		\Magento\Framework\Data\Form\Element\Text $text
+	)
+	{
+		$this->_urlBuilder = $urlBuilder;
+		$this->_text = $text;
+		parent::__construct($context);
+	}
+
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-	    return 'color picker';
         // Include Procolor library JS file
-        $html = '<script type="text/javascript" src="' . Mage::getBaseUrl('js') . 'connector/procolor-1.0/procolor.compressed.js' .'"></script>';
+        //$html = '<script type="text/javascript" src="' . $jsPath . 'js/procolor-1.0/procolor.compressed.js' .'"></script>';
+        $html = '<script type="text/javascript" src="procolor.compressed.js"></script>';
+
+//$html = '<script type="text/javascript">ProColor.prototype.attachButton("connector_configuration_dynamic_content_style_font_color", { imgPath:"http://magentotwo.dev/admin/admin/index/index/key/a35d85a33acddedae2753bf2b47ba63cbc8c768fc1a6740819ceabf2a0691af8/connector/procolor-1.0/img/procolor_win_", showInField: true });</script><script type="text/javascript">';
 
         // Use Varien text element as a basis
-        $input = new Varien_Data_Form_Element_Text();
+        $input = $this->_text;
 
         // Set data from config element on Varien text element
         $input->setForm($element->getForm())
@@ -43,7 +56,8 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
      */
     protected function _getProcolorJs($htmlId)
     {
-        return '<script type="text/javascript">ProColor.prototype.attachButton(\'' . $htmlId . '\', { imgPath:\'' . Mage::getBaseUrl('js') . 'connector/procolor-1.0/' . 'img/procolor_win_\', showInField: true });</script>';
+	    $this->_logger->debug('<script type="text/javascript">ProColor.prototype.attachButton(\'' . $htmlId . '\', { imgPath:\'' . $this->_urlBuilder->getUrl() . 'connector/procolor-1.0/' . 'img/procolor_win_\', showInField: true });</script>');
+        return '<script type="text/javascript">ProColor.prototype.attachButton(\'' . $htmlId . '\', { imgPath:\'' . $this->_urlBuilder->getUrl() . 'connector/procolor-1.0/' . 'img/procolor_win_\', showInField: true });</script>';
     }
 
     /**
@@ -55,7 +69,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
     {
         return
             '<script type="text/javascript">
-                Validation.add(\'validate-hex\', \'' . Mage::helper('ddg')->__('Please enter a valid hex color code') . '\', function(v) {
+                Validation.add(\'validate-hex\', \'' . 'Please enter a valid hex color code' . '\', function(v) {
                     return /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(v);
                 });
             </script>';

@@ -972,17 +972,17 @@
             <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Tracking</label>
                 <field id="roi_enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>ROI Tracking Enabled</label>
+                    <label>ROI Tracking</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
                 <field id="page_enabled" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Page Tracking Enabled</label>
+                    <label>Page Tracking</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
             </group>
             <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Transactional Data</label>
-                <field id="order_statuses" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order_statuses" translate="label" sortOrder="10" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Import Order With Status</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
                     <comment><![CDATA[Select multiple statuses by pressing Ctrl button while selecting]]></comment>
