@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Cron/etc/crontab.xsd">
+    <group id="default">
+        <job name="ddg_automation_customer_subscriber_guest_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="contactSync">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+    </group>
+</config>

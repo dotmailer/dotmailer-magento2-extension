@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
-    <type name="Dotdigitalgroup\Email\Model\" shared="false">
+    <type name="Magento\ImportExport\Model\Export\Adapter\Csv">
         <arguments>
-            <argument name="metadataService" xsi:type="object">\Magento\Customer\Api\CustomerMetadataInterface</argument>
+            <argument name="destination" xsi:type="string">feeds/product_feed.csv</argument>
         </arguments>
     </type>
 </config>

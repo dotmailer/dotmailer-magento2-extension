@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 {
@@ -33,10 +35,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		return $config;
 	}
 
+    /**
+     * Get api is enabled.
+     *
+     * @param int $website
+     *
+     * @return mixed
+     */
     public function isEnabled($website = 0)
     {
-        $website = Mage::app()->getWebsite($website);
-        return (bool)$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED);
+        $website = $this->_store->getWebsite($website);
+        $enabled = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
+	        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+	        $website);
+
+        return $enabled;
     }
 
     /**
@@ -57,6 +70,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	    $website = $websiteModel->load($website);
 
         return $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD);
+    }
+
+    public function getWebsites($default = false)
+    {
+        return $this->_store->getWebsites($default);
     }
 
     public function auth($authRequest)
@@ -116,10 +134,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID, 'default');
     }
 
-    public function log($data, $level = 'info', $filename = 'api.log')
+    public function log($data, $filename = 'api.log')
     {
 	    //@todo check if debug is enabled
-	    $this->_logger->info($data, $level);
+	    $this->_logger->info($data);
 
 
 	    return ;
@@ -160,9 +178,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return (bool)Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED);
     }
 
+    /**
+     * Use recommended resource allocation.
+     *
+     * @return bool
+     */
     public function getResourceAllocationEnabled()
     {
-        return (bool)Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_RESOURCE_ALLOCATION);
+        return (bool)$this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_RESOURCE_ALLOCATION);
     }
 
     public function getMappedStoreName($website)
@@ -199,10 +222,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $response->id;
     }
 
-    public function getCustomerAddressBook($website)
+	/**
+	 * Get the addres book for customer.
+	 *
+	 * @param int $website
+	 *
+	 * @return mixed
+	 */
+    public function getCustomerAddressBook($website = 0)
     {
-        $website = Mage::app()->getWebsite($website);
-        return $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID);
+	    $website = $this->_store->getWebsite($website);
+
+	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
+		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website);
     }
 
     public function getSubscriberAddressBook($website)
@@ -834,13 +867,34 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	}
 
 	/**
-	 * @param int $websiteId
+     * Customer sync enabled.
+	 * @param int $website
 	 *
 	 * @return bool
 	 */
-	public function getContactSyncEnabled($websiteId = 0)
+	public function getCustomerSyncEnabled($website = 0)
 	{
-		return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED, $websiteId);
+		$website = $this->_store->getWebsite($website);
+
+        $enabled = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED,
+	        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+	        $website);
+
+        return $enabled;
+	}
+
+	/**
+	 * Customer sync size limit.
+	 * @param int $website
+	 *
+	 * @return mixed
+	 */
+	public function getSyncLimit($website = 0)
+	{
+		$website = $this->_store->getWebsite($website);
+		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
+			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+			$website);
 	}
 
 	/**

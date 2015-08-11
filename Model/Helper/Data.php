@@ -2,17 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Helper;
 
-use Magento\Framework\App\Helper\AbstractHelper;
 
-class Data
+class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
-//	protected function _construct(
-//		\Psr\Log\LoggerInterface $logger
-//	)
-//	{
-//		$this->logger = $logger;
-//	}
 
     public function isEnabled($website = 0)
     {

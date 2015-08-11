@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Controller\Index;
 
 use GuzzleHttp;
+use \Dotdigitalgroup\Email\Model\Cron;
+
 class Index extends \Magento\Framework\App\Action\Action {
 
 	/**
@@ -13,8 +15,6 @@ class Index extends \Magento\Framework\App\Action\Action {
 	public function __construct(
 		\Magento\Framework\App\Action\Context $context
 	) {
-
-
 		parent::__construct($context);
 	}
 
@@ -22,6 +22,13 @@ class Index extends \Magento\Framework\App\Action\Action {
 	 * Sets the content of the response
 	 */
 	public function execute() {
+
+		$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron');
+
+		$model->contactSync();
+
+
+		return;
 
 		echo $this->getViewFileUrl('Dotdigitalgroup_Email/images/i_msg-error.gif');
 

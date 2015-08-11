@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use \Dotdigitalgroup\Email\Helper\Data as DataHelper;
+
 abstract class Rest
 {
     protected $url;

@@ -340,7 +340,7 @@
             <label>Sync Settings</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="sync_settings" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="addressbook" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Address Book Mapping</label>
                 <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Add Customers To</label>

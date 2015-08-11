@@ -35,18 +35,18 @@ class Config
     /**
      * SYNC SECTION.
      */
-    const XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED                       = 'connector_sync_settings/sync/contact_enabled';
-    const XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED                         = 'connector_sync_settings/sync/guest_enabled';
-    const XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED                    = 'connector_sync_settings/sync/subscriber_enabled';
-    const XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED                         = 'connector_sync_settings/sync/order_enabled';
-    const XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED                      = 'connector_sync_settings/sync/wishlist_enabled';
-    const XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED                        = 'connector_sync_settings/sync/review_enabled';
-    const XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED                         = 'connector_sync_settings/sync/quote_enabled';
-    const XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED                       = 'connector_sync_settings/sync/catalog_enabled';
+    const XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED                      = 'sync_settings/sync/customer_enabled';
+    const XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED                         = 'sync_settings/sync/guest_enabled';
+    const XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED                    = 'sync_settings/sync/subscriber_enabled';
+    const XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED                         = 'sync_settings/sync/order_enabled';
+    const XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED                      = 'sync_settings/sync/wishlist_enabled';
+    const XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED                        = 'sync_settings/sync/review_enabled';
+    const XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED                         = 'sync_settings/sync/quote_enabled';
+    const XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED                       = 'sync_settings/sync/catalog_enabled';
 
-    const XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID                  = 'connector_sync_settings/address_book/customers';
-    const XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID                = 'connector_sync_settings/address_book/subscribers';
-    const XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID                      = 'connector_sync_settings/address_book/guests';
+    const XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID                  = 'sync_settings/addressbook/customers';
+    const XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID                = 'sync_settings/addressbook/subscribers';
+    const XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID                      = 'sync_settings/addressbook/guests';
     // Mapping
     const XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID                      = 'connector_data_mapping/customer_data/last_order_id';
     const XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID                      = 'connector_data_mapping/customer_data/last_quote_id';
