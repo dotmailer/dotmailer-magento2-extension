@@ -2,28 +2,25 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 {
-	/**
-	 * @var
-	 */
 	protected $_backendConfig;
-
 	protected $_context;
-
+	protected $_scopeConfig;
 
 	public function __construct(
-		\Magento\Framework\App\Helper\Context $context,
-		\Magento\Store\Model\StoreManagerInterface $store,
+		\Magento\Framework\App\Resource $adapter,
 		\Magento\Framework\UrlInterface $urlBuilder,
-		\Magento\Framework\App\Resource $adapter
+		\Magento\Framework\App\Helper\Context $context,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Store\Model\StoreManagerInterface $store
 	)
 	{
 		$this->_store = $store;
 		$this->_adapter = $adapter;
+		$this->_scopeConfig = $scopeConfig;
 
 		parent::__construct($context);
 	}
@@ -290,12 +287,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $website
      *
      * @return array|mixed
-     * @throws Mage_Core_Exception
      */
     public function getCustomAttributes($website = 0)
     {
-        $website = Mage::app()->getWebsite($website);
-        $attr = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS);
+	    $attr = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS,
+		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website->getId());
 
         if (!$attr)
             return array();
@@ -445,12 +442,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * check sweet tooth installed/active status and active status
-     * @param Mage_Core_Model_Website $website
      * @return boolean
      */
     public function isSweetToothToGo($website)
     {
-        $stMappingStatus = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE, $website);
+	    $stMappingStatus = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE,
+		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website->getId()
+		    );
         if($stMappingStatus && $this->isSweetToothEnabled()) return true;
         return false;
     }

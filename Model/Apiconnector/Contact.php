@@ -13,23 +13,34 @@ class Contact
 	protected $_logger;
 	protected $_helper;
 	protected $_scopeConfig;
+	protected $contactCollection;
+	protected $_resource;
 
 
 	public function __construct(
 		LoggerInterface $logger,
+		\Magento\Framework\App\Resource $resource,
+		\Dotdigitalgroup\Email\Helper\File   $file,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Config $config,
-		\Dotdigitalgroup\Email\Helper\File   $file,
+		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManager
+		\Magento\Customer\Model\Resource\Customer\CollectionFactory $customerCollectionFactory,
+		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollectionFactory
 	)
 	{
 		$this->_logger = $logger;
 		$this->_helper = $helper;
 		$this->_file = $file;
 		$this->_config = $config;
+		$this->_resource = $resource;
 		$this->_scopeConfig = $scopeConfig;
 		$this->_objectManager = $objectManager;
+
+		$this->collection = $customerCollectionFactory->create();
+		$this->collection->addAttributeToSelect('*');
+
+		$this->contactCollection = $contactCollectionFactory->create();
 	}
 	/**
 	 * Contact sync.
@@ -45,8 +56,6 @@ class Contact
 		$result = array('success' => true, 'message' => '');
 		//starting time for sync
 		$this->_start = microtime(true);
-
-		$this->_logger->error('the result ', $result);
 
 		//resourse allocation
 		$this->_helper->allowResourceFullExecution();
@@ -97,16 +106,14 @@ class Contact
 		if (! $customerAddressBook)
 			return 0;
 
-
-//		$coreResource = Mage::getSingleton('core/resource');
-//		$write = $coreResource->getConnection('core_write');
-//		$contactTable = $coreResource->getTableName('ddg_automation/contact');
-//		$select = $write->select();
-
+		$write = $this->_resource->getConnection('core_write');
+		$contactTable = $this->_resource->getTableName('email_contact');
+		$select = $write->select();
 		$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact');
-		var_dump($contactModel->getData());die;
-		$contactModel = Mage::getModel('ddg_automation/contact');
-		$contacts = $contactModel->getContactsToImportForWebsite($website->getId(), $pageSize);
+		$contacts = $this->contactCollection
+			->addFieldToSelect('*')
+			->addFieldToFilter('website_id', $website->getId())
+			->setPageSize($pageSize);
 
 		// no contacts for this website
 		if (!$contacts->getSize())
@@ -125,11 +132,11 @@ class Contact
 		/**
 		 * HEADERS.
 		 */
-		$mappedHash = $fileHelper->getWebsiteCustomerMappingDatafields($website);
+		$mappedHash = $this->_file->getWebsiteCustomerMappingDatafields($website);
 		$headers = $mappedHash;
 
 		//custom customer attributes
-		$customAttributes = $helper->getCustomAttributes($website);
+		$customAttributes = $this->_helper->getCustomAttributes($website);
 		if ($customAttributes){
 			foreach ($customAttributes as $data) {
 				$headers[] = $data['datafield'];
@@ -138,51 +145,55 @@ class Contact
 		}
 		$headers[] = 'Email';
 		$headers[] = 'EmailType';
-		$fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $headers);
+
+		$this->_file->outputCSV($this->_file->getFilePath($customersFile), $headers);
 		/**
 		 * END HEADERS.
 		 */
 
 		//only execute once despite number of websites
-		if(!$this->_sqlExecuted){
+		if (!$this->_sqlExecuted)  {
 			//check subscriber and update in one query
-			$select->joinLeft(
-				array('s' => $coreResource->getTableName('newsletter/subscriber')),
-				"c.customer_id = s.customer_id",
-				array('subscriber_status' => 's.subscriber_status')
-			);
-			//update sql statement
-			$updateSql = $select->crossUpdateFromSelect(array('c' => $contactTable));
-			//run query and update subscriber_status column
-			$write->query($updateSql);
-			//update is_subscriber column if subscriber_status is not null
-			$write->update($contactTable, array('is_subscriber' => 1), "subscriber_status is not null");
-
-
-			//remove contact with customer id set and no customer
-			$select->reset()
-			       ->from(
-				       array('c' => $contactTable),
-				       array('c.customer_id')
-			       )
-			       ->joinLeft(
-				       array('e' => $coreResource->getTableName('customer_entity')),
-				       "c.customer_id = e.entity_id"
-			       )
-			       ->where('e.entity_id is NULL');
-			//delete sql statement
-			$deleteSql = $select->deleteFromSelect('c');
-			//run query
-			$write->query($deleteSql);
-
-			//set flag
-			$this->_sqlExecuted = true;
+//			$select->joinLeft(
+//				array('s' => $coreResource->getTableName('newsletter/subscriber')),
+//				"c.customer_id = s.customer_id",
+//				array('subscriber_status' => 's.subscriber_status')
+//			);
+//			//update sql statement
+//			$updateSql = $select->crossUpdateFromSelect(array('c' => $contactTable));
+//			//run query and update subscriber_status column
+//			$write->query($updateSql);
+//			//update is_subscriber column if subscriber_status is not null
+//			$write->update($contactTable, array('is_subscriber' => 1), "subscriber_status is not null");
+//
+//
+//			//remove contact with customer id set and no customer
+//			$select->reset()
+//			       ->from(
+//				       array('c' => $contactTable),
+//				       array('c.customer_id')
+//			       )
+//			       ->joinLeft(
+//				       array('e' => $coreResource->getTableName('customer_entity')),
+//				       "c.customer_id = e.entity_id"
+//			       )
+//			       ->where('e.entity_id is NULL');
+//			//delete sql statement
+//			$deleteSql = $select->deleteFromSelect('c');
+//			//run query
+//			$write->query($deleteSql);
+//
+//			//set flag
+//			$this->_sqlExecuted = true;
 		}
 
-		//customer data
 		foreach ($customerCollection as $customer) {
-			$connectorCustomer = Mage::getModel('ddg_automation/apiconnector_customer', $mappedHash);
+
+			//$connectorCustomer = Mage::getModel('ddg_automation/apiconnector_customer', $mappedHash);
+			$connectorCustomer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Customer' );
+			$connectorCustomer->setMappingHash($mappedHash);
 			$connectorCustomer->setCustomerData($customer);
+
 			//count number of customers
 			$customers[] = $customer->getId();
 
@@ -198,29 +209,31 @@ class Contact
 			$connectorCustomer->setData($customer->getEmail());
 			$connectorCustomer->setData('Html');
 			// save csv file data for customers
-			$fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $connectorCustomer->toCSVArray());
+			$this->_file->outputCSV($this->_file->getFilePath($customersFile), $connectorCustomer->toCSVArray());
+
+
 			//clear collection and free memory
 			$customer->clearInstance();
 		}
 
 		$customerNum = count($customers);
-		$helper->log('Website : ' . $website->getName() . ', customers = ' . $customerNum);
-		$helper->log('---------------------------- execution time :' . gmdate("H:i:s", microtime(true) - $this->_start));
+		$this->_helper->log('Website : ' . $website->getName() . ', customers = ' . $customerNum);
+		$this->_helper->log('---------------------------- execution time :' . gmdate("H:i:s", microtime(true) - $this->_start));
 
-		if (is_file($fileHelper->getFilePath($customersFile))) {
+		if (is_file($this->_file->getFilePath($customersFile))) {
 			if ($customerNum > 0) {
 				//register in queue with importer
-				$check = Mage::getModel('ddg_automation/importer')->registerQueue(
-					Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_CONTACT,
+				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Importer')->registerQueue(
+					\Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
 					'',
-					Dotdigitalgroup_Email_Model_Importer::MODE_BULK,
+					\Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
 					$website->getId(),
 					$customersFile
 				);
 
 				//set imported
 				if ($check) {
-					$tableName = Mage::getSingleton('core/resource')->getTableName('email_contact');
+					$tableName = $this->_resource->getTableName('email_contact');
 					$ids = implode(', ', $customers);
 					$write->update($tableName, array('email_imported' => 1), "customer_id IN ($ids)");
 				}
@@ -259,7 +272,7 @@ class Contact
 		//skip if the mapping field is missing
 		if(!$helper->getCustomerAddressBook($website))
 			return false;
-		$fileHelper = Mage::helper('ddg/file');
+		//$fileHelper = Mage::helper('ddg/file');
 
 		$customerId = $contact->getCustomerId();
 		if (!$customerId) {
@@ -275,7 +288,7 @@ class Contact
 		/**
 		 * HEADERS.
 		 */
-		$mappedHash = $fileHelper->getWebsiteCustomerMappingDatafields($website);
+		$mappedHash = $this->_file->getWebsiteCustomerMappingDatafields($website);
 		$headers = $mappedHash;
 		//custom customer attributes
 		$customAttributes = $helper->getCustomAttributes($website);
@@ -286,14 +299,17 @@ class Contact
 
 		$headers[] = 'Email';
 		$headers[] = 'EmailType';
-		$fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $headers);
+		$this->_file->outputCSV($this->_file->getFilePath($customersFile), $headers);
 		/**
 		 * END HEADERS.
 		 */
 		$customerCollection = $this->getCollection(array($customerId), $website->getId());
 
 		foreach ($customerCollection as $customer) {
-			$contactModel = Mage::getModel('ddg_automation/contact')->loadByCustomerEmail($customer->getEmail(), $websiteId);
+			$contactModel = $this->_objectManager->create('email_contact');
+
+			var_dump($contactModel->getData());die;
+			$contactModel = $this->loadByCustomerEmail($customer->getEmail(), $websiteId);
 			//skip contacts without customer id
 			if (!$contactModel->getId())
 				continue;
@@ -313,7 +329,7 @@ class Contact
 			$connectorCustomer->setData($customer->getEmail());
 			$connectorCustomer->setData('Html');
 			// save csv file data for customers
-			$fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $connectorCustomer->toCSVArray());
+			$this->_file->outputCSV($this->_file->getFilePath($customersFile), $connectorCustomer->toCSVArray());
 
 			/**
 			 * END DATA.
@@ -331,7 +347,7 @@ class Contact
 			$updated++;
 		}
 
-		if (is_file($fileHelper->getFilePath($customersFile))) {
+		if (is_file($this->_file->getFilePath($customersFile))) {
 			//import contacts
 			if ($updated > 0) {
 				//register in queue with importer
@@ -349,109 +365,102 @@ class Contact
 	}
 
 
-	/**
-	 * get customer collection
-	 * @param $customerIds
-	 * @param $websiteId
-	 * @return Mage_Eav_Model_Entity_Collection_Abstract
-	 * @throws Mage_Core_Exception
-	 */
 	public function getCollection($customerIds, $websiteId = 0)
 	{
-		$customerCollection = Mage::getResourceModel('customer/customer_collection')
-		                          ->addNameToSelect()
-		                          ->addAttributeToSelect('*')
-		                          ->joinAttribute('billing_street',       'customer_address/street',      'default_billing', null, 'left')
-		                          ->joinAttribute('billing_city',         'customer_address/city',        'default_billing', null, 'left')
-		                          ->joinAttribute('billing_country_code', 'customer_address/country_id',  'default_billing', null, 'left')
-		                          ->joinAttribute('billing_postcode',     'customer_address/postcode',    'default_billing', null, 'left')
-		                          ->joinAttribute('billing_telephone',    'customer_address/telephone',   'default_billing', null, 'left')
-		                          ->joinAttribute('billing_region',       'customer_address/region',      'default_billing', null, 'left')
-		                          ->joinAttribute('shipping_street',      'customer_address/street',      'default_shipping', null, 'left')
-		                          ->joinAttribute('shipping_city',        'customer_address/city',        'default_shipping', null, 'left')
-		                          ->joinAttribute('shipping_country_code','customer_address/country_id',  'default_shipping', null, 'left')
-		                          ->joinAttribute('shipping_postcode',    'customer_address/postcode',    'default_shipping', null, 'left')
-		                          ->joinAttribute('shipping_telephone',   'customer_address/telephone',   'default_shipping', null, 'left')
-		                          ->joinAttribute('shipping_region',      'customer_address/region',      'default_shipping', null, 'left')
-		                          ->addAttributeToFilter('entity_id', array('in' => $customerIds));
-		$customer_log = Mage::getSingleton('core/resource')->getTableName('log_customer');
-		$sales_flat_order_grid = Mage::getSingleton('core/resource')->getTableName('sales_flat_order_grid');
-		$sales_flat_quote = Mage::getSingleton('core/resource')->getTableName('sales_flat_quote');
-		$sales_flat_order = Mage::getSingleton('core/resource')->getTableName('sales_flat_order');
-		$sales_flat_order_item = Mage::getSingleton('core/resource')->getTableName('sales_flat_order_item');
-		$catalog_category_product_index = Mage::getSingleton('core/resource')->getTableName('catalog_category_product');
-		$eav_attribute_option_value = Mage::getSingleton('core/resource')->getTableName('eav_attribute_option_value');
-		$catalog_product_entity_int = Mage::getSingleton('core/resource')->getTableName('catalog_product_entity_int');
-		$eav_attribute = Mage::getSingleton('core/resource')->getTableName('eav_attribute');
+		$customerCollection = $this->collection->addNameToSelect()
+			->addAttributeToSelect('*')
+			->joinAttribute('billing_street',       'customer_address/street',      'default_billing', null, 'left')
+			->joinAttribute('billing_city',         'customer_address/city',        'default_billing', null, 'left')
+			->joinAttribute('billing_country_code', 'customer_address/country_id',  'default_billing', null, 'left')
+			->joinAttribute('billing_postcode',     'customer_address/postcode',    'default_billing', null, 'left')
+			->joinAttribute('billing_telephone',    'customer_address/telephone',   'default_billing', null, 'left')
+			->joinAttribute('billing_region',       'customer_address/region',      'default_billing', null, 'left')
+			->joinAttribute('shipping_street',      'customer_address/street',      'default_shipping', null, 'left')
+			->joinAttribute('shipping_city',        'customer_address/city',        'default_shipping', null, 'left')
+			->joinAttribute('shipping_country_code','customer_address/country_id',  'default_shipping', null, 'left')
+			->joinAttribute('shipping_postcode',    'customer_address/postcode',    'default_shipping', null, 'left')
+			->joinAttribute('shipping_telephone',   'customer_address/telephone',   'default_shipping', null, 'left')
+			->joinAttribute('shipping_region',      'customer_address/region',      'default_shipping', null, 'left')
+			->addAttributeToFilter('entity_id', array('in' => $customerIds));
 
+		$customer_log                   = $this->_resource->getTableName('log_customer');
+		$eav_attribute                  = $this->_resource->getTableName('eav_attribute');
+		$quote                          = $this->_resource->getTableName('quote');
+		$sales_order                     = $this->_resource->getTableName('sales_order');
+		$sales_order_grid               = $this->_resource->getTableName('sales_order_grid');
+		$sales_order_item                = $this->_resource->getTableName('sales_order_item');
+		$eav_attribute_option_value     = $this->_resource->getTableName('eav_attribute_option_value');
+		$catalog_product_entity_int     = $this->_resource->getTableName('catalog_product_entity_int');
+		$catalog_category_product_index = $this->_resource->getTableName('catalog_category_product');
 
 		// get the last login date from the log_customer table
 		$customerCollection->getSelect()->columns(
-			array('last_logged_date' => new Zend_Db_Expr ("(SELECT login_at FROM  $customer_log WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)")));
+			array('last_logged_date' => new \Zend_Db_Expr ("(SELECT login_at FROM  $customer_log WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)")));
 
 		// customer order information
 		$alias = 'subselect';
-		$statuses = Mage::helper('ddg')->getWebsiteConfig(
-			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS, $websiteId
-		);
-		$subselect = Mage::getModel('Varien_Db_Select', Mage::getSingleton('core/resource')->getConnection('core_read'))
-		                 ->from($sales_flat_order_grid, array(
-				                 'customer_id as s_customer_id',
-				                 'sum(grand_total) as total_spend',
-				                 'count(*) as number_of_orders',
-				                 'avg(grand_total) as average_order_value',
-			                 )
-		                 )
-		                 ->where("status in (?)", $statuses)
-		                 ->group('customer_id')
+		//@todo fix the stautues datafields to sync and sales values
+//		$statuses = Mage::helper('ddg')->getWebsiteConfig(
+//			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS, $websiteId
+//		);
+//		$subselect = Mage::getModel('Varien_Db_Select', Mage::getSingleton('core/resource')->getConnection('core_read'))
+//		                 ->from($sales_flat_order_grid, array(
+//				                 'customer_id as s_customer_id',
+//				                 'sum(grand_total) as total_spend',
+//				                 'count(*) as number_of_orders',
+//				                 'avg(grand_total) as average_order_value',
+//			                 )
+//		                 )
+//		//                 ->where("status in (?)", $statuses)
+//		                 ->group('customer_id')
 		;
 		$customerCollection->getSelect()->columns(array(
-				'last_order_date' => new Zend_Db_Expr("(SELECT created_at FROM $sales_flat_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
-				'last_order_id' => new Zend_Db_Expr("(SELECT entity_id FROM $sales_flat_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
-				'last_increment_id' => new Zend_Db_Expr("(SELECT increment_id FROM $sales_flat_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
-				'last_quote_id' => new Zend_Db_Expr("(SELECT entity_id FROM $sales_flat_quote WHERE customer_id = e.entity_id ORDER BY created_at DESC LIMIT 1)"),
-				'first_category_id' => new Zend_Db_Expr(
+				'last_order_date' => new \Zend_Db_Expr("(SELECT created_at FROM $sales_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
+				'last_order_id' => new \Zend_Db_Expr("(SELECT entity_id FROM $sales_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
+				'last_increment_id' => new \Zend_Db_Expr("(SELECT increment_id FROM $sales_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
+				'last_quote_id' => new \Zend_Db_Expr("(SELECT entity_id FROM $quote WHERE customer_id = e.entity_id ORDER BY created_at DESC LIMIT 1)"),
+				'first_category_id' => new \Zend_Db_Expr(
 					"(
-                        SELECT ccpi.category_id FROM $sales_flat_order as sfo
-                        left join $sales_flat_order_item as sfoi on sfoi.order_id = sfo.entity_id
+                        SELECT ccpi.category_id FROM $sales_order as sfo
+                        left join $sales_order_item as sfoi on sfoi.order_id = sfo.entity_id
                         left join $catalog_category_product_index as ccpi on ccpi.product_id = sfoi.product_id
                         WHERE sfo.customer_id = e.entity_id
                         ORDER BY sfo.created_at ASC, sfoi.price DESC
                         LIMIT 1
                     )"
 				),
-				'last_category_id' => new Zend_Db_Expr(
+				'last_category_id' => new \Zend_Db_Expr(
 					"(
-                        SELECT ccpi.category_id FROM $sales_flat_order as sfo
-                        left join $sales_flat_order_item as sfoi on sfoi.order_id = sfo.entity_id
+                        SELECT ccpi.category_id FROM $sales_order as sfo
+                        left join $sales_order_item as sfoi on sfoi.order_id = sfo.entity_id
                         left join $catalog_category_product_index as ccpi on ccpi.product_id = sfoi.product_id
                         WHERE sfo.customer_id = e.entity_id
                         ORDER BY sfo.created_at DESC, sfoi.price DESC
                         LIMIT 1
                     )"
 				),
-				'product_id_for_first_brand' => new Zend_Db_Expr(
+				'product_id_for_first_brand' => new \Zend_Db_Expr(
 					"(
-                        SELECT sfoi.product_id FROM $sales_flat_order as sfo
-                        left join $sales_flat_order_item as sfoi on sfoi.order_id = sfo.entity_id
+                        SELECT sfoi.product_id FROM $sales_order as sfo
+                        left join $sales_order_item as sfoi on sfoi.order_id = sfo.entity_id
                         WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
                         ORDER BY sfo.created_at ASC, sfoi.price DESC
                         LIMIT 1
                     )"
 				),
-				'product_id_for_last_brand' => new Zend_Db_Expr(
+				'product_id_for_last_brand' => new \Zend_Db_Expr(
 					"(
-                        SELECT sfoi.product_id FROM $sales_flat_order as sfo
-                        left join $sales_flat_order_item as sfoi on sfoi.order_id = sfo.entity_id
+                        SELECT sfoi.product_id FROM $sales_order as sfo
+                        left join $sales_order_item as sfoi on sfoi.order_id = sfo.entity_id
                         WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
                         ORDER BY sfo.created_at DESC, sfoi.price DESC
                         LIMIT 1
                     )"
 				),
-				'week_day' => new Zend_Db_Expr(
+				'week_day' => new \Zend_Db_Expr(
 					"(
                         SELECT dayname(created_at) as week_day
-                        FROM $sales_flat_order
+                        FROM $sales_order
                         WHERE customer_id = e.entity_id
                         GROUP BY week_day
                         HAVING COUNT(*) > 0
@@ -459,10 +468,10 @@ class Contact
                         LIMIT 1
                     )"
 				),
-				'month_day' => new Zend_Db_Expr(
+				'month_day' => new \Zend_Db_Expr(
 					"(
                         SELECT monthname(created_at) as month_day
-                        FROM $sales_flat_order
+                        FROM $sales_order
                         WHERE customer_id = e.entity_id
                         GROUP BY month_day
                         HAVING COUNT(*) > 0
@@ -470,10 +479,10 @@ class Contact
                         LIMIT 1
                     )"
 				),
-				'most_category_id' => new Zend_Db_Expr(
+				'most_category_id' => new \Zend_Db_Expr(
 					"(
-                        SELECT ccpi.category_id FROM $sales_flat_order as sfo
-                        LEFT JOIN $sales_flat_order_item as sfoi on sfoi.order_id = sfo.entity_id
+                        SELECT ccpi.category_id FROM $sales_order as sfo
+                        LEFT JOIN $sales_order_item as sfoi on sfoi.order_id = sfo.entity_id
                         LEFT JOIN $catalog_category_product_index as ccpi on ccpi.product_id = sfoi.product_id
                         WHERE sfo.customer_id = e.entity_id AND ccpi.category_id is not null
                         GROUP BY category_id
@@ -482,10 +491,10 @@ class Contact
                         LIMIT 1
                     )"
 				),
-				'most_brand' => new Zend_Db_Expr(
+				'most_brand' => new \Zend_Db_Expr(
 					"(
-                        SELECT eaov.value from $sales_flat_order sfo
-                        LEFT JOIN $sales_flat_order_item as sfoi on sfoi.order_id = sfo.entity_id
+                        SELECT eaov.value from $sales_order sfo
+                        LEFT JOIN $sales_order_item as sfoi on sfoi.order_id = sfo.entity_id
                         LEFT JOIN $catalog_product_entity_int pei on pei.entity_id = sfoi.product_id
                         LEFT JOIN $eav_attribute ea ON pei.attribute_id = ea.attribute_id
                         LEFT JOIN $eav_attribute_option_value as eaov on pei.value = eaov.option_id
@@ -498,8 +507,11 @@ class Contact
 				),
 			)
 		);
-		$customerCollection->getSelect()
-		                   ->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
+		//@todo fix first the subselect
+//		$customerCollection->getSelect()
+//		                   ->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
+
+
 		return $customerCollection;
 	}
 }

@@ -15,12 +15,23 @@ class File
 
 	private $delimiter; // set in _construct
 	private $enclosure; // set in _construct
+	protected $_scopeConfig;
+	protected $helper;
 
-	public function __construct()
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data  $helper,
+		\Magento\Framework\App\Filesystem\DirectoryList $directoryList,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\Filesystem $filesystem
+	)
 	{
-
-		//$this->_output_folder = Mage::getBaseDir('var') . DS . 'export' . DS . 'email';
-		//$this->_output_archive_folder = $this->_output_folder . DS . 'archive';
+		$this->helper = $helper;
+		$this->_scopeConfig = $scopeConfig;
+		$this->directoryList = $directoryList;
+		$this->filesystem = $filesystem;
+		$var = $directoryList->getPath('var');
+		$this->_output_folder = $var . DIRECTORY_SEPARATOR . 'export' . DIRECTORY_SEPARATOR . 'email';
+		$this->_output_archive_folder = $var .  $this->_output_folder . DIRECTORY_SEPARATOR . 'archive';
 
 		$this->delimiter = ','; // tab character
 		$this->enclosure = '"';
@@ -42,7 +53,7 @@ class File
 	/* Return the full filepath */
 	public  function getFilePath($filename)
 	{
-		return $this->getOutputFolder() . DS . $filename;
+		return $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
 	}
 
 	public  function archiveCSV($filename)
@@ -59,8 +70,8 @@ class File
 	public function moveFile($source_folder, $dest_folder, $filename )
 	{
 		// generate the full file paths
-		$source_filepath = $source_folder . DS . $filename;
-		$dest_filepath = $dest_folder . DS . $filename;
+		$source_filepath = $source_folder . DIRECTORY_SEPARATOR . $filename;
+		$dest_filepath = $dest_folder . DIRECTORY_SEPARATOR . $filename;
 
 		// rename the file
 		rename($source_filepath, $dest_filepath);
@@ -102,7 +113,8 @@ class File
 		// for some reason passing the preset delimiter/enclosure variables results in error
 		//$this->delimiter $this->enclosure
 		if (fputcsv($handle, $csv, ',', '"') == 0 ) {
-			Mage::throwException('Problem writing CSV file');
+			$message = new \Magento\Framework\Phrase('Problem writing CSV file');
+			new \Magento\Framework\Exception\FileSystemException($message);
 		}
 
 		fclose($handle);
@@ -121,7 +133,6 @@ class File
 		} // end
 
 		return;
-
 	} // end
 
 
@@ -164,21 +175,25 @@ class File
 
 	public function getWebsiteCustomerMappingDatafields($website)
 	{
+		//customer mapped data
 		$store = $website->getDefaultStore();
-		$mappedData = Mage::getStoreConfig('connector_data_mapping/customer_data', $store);
+		$mappedData = $this->_scopeConfig->getValue('connector_data_mapping/customer_data', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store->getId());
 		unset($mappedData['custom_attributes']);
 
 		//enterprise datafields
-		if (Mage::helper('ddg')->isEnterprise()) {
-
-			$enterpriseMapping = Mage::helper( 'ddg' )->getEnterpriseAttributes( $website );
-			if ( $enterpriseMapping ) {
-				$mappedData = array_merge( $mappedData, $enterpriseMapping );
-			}
-		}
+		//@todo fix this for enterprise edition
+//		if (Mage::helper('ddg')->isEnterprise()) {
+//
+//			$enterpriseMapping = Mage::helper( 'ddg' )->getEnterpriseAttributes( $website );
+//			if ( $enterpriseMapping ) {
+//				$mappedData = array_merge( $mappedData, $enterpriseMapping );
+//			}
+//		}
 
 		$mappedRewardData = $this->getWebsiteCustomerRewardMappingDatafields($website);
-		if($mappedRewardData) $mappedData = array_merge($mappedData, $mappedRewardData);
+
+		if($mappedRewardData)
+			$mappedData = array_merge($mappedData, $mappedRewardData);
 
 		foreach ($mappedData as $key => $value) {
 			if (! $value)
@@ -188,12 +203,18 @@ class File
 		return $mappedData;
 	}
 
+	/**
+	 * @param $website
+	 *
+	 * @return bool
+	 */
 	public function getWebsiteCustomerRewardMappingDatafields($website)
 	{
-		$helper = Mage::helper('ddg');
-		if($helper->isSweetToothToGo($website)) {
-			$store = $website->getDefaultStore();
-			$mappedData = Mage::getStoreConfig('connector_data_mapping/sweet_tooth', $store);
+		if($this->helper->isSweetToothToGo($website)) {
+			$mappedData = $this->_scopeConfig->getValue('connector_data_mapping/sweet_tooth',
+				\Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+				$website->getId()
+				);
 			unset($mappedData['active']);
 			return $mappedData;
 		}
