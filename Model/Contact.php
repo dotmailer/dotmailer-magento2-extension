@@ -120,28 +120,28 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 //		}
 //		return $this;
 //	}
-//
-//	/**
-//	 * batch non imported subscribers for a website.
-//	 * @param $website
-//	 * @param int $limit
-//	 *
-//	 * @return Dotdigitalgroup_Email_Model_Resource_Contact_Collection
-//	 */
-//	public function getSubscribersToImport($website, $limit = 1000)
-//	{
-//
-//		$storeIds = $website->getStoreIds();
-//		$collection = $this->getCollection()
-//		                   ->addFieldToFilter('is_subscriber', array('notnull' => true))
-//		                   ->addFieldToFilter('subscriber_imported', array('null' => true))
-//		                   ->addFieldToFilter('store_id', array('in' => $storeIds));
-//
-//		$collection->getSelect()->limit($limit);
-//
-//		return $collection;
-//	}
-//
+
+	/**
+	 * Contact subscribers to import for website
+	 * @param $website
+	 * @param int $limit
+	 *
+	 * @return $this
+	 */
+	public function getSubscribersToImport($website, $limit = 1000)
+	{
+
+		$storeIds = $website->getStoreIds();
+		$collection = $this->getCollection()
+		                   ->addFieldToFilter('is_subscriber', array('notnull' => true))
+		                   ->addFieldToFilter('subscriber_imported', array('null' => true))
+		                   ->addFieldToFilter('store_id', array('in' => $storeIds));
+
+		$collection->getSelect()->limit($limit);
+
+		return $collection;
+	}
+
 //	/**
 //	 * get all not imported guests for a website.
 //	 * @param $website

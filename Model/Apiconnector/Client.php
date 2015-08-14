@@ -3,8 +3,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 use GuzzleHttp;
 
-class Client
-	//extends \Dotdigitalgroup\Email\Model\Rest
+class Client extends \Dotdigitalgroup\Email\Model\Rest
 {
     const APICONNECTOR_VERSION = 'V2';
 
@@ -45,7 +44,7 @@ class Client
 	const API_ERROR_ADDRESSBOOK_NOT_FOUND       = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
 
 
-	public $fileHelper;
+	protected $_fileHelper;
 	protected $_filename;
 	protected $_api_helper;
 	protected $_limit = 10;
@@ -58,26 +57,28 @@ class Client
 	protected $_subscribers_file_slug = 'subscriber_sync';
     public $result = array('error' => false, 'message' => '');
 
-
+	protected $_helper;
 	public $client;
 
 
 	/**
 	 * constructor.
 	 */
-	public function __construct()
+	public function __construct($username, $password,
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Dotdigitalgroup\Email\Helper\File $fileHelper
+	)
 	{
-		//@todo get the website auth details by default
-		$apiUsername = '';
-		$apiPassword = '';
 		$this->client  = new GuzzleHttp\Client(
 			[
 				'base_uri' => 'https://apiconnector.com/v2/',
-				'auth' =>  ['apiuser-e7b76c151df7@apiconnector.com', 'admin123']
+				'auth' =>  [$username, $password]
 			]
 		);
+		$this->_helper = $helper;
+		$this->_fileHelper = $fileHelper;
 
-
+		parent::__construct(0, $helper);
 	}
 
 	/**
@@ -150,7 +151,6 @@ class Client
     public function postAddressBookContactsImport($filename, $addressBookId)
     {
         $url = "https://apiconnector.com/v2/address-books/{$addressBookId}/contacts/import";
-        $helper = Mage::helper('ddg');
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -159,13 +159,13 @@ class Client
 	    //case the deprication of @filename for uploading
 	    if (function_exists('curl_file_create')) {
 		    curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false);
-		    $args['file'] = curl_file_create(Mage::helper('ddg/file')->getFilePath($filename), 'text/csv');
+		    $args['file'] = curl_file_create($this->_fileHelper->getFilePath($filename), 'text/csv');
 		    curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
 
 	    } else {
 		    //standart use of curl file
 		    curl_setopt($ch, CURLOPT_POSTFIELDS, array (
-			    'file' => '@'.Mage::helper('ddg/file')->getFilePath($filename)
+			    'file' => '@' . $this->_fileHelper->getFilePath($filename)
 		    ));
 	    }
 
@@ -174,16 +174,16 @@ class Client
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: multipart/form-data')
         );
-
         // send contacts to address book
         $result = curl_exec($ch);
         $result = json_decode($result);
+
         if (isset($result->message)) {
             $message = 'POST ADDRESS BOOK ' . $addressBookId . ', CONTACT IMPORT : ' . ' filename '  . $filename .  ' Username ' . $this->getApiUsername() . $result->message;
-            $helper->log($message);
-            Mage::helper('ddg')->log($result);
-            Mage::helper('ddg')->rayLog('205', $message, __FILE__, __LINE__);
+            $this->_helper->log($message);
+            $this->_helper->log($result);
         }
+
         return $result;
     }
 

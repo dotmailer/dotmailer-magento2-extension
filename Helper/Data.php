@@ -9,17 +9,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	protected $_backendConfig;
 	protected $_context;
 	protected $_scopeConfig;
+	protected $_objectManager;
 
 	public function __construct(
 		\Magento\Framework\App\Resource $adapter,
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\App\Helper\Context $context,
+		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Store\Model\StoreManagerInterface $store
 	)
 	{
 		$this->_store = $store;
 		$this->_adapter = $adapter;
+		$this->_objectManager = $objectManager;
 		$this->_scopeConfig = $scopeConfig;
 
 		parent::__construct($context);
@@ -55,18 +58,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiUsername($website = 0)
     {
-
-        $website = Mage::app()->getWebsite($website);
-
-        return $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_USERNAME);
+	    $website = $this->_store->getWebsite($website);
+	    return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
+		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website->getId()
+	    );
     }
 
     public function getApiPassword($website = 0)
     {
-	    $websiteModel = new \Magento\Store\Model\Website();
-	    $website = $websiteModel->load($website);
-
-        return $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD);
+	    $website = $this->_store->getWebsite($website);
+		return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
+			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+			$website->getId()
+		);
     }
 
     public function getWebsites($default = false)
@@ -147,7 +152,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getDebugEnabled()
     {
-        return (bool) Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED);
+	    $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED);
     }
 
 	/**
@@ -156,6 +161,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getConnectorVersion()
 	{
+		//@todo get the module version from the config
+		return'';
 		$modules = (array) Mage::getConfig()->getNode('modules')->children();
 		if (isset($modules['Dotdigitalgroup_Email'])) {
 			$moduleName = $modules['Dotdigitalgroup_Email'];
@@ -237,14 +244,27 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getSubscriberAddressBook($website)
     {
-        $website = Mage::app()->getWebsite($website);
-        return $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID);
+	    $website = $this->_store->getWebsite($website);
+	    return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
+		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website->getId()
+		    );
     }
 
+	/**
+	 * Guest address book.
+	 * @param $website
+	 *
+	 * @return mixed
+	 */
     public function getGuestAddressBook($website)
     {
-        $website = Mage::app()->getWebsite($website);
-        return $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID);
+	    $website = $this->_store->getWebsite($website);
+
+	    return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
+		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website->getid()
+		    );
     }
 
     /**
@@ -336,21 +356,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $website->getConfig($path);
     }
 
-    /**
-     * Api client by website.
-     *
-     * @param mixed $website
-     *
-     * @return bool|Dotdigitalgroup_Email_Model_Apiconnector_Client
-     */
+	/**
+	 * Api client by website.
+	 *
+	 * @param int $website
+	 *
+	 * @return bool
+	 */
     public function getWebsiteApiClient($website = 0)
     {
-        if (! $apiUsername = $this->getApiUsername($website) || ! $apiPassword = $this->getApiPassword($website))
+	    $apiUsername = $this->getApiUsername($website);
+	    $apiPassword = $this->getApiPassword($website);
+        if (! $apiUsername || ! $apiPassword)
             return false;
 
-        $client = Mage::getModel('ddg_automation/apiconnector_client');
-        $client->setApiUsername($this->getApiUsername($website))
-            ->setApiPassword($this->getApiPassword($website));
+	    $client = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Client', ['username' => $apiUsername, 'password' => $apiPassword]);
 
         return $client;
     }
@@ -897,13 +917,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	}
 
 	/**
+	 * Get the guest sync enabled value.
+	 *
 	 * @param int $websiteId
 	 *
 	 * @return bool
 	 */
 	public function getGuestSyncEnabled($websiteId = 0)
 	{
-		return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED, $websiteId);
+		return  $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED,
+			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+			$websiteId
+			);
 	}
 
 	/**
@@ -913,7 +938,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getSubscriberSyncEnabled($websiteId = 0)
 	{
-		return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED, $websiteId);
+		return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED,
+			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+			$websiteId
+			);
 	}
 
 	/**
@@ -921,8 +949,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getCronInstalled()
 	{
-		$lastCustomerSync = Mage::getModel('ddg_automation/cron')->getLastCustomerSync();
-		$timespan = Mage::helper('ddg')->dateDiff($lastCustomerSync);
+		$lastCustomerSync = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron')
+			->getLastCustomerSync();
+		$timespan = $this->_helper->dateDiff($lastCustomerSync);
 
 		//last customer cron was less then 15 min
 		if ($timespan <= 15 * 60) {

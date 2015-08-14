@@ -15,13 +15,15 @@ class Cron
 	protected $csv;
 
 	protected $_logger;
+	protected $_objectManager;
 
 	public function __construct(
-		ProductRepositoryInterface $productRepository,
-		SearchCriteriaBuilder $searchCriteriaBuilder,
 		FilterBuilder $filterBuilder,
 		Csv $csv,
 		\Psr\Log\LoggerInterface $logger,
+		SearchCriteriaBuilder $searchCriteriaBuilder,
+		ProductRepositoryInterface $productRepository,
+		\Magento\Framework\ObjectManagerInterface $objectManager,
 		Apiconnector\Contact $contact
 	) {
 		$this->productRepository = $productRepository;
@@ -30,6 +32,7 @@ class Cron
 		$this->csv = $csv;
 		$this->_logger = $logger;
 		$this->contact = $contact;
+		$this->_objectManager = $objectManager;
 
 		//mark the running state
 		$this->_logger->error('cron is running');
@@ -45,11 +48,11 @@ class Cron
 		//run the sync for contacts
 		$this->contact->sync();
 		//run subscribers and guests sync
-//		$subscriberResult = $this->subscribersAndGuestSync();
+		$subscriberResult = $this->subscribersAndGuestSync();
 
-//		if(isset($subscriberResult['message']) && isset($result['message']))
-//			$result['message'] = $result['message'] . ' - ' . $subscriberResult['message'];
-//		return $result;
+		if(isset($subscriberResult['message']) && isset($result['message']))
+			$result['message'] = $result['message'] . ' - ' . $subscriberResult['message'];
+		return $result;
 	}
 
 	public function export()
@@ -59,6 +62,32 @@ class Cron
 		$this->writeToFile($items);
 	}
 
+
+	/**
+	 * CRON FOR EMAIL IMPORTER PROCESSOR
+	 */
+	public function emailImporter()
+	{
+		$importer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor');
+		return $importer->processQueue();
+	}
+
+	/**
+	 * CRON FOR SUBSCRIBERS AND GUEST CONTACTS
+	 */
+	public function subscribersAndGuestSync()
+	{
+		//sync subscribers
+		$subscriberModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Newsletter\Subscriber')->sync();
+
+		//unsubscribe suppressed contacts
+		$subscriberModel->unsubscribe();
+
+		//sync guests
+		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Customer\Guest')->sync();
+
+		return;
+	}
 
 
 	public function getProducts()

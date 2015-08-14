@@ -34,16 +34,18 @@ class Customer
 	 *
 	 */
 	public function __construct(
+		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
-		\Magento\Store\Model\StoreManagerInterface $store,
 		\Magento\Review\Model\Resource\Review\Collection $reviewCollection,
+		\Magento\Sales\Model\Resource\Order\CollectionFactory $collectionFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper
 	)
 	{
 		$this->_helper = $helper;
-		$this->_store = $store;
+		$this->_store = $storeManager;
 		$this->_objectManager = $objectManager;
 		$this->reviewCollection = $reviewCollection;
+		$this->orderCollection = $collectionFactory->create();
 	}
 
 	/**
@@ -497,17 +499,19 @@ class Customer
 	}
 
 	/**
-	 * get total refund value.
+	 * Total value refunded for the customer.
 	 *
 	 * @return float|int
 	 */
 	public function getTotalRefund()
 	{
-		$orders = Mage::getResourceModel('sales/order_collection')
-		              ->addAttributeToFilter('customer_id', $this->customer->getId())
-		;
+		//filter by customer id
+		$customerOrders = $this->orderCollection
+			->addAttributeToFilter('customer_id', $this->customer->getId());
+
 		$totalRefunded = 0;
-		foreach ($orders as $order) {
+		//calculate total refunded
+		foreach ($customerOrders as $order) {
 			$refunded = $order->getTotalRefunded();
 			$totalRefunded += $refunded;
 		}
@@ -530,17 +534,14 @@ class Customer
 	 * customer gender.
 	 *
 	 * @return bool|string
-	 * @throws Mage_Core_Exception
 	 */
 	private function _getCustomerGender()
 	{
 		$genderId = $this->customer->getGender();
 		if (is_numeric($genderId)) {
-			$gender = Mage::getResourceModel('customer/customer')
-			              ->getAttribute('gender')
-			              ->getSource()
-			              ->getOptionText($genderId)
-			;
+			$gender = $this->customer->getAttribute('gender')
+				->getSource()->getOptionText($genderId);
+
 			return $gender;
 		}
 
@@ -566,7 +567,8 @@ class Customer
 	private  function _getStoreName()
 	{
 		$storeId = $this->customer->getStoreId();
-		$store = Mage::app()->getStore($storeId);
+		$store = $this->_store->getStore($storeId);
+
 		if($store)
 			return $store->getName();
 
@@ -591,10 +593,12 @@ class Customer
 
 	private function _getCustomerGroup(){
 		$groupId = $this->customer->getGroupId();
-		$group = Mage::getModel('customer/group')->load($groupId);
-		if($group){
-			return $group->getCode();
+		$groupModel = $this->_objectManager->create('Magento\Customer\Model\Group');
+		$groupModel->load($groupId);
+		if ($groupModel) {
+			return $groupModel->getCode();
 		}
+
 		return '';
 	}
 
@@ -664,11 +668,17 @@ class Customer
 		return 0;
 	}
 
+	/**
+	 * Subscriber status for Customer.
+	 * @return mixed
+	 */
 	public function getSubscriberStatus()
 	{
-		$subscriber = Mage::getModel('newsletter/subscriber')->loadByCustomer($this->customer);
-		if($subscriber->getCustomerId())
-			return $this->subscriber_status[$subscriber->getSubscriberStatus()];
+		$subscriberModel = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')
+			->loadByCustomerId($this->customer->getId());
+
+		if($subscriberModel->getCustomerId())
+			return $this->subscriber_status[$subscriberModel->getSubscriberStatus()];
 	}
 
 	/**

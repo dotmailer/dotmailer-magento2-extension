@@ -29,10 +29,10 @@ class Contact
 		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollectionFactory
 	)
 	{
-		$this->_logger = $logger;
-		$this->_helper = $helper;
 		$this->_file = $file;
 		$this->_config = $config;
+		$this->_logger = $logger;
+		$this->_helper = $helper;
 		$this->_resource = $resource;
 		$this->_scopeConfig = $scopeConfig;
 		$this->_objectManager = $objectManager;
@@ -223,10 +223,10 @@ class Contact
 		if (is_file($this->_file->getFilePath($customersFile))) {
 			if ($customerNum > 0) {
 				//register in queue with importer
-				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Importer')->registerQueue(
-					\Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
+				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
 					'',
-					\Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
 					$website->getId(),
 					$customersFile
 				);
@@ -308,7 +308,6 @@ class Contact
 		foreach ($customerCollection as $customer) {
 			$contactModel = $this->_objectManager->create('email_contact');
 
-			var_dump($contactModel->getData());die;
 			$contactModel = $this->loadByCustomerEmail($customer->getEmail(), $websiteId);
 			//skip contacts without customer id
 			if (!$contactModel->getId())

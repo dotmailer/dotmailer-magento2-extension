@@ -5,5 +5,8 @@
         <job name="ddg_automation_customer_subscriber_guest_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="contactSync">
             <schedule>*/5 * * * *</schedule>
         </job>
+        <job name="ddg_automation_importer" instance="Dotdigitalgroup\Email\Model\Cron" method="emailImporter">
+            <schedule>*/5 * * * *</schedule>
+        </job>
     </group>
 </config>

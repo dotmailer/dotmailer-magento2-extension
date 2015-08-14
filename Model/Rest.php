@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
-use \Dotdigitalgroup\Email\Helper\Data as DataHelper;
-
 abstract class Rest
 {
     protected $url;
@@ -15,14 +13,15 @@ abstract class Rest
     protected $acceptType;
     protected $responseBody;
     protected $responseInfo;
+	protected $_helper;
 
     public function __construct(
-	    $website = 0
+	    $website = 0,
+		\Dotdigitalgroup\Email\Helper\Data $helper
     ) // ($url = null, $verb = 'GET', $requestBody = null)
     {
 
-		$configHelper = new \Dotdigitalgroup\Email\Model\Helper\Data();
-	    $this->_helper = $configHelper;
+	    $this->_helper = $helper;
 
         $this->url				= null; //$url;
         $this->verb				= 'GET'; //$verb;
@@ -180,21 +179,20 @@ abstract class Rest
 	    /**
 	     * check and debug api request total time
 	     */
-	    if (Mage::helper('ddg')->getDebugEnabled()){
+	    if ($this->_helper->getDebugEnabled()){
 		    $info = $this->getResponseInfo();
 			//the response info data is set
 		    if (isset($info['url']) && isset($info['total_time'])){
 			    $url       = $info['url'];
 		        $time      = $info['total_time'];
 			    $totalTime = sprintf(' time : %g sec', $time);
-			    $check = Mage::helper('ddg')->getApiResponseTimeLimit();
+			    $check = $this->_helep->getApiResponseTimeLimit();
 			    $limit = ($check)? $check : '2';
 			    $message = $this->verb . ', ' .  $url. $totalTime;
 			    //check for slow queries
 			    if ( $time >  $limit) {
 				    //log the slow queries
-				    Mage::helper('ddg')->rayLog('100', $message);
-				    Mage::helper( 'ddg' )->log( $message );
+				    $this->_helper->log( $message );
 			    }
 		    }
 	    }
