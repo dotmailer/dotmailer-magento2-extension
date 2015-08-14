@@ -8,7 +8,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 	protected $_backendConfig;
 	protected $_context;
-	protected $_scopeConfig;
 	protected $_objectManager;
 
 	public function __construct(
@@ -16,14 +15,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\App\Helper\Context $context,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Store\Model\StoreManagerInterface $store
 	)
 	{
 		$this->_store = $store;
 		$this->_adapter = $adapter;
 		$this->_objectManager = $objectManager;
-		$this->_scopeConfig = $scopeConfig;
 
 		parent::__construct($context);
 	}
@@ -59,7 +56,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getApiUsername($website = 0)
     {
 	    $website = $this->_store->getWebsite($website);
-	    return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
+	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 		    $website->getId()
 	    );
@@ -68,16 +65,33 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getApiPassword($website = 0)
     {
 	    $website = $this->_store->getWebsite($website);
-		return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
+		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
 			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 			$website->getId()
 		);
     }
 
+	/**
+	 * Get all websites.
+	 * @param bool|false $default
+	 *
+	 * @return \Magento\Store\Api\Data\WebsiteInterface[]
+	 */
     public function getWebsites($default = false)
     {
         return $this->_store->getWebsites($default);
     }
+
+	/**
+	 * Get all stores.
+	 * @param bool|false $default
+	 *
+	 * @return \Magento\Store\Api\Data\StoreInterface[]
+	 */
+	public function getStores( $default = false )
+	{
+		return $this->_store->getStores($default);
+	}
 
     public function auth($authRequest)
     {
@@ -152,7 +166,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getDebugEnabled()
     {
-	    $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED);
+	    $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED);
     }
 
 	/**
@@ -245,7 +259,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getSubscriberAddressBook($website)
     {
 	    $website = $this->_store->getWebsite($website);
-	    return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
+	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 		    $website->getId()
 		    );
@@ -261,7 +275,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
 	    $website = $this->_store->getWebsite($website);
 
-	    return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
+	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 		    $website->getid()
 		    );
@@ -310,7 +324,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getCustomAttributes($website = 0)
     {
-	    $attr = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS,
+	    $attr = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 		    $website->getId());
 
@@ -466,7 +480,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isSweetToothToGo($website)
     {
-	    $stMappingStatus = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE,
+	    $stMappingStatus = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 		    $website->getId()
 		    );
@@ -867,22 +881,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	}
 
 	/**
+	 * Get order sync enabled value from configuration.
 	 * @param int $websiteId
 	 *
 	 * @return bool
 	 */
 	public function getOrderSyncEnabled($websiteId = 0)
 	{
-		return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, $websiteId);
+		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
+			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+			$websiteId
+			);
 	}
 	/**
+	 * Get the catalog sync enabled value from config.
 	 * @param int $websiteId
 	 *
 	 * @return bool
 	 */
 	public function getCatalogSyncEnabled($websiteId = 0)
 	{
-		return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED, $websiteId);
+		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED,
+			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+			$websiteId
+			);
 	}
 
 	/**
@@ -925,7 +947,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getGuestSyncEnabled($websiteId = 0)
 	{
-		return  $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED,
+		return  $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED,
 			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 			$websiteId
 			);
@@ -938,7 +960,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getSubscriberSyncEnabled($websiteId = 0)
 	{
-		return $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED,
+		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED,
 			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 			$websiteId
 			);
@@ -1009,7 +1031,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 * @param int $websiteId
 	 *
 	 * @return mixed
-	 * @throws Mage_Core_Exception
 	 */
 	public function getApiResponseTimeLimit($websiteId = 0)
 	{

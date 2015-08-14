@@ -55,6 +55,15 @@ class Cron
 		return $result;
 	}
 
+	/**
+	 * CRON FOR CATALOG SYNC
+	 */
+	public function catalogSync()
+	{
+		$result = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Catalog')->sync();
+		return $result;
+	}
+
 	public function export()
 	{
 		$this->_logger->error('cron is running');
@@ -87,6 +96,15 @@ class Cron
 		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Customer\Guest')->sync();
 
 		return;
+	}
+
+	/**
+	 * CRON FOR ABANDONED CARTS
+	 */
+	public function abandonedCarts()
+	{
+		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Sales\Quote')
+			->proccessAbandonedCarts();
 	}
 
 

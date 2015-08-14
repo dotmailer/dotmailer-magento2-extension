@@ -28,7 +28,8 @@ class Index extends \Magento\Framework\App\Action\Action {
 
 		//$model->contactSync();
 		//$model->emailImporter();
-		$model->subscribersAndGuestSync();
+		//$model->subscribersAndGuestSync();
+		$model->catalogSync();
 
 
 		return;
