@@ -6,20 +6,21 @@ namespace Dotdigitalgroup\Email\Helper;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 {
-	protected $_backendConfig;
 	protected $_context;
+	protected $_storeManager;
 	protected $_objectManager;
+	protected $_backendConfig;
 
 	public function __construct(
 		\Magento\Framework\App\Resource $adapter,
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\App\Helper\Context $context,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
-		\Magento\Store\Model\StoreManagerInterface $store
+		\Magento\Store\Model\StoreManagerInterface $storeManager
 	)
 	{
-		$this->_store = $store;
 		$this->_adapter = $adapter;
+		$this->_storeManager = $storeManager;
 		$this->_objectManager = $objectManager;
 
 		parent::__construct($context);
@@ -41,7 +42,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isEnabled($website = 0)
     {
-        $website = $this->_store->getWebsite($website);
+        $website = $this->_storeManager->getWebsite($website);
         $enabled = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
 	        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 	        $website);
@@ -55,7 +56,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiUsername($website = 0)
     {
-	    $website = $this->_store->getWebsite($website);
+	    $website = $this->_storeManager->getWebsite($website);
 	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 		    $website->getId()
@@ -64,7 +65,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getApiPassword($website = 0)
     {
-	    $website = $this->_store->getWebsite($website);
+	    $website = $this->_storeManager->getWebsite($website);
 		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
 			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 			$website->getId()
@@ -79,7 +80,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
     public function getWebsites($default = false)
     {
-        return $this->_store->getWebsites($default);
+        return $this->_storeManager->getWebsites($default);
     }
 
 	/**
@@ -90,7 +91,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getStores( $default = false )
 	{
-		return $this->_store->getStores($default);
+		return $this->_storeManager->getStores($default);
 	}
 
     public function auth($authRequest)
@@ -249,7 +250,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
     public function getCustomerAddressBook($website = 0)
     {
-	    $website = $this->_store->getWebsite($website);
+	    $website = $this->_storeManager->getWebsite($website);
 
 	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
@@ -258,7 +259,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getSubscriberAddressBook($website)
     {
-	    $website = $this->_store->getWebsite($website);
+	    $website = $this->_storeManager->getWebsite($website);
 	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 		    $website->getId()
@@ -273,7 +274,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
     public function getGuestAddressBook($website)
     {
-	    $website = $this->_store->getWebsite($website);
+	    $website = $this->_storeManager->getWebsite($website);
 
 	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
@@ -915,7 +916,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getCustomerSyncEnabled($website = 0)
 	{
-		$website = $this->_store->getWebsite($website);
+		$website = $this->_storeManager->getWebsite($website);
 
         $enabled = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED,
 	        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
@@ -932,7 +933,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getSyncLimit($website = 0)
 	{
-		$website = $this->_store->getWebsite($website);
+		$website = $this->_storeManager->getWebsite($website);
 		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
 			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 			$website);
@@ -998,12 +999,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getAbandonedProductName()
     {
-        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME);
-
+	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME);
     }
 
     /**
-     * Update last quote id datafield.
+     * api- update the product name most expensive.
      * @param $name
      * @param $email
      * @param $websiteId

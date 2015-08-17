@@ -1,28 +1,29 @@
 <?php
+namespace Dotdigitalgroup\Email\Model\Sales;
 
-class Dotdigitalgroup_Email_Model_Sales_Quote
+class Quote
 {
     //customer
-    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_1        = 'connector_lost_baskets/customers/enabled_1';
-    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_2        = 'connector_lost_baskets/customers/enabled_2';
-    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_3        = 'connector_lost_baskets/customers/enabled_3';
-    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_1       = 'connector_lost_baskets/customers/send_after_1';
-    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_2       = 'connector_lost_baskets/customers/send_after_2';
-    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_3       = 'connector_lost_baskets/customers/send_after_3';
-    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_1       = 'connector_lost_baskets/customers/campaign_1';
-    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_2       = 'connector_lost_baskets/customers/campaign_2';
-    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_3       = 'connector_lost_baskets/customers/campaign_3';
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_1        = 'abandoned_carts/customers/enabled_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_2        = 'abandoned_carts/customers/enabled_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_3        = 'abandoned_carts/customers/enabled_3';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_1       = 'abandoned_carts/customers/send_after_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_2       = 'abandoned_carts/customers/send_after_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_3       = 'abandoned_carts/customers/send_after_3';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_1       = 'abandoned_carts/customers/campaign_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_2       = 'abandoned_carts/customers/campaign_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_3       = 'abandoned_carts/customers/campaign_3';
 
     //guest
-    const XML_PATH_LOSTBASKET_GUEST_ENABLED_1           = 'connector_lost_baskets/guests/enabled_1';
-    const XML_PATH_LOSTBASKET_GUEST_ENABLED_2           = 'connector_lost_baskets/guests/enabled_2';
-    const XML_PATH_LOSTBASKET_GUEST_ENABLED_3           = 'connector_lost_baskets/guests/enabled_3';
-    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_1          = 'connector_lost_baskets/guests/send_after_1';
-    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_2          = 'connector_lost_baskets/guests/send_after_2';
-    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_3          = 'connector_lost_baskets/guests/send_after_3';
-    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_1          = 'connector_lost_baskets/guests/campaign_1';
-    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2          = 'connector_lost_baskets/guests/campaign_2';
-    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3          = 'connector_lost_baskets/guests/campaign_3';
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_1           = 'abandoned_carts/guests/enabled_1';
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_2           = 'abandoned_carts/guests/enabled_2';
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_3           = 'abandoned_carts/guests/enabled_3';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_1          = 'abandoned_carts/guests/send_after_1';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_2          = 'abandoned_carts/guests/send_after_2';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_3          = 'abandoned_carts/guests/send_after_3';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_1          = 'abandoned_carts/guests/campaign_1';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2          = 'abandoned_carts/guests/campaign_2';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3          = 'abandoned_carts/guests/campaign_3';
 
 
 	/**
@@ -36,6 +37,34 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 	 */
 	public $lostBasketGuests = array(1, 2, 3);
 
+	protected $_helper;
+	/**
+	 * @var \Magento\Framework\Stdlib\DateTime
+	 */
+	protected $dateTime;
+	protected $scopeConfig;
+	protected $_storeManager;
+	protected $_objectManager;
+	protected $quoteCollection;
+
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Framework\Stdlib\DateTime $dateTime,
+		\Magento\Store\Model\StoreManagerInterface $storeManager,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\ObjectManagerInterface $objectManager,
+		\Magento\Quote\Model\Resource\Quote\CollectionFactory $collectionFactory
+	)
+	{
+		$this->_helper = $helper;
+		$this->dateTime = $dateTime;
+		$this->_storeManager = $storeManager;
+		$this->_objectManager = $objectManager;
+		$this->quoteCollection = $collectionFactory->create();
+		$this->scopeConfig = $scopeConfig;
+	}
+
 
 	/**
 	 * Proccess abandoned carts.
@@ -47,11 +76,10 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
         /**
          * Save lost baskets to be send in Send table.
          */
-	    $locale = Mage::app()->getLocale()->getLocale();
-
-	    foreach (Mage::app()->getStores() as $store) {
+	    //$locale = Mage::app()->getLocale()->getLocale();
+		$stores = $this->_helper->getStores();
+	    foreach ($stores as $store) {
             $storeId = $store->getId();
-
 		    if ($mode == 'all' || $mode == 'customers') {
 			    /**
 			     * Customers campaings
@@ -59,24 +87,33 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 			    foreach ( $this->lostBasketCustomers as $num ) {
 				    //customer enabled
 				    if ( $this->_getLostBasketCustomerEnabled( $num, $storeId ) ) {
-
 					    //number of the campaign use minutes
 					    if ( $num == 1 ) {
-						    $from = Zend_Date::now( $locale )->subMinute( $this->_getLostBasketCustomerInterval( $num, $storeId ) );
-						    //other use hours
-					    } else {
-						    $from = Zend_Date::now( $locale )->subHour( $this->_getLostBasketCustomerInterval( $num, $storeId ) );
-					    }
+						    //$from = Zend_Date::now( $locale )->subMinute( $this->_getLostBasketCustomerInterval( $num, $storeId ) );
+							//@todo get the localized time
+						    $minutes = $this->_getLostBasketCustomerInterval( $num, $storeId );
+						    $interval = new \DateInterval("PT" . $minutes . "M");
 
-                        $to = clone($from);
-                        $from->sub('5', Zend_Date::MINUTE);
+					    } else {
+						    $hours = (int)$this->_getLostBasketCustomerInterval( $num, $storeId );
+						    $interval = new \DateInterval("PT" . $hours . "H");
+					    }
+					    $fromTime = new \DateTime();
+					    $fromTime->sub($interval);
+					    $toTime = clone $fromTime;
+
+					    $fromTime->sub(new \DateInterval("PT5M"));
+
+					    //format time
+					    $fromDate = $this->dateTime->formatDate($fromTime->getTimestamp());
+					    $toDate = $this->dateTime->formatDate($toTime->getTimestamp());
 
 					    //active quotes
-					    $quoteCollection = $this->_getStoreQuotes( $from->toString( 'YYYY-MM-dd HH:mm' ), $to->toString( 'YYYY-MM-dd HH:mm' ), $guest = false, $storeId );
+					    $quoteCollection = $this->_getStoreQuotes( $fromDate, $toDate, $guest = false, $storeId );
 
 					    if ( $quoteCollection->getSize() ) {
-						    Mage::helper( 'ddg' )->log( 'Customer lost baskets : ' . $num . ', from : ' . $from->toString( 'YYYY-MM-dd HH:mm' ) . ':' . $to->toString( 'YYYY-MM-dd HH:mm' ) );
 					    }
+					    $this->_helper->log( 'Customer lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to ' . $toDate);
 
 					    //campaign id for customers
 					    $campaignId = $this->_getLostBasketCustomerCampaignId( $num, $storeId );
@@ -85,30 +122,29 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 						    $email        = $quote->getCustomerEmail();
 						    $websiteId    = $store->getWebsiteId();
 						    $quoteId      = $quote->getId();
-						    // upate last quote id for the contact
-						    Mage::helper('ddg')->updateLastQuoteId($quoteId, $email, $websiteId);
+						    //api - set the last quote id for customer
+						    $this->_helper->updateLastQuoteId($quoteId, $email, $websiteId);
 
-                            // update abandoned product name for contact
+                            //@todo get the most expinsive item, change the logic by not looping
                             $items = $quote->getAllItems();
                             $mostExpensiveItem = false;
                             foreach ($items as $item) {
-                                /** @var $item Mage_Sales_Model_Quote_Item */
                                 if ($mostExpensiveItem == false)
                                     $mostExpensiveItem = $item;
                                 elseif ($item->getPrice() > $mostExpensiveItem->getPrice())
                                     $mostExpensiveItem = $item;
                             }
+						    //api-send the most expensive product for abandoned cart
                             if ($mostExpensiveItem)
-                                Mage::helper('ddg')->updateAbandonedProductName($mostExpensiveItem->getName(), $email, $websiteId);
+                                $this->_helper->updateAbandonedProductName($mostExpensiveItem->getName(), $email, $websiteId);
 
 						    //send email only if the interval limit passed, no emails during this interval
-						    $campignFound = $this->_checkCustomerCartLimit( $email, $storeId );
-
+						    $intervalLimit = $this->_checkCustomerCartLimit( $email, $storeId );
 						    //no campign found for interval pass
-                            if (!$campignFound) {
+                            if (!$intervalLimit) {
 
 							    //save lost basket for sending
-							    $sendModel = Mage::getModel('ddg_automation/campaign')
+							    $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')
 								    ->setEmail( $email )
 								    ->setCustomerId( $quote->getCustomerId() )
 								    ->setEventName( 'Lost Basket' )
@@ -131,38 +167,48 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 			    foreach ( $this->lostBasketGuests as $num ) {
 				    if ( $this->_getLostBasketGuestEnabled( $num, $storeId ) ) {
 					    if ( $num == 1 ) {
-						    $from = Zend_Date::now( $locale )->subMinute( $this->_getLostBasketGuestIterval( $num, $storeId ) );
+						    //$from = Zend_Date::now( $locale )->subMinute( $this->_getLostBasketCustomerInterval( $num, $storeId ) );
+						    //@todo get the localized time
+						    $minutes = $this->_getLostBasketGuestIterval( $num, $storeId );
+						    $interval = new \DateInterval("PT" . $minutes . "M");
 					    } else {
-						    $from = Zend_Date::now( $locale )->subHour( $this->_getLostBasketGuestIterval( $num, $storeId ) );
+						    $hours = $this->_getLostBasketGuestIterval( $num, $storeId );
+						    $interval = new \DateInterval("P" . $hours . "H");
 					    }
-                        $to = clone($from);
-                        $from->sub('5', Zend_Date::MINUTE);
-					    $quoteCollection = $this->_getStoreQuotes( $from->toString( 'YYYY-MM-dd HH:mm' ), $to->toString( 'YYYY-MM-dd HH:mm' ), $guest = true, $storeId );
+					    $fromTime = new \DateTime();
+					    $fromTime->sub($interval);
+					    $toTime = clone $fromTime;
+					    $fromTime->sub(new \DateInterval("PT5M"));
+
+					    //format time
+					    $fromDate = $this->dateTime->formatDate($fromTime->getTimestamp());
+					    $toDate = $this->dateTime->formatDate($toTime->getTimestamp());
+
+					    //active guest quotes
+					    $quoteCollection = $this->_getStoreQuotes( $fromDate, $toDate, $guest = true, $storeId );
 
 					    if ( $quoteCollection->getSize() ) {
-						    Mage::helper( 'ddg' )->log( 'Guest lost baskets : ' . $num . ', from : ' . $from->toString( 'YYYY-MM-dd HH:mm' ) . ':' . $to->toString( 'YYYY-MM-dd HH:mm' ) );
+						    $this->_helper->log( 'Guest lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate );
 					    }
 					    $guestCampaignId = $this->_getLostBasketGuestCampaignId( $num, $storeId );
 					    foreach ( $quoteCollection as $quote ) {
-
 						    $email        = $quote->getCustomerEmail();
 						    $websiteId    = $store->getWebsiteId();
 						    $quoteId      = $quote->getId();
 						    // upate last quote id for the contact
-						    Mage::helper('ddg')->updateLastQuoteId($quoteId, $email, $websiteId);
-
+						    $this->_helper->updateLastQuoteId($quoteId, $email, $websiteId);
                             // update abandoned product name for contact
                             $items = $quote->getAllItems();
                             $mostExpensiveItem = false;
                             foreach ($items as $item) {
-                                /** @var $item Mage_Sales_Model_Quote_Item */
                                 if ($mostExpensiveItem == false)
                                     $mostExpensiveItem = $item;
                                 elseif ($item->getPrice() > $mostExpensiveItem->getPrice())
                                     $mostExpensiveItem = $item;
                             }
+						    //api- set the most expensive product to datafield
                             if ($mostExpensiveItem)
-                                Mage::helper('ddg')->updateAbandonedProductName($mostExpensiveItem->getName(), $email, $websiteId);
+                                $this->_helper->updateAbandonedProductName($mostExpensiveItem->getName(), $email, $websiteId);
 
 						    //send email only if the interval limit passed, no emails during this interval
 						    $campignFound = $this->_checkCustomerCartLimit( $email, $storeId );
@@ -170,7 +216,7 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 						    //no campign found for interval pass
                             if (!$campignFound) {
 							    //save lost basket for sending
-							    $sendModel = Mage::getModel('ddg_automation/campaign')
+							    $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')
 								    ->setEmail( $email )
 								    ->setEventName( 'Lost Basket' )
 								    ->setQuoteId($quoteId)
@@ -190,61 +236,74 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 
     private function _getLostBasketCustomerCampaignId($num, $storeId)
     {
-        $store = Mage::app()->getStore($storeId);
-        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_' . $num));
+	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_' . $num),
+		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+		    $storeId
+	    );
     }
     private function _getLostBasketGuestCampaignId($num, $storeId)
     {
-        $store = Mage::app()->getStore($storeId);
-        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_'. $num));
+	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_' . $num),
+		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+		    $storeId
+	    );
     }
 
     private function _getLostBasketCustomerInterval($num, $storeId)
     {
-        $store = Mage::app()->getstore($storeId);
-        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_' . $num));
+	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_' . $num),
+		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+		    $storeId
+	    );
     }
 
     private function _getLostBasketGuestIterval($num, $storeId)
     {
-        $store = Mage::app()->getStore($storeId);
-        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_' . $num));
+	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_' . $num),
+		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+		    $storeId
+	    );
     }
 
     protected function _getLostBasketCustomerEnabled($num, $storeId)
     {
-        $store = Mage::app()->getStore($storeId);
-        $enabled = $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_' . $num));
-        return $enabled;
-
+	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_' . $num),
+		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+		    $storeId
+	    );
     }
 
     protected function _getLostBasketGuestEnabled($num, $storeId)
     {
-        $store = Mage::app()->getStore($storeId);
-        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_ENABLED_' . $num));
+	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_GUEST_ENABLED_' . $num),
+		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+	        $storeId
+	    );
     }
 
-    /**
-     * @param string $from
-     * @param string $to
-     * @param bool $guest
-     * @param int $storeId
-     * @return Mage_Eav_Model_Entity_Collection_Abstract
-     */
+	/**
+	 * @param null $from
+	 * @param null $to
+	 * @param bool|false $guest
+	 * @param int $storeId
+	 *
+	 * @return $this
+	 */
     private function _getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
     {
 	    $updated = array(
             'from' => $from,
             'to' => $to,
             'date' => true);
+	    //@todo reset the select is making the sql empty,
+	    //$this->quoteCollection->getSelect()->reset();
 
-        $salesCollection = Mage::getResourceModel('sales/quote_collection')
+        $salesCollection = $this->quoteCollection
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('items_count', array('gt' => 0))
             ->addFieldToFilter('customer_email', array('neq' => ''))
             ->addFieldToFilter('store_id', $storeId)
-            ->addFieldToFilter('updated_at', $updated);
+;//->addFieldToFilter('updated_at', $updated);
         //guests
 	    if ($guest) {
 	        $salesCollection->addFieldToFilter( 'main_table.customer_id', array( 'null' => true ) );
@@ -254,9 +313,10 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
         }
 
         //process rules on collection
-        $ruleModel = Mage::getModel('ddg_automation/rules');
+	    $ruleModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Rules');
+        $websiteId = $this->_storeManager->getStore($storeId)->getWebsiteId();
         $salesCollection = $ruleModel->process(
-            $salesCollection, Dotdigitalgroup_Email_Model_Rules::ABANDONED, Mage::app()->getStore($storeId)->getWebsiteId()
+            $salesCollection, \Dotdigitalgroup\Email\Model\Rules::ABANDONED, $websiteId
         );
 
 	    return $salesCollection;
@@ -273,30 +333,38 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 	 */
 	private function _checkCustomerCartLimit($email, $storeId) {
 
-		$cartLimit = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT, $storeId);
-		$locale = Mage::app()->getLocale()->getLocale();
+		$cartLimit = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT,
+			\Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+			$storeId);
+		//@todo get locale
+		//$locale = Mage::app()->getLocale()->getLocale();
 
 		//no limit is set skip
 		if (! $cartLimit)
 			return false;
 
 		//time diff
-		$to = Zend_Date::now($locale);
-		$from = Zend_Date::now($locale)->subHour($cartLimit);
+		//$to = Zend_Date::now($locale);
+		//$from = Zend_Date::now($locale)->subHour($cartLimit);
 
+		$fromTime = new \DateTime();
+		$interval = new \DateInterval('P' . $cartLimit . 'H');
+		$fromTime->sub($interval);
+		$toTime = new \DateTime();
+		$fromDate = $this->dateTime->formatDate($fromTime->getTimestamp());
+		$toDate = $this->dateTime->formatDate($toTime->getTimestamp());
 		$updated = array(
-			'from' => $from,
-			'to' => $to,
+			'from' => $fromDate,
+			'to' => $toDate,
 			'date' => true
 		);
 
 		//number of campigns during this time
-		$campaignLimit = Mage::getModel('ddg_automation/campaign')->getCollection()
+		$campaignLimit = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')->getCollection()
 			->addFieldToFilter('email', $email)
 			->addFieldToFilter('event_name', 'Lost Basket')
 			->addFieldToFilter('sent_at', $updated)
-			->count()
-		;
+			->count();
 
 		if ($campaignLimit)
 			return true;

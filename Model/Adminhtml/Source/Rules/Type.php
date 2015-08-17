@@ -1,8 +1,9 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Type
-{
+namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
+class Type
+{
     /**
      * get input type
      *
@@ -36,17 +37,17 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Type
     public function defaultOptions()
     {
         return array(
-            'method' => Mage::helper('adminhtml')->__('Payment Method'),
-            'shipping_method' => Mage::helper('adminhtml')->__('Shipping Method'),
-            'country_id' => Mage::helper('adminhtml')->__('Shipping Country'),
-            'city' => Mage::helper('adminhtml')->__('Shipping Town'),
-            'region_id' =>Mage::helper('adminhtml')->__( 'Shipping State/Province'),
-            'customer_group_id' =>Mage::helper('adminhtml')->__( 'Customer Group'),
-            'coupon_code' =>Mage::helper('adminhtml')->__( 'Coupon'),
-            'subtotal' =>Mage::helper('adminhtml')->__( 'Subtotal'),
-            'grand_total' =>Mage::helper('adminhtml')->__( 'Grand Total'),
-            'items_qty' =>Mage::helper('adminhtml')->__( 'Total Qty'),
-            'customer_email' => Mage::helper('adminhtml')->__('Email'),
+            'method' => 'Payment Method',
+            'shipping_method' => 'Shipping Method',
+            'country_id' => 'Shipping Country',
+            'city' => 'Shipping Town',
+            'region_id' => 'Shipping State/Province',
+            'customer_group_id' => 'Customer Group',
+            'coupon_code' => 'Coupon',
+            'subtotal' => 'Subtotal',
+            'grand_total' => 'Grand Total',
+            'items_qty' => 'Total Qty',
+            'customer_email' => 'Email',
         );
     }
 
