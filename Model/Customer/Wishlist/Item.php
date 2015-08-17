@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Customer_Wishlist_Item
+namespace Dotdigitalgroup\Email\Model\Customer\Wishlist;
+
+class Item
 {
 	protected   $sku;
 	protected   $qty;
@@ -9,16 +11,15 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist_Item
     protected   $total_value_of_product;
 
 
-	/**
-	 * construnctor.
-	 *
-	 * @param $product
-	 */
-	public function __construct($product)
+	public function __construct()
     {
-        $this->setSku($product->getSku());
-        $this->setName($product->getName());
     }
+
+	public function setProduct($product)
+	{
+		$this->setSku($product->getSku());
+		$this->setName($product->getName());
+	}
 
     /**
      * @param $name

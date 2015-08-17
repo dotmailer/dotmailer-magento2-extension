@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Customer_Review_Rating
+namespace Dotdigitalgroup\Email\Model\Customer\Review;
+
+class Rating
 {
     /**
      * @var int
@@ -12,11 +14,14 @@ class Dotdigitalgroup_Email_Model_Customer_Review_Rating
      *
      * @param $rating
      */
-    public function __construct($rating)
+    public function __construct()
     {
-        $this->setRatingScore($rating->getValue());
     }
 
+	public function setRating($rating)
+	{
+		$this->setRatingScore($rating->getValue());
+	}
     /**
      * @param $score
      *

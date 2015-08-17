@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Customer_Wishlist
+namespace Dotdigitalgroup\Email\Model\Customer;
+
+class Wishlist
 {
 	/**
 	 * @var int
@@ -30,17 +32,18 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
      * @var string
      */
     public $updated_at;
-	/**
-	 * constructor.
-	 *
-	 * @param Mage_Customer_Model_Customer $customer
-	 */
-	public function __construct(Mage_Customer_Model_Customer $customer)
+
+
+	public function __construct( )
     {
 
-        $this->setCustomerId($customer->getId());
-        $this->email = $customer->getEmail();
     }
+
+	public function setCustomer( $customer )
+	{
+		$this->setCustomerId($customer->getId());
+		$this->email = $customer->getEmail();
+	}
 
     /**
      * @param mixed $customer_id
