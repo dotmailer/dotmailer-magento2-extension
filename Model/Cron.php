@@ -99,6 +99,31 @@ class Cron
 	}
 
 	/**
+	 * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS
+	 */
+	public function reviewsAndWishlist()
+	{
+		//sync reviews
+		$this->reviewSync();
+		//sync wishlist
+		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->sync();
+	}
+
+	/**
+	 * review sync
+	 */
+	public function reviewSync()
+	{
+		//find orders to review and register campaign
+		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Sales\Order')
+			->createReviewCampaigns();
+		//sync reviews
+		$result = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Review')->sync();
+		return $result;
+	}
+
+
+	/**
 	 * CRON FOR ABANDONED CARTS
 	 */
 	public function abandonedCarts()
@@ -107,6 +132,17 @@ class Cron
 			->proccessAbandonedCarts();
 	}
 
+	/**
+	 * order sync
+	 *
+	 * @return mixed
+	 */
+	public function orderSync()
+	{
+		// send order
+		$orderResult = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Order')->sync();
+		return $orderResult;
+	}
 
 	public function getProducts()
 	{

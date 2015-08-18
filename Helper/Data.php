@@ -360,15 +360,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		return $result;
 	}
 
-    /**
-     * @param $path
-     * @param null|string|bool|int|Mage_Core_Model_Website $websiteId
-     * @return mixed
-     */
-    public function getWebsiteConfig($path, $websiteId = 0)
+	/**
+	 * Get website level config.
+	 * @param $path
+	 * @param int $website
+	 *
+	 * @return mixed
+	 */
+    public function getWebsiteConfig($path, $website = 0)
     {
-        $website = Mage::app()->getWebsite($websiteId);
-        return $website->getConfig($path);
+	    $website = $this->_storeManager->getWebsite($website);
+	    return $this->scopeConfig->getValue($path,
+	        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website->getId()
+		    );
     }
 
 	/**
@@ -441,7 +446,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getConfigSelectedStatus($website = 0)
     {
-        $status = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS, $website);
+        $status = $this->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS, $website);
         if($status)
             return explode(',',$status);
         else
@@ -450,7 +455,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getConfigSelectedCustomOrderAttributes($website = 0)
     {
-        $customAttributes = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES, $website);
+        $customAttributes = $this->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES, $website);
         if($customAttributes)
             return explode(',',$customAttributes);
         else
@@ -459,7 +464,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getConfigSelectedCustomQuoteAttributes($website = 0)
     {
-        $customAttributes = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES, $website);
+        $customAttributes = $this->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES, $website);
         if($customAttributes)
             return explode(',',$customAttributes);
         else
@@ -472,7 +477,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isSweetToothEnabled()
     {
-        return (bool)Mage::getConfig()->getModuleConfig('TBT_Rewards')->is('active', 'true');
+        return false;//@todo look up for module config (bool)Mage::getConfig()->getModuleConfig('TBT_Rewards')->is('active', 'true');
     }
 
     /**
@@ -485,7 +490,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
 		    $website->getId()
 		    );
-        if($stMappingStatus && $this->isSweetToothEnabled()) return true;
+        if($stMappingStatus && $this->isSweetToothEnabled())
+	        return true;
         return false;
     }
 

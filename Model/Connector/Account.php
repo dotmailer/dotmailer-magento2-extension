@@ -1,6 +1,7 @@
 <?php
+namespace Dotdigitalgroup\Email\Model\Connector;
 
-class Dotdigitalgroup_Email_Model_Connector_Account
+class Account
 {
     private  $_api_username;
     private  $_api_password;

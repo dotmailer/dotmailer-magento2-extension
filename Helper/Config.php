@@ -141,9 +141,11 @@ class Config
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS                    = 'connector_configuration/data_fields/order_statuses';
 
     //Transactional Data
-    const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS              = 'connector_configuration/transactional_data/order_statuses';
-    const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES        = 'connector_configuration/transactional_data/order_custom_attributes';
-    const XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES        = 'connector_configuration/transactional_data/quote_custom_attributes';
+    const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS                  = 'connector_configuration/transactional_data/order_statuses';
+    const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES            = 'connector_configuration/transactional_data/order_custom_attributes';
+    const XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES            = 'connector_configuration/transactional_data/quote_custom_attributes';
+	const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES      = 'connector_configuration/transactional_data/order_product_attributes';
+	const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS  = 'connector_configuration/transactional_data/order_product_custom_options';
     //Admin
     const XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS     = 'connector_configuration/admin/disable_newsletter_success';
     const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS       = 'connector_configuration/admin/disable_customer_success';
