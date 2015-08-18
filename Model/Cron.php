@@ -144,6 +144,14 @@ class Cron
 		return $orderResult;
 	}
 
+	/**
+	 * CRON FOR AUTOMATION
+	 */
+	public function syncAutomation()
+	{
+		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Automation')->sync();
+
+	}
 	public function getProducts()
 	{
 		$filters = [];
