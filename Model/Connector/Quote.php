@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Connector_Quote
+namespace Dotdigitalgroup\Email\Model\Connector;
+
+class Quote
 {
     /**
      * @var int
@@ -72,23 +74,38 @@ class Dotdigitalgroup_Email_Model_Connector_Quote
      * @var array
      */
     public  $custom = array();
+	protected $_datetime;
+	protected $_helper;
+	protected $_objectManager;
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+		\Magento\Framework\Stdlib\Datetime $datetime,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+	)
+	{
+		$this->_helper = $data;
+		$this->_datetime = $datetime;
+		$this->_storeManager = $storeManagerInterface;
+		$this->_objectManager = $objectManagerInterface;
+	}
 
     /**
      * set the quote information
-     * @param Mage_Sales_Model_Quote $quoteData
      */
-    public function __construct(Mage_Sales_Model_Quote $quoteData)
+    public function setQuote($quoteData)
     {
-        $customerModel = Mage::getModel('customer/customer');
-        $customerModel->load($quoteData->getCustomerId());
+	    $customerModel = $this->_objectManager->create('Magento\Customer\Model\Customer')
+            ->load($quoteData->getCustomerId());
 
         $this->id           = $quoteData->getId();
         $this->email        = $quoteData->getCustomerEmail();
         $this->store_name   = $quoteData->getStore()->getName();
 
-        $created_at = new Zend_Date($quoteData->getCreatedAt(), Zend_Date::ISO_8601);
+        $created_at = new \Zend_Date($quoteData->getCreatedAt(), \Zend_Date::ISO_8601);
 
-        $this->created_date = $created_at->toString(Zend_Date::ISO_8601);
+        $this->created_date = $created_at->toString(\Zend_Date::ISO_8601);
         if($quoteData->getShippingAddress()){
             $this->delivery_method = $quoteData->getShippingAddress()->getShippingDescription();
             $this->delivery_total = $quoteData->getShippingAddress()->getShippingAmount();
@@ -102,11 +119,11 @@ class Dotdigitalgroup_Email_Model_Connector_Quote
         /**
          * custom quote attributes
          */
-        $helper = Mage::helper('ddg');
-        $website = Mage::app()->getStore($quoteData->getStore())->getWebsite();
-        $customAttributes = $helper->getConfigSelectedCustomQuoteAttributes($website);
+
+	    $website = $this->_storeManager->getStore($quoteData->getStore())->getWebsite();
+        $customAttributes = $this->_helper->getConfigSelectedCustomQuoteAttributes($website);
         if($customAttributes){
-            $fields = $helper->getQuoteTableDescription();
+            $fields = $this->_helper->getQuoteTableDescription();
             foreach($customAttributes as $customAttribute){
                 if(isset($fields[$customAttribute])){
                     $field = $fields[$customAttribute];
@@ -153,11 +170,11 @@ class Dotdigitalgroup_Email_Model_Connector_Quote
         foreach ($quoteData->getAllItems() as $productItem) {
 
             //load product by product id, for compatibility
-            $product = Mage::getModel('catalog/product')->load($productItem->getProductId());
-
-            if ($product) {
+			$productModel = $this->_objectManager->create('Magento\Catalog\Model\Product')
+				->load($productItem->getProductId());
+            if ($productModel) {
                 // category names
-                $categoryCollection = $product->getCategoryCollection()
+                $categoryCollection = $productModel->getCategoryCollection()
                     ->addAttributeToSelect( 'name' );
 
                 foreach ( $categoryCollection as $cat ) {
@@ -166,8 +183,8 @@ class Dotdigitalgroup_Email_Model_Connector_Quote
                     $this->categories[]['Name'] = substr( implode( ', ', $categories ), 0, 244 );
                 }
 
-                $attributeSetModel = Mage::getModel( "eav/entity_attribute_set" );
-                $attributeSetModel->load( $product->getAttributeSetId() );
+	            $attributeSetModel = $this->_objectManager->create('Magento\Eav\Model\Entity\Attribute\Set');
+                $attributeSetModel->load( $productModel->getAttributeSetId() );
                 $attributeSetName = $attributeSetModel->getAttributeSetName();
                 $this->products[] = array(
                     'name'          => $productItem->getName(),
@@ -257,15 +274,14 @@ class Dotdigitalgroup_Email_Model_Connector_Quote
                 case 'timestamp':
                 case 'datetime':
                 case 'date':
-                    $date = new Zend_Date($quoteData->$function(), Zend_Date::ISO_8601);
-                    $value = $date->toString(Zend_Date::ISO_8601);
+                    $date = new \Zend_Date($quoteData->$function(), \Zend_Date::ISO_8601);
+                    $value = $date->toString(\Zend_Date::ISO_8601);
                 break;
 
                 default:
                     $value = $quoteData->$function();
             }
-        }catch (Exception $e){
-            Mage::logException($e);
+        }catch (\Exception $e){
         }
 
         return $value;

@@ -7,7 +7,7 @@ use Magento\Framework\Stdlib\DateTime as LibDateTime;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 
-class Order extends \Magento\Framework\Model\Resource\Db\AbstractDb
+class Quote extends \Magento\Framework\Model\Resource\Db\AbstractDb
 {
 	/**
 	 * Initialize resource
@@ -16,7 +16,7 @@ class Order extends \Magento\Framework\Model\Resource\Db\AbstractDb
 	 */
 	public function _construct()
 	{
-		$this->_init('email_order', 'email_order_id');
+		$this->_init('email_quote', 'id');
 	}
 
 }
