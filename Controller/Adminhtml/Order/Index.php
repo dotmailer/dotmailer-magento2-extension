@@ -1,9 +1,6 @@
 <?php
-/**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Contact;
+
+namespace Dotdigitalgroup\Email\Controller\Adminhtml\Order;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -67,8 +64,8 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	protected function setPageData()
 	{
 		$resultPage = $this->getResultPage();
-		$resultPage->setActiveMenu('Dotdigitalgroup_Email::contact');
-		$resultPage->getConfig()->getTitle()->set((__('Contacts')));
+		$resultPage->setActiveMenu('Dotdigitalgroup_Email::order');
+		$resultPage->getConfig()->getTitle()->set((__('Orders')));
 		return $this;
 	}
 }

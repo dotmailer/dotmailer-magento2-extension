@@ -1,6 +1,7 @@
 <?php
+namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact;
 
-class Dotdigitalgroup_Email_Model_Adminhtml_Source_Contact_Imported
+class Imported
 {
 	/**
 	 * Contact imported options.
@@ -10,8 +11,8 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Contact_Imported
 	public function getOptions()
     {
         return array(
-            '1' =>  Mage::helper('ddg')->__('Imported'),
-            'null' => Mage::helper('ddg')->__('Not Imported'),
+            '1' =>  __('Imported'),
+            'null' => __('Not Imported'),
         );
     }
 }
