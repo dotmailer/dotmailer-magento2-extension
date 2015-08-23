@@ -1,219 +1,221 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Contact_Grid extends Mage_Adminhtml_Block_Widget_Grid
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Contact;
+
+use Magento\Backend\Block\Widget\Grid as WidgetGrid;
+
+class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->setId('email_contact_id');
-        $this->setDefaultSort('entity_id');
-        $this->setDefaultDir('ASC');
-        $this->setSaveParametersInSession(true);
-        $this->setUseAjax(true);
-    }
+	/**
+	 * @var \Magento\Framework\Module\Manager
+	 */
+	protected $moduleManager;
 
-    protected function _prepareCollection()
-    {
-	    $collection = Mage::getModel('ddg_automation/contact')->getCollection();
-        $this->setCollection($collection);
-        $this->setDefaultSort('updated_at');
-        $this->setDefaultDir('DESC');
-        return parent::_prepareCollection();
-    }
 
-    protected function _prepareColumns()
-    {
-        $this->addColumn('email_contact_id', array(
-            'header'        => Mage::helper('ddg')->__('Email Contact ID'),
-            'width'         => '20px',
-            'index'         => 'email_contact_id',
-            'type'          => 'number',
-            'escape'        => true,
-        ))->addColumn('email', array(
-            'header'        => Mage::helper('ddg')->__('Email'),
-            'align'         => 'left',
-            'width'         => '50px',
-            'index'         => 'email',
-            'type'          => 'text',
-            'escape'        => true
-        ))->addColumn('customer_id', array(
-	        'header'        => Mage::helper('ddg')->__('Customer ID'),
-	        'align'         => 'left',
-	        'width'         => '20px',
-	        'index'         => 'customer_id',
-	        'type'          => 'number',
-	        'escape'        => true
-        ))->addColumn('is_guest', array(
-            'header'        => Mage::helper('ddg')->__('Is Guest'),
-            'align'         => 'right',
-            'width'         => '50px',
-            'index'         => 'is_guest',
-            'type'          => 'options',
-	        'options'       => array(
-		        '1'    => 'Guest',
-		        'null' => 'Not Guest'
-	        ),
-            'escape'        => true,
-            'filter_condition_callback' => array($this, 'filterCallbackContact')
-        ))->addColumn('is_subscriber', array(
-            'header'        => Mage::helper('ddg')->__('Is Subscriber'),
-            'width'         => '50px',
-            'align'         => 'right',
-            'index'         => 'is_subscriber',
-            'type'          => 'options',
-	        'options'   => array(
-		        '1'  => 'Subscriber',
-		        'null' => 'Not Subscriber'
-	        ),
-	        'filter_condition_callback' => array($this, 'filterCallbackContact'),
-            'escape'        => true,
-        ))->addColumn('subscriber_status', array(
-            'header'        => Mage::helper('ddg')->__('Subscriber Status'),
-            'align'         => 'center',
-            'width'         => '50px',
-            'index'         => 'subscriber_status',
-            'type'          => 'options',
-	        'options'       => array(
-		        '1' => 'Subscribed',
-		        '2' => 'Not Active',
-		        '3' => 'Unsubscribed',
-		        '4' => 'Unconfirmed'
-	        ),
-            'escape'        => true,
-        ))->addColumn('email_imported', array(
-            'header'        => Mage::helper('ddg')->__('Email Imported'),
-            'width'         => '20px',
-            'align'         => 'center',
-            'index'         => 'email_imported',
-            'escape'        => true,
-            'type'          => 'options',
-            'options'       => Mage::getModel('ddg_automation/adminhtml_source_contact_imported')->getOptions(),
-            'renderer'      => 'ddg_automation/adminhtml_column_renderer_imported',
-            'filter_condition_callback' => array($this, 'filterCallbackContact')
-        ))->addColumn('subscriber_imported', array(
-            'header'        => Mage::helper('ddg')->__('Subscriber Imported'),
-            'width'         => '20px',
-            'align'         => 'center',
-            'index'         => 'subscriber_imported',
-            'type'          => 'options',
-            'escape'        => true,
-            'renderer'      => 'ddg_automation/adminhtml_column_renderer_imported',
-            'options'       => Mage::getModel('ddg_automation/adminhtml_source_contact_imported')->getOptions(),
-            'filter_condition_callback' => array($this, 'filterCallbackContact')
-        ))->addColumn('suppressed', array(
-            'header'        => Mage::helper('ddg')->__('Suppressed'),
-            'align'         => 'right',
-            'width'         => '50px',
-            'index'         => 'suppressed',
-            'escape'        => true,
-            'type'          => 'options',
-	        'options'       => array(
-		        '1'     => 'Suppressed',
-		        'null'  => 'Not Suppressed'
-	        ),
-            'filter_condition_callback' => array($this, 'filterCallbackContact')
-        ));
+	protected $_gridFactory;
 
-	    //Enterprise customer segments.
-	    if (Mage::helper('ddg')->isEnterprise()) {
-		    $this->addColumn( 'segment_ids', array(
-			    'header' => Mage::helper( 'ddg' )->__( 'Segment Id\'s' ),
-			    'align'  => 'right',
-			    'width'  => '50px',
-			    'index'  => 'segment_ids',
-			    'escape' => true,
-			    'type'   => 'text'
-		    ) );
-	    }
-        if (!Mage::app()->isSingleStoreMode()) {
-            $this->addColumn('website_id', array(
-                'header'    => Mage::helper('customer')->__('Website'),
-                'align'     => 'center',
-                'width'     => '80px',
-                'type'      => 'options',
-                'options'   => Mage::getSingleton('adminhtml/system_store')->getWebsiteOptionHash(true),
-                'index'     => 'website_id',
-            ));
-        }
 
-        $this->addColumn('sync', array(
-            'header' => Mage::helper('ddg')->__('Sync Contact'),
-            'align'         => 'center',
-            'width'         => '80px',
-            'renderer'     => 'ddg_automation/adminhtml_column_renderer_sync'
-
-        ));
-
-        $this->addExportType('*/*/exportCsv', Mage::helper('ddg')->__('CSV'));
-        return parent::_prepareColumns();
-    }
-
-    /**
-	 * Get the store.
+	/**
+	 * @param \Magento\Backend\Block\Template\Context $context
+	 * @param \Magento\Backend\Helper\Data $backendHelper
+	 * @param \Magento\Framework\Module\Manager $moduleManager
+	 * @param array $data
 	 *
-	 * @return Mage_Core_Model_Store
-	 * @throws Exception
+	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
-    protected function _getStore()
-    {
-        $storeId = (int) $this->getRequest()->getParam('store', 0);
-        return Mage::app()->getStore($storeId);
-    }
+	public function __construct(
+		\Magento\Backend\Block\Template\Context $context,
+		\Magento\Backend\Helper\Data $backendHelper,
+		\Dotdigitalgroup\Email\Model\ContactFactory $gridFactory,
+		\Magento\Framework\Module\Manager $moduleManager,
+		array $data = []
+	) {
+		$this->_contactFactory = $gridFactory;
+		$this->moduleManager = $moduleManager;
+		parent::__construct($context, $backendHelper, $data);
+	}
 
-    /**
-	 * Prepare the grid massaction.
-	 * @return $this|Mage_Adminhtml_Block_Widget_Grid
+	/**
+	 * @return void
 	 */
-    protected function _prepareMassaction()
-    {
-        $this->setMassactionIdField('email_contact_id');
-        $this->getMassactionBlock()->setFormFieldName('contact');
-        $this->getMassactionBlock()->addItem('delete', array(
-            'label'=> Mage::helper('ddg')->__('Delete'),
-            'url'  => $this->getUrl('*/*/massDelete'),
-            'confirm'  => Mage::helper('ddg')->__('Are you sure?')));
-        $this->getMassactionBlock()->addItem('resend', array(
-            'label' => Mage::helper('ddg')->__('Resend'),
-            'url' => $this->getUrl('*/*/massResend'),
+	protected function _construct()
+	{
+		parent::_construct();
+		$this->setId('contact');
+		$this->setDefaultSort('email_contact_id');
+		$this->setDefaultDir('DESC');
+		$this->setSaveParametersInSession(true);
+		$this->setUseAjax(true);
+		//$this->setVarNameFilter('grid_record');
+	}
 
-        ));
-        return $this;
-    }
-
-    /**
-	 * Custom callback action for the subscribers/contacts.
-	 * @param $collection
-	 * @param $column
+	/**
+	 * @return $this
 	 */
-    public function filterCallbackContact($collection, $column)
-    {
-        $field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
-        $value = $column->getFilter()->getValue();
+	protected function _prepareCollection()
+	{
+		$collection = $this->_contactFactory->create()->getCollection();
+		$this->setCollection($collection);
 
-        if ($value == 'null')
-              $collection->addFieldToFilter($field, array('null' => true));
-        else
-            $collection->addFieldToFilter($field, array('notnull' => true));
-    }
+		parent::_prepareCollection();
+		return $this;
+	}
 
-    /**
-	 * Edit the row.
-	 * @param $row
-	 *
+	/**
+	 * @return $this
+	 * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+	 */
+	protected function _prepareColumns()
+	{
+		$this->addColumn(
+			'email_contact_id',
+			[
+				'header' => __('Email Contact ID'),
+				'type' => 'number',
+				'index' => 'email_contact_id',
+				'header_css_class' => 'col-id',
+				'column_css_class' => 'col-id'
+			]
+		);
+		$this->addColumn(
+			'email',
+			[
+				'header' => __('Email'),
+				'type'  => 'text',
+				'index' => 'email',
+				'class' => 'xxx'
+			]
+		);
+		$this->addColumn(
+			'customer_id',
+			[
+				'header' => __('Customer ID'),
+				'type' => 'number',
+				'index' => 'customer_id'
+			]
+		);
+		$this->addColumn(
+			'is_guest',
+			[
+				'header' => __('Is Guest'),
+				'type' => 'options',
+				'index' => 'is_guest',
+				'options' => ['0' => 'Guest', '1' => 'Not Guest']
+			]
+		);
+		$this->addColumn(
+			'is_subscriber',
+			[
+				'header' => __('Is Subscriber'),
+				'index' => 'is_subscriber',
+				'type' => 'options',
+				'options' => ['0' => 'Not Subscriber', '1' => 'Subscriber'],
+				'escape' => true
+			]
+		);
+		$this->addColumn('subscriber_status', [
+			'header'        => 'Subscriber Status',
+			'align'         => 'center',
+			'width'         => '50px',
+			'index'         => 'subscriber_status',
+			'type'          => 'options',
+			'options'       => [
+				'1' => 'Subscribed',
+				'2' => 'Not Active',
+				'3' => 'Unsubscribed',
+				'4' => 'Unconfirmed'
+			],
+			'escape'        => true,
+		]);
+		$this->addColumn(
+			'website_id',
+			[
+				'header' => __('Website ID'),
+				'index' => 'website_id'
+			]
+		);
+		$this->addColumn(
+			'subscriber_imported',
+			[
+				'header' => __('Subscriber Imported'),
+				'index' => 'subscriber_imported'
+			]
+		);
+		$this->addColumn(
+			'suppressed',
+			[
+				'header' => __('Suppressed'),
+				'index' => 'suppressed'
+			]
+		);
+
+		$this->addColumn(
+			'edit',
+			[
+				'header' => __('Edit'),
+				'type' => 'action',
+				'getter' => 'getId',
+				'actions' => [
+					[
+						'caption' => __('Edit'),
+						'url' => [
+							'base' => '*/*/edit'
+						],
+						'field' => 'email_contact_id'
+					]
+				],
+				'filter' => false,
+				'sortable' => false,
+				'index' => 'stores',
+				'header_css_class' => 'col-action',
+				'column_css_class' => 'col-action'
+			]
+		);
+
+		$block = $this->getLayout()->getBlock('grid.bottom.links');
+		if ($block) {
+			$this->setChild('grid.bottom.links', $block);
+		}
+
+		return parent::_prepareColumns();
+	}
+
+	/**
+	 * @return $this
+	 */
+	protected function _prepareMassaction()
+	{
+		$this->setMassactionIdField('email_contact_id');
+		$this->getMassactionBlock()->setFormFieldName('email_contact_id');
+
+		$this->getMassactionBlock()->addItem(
+			'delete',
+			[
+				'label' => __('Delete'),
+				'url' => $this->getUrl('dotdigitalgroup_email/*/massDelete'),
+				'confirm' => __('Are you sure?')
+			]
+		);
+
+
+		return $this;
+	}
+
+	/**
 	 * @return string
 	 */
-    public function getRowUrl($row)
-    {
-        return $this->getUrl('*/*/edit', array('id' => $row->getEmailContactId()));
-    }
+	public function getGridUrl()
+	{
+		return $this->getUrl('dotdigitalgroup_email/*/grid', ['_current' => true]);
+	}
 
-    /**
-	 * Grid url.
-	 * @return string
-	 */
-    public function getGridUrl()
-    {
-        return $this->getUrl('*/*/grid', array('_current'=>true));
-    }
+
+	public function getRowUrl($row)
+	{
+		return $this->getUrl(
+			'dotdigitalgroup_email/*/edit',
+			['email_contact_id' => $row->getId()]
+		);
+	}
 
 }

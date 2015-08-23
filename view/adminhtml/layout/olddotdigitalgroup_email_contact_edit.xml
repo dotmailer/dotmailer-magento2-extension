@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Contact\Edit" name="contact_grid_edit"/>
+        </referenceContainer>
+        <referenceContainer name="left">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Contact\Edit\Tabs" name="contact_grid_edit_tabs">
+                <block class="Dotdigitalgroup\Email\Block\Adminhtml\Contact\Edit\Tab\Main" name="contact_grid_edit_tab_main"/>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">main_section</argument>
+                    <argument name="block" xsi:type="string">contact_grid_edit_tab_main</argument>
+                </action>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

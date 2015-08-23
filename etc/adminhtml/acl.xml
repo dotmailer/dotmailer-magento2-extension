@@ -10,6 +10,11 @@
                         </resource>
                     </resource>
                 </resource>
+                <resource id="Magento_Backend::marketing">
+                    <resource id="Dotdigitalgroup_Email::email_marketing">
+                        <resource id="Dotdigitalgroup_Email::dashboard" title="Email Dashboard" sortOrder="10" />
+                    </resource>
+                </resource>
             </resource>
         </resources>
     </acl>
