@@ -14,6 +14,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 	protected $_gridFactory;
 	protected $_objectManager;
+	protected $_orderFactory;
 
 
 	/**
@@ -179,7 +180,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	{
 		return $this->getUrl(
 			'*/*/edit',
-			['email_contact_id' => $row->getId()]
+			['email_order_id' => $row->getId()]
 		);
 	}
 
