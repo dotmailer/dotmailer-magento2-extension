@@ -1,43 +1,34 @@
 <?php
-namespace Sample\News\Controller\Adminhtml\Author;
 
-use Sample\News\Controller\Adminhtml\Author;
-use Sample\News\Model\AuthorFactory;
-use Magento\Backend\App\Action\Context;
-use Magento\Backend\Model\View\Result\RedirectFactory;
-use Magento\Framework\Model\Exception as FrameworkException;
+namespace Dotdigitalgroup\Email\Controller\Adminhtml\Order;
 
-class MassDelete extends Author
+use Dotdigitalgroup\Email\Controller\Adminhtml\Order as OrderController;
+use Magento\Framework\Controller\ResultFactory;
+
+class MassDelete extends OrderController
 {
-    /**
-     * execute action
-     *
-     * @return \Magento\Backend\Model\View\Result\Redirect
-     */
-    public function execute()
-    {
-        $authorIds = $this->getRequest()->getParam('author_ids');
-
-        if (!is_array($authorIds)) {
-            $this->messageManager->addError(__('Please select authors.'));
-        } else {
-            try {
-                foreach ($authorIds as $reviewId) {
-                    /** @var \Sample\News\Model\Author $author */
-                    $author = $this->authorFactory->create()->load($reviewId);
-                    $author->delete();
-                }
-                $this->messageManager->addSuccess(
-                    __('A total of %1 record(s) have been deleted.', count($authorIds))
-                );
-            } catch (FrameworkException $e) {
-                $this->messageManager->addError($e->getMessage());
-            } catch (\Exception $e) {
-                $this->messageManager->addException($e, __('An error occurred while deleting record(s).'));
-            }
-        }
-        $redirectResult = $this->resultRedirectFactory->create();
-        $redirectResult->setPath('sample_news/*/index');
-        return $redirectResult;
-    }
+	/**
+	 * @return \Magento\Backend\Model\View\Result\Redirect
+	 */
+	public function execute()
+	{
+		$ids = $this->getRequest()->getParam('email_contact_id');
+		if (!is_array($ids)) {
+			$this->messageManager->addError(__('Please select orders.'));
+		} else {
+			try {
+				foreach ($ids as $id) {
+					$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Order')->load($id);
+					$model->delete();
+				}
+				$this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
+			} catch (\Exception $e) {
+				$this->messageManager->addError($e->getMessage());
+			}
+		}
+		/** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+		$resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+		$resultRedirect->setPath('*/*/');
+		return $resultRedirect;
+	}
 }

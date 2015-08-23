@@ -14,6 +14,7 @@
         <add id="Dotdigitalgroup_Email::contact" title="Contact Report" module="Dotdigitalgroup_Email" sortOrder="140" action="dotdigitalgroup_email/contact" resource="Dotdigitalgroup_Email::contact" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::order" title="Order Report" module="Dotdigitalgroup_Email" sortOrder="150" action="dotdigitalgroup_email/order" resource="Dotdigitalgroup_Email::reports" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::quote" title="Quote Report" module="Dotdigitalgroup_Email" sortOrder="160" action="dotdigitalgroup_email/quote" resource="Dotdigitalgroup_Email::reports" parent="Dotdigitalgroup_Email::reports" />
+        <add id="Dotdigitalgroup_Email::review" title="Review Report" module="Dotdigitalgroup_Email" sortOrder="170" action="dotdigitalgroup_email/review" resource="Dotdigitalgroup_Email::review" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::configuration" title="Configuration" module="Dotdigitalgroup_Email" sortOrder="140" action="system_config/index" resource="Dotdigitalgroup_Email::configuration" parent="Dotdigitalgroup_Email::marketing_automation" />
     </menu>
 </config>

@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 use Magento\Backend\App\Action;
 use Magento\Framework\Controller\ResultFactory;
 
-abstract class Contact extends Action
+abstract class Order extends Action
 {
 
 
@@ -13,6 +13,6 @@ abstract class Contact extends Action
 	 */
 	protected function _isAllowed()
 	{
-		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::contact');
+		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::order');
 	}
 }
