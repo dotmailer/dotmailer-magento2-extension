@@ -9,4 +9,7 @@
     <event name="admin_system_config_changed_section_sync_settings">
         <observer name="admin_connector_sync_settings" instance="Dotdigitalgroup\Email\Model\Adminhtml\Observer" method="checkFeatureActive" />
     </event>
+    <event name="customer_delete_after">
+        <observer name="ddg_remove_contact" instance="Dotdigitalgroup\Email\Model\Customer\Observer" method="handleCustomerDeleteAfter" />
+    </event>
 </config>

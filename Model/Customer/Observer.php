@@ -105,7 +105,6 @@ $this->_logger->info('saving contact');
 
 		$website = $this->_storeManager->getWebsite($websiteId);
 		$store = $this->_storeManager->getStore($customer->getStoreId());
-		//$storeName = $customer->getStore()->getName();
 		$storeName = $store->getName();
 
 		//if api is not enabled
@@ -147,38 +146,27 @@ $this->_logger->info('saving contact');
 		$customer = $observer->getEvent()->getCustomer();
 		$email      = $customer->getEmail();
 		$websiteId  = $customer->getWebsiteId();
-		$helper = Mage::helper('ddg');
-
-		//api enabled
-		$enabled = $helper->getWebsiteConfig(
-			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED,
-			$websiteId
-		);
-		//sync enabled
-		$syncEnabled = $helper->getWebsiteConfig(
-			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED,
-			$websiteId
-		);
+		$apiEnabled = $this->_helper->isEnabled($websiteId);
+		$customerSync = $this->_helper->getCustomerSyncEnabled($websiteId);
 
 		/**
 		 * Remove contact.
 		 */
-		if ($enabled && $syncEnabled) {
+		if ($apiEnabled && $customerSync) {
 			try {
 				//register in queue with importer
-				$check = Mage::getModel('ddg_automation/importer')->registerQueue(
-					Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_CONTACT,
+				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
 					$email,
-					Dotdigitalgroup_Email_Model_Importer::MODE_CONTACT_DELETE,
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_CONTACT_DELETE,
 					$websiteId
 				);
-				$contactModel = Mage::getModel('ddg_automation/contact')->loadByCustomerEmail($email, $websiteId);
+				$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->loadByCustomerEmail($email, $websiteId);
 				if ($contactModel->getId() && $check) {
 					//remove contact
 					$contactModel->delete();
 				}
-			} catch (Exception $e) {
-				Mage::logException($e);
+			} catch (\Exception $e) {
 			}
 		}
 		return $this;

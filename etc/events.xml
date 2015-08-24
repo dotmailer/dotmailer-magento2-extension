@@ -4,4 +4,7 @@
     <event name="customer_save_after">
         <observer name="ddg_customer_save_after" instance="Dotdigitalgroup\Email\Model\Customer\Observer" method="handleCustomerSaveAfter" />
     </event>
+    <event name="newsletter_subscriber_save_before">
+        <observer name="ddg_contact_change_subscription" instance="Dotdigitalgroup\Email\Model\Newsletter\Observer" method="handleNewsletterSubscriberSave" />
+    </event>
 </config>
