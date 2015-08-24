@@ -10,7 +10,7 @@ class Order extends \Magento\Backend\Block\Widget\Container
 
 	public function __construct(
 		\Magento\Backend\Block\Widget\Context $context,
-		\Dotdigitalgroup\Email\Model\Resource\Contact $resourceModel,
+		\Dotdigitalgroup\Email\Model\Resource\Order $resourceModel,
 		array $data = []
 	) {
 		parent::__construct($context, $data);

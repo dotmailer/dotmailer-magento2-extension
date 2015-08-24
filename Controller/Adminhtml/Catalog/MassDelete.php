@@ -1,11 +1,11 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
+namespace Dotdigitalgroup\Email\Controller\Adminhtml\Catalog;
 
-use Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist as WishlistController;
+use Dotdigitalgroup\Email\Controller\Adminhtml\Catalog as CatalogController;
 use Magento\Framework\Controller\ResultFactory;
 
-class MassDelete extends WishlistController
+class MassDelete extends CatalogController
 {
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
@@ -14,11 +14,11 @@ class MassDelete extends WishlistController
 	{
 		$searchIds = $this->getRequest()->getParam('id');
 		if (!is_array($searchIds)) {
-			$this->messageManager->addError(__('Please select wishlists.'));
+			$this->messageManager->addError(__('Please select catalog.'));
 		} else {
 			try {
 				foreach ($searchIds as $searchId) {
-					$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->load($searchId);
+					$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Catalog')->load($searchId);
 					$model->delete();
 				}
 				$this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
