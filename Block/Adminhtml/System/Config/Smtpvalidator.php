@@ -25,8 +25,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Smtpvalidator extends 
             jQuery(document).ready(function() {
                 // Handler for .ready() called.
 
-                //Show sweet tooth notice
-                if(show_warning == 1) jQuery('#smtp-warning').show();
             });
             </script>";
 

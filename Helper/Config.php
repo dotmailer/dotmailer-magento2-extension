@@ -54,7 +54,6 @@ class Config
     const XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS                  = 'connector_data_mapping/customer_data/custom_attributes';
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME                 = 'connector_data_mapping/customer_data/store_name';
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_TOTALREFUND               = 'connector_data_mapping/customer_data/total_refund';
-    const XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE                  = 'connector_data_mapping/sweet_tooth/active';
 
     /**
      * Abandoned Carts.

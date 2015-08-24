@@ -22,9 +22,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Validator extends Mage
         $html .=$jquery;
         $javaScript = "<script type=\"text/javascript\"> var show_warning = 0;";
 
-        if(!Mage::helper('ddg')->isSweetToothEnabled()){
-            $javaScript .= "show_warning = 1;";
-        }
 
         $javaScript .=
             "jQuery.noConflict();
@@ -32,8 +29,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Validator extends Mage
             jQuery(document).ready(function() {
                 // Handler for .ready() called.
 
-                //Show sweet tooth notice
-                if(show_warning == 1) jQuery('#sweet-tooth-warning').show();
+
 
                 // Hide our validation block
                 jQuery('#row_connector_data_mapping_customer_data_validator').hide();
@@ -41,12 +37,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Validator extends Mage
                 // Add listener for changing select box
 
                 jQuery('#connector_data_mapping_customer_data select').on('change', function() {
-                    var currentSelection = jQuery(this).val();
-                    var currentDropdownId = jQuery(this).attr('id');
-                    check(currentSelection, currentDropdownId);
-                });
-
-                jQuery('#connector_data_mapping_sweet_tooth select').on('change', function() {
                     var currentSelection = jQuery(this).val();
                     var currentDropdownId = jQuery(this).attr('id');
                     check(currentSelection, currentDropdownId);

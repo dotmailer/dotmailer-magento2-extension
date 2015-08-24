@@ -9,9 +9,6 @@ class Customer
 	public $customerData;
 	public $reviewCollection;
 
-	//enterprise reward
-	public $reward;
-
 	public $rewardCustomer;
 	public $rewardLastSpent = "";
 	public $rewardLastEarned = "";
@@ -67,10 +64,6 @@ class Customer
 		$this->customer = $customer;
 		$this->setReviewCollection();
 
-		$website = $customer->getStore()->getWebsite();
-
-		if ($website && $this->_helper->isSweetToothToGo($website))
-			$this->setRewardCustomer($customer);
 
 		foreach ($this->getMappingHash() as $key => $field) {
 
@@ -112,53 +105,6 @@ class Customer
 		if(count($this->reviewCollection))
 			return $this->reviewCollection->getFirstItem()->getCreatedAt();
 		return '';
-	}
-
-	/**
-	 * Set reward customer
-	 *
-	 */
-	public function setRewardCustomer($customer)
-	{
-		//get tbt reward customer
-		$tbt_reward  = $this->_objectManager->create('TBT/Rewards/Model/Customer')->getRewardsCustomer($customer);
-		$this->rewardCustomer = $tbt_reward;
-
-		//get transfers collection from tbt reward. only active and order by last updated.
-		$lastTransfers = $tbt_reward->getTransfers()
-	        ->selectOnlyActive()
-	        ->addOrder('last_update_ts', \Magento\Framework\Data\Collection::SORT_ORDER_DESC);
-
-		$spent = $earn = null;
-
-		foreach($lastTransfers as $transfer) {
-			// if transfer quantity is greater then 0 then this is last points earned date. keep checking until earn is not null
-			if(is_null($earn) && $transfer->getQuantity() > 0){
-				$earn  = $transfer->getEffectiveStart();
-			}
-			// id transfer quantity is less then 0 then this is last points spent date. keep checking until spent is not null
-			else if(is_null($spent) && $transfer->getQuantity() < 0) {
-				$spent = $transfer->getEffectiveStart();
-			}
-			// break if both spent and earn are not null (a value has been assigned)
-			if(!is_null($spent) && !is_null($earn)) {
-				break;
-			}
-		}
-
-		// if earn is not null (has a value) then assign the value to property
-		if($earn)
-			$this->rewardLastEarned = $earn;
-		// if spent is not null (has a value) then assign the value to property
-		if($spent)
-			$this->rewardLastSpent = $spent;
-
-		$tbt_expiry = $this->_objectManager->create('TBT\Rewards\Model\Expire')
-		                  ->getExpiryDate($tbt_reward);
-
-		// if there is an expiry (has a value) then assign the value to property
-		if($tbt_expiry)
-			$this->rewardExpiry = $tbt_expiry;
 	}
 
 	/**
@@ -615,50 +561,6 @@ class Customer
 		return $this;
 	}
 
-	public function getRewardReferralUrl()
-	{
-		if(Mage::helper('ddg')->isSweetToothToGo($this->customer->getStore()->getWebsite()))
-			return (string) Mage::helper('rewardsref/url')->getUrl($this->customer);
-
-		return '';
-	}
-
-	public function getRewardPointBalance()
-	{
-		return $this->cleanString($this->rewardCustomer->getPointsSummary());
-	}
-
-	public function getRewardPointPending()
-	{
-		return $this->cleanString($this->rewardCustomer->getPendingPointsSummary());
-	}
-
-	public function getRewardPointPendingTime()
-	{
-		return $this->cleanString($this->rewardCustomer->getPendingTimePointsSummary());
-	}
-
-	public function getRewardPointOnHold()
-	{
-		return $this->cleanString($this->rewardCustomer->getOnHoldPointsSummary());
-	}
-
-	public function getRewardPointExpiration()
-	{
-		if($this->rewardExpiry != "")
-			return Mage::getModel('core/date')->date('Y/m/d', strtotime($this->rewardExpiry));
-		return $this->rewardExpiry;
-	}
-
-	public function getRewardPointLastSpent()
-	{
-		return $this->rewardLastSpent;
-	}
-
-	public function getRewardPointLastEarn()
-	{
-		return $this->rewardLastEarned;
-	}
 
 	public function cleanString($string)
 	{
@@ -679,66 +581,6 @@ class Customer
 
 		if($subscriberModel->getCustomerId())
 			return $this->subscriber_status[$subscriberModel->getSubscriberStatus()];
-	}
-
-	/**
-	 * Reward points balance.
-	 * @return int
-	 */
-	public function getRewardPoints() {
-		if (!$this->reward)
-			$this->_setReward();
-		$rewardPoints = $this->reward->getPointsBalance();
-
-		return $rewardPoints;
-	}
-
-	/**
-	 * Currency amount points.
-	 * @return mixed
-	 */
-	public function getRewardAmount() {
-		if (!$this->reward)
-			$this->_setReward();
-
-		return $this->reward->getCurrencyAmount();
-	}
-
-	/**
-	 * Expiration date to use the points.
-	 * @return string
-	 */
-	public function getExpirationDate()
-	{
-		//set reward for later use
-		if (!$this->reward)
-			$this->_setReward();
-
-
-		$expiredAt = $this->reward->getExpirationDate();
-
-		if ($expiredAt) {
-			$date = Mage::helper('core')->formatDate($expiredAt, 'short', true);
-		} else {
-			$date = '';
-		}
-
-		return $date;
-	}
-
-
-	private function _setReward() {
-		$collection = Mage::getModel('enterprise_reward/reward_history')->getCollection()
-		                  ->addCustomerFilter($this->customer->getId())
-		                  ->addWebsiteFilter($this->customer->getWebsiteId())
-		                  ->setExpiryConfig(Mage::helper('enterprise_reward')->getExpiryConfig())
-		                  ->addExpirationDate($this->customer->getWebsiteId())
-		                  ->skipExpiredDuplicates()
-		                  ->setDefaultOrder()
-		                  ->getFirstItem()
-		;
-
-		$this->reward = $collection;
 	}
 
 

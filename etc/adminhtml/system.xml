@@ -292,48 +292,6 @@
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Datafieldbutton</frontend_model>
                 </field>
             </group>
-            <group id="sweet_tooth" translate="comment label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Sweet Tooth Rewards</label>
-                <field id="active" translate="label" sortOrder="10" type="select" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[<p id="sweet-tooth-warning" style="display:none;" class="notice">SWEET TOOTH EXTENSION HAS TO BE INSTALLED AND ENABLED IN ORDER TO USE THIS FEATURE.</p>]]></comment>
-                </field>
-                <field id="title" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Datafield Mapping</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                </field>
-                <field id="reward_point_balance" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Current Point Balance</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="reward_point_pending" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Points Pending An Event</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="reward_pendig_time" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Points Pending A Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="reward_point_on_hold" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Current On Hold Points</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="reward_point_expiration" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Points Expire Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="reward_point_last_earn" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Last Date Points Earned</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="reward_point_last_spent" translate="label" sortOrder="90" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Last Date Points Spent</label>
-                </field>
-                <field id="reward_referral_url" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Referral Url</label>
-                </field>
-            </group>
         </section>
         <section id="sync_settings" translate="label" type="text" sortOrder="150" showInWebsite="1" showInStore="1" showInDefault="1">
             <class>separator-top</class>

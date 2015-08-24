@@ -181,21 +181,6 @@ class File
 		$mappedData = $this->_scopeConfig->getValue('connector_data_mapping/customer_data', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store->getId());
 		unset($mappedData['custom_attributes']);
 
-		//enterprise datafields
-		//@todo fix this for enterprise edition
-//		if (Mage::helper('ddg')->isEnterprise()) {
-//
-//			$enterpriseMapping = Mage::helper( 'ddg' )->getEnterpriseAttributes( $website );
-//			if ( $enterpriseMapping ) {
-//				$mappedData = array_merge( $mappedData, $enterpriseMapping );
-//			}
-//		}
-
-		$mappedRewardData = $this->getWebsiteCustomerRewardMappingDatafields($website);
-
-		if($mappedRewardData)
-			$mappedData = array_merge($mappedData, $mappedRewardData);
-
 		foreach ($mappedData as $key => $value) {
 			if (! $value)
 				unset($mappedData[$key]);
@@ -204,23 +189,7 @@ class File
 		return $mappedData;
 	}
 
-	/**
-	 * @param $website
-	 *
-	 * @return bool
-	 */
-	public function getWebsiteCustomerRewardMappingDatafields($website)
-	{
-		if($this->helper->isSweetToothToGo($website)) {
-			$mappedData = $this->_scopeConfig->getValue('connector_data_mapping/sweet_tooth',
-				\Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-				$website->getId()
-				);
-			unset($mappedData['active']);
-			return $mappedData;
-		}
-		return false;
-	}
+
 
 	/**
 	 * @param $path

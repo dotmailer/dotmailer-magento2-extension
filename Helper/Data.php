@@ -471,29 +471,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
     }
 
-    /**
-     * check sweet tooth installed/active status
-     * @return boolean
-     */
-    public function isSweetToothEnabled()
-    {
-        return false;//@todo look up for module config (bool)Mage::getConfig()->getModuleConfig('TBT_Rewards')->is('active', 'true');
-    }
-
-    /**
-     * check sweet tooth installed/active status and active status
-     * @return boolean
-     */
-    public function isSweetToothToGo($website)
-    {
-	    $stMappingStatus = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE,
-		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-		    $website->getId()
-		    );
-        if($stMappingStatus && $this->isSweetToothEnabled())
-	        return true;
-        return false;
-    }
 
     public function setConnectorContactToReImport($customerId)
     {
