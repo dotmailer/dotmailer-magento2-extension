@@ -1,14 +1,15 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Column_Renderer_Script extends Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Abstract
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer;
+
+class Script extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractRenderer
 {
     /**
      * Render the grid columns.
      *
-     * @param Varien_Object $row
      * @return string
      */
-    public function render(Varien_Object $row)
+    public function render(\Magento\Framework\DataObject $row)
     {
         $html = "<script type='application/javascript'>
                     function visitPage(url){

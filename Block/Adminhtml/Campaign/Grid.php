@@ -1,179 +1,198 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Grid extends Mage_Adminhtml_Block_Widget_Grid
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Campaign;
+
+use Magento\Backend\Block\Widget\Grid as WidgetGrid;
+
+class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->setId('id');
-        $this->setDefaultSort('entity_id');
-        $this->setDefaultDir('ASC');
-        $this->setSaveParametersInSession(true);
-        $this->setUseAjax(true);
-    }
-
-    /**
-	 *  Prepare grid collection object.
-	 * @return Mage_Adminhtml_Block_Widget_Grid
+	/**
+	 * @var \Magento\Framework\Module\Manager
 	 */
-    protected function _prepareCollection()
-    {
-        $collection = Mage::getModel('ddg_automation/campaign')->getCollection();
-        $this->setCollection($collection);
-        $this->setDefaultSort('created_at');
-        $this->setDefaultDir('DESC');
-        return parent::_prepareCollection();
-    }
+	protected $moduleManager;
+	protected $_gridFactory;
+	protected $_objectManager;
+	protected $_campaignFactory;
 
-    protected function _prepareColumns()
-    {
-        $this->addColumn('id', array(
-            'header'        => Mage::helper('ddg')->__('Campaign ID'),
-            'width'         => '20px',
-            'index'         => 'campaign_id',
-            'type'          => 'number',
-            'truncate'      => 50,
-            'escape'        => true
-        ))->addColumn('customer_id', array(
-	        'header'        => Mage::helper('ddg')->__('Customer ID'),
-	        'align'         => 'left',
-	        'width'         => '50px',
-	        'index'         => 'customer_id',
-	        'type'          => 'number',
-	        'escape'        => true
-        ))->addColumn('email', array(
-            'header'        => Mage::helper('ddg')->__('Email'),
-            'align'         => 'left',
-            'width'         => '50px',
-            'index'         => 'email',
-            'type'          => 'text',
-            'escape'        => true
-        ))->addColumn('is_sent', array(
-            'header'        => Mage::helper('ddg')->__('Is Sent'),
-            'align'         => 'center',
-            'width'         => '20px',
-            'index'         => 'is_sent',
-            'escape'        => true,
-            'type'          => 'options',
-            'renderer'     => 'ddg_automation/adminhtml_column_renderer_imported',
-            'options'       => array(
-                '1'    => 'Is Send',
-                'null' => 'Not Send'
-            ),
-            'filter_condition_callback' => array($this, 'filterCallbackContact')
-        ))->addColumn('message', array(
-            'header'		=> Mage::helper('ddg')->__('Send Message'),
-            'align'		=> 'left',
-            'width'		=> '300px',
-            'index'     => 'message',
-            'type'      => 'text',
-            'escape'    => true
-        ))->addColumn('event_name', array(
-            'header'        => Mage::helper('ddg')->__('Event Name'),
-            'align'         => 'left',
-            'index'         => 'event_name',
-            'width'		    => '100px',
-            'type'          => 'string',
-            'escape'        => true
-        ))->addColumn('quote_id', array(
-	        'header'        => Mage::helper('ddg')->__('Quote Id'),
-	        'align'         => 'left',
-	        'width'         => '50px',
-	        'index'         => 'quote_id',
-	        'type'          => 'number',
-	        'escape'        => true
-        ))->addColumn('sent_at', array(
-	        'header'    => Mage::helper('ddg')->__('Sent At'),
-	        'align'     => 'center',
-	        'width'     => '100px',
-	        'index'     => 'sent_at',
-	        'type'     => 'datetime',
-	        'escape'   => true
-        ))->addColumn('created_at', array(
-            'header'    => Mage::helper('ddg')->__('Created At'),
-            'align'     => 'center',
-            'width'     => '100px',
-            'index'     => 'created_at',
-            'type'      => 'datetime',
-            'escape'    => true
-        ))->addColumn('updated_at', array(
-            'header'    => Mage::helper('ddg')->__('Updated At'),
-            'align'     => 'center',
-            'width'     => '100px',
-            'index'     => 'updated_at',
-            'type'      => 'datetime',
-            'escape'    => true
-        ));
-        if (!Mage::app()->isSingleStoreMode()) {
-            $this->addColumn('store_id', array(
-                'header'    => Mage::helper('customer')->__('Store'),
-                'align'     => 'center',
-                'width'     => '80px',
-                'type'      => 'options',
-                'options'   => Mage::getSingleton('adminhtml/system_store')->getStoreOptionHash(true),
-                'index'     => 'store_id'
-            ));
-        }
-
-        $this->addExportType('*/*/exportCsv', Mage::helper('ddg')->__('CSV'));
-        return parent::_prepareColumns();
-    }
-
-    /**
-	 * Get the store selected.
-	 * @return Mage_Core_Model_Store
-	 * @throws Exception
+	/**
+	 * @param \Magento\Backend\Block\Template\Context $context
+	 * @param \Magento\Backend\Helper\Data $backendHelper
+	 * @param \Magento\Framework\Module\Manager $moduleManager
+	 * @param array $data
+	 *
+	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
-    protected function _getStore()
-    {
-        $storeId = (int) $this->getRequest()->getParam('store', 0);
-        return Mage::app()->getStore($storeId);
-    }
+	public function __construct(
+		\Dotdigitalgroup\Email\Model\CampaignFactory $gridFactory,
+		\Magento\Backend\Block\Template\Context $context,
+		\Magento\Backend\Helper\Data $backendHelper,
+		\Magento\Framework\Module\Manager $moduleManager,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	) {
+		$this->_campaignFactory = $gridFactory;
+		$this->_objectManager = $objectManagerInterface;
+		$this->moduleManager = $moduleManager;
+		parent::__construct($context, $backendHelper, $data);
+	}
 
-
-    /**
-	 * @return $this|Mage_Adminhtml_Block_Widget_Grid
+	/**
+	 * @return void
 	 */
-    protected function _prepareMassaction()
-    {
-        $this->setMassactionIdField('id');
-        $this->getMassactionBlock()->setFormFieldName('campaign');
-        $this->getMassactionBlock()->addItem('delete', array (
-		        'label'=> Mage::helper('ddg')->__('Delete'),
-                'url'  => $this->getUrl('*/*/massDelete'),
-                'confirm'  => Mage::helper('ddg')->__('Are you sure?')
-	        )
-        );
+	protected function _construct()
+	{
+		parent::_construct();
+		$this->setId('id');
+		$this->setDefaultSort('entity_id');
+		$this->setDefaultDir('DESC');
+		$this->setSaveParametersInSession(true);
+		$this->setUseAjax(true);
+	}
 
-        $this->getMassactionBlock()->addItem('resend', array('label'=>Mage::helper('ddg')->__('Resend'),'url'=>$this->getUrl('*/*/massResend')));
-        $this->getMassactionBlock()->addItem('re-create', array('label'=>Mage::helper('ddg')->__('Recreate'),'url'=>$this->getUrl('*/*/massRecreate')));
-        return $this;
-    }
-
-    /**
-	 * Grid selected url.
-	 * @return string
+	/**
+	 * @return $this
 	 */
-    public function getGridUrl()
-    {
-        return $this->getUrl('*/*/grid', array('_current'=>true));
-    }
-    /**
-	 * Custom callback action for the campaign.
-     *
+	protected function _prepareCollection()
+	{
+		$collection = $this->_campaignFactory->create()->getCollection();
+		$this->setCollection($collection);
+
+		parent::_prepareCollection();
+		return $this;
+	}
+
+	protected function _prepareColumns()
+	{
+		$this->addColumn('id', array(
+			'header'        => __('Campaign ID'),
+			'width'         => '20px',
+			'index'         => 'campaign_id',
+			'type'          => 'number',
+			'truncate'      => 50,
+			'escape'        => true
+		))->addColumn('customer_id', array(
+			'header'        => __('Customer ID'),
+			'align'         => 'left',
+			'width'         => '50px',
+			'index'         => 'customer_id',
+			'type'          => 'number',
+			'escape'        => true
+		))->addColumn('email', array(
+			'header'        => __('Email'),
+			'align'         => 'left',
+			'width'         => '50px',
+			'index'         => 'email',
+			'type'          => 'text',
+			'escape'        => true
+		))->addColumn('is_sent', array(
+			'header'        => __('Is Sent'),
+			'align'         => 'center',
+			'width'         => '20px',
+			'index'         => 'is_sent',
+			'escape'        => true,
+			'type'          => 'options',
+			'renderer'     => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+			'options'       => [
+				'1'    => 'Is Send',
+				'null' => 'Not Send'
+			],
+			'filter_condition_callback' => array($this, 'filterCallbackContact')
+		))->addColumn('message', array(
+			'header'		=> __('Send Message'),
+			'align'		=> 'left',
+			'width'		=> '300px',
+			'index'     => 'message',
+			'type'      => 'text',
+			'escape'    => true
+		))->addColumn('event_name', array(
+			'header'        => __('Event Name'),
+			'align'         => 'left',
+			'index'         => 'event_name',
+			'width'		    => '100px',
+			'type'          => 'string',
+			'escape'        => true
+		))->addColumn('quote_id', array(
+			'header'        => __('Quote Id'),
+			'align'         => 'left',
+			'width'         => '50px',
+			'index'         => 'quote_id',
+			'type'          => 'number',
+			'escape'        => true
+		))->addColumn('sent_at', array(
+			'header'    => __('Sent At'),
+			'align'     => 'center',
+			'width'     => '100px',
+			'index'     => 'sent_at',
+			'type'     => 'datetime',
+			'escape'   => true
+		))->addColumn('created_at', array(
+			'header'    => __('Created At'),
+			'align'     => 'center',
+			'width'     => '100px',
+			'index'     => 'created_at',
+			'type'      => 'datetime',
+			'escape'    => true
+		))->addColumn('updated_at', array(
+			'header'    => __('Updated At'),
+			'align'     => 'center',
+			'width'     => '100px',
+			'index'     => 'updated_at',
+			'type'      => 'datetime',
+			'escape'    => true
+		));
+
+		//$this->addExportType('*/*/exportCsv', Mage::helper('ddg')->__('CSV'));
+		return parent::_prepareColumns();
+	}
+
+	/**
+	 * Callback action for the imported subscribers/contacts.
+	 *
 	 * @param $collection
 	 * @param $column
 	 */
-    public function filterCallbackContact($collection, $column)
+	public function filterCallbackContact($collection, $column)
 	{
 		$field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
 		$value = $column->getFilter()->getValue();
+		if ($value == 'null') {
+			$collection->addFieldToFilter($field, array('null' => true));
+		} else {
+			$collection->addFieldToFilter($field, array('notnull' => true));
+		}
+	}
 
-        if ($value == 'null') {
-	        $collection->addFieldToFilter($field, array('null' => true) );
-        } else {
-	        $collection->addFieldToFilter($field, array('notnull' => true));
-        }
+
+	protected function _prepareMassaction()
+	{
+		$this->setMassactionIdField('id');
+		$this->getMassactionBlock()->setFormFieldName('id');
+		$this->getMassactionBlock()->addItem('delete', array (
+				'label'=> __('Delete'),
+				'url'  => $this->getUrl('*/*/massDelete'),
+				'confirm'  => __('Are you sure?')
+			)
+		);
+
+		$this->getMassactionBlock()->addItem('resend', ['label'=>  __('Resend'),'url'=> $this->getUrl('*/*/massResend')]);
+		$this->getMassactionBlock()->addItem('re-create', ['label'=> __('Recreate'),'url'=>$this->getUrl('*/*/massRecreate')]);
+		return $this;
+	}
+	/**
+	 * @return string
+	 */
+	public function getGridUrl()
+	{
+		return $this->getUrl('*/*/grid', ['_current' => true]);
+	}
+
+
+	public function getRowUrl($row)
+	{
+		return $this->getUrl(
+			'*/*/edit',
+			['id' => $row->getId()]
+		);
 	}
 
 }

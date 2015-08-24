@@ -1,39 +1,58 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
-{
-    /**
-	 *   Construct.
-	 */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->_blockGroup = 'ddg_automation';
-        $this->_controller = 'adminhtml_campaign';
-        $this->_mode = 'edit';
-        $this->_updateButton('save', 'label', Mage::helper('ddg')->__('Save Campaign'));
-        $this->_updateButton('delete', 'label', Mage::helper('ddg')->__('Delete Campaign'));
-        $this->_addButton('saveandcontinue', array(
-            'label'        => Mage::helper('ddg')->__('Save And Continue Edit'),
-            'onclick'    => 'saveAndContinueEdit()',
-            'class'        => 'save',
-        ), -100);
-        $this->_formScripts[] = "
-            function saveAndContinueEdit(){
-                editForm.submit($('edit_form').action+'back/edit/');
-            }";
-    }
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Contact;
+
+class Edit extends \Magento\Backend\Block\Widget\Form\Container {
+
+	protected $_coreRegistry = null;
 
 	/**
-	 * Header text for the campaign.
-	 * @return string
-	 */
-    public function getHeaderText()
-    {
-        if ( Mage::registry('email_campaign') && Mage::registry('email_campaign')->getId() ) {
-            return Mage::helper('ddg')->__("Edit Campaign '%s'", $this->htmlEscape(Mage::registry('email_campaign')->getContact()));
-        } else {
-            return Mage::helper('ddg')->__('Add Contact');
-        }
-    }
+	 *      * Initialize blog post edit block
+	 *      *
+	 *      * @return void
+	 *      */
+	protected function _construct()
+	{
+		$this->_objectId   = 'email_campaign_id';
+		$this->_blockGroup = 'dotdigitalgroup_email';
+		$this->_controller = 'adminhtml_campaign';
+
+		parent::_construct();
+
+		$this->buttonList->update( 'save', 'label', __( 'Save Campaign' ) );
+		$this->buttonList->add(
+			'saveandcontinue',
+			[
+				'label'          => __( 'Save and Continue Edit' ),
+				'class'          => 'save',
+				'data_attribute' => [
+					'mage-init' => [
+						'button' => [ 'event' => 'saveAndContinueEdit', 'target' => '#edit_form' ],
+					],
+				]
+			],
+			- 100
+		);
+		$this->buttonList->update( 'delete', 'label', __( 'Delete Campaign' ) );
+	}
+
+	public function getHEaderText()
+	{
+		if ($this->_coreRegistry->registry('email_campaign')){
+			return __("Edit Contact'%1'", $this->escapeHtml($this->_coreRegistry->registry('email_campaign')->getTitle()));
+		} else {
+			return __('New Campaign');
+		}
+	}
+
+	protected function _getSaveAndContinueUrl()
+	{
+		return $this->getUrl('dotdigitalgroup_email/*/save', ['_current' => true, 'back' => 'edit', 'active_tab' => '{{tab_id']);
+	}
+
+	protected function _prepareLayout()
+	{
+		return parent::_prepareLayout();
+	}
+
 }

@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Adminhtml_Source_Importer_Status
+namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer;
+
+class Status
 {
     /**
      * Contact imported options.
@@ -10,10 +12,10 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Importer_Status
     public function getOptions()
     {
         return array(
-            Dotdigitalgroup_Email_Model_Importer::NOT_IMPORTED => Mage::helper('ddg')->__('Not Imported'),
-            Dotdigitalgroup_Email_Model_Importer::IMPORTING => Mage::helper('ddg')->__('Importing'),
-            Dotdigitalgroup_Email_Model_Importer::IMPORTED => Mage::helper('ddg')->__('Imported'),
-            Dotdigitalgroup_Email_Model_Importer::FAILED => Mage::helper('ddg')->__('Failed'),
+            \Dotdigitalgroup\Email\Model\Proccessor::NOT_IMPORTED => __('Not Imported'),
+            \Dotdigitalgroup\Email\Model\Proccessor::IMPORTING => __('Importing'),
+            \Dotdigitalgroup\Email\Model\Proccessor::IMPORTED => __('Imported'),
+            \Dotdigitalgroup\Email\Model\Proccessor::FAILED => __('Failed'),
         );
     }
 }
