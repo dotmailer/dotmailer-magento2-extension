@@ -19,6 +19,7 @@
         <add id="Dotdigitalgroup_Email::catalog" title="Catalog Report" module="Dotdigitalgroup_Email" sortOrder="190" action="dotdigitalgroup_email/catalog" resource="Dotdigitalgroup_Email::catalog" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::importer" title="Importer Report" module="Dotdigitalgroup_Email" sortOrder="200" action="dotdigitalgroup_email/importer" resource="Dotdigitalgroup_Email::importer" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::campaign" title="Campaign Report" module="Dotdigitalgroup_Email" sortOrder="210" action="dotdigitalgroup_email/campaign" resource="Dotdigitalgroup_Email::campaign" parent="Dotdigitalgroup_Email::reports" />
+        <add id="Dotdigitalgroup_Email::automation" title="Automation Report" module="Dotdigitalgroup_Email" sortOrder="220" action="dotdigitalgroup_email/automation" resource="Dotdigitalgroup_Email::automation" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::configuration" title="Configuration" module="Dotdigitalgroup_Email" sortOrder="140" action="system_config/index" resource="Dotdigitalgroup_Email::configuration" parent="Dotdigitalgroup_Email::marketing_automation" />
     </menu>
 </config>
