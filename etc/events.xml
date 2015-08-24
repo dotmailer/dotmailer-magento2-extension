@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/Event/etc/events.xsd">
+    <event name="customer_save_after">
+        <observer name="ddg_customer_save_after" instance="Dotdigitalgroup\Email\Model\Customer\Observer" method="handleCustomerSaveAfter" />
+    </event>
+</config>

@@ -136,6 +136,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	    return $passcode;
     }
 
+	public function disableTransactionalDataConfig( $scope, $scopeId )
+	{
+		//@todo disable all transactional data as in account may not be enabled.
+		return;
+		$config = Mage::getConfig();
+		$config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, 0, $scope, $scopeId);
+		$config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, 0, $scope, $scopeId);
+		$config->cleanCache();
+	}
+
 	/**
 	 * Customer last order id.
 	 *

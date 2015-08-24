@@ -17,20 +17,20 @@ class Config
      * SMS SECTION.
      */
     //enabled
-    const XML_PATH_CONNECTOR_SMS_ENABLED_1                                      = 'connector_automation_studio/sms/sms_one_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_2                                      = 'connector_automation_studio/sms/sms_two_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_3                                      = 'connector_automation_studio/sms/sms_three_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_4                                      = 'connector_automation_studio/sms/sms_four_enabled';
+    const XML_PATH_CONNECTOR_SMS_ENABLED_1                                      = 'connector_automation/sms/sms_one_enabled';
+    const XML_PATH_CONNECTOR_SMS_ENABLED_2                                      = 'connector_automation/sms/sms_two_enabled';
+    const XML_PATH_CONNECTOR_SMS_ENABLED_3                                      = 'connector_automation/sms/sms_three_enabled';
+    const XML_PATH_CONNECTOR_SMS_ENABLED_4                                      = 'connector_automation/sms/sms_four_enabled';
     //status
-    const XML_PATH_CONNECTOR_SMS_STATUS_1                                       = 'connector_automation_studio/sms/sms_one_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_2                                       = 'connector_automation_studio/sms/sms_two_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_3                                       = 'connector_automation_studio/sms/sms_three_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_4                                       = 'connector_automation_studio/sms/sms_four_status';
+    const XML_PATH_CONNECTOR_SMS_STATUS_1                                       = 'connector_automation/sms/sms_one_status';
+    const XML_PATH_CONNECTOR_SMS_STATUS_2                                       = 'connector_automation/sms/sms_two_status';
+    const XML_PATH_CONNECTOR_SMS_STATUS_3                                       = 'connector_automation/sms/sms_three_status';
+    const XML_PATH_CONNECTOR_SMS_STATUS_4                                       = 'connector_automation/sms/sms_four_status';
     //message
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_1                                      = 'connector_automation_studio/sms/sms_one_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_2                                      = 'connector_automation_studio/sms/sms_two_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_3                                      = 'connector_automation_studio/sms/sms_three_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_4                                      = 'connector_automation_studio/sms/sms_four_message';
+    const XML_PATH_CONNECTOR_SMS_MESSAGE_1                                      = 'connector_automation/sms/sms_one_message';
+    const XML_PATH_CONNECTOR_SMS_MESSAGE_2                                      = 'connector_automation/sms/sms_two_message';
+    const XML_PATH_CONNECTOR_SMS_MESSAGE_3                                      = 'connector_automation/sms/sms_three_message';
+    const XML_PATH_CONNECTOR_SMS_MESSAGE_4                                      = 'connector_automation/sms/sms_four_message';
 
     /**
      * SYNC SECTION.
@@ -193,13 +193,13 @@ class Config
     /**
      * Automation studio.
      */
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER      = 'connector_automation_studio/visitor_automation/customer_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER    = 'connector_automation_studio/visitor_automation/subscriber_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER         = 'connector_automation_studio/visitor_automation/order_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER   = 'connector_automation_studio/visitor_automation/guest_order_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW        = 'connector_automation_studio/visitor_automation/review_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST      = 'connector_automation_studio/visitor_automation/wishlist_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS  = 'connector_automation_studio/order_status_automation/status_to_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER      = 'connector_automation/visitor_automation/customer_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER    = 'connector_automation/visitor_automation/subscriber_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER         = 'connector_automation/visitor_automation/order_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER   = 'connector_automation/visitor_automation/guest_order_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW        = 'connector_automation/visitor_automation/review_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST      = 'connector_automation/visitor_automation/wishlist_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS  = 'connector_automation/order_status_automation/status_to_automation';
 
 
     /**
@@ -221,10 +221,10 @@ class Config
     /**
      * Reviews SECTION
      */
-    const XML_PATH_REVIEWS_ENABLED                          = 'connector_automation_studio/review_settings/enabled';
-    const XML_PATH_REVIEWS_FEEFO_LOGON                      = 'connector_automation_studio/feefo_feedback_engine/logon';
-    const XML_PATH_REVIEWS_FEEFO_REVIEWS                    = 'connector_automation_studio/feefo_feedback_engine/reviews_per_product';
-    const XML_PATH_REVIEWS_FEEFO_TEMPLATE                   = 'connector_automation_studio/feefo_feedback_engine/template';
+    const XML_PATH_REVIEWS_ENABLED                          = 'connector_automation/review_settings/enabled';
+    const XML_PATH_REVIEWS_FEEFO_LOGON                      = 'connector_automation/feefo_feedback_engine/logon';
+    const XML_PATH_REVIEWS_FEEFO_REVIEWS                    = 'connector_automation/feefo_feedback_engine/reviews_per_product';
+    const XML_PATH_REVIEWS_FEEFO_TEMPLATE                   = 'connector_automation/feefo_feedback_engine/template';
 
 
 	/**

@@ -8,6 +8,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	const EMAIL_CONTACT_IMPORTED = 1;
 	const EMAIL_CONTACT_NOT_IMPORTED = null;
 	const EMAIL_SUBSCRIBER_NOT_IMPORTED = null;
+
+
 	/**
 	 * constructor
 	 */
@@ -17,32 +19,9 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	}
 
 
-//	/**
-//	 * Reset the imported contacts
-//	 * @return int
-//	 */
-//	public function resetAllContacts()
-//	{
-//
-//		/** @var $coreResource Mage_Core_Model_Resource */
-//		$coreResource = Mage::getSingleton('core/resource');
-//
-//		/** @var $conn Varien_Db_Adapter_Pdo_Mysql */
-//		$conn = $coreResource->getConnection('core_write');
-//
-//		try{
-//			$num = $conn->update($coreResource->getTableName('ddg_automation/contact'),
-//				array('email_imported' => new Zend_Db_Expr('null')),
-//				$conn->quoteInto('email_imported is ?', new Zend_Db_Expr('not null'))
-//			);
-//		}catch (Exception $e){
-//			Mage::logException($e);
-//			Mage::helper('ddg')->rayLog('300', $e);
-//		}
-//		return $num;
-//	}
-//
-//
+
+
+
 	/**
 	 * Load contact by customer id
 	 * @param $customerId
@@ -99,27 +78,27 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 //		return $collection->load();
 //	}
 //
-//	/**
-//	 * Load Contact by Email.
-//	 * @param $email
-//	 * @param $websiteId
-//	 * @return $this
-//	 */
-//	public function loadByCustomerEmail($email, $websiteId)
-//	{
-//		$collection = $this->getCollection()
-//		                   ->addFieldToFilter('email', $email)
-//		                   ->addFieldToFilter('website_id', $websiteId)
-//		                   ->setPageSize(1);
-//
-//		if ($collection->getSize()) {
-//			return $collection->getFirstItem();
-//		} else {
-//			$this->setEmail($email)
-//			     ->setWebsiteId($websiteId);
-//		}
-//		return $this;
-//	}
+	/**
+	 * Load Contact by Email.
+	 * @param $email
+	 * @param $websiteId
+	 * @return $this
+	 */
+	public function loadByCustomerEmail($email, $websiteId)
+	{
+		$collection = $this->getCollection()
+           ->addFieldToFilter('email', $email)
+           ->addFieldToFilter('website_id', $websiteId)
+           ->setPageSize(1);
+
+		if ($collection->getSize()) {
+			return $collection->getFirstItem();
+		} else {
+			$this->setEmail($email)
+			     ->setWebsiteId($websiteId);
+		}
+		return $this;
+	}
 
 	/**
 	 * Contact subscribers to import for website
@@ -156,15 +135,14 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 //		                        ->addFieldToFilter('website_id', $website->getId());
 //		return $guestCollection->load();
 //	}
-//
-//	public function getNumberOfImportedContacs()
-//	{
-//		$collection = $this->getCollection()
-//		                   ->addFieldToFilter('email_imported', array('notnull' => true));
-//
-//		return $collection->getSize();
-//	}
-//
+
+	public function getNumberOfImportedContacs()
+	{
+		$collection = $this->getCollection()
+		                   ->addFieldToFilter('email_imported', array('notnull' => true));
+
+		return $collection->getSize();
+	}
 //
 //	/**
 //	 * Set all imported subscribers for reimport.

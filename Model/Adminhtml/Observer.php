@@ -1,8 +1,30 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Adminhtml_Observer
+namespace Dotdigitalgroup\Email\Model\Adminhtml;
+
+
+class Observer
 {
 
+	protected $_helper;
+	protected $_context;
+	protected $_storeManager;
+	protected $messageManager;
+	protected $_objectManager;
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Magento\Backend\App\Action\Context $context,
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+	)
+	{
+		$this->_helper = $data;
+		$this->_context = $context;
+		$this->_storeManager = $storeManagerInterface;
+		$this->messageManager = $context->getMessageManager();
+		$this->_objectManager = $objectManagerInterface;
+	}
     /**
      * API Sync and Data Mapping.
      * Reset contacts for reimport.
@@ -10,15 +32,11 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
      */
     public function actionConfigResetContacts()
     {
-        $contactModel = Mage::getModel('ddg_automation/contact');
-        $numImported = $contactModel->getNumberOfImportedContacs();
+	    $contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Resource\Contact');
+        $numImported = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getNumberOfImportedContacs();
         $updated = $contactModel->resetAllContacts();
-        Mage::helper('ddg')->log('-- Imported contacts: ' . $numImported  . ' reseted :  ' . $updated . ' --');
 
-        /**
-         * check for addressbook mapping and disable if no address selected.
-         */
-        $this->_checkAddressBookMapping(Mage::app()->getRequest()->getParam('website'));
+        $this->_helper->log('-- Imported contacts: ' . $numImported  . ' reseted :  ' . $updated . ' --');
 
         return $this;
     }
@@ -31,25 +49,26 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
     {
         //scope to retrieve the website id
         $scopeId = 0;
-        if ($website = Mage::app()->getRequest()->getParam('website')) {
+	    $request = $this->_context->getRequest();
+        if ($website = $request->getParam('website')) {
             //use webiste
             $scope = 'websites';
-            $scopeId = Mage::app()->getWebsite($website)->getId();
+            $scopeId = $this->_storeManager->getWebsite($website)->getId();
         } else {
             //set to default
             $scope = "default";
         }
         //webiste by id
-        $website = Mage::app()->getWebsite($scopeId);
+        $website = $this->_storeManager->getWebsite($scopeId);
 
         //configuration saved for the wishlist and order sync
-        $wishlistEnabled = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, $scope, $scopeId);
-        $orderEnabled = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED);
+        $wishlistEnabled = $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, $scope, $scopeId);
+        $orderEnabled = $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED);
 
         //only for modification for order and wishlist
         if ($orderEnabled || $wishlistEnabled) {
             //client by website id
-            $client = Mage::helper('ddg')->getWebsiteApiClient($scopeId);
+            $client = $this->_helper->getWebsiteApiClient($scopeId);
 
             //call request for account info
             $response = $client->getAccountInfo();
@@ -57,21 +76,15 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
             //properties must be checked
             if (isset($response->properties)) {
                 $accountInfo = $response->properties;
-                $result = $this->_checkForOption(Dotdigitalgroup_Email_Model_Apiconnector_Client::API_ERROR_TRANS_ALLOWANCE, $accountInfo);
+                $result = $this->_checkForOption(\Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_TRANS_ALLOWANCE, $accountInfo);
 
                 //account is disabled to use transactional data
                 if (! $result) {
                     $message = 'Transactional Data For This Account Is Disabled. Call Support To Enable.';
                     //send admin message
-                    Mage::getSingleton('adminhtml/session')->addError($message);
-
-                    //send raygun message for trans data
-                    Mage::helper('ddg')->rayLog('100', $message);
+                    $this->messageManager->addError($message);
                     //disable the config for wishlist and order sync
-                    $config = Mage::getConfig();
-                    $config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, 0, $scope, $scopeId);
-                    $config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, 0, $scope, $scopeId);
-                    $config->cleanCache();
+	                $this->_helper->disableTransactionalDataConfig($scope, $scopeId);
                 }
             }
         }
@@ -85,18 +98,23 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
      * Installation and validation confirmation.
      * @return $this
      */
-    public function actionConfigSaveApi()
+    public function actionConfigSaveApi(\Magento\Framework\Event\Observer $observer)
     {
-        $groups = Mage::app()->getRequest()->getPost('groups');
+	    return $this;
+
+	    //@todo fix get the request
+	    $groups = $this->_context->getRequest()->getPost('groups');
+
         if (isset($groups['api']['fields']['username']['inherit']) || isset($groups['api']['fields']['password']['inherit']))
             return $this;
 
         $apiUsername =  isset($groups['api']['fields']['username']['value'])? $groups['api']['fields']['username']['value'] : false;
         $apiPassword =  isset($groups['api']['fields']['password']['value'])? $groups['api']['fields']['password']['value'] : false;
+
         //skip if the inherit option is selected
         if ($apiUsername && $apiPassword) {
-            Mage::helper('ddg')->log('----VALIDATING ACCOUNT---');
-            $testModel = Mage::getModel('ddg_automation/apiconnector_test');
+            $this->_helper->log('----VALIDATING ACCOUNT---');
+            $testModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Test');
             $isValid = $testModel->validate($apiUsername, $apiPassword);
             if ($isValid) {
                 /**
@@ -121,24 +139,6 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
             Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('ddg')->__('API Credentials Valid.'));
         }
         return $this;
-    }
-
-    private function _checkAddressBookMapping( $website ) {
-
-        $helper = Mage::helper('ddg');
-        $customerAddressBook = $helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID, $website);
-        $subscriberAddressBook = $helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID, $website);
-
-        if (! $customerAddressBook && $helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED, $website)){
-
-            $helper->disableConfigForWebsite(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED);
-            Mage::getSingleton('adminhtml/session')->addNotice('The Contact Sync Disabled - No Addressbook Selected !');
-        }
-        if (! $subscriberAddressBook && $helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED, $website)) {
-            $helper->disableConfigForWebsite( Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED );
-            Mage::getSingleton('adminhtml/session')->addNotice('The Subscriber Sync Disabled - No Addressbook Selected !');
-        }
-
     }
 
     /**

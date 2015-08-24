@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/Event/etc/events.xsd">
+    <event name="admin_system_config_changed_section_connector_api_credentials">
+        <observer name="admin_connector_api_credentials" instance="Dotdigitalgroup\Email\Model\Adminhtml\Observer" method="actionConfigSaveApi" />
+    </event>
+    <event name="admin_system_config_changed_section_connector_data_mapping">
+        <observer name="admin_connector_data_mapping" instance="Dotdigitalgroup\Email\Model\Adminhtml\Observer" method="actionConfigResetContacts" />
+    </event>
+    <event name="admin_system_config_changed_section_sync_settings">
+        <observer name="admin_connector_sync_settings" instance="Dotdigitalgroup\Email\Model\Adminhtml\Observer" method="checkFeatureActive" />
+    </event>
+</config>

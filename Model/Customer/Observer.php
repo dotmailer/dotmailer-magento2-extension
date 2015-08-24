@@ -1,16 +1,39 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Customer_Observer
+namespace Dotdigitalgroup\Email\Model\Customer;
+
+class Observer
 {
+	protected $_helper;
+	protected $_registry;
+	protected $_logger;
+	protected $_storeManager;
+	protected $_objectManager;
+
+	public function __construct(
+		\Magento\Framework\Registry $registry,
+		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Psr\Log\LoggerInterface $loggerInterface,
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+	)
+	{
+		$this->_helper = $data;
+		$this->_logger = $loggerInterface;
+		$this->_storeManager = $storeManagerInterface;
+		$this->_registry = $registry;
+		$this->_objectManager = $objectManagerInterface;
+
+	}
 	/**
 	 * Create new contact or update info, also check for email change
 	 * event: customer_save_after
-	 * @param Varien_Event_Observer $observer
 	 * @return $this
 	 */
-	public function handleCustomerSaveAfter(Varien_Event_Observer $observer)
+	public function handleCustomerSaveAfter( $observer)
 	{
 		$customer = $observer->getEvent()->getCustomer();
+
 		$email      = $customer->getEmail();
 		$websiteId  = $customer->getWebsiteId();
 		$customerId = $customer->getEntityId();
@@ -18,22 +41,20 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 
 		try{
 			// fix for a multiple hit of the observer
-			$emailReg =  Mage::registry($email . '_customer_save');
+			$emailReg =  $this->_registry->registry($email . '_customer_save');
 			if ($emailReg){
 				return $this;
 			}
-
-			Mage::register($email . '_customer_save', $email);
-			$emailBefore = Mage::getModel('customer/customer')->load($customer->getId())->getEmail();
-			$contactModel = Mage::getModel('ddg_automation/contact')->loadByCustomerEmail($emailBefore, $websiteId);
+			$this->_registry->register($email . '_customer_save', $email);
+			$emailBefore = $this->_objectManager->create('Magento\Customer\Model\Customer')->load($customer->getId())->getEmail();
+			$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->loadByCustomerEmail($emailBefore, $websiteId);
 			//email change detection
 			if ($email != $emailBefore) {
-				Mage::helper('ddg')->log('email change detected : '  . $email . ', after : ' . $emailBefore .  ', website id : ' . $websiteId);
-				$enabled = Mage::helper('ddg')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
-
+				$this->_helper->log('email change detected : '  . $email . ', after : ' . $emailBefore .  ', website id : ' . $websiteId);
+				$enabled = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
 				if ($enabled) {
-					$client = Mage::helper('ddg')->getWebsiteApiClient($websiteId);
-					$subscribersAddressBook = Mage::helper('ddg')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID, $websiteId);
+					$client = $this->_helper->getWebsiteApiClient($websiteId);
+					$subscribersAddressBook = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID, $websiteId);
 					$response = $client->postContacts($emailBefore);
 					//check for matching email
 					if (isset($response->id)) {
@@ -50,50 +71,58 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 							$client->deleteAddressBookContact($subscribersAddressBook, $response->id);
 						}
 					} elseif (isset($response->message)) {
-						Mage::helper('ddg')->log('Email change error : ' . $response->message);
+						$this->_helper->log('Email change error : ' . $response->message);
 					}
 				}
 				$contactModel->setEmail($email);
 			}
-
-			$contactModel->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_NOT_IMPORTED)
+$this->_logger->info('saving contact');
+			$contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
 				->setCustomerId($customerId)
 				->save();
-		}catch(Exception $e){
-			Mage::logException($e);
+		}catch(\Exception $e){
+			$this->_logger->critical($e->getMessage());
 		}
 		return $this;
 	}
 
 	/**
 	 * Add new customers to the automation.
-	 * @param Varien_Event_Observer $observer
 	 *
 	 * @return $this
 	 */
-	public function handleCustomerRegiterSuccess(Varien_Event_Observer $observer)
+	public function handleCustomerRegiterSuccess($observer)
 	{
-		/** @var $customer Mage_Customer_Model_Customer */
 		$customer = $observer->getEvent()->getCustomer();
+		$email = $customer->getEmail();
+		// fix for a multiple hit of the observer
+		$emailReg =  $this->_registry->registry($email . '_customer_register');
+		if ($emailReg){
+			return $this;
+		}
+		$this->_registry->register($email . '_customer_register', $email);
 		$websiteId  = $customer->getWebsiteId();
-		$website = Mage::app()->getWebsite($websiteId);
-		$storeName = $customer->getStore()->getName();
 
+		$website = $this->_storeManager->getWebsite($websiteId);
+		$store = $this->_storeManager->getStore($customer->getStoreId());
+		//$storeName = $customer->getStore()->getName();
+		$storeName = $store->getName();
 
 		//if api is not enabled
-		if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+		if (!$website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED))
 			return $this;
 
 		try {
 			//program id must be map
-			$programId     = Mage::helper( 'ddg' )->getAutomationIdByType( 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER', $websiteId);
+			$programId     = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/customer_automation', $websiteId);
+
 			if (!$programId)
 				return $this;
 			$email      = $customer->getEmail();
-			$automation = Mage::getModel( 'ddg_automation/automation' );
+			$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
 			$automation->setEmail( $email )
-				->setAutomationType( Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_CUSTOMER )
-				->setEnrolmentStatus(Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING)
+				->setAutomationType( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_CUSTOMER )
+				->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
 				->setTypeId( $customer->getId() )
 				->setWebsiteId($websiteId)
 				->setStoreName($storeName)
@@ -101,8 +130,8 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 			;
 
 			$automation->save();
-		}catch(Exception $e) {
-			Mage::logException($e);
+		}catch(\Exception $e) {
+			$this->_helper->log($e->getMessage());
 		}
 
 		return $this;
@@ -111,11 +140,9 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 	/**
 	 * Remove the contact on customer delete.
 	 *
-	 * @param Varien_Event_Observer $observer
-	 *
 	 * @return $this
 	 */
-	public function handleCustomerDeleteAfter(Varien_Event_Observer $observer)
+	public function handleCustomerDeleteAfter( $observer)
 	{
 		$customer = $observer->getEvent()->getCustomer();
 		$email      = $customer->getEmail();

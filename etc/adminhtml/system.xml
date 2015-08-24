@@ -237,37 +237,37 @@
                     <label>Customer</label>
                 </field>
             </group>
-            <group id="enterprise_data" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Enterpirse Data</label>
-                <field id="enterprise_title" type="select" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Reward Points</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                </field>
-                <field id="reward_points" type="select" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Points</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="reward_amount" type="select" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Reward Amount</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="expiration_date" type="select" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Expiration Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="last_used_date" type="select" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Last Used Date</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="enterprise_header" translate="label" sortOrder="60" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <label>Customer Information</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                </field>
-                <field id="customer_segments" type="select" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Segments</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-            </group>
+            <!--<group id="enterprise_data" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                <!--<label>Enterpirse Data</label>-->
+                <!--<field id="enterprise_title" type="select" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                    <!--<label>Reward Points</label>-->
+                    <!--<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>-->
+                <!--</field>-->
+                <!--<field id="reward_points" type="select" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                    <!--<label>Points</label>-->
+                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
+                <!--</field>-->
+                <!--<field id="reward_amount" type="select" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                    <!--<label>Reward Amount</label>-->
+                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
+                <!--</field>-->
+                <!--<field id="expiration_date" type="select" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                    <!--<label>Expiration Date</label>-->
+                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
+                <!--</field>-->
+                <!--<field id="last_used_date" type="select" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                    <!--<label>Last Used Date</label>-->
+                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
+                <!--</field>-->
+                <!--<field id="enterprise_header" translate="label" sortOrder="60" showInDefault="1" showInStore="1" showInWebsite="1">-->
+                    <!--<label>Customer Information</label>-->
+                    <!--<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>-->
+                <!--</field>-->
+                <!--<field id="customer_segments" type="select" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                    <!--<label>Segments</label>-->
+                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
+                <!--</field>-->
+            <!--</group>-->
             <group id="dynamic_datafield" translate="comment label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Create Datafield</label>
                 <field id="datafield_name" type="text" translate="label" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
