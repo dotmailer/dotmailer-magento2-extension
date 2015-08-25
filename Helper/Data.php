@@ -484,10 +484,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function setConnectorContactToReImport($customerId)
     {
-        $contactModel = Mage::getModel('ddg_automation/contact');
+        $contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact');
         $contactModel
             ->loadByCustomerId($customerId)
-            ->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_NOT_IMPORTED)
+            ->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
             ->save();
     }
 

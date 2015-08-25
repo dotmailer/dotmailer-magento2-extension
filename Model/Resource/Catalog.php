@@ -19,4 +19,23 @@ class Catalog extends \Magento\Framework\Model\Resource\Db\AbstractDb
 		$this->_init('email_catalog', 'id');
 	}
 
+
+	/**
+	 * Reset for re-import.
+	 *
+	 * @return int
+	 */
+	public function reset()
+	{
+
+		$conn = $this->getConnection();
+		try{
+			$num = $conn->update($conn->getTableName('email_catalog'),
+				array('imported' => new \Zend_Db_Expr('null'), 'modified' => new \Zend_Db_Expr('null'))
+			);
+		}catch (\Exception $e){
+		}
+		return $num;
+	}
+
 }

@@ -1,8 +1,33 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Sales_Observer
-{
+namespace Dotdgitalgroup\Email\Model\Sales;
 
+class Observer
+{
+	protected $_helper;
+	protected $_registry;
+	protected $_logger;
+	protected $_scopeConfig;
+	protected $_storeManager;
+	protected $_objectManager;
+
+	public function __construct(
+		\Magento\Framework\Registry $registry,
+		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Psr\Log\LoggerInterface $loggerInterface,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+	)
+	{
+		$this->_helper = $data;
+		$this->_scopeConfig = $scopeConfig;
+		$this->_logger = $loggerInterface;
+		$this->_storeManager = $storeManagerInterface;
+		$this->_registry = $registry;
+		$this->_objectManager = $objectManagerInterface;
+
+	}
     /**
      * Register the order status.
      * @param $observer
@@ -12,50 +37,48 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     {
         $order = $observer->getEvent()->getOrder();
         // the reloaded status
-        $reloaded = Mage::getModel('sales/order')->load($order->getId());
-        if (! Mage::registry('sales_order_status_before'))
-            Mage::register('sales_order_status_before', $reloaded->getStatus());
+        $reloaded = $this->_objectManager->create('Magento\Sales\Model\Order')->load($order->getId());
+        if (! $this->_registry->registry('sales_order_status_before'))
+            $this->_registry->register('sales_order_status_before', $reloaded->getStatus());
         return $this;
     }
     /**
      * save/reset the order as transactional data.
      *
-     * @param Varien_Event_Observer $observer
      * @return $this
      */
-    public function handleSalesOrderSaveAfter(Varien_Event_Observer $observer)
+    public function handleSalesOrderSaveAfter($observer)
     {
         try{
-            /** @var $order Mage_Sales_Model_Order */
             $order = $observer->getEvent()->getOrder();
             $status  = $order->getStatus();
             $storeId = $order->getStoreId();
-            $store = Mage::app()->getStore($storeId);
+            $store = $this->_storeManager->getStore($storeId);
             $storeName = $store->getName();
             $websiteId = $store->getWebsiteId();
             $customerEmail = $order->getCustomerEmail();
             // start app emulation
-            $appEmulation = Mage::getSingleton('core/app_emulation');
+            $appEmulation = $this->_objectManager->create('Magento\Store\Model\App\Emulation');
             $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
-            $emailOrder = Mage::getModel('ddg_automation/order')->loadByOrderId($order->getEntityId(), $order->getQuoteId());
+            $emailOrder = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Order')->loadByOrderId($order->getEntityId(), $order->getQuoteId());
             //reimport email order
             $emailOrder->setUpdatedAt($order->getUpdatedAt())
                 ->setStoreId($storeId)
                 ->setOrderStatus($status);
-            if($emailOrder->getEmailImported() != Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED) {
+            if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
                 $emailOrder->setEmailImported(null);
             }
 
             //if api is not enabled
-            if (!$store->getWebsite()->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+            if (!$store->getWebsite()->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED))
                 return $this;
 
             // check for order status change
-            $statusBefore = Mage::registry('sales_order_status_before');
+            $statusBefore =  $this->_registry->registry('sales_order_status_before');
             if ( $status!= $statusBefore) {
                 //If order status has changed and order is already imported then set modified to 1
-                if($emailOrder->getEmailImported() == Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED) {
-                    $emailOrder->setModified(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED);
+                if($emailOrder->getEmailImported() == \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
+                    $emailOrder->setModified(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
                 }
                 $smsCampaign = Mage::getModel('ddg_automation/sms_campaign', $order);
                 $smsCampaign->setStatus($status);
@@ -66,33 +89,33 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
             $emailOrder->save();
 
             //Status check automation enrolment
-            $configStatusAutomationMap = unserialize(Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS, $order->getStore()));
+            $configStatusAutomationMap = unserialize(
+	            $this->_scopeConfig->getValue(
+		            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
+	                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+		            $order->getStore()));
             if(!empty($configStatusAutomationMap)){
                 foreach($configStatusAutomationMap as $configMap){
                     if($configMap['status'] == $status) {
                         try {
                             $programId  = $configMap['automation'];
-                            $automation = Mage::getModel( 'ddg_automation/automation' );
+                            $automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
                             $automation->setEmail( $customerEmail )
                                 ->setAutomationType( 'order_automation_' . $status )
-                                ->setEnrolmentStatus( Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING )
+                                ->setEnrolmentStatus( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING )
                                 ->setTypeId( $order->getId() )
                                 ->setWebsiteId( $websiteId )
                                 ->setStoreName( $storeName )
                                 ->setProgramId( $programId );
                             $automation->save();
-                        }catch(Exception $e){
-                            Mage::logException($e);
+                        }catch(\Exception $e){
                         }
                     }
                 }
             }
-
             //admin oder when editing the first one is canceled
-            Mage::unregister('sales_order_status_before');
-
-        }catch(Exception $e){
-            Mage::logException($e);
+            $this->_registry->unregister('sales_order_status_before');
+        }catch(\Exception $e){
         }
         return $this;
     }
@@ -100,54 +123,46 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
 
     /**
      * Create new order event.
-     * @param Varien_Event_Observer $observer
      *
      * @return $this
-     * @throws Mage_Core_Exception
      */
-    public function handleSalesOrderPlaceAfter(Varien_Event_Observer $observer)
+    public function handleSalesOrderPlaceAfter($observer)
     {
-        /** @var $order Mage_Sales_Model_Order */
         $order = $observer->getEvent()->getOrder();
         $email      = $order->getCustomerEmail();
-        $website    = Mage::app()->getWebsite($order->getWebsiteId());
-        $storeName  = Mage::app()->getStore($order->getStoreId())->getName();
-
+        $website    = $this->_storeManager->getWebsite($order->getWebsiteId());
+        $storeName  = $this->_storeManager->getStore($order->getStoreId())->getName();
         //if api is not enabled
-        if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+        if (! $this->_helper->isEnabled($website))
             return $this;
-
         //automation enrolment for order
         if($order->getCustomerIsGuest()){
             // guest to automation mapped
             $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
-            $automationType = Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_GUEST_ORDER;
+            $automationType = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_GUEST_ORDER;
         }else{
             // customer to automation mapped
             $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER';
-            $automationType = Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_ORDER;
+            $automationType = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_ORDER;
         }
-
-        $programId     = Mage::helper( 'ddg' )->getAutomationIdByType($programType, $order->getWebsiteId());
+        $programId = $this->_helper->getAutomationIdByType($programType, $order->getWebsiteId());
 
         //the program is not mappped
         if (! $programId){
-
-            Mage::log('automation type : '  . $automationType. ' program id not found');
+            $this->_helper->log('automation type : '  . $automationType. ' program id not found');
             return $this;
         }
         try {
-            $automation = Mage::getModel( 'ddg_automation/automation' );
+            $automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
             $automation->setEmail( $email )
                 ->setAutomationType( $automationType )
-                ->setEnrolmentStatus( Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING )
+                ->setEnrolmentStatus( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING )
                 ->setTypeId( $order->getId() )
                 ->setWebsiteId( $website->getId() )
                 ->setStoreName( $storeName )
                 ->setProgramId( $programId )
                 ->save();
-        }catch(Exception $e){
-            Mage::logException($e);
+        }catch(\Exception $e){
         }
 
         return $this;
@@ -156,11 +171,9 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     /**
      * Sales order refund event.
      *
-     * @param Varien_Event_Observer $observer
-     *
      * @return $this
      */
-    public function handleSalesOrderRefund(Varien_Event_Observer $observer)
+    public function handleSalesOrderRefund($observer)
     {
         $creditmemo = $observer->getEvent()->getCreditmemo();
         $storeId = $creditmemo->getStoreId();
@@ -172,14 +185,14 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
             /**
              * Reimport transactional data.
              */
-            $emailOrder = Mage::getModel('ddg_automation/order')->loadByOrderId($orderId, $quoteId, $storeId);
+            $emailOrder = $this->_objectManager->create('Dotdigitalgroup\Email\Order')->loadByOrderId($orderId, $quoteId, $storeId);
             if (!$emailOrder->getId()) {
-                Mage::helper('ddg')->log('ERROR Creditmemmo Order not found :' . $orderId . ', quote id : ' . $quoteId . ', store id ' . $storeId);
+                $this->_helper->log('ERROR Creditmemmo Order not found :' . $orderId . ', quote id : ' . $quoteId . ', store id ' . $storeId);
                 return $this;
             }
-            $emailOrder->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_NOT_IMPORTED)->save();
-        }catch (Exception $e){
-            Mage::logException($e);
+            $emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
+	            ->save();
+        }catch (\Exception $e){
         }
 
         return $this;
@@ -188,29 +201,22 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     /**
      * Sales cancel order event, remove transactional data.
      *
-     * @param Varien_Event_Observer $observer
-     *
      * @return $this
      */
-    public function hangleSalesOrderCancel(Varien_Event_Observer $observer)
+    public function hangleSalesOrderCancel( $observer)
     {
-        $helper = Mage::helper('ddg');
         $order = $observer->getEvent()->getOrder();
         $incrementId = $order->getIncrementId();
-        $websiteId = Mage::app()->getStore($order->getStoreId())->getWebsiteId();
+        $websiteId = $this->_storeManager->getStore($order->getStoreId())->getWebsiteId();
 
-        //sync enabled
-        $syncEnabled = $helper->getWebsiteConfig(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-            $websiteId
-        );
+	    $orderSync = $this->_helper->getOrderSyncEnabled($websiteId);
 
-        if ($helper->isEnabled($websiteId) && $syncEnabled) {
+        if ($this->_helper->isEnabled($websiteId) && $orderSync) {
             //register in queue with importer
-            Mage::getModel('ddg_automation/importer')->registerQueue(
-                Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_ORDERS,
+            $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+                \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
                 array($incrementId),
-                Dotdigitalgroup_Email_Model_Importer::MODE_SINGLE_DELETE,
+	            \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
                 $websiteId
             );
         }
@@ -221,31 +227,26 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     /**
      * convert_quote_to_order observer
      *
-     * @param Varien_Event_Observer $observer
      * @return $this
      */
-    public function handleQuoteToOrder(Varien_Event_Observer $observer)
+    public function handleQuoteToOrder( $observer)
     {
-        /* @var $order Mage_Sales_Model_Order */
         $order = $observer->getOrder();
-        $helper = Mage::helper('ddg');
-        $enabled = $helper->getWebsiteConfig(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED,
-            $order->getStore()->getWebsiteId()
+	    $websiteId = $order->getStore()->getWebsiteId();
+        $apiEnabled = $this->_helper->isEnabled($websiteId);
+        $syncEnabled = $this->_helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED,
+            $websiteId
         );
-        $syncEnabled = $helper->getWebsiteConfig(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED,
-            $order->getStore()->getWebsiteId()
-        );
-        if ($enabled && $syncEnabled) {
+        if ($apiEnabled && $syncEnabled) {
             $quoteId = $order->getQuoteId();
-            $connectorQuote = Mage::getModel('ddg_automation/quote')->loadQuote($quoteId);
+            $connectorQuote = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Quote')->loadQuote($quoteId);
             if ($connectorQuote) {
                 //register in queue with importer for single delete
-                Mage::getModel('ddg_automation/importer')->registerQueue(
-                    Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_QUOTE,
+                $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+                    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
                     array($connectorQuote->getQuoteId()),
-                    Dotdigitalgroup_Email_Model_Importer::MODE_SINGLE_DELETE,
+	                \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
                     $order->getStore()->getWebsiteId()
                 );
                 //delete from table
@@ -258,38 +259,33 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     /**
      * sales_quote_save_after event observer
      *
-     * @param Varien_Event_Observer $observer
      * @return $this
      */
-    public function handleQuoteSaveAfter(Varien_Event_Observer $observer)
+    public function handleQuoteSaveAfter($observer)
     {
-        /* @var $quote Mage_Sales_Model_Quote */
         $quote = $observer->getEvent()->getQuote();
-        $helper = Mage::helper('ddg');
-        $enabled = $helper->getWebsiteConfig(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED,
-            $quote->getStore()->getWebsiteId()
+	    $websiteId = $quote->getStore()->getWebsiteId();
+	    $apiEnabled = $this->_helper->isEnabled($websiteId);
+        $syncEnabled = $this->_helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED,
+            $websiteId
         );
-        $syncEnabled = $helper->getWebsiteConfig(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED,
-            $quote->getStore()->getWebsiteId()
-        );
-        if ($enabled && $syncEnabled) {
+        if ($apiEnabled && $syncEnabled) {
             if ($quote->getCustomerId()) {
-                $connectorQuote = Mage::getModel('ddg_automation/quote')->loadQuote($quote->getId());
+                $connectorQuote = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Quote')->loadQuote($quote->getId());
                 $count = count($quote->getAllItems());
                 if ($connectorQuote) {
                     if ($connectorQuote->getImported() && $count > 0)
                         $connectorQuote->setModified(1)->save();
                     elseif ($connectorQuote->getImported() && $count == 0) {
                         //register in queue with importer for single delete
-                        Mage::getModel('ddg_automation/importer')->registerQueue(
-                            Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_QUOTE,
-                            array($connectorQuote->getQuoteId()),
-                            Dotdigitalgroup_Email_Model_Importer::MODE_SINGLE_DELETE,
-                            $quote->getStore()->getWebsiteId()
-                        );
-                        //delete from table
+	                    $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+		                    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
+		                    array($connectorQuote->getQuoteId()),
+		                    \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+		                    $websiteId
+	                    );
+
                         $connectorQuote->delete();
                     }
                 } elseif ($count > 0)
@@ -302,18 +298,16 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     /**
      * register quote with connector
      *
-     * @param Mage_Sales_Model_Quote $quote
      */
-    private function _registerQuote(Mage_Sales_Model_Quote $quote)
+    private function _registerQuote( $quote)
     {
         try {
-            $connectorQuote = Mage::getModel('ddg_automation/quote');
+            $connectorQuote = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Quote');
             $connectorQuote->setQuoteId($quote->getId())
                 ->setCustomerId($quote->getCustomerId())
                 ->setStoreId($quote->getStoreId())
                 ->save();
-        }catch (Exception $e){
-            Mage::logException($e);
+        }catch (\Exception $e){
         }
     }
 }

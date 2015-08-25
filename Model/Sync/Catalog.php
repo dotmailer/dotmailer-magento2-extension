@@ -238,130 +238,12 @@ class Catalog
 		return false;
 	}
 
-	/**
-	 * Reset for re-import.
-	 *
-	 * @return int
-	 */
-	public function reset()
-	{
-		/** @var $coreResource Mage_Core_Model_Resource */
-		$coreResource = Mage::getSingleton('core/resource');
 
-		/** @var $conn Varien_Db_Adapter_Pdo_Mysql */
-		$conn = $coreResource->getConnection('core_write');
-		try{
-			$num = $conn->update($coreResource->getTableName('ddg_automation/catalog'),
-				array('imported' => new Zend_Db_Expr('null'), 'modified' => new Zend_Db_Expr('null'))
-			);
-		}catch (Exception $e){
-			Mage::logException($e);
-		}
-		return $num;
-	}
 
-	/**
-	 * product save after event processor
-	 *
-	 * @param Varien_Event_Observer $observer
-	 */
-	public function handleProductSaveAfter(Varien_Event_Observer $observer)
-	{
-		try{
-			$object = $observer->getEvent()->getDataObject();
-			$productId = $object->getId();
-			if($item = $this->_loadProduct($productId)){
-				if($item->getImported())
-					$item->setModified(1)->save();
-			}
-		}catch (Exception $e){
-			Mage::logException($e);
-		}
-	}
 
-	/**
-	 * product delete after event processor
-	 *
-	 * @param Varien_Event_Observer $observer
-	 */
-	public function handleProductDeleteAfter(Varien_Event_Observer $observer)
-	{
-		try{
-			/** @var $object Mage_Catalog_Model_Product */
-			$object = $observer->getEvent()->getDataObject();
-			$productId = $object->getId();
-			if($item = $this->_loadProduct($productId)){
-				//if imported delete from account
-				if($item->getImported()){
-					$this->_deleteFromAccount($productId);
-				}
-				//delete from table
-				$item->delete();
 
-			}
-		}catch (Exception $e){
-			Mage::logException($e);
-		}
-	}
 
-	/**
-	 * delete piece of transactional data by key
-	 *
-	 * @param $key
-	 */
-	private function _deleteFromAccount($key)
-	{
-		$enabled = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED);
-		$sync = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED);
-		if($enabled && $sync){
-			$scope = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES);
-			if($scope == 1){
-				//register in queue with importer
-				Mage::getModel('ddg_automation/importer')->registerQueue(
-					Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_CATALOG,
-					array($key),
-					Dotdigitalgroup_Email_Model_Importer::MODE_SINGLE_DELETE,
-					Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID
-				);
-			}
-			if($scope == 2){
-				$stores = Mage::app()->getStores();
-				/** @var $store Mage_Core_Model_Store */
-				foreach($stores as $store){
-					$websiteCode = $store->getWebsite()->getCode();
-					$storeCode = $store->getCode();
 
-					//register in queue with importer
-					Mage::getModel('ddg_automation/importer')->registerQueue(
-						'Catalog_' . $websiteCode . '_' . $storeCode,
-						array($key),
-						Dotdigitalgroup_Email_Model_Importer::MODE_SINGLE_DELETE,
-						$store->getWebsite()->getId()
-					);
-				}
-			}
-		}
-	}
-
-	/**
-	 * load product. return item otherwise create item
-	 *
-	 * @param $productId
-	 * @return bool|Varien_Object
-	 */
-	private function _loadProduct($productId)
-	{
-		$collection = $this->getCollection()
-		                   ->addFieldToFilter('product_id', $productId)
-		                   ->setPageSize(1);
-
-		if ($collection->getSize()) {
-			return $collection->getFirstItem();
-		} else {
-			$this->setProductId($productId)->save();
-		}
-		return false;
-	}
 
 	/**
 	 * set imported in bulk query. if modified true then set modified to null in bulk query.
@@ -371,91 +253,21 @@ class Catalog
 	 */
 	private function _setImported($ids, $modified = false)
 	{
-		try{
-			$coreResource = Mage::getSingleton('core/resource');
-			$write = $coreResource->getConnection('core_write');
-			$tableName = $coreResource->getTableName('email_catalog');
-			$ids = implode(', ', $ids);
-			$now = Mage::getSingleton('core/date')->gmtDate();
-			if($modified)
-				$write->update($tableName, array('modified' => new Zend_Db_Expr('null'), 'updated_at' => $now), "product_id IN ($ids)");
-			else
-				$write->update($tableName, array('imported' => 1, 'updated_at' => $now), "product_id IN ($ids)");
-		}catch (Exception $e){
-			Mage::logException($e);
-		}
-	}
-
-	/**
-	 * core config data save before event
-	 *
-	 * @param Varien_Event_Observer $observer
-	 * @return $this
-	 */
-	public function handleConfigSaveBefore(Varien_Event_Observer $observer)
-	{
-		if (!Mage::registry('core_config_data_save_before')){
-			if($groups = $observer->getEvent()->getConfigData()->getGroups()){
-				if(isset($groups['catalog_sync']['fields']['catalog_values']['value'])){
-					$value = $groups['catalog_sync']['fields']['catalog_values']['value'];
-					Mage::register('core_config_data_save_before', $value);
-				}
+		try {
+			$coreResource = Mage::getSingleton( 'core/resource' );
+			$write        = $coreResource->getConnection( 'core_write' );
+			$tableName    = $coreResource->getTableName( 'email_catalog' );
+			$ids          = implode( ', ', $ids );
+			$now          = Mage::getSingleton( 'core/date' )->gmtDate();
+			if ( $modified ) {
+				$write->update( $tableName, array( 'modified'   => new Zend_Db_Expr( 'null' ),
+				                                   'updated_at' => $now
+				), "product_id IN ($ids)" );
+			} else {
+				$write->update( $tableName, array( 'imported' => 1, 'updated_at' => $now ), "product_id IN ($ids)" );
 			}
+		} catch ( Exception $e ) {
+			Mage::logException( $e );
 		}
-
-
-		if (!Mage::registry('core_config_data_save_before_status')) {
-			if ($groups = $observer->getEvent()->getConfigData()->getGroups()) {
-				if (isset($groups['data_fields']['fields']['order_statuses']['value'])) {
-					$value = $groups['data_fields']['fields']['order_statuses']['value'];
-					Mage::register('core_config_data_save_before_status', $value);
-				}
-			}
-		}
-
-
-		return $this;
-	}
-
-	/**
-	 * core config data save after event
-	 *
-	 * @param Varien_Event_Observer $observer
-	 * @return $this
-	 */
-	public function handleConfigSaveAfter(Varien_Event_Observer $observer)
-	{
-		try{
-			if(!Mage::registry('core_config_data_save_after_done')){
-				if($groups = $observer->getEvent()->getConfigData()->getGroups()){
-					if(isset($groups['catalog_sync']['fields']['catalog_values']['value'])){
-						$configAfter = $groups['catalog_sync']['fields']['catalog_values']['value'];
-						$configBefore = Mage::registry('core_config_data_save_before');
-						if($configAfter != $configBefore){
-							//reset catalog to re-import
-							$this->reset();
-						}
-						Mage::register('core_config_data_save_after_done', true);
-					}
-				}
-			}
-
-			if (!Mage::registry('core_config_data_save_after_done_status')) {
-				if ($groups = $observer->getEvent()->getConfigData()->getGroups()) {
-					if (isset($groups['data_fields']['fields']['order_statuses']['value'])) {
-						$configAfter = $groups['data_fields']['fields']['order_statuses']['value'];
-						$configBefore = Mage::registry('core_config_data_save_before_status');
-						if ($configAfter != $configBefore) {
-							//reset all contacts
-							Mage::getModel('ddg_automation/contact')->resetAllContacts();
-						}
-						Mage::register('core_config_data_save_after_done_status', true);
-					}
-				}
-			}
-		}catch (Exception $e){
-			Mage::logException($e);
-		}
-		return $this;
 	}
 }

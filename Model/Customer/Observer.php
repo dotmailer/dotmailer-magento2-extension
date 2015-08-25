@@ -174,35 +174,31 @@ $this->_logger->info('saving contact');
 
 	/**
 	 * Set contact to re-import if registered customer submitted a review. Save review in email_review table.
-	 * @param Varien_Event_Observer $observer
 	 * @return $this
 	 */
-	public function reviewSaveAfter(Varien_Event_Observer $observer)
+	public function reviewSaveAfter( $observer)
 	{
 		$dataObject = $observer->getEvent()->getDataObject();
 
-		if($dataObject->getCustomerId() && $dataObject->getStatusId() == Mage_Review_Model_Review::STATUS_PENDING){
-			$helper = Mage::helper('ddg');
+		if ($dataObject->getCustomerId() && $dataObject->getStatusId() == \Magento\Review\Model\Review::STATUS_PENDING){
 			$customerId = $dataObject->getCustomerId();
-			$helper->setConnectorContactToReImport($customerId);
+			$this->_helper->setConnectorContactToReImport($customerId);
 			//save review info in the table
 			$this->_registerReview($dataObject);
-			$store = Mage::app()->getStore($dataObject->getStoreId());
+			$store = $this->_storeManager->getStore($dataObject->getStoreId());
 			$storeName = $store->getName();
-			$website = Mage::app()->getStore($store)->getWebsite();
-			$customer = Mage::getModel('customer/customer')->load($customerId);
-
-
+			$website = $this->_storeManager->getStore($store)->getWebsite();
+			$customer = $this->_objectManager->create('Magento\Customer\Model\Customer')->load($customerId);
 			//if api is not enabled
-			if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+			if (! $this->_helper->isEnabled($website))
 				return $this;
 
-			$programId     = Mage::helper( 'ddg' )->getAutomationIdByType('XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW', $website->getId());
+			$programId = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/review_automation');
 			if ($programId) {
-				$automation = Mage::getModel( 'ddg_automation/automation' );
+				$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
 				$automation->setEmail( $customer->getEmail() )
-					->setAutomationType( Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_REVIEW )
-					->setEnrolmentStatus(Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING)
+					->setAutomationType( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_REVIEW )
+					->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
 					->setTypeId( $dataObject->getReviewId() )
 					->setWebsiteId( $website->getId() )
 					->setStoreName( $storeName )
@@ -221,25 +217,23 @@ $this->_logger->info('saving contact');
 	private function _registerReview($review)
 	{
 		try{
-			$emailReview = Mage::getModel('ddg_automation/review');
+			$emailReview = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Review');
 			$emailReview->setReviewId($review->getReviewId())
 				->setCustomerId($review->getCustomerId())
 				->setStoreId($review->getStoreId())
 				->save();
-		}catch(Exception $e){
-			Mage::logException($e);
+		}catch(\Exception $e){
 		}
 	}
 
 	/**
 	 * wishlist save after observer. save new wishlist in the email_wishlist table.
 	 *
-	 * @param Varien_Event_Observer $observer
 	 * @return $this
 	 */
-	public function wishlistSaveAfter(Varien_Event_Observer $observer)
+	public function wishlistSaveAfter($observer)
 	{
-		if($observer->getEvent()->getObject() instanceof Mage_Wishlist_Model_Wishlist) {
+		if($observer->getEvent()->getObject() instanceof \Magento\Wishlist\Model\Wishlist) {
 			$wishlist = $observer->getEvent()->getObject()->getData();
 			if (is_array($wishlist) && isset($wishlist['customer_id'])) {
 				//save wishlist info in the table
@@ -257,8 +251,8 @@ $this->_logger->info('saving contact');
 	private function _registerWishlist($wishlist)
 	{
 		try{
-			$emailWishlist = Mage::getModel('ddg_automation/wishlist');
-			$customer = Mage::getModel('customer/customer');
+			$emailWishlist = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist');
+			$customer = $this->_objectManager->create('Magento\Customer\Model\Customer');
 
 			//if wishlist exist not to save again
 			if(!$emailWishlist->getWishlist($wishlist['wishlist_id'])){
@@ -271,44 +265,39 @@ $this->_logger->info('saving contact');
 					->setStoreId($customer->getStoreId())
 					->save();
 
-				$store = Mage::app()->getStore($customer->getStoreId());
+				$store = $this->_storeManager->getStore($customer->getStoreId());
 				$storeName = $store->getName();
-				$website = Mage::app()->getStore($store)->getWebsite();
+				$website = $this->_storeManager->getStore($store)->getWebsite();
 
 				//if api is not enabled
-				if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+				if (! $this->_helper->isEnabled($website))
 					return $this;
-
-				$automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST';
-				$programId     = Mage::helper( 'ddg' )->getAutomationIdByType($automationType, $websiteId);
+				$programId     = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/wishlist_automation', $websiteId);
 				if ($programId) {
-					$automation = Mage::getModel( 'ddg_automation/automation' );
+					$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
 					$automation->setEmail( $email )
-						->setAutomationType( Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_WISHLIST )
-						->setEnrolmentStatus(Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING)
+						->setAutomationType( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_WISHLIST )
+						->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
 						->setTypeId( $wishlistId )
 						->setWebsiteId( $websiteId )
 						->setStoreName( $storeName )
 						->setProgramId( $programId );
 					$automation->save();
 				}
-
 			}
-		}catch(Exception $e){
-			Mage::logException($e);
+		}catch(\Exception $e){
 		}
 	}
 
 	/**
 	 * wishlist item save after
 	 *
-	 * @param Varien_Event_Observer $observer
 	 */
-	public function wishlistItemSaveAfter(Varien_Event_Observer $observer)
+	public function wishlistItemSaveAfter($observer)
 	{
 		$object        = $observer->getEvent()->getDataObject();
-		$wishlist      = Mage::getModel( 'wishlist/wishlist' )->load( $object->getWishlistId() );
-		$emailWishlist = Mage::getModel( 'ddg_automation/wishlist' );
+		$wishlist      = $this->_objectManager->create('Magento\Wishlist\Model\Wishlist')->load( $object->getWishlistId() );
+		$emailWishlist = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist');
 		try {
 			if ( $object->getWishlistId() ) {
 				$itemCount = count( $wishlist->getItemCollection() );
@@ -330,47 +319,42 @@ $this->_logger->info('saving contact');
 					$item->save();
 				}
 			}
-		} catch ( Exception $e ) {
-			Mage::logException( $e );
+		} catch ( \Exception $e ) {
 		}
-
 	}
 
 	/**
 	 * wishlist delete observer
 	 *
-	 * @param Varien_Event_Observer $observer
 	 */
-	public function wishlistDeleteAfter(Varien_Event_Observer $observer)
+	public function wishlistDeleteAfter($observer)
 	{
 		$object = $observer->getEvent()->getDataObject();
-		$customer = Mage::getModel('customer/customer')->load($object->getCustomerId());
-		$website = Mage::app()->getStore($customer->getStoreId())->getWebsite();
-		$helper = Mage::helper('ddg');
+		$customer = $this->_objectManager->create('Magento\Customer\Model\Customer')->load($object->getCustomerId());
+		$website = $this->_storeManager->getStore($customer->getStoreId())->getWebsite();
 
 		//sync enabled
-		$syncEnabled = $helper->getWebsiteConfig(
-			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
+		$syncEnabled = $this->_helper->getWebsiteConfig(
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
 			$website->getId()
 		);
-		if ($helper->isEnabled($website->getId()) && $syncEnabled) {
+		if ($this->_helper->isEnabled($website->getId()) && $syncEnabled) {
 			//Remove wishlist
 			try {
-				$item = Mage::getModel('ddg_automation/wishlist')->getWishlist($object->getWishlistId());
+				$item = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->getWishlist($object->getWishlistId());
 				if ($item->getId()) {
 					//register in queue with importer
-					$check = Mage::getModel('ddg_automation/importer')->registerQueue(
-						Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_WISHLIST,
+					$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
 						array($item->getId()),
-						Dotdigitalgroup_Email_Model_Importer::MODE_SINGLE_DELETE,
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
 						$website->getId()
 					);
 					if ($check) {
 						$item->delete();
 					}
 				}
-			} catch (Exception $e) {
-				Mage::logException($e);
+			} catch (\Exception $e) {
 			}
 		}
 	}

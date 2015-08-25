@@ -166,23 +166,7 @@ class Quote
 		}
 	}
 
-	/**
-	 * load quote from connector table
-	 *
-	 * @param $quoteId
-	 * @return bool
-	 */
-	public function loadQuote($quoteId)
-	{
-		$collection = $this->getCollection();
-		$collection->addFieldToFilter('quote_id', $quoteId)
-		           ->setPageSize(1);
 
-		if ($collection->count()) {
-			return $collection->getFirstItem();
-		}
-		return false;
-	}
 
 	/**
 	 * Reset the email quote for reimport.

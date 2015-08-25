@@ -15,12 +15,13 @@ class Order extends \Magento\Framework\Model\AbstractModel
     }
 
 
-    /**
-     * Load the email order by quote id.
-     * @param $orderId
-     * @param $quoteId
-     * @return $this|Varien_Object
-     */
+	/**
+	 * Load the email order by quote id.
+	 * @param $orderId
+	 * @param $quoteId
+	 *
+	 * @return $this|\Magento\Framework\DataObject
+	 */
     public function loadByOrderId($orderId, $quoteId)
     {
         $collection = $this->getCollection()
