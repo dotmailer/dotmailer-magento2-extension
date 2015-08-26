@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Helper;
 
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
-
 {
 	protected $_context;
 	protected $_storeManager;

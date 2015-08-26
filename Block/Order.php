@@ -1,45 +1,61 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Order extends Dotdigitalgroup_Email_Block_Edc
+namespace Dotdigitalgroup\Email\Block;
+
+class Order  extends \Magento\Framework\View\Element\Template
 {
 
-    /**
-	 * Prepare layout, set template and title.
-	 *
-	 * @return Mage_Core_Block_Abstract|void
-	 */
-    protected function _prepareLayout()
-    {
-        if ($root = $this->getLayout()->getBlock('root')) {
-            $root->setTemplate('page/blank.phtml');
-        }
-        if ($headBlock = $this->getLayout()->getBlock('head')) {
-            $headBlock->setTitle($this->__('Order # %s', $this->getOrder()->getRealOrderId()));
-        }
-    }
+	protected $_quote;
+	public $helper;
+	public $registry;
+	public $storeManager;
+	public $priceHelper;
+	public $scopeManager;
+	public $reviewHelper;
+	public $objectManager;
+
+
+	public function __construct(
+		\Magento\Framework\Registry $registry,
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Dotdigitalgroup\Email\Helper\Review $reviewHelper,
+		\Magento\Framework\Pricing\Helper\Data $priceHelper,
+		\Magento\Framework\View\Element\Template\Context $context,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	)
+	{
+		parent::__construct( $context, $data );
+		$this->helper = $helper;
+		$this->reviewHelper = $reviewHelper;
+		$this->registry = $registry;
+		$this->storeManager = $this->_storeManager;
+		$this->priceHelper = $priceHelper;
+		$this->scopeManager = $scopeConfig;
+		$this->objectManager = $objectManagerInterface;
+	}
 
     /**
 	 * Current Order.
-	 *
-	 * @return Mage_Core_Model_Abstract|mixed
 	 */
     public function getOrder()
     {
-        $orderId = Mage::registry('order_id');
-        $order = Mage::registry('current_order');
+        $orderId = $this->registry->registry('order_id');
+        $order = $this->registry->registry('current_order');
         if (! $orderId) {
-            $orderId = Mage::app()->getRequest()->getParam('order_id');
+            $orderId = $this->getRequest()->getParam('order_id');
             if(!$orderId)
                 return false;
-            Mage::unregister('order_id'); // additional measure
-            Mage::register('order_id', $orderId);
+            $this->registry->unregister('order_id'); // additional measure
+            $this->registry->register('order_id', $orderId);
         }
         if (! $order) {
             if(!$orderId)
                 return false;
-            $order = Mage::getModel('sales/order')->load($orderId);
-            Mage::unregister('current_order'); // additional measure
-            Mage::register('current_order', $order);
+            $order = $this->objectManager->create('Magento\Sales\Model\Order')->load($orderId);
+            $this->registry->unregister('current_order'); // additional measure
+            $this->registry->register('current_order', $order);
         }
 
         return $order;
@@ -63,7 +79,7 @@ class Dotdigitalgroup_Email_Block_Order extends Dotdigitalgroup_Email_Block_Edc
         if($order->getCustomerIsGuest())
             return $items;
 
-        if(!Mage::helper('ddg/review')->isNewProductOnly($websiteId))
+        if(! $this->objectManager->create('Dotdigitalgroup\Email\Helper\Review')->isNewProductOnly($websiteId))
             return $items;
 
         $customerId = $order->getCustomerId();
@@ -72,7 +88,7 @@ class Dotdigitalgroup_Email_Block_Order extends Dotdigitalgroup_Email_Block_Edc
         {
             $productId = $item->getProduct()->getId();
 
-            $collection = Mage::getModel('review/review')->getCollection();
+            $collection = $this->objectManager->create('Magento\Review\Model\Review')->getCollection();
             $collection->addCustomerFilter($customerId)
                 ->addStoreFilter($order->getStoreId())
                 ->addFieldToFilter('main_table.entity_pk_value', $productId);

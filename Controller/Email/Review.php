@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 
 use GuzzleHttp;
 
-class Basket extends \Dotdigitalgroup\Email\Controller\Response
+class Review extends \Dotdigitalgroup\Email\Controller\Response
 {
 
 	/**
