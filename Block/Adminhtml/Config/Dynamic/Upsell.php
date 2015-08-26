@@ -28,7 +28,7 @@ class Upsell extends \Magento\Config\Block\System\Config\Form\Field
 	    //generate the base url and display for default store id
 	    $baseUrl = $this->_dataHelper->generateDynamicUrl();
 	    
-        $text = sprintf('%sconnector/products/upsell/code/%s/order_id/@%s@', $baseUrl, $passcode, $lastOrderid);
+        $text = sprintf('%sconnector/product/upsell/code/%s/order_id/@%s@', $baseUrl, $passcode, $lastOrderid);
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

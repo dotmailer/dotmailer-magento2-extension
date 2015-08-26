@@ -30,7 +30,7 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 	        $lastOrderId = '[PLEASE MAP THE LAST ORDER ID]';
 
 	    //full url for dynamic content
-        $text =   sprintf('%sconnector/products/crosssell/code/%s/order_id/@%s@', $baseUrl, $passcode,  $lastOrderId);
+        $text =   sprintf('%sconnector/product/crosssell/code/%s/order_id/@%s@', $baseUrl, $passcode,  $lastOrderId);
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

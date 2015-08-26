@@ -2,6 +2,6 @@
     <update handle="formkey"/>
     <update handle="adminhtml_googleshopping_types_block"/>
     <container name="root">
-        <block class="Dotdigitalgroup\Email\Block\Recommended\Product" name="dotdigitalgroup.related.container" template="Dotdigitalgroup_Email::product/list.phtml"/>
+        <block class="Dotdigitalgroup\Email\Block\Recommended\Product" name="dotdigitalgroup.upsell.container" template="Dotdigitalgroup_Email::product/list.phtml"/>
     </container>
 </layout>
