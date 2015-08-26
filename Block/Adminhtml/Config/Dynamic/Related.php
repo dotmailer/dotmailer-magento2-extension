@@ -30,7 +30,7 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
 	    $baseUrl = $this->_dataHelper->generateDynamicUrl();
 
 	    //display the full url
-        $text = sprintf('%sconnector/products/related/code/%s/order_id/@%s@', $baseUrl, $passcode, $lastOrderId);
+        $text = sprintf('%sconnector/product/related/code/%s/order_id/@%s@', $baseUrl, $passcode, $lastOrderId);
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

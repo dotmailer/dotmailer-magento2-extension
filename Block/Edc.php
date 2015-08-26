@@ -1,7 +1,13 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Edc extends Mage_Core_Block_Template
+namespace Dotdigitalgroup\Email\Block;
+
+class Edc extends \Magento\Framework\View\Element\Template
 {
+	public function __construct()
+	{
+
+	}
     public function getTextForUrl($store)
     {
         $store = Mage::app()->getStore($store);

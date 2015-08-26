@@ -4,9 +4,7 @@ namespace Dotdigitalgroup\Email\Block;
 
 class Coupon extends \Magento\Framework\View\Element\Template
 {
-	protected $_quote;
 	public $helper;
-	public $priceHelper;
 	public $scopeManager;
 	public $objectManager;
 
@@ -15,14 +13,12 @@ class Coupon extends \Magento\Framework\View\Element\Template
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
 		parent::__construct( $context, $data );
 		$this->helper = $helper;
-		$this->priceHelper = $priceHelper;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 		$this->objectManager = $objectManagerInterface;

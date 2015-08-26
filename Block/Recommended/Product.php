@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_Email_Block_Edc
+namespace Dotdigitalgroup\Email\Block\Recommended;
+
+class Product extends \Magento\Framework\View\Element\Template
 {
 	/**
 	 * Slot div name.
@@ -8,16 +10,28 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
 	 */
 	public $slot;
 
-    /**
-	 * Prepare layout, set the template.
-	 * @return Mage_Core_Block_Abstract|void
-	 */
-    protected function _prepareLayout()
-    {
-        if ($root = $this->getLayout()->getBlock('root')) {
-            $root->setTemplate('page/blank.phtml');
-        }
-    }
+	public $helper;
+	public $priceHelper;
+	public $scopeManager;
+	public $objectManager;
+
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Framework\Pricing\Helper\Data $priceHelper,
+		\Magento\Framework\View\Element\Template\Context $context,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	)
+	{
+		parent::__construct( $context, $data );
+		$this->helper = $helper;
+		$this->priceHelper = $priceHelper;
+		$this->scopeManager = $scopeConfig;
+		$this->storeManager = $this->_storeManager;
+		$this->objectManager = $objectManagerInterface;
+	}
 
     /**
      * get the products to display for table
@@ -29,9 +43,9 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
         $orderId = $this->getRequest()->getParam('order_id');
 	    //display mode based on the action name
         $mode  = $this->getRequest()->getActionName();
-        $orderModel = Mage::getModel('sales/order')->load($orderId);
+        $orderModel = $this->objectManager->create('Magento\Sales\Model\Order')->load($orderId);
 	    //number of product items to be displayed
-        $limit      = Mage::helper('ddg/recommended')->getDisplayLimitByMode($mode);
+        $limit      = $this->objectManager->create('Dotdigitalgroup\Email\Helper\Recommended')->getDisplayLimitByMode($mode);
         $orderItems = $orderModel->getAllItems();
 	    $numItems = count($orderItems);
 
@@ -44,20 +58,20 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
             $maxPerChild = number_format($limit / count($orderItems));
         }
 
-		Mage::helper('ddg')->log('DYNAMIC PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
+		$this->helper->log('DYNAMIC PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
 
         foreach ($orderItems as $item) {
 	        $i = 0;
             $productId = $item->getProductId();
             //parent product
-            $productModel = Mage::getModel('catalog/product')->load($productId);
+            $productModel = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
 	        //check for product exists
             if ($productModel->getId()) {
 	            //get single product for current mode
 	            $recommendedProducts = $this->_getRecommendedProduct($productModel, $mode);
                 foreach ($recommendedProducts as $product) {
 	                //load child product
-                    $product = Mage::getModel('catalog/product')->load($product->getId());
+                    $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($product->getId());
 	                //check if still exists
 	                if ($product->getId() && count($productsToDisplay) < $limit && $i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
 		                //we have a product to display
@@ -74,10 +88,10 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
 
         //check for more space to fill up the table with fallback products
         if (count($productsToDisplay) < $limit) {
-            $fallbackIds = Mage::helper('ddg/recommended')->getFallbackIds();
+            $fallbackIds = $this->objectManager->create('Dotdigitalgroup\Email\Helper\Recommended')->getFallbackIds();
 
             foreach ($fallbackIds as $productId) {
-                $product = Mage::getModel('catalog/product')->load($productId);
+                $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
                 if($product->isSaleable())
                     $productsToDisplay[$product->getId()] = $product;
                 //stop the limit was reached
@@ -87,19 +101,18 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
             }
         }
 
-        Mage::helper('ddg')->log('loaded product to display ' . count($productsToDisplay));
+        $this->helper->log('loaded product to display ' . count($productsToDisplay));
         return $productsToDisplay;
     }
 
 	/**
 	 * Product related items.
 	 *
-	 * @param Mage_Catalog_Model_Product $productModel
 	 * @param $mode
 	 *
 	 * @return array
 	 */
-	private  function _getRecommendedProduct(Mage_Catalog_Model_Product $productModel, $mode)
+	private  function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = array();
@@ -126,18 +139,17 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
 	 */
 	public function getMode()
     {
-        return Mage::helper('ddg/recommended')->getDisplayType();
+        return $this->objectManager->create('Dotdigitalgroup\Email\Helper\Recommended')->getDisplayType();
 
     }
 
 	/**
 	 * Number of the colums.
 	 * @return int|mixed
-	 * @throws Exception
 	 */
 	public function getColumnCount()
     {
-        return Mage::helper('ddg/recommended')->getDisplayLimitByMode($this->getRequest()->getActionName());
+        return $this->objectManager->create('Dotdigitalgroup\Email\Helper\Recommended')->getDisplayLimitByMode($this->getRequest()->getActionName());
     }
 
 	/**
@@ -160,12 +172,12 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
 	 */
 	public function getNostoProducts()
 	{
-		$client = Mage::getModel('ddg_automation/apiconnector_client');
+		$client = $this->objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Client');
 		//slot name, div id
-		$slot  = Mage::app()->getRequest()->getParam('slot', false);
+		$slot  = $this->getRequest()->getParam('slot', false);
 
 		//email recommendation
-		$email = Mage::app()->getRequest()->getParam('email', false);
+		$email = $this->getRequest()->getParam('email', false);
 
 		//no valid data for nosto recommendation
 		if (!$slot || ! $email)
@@ -190,5 +202,13 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
 	public function getSlotName()
 	{
 		return $this->slot;
+	}
+
+	public function getTextForUrl($store)
+	{
+		$store = $this->_storeManager->getStore($store);
+		return $store->getConfig(
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
+		);
 	}
 }
