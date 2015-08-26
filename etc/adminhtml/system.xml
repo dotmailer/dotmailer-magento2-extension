@@ -1271,14 +1271,6 @@
                     <label>Debug Api calls time</label>
                     <comment>Set the number in seconds that api calls greater will be logged.</comment>
                 </field>
-                <field id="raygun_code" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Raygun Application Code</label>
-                </field>
-                <field id="raygun_async" translate="comment label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Raygun async mode.</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Some env cannot use the async mode of sending.</comment>
-                </field>
             </group>
             <group id="feed_configuration" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Feed Configuration</label>

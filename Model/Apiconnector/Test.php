@@ -5,6 +5,11 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Test extends \Dotdigitalgroup\Email\Model\Apiconnector\Client
 {
 
+	public function __construct()
+	{
+
+	}
+
     /**
 	 * Validate apiuser on save.
 	 *

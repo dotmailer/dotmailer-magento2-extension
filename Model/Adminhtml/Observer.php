@@ -100,9 +100,7 @@ class Observer
      */
     public function actionConfigSaveApi(\Magento\Framework\Event\Observer $observer)
     {
-	    return $this;
 
-	    //@todo fix get the request
 	    $groups = $this->_context->getRequest()->getPost('groups');
 
         if (isset($groups['api']['fields']['username']['inherit']) || isset($groups['api']['fields']['password']['inherit']))

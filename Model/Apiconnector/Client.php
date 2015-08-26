@@ -754,9 +754,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Rest
         $response = $this->execute();
         if (isset($response->message)) {
             $message = 'GET ACCOUNT INFO for api user : ' . $this->getApiUsername() . ' ' . $response->message;
-            Mage::helper('ddg')->log($message);
+            $this->_helper->log($message);
 	        if (! in_array($response->message, $this->exludeMessages))
-                Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
+                $this->_helper->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
         return $response;

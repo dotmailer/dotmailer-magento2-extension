@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/App/etc/routes.xsd">
     <router id="standard">
-        <route id="ddg_automation" frontName="ddg_automation">
+        <route id="connector" frontName="connector">
             <module name="Dotdigitalgroup_Email" />
         </route>
     </router>

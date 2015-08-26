@@ -1,35 +1,56 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
+namespace Dotdigitalgroup\Email\Block;
+
+class Basket extends \Magento\Framework\View\Element\Template
 {
     protected $_quote;
+	public $helper;
+	public $priceHelper;
+	public $scopeManager;
+	public $objectManager;
+
+
+	public function __construct(
+		\Magento\Framework\View\Element\Template\Context $context,
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\Pricing\Helper\Data $priceHelper,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	)
+	{
+		parent::__construct( $context, $data );
+		$this->helper = $helper;
+		$this->priceHelper = $priceHelper;
+		$this->scopeManager = $scopeConfig;
+		$this->objectManager = $objectManagerInterface;
+	}
 
     /**
 	 * Basket itmes.
 	 *
 	 * @return mixed
-	 * @throws Exception
-	 * @throws Mage_Core_Exception
 	 */
     public function getBasketItems()
     {
         $params = $this->getRequest()->getParams();
 
 	    if (! isset($params['quote_id']) || !isset($params['code'])){
-            Mage::helper('ddg')->log('Basket no quote id or code is set');
+            $this->helper->log('Basket no quote id or code is set');
             return false;
         }
 
         $quoteId = $params['quote_id'];
-	    $quoteModel = Mage::getModel('sales/quote')->load($quoteId);
+	    $quoteModel = $this->objectManager->create('Magento\Quote\Model\Quote')->load($quoteId);
 
 	    //check for any quote for this email, don't want to render further
 	    if (! $quoteModel->getId()) {
-		    Mage::helper('ddg')->log('no quote found for '. $quoteId);
+		    $this->helper->log('no quote found for '. $quoteId);
             return false;
 	    }
 	    if (! $quoteModel->getIsActive()) {
-		    Mage::helper('ddg')->log('Cart is not active : '. $quoteId);
+		    $this->helper->log('Cart is not active : '. $quoteId);
 		    return false;
 	    }
 
@@ -37,7 +58,7 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
 
 	    //Start environment emulation of the specified store
 	    $storeId = $quoteModel->getStoreId();
-	    $appEmulation = Mage::getSingleton('core/app_emulation');
+	    $appEmulation = $this->objectManager->create('Magento\Store\Model\App\Emulation');
 	    $appEmulation->startEnvironmentEmulation($storeId);
 
         return $quoteModel->getAllItems();
@@ -74,14 +95,14 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
 	public function canShowUrl()
 	{
 		return (boolean) $this->_quote->getStore()->getWebsite()->getConfig(
-			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED
 		);
 	}
 
 	public function takeMeToCartTextForUrl()
 	{
 		return $this->_quote->getStore()->getWebsite()->getConfig(
-			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CONTENT_LINK_TEXT
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_TEXT
 		);
 	}
 }

@@ -96,7 +96,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function auth($authRequest)
     {
-        if ($authRequest != Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE)) {
+        if ($authRequest != $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE)) {
             $this->getRaygunClient()->Send('Authentication failed with code :' . $authRequest);
             //throw new Exception('Authentication failed : ' . $authRequest);
             return false;
@@ -177,7 +177,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getDebugEnabled()
     {
-	    $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED);
+	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED);
     }
 
 	/**
