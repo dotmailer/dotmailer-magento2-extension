@@ -16,6 +16,6 @@ class Review extends \Dotdigitalgroup\Email\Controller\Response
 		$this->authenticate();
 		$this->_view->loadLayout();
 		$this->_view->renderLayout();
-		$this->checkContentNotEmpty( $this->_view->getLayout()->getOutput() );
+		//$this->checkContentNotEmpty( $this->_view->getLayout()->getOutput() );
 	}
 }

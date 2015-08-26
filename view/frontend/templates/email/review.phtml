@@ -98,11 +98,8 @@ $image = 'category_page_list';
 
 			<td style="vertical-align: text-top; padding-right: 2px;">
 				<a href="<?php echo $block->getUrl('review/product/list', array('id'=> $_product->getId())). $this->reviewHelper->getAnchor($website) ?>"
-
 				   title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image">
 					<?php echo $imageBlock->init($_product, $image)->toHtml() ?>
-<!--					<img src="--><?php //echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(135); ?><!--" width="140" height="135"-->
-<!--					     alt="--><?php //echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?><!--" align="middle" />-->
 				</a>
 				<div class="product-name" align="center"><b><?php echo substr($_product->getName(), 0, 40);?></b></div>
 				<div align="center">

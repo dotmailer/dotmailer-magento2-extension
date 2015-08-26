@@ -2,9 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-use GuzzleHttp;
-
-class Basket extends \Dotdigitalgroup\Email\Controller\Response
+class Coupon extends \Dotdigitalgroup\Email\Controller\Response
 {
 
 	/**
