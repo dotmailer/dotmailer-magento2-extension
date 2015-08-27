@@ -24,7 +24,7 @@ class Productpush extends \Magento\Config\Block\System\Config\Form\Field
 	        $passcode = '[PLEASE SET UP A PASSCODE]';
 
 	    //full url for dynamic content
-        $text = sprintf('%sconnector/products/push/code/%s', $baseUrl, $passcode);
+        $text = sprintf('%sconnector/product/push/code/%s', $baseUrl, $passcode);
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

@@ -1,18 +1,36 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Recommended_Push extends Dotdigitalgroup_Email_Block_Edc
-{
-	/**
-	 * Prepare layout, set template.
-	 * @return Mage_Core_Block_Abstract|void
-	 */
-	protected function _prepareLayout()
-    {
-        if ($root = $this->getLayout()->getBlock('root')) {
-            $root->setTemplate('page/blank.phtml');
-        }
-    }
+namespace Dotdigitalgroup\Email\Block\Recommended;
 
+class Push extends \Magento\Framework\View\Element\Template
+{
+	public $helper;
+	public $priceHelper;
+	protected $_localeDate;
+	public $scopeManager;
+	public $objectManager;
+
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Framework\Pricing\Helper\Data $priceHelper,
+		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
+		\Magento\Framework\View\Element\Template\Context $context,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	)
+	{
+		parent::__construct( $context, $data );
+		$this->helper = $helper;
+		$this->recommnededHelper = $recommended;
+		$this->priceHelper = $priceHelper;
+		$this->_localeDate = $localeDate;
+		$this->scopeManager = $scopeConfig;
+		$this->storeManager = $this->_storeManager;
+		$this->objectManager = $objectManagerInterface;
+	}
     /**
      * get the products to display for table
      */
@@ -20,17 +38,16 @@ class Dotdigitalgroup_Email_Block_Recommended_Push extends Dotdigitalgroup_Email
     {
         $productsToDisplay = array();
         $mode  = $this->getRequest()->getActionName();
-        $limit = Mage::helper('ddg/recommended')->getDisplayLimitByMode($mode);
+        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $productIds = $this->recommnededHelper->getProductPushIds();
 
-        $productIds = Mage::helper('ddg/recommended')->getProductPushIds();
-
-        $productCollection = Mage::getResourceModel('catalog/product_collection')
+        $productCollection = $this->objectManager->create('Magento\Catalog\Model\Product')->getCollection()
             ->addAttributeToFilter('entity_id', array('in' => $productIds))
             ->setPageSize($limit)
         ;
         foreach ($productCollection as $_product) {
             $productId = $_product->getId();
-            $product = Mage::getModel('catalog/product')->load($productId);
+            $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
             if($product->isSaleable())
                 $productsToDisplay[] = $product;
 
@@ -47,7 +64,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Push extends Dotdigitalgroup_Email
 	 */
 	public function getMode()
     {
-        return Mage::helper('ddg/recommended')->getDisplayType();
+        return $this->recommnededHelper->getDisplayType();
 
     }
 

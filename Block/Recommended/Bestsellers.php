@@ -1,44 +1,65 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Recommended_Bestsellers extends Dotdigitalgroup_Email_Block_Edc
+namespace Dotdigitalgroup\Email\Block\Recommended;
+
+class Bestsellers extends \Magento\Framework\View\Element\Template
 {
 
-    /**
-	 * Prepare layout.
-	 * @return Mage_Core_Block_Abstract|void
-	 */
-	protected function _prepareLayout()
-    {
-        if ($root = $this->getLayout()->getBlock('root')) {
-            $root->setTemplate('page/blank.phtml');
-        }
-    }
+	public $helper;
+	public $priceHelper;
+	protected $_localeDate;
+	public $scopeManager;
+	public $objectManager;
+
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Framework\Pricing\Helper\Data $priceHelper,
+		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
+		\Magento\Framework\View\Element\Template\Context $context,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	)
+	{
+		parent::__construct( $context, $data );
+		$this->helper = $helper;
+		$this->recommnededHelper = $recommended;
+		$this->priceHelper = $priceHelper;
+		$this->_localeDate = $localeDate;
+
+		$this->scopeManager = $scopeConfig;
+		$this->storeManager = $this->_storeManager;
+		$this->objectManager = $objectManagerInterface;
+	}
 
 	/**
 	 * Get product collection.
 	 * @return array
-	 * @throws Exception
 	 */
 	public function getLoadedProductCollection()
     {
         $mode = $this->getRequest()->getActionName();
-        $limit  = Mage::helper('ddg/recommended')->getDisplayLimitByMode($mode);
-        $from  =  Mage::helper('ddg/recommended')->getTimeFromConfig($mode);
-	    $locale = Mage::app()->getLocale()->getLocale();
-	    $to = Zend_Date::now($locale)->toString(Zend_Date::ISO_8601);
+        $limit  = $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $from  =  $this->recommnededHelper->getTimeFromConfig($mode);
+	    //@todo fix the locale
+	    //$locale = $this->objectManager->create('Magento\Framework\Local\ResoverInterface')->getLocale();
+	    $to = \Zend_Date::now()->toString(\Zend_Date::ISO_8601);
 
-	    $productCollection = Mage::getResourceModel('reports/product_collection')
+	    $productCollection = $this->objectManager->create('Magento\Reports\Model\Resource\Product\Sold\Collection')
 		    ->addAttributeToSelect('*')
 		    ->addOrderedQty($from, $to)
             ->setOrder('ordered_qty', 'desc')
 	        ->setPageSize($limit);
 
-	    Mage::getSingleton('cataloginventory/stock')->addInStockFilterToCollection($productCollection);
+	    $this->objectManager->create('Magento\Cataloginventory\Model\Stock')
+		    ->addInStockFilterToCollection($productCollection);
 	    $productCollection->addAttributeToFilter('is_saleable', TRUE);
 
         //filter collection by category by category_id
-        if($cat_id = Mage::app()->getRequest()->getParam('category_id')){
-            $category = Mage::getModel('catalog/category')->load($cat_id);
+        if($cat_id = $this->getRequest()->getParam('category_id')){
+            $category = $this->objectManager->create('Magento\Catalog\Model\Catagtory')->load($cat_id);
             if($category->getId()){
                 $productCollection->getSelect()
                     ->joinLeft(
@@ -48,13 +69,14 @@ class Dotdigitalgroup_Email_Block_Recommended_Bestsellers extends Dotdigitalgrou
                     )
                     ->where('ccpi.category_id =?',  $cat_id);
             }else{
-                Mage::helper('ddg')->log('Best seller. Category id '. $cat_id . ' is invalid. It does not exist.');
+                $this->helper->log('Best seller. Category id '. $cat_id . ' is invalid. It does not exist.');
             }
         }
 
         //filter collection by category by category_name
-        if($cat_name = Mage::app()->getRequest()->getParam('category_name')){
-            $category = Mage::getModel('catalog/category')->loadByAttribute('name', $cat_name);
+        if($cat_name = $this->getRequest()->getParam('category_name')){
+            $category = $this->objectManager->create('Magento\Catalog\Model\Catagtory')
+	            ->loadByAttribute('name', $cat_name);
             if($category){
                 $productCollection->getSelect()
                     ->joinLeft(
@@ -64,7 +86,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Bestsellers extends Dotdigitalgrou
                     )
                     ->where('ccpi.category_id =?',  $category->getId());
             }else{
-                Mage::helper('ddg')->log('Best seller. Category name '. $cat_name .' is invalid. It does not exist.');
+                $this->helper->log('Best seller. Category name '. $cat_name .' is invalid. It does not exist.');
             }
         }
 	    return $productCollection;
@@ -77,7 +99,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Bestsellers extends Dotdigitalgrou
 	 */
 	public function getMode()
     {
-        return Mage::helper('ddg/recommended')->getDisplayType();
+        return $this->recommnededHelper->getDisplayType();
 
     }
 

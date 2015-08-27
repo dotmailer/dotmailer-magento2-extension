@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdgitalgroup\Email\Model\Sales;
+namespace Dotdgitalgroup\Email\Model\Catalog;
 
 class Observer
 {
