@@ -8,7 +8,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
     <menu>
         <add id="Dotdigitalgroup_Email::marketing_automation" title="Marketing Automation" module="Dotdigitalgroup_Email" sortOrder="100" parent="Magento_Backend::marketing" resource="Dotdigitalgroup_Email::contact"/>
-        <add id="Dotdigitalgroup_Email::dashboard" title="Dashboard" module="Dotdigitalgroup_Email" sortOrder="110" action="ddg_automation/dashboard" resource="Dotdigitalgroup_Email::dashboard" parent="Dotdigitalgroup_Email::marketing_automation" />
         <add id="Dotdigitalgroup_Email::automation_studio" title="Automation Studio" module="Dotdigitalgroup_Email" sortOrder="120" action="ddg_automation/studio" resource="Dotdigitalgroup_Email::studio" parent="Dotdigitalgroup_Email::marketing_automation" />
         <add id="Dotdigitalgroup_Email::reports" title="Reports" module="Dotdigitalgroup_Email" sortOrder="130" action="ddg_automation/reports" resource="Dotdigitalgroup_Email::reports" parent="Dotdigitalgroup_Email::marketing_automation" />
         <add id="Dotdigitalgroup_Email::contact" title="Contact Report" module="Dotdigitalgroup_Email" sortOrder="140" action="dotdigitalgroup_email/contact" resource="Dotdigitalgroup_Email::contact" parent="Dotdigitalgroup_Email::reports" />
@@ -20,6 +19,5 @@
         <add id="Dotdigitalgroup_Email::importer" title="Importer Report" module="Dotdigitalgroup_Email" sortOrder="200" action="dotdigitalgroup_email/importer" resource="Dotdigitalgroup_Email::importer" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::campaign" title="Campaign Report" module="Dotdigitalgroup_Email" sortOrder="210" action="dotdigitalgroup_email/campaign" resource="Dotdigitalgroup_Email::campaign" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::automation" title="Automation Report" module="Dotdigitalgroup_Email" sortOrder="220" action="dotdigitalgroup_email/automation" resource="Dotdigitalgroup_Email::automation" parent="Dotdigitalgroup_Email::reports" />
-        <add id="Dotdigitalgroup_Email::configuration" title="Configuration" module="Dotdigitalgroup_Email" sortOrder="140" action="system_config/index" resource="Dotdigitalgroup_Email::configuration" parent="Dotdigitalgroup_Email::marketing_automation" />
     </menu>
 </config>

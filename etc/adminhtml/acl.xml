@@ -11,8 +11,8 @@
                     </resource>
                 </resource>
                 <resource id="Magento_Backend::marketing">
-                    <resource id="Dotdigitalgroup_Email::email_marketing">
-                        <resource id="Dotdigitalgroup_Email::dashboard" title="Email Dashboard" sortOrder="10" />
+                    <resource id="Dotdigitalgroup_Email::marketing_automation">
+                        <resource id="Dotdigitalgroup_Email::automation_studio" title="Marketing Automation" sortOrder="10" />
                     </resource>
                 </resource>
             </resource>

@@ -1,116 +1,183 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Rules_Grid extends Mage_Adminhtml_Block_Widget_Grid
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
+
+use Magento\Backend\Block\Widget\Grid as WidgetGrid;
+
+class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    public function __construct()
-    {
-        parent::__construct();
+	/**
+	 * @var \Magento\Framework\Module\Manager
+	 */
+	protected $moduleManager;
+	protected $_gridFactory;
+	protected $_objectManager;
+	protected $_rulesFactory;
 
-        // Set some defaults for our grid
-        $this->setDefaultSort('id');
-        $this->setId('ddg_rules_grid');
-        $this->setDefaultDir('asc');
-        $this->setSaveParametersInSession(true);
-    }
+	/**
+	 * @param \Magento\Backend\Block\Template\Context $context
+	 * @param \Magento\Backend\Helper\Data $backendHelper
+	 * @param \Magento\Framework\Module\Manager $moduleManager
+	 * @param array $data
+	 *
+	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+	 */
+	public function __construct(
+		\Magento\Backend\Block\Template\Context $context,
+		\Magento\Backend\Helper\Data $backendHelper,
+		\Dotdigitalgroup\Email\Model\RulesFactory $gridFactory,
+		\Magento\Framework\Module\Manager $moduleManager,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	) {
+		$this->_rulesFactory = $gridFactory;
+		$this->_objectManager = $objectManagerInterface;
+		$this->moduleManager = $moduleManager;
+		parent::__construct($context, $backendHelper, $data);
+	}
 
-    /**
-     * Prepare the grid collection.
-     * @return Mage_Adminhtml_Block_Widget_Grid
-     */
-    protected function _prepareCollection()
-    {
-        $collection = Mage::getModel('ddg_automation/rules')->getResourceCollection();
-        $this->setCollection($collection);
-        parent::_prepareCollection();
-        return $this;
-    }
+	/**
+	 * @return void
+	 */
+	protected function _construct()
+	{
+		parent::_construct();
+		$this->setId('rules');
+		$this->setDefaultSort('id');
+		$this->setDefaultDir('DESC');
+		$this->setSaveParametersInSession(true);
+		$this->setUseAjax(true);
+	}
 
-    /**
-     * Add columns to grid
-     *
-     * @return $this
-     * @throws Exception
-     */
-    protected function _prepareColumns()
-    {
-        $this->addColumn('rule_id', array(
-            'header'    => Mage::helper('ddg')->__('ID'),
-            'align'     =>'right',
-            'width'     => '50px',
-            'index'     => 'id',
-        ));
+	/**
+	 * @return $this
+	 */
+	protected function _prepareCollection()
+	{
+		$collection = $this->_rulesFactory->create()->getCollection();
+		$this->setCollection($collection);
 
-        $this->addColumn('name', array(
-            'header'    => Mage::helper('ddg')->__('Rule Name'),
-            'align'     =>'left',
-            'width'     => '150px',
-            'index'     => 'name',
-        ));
+		parent::_prepareCollection();
+		return $this;
+	}
 
-        $this->addColumn('type', array(
-            'header'    => Mage::helper('ddg')->__('Rule Type'),
-            'align'     => 'left',
-            'width'     => '150px',
-            'index'     => 'type',
-            'type'      => 'options',
-            'options'   => array(
-                1 => 'Abandoned Cart Exclusion Rule',
-                2 => 'Review Email Exclusion Rule',
-            ),
-        ));
+	/**
+	 * Add columns to grid
+	 *
+	 * @return $this
+	 */
+	protected function _prepareColumns()
+	{
+		$this->addColumn('rule_id', array(
+			'header'    => __('ID'),
+			'align'     =>'right',
+			'width'     => '50px',
+			'index'     => 'id',
+		));
 
-        $this->addColumn('status', array(
-            'header'    => Mage::helper('ddg')->__('Status'),
-            'align'     => 'left',
-            'width'     => '80px',
-            'index'     => 'status',
-            'type'      => 'options',
-            'options'   => array(
-                1 => 'Active',
-                0 => 'Inactive',
-            ),
-        ));
+		$this->addColumn('name', array(
+			'header'    => __('Rule Name'),
+			'align'     =>'left',
+			'width'     => '150px',
+			'index'     => 'name',
+		));
 
-	    $this->addColumn('created_at', array(
-		    'header'    => Mage::helper('ddg')->__('Created At'),
-		    'align'     => 'left',
-		    'width'     => '120px',
-		    'type'      => 'datetime',
-		    'index'     => 'created_at',
-	    ));
+		$this->addColumn('type', array(
+			'header'    => __('Rule Type'),
+			'align'     => 'left',
+			'width'     => '150px',
+			'index'     => 'type',
+			'type'      => 'options',
+			'options'   => array(
+				1 => 'Abandoned Cart Exclusion Rule',
+				2 => 'Review Email Exclusion Rule',
+			),
+		));
+		$this->addColumn('status', array(
+			'header'    => __('Status'),
+			'align'     => 'left',
+			'width'     => '80px',
+			'index'     => 'status',
+			'type'      => 'options',
+			'options'   => array(
+				1 => 'Active',
+				0 => 'Inactive',
+			),
+		));
 
-	    $this->addColumn('updated_at', array(
-		    'header'    => Mage::helper('ddg')->__('Updated At'),
-		    'align'     => 'left',
-		    'width'     => '120px',
-		    'type'      => 'datetime',
-		    'index'     => 'updated_at',
-	    ));
+		$this->addColumn('created_at', array(
+			'header'    => __('Created At'),
+			'align'     => 'left',
+			'width'     => '120px',
+			'type'      => 'datetime',
+			'index'     => 'created_at',
+		));
 
-	    if (!Mage::app()->isSingleStoreMode()) {
-		    $this->addColumn('rule_website', array(
-			    'header'    => Mage::helper('salesrule')->__('Website'),
-			    'align'     =>'left',
-			    'index'     => 'website_ids',
-			    'type'      => 'options',
-			    'sortable'  => false,
-			    'options'   => Mage::getSingleton('adminhtml/system_store')->getWebsiteOptionHash(),
-			    'width'     => 150,
-		    ));
-	    }
-	    parent::_prepareColumns();
-        return $this;
-    }
+		$this->addColumn('updated_at', array(
+			'header'    => __('Updated At'),
+			'align'     => 'left',
+			'width'     => '120px',
+			'type'      => 'datetime',
+			'index'     => 'updated_at',
+		));
 
-    /**
-     * Retrieve row click URL
-     *
-     * @param Varien_Object $row
-     *
-     * @return string
-     */
-    public function getRowUrl($row)
-    {
-        return $this->getUrl('*/*/edit', array('id' => $row->getId()));
-    }
+
+		parent::_prepareColumns();
+		return $this;
+	}
+	/**
+	 * Callback action for the imported subscribers/contacts.
+	 *
+	 * @param $collection
+	 * @param $column
+	 */
+	public function filterCallbackContact($collection, $column)
+	{
+		$field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
+		$value = $column->getFilter()->getValue();
+		if ($value == 'null') {
+			$collection->addFieldToFilter($field, array('null' => true));
+		} else {
+			$collection->addFieldToFilter($field, array('notnull' => true));
+		}
+	}
+
+	/**
+	 * @return $this
+	 */
+	protected function _prepareMassaction()
+	{
+		$this->setMassactionIdField('id');
+		$this->getMassactionBlock()->setFormFieldName('id');
+
+		$this->getMassactionBlock()->addItem(
+			'delete',
+			[
+				'label' => __('Delete'),
+				'url' => $this->getUrl('*/*/massDelete'),
+				'confirm' => __('Are you sure?')
+			]
+		);
+
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getGridUrl()
+	{
+		return $this->getUrl('*/*/grid', ['_current' => true]);
+	}
+
+
+	public function getRowUrl($row)
+	{
+		return $this->getUrl(
+			'*/*/edit',
+			['id' => $row->getId()]
+		);
+	}
+
 }
