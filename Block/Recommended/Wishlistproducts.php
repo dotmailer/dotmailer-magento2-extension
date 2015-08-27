@@ -1,17 +1,37 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigitalgroup_Email_Block_Edc
+namespace Dotdigitalgroup\Email\Block\Recommended;
+
+class Wishlistproducts extends \Magento\Framework\View\Element\Template
 {
-    /**
-     * Prepare layout, set the template.
-     * @return Mage_Core_Block_Abstract|void
-     */
-    protected function _prepareLayout()
-    {
-        if ($root = $this->getLayout()->getBlock('root')) {
-            $root->setTemplate('page/blank.phtml');
-        }
-    }
+	public $helper;
+	public $priceHelper;
+	protected $_localeDate;
+	public $scopeManager;
+	public $objectManager;
+
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Framework\Pricing\Helper\Data $priceHelper,
+		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
+		\Magento\Framework\View\Element\Template\Context $context,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	)
+	{
+		parent::__construct( $context, $data );
+		$this->helper = $helper;
+		$this->recommnededHelper = $recommended;
+		$this->priceHelper = $priceHelper;
+		$this->_localeDate = $localeDate;
+		$this->scopeManager = $scopeConfig;
+		$this->storeManager = $this->_storeManager;
+		$this->objectManager = $objectManagerInterface;
+	}
+
 
     protected function _getWishlistItems()
     {
@@ -24,15 +44,15 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigita
 
     protected function _getWishlist()
     {
-        $customerId = Mage::app()->getRequest()->getParam('customer_id');
+        $customerId = $this->getRequest()->getParam('customer_id');
         if(!$customerId)
             return array();
 
-        $customer = Mage::getModel('customer/customer')->load($customerId);
+        $customer = $this->objectManager->create('Magento\Customer\Model\Customer')->load($customerId);
         if(!$customer->getId())
             return array();
 
-        $collection = Mage::getModel('wishlist/wishlist')->getCollection();
+        $collection = $this->objectManager->create('Magento\Wishlist\Model\Wishlist')->getCollection();
         $collection->addFieldToFilter('customer_id', $customerId)
             ->setOrder('updated_at', 'DESC');
 
@@ -53,7 +73,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigita
         //display mode based on the action name
         $mode  = $this->getRequest()->getActionName();
         //number of product items to be displayed
-        $limit = Mage::helper('ddg/recommended')->getDisplayLimitByMode($mode);
+        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $items = $this->_getWishlistItems();
         $numItems = count($items);
 
@@ -66,7 +86,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigita
             $maxPerChild = number_format($limit / count($items));
         }
 
-        Mage::helper('ddg')->log('DYNAMIC WISHLIST PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
+        $this->helper->log('DYNAMIC WISHLIST PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
 
         foreach ($items as $item) {
             $i = 0;
@@ -78,7 +98,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigita
                 $recommendedProducts = $this->_getRecommendedProduct($product, $mode);
                 foreach ($recommendedProducts as $product) {
                     //load child product
-                    $product = Mage::getModel('catalog/product')->load($product->getId());
+                    $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($product->getId());
                     //check if still exists
                     if ($product->getId() && count($productsToDisplay) < $limit && $i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
                         //we have a product to display
@@ -95,10 +115,10 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigita
 
         //check for more space to fill up the table with fallback products
         if (count($productsToDisplay) < $limit) {
-            $fallbackIds = Mage::helper('ddg/recommended')->getFallbackIds();
+            $fallbackIds = $this->recommnededHelper->getFallbackIds();
 
             foreach ($fallbackIds as $productId) {
-                $product = Mage::getModel('catalog/product')->load($productId);
+                $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
                 if($product->isSaleable())
                     $productsToDisplay[$product->getId()] = $product;
                 //stop the limit was reached
@@ -108,19 +128,18 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigita
             }
         }
 
-        Mage::helper('ddg')->log('wishlist - loaded product to display ' . count($productsToDisplay));
+        $this->helper->log('wishlist - loaded product to display ' . count($productsToDisplay));
         return $productsToDisplay;
     }
 
     /**
      * Product related items.
      *
-     * @param Mage_Catalog_Model_Product $productModel
      * @param $mode
      *
      * @return array
      */
-    private  function _getRecommendedProduct(Mage_Catalog_Model_Product $productModel, $mode)
+    private  function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = array();
@@ -147,18 +166,17 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigita
      */
     public function getMode()
     {
-        return Mage::helper('ddg/recommended')->getDisplayType();
+        return $this->recommnededHelper->getDisplayType();
 
     }
 
     /**
      * Number of the colums.
      * @return int|mixed
-     * @throws Exception
      */
     public function getColumnCount()
     {
-        return Mage::helper('ddg/recommended')->getDisplayLimitByMode($this->getRequest()->getActionName());
+        return $this->recommnededHelper->getDisplayLimitByMode($this->getRequest()->getActionName());
     }
 
     /**

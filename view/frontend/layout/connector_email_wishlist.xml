@@ -1,0 +1,7 @@
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Core/etc/layout_generic.xsd">
+    <update handle="formkey"/>
+    <update handle="adminhtml_googleshopping_types_block"/>
+    <container name="root">
+        <block class="Dotdigitalgroup\Email\Block\Wishlist" name="dotdigitalgroup.wishlist.container" template="Dotdigitalgroup_Email::email/wishlist.phtml"/>
+    </container>
+</layout>

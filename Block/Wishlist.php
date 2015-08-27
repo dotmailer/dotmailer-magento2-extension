@@ -1,18 +1,32 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Wishlist extends Dotdigitalgroup_Email_Block_Edc
+namespace Dotdigitalgroup\Email\Block;
+
+class Wishlist extends \Magento\Framework\View\Element\Template
 {
-    protected $_website;
-    /**
-     * Prepare layout, set template and title.
-     *
-     * @return Mage_Core_Block_Abstract|void
-     */
-    protected function _prepareLayout()
-    {
-        if ($root = $this->getLayout()->getBlock('root'))
-            $root->setTemplate('page/blank.phtml');
-    }
+	protected $_website;
+
+	public $helper;
+	public $priceHelper;
+	public $scopeManager;
+	public $objectManager;
+
+
+	public function __construct(
+		\Magento\Framework\View\Element\Template\Context $context,
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Framework\Pricing\Helper\Data $priceHelper,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		array $data = []
+	)
+	{
+		parent::__construct( $context, $data );
+		$this->helper = $helper;
+		$this->priceHelper = $priceHelper;
+		$this->scopeManager = $scopeConfig;
+		$this->objectManager = $objectManagerInterface;
+	}
 
     public function getWishlistItems()
     {
@@ -25,15 +39,15 @@ class Dotdigitalgroup_Email_Block_Wishlist extends Dotdigitalgroup_Email_Block_E
 
     protected function _getWishlist()
     {
-        $customerId = Mage::app()->getRequest()->getParam('customer_id');
+        $customerId = $this->getRequest()->getParam('customer_id');
         if(!$customerId)
             return false;
 
-        $customer = Mage::getModel('customer/customer')->load($customerId);
+        $customer = $this->objectManager->create('Magento\Customer\Model\Customer')->load($customerId);
         if(!$customer->getId())
             return false;
 
-        $collection = Mage::getModel('wishlist/wishlist')->getCollection();
+        $collection = $this->objectManager->create('Magento\Wishlist\Model\Wishlist')->getCollection();
         $collection->addFieldToFilter('customer_id', $customerId)
                     ->setOrder('updated_at', 'DESC');
 
@@ -46,8 +60,8 @@ class Dotdigitalgroup_Email_Block_Wishlist extends Dotdigitalgroup_Email_Block_E
 
     public function getMode()
     {
-        return Mage::helper('ddg')->getWebsiteConfig(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WIHSLIST_DISPLAY
+        return $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WIHSLIST_DISPLAY
         );
     }
 }
