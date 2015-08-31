@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Sms;
 
 class Smsmessagetwo extends \Magento\Config\Block\System\Config\Form\Field

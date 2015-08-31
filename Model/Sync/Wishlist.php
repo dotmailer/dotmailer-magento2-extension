@@ -7,6 +7,10 @@ class Wishlist
 	protected $_helper;
 	protected $_resource;
 	protected $_objectManager;
+	protected $_wishlists;
+	protected $_wishlistIds = array();
+	protected $_start;
+	protected $_count;
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\Data $helper,

@@ -31,16 +31,24 @@ class Order
 	protected $_objectManager;
 	protected $_resource;
 	protected $_scopeConfig;
+	protected $_reviewHelper;
+	protected $_storeManager;
+	public $dateTime;
 
 	public function __construct(
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Framework\Stdlib\Datetime $datetime,
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+		\Dotdigitalgroup\Email\Helper\Review $reviewHelper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
 		$this->_helper = $helper;
 		$this->_resource = $resource;
+		$this->dateTime = $datetime;
+		$this->_storeManager = $storeManagerInterface;
 		$this->_scopeConfig = $scopeConfig;
 		$this->_objectManager = $objectManager;
 	}
@@ -66,25 +74,24 @@ class Order
      * @param $collection
      * @param $websiteId
      *
-     * @throws Exception
      */
     private function registerCampaign($collection, $websiteId)
     {
-        $helper = Mage::helper('ddg/review');
-        $campaignId = $helper->getCampaign($websiteId);
+	    //review campaign id
+        $campaignId = $this->_reviewHelper->getCampaign($websiteId);
 
         if($campaignId) {
             foreach ($collection as $order) {
-                Mage::helper('ddg')->log('-- Order Review: ' . $order->getIncrementId() . ' Campaign Id: ' . $campaignId);
+                $this->_helper->log('-- Order Review: ' . $order->getIncrementId() . ' Campaign Id: ' . $campaignId);
 
                 try {
-                    $emailCampaign = Mage::getModel('ddg_automation/campaign');
+                    $emailCampaign = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Camapaign');
                     $emailCampaign
                         ->setEmail($order->getCustomerEmail())
                         ->setStoreId($order->getStoreId())
                         ->setCampaignId($campaignId)
                         ->setEventName('Order Review')
-                        ->setCreatedAt(Mage::getSingleton('core/date')->gmtDate())
+                        ->setCreatedAt($this->dateTime->formatDate(true))
                         ->setOrderIncrementId($order->getIncrementId())
                         ->setQuoteId($order->getQuoteId());
 
@@ -92,8 +99,7 @@ class Order
                         $emailCampaign->setCustomerId($order->getCustomerId());
 
                     $emailCampaign->save();
-                } catch (Exception $e) {
-                    Mage::logException($e);
+                } catch (\Exception $e) {
                 }
             }
         }
@@ -104,38 +110,42 @@ class Order
      */
     private function searchOrdersForReview()
     {
-        $helper = Mage::helper('ddg/review');
+		$websites = $this->_helper->getwebsites(true);
 
-        foreach (Mage::app()->getWebsites(true) as $website){
-            $apiEnabled = Mage::helper('ddg')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED, $website);
-            if($apiEnabled && $helper->isEnabled($website) &&
-                $helper->getOrderStatus($website) &&
-                    $helper->getDelay($website)){
+        foreach ($websites as $website){
+
+	        $apiEnabled = $this->_helper->isEnabled($website);
+            if($apiEnabled &&
+               $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, $website) &&
+               $this->_reviewHelper->getOrderStatus($website) &&
+               $this->_reviewHelper->getDelay($website))
+            {
 
                 $storeIds = $website->getStoreIds();
                 if(empty($storeIds))
                     continue;
 
-                $orderStatusFromConfig = $helper->getOrderStatus($website);
-                $delayInDays = $helper->getDelay($website);
+                $orderStatusFromConfig = $this->_reviewHelper->getOrderStatus($website);
+                $delayInDays = $this->_reviewHelper->getDelay($website);
 
-                $campaignCollection = Mage::getModel('ddg_automation/campaign')->getCollection();
+                $campaignCollection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Camapaign')->getCollection();
                 $campaignCollection
                     ->addFieldToFilter('event_name', 'Order Review')
                     ->load();
 
                 $campaignOrderIds = $campaignCollection->getColumnValues('order_increment_id');
 
-                $to = Mage::app()->getLocale()->date()
-                    ->subDay($delayInDays);
-                $from = clone $to;
-                $to = $to->toString('YYYY-MM-dd HH:mm:ss');
-                $from = $from->subHour(2)
+
+	            $fromTime = new \Zend_date();
+	            $fromTime->subDay($delayInDays);
+	            $toTime = clone $fromTime;
+                $to = $toTime->toString('YYYY-MM-dd HH:mm:ss');
+                $from = $fromTime->subHour(2)
                     ->toString('YYYY-MM-dd HH:mm:ss');
 
                 $created = array( 'from' => $from, 'to' => $to, 'date' => true);
 
-                $collection = Mage::getModel('sales/order')->getCollection();
+                $collection = $this->_objectManager->create('Magento\Sales\Order')->getCollection();
                     $collection->addFieldToFilter('main_table.status', $orderStatusFromConfig)
                     ->addFieldToFilter('main_table.created_at', $created)
                     ->addFieldToFilter('main_table.store_id', array('in' => $storeIds));
@@ -144,9 +154,9 @@ class Order
                     $collection->addFieldToFilter('main_table.increment_id', array('nin' => $campaignOrderIds));
 
                 //process rules on collection
-                $ruleModel = Mage::getModel('ddg_automation/rules');
+                $ruleModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Rules');
                 $collection = $ruleModel->process(
-                    $collection, Dotdigitalgroup_Email_Model_Rules::REVIEW, $website->getId()
+                    $collection, \Dotdigitalgroup\Email\Model\Rules::REVIEW, $website->getId()
                 );
 
                 if($collection->getSize())
@@ -158,13 +168,11 @@ class Order
     /**
      * get customer last order id
      *
-     * @param Mage_Customer_Model_Customer $customer
-     * @return bool|Varien_Object
      */
-    public function getCustomerLastOrderId(Mage_Customer_Model_Customer $customer)
+    public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer)
     {
-        $storeIds = Mage::app()->getWebsite($customer->getWebsiteId())->getStoreIds();
-        $collection = Mage::getModel('sales/order')->getCollection();
+        $storeIds = $this->_storeManager->getWebsite($customer->getWebsiteId())->getStoreIds();
+        $collection = $this->_objectManager->create('Magento\Sales\Order')->getCollection();
         $collection->addFieldToFilter('customer_id', $customer->getId())
             ->addFieldToFilter('store_id', array('in' => $storeIds))
             ->setPageSize(1)
@@ -179,13 +187,11 @@ class Order
     /**
      * get customer last quote id
      *
-     * @param Mage_Customer_Model_Customer $customer
-     * @return bool|Varien_Object
      */
-    public function getCustomerLastQuoteId(Mage_Customer_Model_Customer $customer)
+    public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer)
     {
-        $storeIds = Mage::app()->getWebsite($customer->getWebsiteId())->getStoreIds();
-        $collection = Mage::getModel('sales/quote')->getCollection();
+        $storeIds = $this->_storeManager->getWebsite($customer->getWebsiteId())->getStoreIds();
+        $collection = $this->_objectManager->create('Magento\Quote\Model\Quote')->getCollection();
         $collection->addFieldToFilter('customer_id', $customer->getId())
             ->addFieldToFilter('store_id', array('in' => $storeIds))
             ->setPageSize(1)
@@ -197,27 +203,4 @@ class Order
             return false;
     }
 
-    /**
-     * set imported in bulk query
-     *
-     * @param $ids
-     * @param $modified
-     */
-    private function _setImported($ids, $modified = false)
-    {
-        try{
-            $coreResource = Mage::getSingleton('core/resource');
-            $write = $coreResource->getConnection('core_write');
-            $tableName = $coreResource->getTableName('email_order');
-            $ids = implode(', ', $ids);
-            $now = Mage::getSingleton('core/date')->gmtDate();
-
-            if ($modified)
-                $write->update($tableName, array('modified' => new Zend_Db_Expr('null'), 'updated_at' => $now), "order_id IN ($ids)");
-            else
-                $write->update($tableName, array('email_imported' => 1, 'updated_at' => $now), "order_id IN ($ids)");
-        }catch (Exception $e){
-            Mage::logException($e);
-        }
-    }
 }

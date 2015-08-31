@@ -38,8 +38,6 @@ class Wrapper implements \Magento\Framework\Option\ArrayInterface
 			/** @var $section \Magento\Config\Model\Config\Structure\Element\Section */
 			$section = $this->_configStructure->getElement('trans_email');
 
-			var_dump($section);
-die();
 			/** @var $group \Magento\Config\Model\Config\Structure\Element\Group */
 			foreach ($section->getChildren() as $group) {
 				$this->_options[] = [

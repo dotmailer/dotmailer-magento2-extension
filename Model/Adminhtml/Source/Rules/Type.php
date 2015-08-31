@@ -4,6 +4,15 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
 class Type
 {
+
+	protected $_objectManager;
+
+	public function __construct(
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+	)
+	{
+		$this->_objectManager = $objectManagerInterface;
+	}
     /**
      * get input type
      *
@@ -20,7 +29,7 @@ class Type
                 return 'select';
 
             default:
-                $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute);
+                $attribute = $this->_objectManager->create('Magento\Eav\Model\Config')->getAttribute('catalog_product', $attribute);
                 if($attribute->getFrontend()->getInputType() == 'price')
                     return 'numeric';
                 if ($attribute->usesSource())
@@ -59,12 +68,12 @@ class Type
     public function toOptionArray()
     {
         $defaultOptions = $this->defaultOptions();
-        $productCondition = Mage::getModel('salesrule/rule_condition_product');
+        $productCondition = $this->_objectManager->create('Magento\Salesrule\Model\Rule\Condition\Product');
         $productAttributes = $productCondition->loadAttributeOptions()->getAttributeOption();
         $pAttributes = array();
         foreach ($productAttributes as $code=>$label) {
             if (strpos($code, 'quote_item_') === false) {
-                $pAttributes[$code] = Mage::helper('adminhtml')->__($label);
+                $pAttributes[$code] = __($label);
             }
         }
         $options = array_merge($defaultOptions, $pAttributes);

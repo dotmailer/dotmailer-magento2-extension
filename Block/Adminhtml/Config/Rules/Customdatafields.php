@@ -1,20 +1,28 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Config_Rules_Customdatafields  extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules;
+
+class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
 {
     protected $_getAttributeRenderer;
     protected $_getConditionsRenderer;
     protected $_getValueRenderer;
 
-
+	protected $_objectManager;
     /**
 	 * Construct.
 	 */
-    public function __construct()
+    public function __construct(
+	    \Magento\Backend\Block\Template\Context $context,
+        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		$data = []
+    )
     {
+	    $this->_objectManager = $objectManagerInterface;
         $this->_addAfter = false;
-        $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add New Condition');
-        parent::__construct();
+
+        $this->_addButtonLabel = __('Add New Condition');
+        parent::__construct($context, $data);
 
     }
 
@@ -28,19 +36,19 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Rules_Customdatafields  exten
         $this->_getValueRenderer = null;
         $this->addColumn('attribute',
 	        array(
-	            'label' => Mage::helper('adminhtml')->__('Attribute'),
+	            'label' => __('Attribute'),
                 'style' => 'width:120px',
             )
         );
         $this->addColumn('conditions',
             array(
-                'label' => Mage::helper('adminhtml')->__('Condition'),
+                'label' => __('Condition'),
                 'style' => 'width:120px',
 			)
         );
         $this->addColumn('cvalue',
             array(
-                'label' => Mage::helper('adminhtml')->__('Value'),
+                'label' => __('Value'),
                 'style' => 'width:120px',
             )
         );
@@ -51,7 +59,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Rules_Customdatafields  exten
      *
      * @param string $columnName
      * @return string
-     * @throws Exception
      */
     protected function _renderCellTemplate($columnName)
     {
@@ -70,7 +77,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Rules_Customdatafields  exten
                 ->setName($inputName)
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
-                ->setOptions(Mage::getModel('ddg_automation/adminhtml_source_rules_condition')->toOptionArray())
+                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition')Mage::getModel('ddg_automation/adminhtml_source_rules_condition')->toOptionArray())
                 ->toHtml();
         }elseif ($columnName == "cvalue") {
             return $this->_getValueRenderer()

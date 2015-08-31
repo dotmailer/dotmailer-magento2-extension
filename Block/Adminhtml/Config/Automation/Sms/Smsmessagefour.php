@@ -1,10 +1,10 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Sms;
+
 class Smsmessagefour extends \Magento\Config\Block\System\Config\Form\Field
 {
     const DEFAULT_TEXT = 'Default SMS Text';
-
 
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {

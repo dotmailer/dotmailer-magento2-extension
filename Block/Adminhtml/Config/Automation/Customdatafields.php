@@ -1,20 +1,23 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Config_Automation_Customdatafields  extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation;
+
+class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
 {
     protected $_getStatusRenderer;
     protected $_getAutomationRenderer;
 
-
     /**
 	 * Construct.
 	 */
-    public function __construct()
+    public function __construct(
+	    \Magento\Backend\Block\Template\Context $context,
+		$data = []
+    )
     {
         $this->_addAfter = false;
-        $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add New Enrolment');
-        parent::__construct();
-
+        $this->_addButtonLabel = __('Add New Enrolment');
+        parent::__construct($context, $data);
     }
 
     protected function _prepareToRender()
@@ -23,12 +26,12 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Automation_Customdatafields  
         $this->_getAutomationRenderer = null;
         $this->addColumn('status',
 	        array(
-	            'label' => Mage::helper('adminhtml')->__('Order Status'),
+	            'label' => __('Order Status'),
                 'style' => 'width:120px',
             )
         );
         $this->addColumn('automation', array(
-	        'label' => Mage::helper('adminhtml')->__('Automation Programme'),
+	        'label' => __('Automation Programme'),
             'style' => 'width:120px',
 			)
         );
@@ -60,9 +63,8 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Automation_Customdatafields  
     /**
      * Assign extra parameters to row
      *
-     * @param Varien_Object $row
      */
-    protected function _prepareArrayRow(Varien_Object $row)
+    protected function _prepareArrayRow( $row)
     {
 
         $row->setData(
@@ -79,7 +81,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Automation_Customdatafields  
     {
         if (!$this->_getStatusRenderer) {
             $this->_getStatusRenderer = $this->getLayout()
-                ->createBlock('ddg_automation/adminhtml_config_select')
+                ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Select')
                 ->setIsRenderToJsTemplate(true);
         }
         return $this->_getStatusRenderer;
@@ -89,7 +91,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Automation_Customdatafields  
     {
         if (!$this->_getAutomationRenderer) {
             $this->_getAutomationRenderer = $this->getLayout()
-                ->createBlock('ddg_automation/adminhtml_config_select')
+                ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Select')
                 ->setIsRenderToJsTemplate(true);
         }
         return $this->_getAutomationRenderer;

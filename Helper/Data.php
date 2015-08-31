@@ -114,6 +114,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
 	/**
+	 * Get website selected in admin.
+	 * @return \Magento\Store\Api\Data\WebsiteInterface
+	 */
+	public function getWebsite()
+	{
+		$websiteId = $this->_request->getParam('website', false);
+		if ($websiteId)
+			return $this->_storeManager->getWebsite($websiteId);
+
+		return $this->_storeManager->getWebsite();
+	}
+
+	/**
 	 *
 	 * @return mixed
 	 */
@@ -762,7 +775,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isSmtpEnabled()
     {
-        return (bool)Mage::getConfig()->getModuleConfig('Ddg_Transactional')->is('active', 'true');
+	    //@todo get the module config
+	    return false;
+        //return (bool)Mage::getConfig()->getModuleConfig('Ddg_Transactional')->is('active', 'true');
     }
 
 	/**

@@ -4,12 +4,18 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class CatalogType
 {
+	protected $_objectManager;
+
+	public function __construct(
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+	)
+	{
+		$this->_objectManager = $objectManagerInterface;
+	}
 
     public function toOptionArray()
     {
-	    return array();
-
-        $options = Mage::getModel('catalog/product_type')->getAllOptions();
+        $options = $this->_objectManager->create('Magento\Catalog\Model\Product\Type')->getAllOptions();
         array_shift($options);
         return $options;
     }

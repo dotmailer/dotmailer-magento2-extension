@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Model\Connector;
 
 class Account

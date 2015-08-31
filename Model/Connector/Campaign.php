@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Connector_Campaign
+namespace Dotdigitalgroup\Email\Model\Connector;
+
+class Campaign
 {
 
     public $id;

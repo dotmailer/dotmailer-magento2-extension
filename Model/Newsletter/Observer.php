@@ -41,10 +41,11 @@ class Observer
 		$websiteId = $this->_storeManager->getStore($subscriber->getStoreId())->getWebsiteId();
 
 		//check if enabled
-		if ( ! $this->_helper->isEnabled($websiteId))
+		$apiEnabled = $this->_helper->isEnabled($websiteId);
+		if ( ! $apiEnabled)
 			return $this;
-		try{
 
+		try{
 			// fix for a multiple hit of the observer
 			$emailReg =  $this->_registry->registry($email . '_subscriber_save');
 			if ($emailReg){

@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Model\Config\Dynamic;
 
 class Gridview

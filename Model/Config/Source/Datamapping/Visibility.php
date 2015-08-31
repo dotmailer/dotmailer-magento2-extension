@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 
 class Visibility

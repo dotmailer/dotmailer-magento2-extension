@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Adminhtml_Source_Lostbaskets_Interval
+namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Lostbaskets;
+
+class Interval
 {
 
     /**
@@ -23,12 +25,12 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Lostbaskets_Interval
             if ($i == 0) {
 	            $row = array(
 		            'value' => $one,
-		            'label' => Mage::helper( 'ddg' )->__( $one . ' Hour' )
+		            'label' => __( $one . ' Hour' )
 	            );
             } else {
 	            $row = array(
 		            'value' => $one,
-		            'label' => Mage::helper( 'ddg' )->__( $one . ' Hours' )
+		            'label' => __( $one . ' Hours' )
 	            );
             }
             $result[] = $row;

@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Connector_Datafield
+namespace Dotdigitalgroup\Email\Model\Connector;
+
+class Datafield
 {
 	/**
 	 * @var string

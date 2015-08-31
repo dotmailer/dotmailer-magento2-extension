@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
 class Intervalminute implements \Magento\Framework\Option\ArrayInterface

@@ -2,8 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Contact;
 
-class Edit extends \Magento\Backend\Block\Widget\Form\Container {
-
+class Edit extends \Magento\Backend\Block\Widget\Form\Container
+{
 	protected $_coreRegistry = null;
 
 	/**

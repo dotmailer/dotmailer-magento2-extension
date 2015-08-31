@@ -55,23 +55,19 @@ class Subscriber
 
         foreach ($websites as $website) {
             //if subscriber is enabled and mapped
-	        $apiEnabled = $this->_helper->isEnabled($website->getid());
-	        $subscriberEnaled = $this->_helper->getSubscriberSyncEnabled($website->getid());
-	        $addressBook = $this->_helper->getSubscriberAddressBook($website->getId());
+	        $apiEnabled         = $this->_helper->isEnabled($website->getid());
+	        $subscriberEnaled   = $this->_helper->getSubscriberSyncEnabled($website->getid());
+	        $addressBook        = $this->_helper->getSubscriberAddressBook($website->getId());
 	        //enabled and mapped
             if ($apiEnabled && $addressBook && $subscriberEnaled) {
-
 	            //ready to start sync
 	            if (!$this->_countSubscriber)
 	                $this->_helper->log('---------------------- Start subscriber sync -------------------');
 
                 $numUpdated = $this->exportSubscribersPerWebsite($website);
-
-
                 // show message for any number of customers
                 if ($numUpdated)
                     $response['message'] .=  '</br>' . $website->getName() . ', updated subscribers = ' . $numUpdated;
-
             }
         }
 
@@ -115,10 +111,8 @@ class Subscriber
                     $subscriber->setSubscriberImported(1)->save();
 	                $subscriberModel = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')
 		                ->loadByEmail($email);
-                    //$storeName = Mage::app()->getStore($subscriber->getStoreId())->getName();
 
 	                $storeName = $this->storeManager->getStore($subscriber->getStoreId())->getName();
-var_dump($storeName);die;
                     // save data for subscribers
                     $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename), array($email, 'Html', $storeName));
                     $updated++;
@@ -150,11 +144,8 @@ var_dump($storeName);die;
 	    $limit = 5;
 	    $max_to_select = 1000;
 	    $result['customers'] = 0;
-
-	    //$date = Mage::app()->getLocale()->date()->subHour(24);
 	    $date = new \Zend_Date();
 	    $date->subHour(24);
-	    //$date = new \Datetime();
 
         // force sync all customers
         if($force)
@@ -167,9 +158,9 @@ var_dump($storeName);die;
 	    $websites = $this->_helper->getWebsites(true);
         foreach ($websites as $website) {
 
-	        $enabled = $this->_helper->isEnabled($website);
+	        $apiEnabled = $this->_helper->isEnabled($website);
 	        //no enabled and valid credentials
-            if (! $enabled)
+            if (! $apiEnabled)
                 continue;
 
 	        $skip = $i = 0;
@@ -210,7 +201,7 @@ var_dump($storeName);die;
                         }
                         //mark contact as suppressed and unsubscribe
 
-                        $contactCollection = Mage::getModel('ddg_automation/contact')->getCollection()
+                        $contactCollection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
                             ->addFieldToFilter('email', $email)
                             ->addFieldToFilter('website_id', $website->getId());
 
@@ -219,8 +210,8 @@ var_dump($storeName);die;
                             $contact->setIsSubscriber(null)
                                 ->setSuppressed('1')->save();
                         }
-                    }catch (Exception $e){
-                        Mage::logException($e);
+                    }catch (\Exception $e){
+
                     }
                 }
             }

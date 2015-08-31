@@ -1,7 +1,10 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Condition
+namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
+
+class Condition
 {
+
     /**
      * options array
      *
@@ -10,9 +13,9 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Condition
     public function toOptionArray()
     {
         $options = array(
-            array('value' => 'eq', 'label' => Mage::helper('ddg')->__('is')),
-            array('value' => 'neq', 'label' => Mage::helper('ddg')->__('is not')),
-            array('value' => 'null', 'label' => Mage::helper('ddg')->__('is empty')),
+            array('value' => 'eq', 'label' => __('is')),
+            array('value' => 'neq', 'label' => __('is not')),
+            array('value' => 'null', 'label' => __('is empty')),
         );
         return $options;
     }
@@ -45,10 +48,10 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Condition
     public function optionsForNumericType()
     {
         $options = $this->toOptionArray();
-        $options[] = array('value' => 'gteq', 'label' => Mage::helper('ddg')->__('equals or greater than'));
-        $options[] = array('value' => 'lteq', 'label' => Mage::helper('ddg')->__('equals or less then'));
-        $options[] = array('value' => 'gt', 'label' => Mage::helper('ddg')->__('greater than'));
-        $options[] = array('value' => 'lt', 'label' => Mage::helper('ddg')->__('less than'));
+        $options[] = array('value' => 'gteq', 'label' => __('equals or greater than'));
+        $options[] = array('value' => 'lteq', 'label' => __('equals or less then'));
+        $options[] = array('value' => 'gt', 'label' => __('greater than'));
+        $options[] = array('value' => 'lt', 'label' => __('less than'));
         return $options;
     }
 
@@ -60,8 +63,8 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Condition
     public function optionsForStringType()
     {
         $options = $this->toOptionArray();
-        $options[] = array('value' => 'like', 'label' => Mage::helper('ddg')->__('contains'));
-        $options[] = array('value' => 'nlike', 'label' => Mage::helper('ddg')->__('does not contains'));
+        $options[] = array('value' => 'like', 'label' => __('contains'));
+        $options[] = array('value' => 'nlike', 'label' => __('does not contains'));
         return $options;
     }
 }

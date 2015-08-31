@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Cartlimit

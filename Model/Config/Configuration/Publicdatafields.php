@@ -4,13 +4,17 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Publicdatafields
 {
-	private function getWebsite()
+	protected $_objectManager;
+	protected $_helper;
+
+
+	public function __construct(
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		\Dotdigitalgroup\Email\Helper\Data $data
+	)
 	{
-		$website = Mage::app()->getWebsite();
-		$websiteParam = Mage::app()->getRequest()->getParam('website');
-		if($websiteParam)
-			$website = Mage::app()->getWebsite($websiteParam);
-		return $website;
+		$this->_objectManager = $objectManagerInterface;
+		$this->_helper = $data;
 	}
 
 	/**
@@ -20,9 +24,8 @@ class Publicdatafields
 	 */
 	private function getDataFields()
 	{
-		$helper = Mage::helper('ddg');
-		$website = $this->getWebsite();
-		$client = $helper->getWebsiteApiClient($website);
+		$website = $this->_helper->getWebsite();
+		$client = $this->_helper->getWebsiteApiClient($website);
 
 		//grab the datafields request and save to register
 		$datafields = $client->getDataFields();
@@ -37,26 +40,22 @@ class Publicdatafields
     public function toOptionArray()
     {
         $fields = array();
-	    return $fields;
-
-        $helper = Mage::helper('ddg');
-		$website = $this->getWebsite();
-
+	    $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
 	    //get datafields options
-	    if ($helper->isEnabled($website)) {
+	    if ($apiEnabled) {
 			$datafields = $this->getDataFields();
 
 		    //set the api error message for the first option
 		    if ( isset( $datafields->message ) ) {
 			    //message
-			    $fields[] = array( 'value' => 0, 'label' => Mage::helper( 'ddg' )->__( $datafields->message ) );
+			    $fields[] = array( 'value' => 0, 'label' => __( $datafields->message ) );
 		    } else {
 			    //loop for all datafields option
 			    foreach ( $datafields as $datafield ) {
 				    if ( isset( $datafield->name ) &&  $datafield->visibility == 'Public') {
 					    $fields[] = array(
 						    'value' => $datafield->name,
-						    'label' => Mage::helper( 'ddg' )->__( $datafield->name )
+						    'label' => __( $datafield->name )
 					    );
 				    }
 			    }

@@ -1,16 +1,16 @@
 <?php
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer;
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Column_Renderer_Reset extends Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Abstract
+class Reset extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractRenderer
 {
     /**
      * Render the grid columns.
      *
-     * @param Varien_Object $row
      * @return string
      */
-    public function render(Varien_Object $row)
+    public function render(\Magento\Framework\DataObject $row)
     {
-        $url = HtmlSpecialChars(json_encode(Mage::helper('adminhtml')->getUrl('*/*/reset', array('id' => $row->getId()))));
+        $url = HtmlSpecialChars(json_encode($this->getUrl('*/*/reset', array('id' => $row->getId()))));
         return '<button title="Reset" onclick="visitPage(' . $url . '); return false" type="button" style=""><span><span><span>Reset</span></span></span></button>';
     }
 

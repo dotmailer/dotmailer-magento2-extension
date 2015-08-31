@@ -4,10 +4,6 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Wishlist extends \Magento\Framework\Model\AbstractModel
 {
-    private $_start;
-    private $_wishlists;
-    private $_count = 0;
-    private $_wishlistIds;
 
     /**
      * constructor
@@ -18,9 +14,8 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
         $this->_init('Dotdigitalgroup\Email\Model\Resource\Wishlist');
     }
 
-    /**
-     * @param int $wishListId
-     */
+
+
     public function getWishlist($wishListId)
     {
         $collection = $this->getCollection()

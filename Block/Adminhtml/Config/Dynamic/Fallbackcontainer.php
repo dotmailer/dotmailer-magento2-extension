@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Fallbackcontainer extends \Magento\Config\Block\System\Config\Form\Field

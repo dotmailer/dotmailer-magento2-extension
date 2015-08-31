@@ -1,7 +1,17 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Adminhtml_Source_Transactional_Yesno
+namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Transactional;
+
+class Yesno
 {
+	protected $_helper;
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data
+	)
+	{
+		$this->_helper  = $data;
+	}
 
     /**
      * Options getter
@@ -10,15 +20,15 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Transactional_Yesno
      */
     public function toOptionArray()
     {
-        $status = Mage::helper('ddg')->isSmtpEnabled();
+        $status = $this->_helper->isSmtpEnabled();
         if (!$status) {
             return array(
-                array('value' => 0, 'label'=> Mage::helper('adminhtml')->__('No')),
+                array('value' => 0, 'label'=> __('No')),
             );
         } else {
 	        return array(
-		        array('value' => 0, 'label' => Mage::helper('adminhtml')->__('No')),
-		        array('value' => 1, 'label' => Mage::helper('adminhtml')->__('Yes'))
+		        array('value' => 0, 'label' => __('No')),
+		        array('value' => 1, 'label' => __('Yes'))
 	        );
         }
     }

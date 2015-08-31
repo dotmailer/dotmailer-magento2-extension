@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml;
 
-
 class Observer
 {
 
@@ -124,17 +123,18 @@ class Observer
                  * Disable invalid Api credentials
                  */
                 $scopeId = 0;
-                if ($website = Mage::app()->getRequest()->getParam('website')) {
+                if ($website = $this->_request->getParam('website')) {
                     $scope = 'websites';
-                    $scopeId = Mage::app()->getWebsite($website)->getId();
+                    $scopeId = $this->_request->getWebsite($website)->getId();
                 } else {
                     $scope = "default";
                 }
-                $config = Mage::getConfig();
-                $config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED, 0, $scope, $scopeId);
-                $config->cleanCache();
+	            //@todo save config and clear the cache
+//                $config = Mage::getConfig();
+//                $config->saveConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, 0, $scope, $scopeId);
+//                $config->cleanCache();
             }
-            Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('ddg')->__('API Credentials Valid.'));
+	        $this->messageManager->addSuccess(__('API Credentials Valid.'));
         }
         return $this;
     }
@@ -165,7 +165,7 @@ class Observer
      */
     public function updateFeed()
     {
-        Mage::getModel('ddg_automation/feed')->checkForUpgrade();
+        $this->_objectManager->create('Dotdigitalgroup\Email\Model\Feed')->checkForUpgrade();
     }
 
 
@@ -178,8 +178,8 @@ class Observer
 	public function connectorCustomerSegmentChanged($observer)
 	{
 		$segmentsIds = $observer->getEvent()->getSegmentIds();
-		$customerId = Mage::getSingleton('customer/session')->getCustomerId();
-		$websiteId = Mage::app()->getStore()->getWebsiteId();
+		$customerId = $this->_objectManager->create('Magento\Customer\Model\Session')->getCustomerId();
+		$websiteId = $this->_storeManager->getStore()->getWebsiteId();
 
 		if (!empty($segmentsIds) && $customerId) {
 			$this->addContactsFromWebsiteSegments($customerId, $segmentsIds, $websiteId);
@@ -200,10 +200,10 @@ class Observer
 	protected function addContactsFromWebsiteSegments($customerId, $segmentIds, $websiteId){
 
 		if (empty($segmentIds))
-			return;
+			return $this;
 		$segmentIds = implode(',', $segmentIds);
 
-		$contact = Mage::getModel('ddg_automation/contact')->getCollection()
+		$contact = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
 			->addFieldToFilter('customer_id', $customerId)
 			->addFieldToFilter('website_id', $websiteId)
 			->getFirstItem();
@@ -213,15 +213,14 @@ class Observer
 			        ->setEmailImported()
 			        ->save();
 
-		}catch (Exception $e){
-			Mage::logException($e);
+		}catch (\Exception $e){
 		}
 
 		return $this;
 	}
 
 	protected function getCustomerSegmentIdsForWebsite($customerId, $websiteId){
-		$segmentIds = Mage::getModel('ddg_automation/contact')->getCollection()
+		$segmentIds = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
 			->addFieldToFilter('website_id', $websiteId)
 			->addFieldToFilter('customer_id', $customerId)
 			->getFirstItem()

@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Mostviewed extends \Magento\Config\Block\System\Config\Form\Field

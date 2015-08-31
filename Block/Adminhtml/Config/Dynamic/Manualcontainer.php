@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Manualcontainer extends \Magento\Config\Block\System\Config\Form\Field

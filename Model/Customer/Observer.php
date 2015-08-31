@@ -51,8 +51,8 @@ class Observer
 			//email change detection
 			if ($email != $emailBefore) {
 				$this->_helper->log('email change detected : '  . $email . ', after : ' . $emailBefore .  ', website id : ' . $websiteId);
-				$enabled = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
-				if ($enabled) {
+				$apiEnabled = $this->_helper->isEnabled($websiteId);
+				if ($apiEnabled) {
 					$client = $this->_helper->getWebsiteApiClient($websiteId);
 					$subscribersAddressBook = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID, $websiteId);
 					$response = $client->postContacts($emailBefore);
@@ -76,7 +76,6 @@ class Observer
 				}
 				$contactModel->setEmail($email);
 			}
-$this->_logger->info('saving contact');
 			$contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
 				->setCustomerId($customerId)
 				->save();

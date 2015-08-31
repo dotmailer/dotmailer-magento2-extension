@@ -19,9 +19,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	}
 
 
-
-
-
 	/**
 	 * Load contact by customer id
 	 * @param $customerId
@@ -39,45 +36,44 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 		return $this;
 	}
 
-//	/**
-//	 * get all customer contacts not imported for a website.
-//	 *
-//	 * @param $websiteId
-//	 * @param int $pageSize
-//	 *
-//	 * @return Dotdigitalgroup_Email_Model_Resource_Contact_Collection
-//	 */
-//	public function getContactsToImportForWebsite($websiteId, $pageSize = 100)
-//	{
-//		$collection =  $this->getCollection()
-//		                    ->addFieldToFilter('website_id', $websiteId)
-//		                    ->addFieldToFilter('email_imported', array('null' => true))
-//		                    ->addFieldToFilter('customer_id', array('neq' => '0'));
-//
-//
-//		$collection->getSelect()->limit($pageSize);
-//
-//		return $collection;
-//	}
-//
-//	/**
-//	 * Get missing contacts.
-//	 * @param $websiteId
-//	 * @param int $pageSize
-//	 * @return mixed
-//	 */
-//	public function getMissingContacts($websiteId, $pageSize = 100)
-//	{
-//		$collection = $this->getCollection()
-//		                   ->addFieldToFilter('contact_id', array('null' => true))
-//		                   ->addFieldToFilter('suppressed', array('null' => true))
-//		                   ->addFieldToFilter('website_id', $websiteId);
-//
-//		$collection->getSelect()->limit($pageSize);
-//
-//		return $collection->load();
-//	}
-//
+	/**
+	 * get all customer contacts not imported for a website.
+	 *
+	 * @param $websiteId
+	 * @param int $pageSize
+	 *
+	 */
+	public function getContactsToImportForWebsite($websiteId, $pageSize = 100)
+	{
+		$collection =  $this->getCollection()
+                ->addFieldToFilter('website_id', $websiteId)
+                ->addFieldToFilter('email_imported', array('null' => true))
+                ->addFieldToFilter('customer_id', array('neq' => '0'));
+
+
+		$collection->getSelect()->limit($pageSize);
+
+		return $collection;
+	}
+
+	/**
+	 * Get missing contacts.
+	 * @param $websiteId
+	 * @param int $pageSize
+	 * @return mixed
+	 */
+	public function getMissingContacts($websiteId, $pageSize = 100)
+	{
+		$collection = $this->getCollection()
+		                   ->addFieldToFilter('contact_id', array('null' => true))
+		                   ->addFieldToFilter('suppressed', array('null' => true))
+		                   ->addFieldToFilter('website_id', $websiteId);
+
+		$collection->getSelect()->limit($pageSize);
+
+		return $collection->load();
+	}
+
 	/**
 	 * Load Contact by Email.
 	 * @param $email
@@ -121,20 +117,19 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 		return $collection;
 	}
 
-//	/**
-//	 * get all not imported guests for a website.
-//	 * @param $website
-//	 *
-//	 * @return Dotdigitalgroup_Email_Model_Resource_Contact_Collection
-//	 */
-//	public function getGuests($website)
-//	{
-//		$guestCollection = $this->getCollection()
-//		                        ->addFieldToFilter('is_guest', array('notnull' => true))
-//		                        ->addFieldToFilter('email_imported', array('null' => true))
-//		                        ->addFieldToFilter('website_id', $website->getId());
-//		return $guestCollection->load();
-//	}
+	/**
+	 * get all not imported guests for a website.
+	 * @param $website
+	 *
+	 */
+	public function getGuests($website)
+	{
+		$guestCollection = $this->getCollection()
+		                        ->addFieldToFilter('is_guest', array('notnull' => true))
+		                        ->addFieldToFilter('email_imported', array('null' => true))
+		                        ->addFieldToFilter('website_id', $website->getId());
+		return $guestCollection->load();
+	}
 
 	public function getNumberOfImportedContacs()
 	{
@@ -143,145 +138,134 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 
 		return $collection->getSize();
 	}
-//
-//	/**
-//	 * Set all imported subscribers for reimport.
-//	 *
-//	 * @return int
-//	 */
-//	public function resetSubscribers() {
-//
-//		/** @var $coreResource Mage_Core_Model_Resource */
-//		$coreResource = Mage::getSingleton( 'core/resource' );
-//
-//		/** @var $conn Varien_Db_Adapter_Pdo_Mysql */
-//		$conn = $coreResource->getConnection( 'core_write' );
-//
-//		try {
-//			$num = $conn->update(
-//				$coreResource->getTableName( 'ddg_automation/contact' ),
-//				array('subscriber_imported' => new Zend_Db_Expr( 'null' ) ),
-//				$conn->quoteInto('subscriber_imported is ?', new Zend_Db_Expr('not null')));
-//
-//		} catch ( Exception $e ) {
-//			Mage::logException($e);
-//			Mage::helper('ddg')->sendRaygunException($e);
-//		}
-//
-//		return $num;
-//	}
-//
-//	/**
-//	 * Get the number of customers for a website.
-//	 * @param int $websiteId
-//	 *
-//	 * @return int
-//	 */
-//	public function getNumberCustomerContacts($websiteId = 0)
-//	{
-//		$countContacts = Mage::getModel('ddg_automation/contact')->getCollection()
-//		                     ->addFieldToFilter('customer_id', array('gt' => '0'))
-//		                     ->addFieldToFilter('website_id', $websiteId)
-//		                     ->getSize();
-//		return $countContacts;
-//	}
-//
-//	/**
-//	 *
-//	 * Get number of suppressed contacts as customer.
-//	 * @param int $websiteId
-//	 *
-//	 * @return int
-//	 */
-//	public function getNumberCustomerSuppressed( $websiteId = 0 )
-//	{
-//		$countContacts = Mage::getModel('ddg_automation/contact')->getCollection()
-//		                     ->addFieldToFilter('customer_id', array('gt' => 0))
-//		                     ->addFieldToFilter('website_id', $websiteId)
-//		                     ->addFieldToFilter('suppressed', '1')
-//		                     ->getSize();
-//
-//		return $countContacts;
-//	}
-//
-//	/**
-//	 * Get number of synced customers.
-//	 * @param int $websiteId
-//	 *
-//	 * @return int
-//	 */
-//	public function getNumberCustomerSynced( $websiteId = 0 )
-//	{
-//		$countContacts = Mage::getModel('ddg_automation/contact')->getCollection()
-//		                     ->addFieldToFilter('customer_id', array('gt' => 0))
-//		                     ->addFieldToFilter('website_id', $websiteId)
-//		                     ->addFieldToFilter('email_imported' , '1')
-//		                     ->getSize();
-//
-//		return $countContacts;
-//
-//	}
-//
-//	/**
-//	 * Get number of subscribers synced.
-//	 * @param int $websiteId
-//	 *
-//	 * @return int
-//	 */
-//	public function getNumberSubscribersSynced( $websiteId = 0 )
-//	{
-//		$countContacts = Mage::getModel('ddg_automation/contact')->getCollection()
-//		                     ->addFieldToFilter('subscriber_status', Dotdigitalgroup_Email_Model_Newsletter_Subscriber::STATUS_SUBSCRIBED)
-//		                     ->addFieldToFilter('subscriber_imported', '1')
-//		                     ->addFieldToFilter('website_id', $websiteId)
-//		                     ->getSize();
-//
-//		return $countContacts;
-//	}
-//
-//	/**
-//	 * Get number of subscribers.
-//	 * @param int $websiteId
-//	 *
-//	 * @return int
-//	 */
-//	public function getNumberSubscribers( $websiteId = 0 )
-//	{
-//
-//		$countContacts = Mage::getModel('ddg_automation/contact')->getCollection()
-//		                     ->addFieldToFilter('subscriber_status', Dotdigitalgroup_Email_Model_Newsletter_Subscriber::STATUS_SUBSCRIBED)
-//		                     ->addFieldToFilter('website_id', $websiteId)
-//		                     ->getSize();
-//		return $countContacts;
-//	}
-//
-//	/**
-//	 * Reset the imported contacts as guest
-//	 * @return int
-//	 */
-//	public function resetAllGuestContacts()
-//	{
-//
-//		/** @var $coreResource Mage_Core_Model_Resource */
-//		$coreResource = Mage::getSingleton('core/resource');
-//
-//		/** @var $conn Varien_Db_Adapter_Pdo_Mysql */
-//		$conn = $coreResource->getConnection('core_write');
-//
-//		try {
-//			$where = array();
-//			$where[] = $conn->quoteInto('email_imported is ?', new Zend_Db_Expr('not null'));
-//			$where[] = $conn->quoteInto('is_guest is ?', new Zend_Db_Expr('not null'));
-//
-//			$num = $conn->update($coreResource->getTableName('ddg_automation/contact'),
-//				array('email_imported' => new Zend_Db_Expr('null')),
-//				$where
-//			);
-//		} catch (Exception $e) {
-//			Mage::logException($e);
-//			Mage::helper('ddg')->rayLog('300', $e);
-//		}
-//		return $num;
-//	}
 
+	/**
+	 * Set all imported subscribers for reimport.
+	 *
+	 * @return int
+	 */
+	public function resetSubscribers() {
+
+		$coreResource = $this->_resource;
+
+		$conn = $coreResource->getConnection( );
+
+		try {
+			$num = $conn->update(
+				$coreResource->getTableName( 'email_contact' ),
+				array('subscriber_imported' => new \Zend_Db_Expr( 'null' ) ),
+				$conn->quoteInto('subscriber_imported is ?', new \Zend_Db_Expr('not null')));
+
+		} catch ( \Exception $e ) {
+		}
+
+		return $num;
+	}
+
+	/**
+	 * Get the number of customers for a website.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberCustomerContacts($websiteId = 0)
+	{
+		$countContacts = $this->getCollection()
+                 ->addFieldToFilter('customer_id', array('gt' => '0'))
+                 ->addFieldToFilter('website_id', $websiteId)
+                 ->getSize();
+		return $countContacts;
+	}
+
+	/**
+	 *
+	 * Get number of suppressed contacts as customer.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberCustomerSuppressed( $websiteId = 0 )
+	{
+		$countContacts = $this->getCollection()
+             ->addFieldToFilter('customer_id', array('gt' => 0))
+             ->addFieldToFilter('website_id', $websiteId)
+             ->addFieldToFilter('suppressed', '1')
+             ->getSize();
+
+		return $countContacts;
+	}
+
+	/**
+	 * Get number of synced customers.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberCustomerSynced( $websiteId = 0 )
+	{
+		$countContacts = $this->getCollection()
+             ->addFieldToFilter('customer_id', array('gt' => 0))
+             ->addFieldToFilter('website_id', $websiteId)
+             ->addFieldToFilter('email_imported' , '1')
+             ->getSize();
+
+		return $countContacts;
+
+	}
+
+	/**
+	 * Get number of subscribers synced.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberSubscribersSynced( $websiteId = 0 )
+	{
+		$countContacts = $this->getCollection()
+             ->addFieldToFilter('subscriber_status', \Dotdigitalgroup\Email\Model\Newsletter\Subscriber::STATUS_SUBSCRIBED)
+             ->addFieldToFilter('subscriber_imported', '1')
+             ->addFieldToFilter('website_id', $websiteId)
+             ->getSize();
+
+		return $countContacts;
+	}
+
+	/**
+	 * Get number of subscribers.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberSubscribers( $websiteId = 0 )
+	{
+		$countContacts = $this->getCollection()
+             ->addFieldToFilter('subscriber_status', \Dotdigitalgroup\Email\Model\Newsletter\Subscriber::STATUS_SUBSCRIBED)
+             ->addFieldToFilter('website_id', $websiteId)
+             ->getSize();
+		return $countContacts;
+	}
+
+	/**
+	 * Reset the imported contacts as guest
+	 * @return int
+	 */
+	public function resetAllGuestContacts()
+	{
+		$coreResource = $this->_resource;
+
+		$conn = $coreResource->getConnection();
+
+		try {
+			$where = array();
+			$where[] = $conn->quoteInto('email_imported is ?', new \Zend_Db_Expr('not null'));
+			$where[] = $conn->quoteInto('is_guest is ?', new \Zend_Db_Expr('not null'));
+
+			$num = $conn->update($coreResource->getTableName('email_contact'),
+				array('email_imported' => new \Zend_Db_Expr('null')),
+				$where
+			);
+		} catch (\Exception $e) {
+		}
+		return $num;
+	}
 }

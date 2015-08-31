@@ -1,7 +1,17 @@
 <?php
 
-class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Value
+namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
+
+class Value
 {
+	protected $_objectManager;
+
+	public function __construct(
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+	)
+	{
+		$this->_objectManager = $objectManagerInterface;
+	}
     /**
      * get element type
      *
@@ -14,7 +24,7 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Value
             case 'method': case 'shipping_method': case 'country_id': case 'region_id': case 'customer_group_id':
                 return 'select';
             default:
-                $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute);
+                $attribute = $this->_objectManager('Magento\Eav\Model\Config')->getAttribute('catalog_product', $attribute);
                 if ($attribute->usesSource()) {
                     return 'select';
                 }
@@ -28,45 +38,44 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Value
      * @param $attribute
      * @param bool $is_empty
      * @return array
-     * @throws Mage_Core_Exception
      */
     public function getValueSelectOptions($attribute, $is_empty = false)
     {
         $options = array();
         if($is_empty){
-            $options = Mage::getModel('adminhtml/system_config_source_yesno')
+            $options = $this->_objectManager->create('Magento\Config\Model\Config\Source\Yesno')
                 ->toOptionArray();
             return $options;
         }
 
         switch ($attribute) {
             case 'country_id':
-                $options = Mage::getModel('adminhtml/system_config_source_country')
+                $options = $this->_objectManager->create('Magento\Config\Model\Config\Source\Country')
                     ->toOptionArray();
                 break;
 
             case 'region_id':
-                $options = Mage::getModel('adminhtml/system_config_source_allregion')
+                $options = $this->_objectManager->create('Magento\Directory\Model\Config\Source\Allregion')
                     ->toOptionArray();
                 break;
 
             case 'shipping_method':
-                $options = Mage::getModel('adminhtml/system_config_source_shipping_allmethods')
+                $options = $this->_objectManager->create('Magento\Shipping\Model\Config\Source\Allmethods')
                     ->toOptionArray();
                 break;
 
             case 'method':
-                $options = Mage::getModel('adminhtml/system_config_source_payment_allmethods')
+                $options = $this->_objectManager->create('Magento\Shipping\Model\Config\Source\Allmethods')
                     ->toOptionArray();
                 break;
 
             case 'customer_group_id':
-                $options = Mage::getModel('adminhtml/system_config_source_customer_group')
+                $options = $this->_objectManager->create('Magento\Customer\Model\Config\Source\Group')
                     ->toOptionArray();
                 break;
 
             default:
-                $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute);
+                $attribute = $this->_objectManager->create('Magento\Eav\Model\Config')->getAttribute('catalog_product', $attribute);
                 if ($attribute->usesSource()) {
                     $options = $attribute->getSource()->getAllOptions(false);
                 }
@@ -81,7 +90,7 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Rules_Value
      */
     public function toOptionArray()
     {
-        $options = Mage::getModel('adminhtml/system_config_source_payment_allmethods')
+        $options = $this->_objectManager->create('Magento\Shipping\Model\Config\Source\Allmethods')
             ->toOptionArray();
 
         return $options;

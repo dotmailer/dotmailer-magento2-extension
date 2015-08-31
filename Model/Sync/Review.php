@@ -4,9 +4,13 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Review
 {
+	protected $_start;
+	protected $_reviews;
+	protected $_countReviews;
 	protected $_helper;
 	protected $_resource;
 	protected $_objectManager;
+	protected $_reviewIds;
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\Data $data,
@@ -127,7 +131,7 @@ class Review
 	public function reset()
 	{
 		$coreResource = $this->_resource;
-		$conn = $coreResource->getConnection('core_write');
+		$conn = $coreResource->getConnection();
 		try{
 			$num = $conn->update($coreResource->getTableName('email_review'),
 				array('review_imported' => new \Zend_Db_Expr('null')),

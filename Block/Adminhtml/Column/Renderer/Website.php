@@ -1,15 +1,28 @@
 <?php
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer;
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Column_Renderer_Website extends Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Abstract
+class Website extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractRenderer
 {
+	protected $storeManager;
+
+
+	public function __construct(
+		\Magento\Backend\Block\Context $context,
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+		$data = []
+	)
+	{
+		$this->storeManger = $storeManagerInterface;
+		parent::__construct($context, $data);
+
+	}
     /**
      * Render grid columns.
-     * @param Varien_Object $row
      *
      * @return string
      */
-    public function render(Varien_Object $row)
+    public function render(\Magento\Framework\DataObject $row)
     {
-        return Mage::app()->getStore($this->_getValue($row))->getWebsiteId();
+        return $this->storeManger->getStore($this->_getValue($row))->getWebsiteId();
     }
 }

@@ -157,20 +157,19 @@ class Catalog
 	 */
 	private function _exportInSingle($store, $collectionName, $websiteId)
 	{
-		$helper = Mage::helper('ddg');
 		$this->_productIds = array();
 
 		$products = $this->_getProductsToExport($store, true);
 		if($products){
 			foreach($products as $product){
-				$connectorProduct = Mage::getModel('ddg_automation/connector_product', $product);
-				$helper->log('---------- Start catalog single sync ----------');
+				$connectorProduct = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Connector\Product', array($product));
+				$this->_helper->log('---------- Start catalog single sync ----------');
 
 				//register in queue with importer
-				$check = Mage::getModel('ddg_automation/importer')->registerQueue(
+				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Mode\Proccessor')->registerQueue(
 					$collectionName,
 					$connectorProduct,
-					Dotdigitalgroup_Email_Model_Importer::MODE_SINGLE,
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
 					$websiteId
 				);
 
@@ -187,15 +186,14 @@ class Catalog
 	}
 
 	/**
-	 * get product collection
-	 *
 	 * @param $store
-	 * @param $modified
-	 * @return bool|Mage_Catalog_Model_Resource_Product_Collection
+	 * @param bool|false $modified
+	 *
+	 * @return bool
 	 */
 	private function _getProductsToExport($store, $modified = false)
 	{
-		$limit = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT);
+		$limit = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT);
 		$connectorCollection = $this->getCollection();
 
 		if($modified)
@@ -207,22 +205,22 @@ class Catalog
 
 		if($connectorCollection->getSize()) {
 			$product_ids = $connectorCollection->getColumnValues('product_id');
-			$productCollection = Mage::getModel('catalog/product')->getCollection();
+			$productCollection = $this->_objectManager->create('Magento\Catalog\Model\Product')->getCollection();
 			$productCollection
 				->addAttributeToSelect('*')
 				->addStoreFilter($store)
 				->addAttributeToFilter('entity_id', array('in' => $product_ids));
 
 			//visibility filter
-			if($visibility = Mage::getStoreConfig(
-				Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY)){
+			if($visibility = $this->_helper->getWebsiteConfig(
+				\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY)){
 				$visibility = explode(',', $visibility);
 				$productCollection->addAttributeToFilter('visibility', array('in' => $visibility));
 			}
 
 			//type filter
-			if($type = Mage::getStoreConfig(
-				Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE)){
+			if($type = $this->_helper->getWebsiteConfig(
+				\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE)){
 				$type = explode(',', $type);
 				$productCollection->addAttributeToFilter('type_id', array('in' => $type));
 			}
@@ -238,13 +236,6 @@ class Catalog
 		return false;
 	}
 
-
-
-
-
-
-
-
 	/**
 	 * set imported in bulk query. if modified true then set modified to null in bulk query.
 	 *
@@ -254,20 +245,21 @@ class Catalog
 	private function _setImported($ids, $modified = false)
 	{
 		try {
-			$coreResource = Mage::getSingleton( 'core/resource' );
+			$coreResource = $this->_resource;
 			$write        = $coreResource->getConnection( 'core_write' );
 			$tableName    = $coreResource->getTableName( 'email_catalog' );
 			$ids          = implode( ', ', $ids );
-			$now          = Mage::getSingleton( 'core/date' )->gmtDate();
+
 			if ( $modified ) {
-				$write->update( $tableName, array( 'modified'   => new Zend_Db_Expr( 'null' ),
-				                                   'updated_at' => $now
+				$write->update( $tableName, array( 'modified'   => new \Zend_Db_Expr( 'null' ),
+				                                   'updated_at' => gmdate('Y-m-d H:i:s')
 				), "product_id IN ($ids)" );
 			} else {
-				$write->update( $tableName, array( 'imported' => 1, 'updated_at' => $now ), "product_id IN ($ids)" );
+				$write->update( $tableName, array( 'imported' => 1,
+				                                   'updated_at' => gmdate('Y-m-d H:i:s'), "product_id IN ($ids)" ));
 			}
-		} catch ( Exception $e ) {
-			Mage::logException( $e );
+		} catch ( \Exception $e ) {
+
 		}
 	}
 }

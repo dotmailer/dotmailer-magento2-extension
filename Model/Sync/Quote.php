@@ -93,12 +93,11 @@ class Quote
 
 			foreach($collection as $emailQuote){
 				$store = $this->_storeManager->getStore($emailQuote->getStoreId());
-				$quote = $this->_objectManager->create('Magento\Sales\Model\Quote')
+				$quote = $this->_objectManager->create('Magento\Quote\Model\Quote')
 					->setStore($store)
 					->load($emailQuote->getQuoteId());
 				//quote found
 				if($quote->getId()) {
-					$connectorQuote = Mage::getModel('ddg_automation/connector_quote', $quote);
 					$connectorQuote = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Connector\Quote')
 						->setQuote($quote);
 					$this->_quotes[$website->getId()][] = $connectorQuote;
@@ -106,8 +105,8 @@ class Quote
 				$this->_quoteIds[] = $emailQuote->getQuoteId();
 				$this->_count++;
 			}
-		}catch(Exception $e){
-			Mage::logException($e);
+		}catch(\Exception $e){
+
 		}
 	}
 
@@ -139,30 +138,28 @@ class Quote
 	/**
 	 * update quotes for website in single
 	 *
-	 * @param Mage_Core_Model_Website $website
 	 */
-	private function _exportQuoteForWebsiteInSingle(Mage_Core_Model_Website $website)
+	private function _exportQuoteForWebsiteInSingle( $website)
 	{
 		try {
-			$limit = Mage::helper('ddg')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT, $website);
+			$limit = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT, $website);
 			$collection = $this->_getQuoteToImport($website, $limit, true);
 			foreach ($collection as $emailQuote) {
 				//register in queue with importer
-				$check = Mage::getModel('ddg_automation/importer')->registerQueue(
-					Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_QUOTE,
+				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
 					array($emailQuote->getQuoteId()),
-					Dotdigitalgroup_Email_Model_Importer::MODE_SINGLE,
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
 					$website->getId()
 				);
 				if ($check) {
-					$message = 'Quote updated : ' . $emailQuote->getQuoteId();
-					Mage::helper('ddg')->log($message);
-					$emailQuote->setModified(null)->save();
+					$this->_helper->log('Quote updated : ' . $emailQuote->getQuoteId());
+					$emailQuote->setModified(null)
+						->save();
 					$this->_count++;
 				}
 			}
-		} catch (Exception $e) {
-			Mage::logException($e);
+		} catch (\Exception $e) {
 		}
 	}
 
@@ -175,17 +172,14 @@ class Quote
 	 */
 	public function resetQuotes()
 	{
-		/** @var $coreResource Mage_Core_Model_Resource */
-		$coreResource = Mage::getSingleton('core/resource');
+		$coreResource = $this->_resource;
 
-		/** @var $conn Varien_Db_Adapter_Pdo_Mysql */
-		$conn = $coreResource->getConnection('core_write');
+		$conn = $coreResource->getConnection();
 		try{
-			$num = $conn->update($coreResource->getTableName('ddg_automation/quote'),
-				array('imported' => new Zend_Db_Expr('null'), 'modified' => new Zend_Db_Expr('null'))
+			$num = $conn->update($coreResource->getTableName('email_quote'),
+				array('imported' => new \Zend_Db_Expr('null'), 'modified' => new \Zend_Db_Expr('null'))
 			);
-		}catch (Exception $e){
-			Mage::logException($e);
+		}catch (\Exception $e){
 		}
 
 		return $num;
@@ -199,15 +193,13 @@ class Quote
 	private function _setImported($ids)
 	{
 		try{
-			$coreResource = Mage::getSingleton('core/resource');
-			$write = $coreResource->getConnection('core_write');
+			$coreResource = $this->_resource;
+			$write = $coreResource->getConnection();
 			$tableName = $coreResource->getTableName('email_quote');
 			$ids = implode(', ', $ids);
-			$now = Mage::getSingleton('core/date')->gmtDate();
-			$write->update($tableName, array('imported' => 1, 'updated_at' => $now, 'modified' => new Zend_Db_Expr('null')), "quote_id IN ($ids)");
-		}catch (Exception $e){
-			Mage::logException($e);
+			$write->update($tableName, array('imported' => 1, 'updated_at' => gmdate('Y-m-d H:i:s'),
+			                                 'modified' => new \Zend_Db_Expr('null')), "quote_id IN ($ids)");
+		}catch (\Exception $e){
 		}
 	}
-
 }

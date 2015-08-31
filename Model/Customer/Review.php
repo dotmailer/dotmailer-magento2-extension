@@ -45,13 +45,17 @@ class Review
     public $store_name;
 
 
-    public function __construct( )
+	protected $_storeManager;
+
+    public function __construct(
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+    )
     {
+	    $this->_storeManager = $storeManagerInterface;
     }
 
 	public function setCustomer( $customer)
 	{
-
 		$this->setCustomerId($customer->getId());
 		$this->email = $customer->getEmail();
 	}
@@ -109,9 +113,9 @@ class Review
      */
     public function setReviewDate($date)
     {
-        $created_at = new Zend_Date($date, Zend_Date::ISO_8601);
+        $created_at = new \Zend_Date($date, \Zend_Date::ISO_8601);
 
-        $this->review_date = $created_at->toString(Zend_Date::ISO_8601);;
+        $this->review_date = $created_at->toString(\Zend_Date::ISO_8601);;
         return $this;
     }
 
@@ -126,10 +130,9 @@ class Review
     /**
      * set product
      *
-     * @param Mage_Catalog_Model_Product $product
      * @return $this
      */
-    public function setProduct(Mage_Catalog_Model_Product $product)
+    public function setProduct(\Magento\Catalog\Model\Product $product)
     {
         $this->setProductName($product->getName());
         $this->setProductSku($product->getSku());
@@ -139,12 +142,11 @@ class Review
     /**
      * set review data
      *
-     * @param Mage_Review_Model_Review $review $product
      * @return $this
      */
-    public function setReviewData(Mage_Review_Model_Review $review)
+    public function setReviewData(\Magento\Review\Model\Review $review)
     {
-        $store = Mage::app()->getStore($review->getStoreId());
+        $store = $this->_storeManager->getStore($review->getStoreId());
         $websiteName = $store->getWebsite()->getName();
         $storeName = $store->getName();
         $this->setId($review->getReviewId())

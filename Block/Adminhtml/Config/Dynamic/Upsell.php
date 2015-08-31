@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Upsell extends \Magento\Config\Block\System\Config\Form\Field

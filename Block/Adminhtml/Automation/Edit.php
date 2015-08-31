@@ -1,15 +1,19 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Automation_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Automation;
+
+class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
-    public function __construct()
+	protected $_coreRegistry = null;
+
+	public function _construct()
     {
-        parent::__construct();
-        $this->_blockGroup = 'ddg_automation';
+        parent::_construct();
+        $this->_blockGroup = 'dotdigitalgroup_email';
         $this->_controller = 'adminhtml_automation';
-        $this->_updateButton('delete', 'label', Mage::helper('ddg')->__('Delete Contact'));
-        $this->_addButton('saveandcontinue', array(
-            'label'        => Mage::helper('ddg')->__('Save And Continue Edit'),
+        $this->buttonList->update('delete', 'label', __('Delete Contact'));
+        $this->buttonList->add('saveandcontinue', array(
+            'label'        => __('Save And Continue Edit'),
             'onclick'    => 'saveAndContinueEdit()',
             'class'        => 'save',
         ), -100);
@@ -26,10 +30,10 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Automation_Edit extends Mage_Adminht
 	 */
     public function getHeaderText()
     {
-        if ( Mage::registry('automation_data') && Mage::registry('contact_data')->getId() ) {
-            return Mage::helper('ddg')->__("Edit Automation '%s'", $this->htmlEscape(Mage::registry('contact_data')->getContact()));
+        if ( $this->_coreRegistry->registry('automation_data') && $this->_coreRegistry->registry('contact_data')->getId() ) {
+            return __("Edit Automation '%s'", $this->escapeHtml($this->_coreRegistry->registry('contact_data')->getContact()));
         } else {
-            return Mage::helper('ddg')->__('Add Automation');
+            return __('Add Automation');
         }
     }
 }

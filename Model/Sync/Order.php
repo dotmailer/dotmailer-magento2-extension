@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Order
@@ -256,5 +257,28 @@ class Order
 		}
 
 		return true;
+	}
+	/**
+	 * set imported in bulk query
+	 * //@todo dry as it's used in many places with same logic
+	 * @param $ids
+	 * @param $modified
+	 */
+	private function _setImported($ids, $modified = false)
+	{
+		try{
+			$coreResource = $this->_resource;
+			$write = $coreResource->getConnection('core_write');
+			$tableName = $coreResource->getTableName('email_order');
+			$ids = implode(', ', $ids);
+
+			if ($modified)
+				$write->update($tableName, array('modified' => new \Zend_Db_Expr('null'), 'updated_at' =>
+					gmdate('Y-m-d H:i:s'), "order_id IN ($ids)"));
+			else
+				$write->update($tableName, array('email_imported' => 1, 'updated_at' => gmdate('Y-m-d H:i:s')), "order_id IN ($ids)");
+		}catch (\Exception $e){
+
+		}
 	}
 }

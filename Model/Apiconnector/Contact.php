@@ -12,6 +12,9 @@ class Contact
 
 	protected $_logger;
 	protected $_helper;
+	protected $_registry;
+	protected $messageManager;
+	protected $_storeManager;
 	protected $_scopeConfig;
 	protected $contactCollection;
 	protected $_resource;
@@ -21,7 +24,10 @@ class Contact
 		LoggerInterface $logger,
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\File   $file,
+		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Backend\App\Action\Context $context,
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
 		\Dotdigitalgroup\Email\Helper\Config $config,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -32,6 +38,9 @@ class Contact
 		$this->_file = $file;
 		$this->_config = $config;
 		$this->_logger = $logger;
+		$this->_registry = $registry;
+		$this->_storeManager = $storeManagerInterface;
+		$this->messageManager = $context->getMessageManager();
 		$this->_helper = $helper;
 		$this->_resource = $resource;
 		$this->_scopeConfig = $scopeConfig;
@@ -150,46 +159,45 @@ class Contact
 		/**
 		 * END HEADERS.
 		 */
-
+		$coreResource  = $this->_resource;
 		//only execute once despite number of websites
 		if (!$this->_sqlExecuted)  {
 			//check subscriber and update in one query
-//			$select->joinLeft(
-//				array('s' => $coreResource->getTableName('newsletter/subscriber')),
-//				"c.customer_id = s.customer_id",
-//				array('subscriber_status' => 's.subscriber_status')
-//			);
-//			//update sql statement
-//			$updateSql = $select->crossUpdateFromSelect(array('c' => $contactTable));
-//			//run query and update subscriber_status column
-//			$write->query($updateSql);
-//			//update is_subscriber column if subscriber_status is not null
-//			$write->update($contactTable, array('is_subscriber' => 1), "subscriber_status is not null");
-//
-//
-//			//remove contact with customer id set and no customer
-//			$select->reset()
-//			       ->from(
-//				       array('c' => $contactTable),
-//				       array('c.customer_id')
-//			       )
-//			       ->joinLeft(
-//				       array('e' => $coreResource->getTableName('customer_entity')),
-//				       "c.customer_id = e.entity_id"
-//			       )
-//			       ->where('e.entity_id is NULL');
-//			//delete sql statement
-//			$deleteSql = $select->deleteFromSelect('c');
-//			//run query
-//			$write->query($deleteSql);
-//
-//			//set flag
-//			$this->_sqlExecuted = true;
+			$select->joinLeft(
+				array('s' => $coreResource->getTableName('newsletter_subscriber')),
+				"c.customer_id = s.customer_id",
+				array('subscriber_status' => 's.subscriber_status')
+			);
+			//update sql statement
+			$updateSql = $select->crossUpdateFromSelect(array('c' => $contactTable));
+			//run query and update subscriber_status column
+			$write->query($updateSql);
+			//update is_subscriber column if subscriber_status is not null
+			$write->update($contactTable, array('is_subscriber' => 1), "subscriber_status is not null");
+
+
+			//remove contact with customer id set and no customer
+			$select->reset()
+			       ->from(
+				       array('c' => $contactTable),
+				       array('c.customer_id')
+			       )
+			       ->joinLeft(
+				       array('e' => $coreResource->getTableName('customer_entity')),
+				       "c.customer_id = e.entity_id"
+			       )
+			       ->where('e.entity_id is NULL');
+			//delete sql statement
+			$deleteSql = $select->deleteFromSelect('c');
+			//run query
+			$write->query($deleteSql);
+
+			//set flag
+			$this->_sqlExecuted = true;
 		}
 
 		foreach ($customerCollection as $customer) {
 
-			//$connectorCustomer = Mage::getModel('ddg_automation/apiconnector_customer', $mappedHash);
 			$connectorCustomer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Customer' );
 			$connectorCustomer->setMappingHash($mappedHash);
 			$connectorCustomer->setCustomerData($customer);
@@ -249,41 +257,39 @@ class Contact
 	 * @param null $contactId
 	 *
 	 * @return mixed
-	 * @throws Mage_Core_Exception
 	 */
 	public function syncContact($contactId = null)
 	{
 		if ($contactId)
-			$contact = Mage::getModel('ddg_automation/contact')->load($contactId);
+			$contact = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->load($contactId);
 		else {
-			$contact = Mage::registry('current_contact');
+			$contact = $this->_registry->registry('current_contact');
 		}
 		if (! $contact->getId()) {
-			Mage::getSingleton('adminhtml/session')->addError('No contact found!');
+			$this->messageManager->addError('No contact found!');
 			return false;
 		}
 
 		$websiteId = $contact->getWebsiteId();
-		$website = Mage::app()->getWebsite($websiteId);
+		$website = $this->_storeManager->getWebsite($websiteId);
 		$updated = 0;
 		$customers = $headers = $allMappedHash = array();
-		$helper = Mage::helper('ddg');
-		$helper->log('---------- Start single customer sync ----------');
+		$this->_helper->log('---------- Start single customer sync ----------');
 		//skip if the mapping field is missing
-		if(!$helper->getCustomerAddressBook($website))
+		if(!$this->_helper->getCustomerAddressBook($website))
 			return false;
 		//$fileHelper = Mage::helper('ddg/file');
 
 		$customerId = $contact->getCustomerId();
 		if (!$customerId) {
-			Mage::getSingleton('adminhtml/session')->addError('Cannot manually sync guests!');
+			$this->_storeManager->addError('Cannot manually sync guests!');
 			return false;
 		}
-		$client = Mage::helper('ddg')->getWebsiteApiClient($website);
+		$client = $this->_helper->getWebsiteApiClient($website);
 
 		//create customer filename
 		$customersFile = strtolower($website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv');
-		$helper->log('Customers file : ' . $customersFile);
+		$this->_helper->log('Customers file : ' . $customersFile);
 
 		/**
 		 * HEADERS.
@@ -291,7 +297,7 @@ class Contact
 		$mappedHash = $this->_file->getWebsiteCustomerMappingDatafields($website);
 		$headers = $mappedHash;
 		//custom customer attributes
-		$customAttributes = $helper->getCustomAttributes($website);
+		$customAttributes = $this->_helper->getCustomAttributes($website);
 		foreach ($customAttributes as $data) {
 			$headers[] = $data['datafield'];
 			$allMappedHash[$data['attribute']] = $data['datafield'];
@@ -315,7 +321,8 @@ class Contact
 			/**
 			 * DATA.
 			 */
-			$connectorCustomer =  Mage::getModel('ddg_automation/apiconnector_customer', $mappedHash);
+			$connectorCustomer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Customer');
+			$connectorCustomer->setMappingHash($mappedHash);
 			$connectorCustomer->setCustomerData($customer);
 			//count number of customers
 			$customers[] = $connectorCustomer;
@@ -335,11 +342,11 @@ class Contact
 			 */
 
 			//mark the contact as imported
-			$contactModel->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED);
-			$subscriber = Mage::getModel('newsletter/subscriber')->loadByEmail($customer->getEmail());
+			$contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
+			$subscriber = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')->loadByEmail($customer->getEmail());
 			if ($subscriber->isSubscribed()) {
 				$contactModel->setIsSubscriber('1')
-				             ->setSubscriberStatus($subscriber->getSubscriberStatus());
+					->setSubscriberStatus($subscriber->getSubscriberStatus());
 			}
 
 			$contactModel->save();
@@ -350,14 +357,14 @@ class Contact
 			//import contacts
 			if ($updated > 0) {
 				//register in queue with importer
-				Mage::getModel('ddg_automation/importer')->registerQueue(
-					Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_CONTACT,
+				$this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
 					'',
-					Dotdigitalgroup_Email_Model_Importer::MODE_BULK,
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
 					$website->getId(),
 					$customersFile
 				);
-				$client->postAddressBookContactsImport($customersFile,   $helper->getCustomerAddressBook($website));
+				$client->postAddressBookContactsImport($customersFile,   $this->_helper->getCustomerAddressBook($website));
 			}
 		}
 		return $contact->getEmail();
@@ -399,19 +406,21 @@ class Contact
 		// customer order information
 		$alias = 'subselect';
 		//@todo fix the stautues datafields to sync and sales values
-//		$statuses = Mage::helper('ddg')->getWebsiteConfig(
-//			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS, $websiteId
-//		);
-//		$subselect = Mage::getModel('Varien_Db_Select', Mage::getSingleton('core/resource')->getConnection('core_read'))
-//		                 ->from($sales_flat_order_grid, array(
-//				                 'customer_id as s_customer_id',
-//				                 'sum(grand_total) as total_spend',
-//				                 'count(*) as number_of_orders',
-//				                 'avg(grand_total) as average_order_value',
-//			                 )
-//		                 )
-//		//                 ->where("status in (?)", $statuses)
-//		                 ->group('customer_id')
+		$statuses = $this->_helper->getWebsiteConfig(
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS, $websiteId
+		);
+		$orderTable = $this->_resource->getTableName('sales_order');
+		//$subselect = Mage::getModel('Varien_Db_Select', Mage::getSingleton('core/resource')->getConnection('core_read'))
+		$subselect = $this->_resource->getConnection()
+		                 ->from($orderTable, array(
+				                 'customer_id as s_customer_id',
+				                 'sum(grand_total) as total_spend',
+				                 'count(*) as number_of_orders',
+				                 'avg(grand_total) as average_order_value',
+			                 )
+		                 )
+		                 ->where("status in (?)", $statuses)
+		                 ->group('customer_id')
 		;
 		$customerCollection->getSelect()->columns(array(
 				'last_order_date' => new \Zend_Db_Expr("(SELECT created_at FROM $sales_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
@@ -506,9 +515,9 @@ class Contact
 				),
 			)
 		);
-		//@todo fix first the subselect
-//		$customerCollection->getSelect()
-//		                   ->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
+
+		$customerCollection->getSelect()
+		                   ->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
 
 
 		return $customerCollection;

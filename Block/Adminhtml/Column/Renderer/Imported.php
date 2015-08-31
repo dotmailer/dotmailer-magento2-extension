@@ -4,11 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer;
 
 class Imported extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractRenderer
 {
+
 	/**
-	 * Renders grid column
+	 * @param \Magento\Framework\DataObject $row
 	 *
-	 * @param   Object $row
-	 * @return  string
+	 * @return string
 	 */
 	public function render(\Magento\Framework\DataObject $row)
 	{

@@ -5,10 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Test extends \Dotdigitalgroup\Email\Model\Apiconnector\Client
 {
 
-	public function __construct()
-	{
 
-	}
 
     /**
 	 * Validate apiuser on save.
@@ -26,8 +23,7 @@ class Test extends \Dotdigitalgroup\Email\Model\Apiconnector\Client
 
             $accountInfo = $this->getAccountInfo();
             if (isset($accountInfo->message)) {
-                Mage::getSingleton('adminhtml/session')->addError($accountInfo->message);
-                Mage::helper('ddg')->log('VALIDATION ERROR :  ' . $accountInfo->message);
+                $this->_helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
                 return false;
             }
             return $accountInfo;

@@ -1,4 +1,5 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist;
 
 class Content   extends \Magento\Config\Block\System\Config\Form\Field
