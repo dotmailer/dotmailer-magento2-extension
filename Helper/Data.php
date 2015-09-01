@@ -6,11 +6,13 @@ namespace Dotdigitalgroup\Email\Helper;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 	protected $_context;
+	protected $_resourceConfig;
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_backendConfig;
 
 	public function __construct(
+		\Magento\Config\Model\Resource\Config $resourceConfig,
 		\Magento\Framework\App\Resource $adapter,
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\App\Helper\Context $context,
@@ -19,6 +21,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	)
 	{
 		$this->_adapter = $adapter;
+		$this->_resourceConfig = $resourceConfig;
 		$this->_storeManager = $storeManager;
 		$this->_objectManager = $objectManager;
 
@@ -33,7 +36,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	}
 
     /**
-     * Get api is enabled.
+     * Get api creadentials enabled.
      *
      * @param int $website
      *
@@ -96,7 +99,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function auth($authRequest)
     {
         if ($authRequest != $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE)) {
-            $this->getRaygunClient()->Send('Authentication failed with code :' . $authRequest);
+
             //throw new Exception('Authentication failed : ' . $authRequest);
             return false;
         }
@@ -110,7 +113,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getMappedOrderId()
     {
-        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID);
+        return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID, 'default');
     }
 
 	/**
@@ -148,14 +151,31 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	    return $passcode;
     }
 
+	/**
+	 * Save config data.
+	 * @param $path
+	 * @param $value
+	 * @param $scope
+	 * @param $scopeId
+	 */
+	public function saveConfigData($path, $value, $scope, $scopeId )
+	{
+		$this->_resourceConfig->saveConfig(
+			$path,
+			$value,
+			$scope,
+			$scopeId
+		);
+	}
+
 	public function disableTransactionalDataConfig( $scope, $scopeId )
 	{
-		//@todo disable all transactional data as in account may not be enabled.
-		return;
-		$config = Mage::getConfig();
-		$config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, 0, $scope, $scopeId);
-		$config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, 0, $scope, $scopeId);
-		$config->cleanCache();
+		$this->_resourceConfig->saveConfig(
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
+			0,
+			$scope,
+			$scopeId
+		);
 	}
 
 	/**
@@ -524,28 +544,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Disable website config when the request is made admin area only!
      * @param $path
      *
-     * @throws Mage_Core_Exception
      */
     public function disableConfigForWebsite($path)
     {
         $scopeId = 0;
-        if ($website = Mage::app()->getRequest()->getParam('website')) {
+        if ($website = $this->_request->getRequest()->getParam('website')) {
             $scope = 'websites';
-            $scopeId = Mage::app()->getWebsite($website)->getId();
+            $scopeId = $this->_storeManager->getWebsite($website)->getId();
         } else {
             $scope = "default";
         }
-        $config = Mage::getConfig();
-        $config->saveConfig($path, 0, $scope, $scopeId);
-        $config->cleanCache();
+	    $this->_resourceConfig->saveConfig(
+		    $path,
+		    0,
+		    $scope,
+		    $scopeId
+	    );
     }
 
     /**
      * number of customers with duplicate emails, emails as total number
-     * @return Mage_Customer_Model_Resource_Customer_Collection
      */
-    public function getCustomersWithDuplicateEmails( ) {
-        $customers = Mage::getModel('customer/customer')->getCollection();
+    public function getCustomersWithDuplicateEmails( )
+    {
+	    $customers = $this->_objectManager->create('Magento\Customer\Model\Customer')->getCollection();
 
         //duplicate emails
         $customers->getSelect()
@@ -556,68 +578,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $customers;
     }
 
-    /**
-     * Create new raygun client.
-     *
-     */
-	public function getRaygunClient()
-	{
-		$code = Mage::getstoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_CODE);
-
-		if ($this->raygunEnabled()) {
-			//use async mode for sending.
-			$async = Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_ASYNC);
-			require_once Mage::getBaseDir('lib') . DS . 'Raygun4php' . DS  . 'RaygunClient.php';
-			return '';//new Raygun4php\RaygunClient($code, $async);
-		}
-
-		return false;
-	}
-
-    /**
-     * Raygun logs.
-     * @param int $errno
-     * @param $message
-     * @param string $filename
-     * @param int $line
-     * @param array $tags
-     *
-     * @return int|null
-     */
-	public function rayLog($errno = 100, $message, $filename = 'helper/data.php', $line = 1, $tags = array())
-	{
-		if (!$this->raygunEnabled())
-			return;
-		$baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
-		if (empty($tags)) {
-			$tags = array(
-				$baseUrl,
-				Mage::getVersion()
-			);
-		}
-
-		$client = $this->getRaygunClient();
-		//user, firstname, lastname, email, annonim, uuid
-		$client->SetUser($baseUrl, null, null, $this->getApiUsername());
-		$client->SetVersion($this->getConnectorVersion());
-		$client->SendError($errno, $message, $filename,$line, $tags);
-	}
-
-
-    /**
-     * check for raygun application and if enabled.
-     * @param int $websiteId
-     *
-     * @return mixed
-     * @throws Mage_Core_Exception
-     */
-    public function raygunEnabled($websiteId = 0)
-    {
-        $website = Mage::app()->getWebsite($websiteId);
-
-        return  (bool)$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_CODE);
-
-    }
 
     /**
      * Generate the baseurl for the default store
@@ -628,30 +588,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	{
 		$baseUrl = '';
 
-		//$website = $this->_getRequest()->getParam('website', null);
-
-
 		$url = $this->_urlBuilder->getBaseUrl();
-
-
-
-		return $url;
-		$website = Mage::app()->getRequest()->getParam('website', false);
+		$website = $this->_request->getRequest()->getParam('website', false);
 
 		//set website url for the default store id
-		$website = ($website)? Mage::app()->getWebsite( $website ) : 0;
+		$website = ($website)? $this->_storeManager->getWebsite( $website ) : 0;
 
-		$defaultGroup = Mage::app()->getWebsite($website)
+		$defaultGroup = $this->_request->getWebsite($website)
 		                    ->getDefaultGroup();
 
 		if (! $defaultGroup)
-			return $mage = Mage::app()->getStore()->getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
+			return $mage = $this->_request->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
 
 		//base url
-		$baseUrl = Mage::app()->getStore($defaultGroup->getDefaultStore())->getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK);
+		$baseUrl = $this->_storeManager->getStore($defaultGroup->getDefaultStore())->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK);
 
 		return $baseUrl;
-
 	}
 
     /**
@@ -662,7 +614,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isNewsletterSuccessDisabled($store = 0)
     {
-        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS, $store);
+        return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS, 'store', $store);
     }
 
     /**
@@ -700,7 +652,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getEasyEmailCapture()
     {
-        return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE);
+        return (bool) $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE);
     }
 
 	/**
@@ -708,7 +660,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getEasyEmailCaptureForNewsletter()
 	{
-		return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER);
+		return (bool) $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER);
 	}
     /**
      * get feefo logon config value
@@ -717,7 +669,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getFeefoLogon()
     {
-        return $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_REVIEWS_FEEFO_LOGON);
+        return $this->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEWS_FEEFO_LOGON);
     }
 
     /**
@@ -727,7 +679,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getFeefoReviewsPerProduct()
     {
-        return $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_REVIEWS_FEEFO_REVIEWS);
+        return $this->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEWS_FEEFO_REVIEWS);
     }
 
     /**
@@ -737,26 +689,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getFeefoLogoTemplate()
     {
-        return $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_REVIEWS_FEEFO_TEMPLATE);
+        return $this->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEWS_FEEFO_TEMPLATE);
     }
 
 	/**
 	 * update data fields
 	 *
 	 * @param $email
-	 * @param Mage_Core_Model_Website $website
 	 * @param $storeName
 	 */
-	public function updateDataFields($email, Mage_Core_Model_Website $website, $storeName)
+	public function updateDataFields($email, $website, $storeName)
     {
         $data = array();
-        if($store_name = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME)){
+        if($store_name = $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME)){
             $data[] = array(
                 'Key' => $store_name,
                 'Value' => $storeName
             );
         }
-        if($website_name = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME)){
+        if($website_name = $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME)){
             $data[] = array(
                 'Key' => $website_name,
                 'Value' => $website->getName()

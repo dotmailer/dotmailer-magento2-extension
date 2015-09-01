@@ -402,10 +402,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Rest
 
         if (isset($response->message)) {
             $message = 'POST CREATE DATAFIELDS ' . $response->message;
-            Mage::helper('ddg')->log($message);
-            Mage::helper('ddg')->log($data);
-	        if (! in_array($response->message, $this->exludeMessages))
-                Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
+            $this->_helper->log($message);
+            $this->_helper->log(implode(',', $data));
         }
 
         return $response;

@@ -2,8 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-class Suppressedcontacts extends \Magento\Config\Block\System\Config\Form\Field
+class Automapdatafields extends \Magento\Config\Block\System\Config\Form\Field
 {
+
 	protected $_buttonLabel = 'Run Now';
 
 	/**
@@ -25,8 +26,8 @@ class Suppressedcontacts extends \Magento\Config\Block\System\Config\Form\Field
 	 */
 	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
 	{
-
-		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/suppresscontacts');
+		$website = $this->getRequest()->getParam('website', 0);
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/automapdatafields/website' . $website);
 
 		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
 		            ->setType('button')
@@ -35,5 +36,4 @@ class Suppressedcontacts extends \Magento\Config\Block\System\Config\Form\Field
 		            ->toHtml();
 
 	}
-
 }

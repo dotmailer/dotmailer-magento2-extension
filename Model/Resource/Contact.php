@@ -2,10 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Resource;
 
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\Stdlib\DateTime as LibDateTime;
-use Magento\Store\Model\Store;
-use Magento\Catalog\Model\Product;
 
 class Contact extends \Magento\Framework\Model\Resource\Db\AbstractDb
 {
@@ -20,6 +16,25 @@ class Contact extends \Magento\Framework\Model\Resource\Db\AbstractDb
 	}
 
 
+	/**
+	 * Remove all contact_id from the table.
+	 * @return int
+	 *
+	 */
+	public function deleteContactIds()
+	{
+
+		$conn = $this->getConnection();
+		try{
+			$num = $conn->update($this->getTable('email_contact'),
+				array('contact_id' => new \Zend_Db_Expr('null')),
+				$conn->quoteInto('contact_id is ?', new \Zend_Db_Expr('not null'))
+			);
+		}catch (\Exception $e){
+
+		}
+		return $num;
+	}
 
 
 	/**
@@ -29,6 +44,7 @@ class Contact extends \Magento\Framework\Model\Resource\Db\AbstractDb
 	public function resetAllContacts()
 	{
 		try{
+
 			$conn = $this->getConnection();
 			$num = $conn->update($conn->getTableName('email_contact'),
 				array('email_imported' => new \Zend_Db_Expr('null')),

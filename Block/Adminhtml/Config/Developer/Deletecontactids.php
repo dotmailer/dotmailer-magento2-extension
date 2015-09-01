@@ -5,21 +5,37 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
 {
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
-        $this->setElement($element);
-        return $this->_getAddRowButtonHtml("Run Now");
-    }
 
-    protected function _getAddRowButtonHtml($title)
-    {
-	    return $title;
-        $url = Mage::helper('adminhtml')->getUrl("*/connector/deletecontactids");
+	protected $_buttonLabel = 'Run Now';
 
-        return $this->getLayout()->createBlock('adminhtml/widget_button')
-            ->setType('button')
-            ->setLabel($this->__($title))
-            ->setOnClick("window.location.href='" . $url . "'")
-            ->toHtml();
-    }
+	/**
+	 * @param $buttonLabel
+	 *
+	 * @return $this
+	 */
+	public function setButtonLabel($buttonLabel)
+	{
+		$this->_buttonLabel = $buttonLabel;
+		return $this;
+	}
+
+	/**
+	 * Get the button and scripts contents
+	 *
+	 * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+	 * @return string
+	 */
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+	{
+
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/deletecontactids');
+
+		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
+		            ->setType('button')
+		            ->setLabel(__($this->_buttonLabel))
+		            ->setOnClick("window.location.href='" . $url . "'")
+		            ->toHtml();
+
+	}
+
 }

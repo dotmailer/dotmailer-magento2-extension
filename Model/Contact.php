@@ -268,4 +268,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 		}
 		return $num;
 	}
+
+
 }

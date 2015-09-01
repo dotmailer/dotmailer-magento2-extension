@@ -32,9 +32,7 @@ class Addressbooks
 	private function getAddressBooks()
 	{
 		$website = $this->_helper->getWebsite();
-		$client = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Client');
-		$client->setApiUsername( $this->_helper->getApiUsername( $website ) )
-			->setApiPassword( $this->_helper->getApiPassword( $website ) );
+		$client = $this->_helper->getWebsiteApiClient($website);
 
 		$savedAddressBooks = $this->_registry->registry( 'addressbooks' );
 		//get saved address books from registry
@@ -51,9 +49,7 @@ class Addressbooks
 	public function toOptionArray()
 	{
 		$fields = array();
-
 		$website = $this->_helper->getWebsite();
-
 		$apiEnabled = $this->_helper->isEnabled($website);
 
 		//get address books options

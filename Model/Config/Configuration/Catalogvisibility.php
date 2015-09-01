@@ -15,7 +15,7 @@ class Catalogvisibility
 
     public function toOptionArray()
     {
-        $options = $this->_objectManager->create('Magento\Catalog\Model\Product\Visisbility')->getAllOptions();
+        $options = $this->_objectManager->create('Magento\Catalog\Model\Product\Visibility')->getAllOptions();
         array_shift($options);
         return $options;
     }
