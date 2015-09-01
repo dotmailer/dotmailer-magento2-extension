@@ -1,7 +1,10 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Config_Select extends Mage_Core_Block_Html_Select
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
+
+class Select extends \Magento\Framework\View\Element\Html\Select
 {
+
     /**
      * Return output in one line
      *
@@ -9,6 +12,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Select extends Mage_Core_Bloc
      */
     public function _toHtml()
     {
-        return trim(preg_replace('/\s+/', ' ',parent::_toHtml()));
+        return trim(preg_replace('/\s+/', ' ', parent::_toHtml()));
     }
 }

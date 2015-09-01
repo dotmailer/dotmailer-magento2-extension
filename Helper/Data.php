@@ -981,6 +981,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	{
 		$lastCustomerSync = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron')
 			->getLastCustomerSync();
+		return true;
 		$timespan = $this->_helper->dateDiff($lastCustomerSync);
 
 		//last customer cron was less then 15 min
@@ -1041,8 +1042,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getApiResponseTimeLimit($websiteId = 0)
 	{
-		$website = Mage::app()->getWebsite($websiteId);
-		$limit = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DEBUG_API_REQUEST_LIMIT);
+		$website = $this->_storeManager->getWebsite($websiteId);
+		$limit = $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DEBUG_API_REQUEST_LIMIT);
 
 		return $limit;
 	}

@@ -81,7 +81,7 @@ class Subscriber
             $result['message'] = $message;
         }
 
-        return $this;
+        return $response;
     }
 
     /**

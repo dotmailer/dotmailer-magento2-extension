@@ -33,9 +33,6 @@ class Cron
 		$this->_logger = $logger;
 		$this->contact = $contact;
 		$this->_objectManager = $objectManager;
-
-		//mark the running state
-		$this->_logger->error('cron is running');
 	}
 
 	/**
@@ -66,7 +63,6 @@ class Cron
 
 	public function export()
 	{
-		$this->_logger->error('cron is running');
 		$items = $this->getProducts();
 		$this->writeToFile($items);
 	}
@@ -87,7 +83,8 @@ class Cron
 	public function subscribersAndGuestSync()
 	{
 		//sync subscribers
-		$subscriberModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Newsletter\Subscriber')->sync();
+		$subscriberModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Newsletter\Subscriber');
+		$result = $subscriberModel->sync();
 
 		//unsubscribe suppressed contacts
 		$subscriberModel->unsubscribe();
@@ -95,7 +92,7 @@ class Cron
 		//sync guests
 		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Customer\Guest')->sync();
 
-		return;
+		return $result;
 	}
 
 	/**

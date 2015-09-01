@@ -186,7 +186,7 @@ abstract class Rest
 			    $url       = $info['url'];
 		        $time      = $info['total_time'];
 			    $totalTime = sprintf(' time : %g sec', $time);
-			    $check = $this->_helep->getApiResponseTimeLimit();
+			    $check = $this->_helper->getApiResponseTimeLimit();
 			    $limit = ($check)? $check : '2';
 			    $message = $this->verb . ', ' .  $url. $totalTime;
 			    //check for slow queries

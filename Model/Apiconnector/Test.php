@@ -2,10 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-class Test extends \Dotdigitalgroup\Email\Model\Apiconnector\Client
+class Test
 {
 
-
+	protected $_helper;
+	protected $_objectManager;
+	public function __construct(
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		\Dotdigitalgroup\Email\Helper\Data $data
+	)
+	{
+		$this->_objectManager = $objectManagerInterface;
+		$this->_helper = $data;
+	}
 
     /**
 	 * Validate apiuser on save.
@@ -17,11 +26,12 @@ class Test extends \Dotdigitalgroup\Email\Model\Apiconnector\Client
 	 */
     public function validate($apiUsername, $apiPassword)
     {
+	    $client = $this->_helper->getWebsiteApiClient();
         if ($apiUsername && $apiPassword) {
-                $this->setApiUsername($apiUsername)
+                $client->setApiUsername($apiUsername)
                 ->setApiPassword($apiPassword);
 
-            $accountInfo = $this->getAccountInfo();
+            $accountInfo = $client->getAccountInfo();
             if (isset($accountInfo->message)) {
                 $this->_helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
                 return false;
@@ -43,13 +53,14 @@ class Test extends \Dotdigitalgroup\Email\Model\Apiconnector\Client
     {
 	    //api username and apipass must be checked
         if ($apiUsername && $apiPassword) {
+	        $client = $this->_helper->getWebsiteApiClient();
 	        //default result
             $message = 'Credentials Valid.';
 	        //set the api credentials to the rest client
-            $this->setApiUsername($apiUsername)
+            $client->setApiUsername($apiUsername)
                 ->setApiPassword($apiPassword);
 	        //account info api request
-            $response = $this->getAccountInfo();
+            $response = $client->getAccountInfo();
 	        //get the repsonse error message and invalidate the request
             if (isset($response->message)) {
                 $message = 'API Username And Password Do Not Match!';

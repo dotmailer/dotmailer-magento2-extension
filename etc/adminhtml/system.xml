@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Config/etc/system_file.xsd">
     <system>
-        <tab id="ddg_automation" translate="label" sortOrder="100">
+        <tab id="ddg_automation" translate="label" sortOrder="500">
             <label>DOTMAILER</label>
         </tab>
         <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -233,8 +233,11 @@
                     <label>Custom Attributes</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="custom_attributes" type="select" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="custom_attributes" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
                 </field>
             </group>
             <!--<group id="enterprise_data" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">-->

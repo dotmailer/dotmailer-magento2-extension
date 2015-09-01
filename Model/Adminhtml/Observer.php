@@ -4,9 +4,9 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml;
 
 class Observer
 {
-
 	protected $_helper;
 	protected $_context;
+	protected $_request;
 	protected $_storeManager;
 	protected $messageManager;
 	protected $_objectManager;
@@ -20,6 +20,7 @@ class Observer
 	{
 		$this->_helper = $data;
 		$this->_context = $context;
+		$this->_request = $context->getRequest();
 		$this->_storeManager = $storeManagerInterface;
 		$this->messageManager = $context->getMessageManager();
 		$this->_objectManager = $objectManagerInterface;
@@ -99,7 +100,6 @@ class Observer
      */
     public function actionConfigSaveApi(\Magento\Framework\Event\Observer $observer)
     {
-
 	    $groups = $this->_context->getRequest()->getPost('groups');
 
         if (isset($groups['api']['fields']['username']['inherit']) || isset($groups['api']['fields']['password']['inherit']))
@@ -118,6 +118,7 @@ class Observer
                  * Send install info
                  */
                 //$testModel->sendInstallConfirmation();
+	            $this->messageManager->addSuccess(__('API Credentials Valid.'));
             } else {
                 /**
                  * Disable invalid Api credentials
@@ -133,8 +134,8 @@ class Observer
 //                $config = Mage::getConfig();
 //                $config->saveConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, 0, $scope, $scopeId);
 //                $config->cleanCache();
+	            $this->messageManager->addWarning(__('Authorization has been denied for this request.'));
             }
-	        $this->messageManager->addSuccess(__('API Credentials Valid.'));
         }
         return $this;
     }
