@@ -15,6 +15,19 @@
                         <resource id="Dotdigitalgroup_Email::automation_studio" title="Marketing Automation" sortOrder="10" />
                     </resource>
                 </resource>
+                <resource id="Magento_Reports::report">
+                    <resource id="Dotdigitalgroup_Email::reports">
+                        <resource id="Dotdigitalgroup_Email::contact" title="Contact" sortOrder="20" />
+                        <resource id="Dotdigitalgroup_Email::order" title="Dotmailer" sortOrder="30" />
+                        <resource id="Dotdigitalgroup_Email::quote" title="Dotmailer" sortOrder="40" />
+                        <resource id="Dotdigitalgroup_Email::review" title="Dotmailer" sortOrder="50" />
+                        <resource id="Dotdigitalgroup_Email::wishlist" title="Dotmailer" sortOrder="60" />
+                        <resource id="Dotdigitalgroup_Email::catalog" title="Dotmailer" sortOrder="70" />
+                        <resource id="Dotdigitalgroup_Email::importer" title="Dotmailer" sortOrder="80" />
+                        <resource id="Dotdigitalgroup_Email::campaign" title="Dotmailer" sortOrder="90" />
+                        <resource id="Dotdigitalgroup_Email::automation" title="Dotmailer" sortOrder="100" />
+                    </resource>
+                </resource>
             </resource>
         </resources>
     </acl>
