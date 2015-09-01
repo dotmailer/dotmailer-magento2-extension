@@ -4,49 +4,32 @@
 
 //<![CDATA[
 
-		$('connector_data_mapping_dynamic_datafield_datafield_button').on('click', function () {
+		$('sync_settings_dynamic_addressbook_addressbook_button').on('click', function () {
 
-			var validationMessage = $('validation_result');
-			var datafield_name  	= $('connector_data_mapping_dynamic_datafield_datafield_name').value;
-			var datafield_type  	= $('connector_data_mapping_dynamic_datafield_datafield_type').value;
-			var datafield_default  	= $('connector_data_mapping_dynamic_datafield_datafield_default').value;
-			var datafield_access    = $('connector_data_mapping_dynamic_datafield_datafield_access').value;
-
+			var addressbook_name  	= $('sync_settings_dynamic_addressbook_addressbook_name').value;
+			var addressbook_visiblity  	= $('sync_settings_dynamic_addressbook_visibility').value;
 
 			params = {
-				name : datafield_name,
-				type : datafield_type,
-				deafult : datafield_default,
-				visiblity : datafield_access
+				name : addressbook_name,
+				visiblity : addressbook_visiblity
 			}
+			if(addressbook_name && addressbook_visiblity) {
 
-			new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
-				parameters: params,
-				onSuccess: function(response) {
-					result = '<?php echo __('Datafield Created.') ?>';
-					try {
-						response = response.responseText;
-						if (response == 1) {
-							result = '<?php echo __('Datafield Success') ?>';
-							validationMessage.removeClassName('hidden').addClassName('success')
-						} else {
-							validationMessage.removeClassName('hidden').addClassName('error')
-						}
-					} catch (e) {
-						validationMessage.removeClassName('hidden').addClassName('error')
+				new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+					parameters: params,
+					onComplete: function(transport) {
+						window.location.reload();
 					}
-					validationMessage.update(result);
-				}
-			});
+				});
+			}
 		});
-
 //]]
 	});
 
 </script>
-<div class="actions actions-create-datafield">
+<div class="actions actions-create-addressbook">
 	<div id="validation_result" class="message-validation hidden"></div>
-	<button class="action-create-datafield" type="button" id="<?php echo $block->getHtmlId() ?>">
+	<button class="action-create-addressbook" type="button" id="<?php echo $block->getHtmlId() ?>">
 		<span><?php echo $block->escapeHtml($block->getButtonLabel()) ?></span>
 	</button>
 </div>
