@@ -2,32 +2,31 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
-class Datafieldbutton extends \Magento\Config\Block\System\Config\Form\Field
+class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
 {
-	protected $_vatButtonLabel = 'Create New Datafield';
+	protected $_buttonLabel = 'New Datafield';
 
 	/**
 	 * Set Validate VAT Button Label
 	 *
-	 * @param string $vatButtonLabel
+	 * @param string $buttonLabel
 	 * @return \Magento\Customer\Block\Adminhtml\System\Config\Validatevat
 	 */
-	public function setVatButtonLabel($vatButtonLabel)
+	public function setButtonLabel($buttonLabel)
 	{
-		$this->_vatButtonLabel = $vatButtonLabel;
+		$this->_buttonLabel = $buttonLabel;
 		return $this;
 	}
 
 	/**
 	 * Set template to itself
 	 *
-	 * @return \Magento\Customer\Block\Adminhtml\System\Config\Validatevat
 	 */
 	protected function _prepareLayout()
 	{
 		parent::_prepareLayout();
 		if (!$this->getTemplate()) {
-			$this->setTemplate('system/config/createaddressbook.phtml');
+			$this->setTemplate('system/config/createdatafield.phtml');
 		}
 		return $this;
 	}
@@ -42,8 +41,8 @@ class Datafieldbutton extends \Magento\Config\Block\System\Config\Form\Field
 	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
 	{
 		$originalData = $element->getOriginalData();
-		$buttonLabel = !empty($originalData['button_label']) ? $originalData['button_label'] : $this->_vatButtonLabel;
-		$url = $this->_urlBuilder->getUrl('*/connector/createnewaddressbook');
+		$buttonLabel = !empty($originalData['button_label']) ? $originalData['button_label'] : $this->_buttonLabel;
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/datafield/save');
 		$this->addData(
 			[
 				'button_label' => __($buttonLabel),
@@ -74,13 +73,5 @@ class Datafieldbutton extends \Magento\Config\Block\System\Config\Form\Field
             ->setLabel($this->__($title))
             ->setOnClick("createDatafield(this.form, this);")
             ->toHtml();
-    }
-
-    protected function _2getElementHtml(Varien_Data_Form_Element_Abstract $element)
-    {
-        $this->setElement($element);
-        $originalData = $element->getOriginalData();
-
-        return $this->_getAddRowButtonHtml($this->__($originalData['button_label']));
     }
 }

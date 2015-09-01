@@ -54,7 +54,7 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
 	{
 		$originalData = $element->getOriginalData();
 		$buttonLabel = !empty($originalData['button_label']) ? $originalData['button_label'] : $this->_vatButtonLabel;
-		$url = $this->_urlBuilder->getUrl('*/connector/createnewaddressbook');
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/addressbook/saving');
 		$this->addData(
 			[
 				'button_label' => __($buttonLabel),
@@ -74,7 +74,7 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
 	 */
 	protected function _gedtElementHtml(Varien_Data_Form_Element_Abstract $element)
 	{
-		$url = Mage::helper('adminhtml')->getUrl('*/connector/createnewaddressbook');
+		$url = Mage::helper('adminhtml')->getUrl('*/connector/addressbook');
 		$website = Mage::app()->getRequest()->getParam('website', 0);
 
 		$element->setData('after_element_html',

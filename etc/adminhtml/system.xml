@@ -292,7 +292,7 @@
                 </field>
                 <field id="datafield_button" translate="button_label" sortOrder="50" showInDefault="1" showInStore="1" showInWebsite="1">
                     <button_label>Create New Datafield</button_label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Datafieldbutton</frontend_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Createdatafield</frontend_model>
                 </field>
             </group>
         </section>

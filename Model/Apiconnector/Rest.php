@@ -61,24 +61,20 @@ class Rest
 
 
 	public $client;
+	protected $_helper;
 
 
-	/**
-	 * @param \Psr\Log\LoggerInterface $logger
-	 */
 	public function __construct(
-
+		\Dotdigitalgroup\Email\Helper\Data $data
 	)
 	{
-		//$this->_logger = $logger;
-
-		//@todo get the store config
-		$apiUsername = '';
-		$apiPassword = '';
+		$this->_helper = $data;
+		$this->_apiUsername = $this->_helper->getApiUsername();
+		$this->_apiPassword = $this->_helper->getApiPassword();
 		$this->client  = new GuzzleHttp\Client(
 			[
 				'base_uri' => 'https://apiconnector.com/v2/',
-				'auth' =>  ['apiuser-e7b76c151df7@apiconnector.com', 'admin123'],
+				'auth' =>  [$this->_apiUsername, $this->_apiPassword],
 				'http_errors' => false
 			]
 		);
@@ -442,7 +438,6 @@ class Rest
 
 	    if ( isset($response->message)) {
 		    $message = $response->message;
-		    //$this->_logger->debug($message);
 		    return false;
 	    }
 

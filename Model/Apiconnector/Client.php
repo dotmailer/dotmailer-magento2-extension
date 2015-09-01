@@ -337,12 +337,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Rest
             ->buildPostBody($data);
 
         $response = $this->execute();
+
         if (isset($response->message)) {
-            $message = 'Postaddressbooks ' . $response->message . ', url :' . $url ;
-            Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
-		        Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
+	        $this->_helper->log( 'Post addressbooks ' . $response->message . ', url :' . $url );
+	        $this->_helper->log(implode(',' , $data));
         }
+
+
         return $response;
     }
 

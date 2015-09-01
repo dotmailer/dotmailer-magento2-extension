@@ -39,11 +39,6 @@ class Index extends \Magento\Framework\App\Action\Action {
 		echo $this->getViewFileUrl('Dotdigitalgroup_Email/images/i_msg-error.gif');
 
 		$rest = new \Dotdigitalgroup\Email\Model\Apiconnector\Rest();
-
-		$apiUsername = 'apiuser-e7b76c151df7@apiconnector.com';
-		$pass = 'admin12d33';
-
-		//$res = $client->get('https://apiconnector.com/v2/account-info', ['auth' =>  ['apiuser-e7b76c151df7@apiconnector.com', 'admin123']]);
 		$res = $rest->validate($apiUsername, $pass);
 		//echo $res->getStatusCode();
 		// "200"
