@@ -10,7 +10,7 @@ class Wishlist
 	protected $_wishlists;
 	protected $_wishlistIds = array();
 	protected $_start;
-	protected $_count;
+	protected $_count  = 0;
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\Data $helper,
@@ -26,7 +26,7 @@ class Wishlist
 	}
 	public function sync()
 	{
-		$response = array('success' => true, 'message' => '');
+		$response = array('success' => true, 'message' => 'Done.');
 		//resource allocation
 		$this->_helper->allowResourceFullExecution();
 		$websites = $this->_helper->getWebsites(true);
@@ -63,7 +63,7 @@ class Wishlist
 				$this->_exportWishlistForWebsiteInSingle($website);
 			}
 		}
-		$response['message'] = "wishlist updated: ". $this->_count;
+		$response['message'] = "wishlists updated: ". $this->_count;
 		return $response;
 	}
 
@@ -108,7 +108,6 @@ class Wishlist
                ->addFieldToFilter('wishlist_imported', array('null' => true))
                ->addFieldToFilter('store_id', array('in' => $website->getStoreIds()))
                ->addFieldToFilter('item_count', array('gt' => 0));
-
 		$collection->getSelect()->limit($limit);
 
 		return $collection;
@@ -182,25 +181,7 @@ class Wishlist
 		return $collection;
 	}
 
-	/**
-	 * Reset the email reviews for reimport.
-	 *
-	 * @return int
-	 */
-	public function reset()
-	{
-		$coreResource = $this->_resource;
 
-		$conn = $coreResource->getConnection('core_write');
-		try{
-			$num = $conn->update($coreResource->getTableName('email_wishlist'),
-				array('wishlist_imported' => new \Zend_Db_Expr('null'), 'wishlist_modified' => new \Zend_Db_Expr('null'))
-			);
-		}catch (\Exception $e){
-		}
-
-		return $num;
-	}
 
 	/**
 	 * set imported in bulk query

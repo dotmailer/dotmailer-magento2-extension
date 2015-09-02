@@ -5,21 +5,33 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 class Quotesync extends \Magento\Config\Block\System\Config\Form\Field
 {
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
-        $this->setElement($element);
-        return $this->_getAddRowButtonHtml("Run Now");
-    }
+	protected $_buttonLabel = 'Run Now';
 
-    protected function _getAddRowButtonHtml($title)
-    {
-	    return $title;
-        $url = Mage::helper('adminhtml')->getUrl("*/connector/runquotesync");
+	/**
+	 * @param $buttonLabel
+	 *
+	 * @return $this
+	 */
+	public function setButtonLabel($buttonLabel)
+	{
+		$this->_buttonLabel = $buttonLabel;
+		return $this;
+	}
 
-        return $this->getLayout()->createBlock('adminhtml/widget_button')
+	/**
+	 * Get the button and scripts contents
+	 *
+	 * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+	 * @return string
+	 */
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+	{
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/quotesync');
+
+		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
             ->setType('button')
-            ->setLabel($this->__($title))
+            ->setLabel(__($this->_buttonLabel))
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
-    }
+	}
 }

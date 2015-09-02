@@ -8,8 +8,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
     <menu>
         <add id="Dotdigitalgroup_Email::marketing_automation" title="Marketing Automation" module="Dotdigitalgroup_Email" sortOrder="100" parent="Magento_Backend::marketing" resource="Dotdigitalgroup_Email::contact"/>
-        <add id="Dotdigitalgroup_Email::automation_studio" title="Automation Studio" module="Dotdigitalgroup_Email" sortOrder="120" action="ddg_automation/studio" resource="Dotdigitalgroup_Email::studio" parent="Dotdigitalgroup_Email::marketing_automation" />
-        <add id="Dotdigitalgroup_Email::reports" title="Dotmailer" module="Dotdigitalgroup_Email" sortOrder="130" action="ddg_automation/reports" resource="Dotdigitalgroup_Email::reports" parent="Magento_Reports::report" />
+        <add id="Dotdigitalgroup_Email::automation_studio" title="Automation Studio" module="Dotdigitalgroup_Email" sortOrder="120" action="dotdigitalgroup_email/studio" resource="Dotdigitalgroup_Email::studio" parent="Dotdigitalgroup_Email::marketing_automation" />
+        <add id="Dotdigitalgroup_Email::reports" title="Dotmailer" module="Dotdigitalgroup_Email" sortOrder="130" action="dotdigitalgroup_email/reports" resource="Dotdigitalgroup_Email::reports" parent="Magento_Reports::report" />
         <add id="Dotdigitalgroup_Email::contact" title="Contact Report" module="Dotdigitalgroup_Email" sortOrder="140" action="dotdigitalgroup_email/contact" resource="Dotdigitalgroup_Email::contact" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::order" title="Order Report" module="Dotdigitalgroup_Email" sortOrder="150" action="dotdigitalgroup_email/order" resource="Dotdigitalgroup_Email::reports" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::quote" title="Quote Report" module="Dotdigitalgroup_Email" sortOrder="160" action="dotdigitalgroup_email/quote" resource="Dotdigitalgroup_Email::reports" parent="Dotdigitalgroup_Email::reports" />

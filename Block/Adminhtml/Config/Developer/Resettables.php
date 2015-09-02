@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-class Catalogsync extends \Magento\Config\Block\System\Config\Form\Field
+class Resettables extends \Magento\Config\Block\System\Config\Form\Field
 {
 	protected $_buttonLabel = 'Run Now';
 
@@ -25,12 +25,16 @@ class Catalogsync extends \Magento\Config\Block\System\Config\Form\Field
 	 */
 	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
 	{
-		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/catalogsync');
+
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/resettables');
 
 		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
-            ->setType('button')
-            ->setLabel(__($this->_buttonLabel))
-            ->setOnClick("window.location.href='" . $url . "'")
-            ->toHtml();
+		            ->setType('button')
+		            ->setLabel(__($this->_buttonLabel))
+		            ->setOnClick("window.location.href='" . $url . "'")
+		            ->toHtml();
+
 	}
+
+
 }

@@ -66,7 +66,6 @@ class Customer
 
 
 		foreach ($this->getMappingHash() as $key => $field) {
-
 			/**
 			 * call user function based on the attribute mapped.
 			 */
@@ -79,7 +78,6 @@ class Customer
 				$value = call_user_func(array('self', $function));
 				$this->customerData[$key] = $value;
 			}catch (\Exception $e){
-
 			}
 		}
 	}
@@ -590,7 +588,7 @@ class Customer
 	 */
 	public function getCustomerSegments()
 	{
-		$contactModel = Mage::getModel('ddg_automation/contact')->getCollection()
+		$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
 		                    ->addFieldToFilter('customer_id', $this->getCustomerId())
 		                    ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
 		                    ->getFirstItem();
@@ -609,7 +607,7 @@ class Customer
 	public function getLastUsedDate()
 	{
 		//last used from the reward history based on the points delta used
-		$lastUsed = Mage::getModel('enterprise_reward/reward_history')->getCollection()
+		$lastUsed = $this->_objectManager->create('Enterpirse\Reward\Model\Reward\History')
 		                ->addCustomerFilter($this->customer->getId())
 		                ->addWebsiteFilter($this->customer->getWebsiteId())
 		                ->addFieldToFilter('points_delta', array('lt'=> 0))
@@ -620,7 +618,7 @@ class Customer
 
 		//for any valid date
 		if ($lastUsed)
-			return $date = Mage::helper('core')->formatDate($lastUsed, 'short', true);
+			return $date = $this->_helper->formatDate($lastUsed, 'short', true);
 
 		return '';
 	}
@@ -635,11 +633,11 @@ class Customer
 	public function getMostPurCategory()
 	{
 		$id = $this->customer->getMostCategoryId();
-		if($id){
-			return Mage::getModel('catalog/category')
-			           ->load($id)
-			           ->setStoreId($this->customer->getStoreId())
-			           ->getName();
+		if ($id) {
+			return $this->_objectManager->create('Magento\Catalog\Model\Category')
+	           ->load($id)
+	           ->setStoreId($this->customer->getStoreId())
+	           ->getName();
 		}
 		return "";
 	}
@@ -691,8 +689,8 @@ class Customer
 	public function getFirstCategoryPur()
 	{
 		$id = $this->customer->getFirstCategoryId();
-		if($id){
-			return Mage::getModel('catalog/category')
+		if ($id) {
+			return $this->_objectManager->create('Magento\Catalog\Model\Category')
 			           ->load($id)
 			           ->setStoreId($this->customer->getStoreId())
 			           ->getName();
@@ -709,7 +707,7 @@ class Customer
 	{
 		$id = $this->customer->getLastCategoryId();
 		if($id){
-			return Mage::getModel('catalog/category')
+			return $this->_objectManager->create('Magento\Catalog\Model\Category')
 			           ->setStoreId($this->customer->getStoreId())
 			           ->load($id)
 			           ->getName();
@@ -724,18 +722,18 @@ class Customer
 	 */
 	public function getFirstBrandPur()
 	{
-		if(!$this->attribute_check){
-			$attribute = Mage::getModel('catalog/resource_eav_attribute')
-			                 ->loadByCode('catalog_product', 'manufacturer');
-
-			if($attribute->getId())
-				$this->attribute_check = true;
-		}
+//		if(!$this->attribute_check){
+//			$attribute = $this->_objectManager->create('Magento\Eav\Model\Resource\Attribute')
+//				->loadByCode('catalog_product', 'manufacturer');
+//
+//			if($attribute->getId())
+//				$this->attribute_check = true;
+//		}
 
 		if($this->attribute_check){
 			$id = $this->customer->getProductIdForFirstBrand();
 			if($id){
-				$brand = Mage::getModel('catalog/product')
+				$brand = $this->_objectManager->create('Magento\Catalog\Model\Product')
 				             ->setStoreId($this->customer->getStoreId())
 				             ->load($id)
 				             ->getAttributeText('manufacturer');
@@ -753,18 +751,18 @@ class Customer
 	 */
 	public function getLastBrandPur()
 	{
-		if(!$this->attribute_check){
-			$attribute = Mage::getModel('catalog/resource_eav_attribute')
-			                 ->loadByCode('catalog_product', 'manufacturer');
-
-			if($attribute->getId())
-				$this->attribute_check = true;
-		}
+//		if(!$this->attribute_check){
+//			$attribute = $this->_objectManager->create('Magento\Eav\Model\Resource\Attribute')
+//			                 ->loadByCode('catalog_product', 'manufacturer');
+//
+//			if($attribute->getId())
+//				$this->attribute_check = true;
+//		}
 
 		if($this->attribute_check){
 			$id = $this->customer->getProductIdForLastBrand();
 			if($id){
-				$brand = Mage::getModel('catalog/product')
+				$brand = $this->_objectManager->create('Magento\Catalog\Model\Product')
 				             ->setStoreId($this->customer->getStoreId())
 				             ->load($id)
 				             ->getAttributeText('manufacturer');

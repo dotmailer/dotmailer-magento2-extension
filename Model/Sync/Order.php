@@ -50,7 +50,7 @@ class Order
 	 */
 	public function sync()
 	{
-		$response = array('success' => true, 'message' => '');
+		$response = array('success' => true, 'message' => 'Done.');
 
 		// Initialise a return hash containing results of our sync attempt
 		$this->_searchAccounts();
@@ -88,12 +88,12 @@ class Order
 					$this->_helper->log('--------- register Order sync in single with importer ---------- : ' . $order->id);
 					//register in queue with importer
 					$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')
-					                              ->registerQueue(
-						                              \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
-						                              $order,
-						                              \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
-						                              $website[0]
-					                              );
+	                      ->registerQueue(
+	                          \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
+	                          $order,
+	                          \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
+	                          $website[0]
+	                      );
 					if (!$check) {
 						$error = true;
 					}

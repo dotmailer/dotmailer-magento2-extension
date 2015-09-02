@@ -25,7 +25,7 @@ class Catalog extends \Magento\Framework\Model\Resource\Db\AbstractDb
 	 *
 	 * @return int
 	 */
-	public function reset()
+	public function resetCatalog()
 	{
 
 		$conn = $this->getConnection();

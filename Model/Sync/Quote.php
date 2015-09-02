@@ -36,7 +36,7 @@ class Quote
 	 */
 	public function sync()
 	{
-		$response = array('success' => true, 'message' => '');
+		$response = array('success' => true, 'message' => 'Done.');
 
 		//resource allocation
 		$this->_helper->allowResourceFullExecution();
@@ -161,28 +161,6 @@ class Quote
 			}
 		} catch (\Exception $e) {
 		}
-	}
-
-
-
-	/**
-	 * Reset the email quote for reimport.
-	 *
-	 * @return int
-	 */
-	public function resetQuotes()
-	{
-		$coreResource = $this->_resource;
-
-		$conn = $coreResource->getConnection();
-		try{
-			$num = $conn->update($coreResource->getTableName('email_quote'),
-				array('imported' => new \Zend_Db_Expr('null'), 'modified' => new \Zend_Db_Expr('null'))
-			);
-		}catch (\Exception $e){
-		}
-
-		return $num;
 	}
 
 	/**

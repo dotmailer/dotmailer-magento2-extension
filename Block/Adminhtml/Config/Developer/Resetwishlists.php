@@ -5,23 +5,35 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
 {
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
-        $this->setElement($element);
-        return $this->_getAddRowButtonHtml("Run Now");
-    }
+	protected $_buttonLabel = 'Run Now';
 
-    protected function _getAddRowButtonHtml($title)
-    {
-	    return $title;
+	/**
+	 * @param $buttonLabel
+	 *
+	 * @return $this
+	 */
+	public function setButtonLabel($buttonLabel)
+	{
+		$this->_buttonLabel = $buttonLabel;
+		return $this;
+	}
 
-        $url = $this->getUrl("*/connector/resetwishlists");
+	/**
+	 * Get the button and scripts contents
+	 *
+	 * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+	 * @return string
+	 */
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+	{
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/wishlistsreset');
 
-        return $this->getLayout()->createBlock('adminhtml/widget_button')
-            ->setType('button')
-            ->setLabel($this->__($title))
-            ->setOnClick("window.location.href='" . $url . "'")
-            ->toHtml();
-    }
+		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
+		            ->setType('button')
+		            ->setLabel(__($this->_buttonLabel))
+		            ->setOnClick("window.location.href='" . $url . "'")
+		            ->toHtml();
+
+	}
 
 }

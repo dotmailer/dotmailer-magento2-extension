@@ -135,6 +135,7 @@ class Contact
 		//get customer ids
 		$customerIds = $contacts->getColumnValues('customer_id');
 
+
 		//customer collection
 		$customerCollection = $this->getCollection($customerIds, $website->getId());
 
@@ -373,6 +374,7 @@ class Contact
 
 	public function getCollection($customerIds, $websiteId = 0)
 	{
+		//$customerCollection = Mage::getResourceModel('customer/customer_collection')
 		$customerCollection = $this->collection->addNameToSelect()
 			->addAttributeToSelect('*')
 			->joinAttribute('billing_street',       'customer_address/street',      'default_billing', null, 'left')
@@ -411,17 +413,18 @@ class Contact
 		);
 		$orderTable = $this->_resource->getTableName('sales_order');
 		//$subselect = Mage::getModel('Varien_Db_Select', Mage::getSingleton('core/resource')->getConnection('core_read'))
-		$subselect = $this->_resource->getConnection()
-		                 ->from($orderTable, array(
-				                 'customer_id as s_customer_id',
-				                 'sum(grand_total) as total_spend',
-				                 'count(*) as number_of_orders',
-				                 'avg(grand_total) as average_order_value',
-			                 )
-		                 )
-		                 ->where("status in (?)", $statuses)
-		                 ->group('customer_id')
-		;
+//		$subselect = $this->collection->getSelect()
+//		                 ->from($orderTable, array(
+//				                 'customer_id as s_customer_id',
+//				                 'sum(grand_total) as total_spend',
+//				                 'count(*) as number_of_orders',
+//				                 'avg(grand_total) as average_order_value',
+//			                 )
+//		                 )
+//		                 ->where("status in (?)", $statuses)
+//		                 ->group('customer_id')
+//		;
+
 		$customerCollection->getSelect()->columns(array(
 				'last_order_date' => new \Zend_Db_Expr("(SELECT created_at FROM $sales_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
 				'last_order_id' => new \Zend_Db_Expr("(SELECT entity_id FROM $sales_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
@@ -516,8 +519,8 @@ class Contact
 			)
 		);
 
-		$customerCollection->getSelect()
-		                   ->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
+//		$customerCollection->getSelect()
+//		                   ->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
 
 
 		return $customerCollection;

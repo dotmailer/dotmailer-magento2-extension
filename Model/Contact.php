@@ -82,6 +82,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	 */
 	public function loadByCustomerEmail($email, $websiteId)
 	{
+
 		$collection = $this->getCollection()
            ->addFieldToFilter('email', $email)
            ->addFieldToFilter('website_id', $websiteId)
@@ -133,34 +134,14 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 
 	public function getNumberOfImportedContacs()
 	{
-		$collection = $this->getCollection()
-		                   ->addFieldToFilter('email_imported', array('notnull' => true));
+		$collection = $this->_getResource()->getEmail();
 
+		//	->addFieldToFilter('email_imported', array('notnull' => true));
+var_dump($collection);die;
 		return $collection->getSize();
 	}
 
-	/**
-	 * Set all imported subscribers for reimport.
-	 *
-	 * @return int
-	 */
-	public function resetSubscribers() {
 
-		$coreResource = $this->_resource;
-
-		$conn = $coreResource->getConnection( );
-
-		try {
-			$num = $conn->update(
-				$coreResource->getTableName( 'email_contact' ),
-				array('subscriber_imported' => new \Zend_Db_Expr( 'null' ) ),
-				$conn->quoteInto('subscriber_imported is ?', new \Zend_Db_Expr('not null')));
-
-		} catch ( \Exception $e ) {
-		}
-
-		return $num;
-	}
 
 	/**
 	 * Get the number of customers for a website.

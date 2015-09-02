@@ -4,23 +4,37 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Resetcatalog extends \Magento\Config\Block\System\Config\Form\Field
 {
+	protected $_buttonLabel = 'Run Now';
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
-        $this->setElement($element);
-        return $this->_getAddRowButtonHtml("Run Now");
-    }
+	/**
+	 * @param $buttonLabel
+	 *
+	 * @return $this
+	 */
+	public function setButtonLabel($buttonLabel)
+	{
+		$this->_buttonLabel = $buttonLabel;
+		return $this;
+	}
 
-    protected function _getAddRowButtonHtml($title)
-    {
-	    return $title;
-        $url = $this->getUrl("*/connector/resetcatalog");
+	/**
+	 * Get the button and scripts contents
+	 *
+	 * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+	 * @return string
+	 */
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+	{
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/catalogreset');
 
-        return $this->getLayout()->createBlock('adminhtml/widget_button')
-            ->setType('button')
-            ->setLabel($this->__($title))
-            ->setOnClick("window.location.href='" . $url . "'")
-            ->toHtml();
-    }
+		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
+		            ->setType('button')
+		            ->setLabel(__($this->_buttonLabel))
+		            ->setOnClick("window.location.href='" . $url . "'")
+		            ->toHtml();
+
+	}
+
+
 
 }

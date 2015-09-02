@@ -43,7 +43,7 @@ class Cron
 	public function contactSync()
 	{
 		//run the sync for contacts
-		$this->contact->sync();
+		$result = $this->contact->sync();
 		//run subscribers and guests sync
 		$subscriberResult = $this->subscribersAndGuestSync();
 
@@ -115,7 +115,7 @@ class Cron
 		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Sales\Order')
 			->createReviewCampaigns();
 		//sync reviews
-		$result = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Review')->sync();
+		$result = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Review')->sync();
 		return $result;
 	}
 
@@ -139,6 +139,19 @@ class Cron
 		// send order
 		$orderResult = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Order')->sync();
 		return $orderResult;
+	}
+
+	/**
+	 * quote sync
+	 *
+	 * @return mixed
+	 */
+	public function quoteSync()
+	{
+		//send quote
+		$quoteResult = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Quote')->sync();
+
+		return $quoteResult;
 	}
 
 	/**

@@ -19,4 +19,23 @@ class Quote extends \Magento\Framework\Model\Resource\Db\AbstractDb
 		$this->_init('email_quote', 'id');
 	}
 
+
+	/**
+	 * Reset the email quote for reimport.
+	 *
+	 * @return int
+	 */
+	public function resetQuotes()
+	{
+		$conn = $this->getConnection();
+		try{
+			$num = $conn->update($conn->getTableName('email_quote'),
+				array('imported' => new \Zend_Db_Expr('null'), 'modified' => new \Zend_Db_Expr('null'))
+			);
+		}catch (\Exception $e){
+		}
+
+		return $num;
+	}
+
 }

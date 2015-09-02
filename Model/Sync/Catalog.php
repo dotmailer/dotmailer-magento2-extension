@@ -9,6 +9,7 @@ class Catalog
 	protected $_resource;
 	protected $_scopeConfig;
 	protected $_objectManager;
+	protected $_productFactory;
 
 	private $_start;
 	private $_countProducts = 0;
@@ -18,6 +19,7 @@ class Catalog
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Catalog\Model\ProductFactory $productFactory,
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
@@ -25,6 +27,7 @@ class Catalog
 		$this->_resource = $resource;
 		$this->_scopeConfig = $scopeConfig;
 		$this->_objectManager = $objectManager;
+		$this->_productFactory = $productFactory->create();
 	}
 	/**
 	 *
@@ -34,7 +37,7 @@ class Catalog
 	 */
 	public function sync()
 	{
-		$response = array('success' => true, 'message' => '');
+		$response = array('success' => true, 'message' => 'Done.');
 		$this->_start = microtime(true);
 		$proccessorModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor');
 
@@ -194,7 +197,7 @@ class Catalog
 	private function _getProductsToExport($store, $modified = false)
 	{
 		$limit = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT);
-		$connectorCollection = $this->getCollection();
+		$connectorCollection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Catalog')->getCollection();
 
 		if($modified)
 			$connectorCollection->addFieldToFilter('modified', array('eq' => '1'));
@@ -205,7 +208,9 @@ class Catalog
 
 		if($connectorCollection->getSize()) {
 			$product_ids = $connectorCollection->getColumnValues('product_id');
-			$productCollection = $this->_objectManager->create('Magento\Catalog\Model\Product')->getCollection();
+
+			$productCollection = $this->_productFactory->getCollection();
+
 			$productCollection
 				->addAttributeToSelect('*')
 				->addStoreFilter($store)

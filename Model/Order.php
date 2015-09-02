@@ -113,28 +113,6 @@ class Order extends \Magento\Framework\Model\AbstractModel
         return $collection->load();
     }
     
-	/**
-	 * Reset the email order for reimport.
-	 *
-	 * @return int
-	 */
-	public function resetOrders()
-	{
-		/** @var $coreResource Mage_Core_Model_Resource */
-		$coreResource = Mage::getSingleton('core/resource');
 
-		/** @var $conn Varien_Db_Adapter_Pdo_Mysql */
-		$conn = $coreResource->getConnection('core_write');
-		try{
-			$num = $conn->update($coreResource->getTableName('ddg_automation/order'),
-				array('email_imported' => new Zend_Db_Expr('null'), 'modified' => new Zend_Db_Expr('null')),
-				$conn->quoteInto('email_imported is ?', new Zend_Db_Expr('not null'))
-			);
-		}catch (Exception $e){
-			Mage::logException($e);
-		}
-
-		return $num;
-	}
 
 }

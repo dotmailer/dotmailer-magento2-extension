@@ -46,6 +46,7 @@ class Order
 	)
 	{
 		$this->_helper = $helper;
+		$this->_reviewHelper  = $reviewHelper;
 		$this->_resource = $resource;
 		$this->dateTime = $datetime;
 		$this->_storeManager = $storeManagerInterface;

@@ -17,12 +17,12 @@ class Subscriber
      */
     protected $_countSubscriber = 0;
 
-	protected $_helper;
 	protected $_file;
 	protected $_config;
+	protected $_helper;
 	protected $_dateTime;
-	protected $_scopeConfig;
 	protected $storeManager;
+	protected $_scopeConfig;
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\File $file,
