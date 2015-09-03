@@ -591,11 +591,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		//set website url for the default store id
 		$website = ($website)? $this->_storeManager->getWebsite( $website ) : 0;
 
-		$defaultGroup = $this->_request->getWebsite($website)
+		$defaultGroup = $this->_storeManager->getWebsite($website)
 		                    ->getDefaultGroup();
 
 		if (! $defaultGroup)
-			return $mage = $this->_request->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+			return $mage = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
 
 		//base url
 		$baseUrl = $this->_storeManager->getStore($defaultGroup->getDefaultStore())->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK);
