@@ -586,10 +586,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
 	public function generateDynamicUrl()
 	{
-		$baseUrl = '';
-
-		$url = $this->_urlBuilder->getBaseUrl();
-		$website = $this->_request->getRequest()->getParam('website', false);
+		$website = $this->_request->getParam('website', false);
 
 		//set website url for the default store id
 		$website = ($website)? $this->_storeManager->getWebsite( $website ) : 0;

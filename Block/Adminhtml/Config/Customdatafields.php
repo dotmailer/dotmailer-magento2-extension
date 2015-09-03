@@ -79,7 +79,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
      * Assign extra parameters to row
      *
      */
-    protected function _prepareArrayRow(\Magento\Framework\DataObject  $row)
+    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
 	    $options = [];
 

@@ -93,9 +93,8 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Assign extra parameters to row
      *
-     * @param Varien_Object $row
      */
-    protected function _prepareArrayRow(Varien_Object $row)
+    protected function _prepareArrayRow($row)
     {
         $row->setData(
             'option_extra_attr_' . $this->_getAttributeRenderer()->calcOptionHash($row->getData('attribute')),
