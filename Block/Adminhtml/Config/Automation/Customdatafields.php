@@ -2,20 +2,24 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation;
 
-class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
+class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
-    protected $_getStatusRenderer;
-    protected $_getAutomationRenderer;
-
+    protected $_statusRenderer;
+    protected $_automationRenderer;
+	protected $_objectManager;
     /**
 	 * Construct.
 	 */
     public function __construct(
+
 	    \Magento\Backend\Block\Template\Context $context,
+	    \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		$data = []
     )
     {
+
         $this->_addAfter = false;
+	    $this->_objectManager = $objectManagerInterface;
         $this->_addButtonLabel = __('Add New Enrolment');
         parent::__construct($context, $data);
     }
@@ -31,13 +35,13 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
             )
         );
         $this->addColumn('automation', array(
-	        'label' => __('Automation Programme'),
+	        'label' => __('Automation Program'),
             'style' => 'width:120px',
 			)
         );
     }
 
-    protected function _renderCellTemplate($columnName)
+    public function renderCellTemplate($columnName)
     {
         $inputName  = $this->getElement()->getName() . '[#{_id}][' . $columnName . ']';
         if ($columnName=="status") {
@@ -45,28 +49,25 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
                 ->setName($inputName)
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
-                ->setOptions(
-                    $this->getElement()->getValues()
-                )
+                ->setOptions( $this->getElement()->getValues() )
                 ->toHtml();
         } elseif ($columnName == "automation") {
             return $this->_getAutomationRenderer()
                 ->setName($inputName)
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
-                ->setOptions(Mage::getModel('ddg_automation/adminhtml_source_automation_programme')->toOptionArray())
+                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields')->toOptionArray())
                 ->toHtml();
         }
-        return parent::_renderCellTemplate($columnName);
+        return parent::renderCellTemplate($columnName);
     }
 
     /**
      * Assign extra parameters to row
      *
      */
-    protected function _prepareArrayRow( $row)
+    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
-
         $row->setData(
             'option_extra_attr_' . $this->_getStatusRenderer()->calcOptionHash($row->getData('status')),
             'selected="selected"'
@@ -79,28 +80,29 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
     }
     protected function _getStatusRenderer()
     {
-        if (!$this->_getStatusRenderer) {
-            $this->_getStatusRenderer = $this->getLayout()
-                ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Select')
-                ->setIsRenderToJsTemplate(true);
-        }
-        return $this->_getStatusRenderer;
+	    $this->_statusRenderer = $this->getLayout()->createBlock(
+		    'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+		    '',
+		    ['data' => ['is_render_to_js_template' => true]]
+	    );
+
+        return $this->_statusRenderer;
     }
 
     protected function _getAutomationRenderer()
     {
-        if (!$this->_getAutomationRenderer) {
-            $this->_getAutomationRenderer = $this->getLayout()
-                ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Select')
-                ->setIsRenderToJsTemplate(true);
-        }
-        return $this->_getAutomationRenderer;
+	    $this->_automationRenderer = $this->getLayout()->createBlock(
+		    'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+		    '',
+		    ['data' => ['is_render_to_js_template' => true]]
+	    );
+
+        return $this->_automationRenderer;
     }
 
-    public function _toHtml()
-    {
-        return '<input type="hidden" id="'.$this->getElement()->getHtmlId().'"/>'.parent::_toHtml();
+	public function _toHtml()
+	{
+		return '<input type="hidden" id="'.$this->getElement()->getHtmlId().'"/>'.parent::_toHtml();
 
-    }
-
+	}
 }

@@ -195,17 +195,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function log($data, $filename = 'api.log')
     {
-	    //@todo check if debug is enabled
+
 	    $this->_logger->info($data);
-
-
-	    return ;
-        if ($this->getDebugEnabled()) {
-            $filename = 'connector_' . $filename;
-
-            Mage::log($data, $level, $filename, $force = true);
-        }
     }
+
+	public function debug( $title, $context )
+	{
+		$this->_logger->debug($title, $context);
+
+	}
 
     public function getDebugEnabled()
     {

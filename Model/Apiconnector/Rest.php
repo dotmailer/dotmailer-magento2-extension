@@ -71,13 +71,13 @@ class Rest
 		$this->_helper = $data;
 		$this->_apiUsername = $this->_helper->getApiUsername();
 		$this->_apiPassword = $this->_helper->getApiPassword();
-		$this->client  = new GuzzleHttp\Client(
-			[
-				'base_uri' => 'https://apiconnector.com/v2/',
-				'auth' =>  [$this->_apiUsername, $this->_apiPassword],
-				'http_errors' => false
-			]
-		);
+//		$this->client  = new GuzzleHttp\Client(
+//			[
+//				'base_uri' => 'https://apiconnector.com/v2/',
+//				'auth' =>  [$this->_apiUsername, $this->_apiPassword],
+//				'http_errors' => false
+//			]
+//		);
 	}
 
 	/**

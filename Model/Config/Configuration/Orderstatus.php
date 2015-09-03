@@ -15,8 +15,8 @@ class Orderstatus
      */
     public function toOptionArray()
     {
-
 		$statuses = $this->status->toOptionArray();
+
 		
 		// Remove the "please select" option if present
 		if(count($statuses) > 0 && $statuses[0]['value'] == '')
@@ -27,9 +27,10 @@ class Orderstatus
 		foreach($statuses as $status) {
             $options[] = array(
                    'value' => $status['value'],
-                   'label' => $status['label']
+                   'label' => $status['label']->getText()
                 );
 		}
+
 		return $options;
     }
 }

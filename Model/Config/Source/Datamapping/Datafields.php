@@ -5,14 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 class Datafields implements \Magento\Framework\Option\ArrayInterface
 {
 
-	/**
-	 * options
-	 *
-	 * @var array
-	 */
-	protected $_options = null;
 	protected $_helper;
-	protected $rest;
 
 
 	/**
@@ -22,20 +15,13 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
 	 */
 	protected $_configStructure;
 
-	protected $_logger;
-
-
 	public function __construct(
-		\Psr\Log\LoggerInterface $logger,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Dotdigitalgroup\Email\Model\Apiconnector\Rest $rest,
 		\Magento\Store\Model\StoreManagerInterface $storeManager
 	)
 	{
-		$this->rest = $rest;
 		$this->_helper = $data;
-		$this->_logger = $logger;
 		$this->_registry = $registry;
 		$this->_storeManager = $storeManager;
 	}
@@ -47,7 +33,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
     {
         $fields = array();
 	    //default data option
-	    $fields[] = array('value' => 0, 'label' => '-- Please Select --');
+	    $fields[] = array('value' => '0', 'label' => '-- Please Select --');
 
 	    $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
 	    if ($apiEnabled) {
@@ -58,7 +44,8 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
 			    $datafields = $savedDatafields;
 		    } else {
 			    //grab the datafields request and save to register
-			    $datafields = $this->rest->getDatafields();
+			    $client = $this->_helper->getWebsiteApiClient();
+			    $datafields = $client->getDatafields();
 			    $this->_registry->register( 'datafields', $datafields );
 		    }
 

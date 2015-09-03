@@ -199,7 +199,7 @@ class Config
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER   = 'connector_automation/visitor_automation/guest_order_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW        = 'connector_automation/visitor_automation/review_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST      = 'connector_automation/visitor_automation/wishlist_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS  = 'connector_automation/order_status_automation/status_to_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS  = 'connector_automation/order_status_automation/program';
 
 
     /**

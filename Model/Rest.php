@@ -143,7 +143,6 @@ abstract class Rest
 	 * Execute the curl request.
 	 *
 	 * @return null
-	 * @throws Exception
 	 */
     public function execute()
     {
@@ -166,12 +165,12 @@ abstract class Rest
                     $this->executeDelete($ch);
                     break;
                 default:
-                    throw new InvalidArgumentException('Current verb (' . $this->verb . ') is an invalid REST verb.');
+                    throw new \InvalidArgumentException('Current verb (' . $this->verb . ') is an invalid REST verb.');
             }
-        }catch (InvalidArgumentException $e){
+        }catch (\InvalidArgumentException $e){
             curl_close($ch);
             throw $e;
-        }catch (Exception $e){
+        }catch (\Exception $e){
             curl_close($ch);
             throw $e;
         }

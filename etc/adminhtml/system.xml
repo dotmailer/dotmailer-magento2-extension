@@ -508,9 +508,12 @@
                 </field>
             </group>
             <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Order status automation enrolment</label>
-                <field id="status_to_automation" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <label>Order</label>
+                <field id="program" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Customdatafields</frontend_model>
                 </field>
             </group>
             <group id="review_settings" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">

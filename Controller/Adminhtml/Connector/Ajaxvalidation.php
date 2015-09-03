@@ -5,15 +5,19 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Connector;
 
 class Ajaxvalidation extends \Magento\Backend\App\Action
 {
+	protected $_objectManager;
+	protected $_helper;
 
-	public function __costruct(
-
-	)
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Magento\Framework\ObjectManagerInterface $objectManager,
+		\Magento\Backend\App\Action\Context $context)
 	{
+		$this->_helper = $data;
+		$this->_objectManager = $objectManager;
+		parent::__construct($context);
 
 	}
-
-
 	/**
 	 * Validate api user.
 	 */
@@ -24,9 +28,9 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
 		$apiPassword     = base64_decode($params['api_password']);
 
 		//validate api, check against account info.
-		//@todo use the dependency injection for new class
-		$rest = new \Dotdigitalgroup\Email\Model\Apiconnector\Rest();
-		$result = $rest->validate($apiUsername, $apiPassword);
+
+		$client = $this->_helper->getWebsiteApiClient();
+		$result = $client->validate($apiUsername, $apiPassword);
 
 		$resonseData['success'] = true;
 		//validation failed

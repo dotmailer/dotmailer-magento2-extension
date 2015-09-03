@@ -77,7 +77,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
                 ->setName($inputName)
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
-                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition')Mage::getModel('ddg_automation/adminhtml_source_rules_condition')->toOptionArray())
+                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition')->toOptionArray())
                 ->toHtml();
         }elseif ($columnName == "cvalue") {
             return $this->_getValueRenderer()
@@ -87,7 +87,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
                 ->setOptions(Mage::getModel('ddg_automation/adminhtml_source_rules_value')->toOptionArray())
                 ->toHtml();
         }
-        return parent::_renderCellTemplate($columnName);
+        return parent::renderCellTemplate($columnName);
     }
 
     /**
