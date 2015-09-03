@@ -6,12 +6,18 @@ class Type
 {
 
 	protected $_objectManager;
+	protected $_configFactory;
+	protected $_productFactory;
 
 	public function __construct(
+		\Magento\Eav\Model\ConfigFactory $configFactory,
+		\Magento\Salesrule\Model\Rule\Condition\ProductFactory $productFactory,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_configFactory = $configFactory->create();
 		$this->_objectManager = $objectManagerInterface;
+		$this->_productFactory = $productFactory->create();
 	}
     /**
      * get input type
@@ -29,7 +35,7 @@ class Type
                 return 'select';
 
             default:
-                $attribute = $this->_objectManager->create('Magento\Eav\Model\Config')->getAttribute('catalog_product', $attribute);
+                $attribute = $this->_configFactory->getAttribute('catalog_product', $attribute);
                 if($attribute->getFrontend()->getInputType() == 'price')
                     return 'numeric';
                 if ($attribute->usesSource())
@@ -68,7 +74,7 @@ class Type
     public function toOptionArray()
     {
         $defaultOptions = $this->defaultOptions();
-        $productCondition = $this->_objectManager->create('Magento\Salesrule\Model\Rule\Condition\Product');
+        $productCondition = $this->_productFactory;
         $productAttributes = $productCondition->loadAttributeOptions()->getAttributeOption();
         $pAttributes = array();
         foreach ($productAttributes as $code=>$label) {

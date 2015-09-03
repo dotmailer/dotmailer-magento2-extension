@@ -8,13 +8,11 @@ use Dotdigitalgroup\Email\Model\Apiconnector;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\FilterBuilder;
-use \Psr\Log\LoggerInterface;
 
 class Cron
 {
 	protected $csv;
 
-	protected $_logger;
 	protected $_objectManager;
 
 	public function __construct(
@@ -30,7 +28,6 @@ class Cron
 		$this->searchCriteriaBuilder = $searchCriteriaBuilder;
 		$this->filterBuilder = $filterBuilder;
 		$this->csv = $csv;
-		$this->_logger = $logger;
 		$this->contact = $contact;
 		$this->_objectManager = $objectManager;
 	}

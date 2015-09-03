@@ -5,11 +5,14 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 class Value
 {
 	protected $_objectManager;
+	protected $_configFactory;
 
 	public function __construct(
+		\Magento\Eav\Model\ConfigFactory $configFactory,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_configFactory = $configFactory;
 		$this->_objectManager = $objectManagerInterface;
 	}
     /**
@@ -24,7 +27,7 @@ class Value
             case 'method': case 'shipping_method': case 'country_id': case 'region_id': case 'customer_group_id':
                 return 'select';
             default:
-                $attribute = $this->_objectManager('Magento\Eav\Model\Config')->getAttribute('catalog_product', $attribute);
+                $attribute = $this->_configFactory->getAttribute('catalog_product', $attribute);
                 if ($attribute->usesSource()) {
                     return 'select';
                 }
@@ -75,7 +78,7 @@ class Value
                 break;
 
             default:
-                $attribute = $this->_objectManager->create('Magento\Eav\Model\Config')->getAttribute('catalog_product', $attribute);
+                $attribute = $this->_config->getAttribute('catalog_product', $attribute);
                 if ($attribute->usesSource()) {
                     $options = $attribute->getSource()->getAllOptions(false);
                 }

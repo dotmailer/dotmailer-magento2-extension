@@ -12,6 +12,7 @@ class Observer
 	protected $_objectManager;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -20,6 +21,7 @@ class Observer
 	{
 		$this->_helper = $data;
 		$this->_context = $context;
+		$this->_contactFactory = $contactFactory;
 		$this->_request = $context->getRequest();
 		$this->_storeManager = $storeManagerInterface;
 		$this->messageManager = $context->getMessageManager();
@@ -33,7 +35,7 @@ class Observer
     public function actionConfigResetContacts()
     {
 	    $contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Resource\Contact');
-        $numImported = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getNumberOfImportedContacs();
+        $numImported = $this->_contactFactory->create()->getNumberOfImportedContacs();
         $updated = $contactModel->resetAllContacts();
 
         $this->_helper->log('-- Imported contacts: ' . $numImported  . ' reseted :  ' . $updated . ' --');
@@ -90,7 +92,6 @@ class Observer
         }
 
         return $this;
-
     }
 
     /**
@@ -120,20 +121,7 @@ class Observer
                 //$testModel->sendInstallConfirmation();
 	            $this->messageManager->addSuccess(__('API Credentials Valid.'));
             } else {
-                /**
-                 * Disable invalid Api credentials
-                 */
-                $scopeId = 0;
-                if ($website = $this->_request->getParam('website')) {
-                    $scope = 'websites';
-                    $scopeId = $this->_request->getWebsite($website)->getId();
-                } else {
-                    $scope = "default";
-                }
-	            //@todo save config and clear the cache
-//                $config = Mage::getConfig();
-//                $config->saveConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, 0, $scope, $scopeId);
-//                $config->cleanCache();
+
 	            $this->messageManager->addWarning(__('Authorization has been denied for this request.'));
             }
         }
@@ -179,7 +167,7 @@ class Observer
 	public function connectorCustomerSegmentChanged($observer)
 	{
 		$segmentsIds = $observer->getEvent()->getSegmentIds();
-		$customerId = $this->_objectManager->create('Magento\Customer\Model\Session')->getCustomerId();
+		$customerId = $this->_objectManager->get('Magento\Customer\Model\Session')->getCustomerId();
 		$websiteId = $this->_storeManager->getStore()->getWebsiteId();
 
 		if (!empty($segmentsIds) && $customerId) {
@@ -204,8 +192,7 @@ class Observer
 			return $this;
 		$segmentIds = implode(',', $segmentIds);
 
-		$contact = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
-			->addFieldToFilter('customer_id', $customerId)
+		$contact = $this->_contactFactory->addFieldToFilter('customer_id', $customerId)
 			->addFieldToFilter('website_id', $websiteId)
 			->getFirstItem();
 		try {
@@ -215,14 +202,15 @@ class Observer
 			        ->save();
 
 		}catch (\Exception $e){
+
 		}
 
 		return $this;
 	}
 
 	protected function getCustomerSegmentIdsForWebsite($customerId, $websiteId){
-		$segmentIds = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
-			->addFieldToFilter('website_id', $websiteId)
+
+		$segmentIds = $this->_contactFactory->addFieldToFilter('website_id', $websiteId)
 			->addFieldToFilter('customer_id', $customerId)
 			->getFirstItem()
 			->getSegmentIds();

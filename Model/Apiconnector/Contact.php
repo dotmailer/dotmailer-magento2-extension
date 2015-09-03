@@ -374,7 +374,6 @@ class Contact
 
 	public function getCollection($customerIds, $websiteId = 0)
 	{
-		//$customerCollection = Mage::getResourceModel('customer/customer_collection')
 		$customerCollection = $this->collection->addNameToSelect()
 			->addAttributeToSelect('*')
 			->joinAttribute('billing_street',       'customer_address/street',      'default_billing', null, 'left')

@@ -2,25 +2,21 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source;
 
- class Addressbooks extends \Magento\Framework\Model\AbstractModel
+ class Addressbooks
 {
-	protected $_helper;
-	protected $_objectManager;
+	 protected $_helper;
+	 protected $_registry;
+	 protected $_request;
+
 	public function __construct(
-		 \Magento\Framework\Model\Context $context,
 		 \Magento\Framework\Registry $registry,
 		 \Magento\Framework\App\RequestInterface $requestInterface,
-		 \Magento\Framework\Model\Resource\AbstractResource $resource = null,
-		 \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-		 array $data = [],
-		 \Dotdigitalgroup\Email\Helper\Data $data,
-	     \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+		 \Dotdigitalgroup\Email\Helper\Data $helper
 	)
 	{
-		$this->_helper  = $data;
+		$this->_helper  = $helper;
+		$this->_registry = $registry;
 		$this->_request = $requestInterface;
-		$this->_objectManager = $objectManagerInterface;
-        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
 	}
 	/**
 	* Returns the address books options.
@@ -38,18 +34,16 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source;
 
 		//get address books options
 		if ($apiEnabled) {
-			$client = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Client');
-			$client->setApiUsername( $this->_helper->getApiUsername( $website ) )
-			       ->setApiPassword( $this->_helper->getApiPassword( $website ) );
+			$client = $this->_helper->getWebsiteApiClient($website);
 
-			$savedAddressBooks = Mage::registry( 'addressbooks' );
+			$savedAddressBooks = $this->_registry->registry( 'addressbooks' );
 			//get saved address books from registry
 			if ( $savedAddressBooks ) {
 				$addressBooks = $savedAddressBooks;
 			} else {
 				// api all address books
 				$addressBooks = $client->getAddressBooks();
-				Mage::register( 'addressbooks', $addressBooks );
+				$this->_registry->register( 'addressbooks', $addressBooks );
 			}
 
 			//set up fields with book id and label

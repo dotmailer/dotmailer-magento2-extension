@@ -3,7 +3,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 
 
-class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
+class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 {
     const APICONNECTOR_VERSION = 'V2';
 
@@ -62,23 +62,22 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 
 
 	/**
-	 * constructor.
+	 * @param int $username apiusernname
+	 * @param \Dotdigitalgroup\Email\Helper\Data $password apipassword
+	 * @param \Dotdigitalgroup\Email\Helper\Data $data
+	 * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
 	 */
-	public function __construct($username, $password,
-		\Dotdigitalgroup\Email\Helper\Data $helper,
+	public function __construct(
+		$username,
+		$password,
+		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Dotdigitalgroup\Email\Helper\File $fileHelper
 	)
 	{
-//		$this->client  = new GuzzleHttp\Client(
-//			[
-//				'base_uri' => 'https://apiconnector.com/v2/',
-//				'auth' =>  [$username, $password]
-//			]
-//		);
-		$this->_helper = $helper;
+		$this->_helper = $data;
 		$this->_fileHelper = $fileHelper;
 
-		parent::__construct(0, $helper);
+		parent::__construct(0, $this->_helper);
 	}
 
 	/**
@@ -128,6 +127,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
         $url = self::REST_CONTACTS . $id;
         $this->setUrl($url)
             ->setVerb('GET');
+
         $response = $this->execute();
 
         if(isset($response->message)) {
@@ -180,7 +180,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
         if (isset($result->message)) {
             $message = 'POST ADDRESS BOOK ' . $addressBookId . ', CONTACT IMPORT : ' . ' filename '  . $filename .  ' Username ' . $this->getApiUsername() . $result->message;
             $this->_helper->log($message);
-            $this->_helper->log($result);
+            $this->_helper->debug('postAddressBookContactsImport', $result);
         }
 
         return $result;
@@ -200,8 +200,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
             ->buildPostBody($apiContact);
 
         $response = $this->execute();
-        if (isset($response->message)) {
 
+        if (isset($response->message)) {
             $message = 'POST ADDRESS BOOK CONTACTS ' . $url . ', ' . $response->message;
             $this->_helper->log($message);
         }
@@ -217,7 +217,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
      */
     public function deleteAddressBookContact($addressBookId, $contactId)
     {
-
         $url = self::REST_ADDRESS_BOOKS . $addressBookId . '/contacts/' . $contactId;
         $this->setUrl($url)
             ->setVerb('DELETE');
@@ -233,12 +232,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
      */
     public function getContactsImportReport($importId)
     {
-
         $url = self::REST_CONTACTS_IMPORT . $importId . "/report";
         $this->setUrl($url)
             ->setVerb('GET');
-        $response = $this->execute();
-        if (isset($response->message)) {
+
+	    $response = $this->execute();
+
+	    if (isset($response->message)) {
             $message = 'GET CONTACTS IMPORT REPORT  . ' . $url . ' message : ' . $response->message;
             $this->_helper->log( $message );
         }
@@ -258,6 +258,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 
         //should create new one if not exists?!?
         $response = $this->execute();
+
         if (isset($response->message)) {
             $message = 'GET CONTACT BY email : ' . $email . ' ' . $response->message;
             $this->_helper->log($message);
@@ -281,6 +282,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
             $message  = 'GET ALL ADDRESS BOOKS : '  . $url . ', ' .  $response->message;
             $this->_helper->log($message);
         }
+
         return $response;
     }
 
@@ -293,7 +295,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 	public function getAddressBookById($id)
 	{
 		$url = self::REST_ADDRESS_BOOKS . $id;
-
 		$this->setUrl($url)
 			->setVerb('GET');
 
@@ -327,9 +328,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 
         if (isset($response->message)) {
 	        $this->_helper->log( 'Post addressbooks ' . $response->message . ', url :' . $url );
-	        $this->_helper->debug('post address books', $data);
+	        $this->_helper->debug('postAddressBooks', $data);
         }
-
 
         return $response;
     }
@@ -400,7 +400,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
      */
     public function getDataFields()
     {
-
         $url = self::REST_DATA_FILEDS;
         $this->setUrl($url)
             ->setVerb('GET');
@@ -445,8 +444,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
      */
     public function deleteContact($contactId)
     {
-
-
         $url = self::REST_CONTACTS . $contactId;
         $this->setUrl($url)
             ->setVerb('DELETE');
@@ -490,7 +487,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
         if (isset($response->message)) {
             $message = 'ERROR: UPDATE CONTACT DATAFIELD ' . $url . ' message : ' . $response->message;
             $this->_helper->log($message);
-            $this->_helper->debug($data);
+            $this->_helper->debug('updateContactDatafieldsByEmail', $data);
         }
 
         return $response;
@@ -543,6 +540,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
             ->buildPostBody($data);
 
         $response = $this->execute();
+
         if (isset($response->message)) {
             $message = 'CREATE A NEW CONTACT : ' . $email . ' , url ' . $url . ', ' . $response->message;
             $this->_helper->log($message);
@@ -550,7 +548,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 
         return $response;
     }
-
 
     /**
      * Gets a list of suppressed contacts after a given date along with the reason for suppression.
@@ -701,8 +698,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
      */
     public function postSmsMessagesSendTo($telephoneNumber, $message)
     {
-
-
         $data = array('Message' => $message);
         $url = self::REST_SMS_MESSAGE_SEND_TO . $telephoneNumber;
         $this->setUrl($url)
@@ -727,8 +722,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
      */
     public function deleteAddressBookContactsInbulk($addressBookId, $contactIds)
     {
-
-
         $url = 'https://apiconnector.com/v2/address-books/' . $addressBookId . '/contacts/inbulk';
         $data = array('ContactIds' => array($contactIds[0]));
         $this->setUrl($url)
@@ -736,6 +729,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
             ->buildPostBody($data);
 
         $response = $this->execute();
+
         if (isset($response->message)) {
             $message = 'DELETE BULK ADDRESS BOOK CONTACTS ' . $response->message . ' address book ' . $addressBookId;
             $this->_helper->log($message);
@@ -796,8 +790,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
      */
     public function postCampaign($data)
     {
-
-
         $url = self::REST_CREATE_CAMPAIGN;
         $this->setURl($url)
             ->setVerb('POST')
@@ -820,7 +812,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
     public function getPrograms()
     {
         $url = self::REST_PROGRAM;
-
         $this->setUrl($url)
             ->setVerb('GET');
 
@@ -848,6 +839,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
             ->buildPostBody($data);
 
         $response = $this->execute();
+
         if (isset($response->message)) {
             $message = 'Post programs enrolments : ' . $response->message;
             $this->_helper->log($message);
@@ -887,9 +879,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
     public function getCampaignSummary($campaignId)
     {
         $url = 'https://apiconnector.com/v2/campaigns/' . $campaignId . '/summary';
-
         $this->setUrl($url)
             ->setVerb('GET');
+
         $response = $this->execute();
 
         if (isset($response->message)) {
@@ -911,7 +903,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
         $url =  'https://apiconnector.com/v2/contacts/transactional-data/' . $collectionName  .'/' . $key ;
         $this->setUrl($url)
             ->setVerb('DELETE');
+
         $response = $this->execute();
+
         if (isset($response->message))
             $this->_helper->log('DELETE CONTACTS TRANSACTIONAL DATA : ' . $url . ' ' . $response->message);
 
@@ -931,8 +925,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
         $this->setURl($url)
             ->setVerb('POST')
             ->buildPostBody($data);
-        $result = $this->execute();
-        if (isset($result->message)) {
+
+	    $result = $this->execute();
+
+	    if (isset($result->message)) {
             $this->_helper->log(' CAMPAIGN ATTACHMENT ' . $result->message);
         }
         return $result;
@@ -977,8 +973,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
         $url =  'https://apiconnector.com/v2/contacts/' . $contactId . '/address-books' ;
         $this->setUrl($url)
             ->setVerb('GET');
+
         $response = $this->execute();
-        if (isset($response->message)) {
+
+	    if (isset($response->message)) {
             $message = 'GET CONTACTS ADDRESS BOOKS contact: ' . $contactId .  $response->message;
             $this->_helper->log($message);
         }
@@ -1016,8 +1014,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
         $url =  self::REST_TEMPLATES . '/' . $templateId;
         $this->setUrl($url)
             ->setVerb('GET');
-        $response = $this->execute();
-        if (isset($response->message)) {
+
+	    $response = $this->execute();
+
+	    if (isset($response->message)) {
             $message = 'GET API CONTACT LIST ' .  $response->message;
             $this->_helper->log($message);
         }
@@ -1063,8 +1063,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 
         $this->setUrl($url)
             ->setVerb('GET');
-        $response = $this->execute();
-        if (isset($response->message)) {
+
+	    $response = $this->execute();
+
+	    if (isset($response->message)) {
             $message = 'GET CAMPAIGNS WITH ACTIVITY SINCE DATE ' .  $response->message;
             $this->_helper->log($message);
         }
@@ -1077,8 +1079,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 
         $this->setUrl($url)
             ->setVerb('GET');
-        $response = $this->execute();
-        if (isset($response->message)) {
+
+	    $response = $this->execute();
+
+	    if (isset($response->message)) {
             $message = 'GET CAMPAIGN ACTIVITY BY CONTACT ID ' .  $response->message;
             $this->_helper->log($message);
         }
@@ -1097,8 +1101,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 
         $this->setUrl($url)
             ->setVerb('GET');
-        $response = $this->execute();
-        if (isset($response->message)) {
+
+	    $response = $this->execute();
+
+	    if (isset($response->message)) {
             $message = 'GET CONTACTS IMPORT BY IMPORT ID ' . $response->message;
             $this->_helper->log($message);
         }
@@ -1117,8 +1123,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 
         $this->setUrl($url)
             ->setVerb('GET');
-        $response = $this->execute();
-        if (isset($response->message)) {
+
+	    $response = $this->execute();
+
+	    if (isset($response->message)) {
             $message = 'GET CONTACTS TRANSACTIONAL DATA IMPORT BY IMPORT ID ' . $response->message;
             $this->_helper->log($message);
         }
