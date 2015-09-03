@@ -322,33 +322,57 @@
                     <label>Customer Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="guest_enabled" type="select" sortOrder="20" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="contact_report" type="button" sortOrder="20" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Contact</frontend_model>
+                </field>
+                <field id="guest_enabled" type="select" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Guest Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="subscriber_enabled" type="select" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="guest_report" type="button" sortOrder="40" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Contact</frontend_model>
+                </field>
+                <field id="subscriber_enabled" type="select" sortOrder="50" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Subscriber Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="order_enabled" type="select" sortOrder="40" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="subscriber_report" type="button" sortOrder="60" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Contact</frontend_model>
+                </field>
+                <field id="order_enabled" type="select" sortOrder="70" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Order Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="quote_enabled" type="select" sortOrder="50" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="order_report" type="button" sortOrder="80" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Order</frontend_model>
+                </field>
+                <field id="quote_enabled" type="select" sortOrder="90" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Quote Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="wishlist_enabled" type="select" sortOrder="60" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="quote_report" type="button" sortOrder="100" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Quote</frontend_model>
+                </field>
+                <field id="wishlist_enabled" type="select" sortOrder="110" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Wishlist Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="review_enabled" type="select" sortOrder="70" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="wishlist_report" type="button" sortOrder="120" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Contact</frontend_model>
+                </field>
+                <field id="review_enabled" type="select" sortOrder="130" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Review Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="catalog_enabled" type="select" sortOrder="80" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="review_report" type="button" sortOrder="140" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Wishlist</frontend_model>
+                </field>
+                <field id="catalog_enabled" type="select" sortOrder="150" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Catalog Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="catalog_report" type="button" sortOrder="160" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Catalog</frontend_model>
                 </field>
             </group>
             <group id="dynamic_addressbook" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">

@@ -34,7 +34,6 @@ class Program
 		$fields = array();
 		$fields[] = array('value' => '0', 'label' => __('-- Disabled --'));
 		$websiteName = $this->_request->getParam('website', false);
-
 		$website = ($websiteName)? $this->_storeManager->getWebsite($websiteName) : 0;
 		//api client is enabled
 		$apiEnabled = $this->_helper->isEnabled($website);

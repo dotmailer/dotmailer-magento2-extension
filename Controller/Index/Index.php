@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Index;
 
-use GuzzleHttp;
-use \Dotdigitalgroup\Email\Model\Cron;
 
 class Index extends \Magento\Framework\App\Action\Action {
 
@@ -23,28 +21,6 @@ class Index extends \Magento\Framework\App\Action\Action {
 	 */
 	public function execute() {
 
-		$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron');
-		$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron');
 
-		//$model->contactSync();
-		//$model->emailImporter();
-		//$model->subscribersAndGuestSync();
-		//$model->catalogSync();
-		//$model->abandonedCarts();
-		$model->orderSync();
-
-
-		return;
-
-		echo $this->getViewFileUrl('Dotdigitalgroup_Email/images/i_msg-error.gif');
-
-		$rest = new \Dotdigitalgroup\Email\Model\Apiconnector\Rest();
-		$res = $rest->validate($apiUsername, $pass);
-		//echo $res->getStatusCode();
-		// "200"
-
-		//echo  $rest->getBody();
-
-		///$this->getResponse()->setContent('Home page.');
 	}
 }

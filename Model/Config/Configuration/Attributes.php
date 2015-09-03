@@ -18,8 +18,6 @@ class Attributes
      */
     public function toOptionArray()
     {
-
-
         $fields = $this->_dataHelper->getOrderTableDescription();
 
         $customFields = array();

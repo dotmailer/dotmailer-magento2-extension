@@ -6,7 +6,7 @@ class Wishlist extends \Dotdigitalgroup\Email\Controller\Response
 {
 
 	/**
-	 * Basket page to display the user items with specific email.
+	 * Wishlist page to display the user items with specific email.
 	 */
 	public function execute()
 	{

@@ -2,13 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-use GuzzleHttp;
 
 class Review extends \Dotdigitalgroup\Email\Controller\Response
 {
 
 	/**
-	 * Basket page to display the user items with specific email.
+	 * Review page to display the user items with specific email.
 	 */
 	public function execute()
 	{

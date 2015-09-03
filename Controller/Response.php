@@ -27,6 +27,7 @@ class Response extends \Magento\Framework\App\Action\Action
 
     protected function authenticate()
     {
+	    //@todo enable before going live.
         //authenticate ip address
         //$authIp = $this->_helper->authIpAddress();
 //        if(!$authIp){

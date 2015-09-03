@@ -5,17 +5,14 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 class Campaigns implements \Magento\Framework\Option\ArrayInterface
 {
 	protected $_helper;
-	protected $rest;
 	protected $_registry;
 
 	public function __construct(
 		\Magento\Framework\Registry $registry,
-		\Dotdigitalgroup\Email\Model\Apiconnector\Rest $rest,
 		\Dotdigitalgroup\Email\Helper\Data $data
 	)
 	{
 		$this->_registry = $registry;
-		$this->rest = $rest;
 		$this->_helper = $data;
 	}
 
@@ -34,7 +31,8 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
 			    $campaigns = $savedCampaigns;
 		    } else {
 			    //grab the datafields request and save to register
-			    $campaigns = $this->rest->getCampaigns();
+			    $client = $this->_helper->getWebsiteApiClient();
+			    $campaigns = $client->getCampaigns();
 			    $this->_registry->register( 'campaigns', $campaigns );
 		    }
 

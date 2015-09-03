@@ -4,16 +4,21 @@ namespace Dotdigitalgroup\Email\Model\Config\Automation;
 
 class Program implements \Magento\Framework\Option\ArrayInterface
 {
+	protected $_helper;
+	protected $_storeManager;
+	protected $_registry;
+	protected $_request;
+
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Magento\Framework\App\RequestInterface $requestInterface,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\Registry $registry,
-		\Dotdigitalgroup\Email\Model\Apiconnector\Rest $rest
+		\Magento\Framework\Registry $registry
 	)
 	{
-		$this->rest = $rest;
 		$this->_helper = $data;
+		$this->_request = $requestInterface;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_registry = $registry;
 	}
@@ -22,8 +27,11 @@ class Program implements \Magento\Framework\Option\ArrayInterface
 	{
 		$fields = array();
 		$fields[] = array('value' => '0', 'label' => '-- Disabled --');
-		//@todo check website level cnf
-		if ($this->_helper->isEnabled()) {
+
+		$websiteName = $this->_request->getParam('website', false);
+		$website = ($websiteName)? $this->_storeManager->getWebsite($websiteName) : 0;
+
+		if ($this->_helper->isEnabled($website)) {
 			$savedPrograms = $this->_registry->registry( 'programs' );
 
 			//get saved datafileds from registry
@@ -31,7 +39,8 @@ class Program implements \Magento\Framework\Option\ArrayInterface
 				$programs = $savedPrograms;
 			} else {
 				//grab the datafields request and save to register
-				$programs = $this->rest->getPrograms();
+				$client  = $this->_helper->getWebsiteApiClient($website);
+				$programs = $client->getPrograms();
 				$this->_registry->register( 'programs', $programs );
 			}
 

@@ -1,9 +1,9 @@
 <?php
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-//use GuzzleHttp;
 
-class Client extends \Dotdigitalgroup\Email\Model\Rest
+
+class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest\Rest
 {
     const APICONNECTOR_VERSION = 'V2';
 

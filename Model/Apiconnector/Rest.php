@@ -1,7 +1,7 @@
 <?php
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-use GuzzleHttp;
+
 use \Psr\Log\LoggerInterface;
 
 class Rest
@@ -1241,12 +1241,11 @@ class Rest
 
 	public function executeGet($url)
 	{
-		$request = $this->client->get($url);
+		$request = $this->get($url);
 
 		//decode the json body
 		$response = json_decode($request->getBody());
 		$message = 'API get ' . $url;
-//$this->_logger->info($message);
 
 		if ( isset($response->message)) {
 			$message = $response->message;
