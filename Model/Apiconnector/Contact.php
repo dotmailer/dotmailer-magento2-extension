@@ -2,54 +2,57 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-use \Psr\Log\LoggerInterface;
-
 class Contact
 {
 	private $_start;
 	private $_countCustomers = 0;
 	private $_sqlExecuted = false;
 
-	protected $_logger;
 	protected $_helper;
 	protected $_registry;
-	protected $messageManager;
+	protected $_messageManager;
 	protected $_storeManager;
 	protected $_scopeConfig;
-	protected $contactCollection;
+	protected $_contactFactory;
+	protected $_contactCollection;
 	protected $_resource;
-
+	protected $_subscriberFactory;
+	protected $_customerCollection;
 
 	public function __construct(
-		LoggerInterface $logger,
+		\Magento\Framework\Registry $registry,
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\File   $file,
-		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
-		\Magento\Backend\App\Action\Context $context,
-		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
 		\Dotdigitalgroup\Email\Helper\Config $config,
+		\Magento\Backend\App\Action\Context $context,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
+		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Customer\Model\Resource\Customer\CollectionFactory $customerCollectionFactory,
 		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollectionFactory
 	)
 	{
 		$this->_file = $file;
 		$this->_config = $config;
-		$this->_logger = $logger;
-		$this->_registry = $registry;
-		$this->_storeManager = $storeManagerInterface;
-		$this->messageManager = $context->getMessageManager();
 		$this->_helper = $helper;
+		$this->_registry = $registry;
 		$this->_resource = $resource;
 		$this->_scopeConfig = $scopeConfig;
 		$this->_objectManager = $objectManager;
-
-		$this->collection = $customerCollectionFactory->create();
-		$this->collection->addAttributeToSelect('*');
-
-		$this->contactCollection = $contactCollectionFactory->create();
+		$this->_storeManager = $storeManagerInterface;
+		$this->_messageManager = $context->getMessageManager();
+		//email contact
+		$this->_contactFactory = $contactFactory;
+		$this->_customerCollection = $customerCollectionFactory->create();
+		$this->_customerCollection->addAttributeToSelect('*');
+		//email contact collection
+		$this->_contactCollection = $contactCollectionFactory->create();
+		$this->_contactCollection->addFieldToSelect('*');
+		//newsletter subscriber
+		$this->_subscriberFactory = $subscriberFactory->create();
 	}
 	/**
 	 * Contact sync.
@@ -58,38 +61,35 @@ class Contact
 	 */
 	public function sync()
 	{
-		//customer campaign id from configuration
-		$customerCampaign = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID);
-
 		//result message
 		$result = array('success' => true, 'message' => '');
 		//starting time for sync
 		$this->_start = microtime(true);
-
 		//resourse allocation
 		$this->_helper->allowResourceFullExecution();
+		//export bulk contacts
+		foreach ( $this->_helper->getWebsites() as $website ) {
+			$apiEnabled                = $this->_helper->isEnabled( $website );
+			$customerSyncEnabled    = $this->_helper->getCustomerSyncEnabled( $website );
+			$customerAddressBook    = $this->_helper->getCustomerAddressBook($website);
 
-		//get websites collection
-		$websites = $this->_helper->getWebsites();
-
-		foreach ( $websites as $website ) {
-
-			$enabled        = $this->_helper->isEnabled( $website );
-			$customerSyncEnabled   = $this->_helper->getCustomerSyncEnabled( $website );
-
-			if ($enabled && $customerSyncEnabled) {
-
+			//api, customer sync and customer address book must be enabled
+			if ($apiEnabled &&
+			    $customerSyncEnabled &&
+			    $customerAddressBook
+			) {
+				//start log
 				if (! $this->_countCustomers)
 					$this->_helper->log('---------- Start customer sync ----------');
-				$numUpdated = $this->exportCustomersForWebsite($website);
+				$contactsUpdated = $this->exportCustomersForWebsite($website);
 				// show message for any number of customers
-				if ($numUpdated)
-					$result['message'] .=  '</br>' . $website->getName() . ', updated customers = ' . $numUpdated;
+				if ($contactsUpdated)
+					$result['message'] .=  '</br>' . $website->getName() . ', exported contacts : ' . $contactsUpdated;
 			}
 		}
 		//sync proccessed
 		if ($this->_countCustomers) {
-			$message = 'Total time for sync : ' . gmdate( "H:i:s", microtime( true ) - $this->_start ) . ', Total updated = ' . $this->_countCustomers;
+			$message = 'Total time for sync : ' . gmdate( "H:i:s", microtime( true ) - $this->_start ) . ', Total contacts : ' . $this->_countCustomers;
 			$this->_helper->log( $message );
 			$message .= $result['message'];
 			$result['message'] = $message;
@@ -106,39 +106,31 @@ class Contact
 	 */
 	public function exportCustomersForWebsite( $website)
 	{
-		$customers = $headers = $allMappedHash = array();
-		$pageSize = $this->_helper->getSyncLimit($website);
+		$customerIds = $headers = $allMappedHash = array();
+		//admin sync limit of batch size for contacts
+		$syncLimit              = $this->_helper->getSyncLimit($website);
+		//address book id mapped
+		$customerAddressBook    = $this->_helper->getCustomerAddressBook($website);
 
-		$customerAddressBook = $this->_helper->getCustomerAddressBook($website);
-
-		//skip if customer address book is not mapped
+		//skip website if address book not mapped
 		if (! $customerAddressBook)
 			return 0;
 
-		$write = $this->_resource->getConnection('core_write');
+		$connection = $this->_resource->getConnection();
 		$contactTable = $this->_resource->getTableName('email_contact');
-		$select = $write->select();
-		$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact');
-		$contacts = $this->contactCollection
-			->addFieldToSelect('*')
+		$select = $connection->select();
+		//contacts ready for website
+		$contacts = $this->_contactCollection
 			->addFieldToFilter('website_id', $website->getId())
-			->setPageSize($pageSize);
-
-		// no contacts for this website
+			->setPageSize($syncLimit);
+		// no contacts found
 		if (!$contacts->getSize())
 			return 0;
-
-		//create customer filename
+		//customer filename
 		$customersFile = strtolower($website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv');
 		$this->_helper->log('Customers file : ' . $customersFile);
-
-		//get customer ids
+		//get customers ids
 		$customerIds = $contacts->getColumnValues('customer_id');
-
-
-		//customer collection
-		$customerCollection = $this->getCollection($customerIds, $website->getId());
-
 		/**
 		 * HEADERS.
 		 */
@@ -172,10 +164,9 @@ class Contact
 			//update sql statement
 			$updateSql = $select->crossUpdateFromSelect(array('c' => $contactTable));
 			//run query and update subscriber_status column
-			$write->query($updateSql);
+			$connection->query($updateSql);
 			//update is_subscriber column if subscriber_status is not null
-			$write->update($contactTable, array('is_subscriber' => 1), "subscriber_status is not null");
-
+			$connection->update($contactTable, array('is_subscriber' => 1), "subscriber_status is not null");
 
 			//remove contact with customer id set and no customer
 			$select->reset()
@@ -191,12 +182,13 @@ class Contact
 			//delete sql statement
 			$deleteSql = $select->deleteFromSelect('c');
 			//run query
-			$write->query($deleteSql);
+			$connection->query($deleteSql);
 
 			//set flag
 			$this->_sqlExecuted = true;
 		}
-
+		//customer collection
+		$customerCollection = $this->_getCustomerCollection($customerIds, $website->getId());
 		foreach ($customerCollection as $customer) {
 
 			$connectorCustomer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Customer' );
@@ -204,7 +196,7 @@ class Contact
 			$connectorCustomer->setCustomerData($customer);
 
 			//count number of customers
-			$customers[] = $customer->getId();
+			$customerIds[] = $customer->getId();
 
 			if ($connectorCustomer) {
 				foreach ($customAttributes as $data) {
@@ -220,15 +212,14 @@ class Contact
 			// save csv file data for customers
 			$this->_file->outputCSV($this->_file->getFilePath($customersFile), $connectorCustomer->toCSVArray());
 
-
 			//clear collection and free memory
 			$customer->clearInstance();
 		}
 
-		$customerNum = count($customers);
+		$customerNum = count($customerIds);
 		$this->_helper->log('Website : ' . $website->getName() . ', customers = ' . $customerNum);
 		$this->_helper->log('---------------------------- execution time :' . gmdate("H:i:s", microtime(true) - $this->_start));
-
+		//file was created - continue for queue the export
 		if (is_file($this->_file->getFilePath($customersFile))) {
 			if ($customerNum > 0) {
 				//register in queue with importer
@@ -239,15 +230,15 @@ class Contact
 					$website->getId(),
 					$customersFile
 				);
-
 				//set imported
 				if ($check) {
 					$tableName = $this->_resource->getTableName('email_contact');
-					$ids = implode(', ', $customers);
-					$write->update($tableName, array('email_imported' => 1), "customer_id IN ($ids)");
+					$ids = implode(', ', $customerIds);
+					$connection->update($tableName, array('email_imported' => 1), "customer_id IN ($ids)");
 				}
 			}
 		}
+
 		$this->_countCustomers += $customerNum;
 		return $customerNum;
 	}
@@ -262,12 +253,12 @@ class Contact
 	public function syncContact($contactId = null)
 	{
 		if ($contactId)
-			$contact = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->load($contactId);
+			$contact = $this->_contactFactory->load($contactId);
 		else {
 			$contact = $this->_registry->registry('current_contact');
 		}
 		if (! $contact->getId()) {
-			$this->messageManager->addError('No contact found!');
+			$this->_messageManager->addError('No contact found!');
 			return false;
 		}
 
@@ -279,11 +270,9 @@ class Contact
 		//skip if the mapping field is missing
 		if(!$this->_helper->getCustomerAddressBook($website))
 			return false;
-		//$fileHelper = Mage::helper('ddg/file');
-
 		$customerId = $contact->getCustomerId();
 		if (!$customerId) {
-			$this->_storeManager->addError('Cannot manually sync guests!');
+			$this->_messageManager->addError('Cannot manually sync guests!');
 			return false;
 		}
 		$client = $this->_helper->getWebsiteApiClient($website);
@@ -303,20 +292,19 @@ class Contact
 			$headers[] = $data['datafield'];
 			$allMappedHash[$data['attribute']] = $data['datafield'];
 		}
-
 		$headers[] = 'Email';
 		$headers[] = 'EmailType';
 		$this->_file->outputCSV($this->_file->getFilePath($customersFile), $headers);
 		/**
 		 * END HEADERS.
 		 */
-		$customerCollection = $this->getCollection(array($customerId), $website->getId());
+		$customerCollection = $this->_getCustomerCollection(array($customerId), $website->getId());
 
 		foreach ($customerCollection as $customer) {
-			$contactModel = $this->_objectManager->create('email_contact');
 
-			$contactModel = $this->loadByCustomerEmail($customer->getEmail(), $websiteId);
-			//skip contacts without customer id
+			$contactModel = $this->_contactFactory->create()
+				->loadByCustomerEmail($customer->getEmail(), $websiteId);
+			//contact with this email not found
 			if (!$contactModel->getId())
 				continue;
 			/**
@@ -325,7 +313,7 @@ class Contact
 			$connectorCustomer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Customer');
 			$connectorCustomer->setMappingHash($mappedHash);
 			$connectorCustomer->setCustomerData($customer);
-			//count number of customers
+
 			$customers[] = $connectorCustomer;
 			foreach ($customAttributes as $data) {
 				$attribute = $data['attribute'];
@@ -344,7 +332,7 @@ class Contact
 
 			//mark the contact as imported
 			$contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
-			$subscriber = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')->loadByEmail($customer->getEmail());
+			$subscriber = $this->_subscriberFactory->loadByEmail($customer->getEmail());
 			if ($subscriber->isSubscribed()) {
 				$contactModel->setIsSubscriber('1')
 					->setSubscriberStatus($subscriber->getSubscriberStatus());
@@ -372,10 +360,18 @@ class Contact
 	}
 
 
-	public function getCollection($customerIds, $websiteId = 0)
+	/**
+	 * Customer collection with all data ready for export.
+	 *
+	 * @param $customerIds
+	 * @param int $websiteId
+	 *
+	 * @return $this
+	 * @throws \Magento\Framework\Exception\LocalizedException
+	 */
+	protected function _getCustomerCollection($customerIds, $websiteId = 0)
 	{
-		$customerCollection = $this->collection->addNameToSelect()
-			->addAttributeToSelect('*')
+		$customerCollection = $this->_customerCollection->addNameToSelect()
 			->joinAttribute('billing_street',       'customer_address/street',      'default_billing', null, 'left')
 			->joinAttribute('billing_city',         'customer_address/city',        'default_billing', null, 'left')
 			->joinAttribute('billing_country_code', 'customer_address/country_id',  'default_billing', null, 'left')
@@ -390,15 +386,15 @@ class Contact
 			->joinAttribute('shipping_region',      'customer_address/region',      'default_shipping', null, 'left')
 			->addAttributeToFilter('entity_id', array('in' => $customerIds));
 
+		$quote                          = $this->_resource->getTableName('quote');
+		$sales_order                    = $this->_resource->getTableName('sales_order');
 		$customer_log                   = $this->_resource->getTableName('log_customer');
 		$eav_attribute                  = $this->_resource->getTableName('eav_attribute');
-		$quote                          = $this->_resource->getTableName('quote');
-		$sales_order                     = $this->_resource->getTableName('sales_order');
 		$sales_order_grid               = $this->_resource->getTableName('sales_order_grid');
-		$sales_order_item                = $this->_resource->getTableName('sales_order_item');
+		$sales_order_item               = $this->_resource->getTableName('sales_order_item');
+		$catalog_category_product_index = $this->_resource->getTableName('catalog_category_product');
 		$eav_attribute_option_value     = $this->_resource->getTableName('eav_attribute_option_value');
 		$catalog_product_entity_int     = $this->_resource->getTableName('catalog_product_entity_int');
-		$catalog_category_product_index = $this->_resource->getTableName('catalog_category_product');
 
 		// get the last login date from the log_customer table
 		$customerCollection->getSelect()->columns(

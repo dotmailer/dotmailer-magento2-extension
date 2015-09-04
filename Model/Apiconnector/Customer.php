@@ -16,6 +16,10 @@ class Customer
 
 	protected $_mapping_hash;
 	protected $_helper;
+	protected $_groupFactory;
+	protected $_subscriberFactory;
+	protected $_categoryFactory;
+	protected $_productFactory;
 
 	private $subscriber_status = array(
 		\Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
@@ -35,14 +39,23 @@ class Customer
 		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Review\Model\Resource\Review\Collection $reviewCollection,
 		\Magento\Sales\Model\Resource\Order\CollectionFactory $collectionFactory,
-		\Dotdigitalgroup\Email\Helper\Data $helper
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Customer\Model\GroupFactory $groupFactory,
+		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+		\Magento\Catalog\Model\CategoryFactory $categoryFactory,
+		\Magento\Catalog\Model\ProductFactory $productFactory
 	)
 	{
 		$this->_helper = $helper;
 		$this->_store = $storeManager;
 		$this->_objectManager = $objectManager;
 		$this->reviewCollection = $reviewCollection;
-		$this->orderCollection = $collectionFactory->create();
+		$this->orderCollection = $collectionFactory;
+		$this->_groupFactory = $groupFactory;
+		$this->_subscriberFactory = $subscriberFactory;
+		$this->_categoryFactory = $categoryFactory;
+		$this->_productFactory = $productFactory;
+
 	}
 
 	/**
@@ -450,7 +463,7 @@ class Customer
 	public function getTotalRefund()
 	{
 		//filter by customer id
-		$customerOrders = $this->orderCollection
+		$customerOrders = $this->orderCollection->create()
 			->addAttributeToFilter('customer_id', $this->customer->getId());
 
 		$totalRefunded = 0;
@@ -537,8 +550,8 @@ class Customer
 
 	private function _getCustomerGroup(){
 		$groupId = $this->customer->getGroupId();
-		$groupModel = $this->_objectManager->create('Magento\Customer\Model\Group');
-		$groupModel->load($groupId);
+		$groupModel = $this->_groupFactory->create()
+			->load($groupId);
 		if ($groupModel) {
 			return $groupModel->getCode();
 		}
@@ -574,7 +587,7 @@ class Customer
 	 */
 	public function getSubscriberStatus()
 	{
-		$subscriberModel = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')
+		$subscriberModel = $this->_subscriberFactory->create()
 			->loadByCustomerId($this->customer->getId());
 
 		if($subscriberModel->getCustomerId())
@@ -589,9 +602,9 @@ class Customer
 	public function getCustomerSegments()
 	{
 		$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
-		                    ->addFieldToFilter('customer_id', $this->getCustomerId())
-		                    ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
-		                    ->getFirstItem();
+	        ->addFieldToFilter('customer_id', $this->getCustomerId())
+	        ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
+	        ->getFirstItem();
 		if ($contactModel)
 			return $contactModel->getSegmentIds();
 
@@ -607,13 +620,14 @@ class Customer
 	public function getLastUsedDate()
 	{
 		//last used from the reward history based on the points delta used
-		$lastUsed = $this->_objectManager->create('Enterpirse\Reward\Model\Reward\History')
-		                ->addCustomerFilter($this->customer->getId())
-		                ->addWebsiteFilter($this->customer->getWebsiteId())
-		                ->addFieldToFilter('points_delta', array('lt'=> 0))
-		                ->setDefaultOrder()
-		                ->getFirstItem()
-		                ->getCreatedAt()
+		//enterprise module
+		$lastUsed = $this->_objectManager->create('Magento\Reward\Model\Reward\History')
+            ->addCustomerFilter($this->customer->getId())
+            ->addWebsiteFilter($this->customer->getWebsiteId())
+            ->addFieldToFilter('points_delta', array('lt'=> 0))
+            ->setDefaultOrder()
+            ->getFirstItem()
+            ->getCreatedAt()
 		;
 
 		//for any valid date
@@ -634,8 +648,7 @@ class Customer
 	{
 		$id = $this->customer->getMostCategoryId();
 		if ($id) {
-			return $this->_objectManager->create('Magento\Catalog\Model\Category')
-	           ->load($id)
+			return $this->_categoryFactory->load($id)
 	           ->setStoreId($this->customer->getStoreId())
 	           ->getName();
 		}
@@ -690,10 +703,9 @@ class Customer
 	{
 		$id = $this->customer->getFirstCategoryId();
 		if ($id) {
-			return $this->_objectManager->create('Magento\Catalog\Model\Category')
-			           ->load($id)
-			           ->setStoreId($this->customer->getStoreId())
-			           ->getName();
+			return $this->_categoryFactory->load($id)
+	           ->setStoreId($this->customer->getStoreId())
+	           ->getName();
 		}
 		return "";
 	}
@@ -707,7 +719,7 @@ class Customer
 	{
 		$id = $this->customer->getLastCategoryId();
 		if($id){
-			return $this->_objectManager->create('Magento\Catalog\Model\Category')
+			return $this->_categoryFactory->create()
 			           ->setStoreId($this->customer->getStoreId())
 			           ->load($id)
 			           ->getName();
@@ -733,10 +745,10 @@ class Customer
 		if($this->attribute_check){
 			$id = $this->customer->getProductIdForFirstBrand();
 			if($id){
-				$brand = $this->_objectManager->create('Magento\Catalog\Model\Product')
-				             ->setStoreId($this->customer->getStoreId())
-				             ->load($id)
-				             ->getAttributeText('manufacturer');
+				$brand = $this->_productFactory->create()
+		             ->setStoreId($this->customer->getStoreId())
+		             ->load($id)
+		             ->getAttributeText('manufacturer');
 				if($brand)
 					return $brand;
 			}
@@ -761,11 +773,11 @@ class Customer
 
 		if($this->attribute_check){
 			$id = $this->customer->getProductIdForLastBrand();
-			if($id){
-				$brand = $this->_objectManager->create('Magento\Catalog\Model\Product')
-				             ->setStoreId($this->customer->getStoreId())
-				             ->load($id)
-				             ->getAttributeText('manufacturer');
+			if ($id) {
+				$brand = $this->_productFactory->create()
+		             ->setStoreId($this->customer->getStoreId())
+		             ->load($id)
+		             ->getAttributeText('manufacturer');
 				if($brand)
 					return $brand;
 			}

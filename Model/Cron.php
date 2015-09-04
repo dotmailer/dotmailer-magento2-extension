@@ -3,8 +3,6 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Magento\ImportExport\Model\Export\Adapter\Csv;
-use Dotdigitalgroup\Email\Model\Apiconnector;
-
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\FilterBuilder;
@@ -22,7 +20,7 @@ class Cron
 		SearchCriteriaBuilder $searchCriteriaBuilder,
 		ProductRepositoryInterface $productRepository,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
-		Apiconnector\Contact $contact
+		\Dotdigitalgroup\Email\Model\Apiconnector\Contact $contact
 	) {
 		$this->productRepository = $productRepository;
 		$this->searchCriteriaBuilder = $searchCriteriaBuilder;

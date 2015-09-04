@@ -82,7 +82,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	 */
 	public function loadByCustomerEmail($email, $websiteId)
 	{
-
 		$collection = $this->getCollection()
            ->addFieldToFilter('email', $email)
            ->addFieldToFilter('website_id', $websiteId)
@@ -126,18 +125,22 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	public function getGuests($website)
 	{
 		$guestCollection = $this->getCollection()
-		                        ->addFieldToFilter('is_guest', array('notnull' => true))
-		                        ->addFieldToFilter('email_imported', array('null' => true))
-		                        ->addFieldToFilter('website_id', $website->getId());
+            ->addFieldToFilter('is_guest', array('notnull' => true))
+            ->addFieldToFilter('email_imported', array('null' => true))
+            ->addFieldToFilter('website_id', $website->getId());
 		return $guestCollection->load();
 	}
 
+	/**
+	 * Number contacts marked as imported.
+	 *
+	 * @return mixed
+	 */
 	public function getNumberOfImportedContacs()
 	{
-		$collection = $this->_getResource()->getEmail();
-
-		//	->addFieldToFilter('email_imported', array('notnull' => true));
-var_dump($collection);die;
+		$collection = $this->getCollection()
+			->addFieldToFilter('email_imported', array('notnull' => true));
+var_dump($collection->getSize());die;
 		return $collection->getSize();
 	}
 

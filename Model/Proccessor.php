@@ -78,7 +78,6 @@ class Proccessor
 
 			return true;
 		} catch (\Exception $e) {
-			//$this->_logger->$e->getMessage();
 		}
 	}
 
@@ -93,8 +92,8 @@ class Proccessor
 
 		if ($item = $this->_getQueue(true)) {
 			$websiteId = $item->getWebsiteId();
-			$enabled = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
-			if ($enabled) {
+			$apiEnabled = $this->_helper->isEnabled($websiteId);
+			if ($apiEnabled) {
 				$client = $this->_helper->getWebsiteApiClient($websiteId);
 				if (
 					$item->getImportType() == self::IMPORT_TYPE_CONTACT or
@@ -108,7 +107,7 @@ class Proccessor
 				}
 				if ($response && !isset($response->message)) {
 					if ($response->status == 'Finished') {
-						$now = Mage::getSingleton('core/date')->gmtDate();
+						$now = gmDate('Y-m-d H:i:s');
 						$item->setImportStatus(self::IMPORTED)
 						     ->setImportFinished($now)
 						     ->setMessage('')
@@ -142,13 +141,13 @@ class Proccessor
 	 */
 	private function _processQueue()
 	{
+		//item in queue
 		if ($item = $this->_getQueue()) {
 			$websiteId = $item->getWebsiteId();
 
 			$client = $this->_helper->getWebsiteApiClient($websiteId);
 
-			//$now = Mage::getSingleton('core/date')->gmtDate();
-			$now = new \Datetime;
+			$now = gmdate('Y-m-d H:i:s');
 			$error = false;
 
 			if ( //import requires file

@@ -19,7 +19,9 @@ class Index extends \Magento\Framework\App\Action\Action {
 	/**
 	 * Sets the content of the response
 	 */
-	public function execute() {
+	public function execute()
+	{
+		$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron')->emailImporter();
 
 
 	}

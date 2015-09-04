@@ -79,7 +79,7 @@ class Observer
 		$collection = $this->getCollection()
            ->addFieldToFilter('product_id', $productId)
            ->setPageSize(1);
-
+var_dump($collection->getData());die;
 		if ($collection->getSize()) {
 			return $collection->getFirstItem();
 		} else {
@@ -195,8 +195,5 @@ class Observer
 		}
 		return $this;
 	}
-
-
-
 
 }
