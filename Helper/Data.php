@@ -10,8 +10,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_backendConfig;
+	protected $_contactFactory;
+	protected $_productMetadata;
 
 	public function __construct(
+		\Magento\Framework\App\ProductMetadata $productMetadata,
+		\Dotdigitalgroup\Email\Model\ContacFactory $contacFactory,
 		\Magento\Config\Model\Resource\Config $resourceConfig,
 		\Magento\Framework\App\Resource $adapter,
 		\Magento\Framework\UrlInterface $urlBuilder,
@@ -21,6 +25,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	)
 	{
 		$this->_adapter = $adapter;
+		$this->_productMetadata = $productMetadata;
+		$this->_contacFactory = $contacFactory;
 		$this->_resourceConfig = $resourceConfig;
 		$this->_storeManager = $storeManager;
 		$this->_objectManager = $objectManager;
@@ -202,7 +208,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	public function debug( $title, $context )
 	{
 		$this->_logger->debug($title, $context);
-
 	}
 
     public function getDebugEnabled()
@@ -229,12 +234,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getPageTrackingEnabled()
     {
-        return (bool)Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED);
+        return (bool)$this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED);
     }
 
     public function getRoiTrackingEnabled()
     {
-        return (bool)Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED);
+        return (bool)$this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED);
     }
 
     /**
@@ -249,7 +254,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getMappedStoreName($website)
     {
-        $mapped = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME);
+        $mapped = $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME);
         $storeName = ($mapped)? $mapped : '';
         return  $storeName;
     }
@@ -263,7 +268,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getContactId($email, $websiteId)
     {
-	    $contact = Mage::getModel('ddg_automation/contact')->loadByCustomerEmail($email, $websiteId);
+	    $contact = $this->_contactFactory->create()
+		    ->loadByCustomerEmail($email, $websiteId);
 	    if ($contactId = $contact->getContactId()) {
 		    return $contactId;
 	    }
@@ -350,7 +356,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getStringWebsiteApiAccounts()
     {
         $accounts = array();
-        foreach (Mage::app()->getWebsites() as $website) {
+	    $websites = $this->getWebsites();
+        foreach ($websites as $website) {
             $websiteId = $website->getId();
             $apiUsername = $this->getApiUsername($website);
             $accounts[$apiUsername] = $apiUsername . ', websiteId: ' . $websiteId . ' name ' . $website->getName();
@@ -381,10 +388,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 * @param int $website
 	 *
 	 * @return array
-	 * @throws Mage_Core_Exception
 	 */
 	public function getEnterpriseAttributes( $website = 0) {
-		$website = Mage::app()->getWebsite($website);
+		$website = $this->_storeManager->getWebsite($website);
 		$result = array();
 		$attrs = $website->getConfig('connector_data_mapping/enterprise_data');
 		//get individual mapped keys
@@ -440,7 +446,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getCode()
     {
-        $adminUser = Mage::getSingleton('admin/session')->getUser();
+        $adminUser = $this->_objectManager->get('Magento\Backend\Model\Session')->getUser();
         $code = $adminUser->getEmailCode();
 
         return $code;
@@ -452,12 +458,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getAuthoriseUrl()
     {
-        $clientId = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CLIENT_ID);
+        $clientId = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID);
 
 	    //callback uri if not set custom
 	    $redirectUri = $this->getRedirectUri();
 	    $redirectUri .= 'connector/email/callback';
-	    $adminUser = Mage::getSingleton('admin/session')->getUser();
+	    $adminUser = $this->_objectManager->get('Magento\Backend\Model\Session')->getUser();
         //query params
         $params = array(
             'redirect_uri' => $redirectUri,
@@ -466,7 +472,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'response_type' => 'code'
         );
 
-        $authorizeBaseUrl = Mage::helper('ddg/config')->getAuthorizeLink();
+        $authorizeBaseUrl = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Config')->getAuthorizeLink();
         $url = $authorizeBaseUrl . http_build_query($params) . '&client_id=' . $clientId;
 
         return $url;
@@ -474,7 +480,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 	public function getRedirectUri()
 	{
-		$callback = Mage::helper('ddg/config')->getCallbackUrl();
+		$callback = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Config')->getCallbackUrl();
 
 		return $callback;
 	}
@@ -530,7 +536,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function dateDiff($time1, $time2=NULL) {
         if (is_null($time2)) {
-            $time2 = Mage::getModel('core/date')->date();
+            $time2 = new \Datetime();
         }
         $time1 = strtotime($time1);
         $time2 = strtotime($time2);
@@ -546,7 +552,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function disableConfigForWebsite($path)
     {
         $scopeId = 0;
-        if ($website = $this->_request->getRequest()->getParam('website')) {
+        if ($website = $this->_request->getParam('website')) {
             $scope = 'websites';
             $scopeId = $this->_storeManager->getWebsite($website)->getId();
         } else {
@@ -590,7 +596,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		$website = ($website)? $this->_storeManager->getWebsite( $website ) : 0;
 
 		$defaultGroup = $this->_storeManager->getWebsite($website)
-		                    ->getDefaultGroup();
+			->getDefaultGroup();
 
 		if (! $defaultGroup)
 			return $mage = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
@@ -732,13 +738,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function isEnterprise()
 	{
-		return Mage::getConfig ()->getModuleConfig ( 'Enterprise_Enterprise' ) && Mage::getConfig ()->getModuleConfig ( 'Enterprise_AdminGws' ) && Mage::getConfig ()->getModuleConfig ( 'Enterprise_Checkout' ) && Mage::getConfig ()->getModuleConfig ( 'Enterprise_Customer' );
-
+		//get edition name from the product metadata
+		$edition = $this->_productMetadata->getEdition();
+		if ($edition == 'Community')
+			return false;
+		return true;
 	}
 
     public function getTemplateList()
     {
-        $client = $this->getWebsiteApiClient(Mage::app()->getWebsite());
+	    $website = $this->_storeManager->getWebsite();
+        $client = $this->getWebsiteApiClient($website);
         if(!$client)
             return array();
 
@@ -748,7 +758,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if ( isset( $one->id ) ) {
                 $fields[] = array(
                     'value' => $one->id,
-                    'label' => $this->__( addslashes( $one->name ) )
+                    'label' => __( addslashes( $one->name ) )
                 );
             }
         }
@@ -868,8 +878,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	{
 		$lastCustomerSync = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron')
 			->getLastCustomerSync();
-		return true;
-		$timespan = $this->_helper->dateDiff($lastCustomerSync);
+
+		$timespan = $this->dateDiff($lastCustomerSync);
 
 		//last customer cron was less then 15 min
 		if ($timespan <= 15 * 60) {

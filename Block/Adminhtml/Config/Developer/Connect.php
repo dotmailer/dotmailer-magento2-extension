@@ -4,40 +4,79 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Connect extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
-        $this->setElement($element);
-        return $this->_getAddRowButtonHtml();
-    }
 
-    protected function _getAddRowButtonHtml()
-    {
 
-	    return 'connect element';
+	protected $_buttonLabel = 'Connect';
 
-        $url = Mage::helper('ddg')->getAuthoriseUrl();
-        $ssl = $this->_checkForSecureUrl();
-        $disabled = false;
-	    //disable for ssl missing
-        if (!$ssl) {
-            $disabled = true;
-        }
+	protected $_objectManager;
+	/**
+	 * Construct.
+	 */
+	public function __construct(
+		\Magento\Backend\Block\Template\Context $context,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		$data = []
+	)
+	{
+		$this->_objectManager = $objectManagerInterface;
+		parent::__construct($context, $data);
+	}
 
-        $adminUser = Mage::getSingleton('admin/session')->getUser();
-        $refreshToken = $adminUser->getRefreshToken();
-        $title = ($refreshToken)? $this->__('Disconnect') : $this->__('Connect');
-        $url = ($refreshToken)? $this->getUrl('*/email_automation/disconnect') : $url;
+	/**
+	 * @param $buttonLabel
+	 *
+	 * @return $this
+	 */
+	public function setButtonLabel($buttonLabel)
+	{
+		$this->_buttonLabel = $buttonLabel;
+		return $this;
+	}
 
-        return $this->getLayout()->createBlock('adminhtml/widget_button')
-            ->setType('button')
-            ->setLabel($this->__($title))
-            ->setDisabled($disabled)
-            ->setOnClick("window.location.href='" . $url . "'")
-            ->toHtml();
-    }
+	/**
+	 * Get the button and scripts contents.
+	 *
+	 * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+	 * @return string
+	 */
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+	{
+
+		$url = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Data')->getAuthoriseUrl();
+		$ssl = $this->_checkForSecureUrl();
+		$disabled = false;
+		//disable for ssl missing
+		if (!$ssl) {
+			$disabled = true;
+		}
+
+		$adminUser = $this->_objectManager->get('Magento\Backend\Model\Session')->getUser();
+		$refreshToken = $adminUser->getRefreshToken();
+		$title = ($refreshToken)? __('Disconnect') : __('Connect');
+
+
+$url = ($refreshToken)? $this->getUrl('*/email_automation/disconnect') : $url;
+
+		return $this->getLayout()->createBlock('adminhtml/widget_button')
+		            ->setType('button')
+		            ->setLabel($this->__($title))
+		            ->setDisabled($disabled)
+		            ->setOnClick("window.location.href='" . $url . "'")
+		            ->toHtml();
+
+		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/contactsync');
+
+		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
+		            ->setType('button')
+		            ->setLabel(__($this->_buttonLabel))
+		            ->setOnClick("window.location.href='" . $url . "'")
+		            ->toHtml();
+
+	}
 
     private function _checkForSecureUrl() {
-        $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB, true);
+	    $baseUrl = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true);
+
         if (!preg_match('/https/',$baseUrl)) {
             return false;
         }

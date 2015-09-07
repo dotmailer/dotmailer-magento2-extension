@@ -93,7 +93,7 @@ class File
 		// for some reason passing the preset delimiter/enclosure variables results in error
 		// $this->delimiter $this->enclosure
 		if (fwrite($fp, $fqCsv) == 0 ) {
-			Mage::throwException('Problem writing CSV file');
+			throw new \Exception('Problem writing CSV file');
 		}
 		fclose($fp);
 

@@ -1,17 +1,17 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Customer_Tab
-    extends Mage_Adminhtml_Block_Widget
-    implements Mage_Adminhtml_Block_Widget_Tab_Interface {
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Customer;
 
+class Tab
+{
     public function getTabLabel()
     {
-        return $this->__('Email Activity');
+        return __('Email Activity');
     }
 
     public function getTabTitle()
     {
-        return $this->__('Email Activity');
+        return __('Email Activity');
     }
 
     public function canShowTab()

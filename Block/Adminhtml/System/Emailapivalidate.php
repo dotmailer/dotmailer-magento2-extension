@@ -1,13 +1,15 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_System_Emailapivalidate extends Mage_Adminhtml_Block_System_Config_Form_Field
+namespace Dotdigitalgroup\Email\Block\Adminhtml\System;
+
+class Emailapivalidate extends \Magento\Backend\Block\Widget\Container
 {
 
-    protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
+    protected function _getElementHtml( $element)
     {
         $element->setData('onchange', "apiValidation(this.form, this);");
 
-        $url = Mage::helper('adminhtml')->getUrl('*/connector/ajaxvalidation');
+        $url = $this->getUrl('*/connector/ajaxvalidation');
 
         $element->setData('after_element_html', "
             <script>

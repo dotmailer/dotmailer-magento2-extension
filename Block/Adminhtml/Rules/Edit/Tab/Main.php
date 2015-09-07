@@ -1,9 +1,26 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Rules_Edit_Tab_Main
-    extends Mage_Adminhtml_Block_Widget_Form
-    implements Mage_Adminhtml_Block_Widget_Tab_Interface
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
+
+class Main extends \Magento\Config\Block\System\Config\Form\Field
 {
+
+	protected $_registry;
+	protected $_objectManager;
+	/**
+	 * Initialize form
+	 * Add standard buttons
+	 * Add "Save and Continue" button
+	 */
+	public function __construct(
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		\Magento\Framework\Registry $registry,
+		\Magento\Backend\Block\Widget\Context $context)
+	{
+		$this->_objectManager = $objectManagerInterface;
+		$this->_registry = $registry;
+		parent::__construct($context);
+	}
     /**
      * Prepare content for tab
      *
@@ -11,7 +28,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Rules_Edit_Tab_Main
      */
     public function getTabLabel()
     {
-        return Mage::helper('salesrule')->__('Rule Information');
+        return __('Rule Information');
     }
 
     /**
@@ -21,7 +38,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Rules_Edit_Tab_Main
      */
     public function getTabTitle()
     {
-        return Mage::helper('salesrule')->__('Rule Information');
+        return __('Rule Information');
     }
 
     /**
@@ -46,13 +63,13 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Rules_Edit_Tab_Main
 
     protected function _prepareForm()
     {
-        $model = Mage::registry('current_ddg_rule');
+        $model = $this->_registry->registry('current_ddg_rule');
 
-        $form = new Varien_Data_Form();
+        $form = $this->_objectManager('Magento\Framework\Data\Form');
         $form->setHtmlIdPrefix('rule_');
 
         $fieldset = $form->addFieldset('base_fieldset',
-            array('legend' => Mage::helper('ddg')->__('Rule Information'))
+            array('legend' => __('Rule Information'))
         );
 
         if ($model->getId()) {
@@ -63,30 +80,30 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Rules_Edit_Tab_Main
 
         $fieldset->addField('name', 'text', array(
             'name' => 'name',
-            'label' => Mage::helper('ddg')->__('Rule Name'),
-            'title' => Mage::helper('ddg')->__('Rule Name'),
+            'label' => __('Rule Name'),
+            'title' => __('Rule Name'),
             'required' => true,
         ));
 
         $fieldset->addField('type', 'select', array(
-            'label'     => Mage::helper('ddg')->__('Rule Type'),
-            'title'     => Mage::helper('ddg')->__('Rule Type'),
+            'label'     => __('Rule Type'),
+            'title'     => __('Rule Type'),
             'name'      => 'type',
             'required' => true,
             'options'   => array(
-                Dotdigitalgroup_Email_Model_Rules::ABANDONED => 'Abandoned Cart Exclusion Rule',
-                Dotdigitalgroup_Email_Model_Rules::REVIEW => 'Review Email Exclusion Rule',
+                \Dotdigitalgroup\Email\Model\Rules::ABANDONED => 'Abandoned Cart Exclusion Rule',
+                \Dotdigitalgroup\Email\Model\Rules::REVIEW => 'Review Email Exclusion Rule',
             ),
         ));
 
         $fieldset->addField('status', 'select', array(
-            'label'     => Mage::helper('ddg')->__('Status'),
-            'title'     => Mage::helper('ddg')->__('Status'),
+            'label'     => __('Status'),
+            'title'     => __('Status'),
             'name'      => 'status',
             'required' => true,
             'options'    => array(
-                '1' => Mage::helper('ddg')->__('Active'),
-                '0' => Mage::helper('ddg')->__('Inactive'),
+                '1' => __('Active'),
+                '0' => __('Inactive'),
             ),
         ));
 
@@ -94,24 +111,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Rules_Edit_Tab_Main
             $model->setData('status', '0');
         }
 
-        if (Mage::app()->isSingleStoreMode()) {
-            $websiteId = Mage::app()->getStore(true)->getWebsiteId();
-            $fieldset->addField('website_ids', 'hidden', array(
-                'name'     => 'website_ids[]',
-                'value'    => $websiteId
-            ));
-            $model->setWebsiteIds($websiteId);
-        } else {
-            $field = $fieldset->addField('website_ids', 'multiselect', array(
-                'name'     => 'website_ids[]',
-                'label'     => Mage::helper('ddg')->__('Websites'),
-                'title'     => Mage::helper('ddg')->__('Websites'),
-                'required' => true,
-                'values'   => Mage::getSingleton('adminhtml/system_store')->getWebsiteValuesForForm()
-            ));
-            $renderer = $this->getLayout()->createBlock('adminhtml/store_switcher_form_renderer_fieldset_element');
-            $field->setRenderer($renderer);
-        }
 
         $form->setValues($model->getData());
         $this->setForm($form);

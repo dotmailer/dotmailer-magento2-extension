@@ -5,8 +5,6 @@ use Magento\Backend\App\Action;
 
 abstract class Importer extends Action
 {
-
-
 	/**
 	 * @return bool
 	 */

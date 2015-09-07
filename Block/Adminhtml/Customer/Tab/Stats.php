@@ -1,8 +1,25 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Customer_Tab_Stats extends Mage_Adminhtml_Block_Template
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Customer\Tab;
+
+class Stats extends \Magento\Framework\View\Element\Template
 {
     private $_stat = array();
+
+	protected $_helper;
+	protected $_objectManager;
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		\Magento\Backend\Block\Template\Context $context)
+	{
+		$data = [];
+		$this->_helper = $data;
+		$this->_objectManager = $objectManagerInterface;
+		parent::__construct($context, $data);
+	}
+
 
     public function _construct()
     {
@@ -11,17 +28,18 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Customer_Tab_Stats extends Mage_Admi
 
     private function _getCampaignStatsForCustomer()
     {
-        $id = Mage::app()->getRequest()->getParam('id');
-        $customer = Mage::getModel('customer/customer')->load($id);
+	    $id = $this->_request->getParam('id');
+        $customer = $this->_objectManager->create('Magento\Customer\Model\Customer')
+	        ->load($id);
         $email = $customer->getEmail();
         $website = $customer->getStore()->getWebsite();
 
-        $client = Mage::helper('ddg')->getWebsiteApiClient($website);
+        $client = $this->_helper->getWebsiteApiClient($website);
         $contact = $client->postContacts($email);
         if(!isset($contact->message)){
-            $locale = Mage::app()->getLocale()->getLocale();
-            $date = Zend_Date::now($locale)->subDay(30);
-            $response = $client->getCampaignsWithActivitySinceDate($date->toString(Zend_Date::ISO_8601));
+
+            $date = \Zend_Date::now()->subDay(30);
+            $response = $client->getCampaignsWithActivitySinceDate($date->toString(\Zend_Date::ISO_8601));
             if(!isset($response->message) && is_array($response)){
                 foreach($response as $one){
                     $result = $client->getCampaignActivityByContactId($one->id, $contact->id);

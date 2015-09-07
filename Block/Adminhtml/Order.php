@@ -41,16 +41,6 @@ class Order extends \Magento\Backend\Block\Widget\Container
 	protected function _prepareLayout()
 	{
 
-		$addButtonProps = [
-			'id' => 'add_new_grid',
-			'label' => __('Add New Order'),
-			'class' => 'add',
-			'button_class' => '',
-			'class_name' => 'Magento\Backend\Block\Widget\Button\SplitButton',
-			'options' => $this->_getAddButtonOptions(),
-		];
-		//$this->buttonList->add('add_new', $addButtonProps);
-
 		$this->setChild(
 			'grid',
 			$this->getLayout()->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Order\Grid', 'grid.view.grid')

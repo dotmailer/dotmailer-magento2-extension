@@ -71,19 +71,22 @@ class Product
 
 	protected $_helper;
 	protected $_resource;
-	protected $_objectManager;
 	protected $_scopeConfig;
+	protected $_storeManager;
+	protected $_objectManager;
 
-    public function __construct($product,
+	public function __construct($product,
+	    \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 	    \Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
-	    $this->_objectManager = $objectManager;
 	    $this->_helper = $helper;
 	    $this->_resource = $resource;
+	    $this->_objectManager = $objectManager;
+	    $this->_storeManager = $storeManagerInterface;
 
         $this->id                   = $product->getId();
         $this->sku                  = $product->getSku();
@@ -126,7 +129,7 @@ class Product
         $count = 0;
         $websiteIds = $product->getWebsiteIds();
         foreach ($websiteIds as $websiteId) {
-            $website = Mage::app()->getWebsite($websiteId);
+            $website = $this->_storeManager->getWebsite($websiteId);
             $this->websites[$count]['Id'] = $website->getId();
             $this->websites[$count]['Name'] = $website->getName();
             $count++;
@@ -134,17 +137,17 @@ class Product
 
         //bundle product options
         if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE){
-            $optionCollection = $product->getTypeInstance()->getOptionsCollection();
-            $selectionCollection = $product->getTypeInstance()->getSelectionsCollection($product->getTypeInstance()->getOptionsIds());
+            $optionCollection       = $product->getTypeInstance()->getOptionsCollection();
+            $selectionCollection    = $product->getTypeInstance()->getSelectionsCollection($product->getTypeInstance()->getOptionsIds());
             $options = $optionCollection->appendSelections($selectionCollection);
-            foreach($options as $option)
-            {
+            foreach($options as $option) {
+
                 $count = 0;
                 $title = str_replace(' ', '', $option->getDefaultTitle());
                 $selections = $option->getSelections();
                 $sOptions = array();
-                foreach($selections as $selection)
-                {
+                foreach($selections as $selection) {
+
                     $sOptions[$count]['name'] = $selection->getName();
                     $sOptions[$count]['sku'] = $selection->getSku();
                     $sOptions[$count]['id'] = $selection->getProductId();
@@ -182,5 +185,4 @@ class Product
     {
         return get_object_vars($this);
     }
-
 }

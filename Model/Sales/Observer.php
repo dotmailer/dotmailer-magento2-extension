@@ -80,7 +80,8 @@ class Observer
                 if($emailOrder->getEmailImported() == \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
                     $emailOrder->setModified(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
                 }
-                $smsCampaign = Mage::getModel('ddg_automation/sms_campaign', $order);
+                $smsCampaign = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sms\Campaign');
+	            $smsCampaign->setOrder($order);
                 $smsCampaign->setStatus($status);
                 $smsCampaign->sendSms();
             }

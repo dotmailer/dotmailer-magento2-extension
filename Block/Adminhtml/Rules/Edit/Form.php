@@ -1,18 +1,21 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_Rules_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit;
+
+class Form extends \Magento\Backend\Block\Widget\Container
 {
 
     public function __construct()
     {
         parent::__construct();
         $this->setId('edit_form');
-        $this->setTitle(Mage::helper('salesrule')->__('Rule Information'));
+        $this->setTitle(__('Rule Information'));
     }
 
     protected function _prepareForm()
     {
-        $form = new Varien_Data_Form(array('id' => 'edit_form', 'action' => $this->getUrl('adminhtml/email_rules/save'), 'method' => 'post'));
+	    //@todo fix the form
+        $form = '';//new Varien_Data_Form(array('id' => 'edit_form', 'action' => $this->getUrl('adminhtml/email_rules/save'), 'method' => 'post'));
         $form->setUseContainer(true);
         $this->setForm($form);
         return parent::_prepareForm();

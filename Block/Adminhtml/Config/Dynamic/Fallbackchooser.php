@@ -15,9 +15,9 @@ class Fallbackchooser extends \Magento\Config\Block\System\Config\Form\Field
     {
 	    return $title;
 
-        $action = 'getFallbackProductChooser(\'' . Mage::getUrl(
+        $action = 'getFallbackProductChooser(\'' . $this->getUrl(
                 '*/widget_chooser/product/form/fallback_product_selector',
-                array('_secure' => Mage::app()->getStore()->isAdminUrlSecure())
+                array('_secure' => $this->_storeManager->getStore()->isAdminUrlSecure())
             ) . '?isAjax=true\'); return false;';
 
         return $this->getLayout()->createBlock('adminhtml/widget_button')

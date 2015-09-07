@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Controller\Email;
 
 
-class Basket extends \Dotdigitalgroup\Email\Controller\Response
+class Disconnect extends \Magento\Framework\App\Action\Action
 {
 
 	/**
@@ -11,10 +11,24 @@ class Basket extends \Dotdigitalgroup\Email\Controller\Response
 	 */
 	public function execute()
 	{
-		//authenticate
-		$this->authenticate();
-		$this->_view->loadLayout();
-		$this->_view->renderLayout();
-		//$this->checkContentNotEmpty( $this->_view->getLayout()->getOutput() );
+
+		/**
+		 * Disconnect and remote the refresh token.
+		 */
+		try {
+			$adminUser = $this->_objectManager->get('Magento\Backend\Model\Session')->getUser();
+
+			//save token
+			if ($adminUser->getRefreshToken()) {
+				$adminUser->setRefreshToken()
+					->save();
+			}
+			$this->messageManager->addSuccess('Successfully disconnected');
+		}catch (\Exception $e){
+
+			$this->messageManager->addError($e->getMessage());
+		}
+
+	//	$this->_redirectReferer('*/*/*');
 	}
 }

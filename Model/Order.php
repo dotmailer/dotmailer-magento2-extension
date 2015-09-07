@@ -44,7 +44,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
 	 * @param $quoteId
 	 * @param $storeId
 	 *
-	 * @return $this|Varien_Object
+	 * @return $this|\Magento\Framework\DataObject
 	 */
 	public function getEmailOrderRow($orderId, $quoteId, $storeId)
     {
@@ -56,12 +56,11 @@ class Order extends \Magento\Framework\Model\AbstractModel
         if ($collection->count()) {
             return $collection->getFirstItem();
         } else {
-            $now = Mage::getSingleton('core/date')->gmtDate();
 
             $this->setOrderId($orderId)
                 ->setQuoteId($quoteId)
                 ->setStoreId($storeId)
-                ->setCreatedAt($now);
+                ->setCreatedAt(time());
         }
         return $this;
 
@@ -95,14 +94,14 @@ class Order extends \Magento\Framework\Model\AbstractModel
         return $collection;
     }
 
-    /**
-     * Get all sent orders older then certain days.
-     *
-     * @param $storeIds
-     * @param $limit
-     *
-     * @return Dotdigitalgroup_Email_Model_Resource_Order_Collection
-     */
+	/**
+	 * Get all sent orders older then certain days.
+	 *
+	 * @param $storeIds
+	 * @param $limit
+	 *
+	 * @return $this
+	 */
     public function getAllSentOrders($storeIds, $limit)
     {
         $collection = $this->getCollection()
@@ -112,7 +111,5 @@ class Order extends \Magento\Framework\Model\AbstractModel
         $collection->getSelect()->limit($limit);
         return $collection->load();
     }
-    
-
 
 }

@@ -84,7 +84,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
                 ->setName($inputName)
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
-                ->setOptions(Mage::getModel('ddg_automation/adminhtml_source_rules_value')->toOptionArray())
+                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value')->toOptionArray())
                 ->toHtml();
         }
         return parent::renderCellTemplate($columnName);
@@ -111,7 +111,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
     {
         if (!$this->_getAttributeRenderer) {
             $this->_getAttributeRenderer = $this->getLayout()
-                ->createBlock('ddg_automation/adminhtml_config_select')
+                ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Select')
                 ->setIsRenderToJsTemplate(true);
         }
         return $this->_getAttributeRenderer;
@@ -126,7 +126,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
     {
         if (!$this->_getConditionsRenderer) {
             $this->_getConditionsRenderer = $this->getLayout()
-                ->createBlock('ddg_automation/adminhtml_config_select')
+                ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Select')
                 ->setIsRenderToJsTemplate(true);
         }
         return $this->_getConditionsRenderer;
@@ -180,7 +180,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
                     });
 
                     function doUpdate(item){
-                        var url = '". Mage::getUrl('connector/rules/ajax')."';
+                        var url = '". $this->getUrl('connector/rules/ajax')."';
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
                         var value = item.up(1).down().next(1);
@@ -210,7 +210,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
                     }
 
                     function doUpdateWithValues(item){
-                        var url = '". Mage::getUrl('connector/rules/selected')."';
+                        var url = '". $this->getUrl('connector/rules/selected')."';
                         var arrayKey = item.up(1).readAttribute('id');
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
@@ -244,7 +244,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field
                     }
 
                     function doUpdateForCondition(item){
-                        var url = '". Mage::getUrl('connector/rules/value')."';
+                        var url = '". $this->getUrl('connector/rules/value')."';
                         var attribute = item.up(1).down();
                         var attributeValue = attribute.down().value;
                         var value = item.up().next();

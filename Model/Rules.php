@@ -7,8 +7,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     const ABANDONED  = 1;
     const REVIEW     = 2;
 
-    private $_defaultOptions;
-    private $_conditionMap;
+	private $_conditionMap;
+	private $_defaultOptions;
     private $_attributeMapForQuote;
     private $_attributeMapForOrder;
     private $_productAttribute;
@@ -325,7 +325,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         if(empty($this->_productAttribute) or !$collection->getSize())
             return $collection;
 
-        $productModel = Mage::getModel('catalog/product');
+        $productModel = $this->_objectManager->create('Magento\Catalog\Model\Product');
         foreach($collection as $collectionItem){
             $items = $collectionItem->getAllItems();
             foreach($items as $item){
@@ -336,8 +336,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                     ->load($productId);
 
                 //attributes array from loaded product
-                $attributes = Mage::getModel('eav/config')->getEntityAttributeCodes(
-                    Mage_Catalog_Model_Product::ENTITY,
+                $attributes = $this->_objectManager->create('Magento\Eav\Model\Config')->getEntityAttributeCodes(
+                    \Magento\Catalog\Model\Product::ENTITY,
                     $product
                 );
 
@@ -356,7 +356,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
                     //if attribute is in product's attributes array
                     if(in_array($attribute,$attributes)){
-                        $attr = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute);
+                        $attr = $this->_objectManager->get('Magento\Eav\Model\Config')
+	                        ->getAttribute('catalog_product', $attribute);
                         //frontend type
                         $frontType = $attr->getFrontend()->getInputType();
                         //if type is select

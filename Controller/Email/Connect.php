@@ -3,16 +3,11 @@
 namespace Dotdigitalgroup\Email\Controller\Email;
 
 
-class Disconnect extends \Dotdigitalgroup\Email\Controller\Response
+class Connect extends \Magento\Framework\App\Action\Action
 {
 
-	/**
-	 * Basket page to display the user items with specific email.
-	 */
 	public function execute()
 	{
-		//authenticate
-		$this->authenticate();
 
 		/**
 		 * Disconnect and remote the refresh token.
