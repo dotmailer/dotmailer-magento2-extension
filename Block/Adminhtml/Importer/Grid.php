@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Importer;
 
-use Magento\Backend\Block\Widget\Grid as WidgetGrid;
-
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
 	/**

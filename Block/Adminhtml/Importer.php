@@ -73,7 +73,7 @@ class Importer extends \Magento\Backend\Block\Widget\Container
 	protected function _getCreateUrl()
 	{
 		return $this->getUrl(
-			'*/*/new'
+			'grid/*/new'
 		);
 	}
 
@@ -87,5 +87,3 @@ class Importer extends \Magento\Backend\Block\Widget\Container
 		return $this->getChildHtml('grid');
 	}
 }
-
-
