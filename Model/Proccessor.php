@@ -18,14 +18,14 @@ class Proccessor
 	const MODE_CONTACT_DELETE = 'Contact_Delete';
 
 	//import type
-	const IMPORT_TYPE_CONTACT = 'Contact';
-	const IMPORT_TYPE_ORDERS = 'Orders';
-	const IMPORT_TYPE_WISHLIST = 'Wishlist';
-	const IMPORT_TYPE_REVIEWS = 'Reviews';
-	const IMPORT_TYPE_CATALOG = 'Catalog_Default';
-	const IMPORT_TYPE_QUOTE = 'Quote';
-	const IMPORT_TYPE_SUBSCRIBERS = 'Subscriber';
 	const IMPORT_TYPE_GUEST = 'Guest';
+	const IMPORT_TYPE_QUOTE = 'Quote';
+	const IMPORT_TYPE_ORDERS = 'Orders';
+	const IMPORT_TYPE_REVIEWS = 'Reviews';
+	const IMPORT_TYPE_CONTACT = 'Contact';
+	const IMPORT_TYPE_WISHLIST = 'Wishlist';
+	const IMPORT_TYPE_SUBSCRIBERS = 'Subscriber';
+	const IMPORT_TYPE_CATALOG = 'Catalog_Default';
 
 	private $import_statuses = array(
 		'RejectedByWatchdog', 'InvalidFileFormat', 'Unknown',

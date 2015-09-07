@@ -48,12 +48,13 @@ class Index extends   \Magento\Backend\App\AbstractAction
 		$baseUrl = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Config')->getLogUserUrl();
 		$loginuserUrl = $baseUrl  . $token . '&suppressfooter=true';
 
-		$block = $this->getLayout()
-              ->createBlock('core/text', 'connector_iframe')
+		$block = $this->_view->getLayout()
+              ->createBlock('Dotdigitalgroup\Email\Helper\Config', 'connector_iframe')
               ->setText(
 	              "<iframe src=" . $loginuserUrl . " width=100% height=1650 frameborder='0' scrolling='no' style='margin:0;padding: 0;display:block;'></iframe>"
               );
 		$this->setPageData();
+
 		return $this->getResultPage();
     }
 
@@ -122,15 +123,16 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	public function disconnectAction()
 	{
 		try {
-			$adminUser = Mage::getSingleton('admin/session')->getUser();
+			$adminUser = $this->_objectManager->get('Magento\Backend\Model\Auth\Session')->getUser();
 
 			if ($adminUser->getRefreshToken()) {
-				$adminUser->setRefreshToken()->save();
+				$adminUser->setRefreshToken()
+					->save();
 			}
-			Mage::getSingleton('adminhtml/session')->addSuccess('Successfully disconnected');
-		}catch (Exception $e){
-			Mage::logException($e);
-			Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
+			$this->messageManager->addSuccess('Successfully disconnected');
+		}catch (\Exception $e){
+
+			$this->messageManager->addError($e->getMessage());
 		}
 
 		$this->_redirectReferer('*/*/*');

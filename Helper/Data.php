@@ -776,65 +776,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	}
 
 	/**
-	 * Remove code and disable Raygun.
-	 */
-	public function disableRaygun()
-	{
-		$config = new Mage_Core_Model_Config();
-		$config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_CODE, '');
-		Mage::getConfig()->cleanCache();
-	}
-
-	public function enableRaygunCode()
-	{
-		$curl = new Varien_Http_Adapter_Curl();
-		$curl->setConfig(array(
-			'timeout'   => 2
-		));
-		$curl->write(Zend_Http_Client::GET, Dotdigitalgroup_Email_Helper_Config::RAYGUN_API_CODE_URL, '1.0');
-		$data = $curl->read();
-
-		if ($data === false) {
-			return false;
-		}
-		$data = preg_split('/^\r?$/m', $data, 2);
-		$data = trim($data[1]);
-		$curl->close();
-
-		$xml  = new SimpleXMLElement($data);
-		$raygunCode = $xml->code;
-
-		//not found
-		if (!$raygunCode)
-			return;
-
-		$config = new Mage_Core_Model_Config();
-		$config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_CODE, $raygunCode);
-	}
-
-	/**
-	 * Send the exception to raygun.
-	 *
-	 * @param $e Exception
-	 */
-	public function sendRaygunException( $e )
-	{
-		if (!$this->raygunEnabled())
-			return;
-		$baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
-		$tags = array(
-			$baseUrl,
-			Mage::getVersion()
-		);
-
-		$client = $this->getRaygunClient();
-		//user, firstname, lastname, email, annonim, uuid
-		$client->SetUser($baseUrl, null, null, $this->getApiUsername());
-		$client->SetVersion($this->getConnectorVersion());
-		$client->SendException($e, $tags);
-	}
-
-	/**
 	 * Get order sync enabled value from configuration.
 	 * @param int $websiteId
 	 *

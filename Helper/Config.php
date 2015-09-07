@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
-class Config
+class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME                                                           = 'Dotdigitalgroup_Email';
 
@@ -253,19 +253,28 @@ class Config
     const API_ENDPOINT                                      = 'https://api.nosto.com';
     const API_ENDPOINT_TEST                                 = 'https://test.api.nosto.com';
 
-	const RAYGUN_API_CODE_URL                               = 'https://dotmailerformagento.co.uk/magento/raygun.xml';
+	protected $_storeManager;
 
+	public function __construct(
+		\Magento\Framework\App\Helper\Context $context,
+		\Magento\Framework\ObjectManagerInterface $objectManager,
+		\Magento\Store\Model\StoreManagerInterface $storeManager
+	)
+	{
+		$this->_storeManager = $storeManager;
+		$this->_objectManager = $objectManager;
+
+		parent::__construct($context);
+	}
 
     /**
      * @param int $website
      *
      * @return bool
-     * @throws Mage_Core_Exception
      */
     public function getAuthorizeLinkFlag($website = 0)
     {
-        $website = Mage::app()->getWebsite($website);
-
+	    $website = $this->_storeManager->getWebsite($website);
         $customDomain = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN);
 
         return (bool)$customDomain;
@@ -275,14 +284,12 @@ class Config
      * @param int $website
      *
      * @return string
-     * @throws Mage_Core_Exception
      */
     public function getAuthorizeLink($website = 0)
     {
         //base url, check for custom oauth domain
         if ($this->getAuthorizeLinkFlag($website)){
-            $website = Mage::app()->getWebsite($website);
-
+	        $website = $this->_storeManager->getWebsite($website);
             $baseUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
 
         } else {
@@ -298,11 +305,11 @@ class Config
 	 */
 	public function getCallbackUrl()
 	{
-		if ($callback = Mage::getStoreConfig(self::XML_PATH_CONNECTOR_CUSTOM_AUTHORIZATION)){
+		if ($callback = $this->scopeConfig->getValue(self::XML_PATH_CONNECTOR_CUSTOM_AUTHORIZATION)){
 			return $callback;
 		}
 
-		return $redirectUri = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB, true);
+		return $redirectUri = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
 	}
 
     /**
@@ -313,7 +320,7 @@ class Config
     public function getTokenUrl($website = 0)
     {
         if ($this->getAuthorizeLinkFlag($website)) {
-            $website = Mage::app()->getWebsite($website);
+	        $website = $this->_storeManager->getWebsite($website);
 
             $tokenUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) . self::API_CONNECTOR_OAUTH_URL_TOKEN;
         } else {
@@ -333,7 +340,7 @@ class Config
     public function getLogUserUrl( $website = 0 )
     {
         if ($this->getAuthorizeLinkFlag($website)) {
-            $website = Mage::app()->getWebsite($website);
+	        $website = $this->_storeManager->getWebsite($website);
 
             $logUserUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         } else {
