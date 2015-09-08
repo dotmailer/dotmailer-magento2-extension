@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Lostbaskets;
+namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
 class Interval
 {

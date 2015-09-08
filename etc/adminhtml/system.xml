@@ -424,7 +424,7 @@
                 </field>
                 <field id="send_after_2" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Send After (min)</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Intervalminute</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
                 <field id="campaign_2" translate="label" sortOrder="80" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Campaign to Send</label>
@@ -440,7 +440,7 @@
                 </field>
                 <field id="send_after_3" translate="label" sortOrder="110" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Send After (min)</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Intervalminute</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
                 <field id="campaign_3" translate="label" sortOrder="120" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Campaign to Send</label>
@@ -475,7 +475,7 @@
                 </field>
                 <field id="send_after_2" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Send After (min)</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Intervalminute</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
                 <field id="campaign_2" translate="label" sortOrder="80" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Campaign to Send</label>
@@ -491,7 +491,7 @@
                 </field>
                 <field id="send_after_3" translate="label" sortOrder="110" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Send After (min)</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Intervalminute</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
                 <field id="campaign_3" translate="label" sortOrder="120" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Campaign to Send</label>
