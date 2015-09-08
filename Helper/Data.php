@@ -15,7 +15,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 	public function __construct(
 		\Magento\Framework\App\ProductMetadata $productMetadata,
-		\Dotdigitalgroup\Email\Model\ContacFactory $contacFactory,
+		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Config\Model\Resource\Config $resourceConfig,
 		\Magento\Framework\App\Resource $adapter,
 		\Magento\Framework\UrlInterface $urlBuilder,
@@ -26,7 +26,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	{
 		$this->_adapter = $adapter;
 		$this->_productMetadata = $productMetadata;
-		$this->_contacFactory = $contacFactory;
+		$this->_contactFactory = $contactFactory;
 		$this->_resourceConfig = $resourceConfig;
 		$this->_storeManager = $storeManager;
 		$this->_objectManager = $objectManager;
