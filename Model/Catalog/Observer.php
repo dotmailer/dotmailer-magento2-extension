@@ -21,12 +21,11 @@ class Observer
 	)
 	{
 		$this->_helper = $data;
-		$this->_scopeConfig = $scopeConfig;
-		$this->_logger = $loggerInterface;
-		$this->_storeManager = $storeManagerInterface;
 		$this->_registry = $registry;
+		$this->_logger = $loggerInterface;
+		$this->_scopeConfig = $scopeConfig;
+		$this->_storeManager = $storeManagerInterface;
 		$this->_objectManager = $objectManagerInterface;
-
 	}
 
 
@@ -44,6 +43,7 @@ class Observer
 					$item->setModified(1)->save();
 			}
 		}catch (\Exception $e){
+			$this->_logger->error('Error saving product', $e);
 		}
 	}
 
@@ -79,7 +79,7 @@ class Observer
 		$collection = $this->getCollection()
            ->addFieldToFilter('product_id', $productId)
            ->setPageSize(1);
-var_dump($collection->getData());die;
+
 		if ($collection->getSize()) {
 			return $collection->getFirstItem();
 		} else {

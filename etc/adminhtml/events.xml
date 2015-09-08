@@ -12,4 +12,10 @@
     <event name="customer_delete_after">
         <observer name="ddg_remove_contact" instance="Dotdigitalgroup\Email\Model\Customer\Observer" method="handleCustomerDeleteAfter" />
     </event>
+    <!--<event name="catalog_product_save_after">-->
+        <!--<observer name="ddg_save_product" instance="Dotdigitalgroup\Email\Model\Catalog\Observers" method="handleProductSaveAfter" />-->
+    <!--</event>-->
+    <!--<event name="catalog_product_delete_after">-->
+        <!--<observer name="ddg_delete_product" instance="Dotdigitalgroup\Email\Model\Catalog\Observer" method="handleProductDeleteAfter" />-->
+    <!--</event>-->
 </config>
