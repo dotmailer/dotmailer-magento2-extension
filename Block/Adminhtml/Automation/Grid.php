@@ -88,7 +88,16 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'align'         => 'left',
 			'width'         => '20px',
 			'index'         => 'enrolment_status',
-			'type'          => 'text',
+			'type'          => 'options',
+			'options'       => [
+				'pending'   => 'Pending',
+				'Active'    => 'Active',
+				'Draft'     => 'Draft',
+				'Deactivated' => 'Deactivated',
+				'ReadOnly'  => 'ReadOnly',
+				'NotAvailableInThisVersion' => 'NotAvailableInThisVersion',
+				'Failed'    => 'Failed'
+			],
 			'escape'        => true
 		))->addColumn('email', array(
 			'header'        => __('Email'),
@@ -124,7 +133,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'index'         => 'updated_at',
 			'escape'        => true,
 			'type'          => 'datetime'
+		))->addColumn('website_id', array(
+			'header'    => __('Website'),
+			'align'     => 'center',
+			'type'      => 'options',
+			'options'   => $this->_objectManager->get('Magento\Store\Model\System\Store')->getWebsiteOptionHash(true),
+			'index'     => 'website_id',
 		));
+
 
 		return parent::_prepareColumns();
 	}
