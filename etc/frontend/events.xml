@@ -9,4 +9,5 @@
     <event name="customer_register_success">
         <observer name="ddg_customer_register_success" instance="Dotdigitalgroup\Email\Model\Customer\Observer" method="handleCustomerRegiterSuccess" />
     </event>
+
 </config>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdgitalgroup\Email\Model\Sales;
+namespace Dotdigitalgroup\Email\Model\Sales;
 
 class Observer
 {
@@ -33,7 +33,7 @@ class Observer
      * @param $observer
      * @return $this
      */
-    public function handleSalesOrderSaveBefore($observer)
+    public function handleSalesOrderSaveBefore(\Magento\Framework\Event\Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
         // the reloaded status

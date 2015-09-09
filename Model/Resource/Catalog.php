@@ -34,6 +34,7 @@ class Catalog extends \Magento\Framework\Model\Resource\Db\AbstractDb
 				array('imported' => new \Zend_Db_Expr('null'), 'modified' => new \Zend_Db_Expr('null'))
 			);
 		}catch (\Exception $e){
+
 		}
 		return $num;
 	}

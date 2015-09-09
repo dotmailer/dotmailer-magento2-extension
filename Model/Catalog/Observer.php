@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdgitalgroup\Email\Model\Catalog;
+namespace Dotdigitalgroup\Email\Model\Catalog;
 
 class Observer
 {
@@ -10,8 +10,12 @@ class Observer
 	protected $_scopeConfig;
 	protected $_storeManager;
 	protected $_objectManager;
+	protected $_catalogFactory;
+	protected $_catalogCollection;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
+		\Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Psr\Log\LoggerInterface $loggerInterface,
@@ -24,6 +28,8 @@ class Observer
 		$this->_registry = $registry;
 		$this->_logger = $loggerInterface;
 		$this->_scopeConfig = $scopeConfig;
+		$this->_catalogFactory = $catalogFactory;
+		$this->_catalogCollection = $catalogCollectionFactory;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_objectManager = $objectManagerInterface;
 	}
@@ -38,12 +44,14 @@ class Observer
 		try{
 			$object = $observer->getEvent()->getDataObject();
 			$productId = $object->getId();
-			if($item = $this->_loadProduct($productId)){
-				if($item->getImported())
-					$item->setModified(1)->save();
+
+			if ($item = $this->_loadProduct($productId)){
+				if ($item->getImported())
+					$item->setModified(1)
+						->save();
 			}
 		}catch (\Exception $e){
-			$this->_logger->error('Error saving product', $e);
+			$this->_logger->error($e->getMessage());
 		}
 	}
 
@@ -64,6 +72,7 @@ class Observer
 				$item->delete();
 			}
 		}catch (\Exception $e){
+			$this->_logger->error($e->getMessage());
 		}
 	}
 
@@ -76,14 +85,15 @@ class Observer
 	 */
 	private function _loadProduct($productId)
 	{
-		$collection = $this->getCollection()
-           ->addFieldToFilter('product_id', $productId)
-           ->setPageSize(1);
+		$collection = $this->_catalogCollection->create()
+			->addFieldToFilter('product_id', $productId)
+            ->setPageSize(1);
 
 		if ($collection->getSize()) {
 			return $collection->getFirstItem();
 		} else {
-			$this->setProductId($productId)
+			$this->_catalogFactory->create()
+				->setProductId($productId)
 				->save();
 		}
 		return false;

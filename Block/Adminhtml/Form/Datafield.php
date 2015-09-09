@@ -10,9 +10,6 @@ class Datafield extends \Magento\Framework\View\Element\Html\Select
 	{
 		$selectedHtml = $selected ? ' selected="selected"' : '';
 
-
-		$this->_logger->info($option['value']);
-		$this->_logger->info($selectedHtml);
 		if ($this->getIsRenderToJsTemplate() === true) {
 			$selectedHtml .= ' <%= option_extra_attrs.option_' . self::calcOptionHash($option['value']) . ' %>';
 		}

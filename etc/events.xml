@@ -40,6 +40,7 @@
     <event name="sales_convert_quote_to_order">
         <observer name="ddg_delete_quote" instance="Dotdigitalgroup\Email\Model\Sales\Observer" method="handleQuoteToOrder" />
     </event>
+
     <event name="sales_quote_save_after">
         <observer name="ddg_remove_or_create" instance="Dotdigitalgroup\Email\Model\Sales\Observer" method="handleQuoteSaveAfter" />
     </event>
