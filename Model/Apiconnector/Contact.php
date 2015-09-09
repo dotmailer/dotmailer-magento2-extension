@@ -389,7 +389,7 @@ class Contact
 
 		$quote                          = $this->_resource->getTableName('quote');
 		$sales_order                    = $this->_resource->getTableName('sales_order');
-		$customer_log                   = $this->_resource->getTableName('log_customer');
+		$customer_log                   = $this->_resource->getTableName('customer_log');
 		$eav_attribute                  = $this->_resource->getTableName('eav_attribute');
 		$sales_order_grid               = $this->_resource->getTableName('sales_order_grid');
 		$sales_order_item               = $this->_resource->getTableName('sales_order_item');

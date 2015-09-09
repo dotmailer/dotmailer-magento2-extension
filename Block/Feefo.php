@@ -102,7 +102,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     {
         $check = true;
         $reviews = array();
-        $feefo_dir = $this->_helper->get'';//Mage::getModel('core/config_options')->getLibDir().DS.'connector'.DS.'feefo';
+        $feefo_dir = '';//Mage::getModel('core/config_options')->getLibDir().DS.'connector'.DS.'feefo';
         $logon = $this->helper->getFeefoLogon();
         $limit = $this->helper->getFeefoReviewsPerProduct();
         $products = $this->getQuoteProducts();
