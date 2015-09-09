@@ -253,7 +253,8 @@ class Contact
 	public function syncContact($contactId = null)
 	{
 		if ($contactId)
-			$contact = $this->_contactFactory->load($contactId);
+			$contact = $this->_contactFactory->create()
+				->load($contactId);
 		else {
 			$contact = $this->_registry->registry('current_contact');
 		}

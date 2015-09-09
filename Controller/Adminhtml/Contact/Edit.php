@@ -1,8 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Grid;
-
-use Magento\Backend\App\Action;
+namespace Dotdigitalgroup\Email\Controller\Adminhtml\Contact;
 
 class Edit extends \Magento\Backend\App\Action
 {
@@ -18,15 +16,11 @@ class Edit extends \Magento\Backend\App\Action
 	 */
 	protected $resultPageFactory;
 
-	/**
-	 * @param Action\Context $context
-	 * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-	 * @param \Magento\Framework\Registry $registry
-	 */
 	public function __construct(
-		Action\Context $context,
+		\Magento\Backend\App\Action\Context $context,
 		\Magento\Framework\View\Result\PageFactory $resultPageFactory,
 		\Magento\Framework\Registry $registry
+
 	) {
 		$this->resultPageFactory = $resultPageFactory;
 		$this->_coreRegistry = $registry;
@@ -40,7 +34,6 @@ class Edit extends \Magento\Backend\App\Action
 	{
 		return true;
 	}
-
 	/**
 	 * Init actions
 	 *
@@ -65,15 +58,14 @@ class Edit extends \Magento\Backend\App\Action
 	 */
 	public function execute()
 	{
-
 		// 1. Get ID and create model
-		$id = $this->getRequest()->getParam('email_contact_id');
-		$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact');
+		$contactId = $this->getRequest()->getParam('email_contact_id');
+		$contactModel = $this->_objectManager->create('\Dotdigitalgroup\Email\Model\Contact');
 
 		// 2. Initial checking
-		if ($id) {
-			$model->load($id);
-			if (!$model->getId()) {
+		if ($contactId) {
+			$contactModel->load($contactId);
+			if (!$contactModel->getId()) {
 				$this->messageManager->addError(__('This contact record no longer exists.'));
 				/** \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
 				$resultRedirect = $this->resultRedirectFactory->create();
@@ -82,25 +74,29 @@ class Edit extends \Magento\Backend\App\Action
 			}
 		}
 
+		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Contact')->syncContact($contactId);
+
+		$resultRedirect = $this->resultRedirectFactory->create();
+
 		// 3. Set entered data if was error when we do save
 		$data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
 		if (!empty($data)) {
-			$model->setData($data);
+			$contactModel->setData($data);
 		}
 
 		// 4. Register model to use later in blocks
-		$this->_coreRegistry->register('email_contact_data', $model);
+		$this->_coreRegistry->register('email_contact_data', $contactModel);
 
 		// 5. Build edit form
 		/** @var \Magento\Backend\Model\View\Result\Page $resultPage */
 		$resultPage = $this->_initAction();
 		$resultPage->addBreadcrumb(
-			$id ? __('Edit Post') : __('New Contact'),
-			$id ? __('Edit Post') : __('New Contact')
+			$contactId ? __('Edit Post') : __('New Contact'),
+			$contactId ? __('Edit Post') : __('New Contact')
 		);
 		$resultPage->getConfig()->getTitle()->prepend(__('Contacts'));
 		$resultPage->getConfig()->getTitle()
-		           ->prepend($model->getId() ? $model->getTitle() : __('New Contact'));
+			->prepend($contactModel->getId() ? $contactModel->getTitle() : __('New Contact'));
 
 		return $resultPage;
 	}

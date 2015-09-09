@@ -164,28 +164,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'filter_condition_callback' => array($this, '_filterCallbackContact')
 		));
 
-		$this->addColumn(
-			'edit',
-			[
-				'header' => __('Edit'),
-				'type' => 'action',
-				'getter' => 'getId',
-				'actions' => [
-					[
-						'caption' => __('Edit'),
-						'url' => [
-							'base' => '*/*/edit'
-						],
-						'field' => 'email_contact_id'
-					]
-				],
-				'filter' => false,
-				'sortable' => false,
-				'index' => 'stores',
-				'header_css_class' => 'col-action',
-				'column_css_class' => 'col-action'
-			]
-		);
 
 		$block = $this->getLayout()->getBlock('grid.bottom.links');
 		if ($block) {
