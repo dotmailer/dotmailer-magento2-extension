@@ -13,6 +13,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 
 	protected $_gridFactory;
+	protected $_storeFactory;
+	protected $_objectManager;
+	protected $_importerFactory;
 
 
 	/**
@@ -21,17 +24,22 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 * @param \Magento\Framework\Module\Manager $moduleManager
 	 * @param array $data
 	 *
-	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $collectionFactory,
+		\Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importerFactory,
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
+		\Magento\Store\Model\System\StoreFactory $storeFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $gridFactory,
 		\Magento\Framework\Module\Manager $moduleManager,
 		array $data = []
 	) {
+		$this->_contactCollection = $collectionFactory;
 		$this->_contactFactory = $gridFactory;
+		$this->_importerFactory = $importerFactory;
 		$this->moduleManager = $moduleManager;
+		$this->_storeFactory = $storeFactory;
 		parent::__construct($context, $backendHelper, $data);
 	}
 
@@ -126,28 +134,35 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 				'4' => 'Unconfirmed'
 			],
 			'escape'        => true,
-		]);
-		$this->addColumn(
-			'website_id',
-			[
-				'header' => __('Website ID'),
-				'index' => 'website_id'
-			]
-		);
-		$this->addColumn(
-			'subscriber_imported',
-			[
-				'header' => __('Subscriber Imported'),
-				'index' => 'subscriber_imported'
-			]
-		);
-		$this->addColumn(
-			'suppressed',
-			[
-				'header' => __('Suppressed'),
-				'index' => 'suppressed'
-			]
-		);
+		])->addColumn('website_id', array(
+			'header'    => __('Website'),
+			'align'     => 'center',
+			'type'      => 'options',
+			'options'   => $this->_storeFactory->create()->getWebsiteOptionHash(true),
+			'index'     => 'website_id',
+		))->addColumn('subscriber_imported', array(
+			'header'        => __('Subscriber Imported'),
+			'sortable' => false,
+			'align'         => 'center',
+			'index'         => 'subscriber_imported',
+			'escape'        => true,
+			'type'          => 'options',
+			'renderer'      => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+			'options'       => $this->_importerFactory->create()->getOptions(),
+			//'filter_condition_callback' => [$this, '_filterCallbackContact']
+		))->addColumn('suppressed', array(
+			'header'        => __('Suppressed'),
+			'align'         => 'right',
+			'width'         => '50px',
+			'index'         => 'suppressed',
+			'escape'        => true,
+			'type'          => 'options',
+			'options'       => [
+				'1'     => 'Suppressed',
+				'null'  => 'Not Suppressed'
+			],
+			'filter_condition_callback' => array($this, '_filterCallbackContact')
+		));
 
 		$this->addColumn(
 			'edit',
@@ -218,4 +233,22 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		);
 	}
 
+
+	/**
+	 * Custom callback action for the subscribers/contacts.
+	 * @param $collection
+	 * @param $column
+	 */
+	public function _filterCallbackContact($collection,\Magento\Framework\DataObject $column)
+	{
+		$field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
+		$value = $column->getFilter()->getValue();
+
+
+
+		if ($value == 'null')
+			$collection->addFieldToFilter($field, array('null' => true));
+		else
+			$collection->addFieldToFilter($field, array('notnull' => true));
+	}
 }
