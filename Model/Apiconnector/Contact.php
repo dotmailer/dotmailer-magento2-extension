@@ -399,7 +399,7 @@ class Contact
 
 		// get the last login date from the log_customer table
 		$customerCollection->getSelect()->columns(
-			array('last_logged_date' => new \Zend_Db_Expr ("(SELECT login_at FROM  $customer_log WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)")));
+			array('last_logged_date' => new \Zend_Db_Expr ("(SELECT last_login_at FROM  $customer_log WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)")));
 
 		// customer order information
 		$alias = 'subselect';
