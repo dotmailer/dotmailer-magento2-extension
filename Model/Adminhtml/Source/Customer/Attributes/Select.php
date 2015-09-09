@@ -4,13 +4,13 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes;
 
 class Select
 {
-	protected $_objectManager;
+	protected $_customerFactory;
 
 	public function __construct(
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+		\Magento\Customer\Model\CustomerFactory $customerFactory
 	)
 	{
-		$this->_objectManager = $objectManagerInterface;
+		$this->_customerFactory = $customerFactory;
 	}
 
 	/**
@@ -26,7 +26,8 @@ class Select
         $excluded =
             array('created_at', 'created_in', 'dob', 'dotmailer_contact_id', 'email', 'firstname', 'lastname', 'gender',
                 'group_id', 'password_hash', 'prefix', 'rp_token', 'rp_token_create_at', 'website_id');
-        $attributes = $this->_objectManager->create('Magento\Customer\Model\Customer')->getAttributes();
+        $attributes = $this->_customerFactory->create()
+	        ->getAttributes();
 
         foreach ($attributes as $attribute) {
             if ($attribute->getFrontendLabel()) {

@@ -140,7 +140,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	{
 		$collection = $this->getCollection()
 			->addFieldToFilter('email_imported', array('notnull' => true));
-var_dump($collection->getSize());die;
+
 		return $collection->getSize();
 	}
 

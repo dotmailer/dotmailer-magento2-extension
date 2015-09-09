@@ -38,7 +38,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
     {
         $this->_getDatafieldRenderer = null;
         $this->_getAttributeRenderer = null;
-        $this->addColumn('attribute',
+	    $this->addColumn('attribute',
 	        array(
 	            'label' => __('Attribute'),
                 'style' => 'width:120px',
@@ -104,7 +104,7 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
     protected function _getDatafieldRenderer()
     {
 	    $this->_datafieldRenderer = $this->getLayout()->createBlock(
-		    'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+		    'Dotdigitalgroup\Email\Block\Adminhtml\Form\Datafield',
 		    '',
 		    ['data' => ['is_render_to_js_template' => true]]
 	    );

@@ -192,7 +192,8 @@ class Observer
 			return $this;
 		$segmentIds = implode(',', $segmentIds);
 
-		$contact = $this->_contactFactory->addFieldToFilter('customer_id', $customerId)
+		$contact = $this->_contactFactory->create()
+			->addFieldToFilter('customer_id', $customerId)
 			->addFieldToFilter('website_id', $websiteId)
 			->getFirstItem();
 		try {
@@ -210,7 +211,8 @@ class Observer
 
 	protected function getCustomerSegmentIdsForWebsite($customerId, $websiteId){
 
-		$segmentIds = $this->_contactFactory->addFieldToFilter('website_id', $websiteId)
+		$segmentIds = $this->_contactFactory->create()
+			->addFieldToFilter('website_id', $websiteId)
 			->addFieldToFilter('customer_id', $customerId)
 			->getFirstItem()
 			->getSegmentIds();
