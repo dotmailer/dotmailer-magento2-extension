@@ -121,6 +121,8 @@ class Contact
 		$select = $connection->select();
 		//contacts ready for website
 		$contacts = $this->_contactCollection
+			->addFieldToFilter('email_imported', array('null' => true))
+			->addFieldToFilter('customer_id', array('neq' => '0'))
 			->addFieldToFilter('website_id', $website->getId())
 			->setPageSize($syncLimit);
 		// no contacts found
@@ -138,13 +140,14 @@ class Contact
 		$headers = $mappedHash;
 
 		//custom customer attributes
-		$customAttributes = $this->_helper->getCustomAttributes($website);
-		if ($customAttributes){
-			foreach ($customAttributes as $data) {
-				$headers[] = $data['datafield'];
-				$allMappedHash[$data['attribute']] = $data['datafield'];
-			}
-		}
+		//@todo fix the customer attributes in admin first
+//		$customAttributes = $this->_helper->getCustomAttributes($website);
+//		if ($customAttributes){
+//			foreach ($customAttributes as $data) {
+//				$headers[] = $data['datafield'];
+//				$allMappedHash[$data['attribute']] = $data['datafield'];
+//			}
+//		}
 		$headers[] = 'Email';
 		$headers[] = 'EmailType';
 
@@ -198,13 +201,14 @@ class Contact
 			//count number of customers
 			$customerIds[] = $customer->getId();
 
-			if ($connectorCustomer) {
-				foreach ($customAttributes as $data) {
-					$attribute = $data['attribute'];
-					$value = $customer->getData($attribute);
-					$connectorCustomer->setData($value);
-				}
-			}
+			//@todo fix the customer custom attributes admin first
+//			if ($connectorCustomer) {
+//				foreach ($customAttributes as $data) {
+//					$attribute = $data['attribute'];
+//					$value = $customer->getData($attribute);
+//					$connectorCustomer->setData($value);
+//				}
+//			}
 
 			//contact email and email type
 			$connectorCustomer->setData($customer->getEmail());

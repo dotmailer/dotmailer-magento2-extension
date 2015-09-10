@@ -37,6 +37,7 @@ class Cron
 	 */
 	public function contactSync()
 	{
+
 		//run the sync for contacts
 		$result = $this->contact->sync();
 		//run subscribers and guests sync

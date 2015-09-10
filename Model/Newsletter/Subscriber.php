@@ -121,7 +121,7 @@ class Subscriber
             }
             $this->_helper->log('Subscriber filename: ' . $subscribersFilename);
             //register in queue with importer
-			$this->_objectManager->create('Dotdigitalgroup\Email\Proccessor')->registerQueue(
+			$this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
                 \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_SUBSCRIBERS,
                 '',
 				\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
