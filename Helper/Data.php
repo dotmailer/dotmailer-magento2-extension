@@ -12,8 +12,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	protected $_backendConfig;
 	protected $_contactFactory;
 	protected $_productMetadata;
+	protected $_sessionModel;
 
 	public function __construct(
+		\Magento\Backend\Model\Auth\Session $sessionModel,
 		\Magento\Framework\App\ProductMetadata $productMetadata,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Config\Model\Resource\Config $resourceConfig,
@@ -25,6 +27,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	)
 	{
 		$this->_adapter = $adapter;
+		$this->_sessionModel = $sessionModel;
 		$this->_productMetadata = $productMetadata;
 		$this->_contactFactory = $contactFactory;
 		$this->_resourceConfig = $resourceConfig;
@@ -446,7 +449,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getCode()
     {
-        $adminUser = $this->_objectManager->get('Magento\Backend\Model\Session')->getUser();
+        $adminUser = $this->_sessionModel
+	        ->getUser();
         $code = $adminUser->getEmailCode();
 
         return $code;
@@ -463,7 +467,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	    //callback uri if not set custom
 	    $redirectUri = $this->getRedirectUri();
 	    $redirectUri .= 'connector/email/callback';
-	    $adminUser = $this->_objectManager->get('Magento\Backend\Model\Session')->getUser();
+
+	    $adminUser = $this->_sessionModel->getUser();
         //query params
         $params = array(
             'redirect_uri' => $redirectUri,

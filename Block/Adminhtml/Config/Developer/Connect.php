@@ -4,8 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Connect extends \Magento\Config\Block\System\Config\Form\Field
 {
-
-
 	protected $_buttonLabel = 'Connect';
 
 	protected $_objectManager;
@@ -50,28 +48,20 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
 			$disabled = true;
 		}
 
-		$adminUser = $this->_objectManager->get('Magento\Backend\Model\Session')->getUser();
+		$adminUser = $this->_objectManager->get('Magento\Backend\Model\Auth\Session')->getUser();
 		$refreshToken = $adminUser->getRefreshToken();
+
 		$title = ($refreshToken)? __('Disconnect') : __('Connect');
 
 
-$url = ($refreshToken)? $this->getUrl('*/email_automation/disconnect') : $url;
-
-		return $this->getLayout()->createBlock('adminhtml/widget_button')
-		            ->setType('button')
-		            ->setLabel($this->__($title))
-		            ->setDisabled($disabled)
-		            ->setOnClick("window.location.href='" . $url . "'")
-		            ->toHtml();
-
-		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/contactsync');
+		$url = ($refreshToken)? $this->getUrl('*/email_automation/disconnect') : $url;
 
 		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
-		            ->setType('button')
-		            ->setLabel(__($this->_buttonLabel))
-		            ->setOnClick("window.location.href='" . $url . "'")
-		            ->toHtml();
-
+            ->setType('button')
+            ->setLabel(__($title))
+            ->setDisabled($disabled)
+            ->setOnClick("window.location.href='" . $url . "'")
+            ->toHtml();
 	}
 
     private function _checkForSecureUrl() {
