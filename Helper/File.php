@@ -15,18 +15,15 @@ class File
 
 	private $delimiter; // set in _construct
 	private $enclosure; // set in _construct
-	protected $_scopeConfig;
 	protected $helper;
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\Data  $helper,
 		\Magento\Framework\App\Filesystem\DirectoryList $directoryList,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Filesystem $filesystem
 	)
 	{
 		$this->helper = $helper;
-		$this->_scopeConfig = $scopeConfig;
 		$this->directoryList = $directoryList;
 		$this->filesystem = $filesystem;
 		$var = $directoryList->getPath('var');
@@ -80,9 +77,12 @@ class File
 
 
 	/**
-	 * Output an array to the output file FORCING Quotes around all fields
+	 * Output an array to the output file FORCING Quotes around all fields.
+	 *
 	 * @param $filepath
 	 * @param $csv
+	 *
+	 * @throws \Exception
 	 */
 	public function outputForceQuotesCSV($filepath, $csv)
 	{
@@ -172,23 +172,6 @@ class File
 			@unlink($path) :
 			array_map($class_func, glob($path.'/*')) == @rmdir($path);
 	}
-
-
-	public function getWebsiteCustomerMappingDatafields($website)
-	{
-		//customer mapped data
-		$store = $website->getDefaultStore();
-		$mappedData = $this->_scopeConfig->getValue('connector_data_mapping/customer_data', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store->getId());
-		unset($mappedData['custom_attributes']);
-
-		foreach ($mappedData as $key => $value) {
-			if (! $value)
-				unset($mappedData[$key]);
-		}
-
-		return $mappedData;
-	}
-
 
 
 	/**

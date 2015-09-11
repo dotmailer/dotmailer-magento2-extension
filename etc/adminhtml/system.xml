@@ -69,14 +69,7 @@
                     <label>Gender</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="website_name" type="select" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Website Name</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="store_name" type="select" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Store Name</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
+
                 <field id="created_at" type="select" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Created At</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
@@ -177,18 +170,11 @@
                     <label>Last Purchase Date</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_order_id" type="select" translate="label" sortOrder="350" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Last Order ID</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="last_increment_id" type="select" translate="label" sortOrder="360" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_increment_id" type="select" translate="label" sortOrder="350" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Last Increment ID</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_quote_id" type="select" translate="label" sortOrder="370" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Last Quote ID</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
+
                 <field id="total_refund" type="select" translate="label" sortOrder="380" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Total Refund</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
@@ -225,15 +211,35 @@
                     <label>Last Brand PUrchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="abandoned_prod_name" type="select" translate="label" sortOrder="470" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="system_values" translate="label" sortOrder="470" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>System Values</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="website_name" type="select" translate="label" sortOrder="480" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Website Name</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
+                <field id="store_name" type="select" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Store Name</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
+                <field id="last_order_id" type="select" translate="label" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Last Order ID</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
+                <field id="last_quote_id" type="select" translate="label" sortOrder="510" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Last Quote ID</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
+                <field id="abandoned_prod_name" type="select" translate="label" sortOrder="530" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Abandoned Product Name</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="custom_title" translate="label" sortOrder="480" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="custom_title" translate="label" sortOrder="540" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Custom Attributes</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="custom_attributes" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="custom_attributes" translate="label" sortOrder="550" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>

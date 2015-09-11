@@ -21,6 +21,7 @@ class Index extends \Magento\Framework\App\Action\Action {
 	 */
 	public function execute()
 	{
+		$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron')->contactSync();
 		$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron')->emailImporter();
 
 

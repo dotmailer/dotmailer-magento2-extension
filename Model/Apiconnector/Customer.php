@@ -91,8 +91,19 @@ class Customer
 				$value = call_user_func(array('self', $function));
 				$this->customerData[$key] = $value;
 			}catch (\Exception $e){
+
 			}
 		}
+	}
+
+	public function setEmail($email)
+	{
+		$this->customerData['email'] = $email;
+	}
+
+	public function setEmailType($emailType)
+	{
+		$this->customerData['email_type'] = $emailType;
 	}
 
 	/**

@@ -877,6 +877,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	}
 
 	/**
+	 * Get customer datafields mapped - exclude custom attributes.
+	 *
+	 * @param $website
+	 *
+	 * @return mixed
+	 */
+	public function getWebsiteCustomerMappingDatafields($website)
+	{
+		//customer mapped data
+		$store = $website->getDefaultStore();
+		$mappedData = $this->scopeConfig->getValue('connector_data_mapping/customer_data', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store->getId());
+		unset($mappedData['custom_attributes']);
+		//skip non mapped customer datafields
+		foreach ($mappedData as $key => $value) {
+			if (! $value)
+				unset($mappedData[$key]);
+		}
+
+		return $mappedData;
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function getCronInstalled()

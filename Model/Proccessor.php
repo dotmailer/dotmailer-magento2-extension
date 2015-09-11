@@ -105,6 +105,7 @@ class Proccessor
 				} else {
 					$response = $client->getContactsTransactionalDataImportByImportId($item->getImportId());
 				}
+
 				if ($response && !isset($response->message)) {
 					if ($response->status == 'Finished') {
 						$now = gmDate('Y-m-d H:i:s');
@@ -112,11 +113,11 @@ class Proccessor
 						     ->setImportFinished($now)
 						     ->setMessage('')
 						     ->save();
-
 						$this->_processQueue();
+
 					} elseif (in_array($response->status, $this->import_statuses)) {
 						$item->setImportStatus(self::FAILED)
-						     ->setMessage($response->message)
+						     ->setMessage($response->status)
 						     ->save();
 
 						$this->_processQueue();

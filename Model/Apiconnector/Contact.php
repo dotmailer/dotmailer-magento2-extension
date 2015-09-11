@@ -136,7 +136,7 @@ class Contact
 		/**
 		 * HEADERS.
 		 */
-		$mappedHash = $this->_file->getWebsiteCustomerMappingDatafields($website);
+		$mappedHash = $this->_helper->getWebsiteCustomerMappingDatafields($website);
 		$headers = $mappedHash;
 
 		//custom customer attributes
@@ -197,7 +197,6 @@ class Contact
 			$connectorCustomer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Customer' );
 			$connectorCustomer->setMappingHash($mappedHash);
 			$connectorCustomer->setCustomerData($customer);
-
 			//count number of customers
 			$customerIds[] = $customer->getId();
 
@@ -213,6 +212,7 @@ class Contact
 			//contact email and email type
 			$connectorCustomer->setData($customer->getEmail());
 			$connectorCustomer->setData('Html');
+
 			// save csv file data for customers
 			$this->_file->outputCSV($this->_file->getFilePath($customersFile), $connectorCustomer->toCSVArray());
 
@@ -256,10 +256,10 @@ class Contact
 	 */
 	public function syncContact($contactId = null)
 	{
-		if ($contactId)
+		if ($contactId) {
 			$contact = $this->_contactFactory->create()
-				->load($contactId);
-		else {
+				->load( $contactId );
+		} else {
 			$contact = $this->_registry->registry('current_contact');
 		}
 		if (! $contact->getId()) {
@@ -289,7 +289,7 @@ class Contact
 		/**
 		 * HEADERS.
 		 */
-		$mappedHash = $this->_file->getWebsiteCustomerMappingDatafields($website);
+		$mappedHash = $this->_helper->getWebsiteCustomerMappingDatafields($website);
 		$headers = $mappedHash;
 		//custom customer attributes
 		$customAttributes = $this->_helper->getCustomAttributes($website);
