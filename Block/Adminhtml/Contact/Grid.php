@@ -84,8 +84,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 				'header_css_class' => 'col-id',
 				'column_css_class' => 'col-id'
 			]
-		);
-		$this->addColumn(
+		)->addColumn(
 			'email',
 			[
 				'header' => __('Email'),
@@ -93,16 +92,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 				'index' => 'email',
 				'class' => 'xxx'
 			]
-		);
-		$this->addColumn(
+		)->addColumn(
 			'customer_id',
 			[
 				'header' => __('Customer ID'),
 				'type' => 'number',
 				'index' => 'customer_id'
 			]
-		);
-		$this->addColumn(
+		)->addColumn(
 			'is_guest',
 			[
 				'header' => __('Is Guest'),
@@ -110,8 +107,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 				'index' => 'is_guest',
 				'options' => ['0' => 'Guest', '1' => 'Not Guest']
 			]
-		);
-		$this->addColumn(
+		)->addColumn(
 			'is_subscriber',
 			[
 				'header' => __('Is Subscriber'),
@@ -120,11 +116,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 				'options' => ['0' => 'Not Subscriber', '1' => 'Subscriber'],
 				'escape' => true
 			]
-		);
-		$this->addColumn('subscriber_status', [
+		)->addColumn('subscriber_status', [
 			'header'        => 'Subscriber Status',
 			'align'         => 'center',
-			'width'         => '50px',
 			'index'         => 'subscriber_status',
 			'type'          => 'options',
 			'options'       => [
@@ -134,13 +128,16 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 				'4' => 'Unconfirmed'
 			],
 			'escape'        => true,
-		])->addColumn('website_id', array(
-			'header'    => __('Website'),
-			'align'     => 'center',
-			'type'      => 'options',
-			'options'   => $this->_storeFactory->create()->getWebsiteOptionHash(true),
-			'index'     => 'website_id',
-		))->addColumn('subscriber_imported', array(
+		])->addColumn('email_imported', [
+			'header'        => __('Email Imported'),
+			'align'         => 'center',
+			'index'         => 'email_imported',
+			'escape'        => true,
+			'type'          => 'options',
+			'options'       => $this->_importerFactory->create()->getOptions(),
+			'renderer'      => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+			//'filter_condition_callback' => array($this, 'filterCallbackContact'
+		])->addColumn('subscriber_imported', array(
 			'header'        => __('Subscriber Imported'),
 			'sortable' => false,
 			'align'         => 'center',
@@ -153,7 +150,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		))->addColumn('suppressed', array(
 			'header'        => __('Suppressed'),
 			'align'         => 'right',
-			'width'         => '50px',
 			'index'         => 'suppressed',
 			'escape'        => true,
 			'type'          => 'options',
@@ -162,6 +158,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 				'null'  => 'Not Suppressed'
 			],
 			'filter_condition_callback' => array($this, '_filterCallbackContact')
+		))->addColumn('website_id', array(
+			'header'    => __('Website'),
+			'align'     => 'center',
+			'type'      => 'options',
+			'options'   => $this->_storeFactory->create()->getWebsiteOptionHash(true),
+			'index'     => 'website_id',
 		));
 
 
