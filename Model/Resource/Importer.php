@@ -2,10 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Resource;
 
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\Stdlib\DateTime as LibDateTime;
-use Magento\Store\Model\Store;
-
 class Importer extends \Magento\Framework\Model\Resource\Db\AbstractDb
 {
 	/**

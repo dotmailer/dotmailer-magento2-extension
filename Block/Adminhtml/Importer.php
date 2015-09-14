@@ -4,19 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 class Importer extends \Magento\Backend\Block\Widget\Container
 {
-	protected $_resourceModel;
-	protected $_template = 'importer/view.phtml';
-
-
-	public function __construct(
-		\Magento\Backend\Block\Widget\Context $context,
-		\Dotdigitalgroup\Email\Model\Resource\importer $resourceModel,
-		array $data = []
-	) {
-		parent::__construct($context, $data);
-		$this->_resourceModel = $resourceModel;
-	}
-
 	/**
 	 * Class constructor
 	 *
@@ -46,35 +33,6 @@ class Importer extends \Magento\Backend\Block\Widget\Container
 			$this->getLayout()->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Importer\Grid', 'importer.view.grid')
 		);
 		return parent::_prepareLayout();
-	}
-
-	/**
-	 *
-	 *
-	 * @return array
-	 */
-	protected function _getAddButtonOptions()
-	{
-
-		$splitButtonOptions[] = [
-			'label' => __('Add New'),
-			'onclick' => "setLocation('" . $this->_getCreateUrl() . "')"
-		];
-
-		return $splitButtonOptions;
-	}
-
-	/**
-	 *
-	 *
-	 * @param string $type
-	 * @return string
-	 */
-	protected function _getCreateUrl()
-	{
-		return $this->getUrl(
-			'grid/*/new'
-		);
 	}
 
 	/**

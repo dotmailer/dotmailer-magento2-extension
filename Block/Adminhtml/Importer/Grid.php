@@ -11,6 +11,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	protected $_gridFactory;
 	protected $_objectManager;
 	protected $_importerFactory;
+	protected $statusOptions;
+	protected $modeOptions;
+
 
 	/**
 	 * @param \Magento\Backend\Block\Template\Context $context
@@ -21,7 +24,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
-		\Dotdigitalgroup\Email\Model\ImporterFactory $gridFactory,
+		\Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\ModeFactory $modeFactory,
+		\Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\StatusFactory $statusFactory,
+		\Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory $gridFactory,
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
 		\Magento\Framework\Module\Manager $moduleManager,
@@ -31,6 +36,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->_importerFactory = $gridFactory;
 		$this->_objectManager = $objectManagerInterface;
 		$this->moduleManager = $moduleManager;
+		$this->statusOptions = $statusFactory->create()->getOptions();
+		$this->modeOptions = $modeFactory->create()->getOptions();
+
 		parent::__construct($context, $backendHelper, $data);
 	}
 
@@ -52,7 +60,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected function _prepareCollection()
 	{
-		$collection = $this->_importerFactory->create()->getCollection();
+		$collection = $this->_importerFactory->create();
 		$this->setCollection($collection);
 
 		parent::_prepareCollection();
@@ -83,7 +91,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'index' => 'import_status',
 			'type' => 'options',
 			'escape' => true,
-			'options' => $this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\Status')->getOptions(),
+			'options' => $this->statusOptions,
 		))->addColumn('message', array(
 			'header' => __('Error Message'),
 			'index' => 'message',
@@ -95,7 +103,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'index' => 'import_mode',
 			'type' => 'options',
 			'escape' => true,
-			'options' => $this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\Mode')->getOptions(),
+			'options' => $this->modeOptions,
 		))->addColumn('import_id', array(
 			'header' => __('Import ID'),
 			'width' => '50px',
@@ -135,7 +143,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'index' => 'updated_at',
 			'type' => 'datetime',
 			'escape' => true
-
 		));
 
 		return parent::_prepareColumns();

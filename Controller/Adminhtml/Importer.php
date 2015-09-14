@@ -12,4 +12,6 @@ abstract class Importer extends Action
 	{
 		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::importer');
 	}
+
+
 }
