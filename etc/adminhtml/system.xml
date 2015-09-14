@@ -23,8 +23,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                    <tooltip>Enter the API username.
-                    </tooltip>
+                    <tooltip>Click anywhere on the page after entering the api username and api password to quick check if credentials are valid before saving.</tooltip>
                 </field>
                 <field id="password" translate="label" type="password" sortOrder="3" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>API Password</label>
