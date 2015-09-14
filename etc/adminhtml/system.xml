@@ -23,6 +23,8 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
+                    <tooltip>Enter the API username.
+                    </tooltip>
                 </field>
                 <field id="password" translate="label" type="password" sortOrder="3" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>API Password</label>

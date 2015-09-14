@@ -78,7 +78,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->addColumn(
 			'email_contact_id',
 			[
-				'header' => __('Email Contact ID'),
+				'header' => __('Contact ID'),
 				'type' => 'number',
 				'index' => 'email_contact_id',
 				'header_css_class' => 'col-id',
@@ -223,8 +223,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	{
 		$field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
 		$value = $column->getFilter()->getValue();
-
-
 
 		if ($value == 'null')
 			$collection->addFieldToFilter($field, array('null' => true));

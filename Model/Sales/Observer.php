@@ -10,8 +10,11 @@ class Observer
 	protected $_scopeConfig;
 	protected $_storeManager;
 	protected $_objectManager;
+	protected $_orderFactory;
+
 
 	public function __construct(
+		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Psr\Log\LoggerInterface $loggerInterface,
@@ -21,6 +24,7 @@ class Observer
 	)
 	{
 		$this->_helper = $data;
+		$this->_orderFactory = $orderFactory;
 		$this->_scopeConfig = $scopeConfig;
 		$this->_logger = $loggerInterface;
 		$this->_storeManager = $storeManagerInterface;
@@ -37,7 +41,8 @@ class Observer
     {
         $order = $observer->getEvent()->getOrder();
         // the reloaded status
-        $reloaded = $this->_objectManager->create('Magento\Sales\Model\Order')->load($order->getId());
+        $reloaded = $this->_orderFactory->create()
+	        ->load($order->getId());
         if (! $this->_registry->registry('sales_order_status_before'))
             $this->_registry->register('sales_order_status_before', $reloaded->getStatus());
         return $this;
@@ -129,6 +134,7 @@ class Observer
      */
     public function handleSalesOrderPlaceAfter($observer)
     {
+
         $order = $observer->getEvent()->getOrder();
         $email      = $order->getCustomerEmail();
         $website    = $this->_storeManager->getWebsite($order->getWebsiteId());
@@ -141,7 +147,7 @@ class Observer
             // guest to automation mapped
             $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
             $automationType = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_GUEST_ORDER;
-        }else{
+        } else {
             // customer to automation mapped
             $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER';
             $automationType = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_ORDER;
@@ -257,11 +263,11 @@ class Observer
         return $this;
     }
 
-    /**
-     * sales_quote_save_after event observer
-     *
-     * @return $this
-     */
+	/**
+	 * @param $observer
+	 *
+	 * @return $this
+	 */
     public function handleQuoteSaveAfter($observer)
     {
         $quote = $observer->getEvent()->getQuote();
