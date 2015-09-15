@@ -1,6 +1,8 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Core_Block_Template
+namespace Dotdigitalgroup\Email\Block\Adminhtml\System;
+
+class Installation extends \Magento\Backend\Block\Template
 {
     public $sections = array(
         'connector_api_credentials',
@@ -15,6 +17,19 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
         'connector_developer_settings'
     );
 
+	protected $_helper;
+	protected $_productMetadata;
+
+	public function __construct(
+		\Magento\Framework\App\ProductMetadata $productMetadata,
+		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Magento\Backend\Block\Template\Context $context,
+		array $data = []
+	) {
+		$this->_helper = $data;
+		$this->_productMetadata = $productMetadata;
+		parent::__construct($context, $data);
+	}
     /**
      * get the website domain.
      *
@@ -22,7 +37,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
      */
     public function getDomain()
     {
-        return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
+	    return $this->_urlBuilder->getBaseUrl();
     }
 
     /**
@@ -31,7 +46,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
      */
     public function getApiUsername()
     {
-        return Mage::helper('ddg')->getApiUsername();
+	    return $this->_helper->getApiUsername();
     }
 
     /**
@@ -40,7 +55,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
      */
     public function getCronInstalled()
     {
-        return (Mage::helper('ddg')->getCronInstalled())? '1' : '0';
+        return ($this->_helper->getCronInstalled())? '1' : '0';
     }
 
     /*
@@ -70,37 +85,37 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
 
     public function getCatalogSync()
     {
-        return Mage::helper('ddg')->getCatalogSyncEnabled();
+        return $this->_helper->getCatalogSyncEnabled();
     }
 
     public function getOrderSync()
     {
-        return Mage::helper('ddg')->getOrderSyncEnabled();
+        return $this->_helper->getOrderSyncEnabled();
     }
 
     public function getSubscriberSync()
     {
-        return Mage::helper('ddg')->getSubscriberSyncEnabled();
+        return $this->_helper->getSubscriberSyncEnabled();
     }
 
     public function getGuestSync()
     {
-        return Mage::helper('ddg')->getGuestSyncEnabled();
+        return $this->_helper->getGuestSyncEnabled();
     }
 
     public function getCustomerSync()
     {
-        return Mage::helper('ddg')->getContactSyncEnabled();
+        return $this->_helper->getContactSyncEnabled();
     }
 
     public function getRoi()
     {
-        return Mage::helper('ddg')->getRoiTrackingEnabled();
+        return $this->_helper->getRoiTrackingEnabled();
     }
 
     public function getDotmailerSmtp()
     {
-        return Mage::helper('ddg')->isSmtpEnabled();
+        return $this->_helper->isSmtpEnabled();
     }
 
     /**
@@ -109,7 +124,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
      */
     public function getMageVersion()
     {
-        return Mage::getVersion();
+	    return $this->_productMetadata->getVersion();
     }
 
     /**
@@ -118,7 +133,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
      */
     public function getConnectorVersion()
     {
-        return Mage::helper('ddg')->getConnectorVersion();
+        return $this->_helper->getConnectorVersion();
     }
 
 	/**
@@ -128,7 +143,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
 	public function getWebsiteNames()
 	{
 
-		$data = Mage::helper('ddg')->getStringWebsiteApiAccounts();
+		$data = $this->_helper->getStringWebsiteApiAccounts();
 
 		return $data;
 	}
@@ -140,6 +155,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Installation extends Mage_Cor
 	 */
 	public function getAccountEmail()
 	{
-		return Mage::helper('ddg')->getAccountEmail();
+		return $this->_helper->getAccountEmail();
 	}
 }

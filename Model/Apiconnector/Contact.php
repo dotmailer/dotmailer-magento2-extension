@@ -411,23 +411,22 @@ class Contact
 
 		// customer order information
 		$alias = 'subselect';
-		//@todo fix the stautues datafields to sync and sales values
 		$statuses = $this->_helper->getWebsiteConfig(
 			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS, $websiteId
 		);
 		$orderTable = $this->_resource->getTableName('sales_order');
-		//$subselect = Mage::getModel('Varien_Db_Select', Mage::getSingleton('core/resource')->getConnection('core_read'))
-//		$subselect = $this->collection->getSelect()
-//		                 ->from($orderTable, array(
-//				                 'customer_id as s_customer_id',
-//				                 'sum(grand_total) as total_spend',
-//				                 'count(*) as number_of_orders',
-//				                 'avg(grand_total) as average_order_value',
-//			                 )
-//		                 )
-//		                 ->where("status in (?)", $statuses)
-//		                 ->group('customer_id')
-//		;
+		$connection = $this->_resource->getConnection();
+		$subselect = $connection->select()
+             ->from($orderTable, array(
+	                 'customer_id as s_customer_id',
+	                 'sum(grand_total) as total_spend',
+	                 'count(*) as number_of_orders',
+	                 'avg(grand_total) as average_order_value',
+                 )
+             )
+             ->where("status in (?)", $statuses)
+             ->group('customer_id')
+		;
 
 		$customerCollection->getSelect()->columns(array(
 				'last_order_date' => new \Zend_Db_Expr("(SELECT created_at FROM $sales_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
@@ -523,9 +522,8 @@ class Contact
 			)
 		);
 
-//		$customerCollection->getSelect()
-//		                   ->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
-
+		$customerCollection->getSelect()
+			->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
 
 		return $customerCollection;
 	}

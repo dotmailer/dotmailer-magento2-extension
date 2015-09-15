@@ -1,9 +1,24 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Customer_Account_Books extends Mage_Customer_Block_Account_Dashboard
+namespace Dotdigitalgroup\Email\Block\Customer\Account;
+
+class Books extends \Magento\Customer\Block\Account\Dashboard
 {
     private $_client;
     private $contact_id;
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Magento\Framework\View\Element\Template\Context $context,
+		\Magento\Customer\Model\Session $customerSession,
+		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+		\Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
+		\Magento\Customer\Api\AccountManagementInterface $customerAccountManagement,
+		array $data = []
+	) {
+		$this->_helper = $data;
+		parent::__construct($context, $customerSession, $subscriberFactory,$customerRepository, $customerAccountManagement);
+	}
 
     /**
      * subscription pref save url
@@ -24,21 +39,20 @@ class Dotdigitalgroup_Email_Block_Customer_Account_Books extends Mage_Customer_B
      */
     private function _getWebsiteConfigFromHelper($path, $website)
     {
-        return Mage::helper('ddg')->getWebsiteConfig($path, $website);
+        return $this->_helper->getWebsiteConfig($path, $website);
     }
 
     /**
      * get api client
      *
-     * @return Dotdigitalgroup_Email_Model_Apiconnector_Client
      */
     private function _getApiClient()
     {
         if(empty($this->_client)) {
             $website = $this->getCustomer()->getStore()->getWebsite();
-            $client = Mage::getModel('ddg_automation/apiconnector_client');
-            $client->setApiUsername(Mage::helper('ddg')->getApiUsername($website))
-                ->setApiPassword(Mage::helper('ddg')->getApiPassword($website));
+            $client = $this->_helper->getWebsiteApiClient($website);
+            $client->setApiUsername($this->_helper->getApiUsername($website))
+                ->setApiPassword($this->_helper->getApiPassword($website));
             $this->_client = $client;
         }
         return $this->_client;
@@ -52,7 +66,7 @@ class Dotdigitalgroup_Email_Block_Customer_Account_Books extends Mage_Customer_B
     public function getCanShowAdditionalBooks()
     {
         return $this->_getWebsiteConfigFromHelper(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS,
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS,
             $this->getCustomer()->getStore()->getWebsite()
         );
     }
@@ -66,7 +80,7 @@ class Dotdigitalgroup_Email_Block_Customer_Account_Books extends Mage_Customer_B
     {
         $additionalBooksToShow = array();
         $additionalFromConfig =  $this->_getWebsiteConfigFromHelper(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS,
+	        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS,
             $this->getCustomer()->getStore()->getWebsite()
         );
 
@@ -109,7 +123,7 @@ class Dotdigitalgroup_Email_Block_Customer_Account_Books extends Mage_Customer_B
     public function getCanShowDataFields()
     {
         return $this->_getWebsiteConfigFromHelper(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS,
+	        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS,
             $this->getCustomer()->getStore()->getWebsite()
         );
     }
@@ -123,7 +137,7 @@ class Dotdigitalgroup_Email_Block_Customer_Account_Books extends Mage_Customer_B
     {
         $datafieldsToShow = array();
         $dataFieldsFromConfig =  $this->_getWebsiteConfigFromHelper(
-            Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS,
+	        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS,
             $this->getCustomer()->getStore()->getWebsite()
         );
         if(strlen($dataFieldsFromConfig))
@@ -151,7 +165,8 @@ class Dotdigitalgroup_Email_Block_Customer_Account_Books extends Mage_Customer_B
                             if($processedConnectorDataFields[$dataFieldFromConfig]->type == "Date"){
                                 $type = "Date";
                                 $value = $processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name];
-                                $value = Mage::app()->getLocale()->date($value)->toString("Y/M/d");
+                                $value = new \Magento\Framework\Stdlib\DateTime($value);
+	                            $value = $value->formatDate('Y/M/d');
                             }
                             else
                                 $value = $processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name];
@@ -194,13 +209,13 @@ class Dotdigitalgroup_Email_Block_Customer_Account_Books extends Mage_Customer_B
     public function getConnectorContact()
     {
         $contact = $this->_getApiClient()->getContactByEmail($this->getCustomer()->getEmail());
-        if($contact->id){
+        if ($contact->id) {
             $this->contact_id = $contact->id;
-        }else{
+        } else {
             $contact = $this->_getApiClient()->postContacts($this->getCustomer()->getEmail());
-            if($contact->id){
+            if ($contact->id)
                 $this->contact_id = $contact->id;
-            }
+
         }
         return $contact;
     }
