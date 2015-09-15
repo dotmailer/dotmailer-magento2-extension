@@ -4,18 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 class Automation extends \Magento\Backend\Block\Widget\Container
 {
-	protected $_resourceModel;
-	protected $_template = 'automation/view.phtml';
-
-
-	public function __construct(
-		\Magento\Backend\Block\Widget\Context $context,
-		\Dotdigitalgroup\Email\Model\Resource\Automation $resourceModel,
-		array $data = []
-	) {
-		parent::__construct($context, $data);
-		$this->_resourceModel = $resourceModel;
-	}
 
 	/**
 	 * Class constructor

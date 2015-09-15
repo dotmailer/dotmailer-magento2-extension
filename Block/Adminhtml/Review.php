@@ -4,18 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 class Review extends \Magento\Backend\Block\Widget\Container
 {
-	protected $_resourceModel;
-	protected $_template = 'review/view.phtml';
-
-
-	public function __construct(
-		\Magento\Backend\Block\Widget\Context $context,
-		\Dotdigitalgroup\Email\Model\Resource\Contact $resourceModel,
-		array $data = []
-	) {
-		parent::__construct($context, $data);
-		$this->_resourceModel = $resourceModel;
-	}
 
 	/**
 	 * Class constructor

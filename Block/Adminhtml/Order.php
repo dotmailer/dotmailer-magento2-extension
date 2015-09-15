@@ -4,19 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 class Order extends \Magento\Backend\Block\Widget\Container
 {
-	protected $_resourceModel;
-	protected $_template = 'order/view.phtml';
-
-
-	public function __construct(
-		\Magento\Backend\Block\Widget\Context $context,
-		\Dotdigitalgroup\Email\Model\Resource\Order $resourceModel,
-		array $data = []
-	) {
-		parent::__construct($context, $data);
-		$this->_resourceModel = $resourceModel;
-	}
-
 	/**
 	 * Class constructor
 	 *

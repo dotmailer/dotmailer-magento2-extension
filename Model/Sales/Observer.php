@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+use Symfony\Component\Config\Definition\Exception\Exception;
+
 class Observer
 {
 	protected $_helper;
@@ -40,18 +42,29 @@ class Observer
     public function handleSalesOrderSaveBefore(\Magento\Framework\Event\Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
-        // the reloaded status
-        $reloaded = $this->_orderFactory->create()
-	        ->load($order->getId());
+	    //order is new
+	    if (! $order->getId()) {
+		    $orderStatus = $order->getStatus();
+	    } else {
+		    // the reloaded status
+		    $reloaded = $this->_orderFactory->create()
+		        ->load( $order->getId() );
+		    $orderStatus = $reloaded->getStatus();
+	    }
+	    //register the order status before change
         if (! $this->_registry->registry('sales_order_status_before'))
-            $this->_registry->register('sales_order_status_before', $reloaded->getStatus());
-        return $this;
+            $this->_registry->register('sales_order_status_before', $orderStatus);
+
+	    return $this;
     }
-    /**
-     * save/reset the order as transactional data.
-     *
-     * @return $this
-     */
+
+	/**
+	 * save/reset the order as transactional data.
+	 * @param $observer
+	 *
+	 * @return $this
+	 * @throws \Magento\Framework\Exception\LocalizedException
+	 */
     public function handleSalesOrderSaveAfter($observer)
     {
         try{
@@ -122,19 +135,22 @@ class Observer
             //admin oder when editing the first one is canceled
             $this->_registry->unregister('sales_order_status_before');
         }catch(\Exception $e){
+	        throw new \Magento\Framework\Exception\LocalizedException($e->getMessage());
         }
         return $this;
     }
 
 
-    /**
-     * Create new order event.
-     *
-     * @return $this
-     */
+	/**
+	 * Create new order event.
+	 *
+	 * @param $observer
+	 *
+	 * @return $this
+	 * @throws \Magento\Framework\Exception\LocalizedException
+	 */
     public function handleSalesOrderPlaceAfter($observer)
     {
-
         $order = $observer->getEvent()->getOrder();
         $email      = $order->getCustomerEmail();
         $website    = $this->_storeManager->getWebsite($order->getWebsiteId());
@@ -154,9 +170,8 @@ class Observer
         }
         $programId = $this->_helper->getAutomationIdByType($programType, $order->getWebsiteId());
 
-        //the program is not mappped
+        //the program is not mapped
         if (! $programId){
-            $this->_helper->log('automation type : '  . $automationType. ' program id not found');
             return $this;
         }
         try {
@@ -170,6 +185,7 @@ class Observer
                 ->setProgramId( $programId )
                 ->save();
         }catch(\Exception $e){
+	        throw new \Magento\Framework\Exception\LocalizedException($e->getMessage());
         }
 
         return $this;
@@ -238,28 +254,34 @@ class Observer
      */
     public function handleQuoteToOrder( $observer)
     {
-        $order = $observer->getOrder();
-	    $websiteId = $order->getStore()->getWebsiteId();
-        $apiEnabled = $this->_helper->isEnabled($websiteId);
-        $syncEnabled = $this->_helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED,
-            $websiteId
-        );
-        if ($apiEnabled && $syncEnabled) {
-            $quoteId = $order->getQuoteId();
-            $connectorQuote = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Quote')->loadQuote($quoteId);
-            if ($connectorQuote) {
-                //register in queue with importer for single delete
-                $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
-                    array($connectorQuote->getQuoteId()),
-	                \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
-                    $order->getStore()->getWebsiteId()
-                );
-                //delete from table
-                $connectorQuote->delete();
-            }
-        }
+	    try {
+
+
+		    $order       = $observer->getOrder();
+		    $websiteId   = $order->getStore()->getWebsiteId();
+		    $apiEnabled  = $this->_helper->isEnabled( $websiteId );
+		    $syncEnabled = $this->_helper->getWebsiteConfig(
+			    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED,
+			    $websiteId
+		    );
+		    if ( $apiEnabled && $syncEnabled ) {
+			    $quoteId        = $order->getQuoteId();
+			    $connectorQuote = $this->_objectManager->create( 'Dotdigitalgroup\Email\Model\Quote' )->loadQuote( $quoteId );
+			    if ( $connectorQuote ) {
+				    //register in queue with importer for single delete
+				    $this->_objectManager->create( 'Dotdigitalgroup\Email\Model\Proccessor' )->registerQueue(
+					    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
+					    array( $connectorQuote->getQuoteId() ),
+					    \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+					    $order->getStore()->getWebsiteId()
+				    );
+				    //delete from table
+				    $connectorQuote->delete();
+			    }
+		    }
+	    }catch(\Exception $e){
+		    throw new \Magento\Framework\Exception\LocalizedException($e->getMessage());
+	    }
         return $this;
     }
 

@@ -3,7 +3,7 @@
     <update handle="dotdigitalgroup_email_catalog_grid_block"/>
     <body>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Catalog" name="dotdigitalgroup_email_email_catalog.grid.container"/>
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Catalog" name="dotdigitalgroup_email_email_catalog.grid.container" template="Magento_Backend::widget/grid/container/empty.phtml"/>
         </referenceContainer>
     </body>
 </page>

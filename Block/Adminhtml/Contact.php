@@ -4,23 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 class Contact extends \Magento\Backend\Block\Widget\Container
 {
-	protected $_resourceModel;
-	protected $_template = 'contact/view.phtml';
-
-	/**
-	 * @param \Magento\Backend\Block\Widget\Context $context
-	 * @param \Magento\User\Model\Resource\User $resourceModel
-	 * @param array $data
-	 */
-	public function __construct(
-		\Magento\Backend\Block\Widget\Context $context,
-		\Dotdigitalgroup\Email\Model\Resource\Contact $resourceModel,
-		array $data = []
-	) {
-		parent::__construct($context, $data);
-		$this->_resourceModel = $resourceModel;
-	}
-
 	/**
 	 * Class constructor
 	 *

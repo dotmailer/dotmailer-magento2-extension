@@ -4,19 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 class Campaign extends \Magento\Backend\Block\Widget\Container
 {
-	protected $_resourceModel;
-	protected $_template = 'campaign/view.phtml';
-
-
-	public function __construct(
-		\Magento\Backend\Block\Widget\Context $context,
-		\Dotdigitalgroup\Email\Model\Resource\Campaign $resourceModel,
-		array $data = []
-	) {
-		parent::__construct($context, $data);
-		$this->_resourceModel = $resourceModel;
-	}
-
 	/**
 	 * Class constructor
 	 *

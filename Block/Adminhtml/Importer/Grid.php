@@ -111,14 +111,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'type' => 'text',
 			'escape' => true
 		))->addColumn('import_started', array(
-			'header' => __('Imported Started At'),
+			'header' => __('Imported At'),
 			'width' => '50px',
 			'align' => 'center',
 			'index' => 'import_started',
 			'type' => 'datetime',
 			'escape' => true
 		))->addColumn('import_finished', array(
-			'header' => __('Last Import Check Time'),
+			'header' => __('Last Check Time'),
 			'width' => '50px',
 			'align' => 'center',
 			'index' => 'import_finished',

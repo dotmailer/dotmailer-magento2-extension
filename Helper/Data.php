@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use \Dotdigitalgroup\Email\Helper\Config as EmailConfig;
+
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -923,7 +925,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	public function getAutomationIdByType($automationType, $websiteId = 0)
 	{
-		$path = constant('Dotdigitalgroup_Email_Helper_Config::' . $automationType);
+		$path = constant(EmailConfig::class . '::' . $automationType);
 		$automationCampaignId = $this->getWebsiteConfig($path, $websiteId);
 
 		return $automationCampaignId;
