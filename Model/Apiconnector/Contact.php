@@ -18,8 +18,10 @@ class Contact
 	protected $_resource;
 	protected $_subscriberFactory;
 	protected $_customerCollection;
+	protected $_emailCustomer;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
 		\Magento\Framework\Registry $registry,
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\File   $file,
@@ -45,6 +47,7 @@ class Contact
 		$this->_storeManager = $storeManagerInterface;
 		$this->_messageManager = $context->getMessageManager();
 		//email contact
+		$this->_emailCustomer = $customerFactory;
 		$this->_contactFactory = $contactFactory;
 		$this->_customerCollection = $customerCollectionFactory->create();
 		$this->_customerCollection->addAttributeToSelect('*');
@@ -125,6 +128,7 @@ class Contact
 			->addFieldToFilter('customer_id', array('neq' => '0'))
 			->addFieldToFilter('website_id', $website->getId())
 			->setPageSize($syncLimit);
+
 		// no contacts found
 		if (!$contacts->getSize())
 			return 0;
@@ -194,7 +198,7 @@ class Contact
 		$customerCollection = $this->_getCustomerCollection($customerIds, $website->getId());
 		foreach ($customerCollection as $customer) {
 
-			$connectorCustomer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Customer' );
+			$connectorCustomer = $this->_emailCustomer->create();
 			$connectorCustomer->setMappingHash($mappedHash);
 			$connectorCustomer->setCustomerData($customer);
 			//count number of customers

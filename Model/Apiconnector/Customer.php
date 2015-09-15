@@ -659,7 +659,7 @@ class Customer
 	{
 		$id = $this->customer->getMostCategoryId();
 		if ($id) {
-			return $this->_categoryFactory->load($id)
+			return $this->_categoryFactory->create()->load($id)
 	           ->setStoreId($this->customer->getStoreId())
 	           ->getName();
 		}
@@ -714,7 +714,7 @@ class Customer
 	{
 		$id = $this->customer->getFirstCategoryId();
 		if ($id) {
-			return $this->_categoryFactory->load($id)
+			return $this->_categoryFactory->create()->load($id)
 	           ->setStoreId($this->customer->getStoreId())
 	           ->getName();
 		}
