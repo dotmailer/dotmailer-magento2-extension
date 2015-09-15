@@ -40,6 +40,9 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	public function execute()
 	{
 		$this->setPageData();
+
+		$this->_view->getPage()->getConfig()->getTitle()->prepend(__('Importer Status'));
+
 		return $this->getResultPage();
     }
 
