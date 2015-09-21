@@ -11,6 +11,7 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="api" translate="label" type="text" sortOrder="10" showInWebsite="1" showInStore="0" showInDefault="1">
                 <label>Settings</label>
+                <attribute type="expanded">1</attribute>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enabled</label>
                     <comment><![CDATA[Dont' have an API? click <a href="http://www.dotmailer.com/resources/dev-tools-guides/getting-started-with-the-dotmailer-api/">here</a> to know how to create new one.]]></comment>
@@ -42,6 +43,7 @@
             <resource>Dotdigitalgroup_Email::congi</resource>
             <group id="customer_data" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Data Fields Mapping</label>
+                <attribute type="expanded">1</attribute>
                 <field id="customer_title" translate="label" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Customer Information</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
@@ -310,6 +312,7 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="addressbook" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Address Book Mapping</label>
+                <attribute type="expanded">1</attribute>
                 <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Add Customers To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
@@ -325,6 +328,7 @@
             </group>
             <group id="sync" translate="label" type="text" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
                 <label>Sync</label>
+                <attribute type="expanded">1</attribute>
                 <field id="customer_enabled" type="select" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Customer Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -405,6 +409,7 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="customers" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Customers</label>
+                <attribute type="expanded">1</attribute>
                 <field id="heading_1" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Abandoned Cart 1</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
@@ -456,6 +461,7 @@
             </group>
             <group id="guests" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Guests</label>
+                <attribute type="expanded">1</attribute>
                 <field id="heading_1" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Abandoned Cart 1</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
