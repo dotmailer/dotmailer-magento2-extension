@@ -100,7 +100,7 @@ class Observer
 					$client->deleteAddressBookContact( $this->_helper->getSubscriberAddressBook( $websiteId ), $contactId );
 				}
 				$contactEmail->setIsSubscriber(null)
-					->setSubscriberStatus(Mage_Newsletter_Model_Subscriber::STATUS_UNSUBSCRIBED);
+					->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED);
 			}
 
 			//add subscriber to automation
