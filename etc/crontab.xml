@@ -6,7 +6,7 @@
             <schedule>*/15 * * * *</schedule>
         </job>
         <job name="ddg_automation_importer" instance="Dotdigitalgroup\Email\Model\Cron" method="emailImporter">
-            <schedule>*/15 * * * *</schedule>
+            <schedule>*/5 * * * *</schedule>
         </job>
         <job name="ddg_automation_status" instance="Dotdigitalgroup\Email\Model\Cron" method="syncAutomation">
             <schedule>*/15 * * * *</schedule>
