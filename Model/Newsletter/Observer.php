@@ -9,8 +9,10 @@ class Observer
 	protected $_logger;
 	protected $_storeManager;
 	protected $_objectManager;
+	protected $_contactFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Psr\Log\LoggerInterface $loggerInterface,
@@ -18,6 +20,7 @@ class Observer
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_contactFactory = $contactFactory;
 		$this->_helper = $data;
 		$this->_logger = $loggerInterface;
 		$this->_storeManager = $storeManagerInterface;
@@ -53,7 +56,7 @@ class Observer
 			}
 			$this->_registry->register($email . '_subscriber_save', $email);
 
-			$contactEmail = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->loadByCustomerEmail($email, $websiteId);
+			$contactEmail = $this->_contactFactory->create()->loadByCustomerEmail($email, $websiteId);
 
 			// only for subsribers
 			if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED) {

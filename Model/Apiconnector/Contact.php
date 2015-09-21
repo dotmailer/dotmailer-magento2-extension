@@ -414,6 +414,7 @@ class Contact
 		$statuses = $this->_helper->getWebsiteConfig(
 			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS, $websiteId
 		);
+
 		$orderTable = $this->_resource->getTableName('sales_order');
 		$connection = $this->_resource->getConnection();
 		$subselect = $connection->select()
@@ -424,9 +425,11 @@ class Contact
 	                 'avg(grand_total) as average_order_value',
                  )
              )
-             ->where("status in (?)", $statuses)
              ->group('customer_id')
 		;
+		//any order statuses selected
+		if ($statuses)
+			$subselect->where("status in (?)", $statuses);
 
 		$customerCollection->getSelect()->columns(array(
 				'last_order_date' => new \Zend_Db_Expr("(SELECT created_at FROM $sales_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
