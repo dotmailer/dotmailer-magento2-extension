@@ -2,6 +2,8 @@
 
 namespace  Dotdigitalgroup\Email\Model\Newsletter;
 
+use Magento\Framework\Exception\LocalizedException;
+
 class Subscriber
 {
     const STATUS_SUBSCRIBED     = 1;
@@ -23,8 +25,12 @@ class Subscriber
 	protected $_dateTime;
 	protected $storeManager;
 	protected $_scopeConfig;
+	protected $_contactFactory;
+	protected $_subscriberFactory;
 
 	public function __construct(
+		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Helper\File $file,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Config $config,
@@ -37,6 +43,8 @@ class Subscriber
 		$this->_file = $file;
 		$this->_helper = $helper;
 		$this->_config = $config;
+		$this->_subscriberFactory = $subscriberFactory;
+		$this->_contactFactory = $contactFactory;
 		$this->_dateTime = $dateFactory;
 		$this->_scopeConfig = $scopeConfig;
 		$this->storeManager = $storeManager;
@@ -94,7 +102,7 @@ class Subscriber
         $updated = 0;
         $limit = $this->_helper->getSyncLimit($website->getId());
 	    //subscribr collectio to import
-	    $subscribers = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')
+	    $subscribers = $this->_contactFactory->create()
 		    ->getSubscribersToImport($website, $limit);
 
 
@@ -109,14 +117,15 @@ class Subscriber
                 try{
                     $email = $subscriber->getEmail();
                     $subscriber->setSubscriberImported(1)->save();
-	                $subscriberModel = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')
+	                $subscriberModel = $this->_subscriberFactory->create()
 		                ->loadByEmail($email);
 
-	                $storeName = $this->storeManager->getStore($subscriber->getStoreId())->getName();
+	                $storeName = $this->storeManager->getStore($subscriberModel->getStoreId())->getName();
                     // save data for subscribers
                     $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename), array($email, 'Html', $storeName));
                     $updated++;
                 }catch (\Exception $e){
+	                throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
                 }
             }
             $this->_helper->log('Subscriber filename: ' . $subscribersFilename);
@@ -211,7 +220,7 @@ class Subscriber
                                 ->setSuppressed('1')->save();
                         }
                     }catch (\Exception $e){
-
+						throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
                     }
                 }
             }

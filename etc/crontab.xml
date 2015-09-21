@@ -17,7 +17,7 @@
         <job name="ddg_automation_reviews_and_wishlist" instance="Dotdigitalgroup\Email\Model\Cron" method="reviewsAndWishlist">
             <schedule>*/15 * * * *</schedule>
         </job>
-        <job name="ddg_automation_campaign" instance="Dotdigitalgroup\Email\Model\Cron" method="emailImporter">
+        <job name="ddg_automation_campaign" instance="Dotdigitalgroup\Email\Model\Cron" method="sendCampaigns">
             <schedule>*/5 * * * *</schedule>
         </job>
         <job name="ddg_automation_order_and_quote_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="orderSync">

@@ -46,10 +46,14 @@ class Quote
 	protected $scopeConfig;
 	protected $_storeManager;
 	protected $_objectManager;
-	protected $quoteCollection;
+	protected $_quoteCollection;
+	protected $_campaignFactory;
+	protected $_campaignCollection;
 
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
+		\Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Stdlib\DateTime $dateTime,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -60,9 +64,11 @@ class Quote
 	{
 		$this->_helper = $helper;
 		$this->dateTime = $dateTime;
+		$this->_campaignCollection = $campaignCollection;
+		$this->_campaignFactory = $campaignFactory;
 		$this->_storeManager = $storeManager;
 		$this->_objectManager = $objectManager;
-		$this->quoteCollection = $collectionFactory->create();
+		$this->_quoteCollection = $collectionFactory;
 		$this->scopeConfig = $scopeConfig;
 	}
 
@@ -90,8 +96,7 @@ class Quote
 				    if ( $this->_getLostBasketCustomerEnabled( $num, $storeId ) ) {
 					    //number of the campaign use minutes
 					    if ( $num == 1 ) {
-						    //$from = Zend_Date::now( $locale )->subMinute( $this->_getLostBasketCustomerInterval( $num, $storeId ) );
-							//@todo get the localized time
+
 						    $minutes = $this->_getLostBasketCustomerInterval( $num, $storeId );
 						    $interval = new \DateInterval("PT" . $minutes . "M");
 
@@ -114,6 +119,7 @@ class Quote
 
 					    if ( $quoteCollection->getSize() ) {
 					    }
+					    //@todo put back the log line
 					    $this->_helper->log( 'Customer lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to ' . $toDate);
 
 					    //campaign id for customers
@@ -145,7 +151,7 @@ class Quote
                             if (!$intervalLimit) {
 
 							    //save lost basket for sending
-							    $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')
+							    $this->_campaignFactory->create()
 								    ->setEmail( $email )
 								    ->setCustomerId( $quote->getCustomerId() )
 								    ->setEventName( 'Lost Basket' )
@@ -217,7 +223,7 @@ class Quote
 						    //no campign found for interval pass
                             if (!$campignFound) {
 							    //save lost basket for sending
-							    $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')
+							    $this->_campaignFactory->create()
 								    ->setEmail( $email )
 								    ->setEventName( 'Lost Basket' )
 								    ->setQuoteId($quoteId)
@@ -299,12 +305,12 @@ class Quote
 	    //@todo reset the select is making the sql empty,
 	    //$this->quoteCollection->getSelect()->reset();
 
-        $salesCollection = $this->quoteCollection
+        $salesCollection = $this->_quoteCollection->create()
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('items_count', array('gt' => 0))
             ->addFieldToFilter('customer_email', array('neq' => ''))
             ->addFieldToFilter('store_id', $storeId)
-;//->addFieldToFilter('updated_at', $updated);
+			->addFieldToFilter('updated_at', $updated);
         //guests
 	    if ($guest) {
 	        $salesCollection->addFieldToFilter( 'main_table.customer_id', array( 'null' => true ) );
@@ -337,16 +343,10 @@ class Quote
 		$cartLimit = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT,
 			\Magento\Store\Model\ScopeInterface::SCOPE_STORE,
 			$storeId);
-		//@todo get locale
-		//$locale = Mage::app()->getLocale()->getLocale();
 
 		//no limit is set skip
 		if (! $cartLimit)
 			return false;
-
-		//time diff
-		//$to = Zend_Date::now($locale);
-		//$from = Zend_Date::now($locale)->subHour($cartLimit);
 
 		$fromTime = new \DateTime();
 		$interval = new \DateInterval('P' . $cartLimit . 'H');
@@ -361,7 +361,8 @@ class Quote
 		);
 
 		//number of campigns during this time
-		$campaignLimit = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')->getCollection()
+		$campaignLimit = $this->_campaignCollection->create()
+			->getCollection()
 			->addFieldToFilter('email', $email)
 			->addFieldToFilter('event_name', 'Lost Basket')
 			->addFieldToFilter('sent_at', $updated)

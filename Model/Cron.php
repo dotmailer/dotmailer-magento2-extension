@@ -22,9 +22,11 @@ class Cron
 	protected $_quoteFactory;
 	protected $_syncOrderFactory;
 	protected $_syncQuoteFactory;
+	protected $_campaignFactory;
 
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
 		\Dotdigitalgroup\Email\Model\Sync\QuoteFactory $syncQuoteFactory,
 		\Dotdigitalgroup\Email\Model\Sync\OrderFactory  $syncOrderFactory,
 		\Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
@@ -44,6 +46,7 @@ class Cron
 		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Dotdigitalgroup\Email\Model\Apiconnector\Contact $contact
 	) {
+		$this->_campaignFactory = $campaignFactory;
 		$this->_syncQuoteFactory = $syncQuoteFactory;
 		$this->_syncOrderFactory = $syncOrderFactory;
 		$this->_quoteFactory = $quoteFactory;
@@ -214,5 +217,10 @@ class Cron
 				$this->csv->writeRow(['id'=>$item->getId(), 'created_at' => $item->getCreatedAt(), 'sku' => $item->getSku()]);
 			}
 		}
+	}
+
+	public function sendCampaigns()
+	{
+		$this->_campaignFactory->create()->sendCampaigns();
 	}
 }
