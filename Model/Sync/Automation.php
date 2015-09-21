@@ -30,8 +30,10 @@ class Automation
 	protected $_resource;
 	protected $_localeDate;
 	protected $_scopeConfig;
+	protected $_automationFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $automationFactory,
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
@@ -40,6 +42,7 @@ class Automation
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
+		$this->_automationFactory = $automationFactory;
 		$this->_helper = $helper;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_resource = $resource;
@@ -51,8 +54,7 @@ class Automation
 	public function sync()
 	{
 		//automation statuses to filter
-		$automationCollection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation')
-			->getCollection()
+		$automationCollection = $this->_automationFactory->create()
              ->addFieldToSelect( 'automation_type' )
              ->addFieldToFilter( 'enrolment_status', self::AUTOMATION_STATUS_PENDING );
 		$automationCollection->getSelect()->group( 'automation_type' );
@@ -62,8 +64,7 @@ class Automation
 		foreach ( $automationTypes as $type ) {
 			$contacts = array();
 			//reset the collection
-			$automationCollection->clear();
-			$automationCollection = $this->getCollection()
+			$automationCollection = $this->_automationFactory->create()
                  ->addFieldToFilter( 'enrolment_status', self::AUTOMATION_STATUS_PENDING )
                  ->addFieldToFilter( 'automation_type', $type );
 			//limit because of the each contact request to get the id
@@ -116,7 +117,7 @@ class Automation
 					$where
 				);
 				if ($num)
-					$this->_helper->log('Automation type : ' . $type . ', updated no : ' . $num);
+					$this->_helper->log('Automation type : ' . $type . ', updated : ' . $num);
 			} catch ( \Exception $e ) {
 			}
 		}

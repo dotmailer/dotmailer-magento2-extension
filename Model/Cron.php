@@ -11,9 +11,31 @@ class Cron
 {
 	protected $csv;
 
-	protected $_objectManager;
+	protected $_automationFactory;
+	protected $_proccessorFactory;
+	protected $_catalogFactory;
+	protected $_subscriberFactory;
+	protected $_guestFactory;
+	protected $_wishlistFactory;
+	protected $_orderFactory;
+	protected $_reviewFactory;
+	protected $_quoteFactory;
+	protected $_syncOrderFactory;
+	protected $_syncQuoteFactory;
+
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Sync\QuoteFactory $syncQuoteFactory,
+		\Dotdigitalgroup\Email\Model\Sync\OrderFactory  $syncOrderFactory,
+		\Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
+		\Dotdigitalgroup\Email\Model\Sync\ReviewFactory $reviewFactory,
+		\Dotdigitalgroup\Email\Model\Sales\OrderFactory $orderFactory,
+		\Dotdigitalgroup\Email\Model\Sync\WishlistFactory $wishlistFactory,
+		\Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
+		\Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
+		\Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+		\Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
 		FilterBuilder $filterBuilder,
 		Csv $csv,
 		\Psr\Log\LoggerInterface $logger,
@@ -22,12 +44,22 @@ class Cron
 		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Dotdigitalgroup\Email\Model\Apiconnector\Contact $contact
 	) {
+		$this->_syncQuoteFactory = $syncQuoteFactory;
+		$this->_syncOrderFactory = $syncOrderFactory;
+		$this->_quoteFactory = $quoteFactory;
+		$this->_reviewFactory = $reviewFactory;
+		$this->_orderFactory = $orderFactory;
+		$this->_wishlistFactory = $wishlistFactory;
+		$this->_guestFactory = $guestFactory;
+		$this->_subscriberFactory = $subscriberFactory;
+		$this->_catalogFactory = $catalogFactorty;
+		$this->_proccessorFactory = $proccessorFactory;
+		$this->_automationFactory = $automationFactory;
 		$this->productRepository = $productRepository;
 		$this->searchCriteriaBuilder = $searchCriteriaBuilder;
 		$this->filterBuilder = $filterBuilder;
 		$this->csv = $csv;
 		$this->contact = $contact;
-		$this->_objectManager = $objectManager;
 	}
 
 	/**
@@ -53,7 +85,7 @@ class Cron
 	 */
 	public function catalogSync()
 	{
-		$result = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Catalog')->sync();
+		$result = $this->_catalogFactory->create()->sync();
 		return $result;
 	}
 
@@ -69,8 +101,7 @@ class Cron
 	 */
 	public function emailImporter()
 	{
-		$importer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor');
-		return $importer->processQueue();
+		return $this->_proccessorFactory->create()->processQueue();
 	}
 
 	/**
@@ -79,14 +110,14 @@ class Cron
 	public function subscribersAndGuestSync()
 	{
 		//sync subscribers
-		$subscriberModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Newsletter\Subscriber');
+		$subscriberModel = $this->_subscriberFactory->create();
 		$result = $subscriberModel->sync();
 
 		//unsubscribe suppressed contacts
 		$subscriberModel->unsubscribe();
 
 		//sync guests
-		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Customer\Guest')->sync();
+		$this->_guestFactory->create()->sync();
 
 		return $result;
 	}
@@ -99,7 +130,7 @@ class Cron
 		//sync reviews
 		$this->reviewSync();
 		//sync wishlist
-		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->sync();
+		$this->_wishlistFactory->create()->sync();
 	}
 
 	/**
@@ -108,10 +139,9 @@ class Cron
 	public function reviewSync()
 	{
 		//find orders to review and register campaign
-		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Sales\Order')
-			->createReviewCampaigns();
+		$this->_orderFactory->create()->createReviewCampaigns();
 		//sync reviews
-		$result = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Review')->sync();
+		$result = $this->_reviewFactory->create()->sync();
 		return $result;
 	}
 
@@ -121,8 +151,7 @@ class Cron
 	 */
 	public function abandonedCarts()
 	{
-		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Sales\Quote')
-			->proccessAbandonedCarts();
+		$this->_quoteFactory->create()->proccessAbandonedCarts();
 	}
 
 	/**
@@ -133,7 +162,7 @@ class Cron
 	public function orderSync()
 	{
 		// send order
-		$orderResult = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Order')->sync();
+		$orderResult = $this->_syncOrderFactory->create()->sync();
 		return $orderResult;
 	}
 
@@ -144,10 +173,7 @@ class Cron
 	 */
 	public function quoteSync()
 	{
-		//send quote
-		$quoteResult = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Quote')->sync();
-
-		return $quoteResult;
+		return $this->_syncQuoteFactory->create()->sync();
 	}
 
 	/**
@@ -155,7 +181,7 @@ class Cron
 	 */
 	public function syncAutomation()
 	{
-		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Automation')->sync();
+		$this->_automationFactory->create()->sync();
 
 	}
 	public function getProducts()
