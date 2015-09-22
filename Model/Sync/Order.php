@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Order
 {
-	public $accounts;
+	protected $accounts = array();
 	/**
 	 * @var string
 	 */
@@ -28,8 +28,16 @@ class Order
 	protected $_objectManager;
 	protected $_resource;
 	protected $_scopeConfig;
+	protected $_contactFactory;
+	protected $_orderFactory;
+	protected $_orderModel;
+	protected $_accountFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
+		\Magento\Sales\Model\OrderFactory $orderModel,
+		\Dotdigitalgroup\Email\Model\Connector\OrderFactory $orderFactory,
+		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -37,6 +45,10 @@ class Order
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
+		$this->_accountFactory = $accountFactory;
+		$this->_orderModel = $orderModel;
+		$this->_orderFactory = $orderFactory;
+		$this->_contactFactory = $contactFactory;
 		$this->_helper = $helper;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_resource = $resource;
@@ -54,6 +66,7 @@ class Order
 
 		// Initialise a return hash containing results of our sync attempt
 		$this->_searchAccounts();
+
 		foreach ($this->accounts as $account) {
 			$orders = $account->getOrders();
 			$orderIds = $account->getOrderIds();
@@ -69,12 +82,12 @@ class Order
 				$this->_helper->log('--------- register Order sync with importer ---------- : ' . count($orders));
 				//register in queue with importer
 				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')
-				                              ->registerQueue(
-					                              \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
-					                              $orders,
-					                              \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
-					                              $website[0]
-				                              );
+                      ->registerQueue(
+                          \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
+                          $orders,
+                          \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                          $website[0]
+				);
 				//if no error then set imported
 				if ($check) {
 					$this->_setImported($orderIds);
@@ -132,7 +145,7 @@ class Order
 				// limit for orders included to sync
 				$limit = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT, $website);
 				if (!isset($this->accounts[$this->_apiUsername])) {
-					$account = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Connector\Account')
+					$account = $this->_accountFactory->create()
                         ->setApiUsername($this->_apiUsername)
                         ->setApiPassword($this->_apiPassword);
 					$this->accounts[$this->_apiUsername] = $account;
@@ -148,18 +161,19 @@ class Order
 
 
 	/**
-	 * get all order to import.
+	 * get all orders to import.
 	 * @param $website
 	 * @param int $limit
-	 * @param $modified
+	 * @param bool|false $modified
 	 *
 	 * @return array
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	public function getConnectorOrders($website, $limit = 100, $modified = false)
 	{
 		$orders = $customers = array();
 		$storeIds = $website->getStoreIds();
-		$orderModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Order');
+		$orderModel = $this->_orderFactory->create();
 		if(empty($storeIds))
 			return array();
 
@@ -178,7 +192,7 @@ class Order
 		foreach ($orderCollection as $order) {
 
 			try {
-				$orderModel = $this->_objectManager->create('Magento\Sales\Model\Order')->load($order->getOrderId());
+				$orderModel = $this->_orderModel->create()->load($order->getOrderId());
 				$storeId = $order->getStoreId();
 				$websiteId = $this->_storeManager->getStore($storeId)->getWebsiteId();
 				/**
@@ -188,7 +202,7 @@ class Order
 					$this->_createGuestContact($orderModel->getCustomerEmail(), $websiteId, $storeId);
 				}
 				if ($orderModel->getId()) {
-					$connectorOrder = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Connector\Order')
+					$connectorOrder = $this->_orderFactory->create()
 						->setOrder($orderModel);
 					$orders[] = $connectorOrder;
 				}
@@ -197,7 +211,7 @@ class Order
 				else
 					$this->_orderIds[] = $order->getOrderId();
 			}catch(\Exception $e){
-
+				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 			}
 		}
 		return $orders;
@@ -206,11 +220,13 @@ class Order
 
 	/**
 	 * Create a guest contact.
+	 *
 	 * @param $email
 	 * @param $websiteId
 	 * @param $storeId
 	 *
-	 * @return bool
+	 * @return bool|void
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	private function _createGuestContact($email, $websiteId, $storeId){
 		try{
@@ -220,7 +236,7 @@ class Order
 			if (! $client || ! $addressBookId = $this->_helper->getGuestAddressBook($websiteId))
 				return false;
 
-			$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\ModelContact')
+			$contactModel = $this->_contactFactory->create()
 				->loadByCustomerEmail($email, $websiteId);
 
 			//check if contact exists, create if not
@@ -228,7 +244,8 @@ class Order
 
 			//contact is suppressed cannot add to address book, mark as suppressed.
 			if (isset($contactApi->message) && $contactApi->message == 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED'){
-				//mark new contacts as guest.
+
+					//mark new contacts as guest.
 				if ($contactModel->isObjectNew())
 					$contactModel->setIsGuest(1);
 				$contactModel->setSuppressed(1);
@@ -253,16 +270,19 @@ class Order
 
 			$this->_helper->log('-- guest found : '  . $email . ' website : ' . $websiteId . ' ,store : ' . $storeId);
 		}catch(\Exception $e){
-
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 
 		return true;
 	}
+
 	/**
 	 * set imported in bulk query
 	 * //@todo dry as it's used in many places with same logic
 	 * @param $ids
-	 * @param $modified
+	 * @param bool|false $modified
+	 *
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	private function _setImported($ids, $modified = false)
 	{
@@ -278,7 +298,7 @@ class Order
 			else
 				$write->update($tableName, array('email_imported' => 1, 'updated_at' => gmdate('Y-m-d H:i:s')), "order_id IN ($ids)");
 		}catch (\Exception $e){
-
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}
 }

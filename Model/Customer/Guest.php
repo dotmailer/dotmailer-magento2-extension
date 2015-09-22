@@ -9,13 +9,16 @@ class Guest
 	protected $_helper;
 	protected $_file;
 	protected $_objectManager;
+	protected $_contactFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Helper\File $file,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
+		$this->_contactFactory = $contactFactory;
 		$this->_helper = $helper;
 		$this->_file = $file;
 		$this->_objectManager = $objectManager;
@@ -50,7 +53,8 @@ class Guest
 
     public function exportGuestPerWebsite( $website)
     {
-	    $guests = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getGuests($website);
+	    $guests = $this->_contactFactory->create()
+		    ->getGuests($website);
         //found some guests
 	    if ($guests->getSize()) {
             $guestFilename = strtolower($website->getCode() . '_guest_' . date('d_m_Y_Hi') . '.csv');

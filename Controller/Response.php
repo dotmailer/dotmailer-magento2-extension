@@ -11,11 +11,12 @@ class Response extends \Magento\Framework\App\Action\Action
 	 * @param \Magento\Framework\App\Action\Context $context
 	 */
 	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Framework\App\Action\Context $context
 
 	) {
+		$this->_helper = $data;
 		parent::__construct( $context );
-
 	}
 
 
@@ -29,11 +30,11 @@ class Response extends \Magento\Framework\App\Action\Action
     {
 	    //@todo enable before going live.
         //authenticate ip address
-        //$authIp = $this->_helper->authIpAddress();
-//        if(!$authIp){
-//            $e = new \Exception('You are not authorised to view content of this page.');
-//            throw new \Exception($e->getMessage());
-//        }
+        $authIp = $this->_helper->authIpAddress();
+        if(!$authIp){
+            $e = new \Exception('You are not authorised to view content of this page.');
+            throw new \Exception($e->getMessage());
+        }
 
 	    $helper = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Data');
         //authenticate

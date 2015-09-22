@@ -20,7 +20,7 @@
         <job name="ddg_automation_campaign" instance="Dotdigitalgroup\Email\Model\Cron" method="sendCampaigns">
             <schedule>*/5 * * * *</schedule>
         </job>
-        <job name="ddg_automation_order_and_quote_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="orderSync">
+        <job name="ddg_automation_order_and_quote_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="orderAndQuoteSync">
             <schedule>*/15 * * * *</schedule>
         </job>
         <job name="ddg_automation_cleaner" instance="Dotdigitalgroup\Email\Model\Cron" method="emailImporter">

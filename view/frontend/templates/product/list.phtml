@@ -1,16 +1,18 @@
 <?php
 $i = 0;
+//display mode
 $mode = $this->getMode();
+//products
 $products = $this->getLoadedProductCollection();
-$imageBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\Image');
+//$imageBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\Image');
 $image = 'category_page_list';
+var_dump($products->getData());die;
 foreach ($products as $key => $_product) :?>
 <?php  if($i == 0):?>
 <?php
     $name_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE));
-    $price_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE));
-    $link_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE));
-?>
+	$link_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE));
+	$price_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE));?>
 <style>
     .product-name{
         color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR);?>;

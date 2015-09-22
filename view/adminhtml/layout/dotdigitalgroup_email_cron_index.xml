@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <update handle="dotdigitalgroup_email_cron_grid_block"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Cron" name="dotdigitalgroup_email_email_cron.grid.container" template="Magento_Backend::widget/grid/container/empty.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

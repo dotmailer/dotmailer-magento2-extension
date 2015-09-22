@@ -7,6 +7,7 @@ class Bestsellers extends \Dotdigitalgroup\Email\Controller\Response
 
 	public function execute()
 	{
+
 		//authenticate
 		$this->authenticate();
 		$this->_view->loadLayout();

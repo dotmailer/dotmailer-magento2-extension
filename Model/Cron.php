@@ -219,8 +219,27 @@ class Cron
 		}
 	}
 
+	/**
+	 * Send email campaigns.
+	 * @throws \Magento\Framework\Exception\LocalizedException
+	 */
 	public function sendCampaigns()
 	{
 		$this->_campaignFactory->create()->sendCampaigns();
+	}
+
+
+	/**
+	 * CRON FOR ORDER & QUOTE TRANSACTIONAL DATA
+	 */
+	public function orderAndQuoteSync()
+	{
+		// send order
+		$orderResult = $this->orderSync();
+
+		//send quote
+		$quoteResult = $this->quoteSync();
+
+		return $orderResult['message'] . '  ' .$quoteResult['message'];
 	}
 }

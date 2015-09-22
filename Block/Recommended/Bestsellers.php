@@ -5,33 +5,43 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 class Bestsellers extends \Magento\Framework\View\Element\Template
 {
 
+	protected $_dateTime;
+	protected $_stockFactory;
+	protected $_categoryFactory;
+	protected $_productSoldFactory;
+
+
 	public $helper;
 	public $priceHelper;
-	protected $_localeDate;
 	public $scopeManager;
 	public $objectManager;
-
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
+		\Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+		\Magento\Catalog\Model\CategoryFactory  $categoryFactory,
 		\Magento\Framework\View\Element\Template\Context $context,
+		\Magento\Cataloginventory\Model\StockFactory $stockFactory,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		\Magento\Reports\Model\Resource\Product\Sold\CollectionFactory $productSoldFactory,
 		array $data = []
 	)
 	{
-		parent::__construct( $context, $data );
 		$this->helper = $helper;
-		$this->recommnededHelper = $recommended;
+		$this->_dateTime = $dateTime;
 		$this->priceHelper = $priceHelper;
-		$this->_localeDate = $localeDate;
+		$this->_stockFactory = $stockFactory;
+		$this->recommnededHelper = $recommended;
+		$this->_categoryFactory = $categoryFactory;
+		$this->_productSoldFactory = $productSoldFactory;
 
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 		$this->objectManager = $objectManagerInterface;
+		parent::__construct( $context, $data );
 	}
 
 	/**
@@ -39,28 +49,29 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 	 * @return array
 	 */
 	public function getLoadedProductCollection()
-    {
+	{
         $mode = $this->getRequest()->getActionName();
         $limit  = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  =  $this->recommnededHelper->getTimeFromConfig($mode);
 	    //@todo fix the locale
-	    //$locale = $this->objectManager->create('Magento\Framework\Local\ResoverInterface')->getLocale();
-	    $to = \Zend_Date::now()->toString(\Zend_Date::ISO_8601);
+	    //$to = \Zend_Date::now()->toString(\Zend_Date::ISO_8601);
 
-	    $productCollection = $this->objectManager->create('Magento\Reports\Model\Resource\Product\Sold\Collection')
+	    $to = $this->_dateTime;
+	    $productCollection = $this->_productSoldFactory->create()
 		    ->addAttributeToSelect('*')
 		    ->addOrderedQty($from, $to)
             ->setOrder('ordered_qty', 'desc')
 	        ->setPageSize($limit);
 
-	    $this->objectManager->create('Magento\Cataloginventory\Model\Stock')
-		    ->addInStockFilterToCollection($productCollection);
-	    $productCollection->addAttributeToFilter('is_saleable', TRUE);
+	    //@todo check inventory for products to display
+//		$this->_stockFactory->create()
+//		    ->addInStockFilterToCollection($productCollection);
+	    //$productCollection->addAttributeToFilter('is_saleable', TRUE);
 
         //filter collection by category by category_id
-        if($cat_id = $this->getRequest()->getParam('category_id')){
-            $category = $this->objectManager->create('Magento\Catalog\Model\Catagtory')->load($cat_id);
-            if($category->getId()){
+        if ($cat_id = $this->getRequest()->getParam('category_id')){
+            $category = $this->_categoryFactory->create()->load($cat_id);
+            if ($category->getId()) {
                 $productCollection->getSelect()
                     ->joinLeft(
                         array("ccpi" => 'catalog_category_product_index'),
@@ -68,14 +79,14 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
                         array("category_id")
                     )
                     ->where('ccpi.category_id =?',  $cat_id);
-            }else{
+            } else {
                 $this->helper->log('Best seller. Category id '. $cat_id . ' is invalid. It does not exist.');
             }
         }
 
         //filter collection by category by category_name
         if($cat_name = $this->getRequest()->getParam('category_name')){
-            $category = $this->objectManager->create('Magento\Catalog\Model\Catagtory')
+            $category = $this->_categoryFactory->create()
 	            ->loadByAttribute('name', $cat_name);
             if($category){
                 $productCollection->getSelect()
@@ -89,6 +100,7 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
                 $this->helper->log('Best seller. Category name '. $cat_name .' is invalid. It does not exist.');
             }
         }
+
 	    return $productCollection;
     }
 
