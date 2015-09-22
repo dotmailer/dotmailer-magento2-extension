@@ -55,7 +55,6 @@ class Quote
 		\Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
 		\Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
-
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -191,11 +190,10 @@ class Quote
 
 					    //active guest quotes
 					    $quoteCollection = $this->_getStoreQuotes( $fromDate, $toDate, $guest = true, $storeId );
-
+						//log the time for carts found
 					    if ( $quoteCollection->getSize() ) {
+						    $this->_helper->log( 'Guest lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate );
 					    }
-					    //@todo put back the guest log
-					    $this->_helper->log( 'Guest lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate );
 					    $guestCampaignId = $this->_getLostBasketGuestCampaignId( $num, $storeId );
 					    foreach ( $quoteCollection as $quote ) {
 						    $email        = $quote->getCustomerEmail();

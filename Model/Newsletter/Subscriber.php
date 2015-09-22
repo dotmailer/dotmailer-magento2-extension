@@ -27,10 +27,12 @@ class Subscriber
 	protected $_scopeConfig;
 	protected $_contactFactory;
 	protected $_subscriberFactory;
+	protected $_contactCollection;
 
 	public function __construct(
 		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollection,
 		\Dotdigitalgroup\Email\Helper\File $file,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Config $config,
@@ -40,6 +42,7 @@ class Subscriber
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
 	)
 	{
+		$this->_contactCollection = $contactCollection;
 		$this->_file = $file;
 		$this->_helper = $helper;
 		$this->_config = $config;
@@ -60,6 +63,7 @@ class Subscriber
         $response = array('success' => true, 'message' => '');
         $this->_start = microtime(true);
 		$websites = $this->_helper->getWebsites(true);
+	    $started = false;
 
         foreach ($websites as $website) {
             //if subscriber is enabled and mapped
@@ -69,10 +73,12 @@ class Subscriber
 	        //enabled and mapped
             if ($apiEnabled && $addressBook && $subscriberEnaled) {
 	            //ready to start sync
-	            if (!$this->_countSubscriber)
-	                $this->_helper->log('---------------------- Start subscriber sync -------------------');
-
                 $numUpdated = $this->exportSubscribersPerWebsite($website);
+
+	            if ($this->_countSubscriber && !$started) {
+		            $this->_helper->log( '---------------------- Start subscriber sync -------------------' );
+		            $started = true;
+	            }
                 // show message for any number of customers
                 if ($numUpdated)
                     $response['message'] .=  '</br>' . $website->getName() . ', updated subscribers = ' . $numUpdated;
@@ -92,19 +98,21 @@ class Subscriber
         return $response;
     }
 
-    /**
-     * Export subscriber per website.
-     *
-     * @return int
-     */
+	/**
+	 * Export subscribers per website.
+	 *
+	 * @param $website
+	 *
+	 * @return int
+	 * @throws LocalizedException
+	 */
     public function exportSubscribersPerWebsite($website)
     {
         $updated = 0;
         $limit = $this->_helper->getSyncLimit($website->getId());
-	    //subscribr collectio to import
+	    //subscriber collection to import
 	    $subscribers = $this->_contactFactory->create()
 		    ->getSubscribersToImport($website, $limit);
-
 
 	    if (count($subscribers)) {
             $subscribersFilename = strtolower($website->getCode() . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
@@ -143,11 +151,13 @@ class Subscriber
         return $updated;
     }
 
-    /**
-     * Unsubscribe suppressed contacts.
-     * @param bool $force set 10years old
-     * @return mixed
-     */
+	/**
+	 * Unsubscribe suppressed contacts.
+	 * @param bool $force set 10years old
+	 *
+	 * @return mixed
+	 * @throws LocalizedException
+	 */
     public function unsubscribe($force = false)
     {
 	    $limit = 5;
@@ -199,7 +209,7 @@ class Subscriber
                          * 2. Remove subscriber from the address book.
                          */
 
-	                    $subscriber = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')
+	                    $subscriber = $this->_subscriberFactory->create()
 		                    ->loadByEmail($email);
 
 	                    if ($subscriber->getStatus() == \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED) {
@@ -210,7 +220,7 @@ class Subscriber
                         }
                         //mark contact as suppressed and unsubscribe
 
-                        $contactCollection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
+                        $contactCollection = $this->_contactCollection->create()
                             ->addFieldToFilter('email', $email)
                             ->addFieldToFilter('website_id', $website->getId());
 
