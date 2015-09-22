@@ -74,15 +74,28 @@ class Product
 	protected $_scopeConfig;
 	protected $_storeManager;
 	protected $_objectManager;
+	protected $_statusFactory;
+	protected $_visibilityFactory;
+	protected $_mediaConfigFactory;
+	protected $_itemFactory;
 
-	public function __construct($product,
+	public function __construct(
+		$product,
 	    \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 	    \Magento\Framework\ObjectManagerInterface $objectManager,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+		\Magento\CatalogInventory\Model\Stock\ItemFactory $itemFactory,
+		\Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
+		\Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
+		\Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
     )
     {
+	    $this->_itemFactory = $itemFactory;
+	    $this->_mediaConfigFactory = $mediaConfigFactory;
+	    $this->_visibilityFactory = $visibilityFactory;
+	    $this->_statusFactory = $statusFactory->create();
 	    $this->_helper = $helper;
 	    $this->_resource = $resource;
 	    $this->_objectManager = $objectManager;
@@ -92,20 +105,19 @@ class Product
         $this->sku                  = $product->getSku();
         $this->name                 = $product->getName();
 
-	    $statuses = $this->_objectManager->create('Magento\Catalog\Model\Product\Attribute\Source\Status')->getOptionArray();
+	    $statuses = $this->_statusFactory->getOptionArray();
 	    $this->status               = $statuses[$product->getStatus()];
 
-	    $options = $this->_objectManager->create('Magento\Catalog\Model\Product\Visibility')->getOptionsArray();
+	    $options = $this->_visibilityFactory->create()->getOptionsArray();
         $this->visibility           = $options[$product->getVisibility()];
         $this->price                = (float) number_format($product->getPrice(), 2, '.', '' );
         $this->special_price        = (float) number_format($product->getSpecialPrice(), 2, '.', '' );
         $this->url                  = $product->getProductUrl();
 
-	    $this->image_path           = $this->_objectManager->create('Magento\Catalog\Model\Product\Media\Config')
+	    $this->image_path           = $this->_mediaConfigFactory->create()
 		    ->getMediaUrl($product->getSmallImage());
-
-
-        $stock = $this->_objectManager->create('Magento\CatalogInventory\Model\Stock\Item')
+	    
+        $stock = $this->_itemFactory->create()
 	        ->loadByProduct($product);
 	    $this->stock                = (float) number_format($stock->getQty(), 2, '.', '' );
 

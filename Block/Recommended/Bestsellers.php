@@ -16,20 +16,24 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 	public $scopeManager;
 	public $objectManager;
 
+	protected $_localeDate;
+
 	public function __construct(
+		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
 		\Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
 		\Magento\Catalog\Model\CategoryFactory  $categoryFactory,
 		\Magento\Framework\View\Element\Template\Context $context,
-		\Magento\Cataloginventory\Model\StockFactory $stockFactory,
+		\Magento\CatalogInventory\Model\StockFactory $stockFactory,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		\Magento\Reports\Model\Resource\Product\Sold\CollectionFactory $productSoldFactory,
 		array $data = []
 	)
 	{
+		$this->_localeDate = $localeDate;
 		$this->helper = $helper;
 		$this->_dateTime = $dateTime;
 		$this->priceHelper = $priceHelper;
@@ -53,10 +57,7 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
         $mode = $this->getRequest()->getActionName();
         $limit  = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  =  $this->recommnededHelper->getTimeFromConfig($mode);
-	    //@todo fix the locale
-	    //$to = \Zend_Date::now()->toString(\Zend_Date::ISO_8601);
-
-	    $to = $this->_dateTime;
+	    $to = $this->_localeDate->date();
 	    $productCollection = $this->_productSoldFactory->create()
 		    ->addAttributeToSelect('*')
 		    ->addOrderedQty($from, $to)
@@ -112,7 +113,6 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 	public function getMode()
     {
         return $this->recommnededHelper->getDisplayType();
-
     }
 
 	/**

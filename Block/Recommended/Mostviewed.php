@@ -7,12 +7,20 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
 
 	public $helper;
 	public $priceHelper;
-	protected $_localeDate;
 	public $scopeManager;
 	public $objectManager;
 
 
+	protected $_localeDate;
+	protected $_productCollection;
+	protected $_categoryFactory;
+	protected $_productFactory;
+
 	public function __construct(
+		\Magento\Catalog\Model\ProductFactory $productFactory,
+		\Magento\Catalog\Model\CategoryFactory $categtoryFactory,
+		\Magento\Reports\Model\Resource\Product\CollectionFactory $proudctCollection,
+		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -23,7 +31,9 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
 		array $data = []
 	)
 	{
-		parent::__construct( $context, $data );
+		$this->_productFactory = $productFactory;
+		$this->_categoryFactory = $categtoryFactory;
+		$this->_productCollection = $proudctCollection;
 		$this->helper = $helper;
 		$this->recommnededHelper = $recommended;
 		$this->priceHelper = $priceHelper;
@@ -31,6 +41,7 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 		$this->objectManager = $objectManagerInterface;
+		parent::__construct( $context, $data );
 	}
 	/**
 	 * Get product collection.
@@ -42,15 +53,15 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
         $mode = $this->getRequest()->getActionName();
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  = $this->recommnededHelper->getTimeFromConfig($mode);
-		//@todo fix locale
-	    $to = \Zend_Date::now()->toString(\Zend_Date::ISO_8601);
-	    $productCollection = $this->objectManager->create('Magento\Reports\Model\Resource\Product\Collection')
+	    $to = $this->_localeDate->date();
+
+	    $productCollection = $this->_productCollection->create()
             ->addViewsCount($from, $to)
             ->setPageSize($limit);
 
         //filter collection by category by category_id
         if($cat_id = $this->getRequest()->getParam('category_id')){
-            $category = $this->objectManager->create('Magento\Catalog\Model\Catagtory')->load($cat_id);
+            $category = $this->_categoryFactory->create()->load($cat_id);
             if($category->getId()){
                 $productCollection->getSelect()
                     ->joinLeft(
@@ -66,7 +77,7 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
 
         //filter collection by category by category_name
         if($cat_name = $this->getRequest()->getParam('category_name')){
-            $category = $this->objectManager->create('Magento\Catalog\Model\Catagtory')->loadByAttribute('name', $cat_name);
+            $category = $this->_categoryFactory->create()->loadByAttribute('name', $cat_name);
             if($category){
                 $productCollection->getSelect()
                     ->joinLeft(
@@ -79,11 +90,12 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
                 $this->helper->log('Most viewed. Category name '. $cat_name .' is invalid. It does not exist.');
             }
         }
-
+	    //proudct collection
         foreach ($productCollection as $_product) {
             $productId = $_product->getId();
-            $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
-            if($product->isSalable())
+            $product = $this->_productFactory->create()->load($productId);
+            //available for sale
+	        if ($product->isSalable())
                 $productsToDisplay[] = $product;
         }
 
