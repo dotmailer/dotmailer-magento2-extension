@@ -10,14 +10,18 @@ class Guest
 	protected $_file;
 	protected $_objectManager;
 	protected $_contactFactory;
+	protected $_proccessorFactory;
+
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Helper\File $file,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
+		$this->_proccessorFactory = $proccessorFactory;
 		$this->_contactFactory = $contactFactory;
 		$this->_helper = $helper;
 		$this->_file = $file;
@@ -30,6 +34,7 @@ class Guest
     {
         $this->_start = microtime(true);
 	    $websites = $this->_helper->getWebsites();
+	    $started = false;
 
 	    foreach($websites as $website) {
 
@@ -40,8 +45,10 @@ class Guest
 	        if ($addresbook && $guestSyncEnabled && $apiEnabled) {
 
 		        //ready to start sync
-		        if (!$this->_countGuests)
-		            $this->_helper->log('----------- Start guest sync ----------');
+		        if (!$this->_countGuests && $started) {
+			        $this->_helper->log( '----------- Start guest sync ----------' );
+			        $started = true;
+		        }
 
 		        //sync guests for website
 		        $this->exportGuestPerWebsite($website);
@@ -77,7 +84,7 @@ class Guest
             }
             if ($this->_countGuests) {
                 //register in queue with importer
-	            $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')
+	            $this->_proccessorFactory->create()
 	                ->registerQueue(
                     \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_GUEST,
                     '',

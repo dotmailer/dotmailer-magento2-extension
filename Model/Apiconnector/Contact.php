@@ -70,6 +70,7 @@ class Contact
 		$this->_start = microtime(true);
 		//resourse allocation
 		$this->_helper->allowResourceFullExecution();
+		$started = false;
 		//export bulk contacts
 		foreach ( $this->_helper->getWebsites() as $website ) {
 			$apiEnabled                = $this->_helper->isEnabled( $website );
@@ -77,13 +78,12 @@ class Contact
 			$customerAddressBook    = $this->_helper->getCustomerAddressBook($website);
 
 			//api, customer sync and customer address book must be enabled
-			if ($apiEnabled &&
-			    $customerSyncEnabled &&
-			    $customerAddressBook
-			) {
+			if ($apiEnabled && $customerSyncEnabled && $customerAddressBook ) {
 				//start log
-				if (! $this->_countCustomers)
-					$this->_helper->log('---------- Start customer sync ----------');
+				if (! $this->_countCustomers && $started) {
+					$this->_helper->log( '---------- Start customer sync ----------' );
+					$started = true;
+				}
 				$contactsUpdated = $this->exportCustomersForWebsite($website);
 				// show message for any number of customers
 				if ($contactsUpdated)
