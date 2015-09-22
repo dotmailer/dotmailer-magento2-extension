@@ -890,7 +890,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		//customer mapped data
 		$store = $website->getDefaultStore();
 		$mappedData = $this->scopeConfig->getValue('connector_data_mapping/customer_data', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store->getId());
-		unset($mappedData['custom_attributes']);
+		unset($mappedData['custom_attributes'], $mappedData['abandoned_prod_name']);
 		//skip non mapped customer datafields
 		foreach ($mappedData as $key => $value) {
 			if (! $value)
