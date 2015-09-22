@@ -180,7 +180,7 @@ class Quote
 						    $interval = new \DateInterval("PT" . $minutes . "M");
 					    } else {
 						    $hours = $this->_getLostBasketGuestIterval( $num, $storeId );
-						    $interval = new \DateInterval("P" . $hours . "H");
+						    $interval = new \DateInterval("PT" . $hours . "H");
 					    }
 					    $fromTime = new \DateTime();
 					    $fromTime->sub($interval);
