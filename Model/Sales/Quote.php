@@ -39,31 +39,33 @@ class Quote
 	public $lostBasketGuests = array(1, 2, 3);
 
 	protected $_helper;
-	/**
-	 * @var \Magento\Framework\Stdlib\DateTime
-	 */
-	protected $dateTime;
+
 	protected $scopeConfig;
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_quoteCollection;
 	protected $_campaignFactory;
 	protected $_campaignCollection;
+	protected $_localeDate;
+	protected $_rulesFactory;
 
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
 		\Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
 		\Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
-		\Magento\Framework\Stdlib\DateTime $dateTime,
+
+		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Quote\Model\Resource\Quote\CollectionFactory $collectionFactory
 	)
 	{
+		$this->_rulesFactory = $rulesFactory;
 		$this->_helper = $helper;
-		$this->dateTime = $dateTime;
+		$this->_localeDate = $localeDate;
 		$this->_campaignCollection = $campaignCollection;
 		$this->_campaignFactory = $campaignFactory;
 		$this->_storeManager = $storeManager;
@@ -83,36 +85,33 @@ class Quote
         /**
          * Save lost baskets to be send in Send table.
          */
-	    //$locale = Mage::app()->getLocale()->getLocale();
 		$stores = $this->_helper->getStores();
 	    foreach ($stores as $store) {
             $storeId = $store->getId();
 		    if ($mode == 'all' || $mode == 'customers') {
 			    /**
-			     * Customers campaings
+			     * Customers campaigns
 			     */
 			    foreach ( $this->lostBasketCustomers as $num ) {
 				    //customer enabled
 				    if ( $this->_getLostBasketCustomerEnabled( $num, $storeId ) ) {
 					    //number of the campaign use minutes
 					    if ( $num == 1 ) {
-
 						    $minutes = $this->_getLostBasketCustomerInterval( $num, $storeId );
 						    $interval = new \DateInterval("PT" . $minutes . "M");
-
 					    } else {
 						    $hours = (int)$this->_getLostBasketCustomerInterval( $num, $storeId );
 						    $interval = new \DateInterval("PT" . $hours . "H");
 					    }
-					    $fromTime = new \DateTime();
+
+					    $fromTime = $this->_localeDate->date();
 					    $fromTime->sub($interval);
 					    $toTime = clone $fromTime;
-
 					    $fromTime->sub(new \DateInterval("PT5M"));
 
 					    //format time
-					    $fromDate = $this->dateTime->formatDate($fromTime->getTimestamp());
-					    $toDate = $this->dateTime->formatDate($toTime->getTimestamp());
+					    $fromDate = $fromTime->format('Y-m-d H:i:s');
+					    $toDate = $toTime->format('Y-m-d H:i:s');
 
 					    //active quotes
 					    $quoteCollection = $this->_getStoreQuotes( $fromDate, $toDate, $guest = false, $storeId );
@@ -149,7 +148,6 @@ class Quote
 						    $intervalLimit = $this->_checkCustomerCartLimit( $email, $storeId );
 						    //no campign found for interval pass
                             if (!$intervalLimit) {
-
 							    //save lost basket for sending
 							    $this->_campaignFactory->create()
 								    ->setEmail( $email )
@@ -173,30 +171,31 @@ class Quote
 			     */
 			    foreach ( $this->lostBasketGuests as $num ) {
 				    if ( $this->_getLostBasketGuestEnabled( $num, $storeId ) ) {
+					    //for the  first cart which use the minutes
 					    if ( $num == 1 ) {
-						    //$from = Zend_Date::now( $locale )->subMinute( $this->_getLostBasketCustomerInterval( $num, $storeId ) );
-						    //@todo get the localized time
 						    $minutes = $this->_getLostBasketGuestIterval( $num, $storeId );
 						    $interval = new \DateInterval("PT" . $minutes . "M");
 					    } else {
 						    $hours = $this->_getLostBasketGuestIterval( $num, $storeId );
 						    $interval = new \DateInterval("PT" . $hours . "H");
 					    }
-					    $fromTime = new \DateTime();
+					    //from to localized time
+					    $fromTime = $this->_localeDate->date();
 					    $fromTime->sub($interval);
 					    $toTime = clone $fromTime;
 					    $fromTime->sub(new \DateInterval("PT5M"));
 
 					    //format time
-					    $fromDate = $this->dateTime->formatDate($fromTime->getTimestamp());
-					    $toDate = $this->dateTime->formatDate($toTime->getTimestamp());
+					    $fromDate = $fromTime->format('Y-m-d H:i:s');
+					    $toDate = $toTime->format('Y-m-d H:i:s');
 
 					    //active guest quotes
 					    $quoteCollection = $this->_getStoreQuotes( $fromDate, $toDate, $guest = true, $storeId );
 
 					    if ( $quoteCollection->getSize() ) {
-						    $this->_helper->log( 'Guest lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate );
 					    }
+					    //@todo put back the guest log
+					    $this->_helper->log( 'Guest lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate );
 					    $guestCampaignId = $this->_getLostBasketGuestCampaignId( $num, $storeId );
 					    foreach ( $quoteCollection as $quote ) {
 						    $email        = $quote->getCustomerEmail();
@@ -320,7 +319,7 @@ class Quote
         }
 
         //process rules on collection
-	    $ruleModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Rules');
+	    $ruleModel = $this->_rulesFactory->create();
         $websiteId = $this->_storeManager->getStore($storeId)->getWebsiteId();
         $salesCollection = $ruleModel->process(
             $salesCollection, \Dotdigitalgroup\Email\Model\Rules::ABANDONED, $websiteId
@@ -348,12 +347,13 @@ class Quote
 		if (! $cartLimit)
 			return false;
 
-		$fromTime = new \DateTime();
+		$fromTime = $this->_localeDate->date();
+		$toTime = clone $fromTime;
 		$interval = new \DateInterval('PT' . $cartLimit . 'H');
 		$fromTime->sub($interval);
-		$toTime = new \DateTime();
-		$fromDate = $this->dateTime->formatDate($fromTime->getTimestamp());
-		$toDate = $this->dateTime->formatDate($toTime->getTimestamp());
+
+		$fromDate = $fromTime->getTimestamp();
+		$toDate = $toTime->getTimestamp();
 		$updated = array(
 			'from' => $fromDate,
 			'to' => $toDate,
