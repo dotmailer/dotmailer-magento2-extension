@@ -85,7 +85,8 @@ class Automation
 					$contacts[ $automation->getId() ] = $contactId;
 				} else {
 					// the contact is suppressed or the request failed
-					$automation->setStatus('Suppressed')->save();
+					$automation->setEnrolmentStatus('Suppressed')
+						->save();
 				}
 			}
 			//only for subscribed contacts
@@ -116,9 +117,11 @@ class Automation
 					$bind,
 					$where
 				);
+				//number of updated records
 				if ($num)
 					$this->_helper->log('Automation type : ' . $type . ', updated : ' . $num);
 			} catch ( \Exception $e ) {
+				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 			}
 		}
 	}

@@ -265,7 +265,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get the contact id for the custoemer based on website id.
+     * Get the contact id for the customer based on website id.
      * @param $email
      * @param $websiteId
      *
