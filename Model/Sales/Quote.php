@@ -114,11 +114,11 @@ class Quote
 
 					    //active quotes
 					    $quoteCollection = $this->_getStoreQuotes( $fromDate, $toDate, $guest = false, $storeId );
-
+						//found abandoned carts
 					    if ( $quoteCollection->getSize() ) {
+						    $this->_helper->log( 'Customer cart : '. $num . ', from : ' . $fromDate . ' ,to ' . $toDate);
 					    }
-					    //@todo put back the log line
-					    $this->_helper->log( 'Customer lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to ' . $toDate);
+
 
 					    //campaign id for customers
 					    $campaignId = $this->_getLostBasketCustomerCampaignId( $num, $storeId );
@@ -153,7 +153,7 @@ class Quote
 								    ->setCustomerId( $quote->getCustomerId() )
 								    ->setEventName( 'Lost Basket' )
 							        ->setQuoteId($quoteId)
-								    ->setMessage('Abandoned Cart :' . $num)
+								    ->setMessage('Abandoned Cart ' . $num)
 								    ->setCampaignId( $campaignId )
 								    ->setStoreId( $storeId )
 								    ->setWebsiteId($websiteId)
@@ -192,7 +192,7 @@ class Quote
 					    $quoteCollection = $this->_getStoreQuotes( $fromDate, $toDate, $guest = true, $storeId );
 						//log the time for carts found
 					    if ( $quoteCollection->getSize() ) {
-						    $this->_helper->log( 'Guest lost baskets : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate );
+						    $this->_helper->log( 'Guest cart : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate );
 					    }
 					    $guestCampaignId = $this->_getLostBasketGuestCampaignId( $num, $storeId );
 					    foreach ( $quoteCollection as $quote ) {
@@ -225,7 +225,7 @@ class Quote
 								    ->setEventName( 'Lost Basket' )
 								    ->setQuoteId($quoteId)
 								    ->setCheckoutMethod( 'Guest' )
-								    ->setMessage('Guest Abandoned Cart : ' . $num)
+								    ->setMessage('Guest Abandoned Cart ' . $num)
 								    ->setCampaignId( $guestCampaignId )
 								    ->setStoreId( $storeId )
 								    ->setWebsiteId($websiteId)
