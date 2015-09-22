@@ -80,7 +80,7 @@ class Contact
 			//api, customer sync and customer address book must be enabled
 			if ($apiEnabled && $customerSyncEnabled && $customerAddressBook ) {
 				//start log
-				if (! $this->_countCustomers && $started) {
+				if (! $this->_countCustomers && !$started) {
 					$this->_helper->log( '---------- Start customer sync ----------' );
 					$started = true;
 				}

@@ -45,7 +45,7 @@ class Guest
 	        if ($addresbook && $guestSyncEnabled && $apiEnabled) {
 
 		        //ready to start sync
-		        if (!$this->_countGuests && $started) {
+		        if (!$this->_countGuests && !$started) {
 			        $this->_helper->log( '----------- Start guest sync ----------' );
 			        $started = true;
 		        }
