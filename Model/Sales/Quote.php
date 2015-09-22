@@ -349,7 +349,7 @@ class Quote
 			return false;
 
 		$fromTime = new \DateTime();
-		$interval = new \DateInterval('P' . $cartLimit . 'H');
+		$interval = new \DateInterval('PT' . $cartLimit . 'H');
 		$fromTime->sub($interval);
 		$toTime = new \DateTime();
 		$fromDate = $this->dateTime->formatDate($fromTime->getTimestamp());
