@@ -80,11 +80,12 @@ class Contact
 			//api, customer sync and customer address book must be enabled
 			if ($apiEnabled && $customerSyncEnabled && $customerAddressBook ) {
 				//start log
-				if (! $this->_countCustomers && !$started) {
+				$contactsUpdated = $this->exportCustomersForWebsite($website);
+
+				if ($this->_countCustomers && !$started) {
 					$this->_helper->log( '---------- Start customer sync ----------' );
 					$started = true;
 				}
-				$contactsUpdated = $this->exportCustomersForWebsite($website);
 				// show message for any number of customers
 				if ($contactsUpdated)
 					$result['message'] .=  '</br>' . $website->getName() . ', exported contacts : ' . $contactsUpdated;
@@ -109,7 +110,7 @@ class Contact
 	 */
 	public function exportCustomersForWebsite( $website)
 	{
-		$customerIds = $headers = $allMappedHash = array();
+		$allMappedHash = array();
 		//admin sync limit of batch size for contacts
 		$syncLimit              = $this->_helper->getSyncLimit($website);
 		//address book id mapped
@@ -196,13 +197,13 @@ class Contact
 		}
 		//customer collection
 		$customerCollection = $this->_getCustomerCollection($customerIds, $website->getId());
+		$countIds = array();
 		foreach ($customerCollection as $customer) {
-
 			$connectorCustomer = $this->_emailCustomer->create();
 			$connectorCustomer->setMappingHash($mappedHash);
 			$connectorCustomer->setCustomerData($customer);
 			//count number of customers
-			$customerIds[] = $customer->getId();
+			$countIds[] = $customer->getId();
 
 			//@todo fix the customer custom attributes admin first
 //			if ($connectorCustomer) {

@@ -44,14 +44,13 @@ class Guest
 		    $apiEnabled = $this->_helper->isEnabled($website);
 	        if ($addresbook && $guestSyncEnabled && $apiEnabled) {
 
-		        //ready to start sync
-		        if (!$this->_countGuests && !$started) {
+		        //sync guests for website
+		        $this->exportGuestPerWebsite($website);
+
+		        if ($this->_countGuests && !$started) {
 			        $this->_helper->log( '----------- Start guest sync ----------' );
 			        $started = true;
 		        }
-
-		        //sync guests for website
-		        $this->exportGuestPerWebsite($website);
 	        }
         }
 	    if ($this->_countGuests)
