@@ -11,7 +11,7 @@ class Type
 
 	public function __construct(
 		\Magento\Eav\Model\ConfigFactory $configFactory,
-		\Magento\Salesrule\Model\Rule\Condition\ProductFactory $productFactory,
+		\Magento\SalesRule\Model\Rule\Condition\ProductFactory $productFactory,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
