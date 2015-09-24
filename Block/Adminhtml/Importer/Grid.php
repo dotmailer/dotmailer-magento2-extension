@@ -51,8 +51,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->setId('importer');
 		$this->setDefaultSort('id');
 		$this->setDefaultDir('DESC');
-		$this->setSaveParametersInSession(true);
-		$this->setUseAjax(true);
 	}
 
 	/**
@@ -185,19 +183,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getGridUrl()
-	{
-		return $this->getUrl('*/*/grid', ['_current' => true]);
-	}
-
 
 	public function getRowUrl($row)
 	{
 		return $this->getUrl(
-			'*/*/edit',
+			'dotdigitalgroup_email/*/edit',
 			['id' => $row->getId()]
 		);
 	}

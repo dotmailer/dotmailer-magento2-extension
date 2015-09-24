@@ -2,10 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Catalog;
 
-use Dotdigitalgroup\Email\Controller\Adminhtml\Catalog as CatalogController;
 use Magento\Framework\Controller\ResultFactory;
 
-class MassDelete extends CatalogController
+class MassDelete extends \Magento\Backend\App\Action
 {
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect

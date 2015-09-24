@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="dotdigitalgroup.eamil.contact.grid.container">
+            <block class="Magento\Backend\Block\Widget\Grid" name="dotdigitalgroup.email.importer.grid" as="grid">
+                <arguments>
+                    <argument name="id" xsi:type="string">importerGrid</argument>
+                    <argument name="dataSource" xsi:type="object">Dotdigitalgroup\Email\Email\Resource\Importer\Collection</argument>
+                    <argument name="default_sort" xsi:type="string">id</argument>
+                    <argument name="default_dir" xsi:type="string">DESC</argument>
+                </arguments>
+                <block class="Magento\Backend\Block\Widget\Grid\ColumnSet" name="dotdigitalgroup.email.contact.grid.columnSet" as="grid.columnSet">
+                    <arguments>
+                        <argument name="rowUrl" xsi:type="array">
+                            <item name="path" xsi:type="string">dotdigitalgroup_email/*/edit</item>
+                            <item name="extraParamsTemplate" xsi:type="array">
+                                <item name="email_contact_id" xsi:type="string">getId</item>
+                            </item>
+                        </argument>
+                    </arguments>
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="email_contact_id">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Importer ID</argument>
+                            <argument name="index" xsi:type="string">email_contact_id</argument>
+                            <argument name="column_css_class" xsi:type="string">col-id</argument>
+                            <argument name="header_css_class" xsi:type="string">col-id</argument>
+                        </arguments>
+                    </block>
+                    <!--<block class="Magento\Backend\Block\Widget\Grid\Column" as="event">-->
+                    <!--<arguments>-->
+                    <!--<argument name="header" xsi:type="string" translate="true">Event</argument>-->
+                    <!--<argument name="index" xsi:type="string">event</argument>-->
+                    <!--</arguments>-->
+                    <!--</block>-->
+                    <!--<block class="Magento\Backend\Block\Widget\Grid\Column" as="url">-->
+                    <!--<arguments>-->
+                    <!--<argument name="header" xsi:type="string" translate="true">Url</argument>-->
+                    <!--<argument name="index" xsi:type="string">url</argument>-->
+                    <!--</arguments>-->
+                    <!--</block>-->
+                </block>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

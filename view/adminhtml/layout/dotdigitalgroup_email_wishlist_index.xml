@@ -6,7 +6,7 @@
     <update handle="dotdigitalgroup_email_wishlist_grid_block"/>
     <body>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Wishlist" name="dotdigitalgroup_email_email_wishlist.grid.container" template="Magento_Backend::widget/grid/container/empty.phtml"/>
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Wishlist" name="dotdigitalgroup.email.wishlist.grid.container"/>
         </referenceContainer>
     </body>
 </page>

@@ -12,7 +12,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	protected $moduleManager;
 	protected $_gridFactory;
 	protected $_objectManager;
-	protected $_catalogFactory;
+	protected $_collectionFactory;
 
 	/**
 	 * @param \Magento\Backend\Block\Template\Context $context
@@ -25,12 +25,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	public function __construct(
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
-		\Dotdigitalgroup\Email\Model\CatalogFactory $gridFactory,
+		\Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $gridFactory,
 		\Magento\Framework\Module\Manager $moduleManager,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	) {
-		$this->_catalogFactory = $gridFactory;
+		$this->_collectionFactory = $gridFactory;
 		$this->_objectManager = $objectManagerInterface;
 		$this->moduleManager = $moduleManager;
 		parent::__construct($context, $backendHelper, $data);
@@ -45,8 +45,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->setId('catalog');
 		$this->setDefaultSort('id');
 		$this->setDefaultDir('DESC');
-		$this->setSaveParametersInSession(true);
-		$this->setUseAjax(true);
 	}
 
 	/**
@@ -54,11 +52,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected function _prepareCollection()
 	{
-		$collection = $this->_catalogFactory->create()->getCollection();
+		$collection = $this->_collectionFactory->create();
 		$this->setCollection($collection);
 
-		parent::_prepareCollection();
-		return $this;
+		return parent::_prepareCollection();
 	}
 
 	/**
@@ -150,19 +147,13 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getGridUrl()
-	{
-		return $this->getUrl('*/*/grid', ['_current' => true]);
-	}
+
 
 
 	public function getRowUrl($row)
 	{
 		return $this->getUrl(
-			'*/*/edit',
+			'dotdigitalgroup_email/*/*',
 			['id' => $row->getId()]
 		);
 	}

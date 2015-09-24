@@ -1,9 +1,0 @@
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
-    <type name="Magento\Framework\Module\Updater\SetupFactory">
-        <arguments>
-            <argument name="resourceTypes" xsi:type="array">
-                <item name="ddg_automation_setup" xsi:type="string">Magento\Customer\Model\Resource\Setup</item>
-            </argument>
-        </arguments>
-    </type>
-</config>

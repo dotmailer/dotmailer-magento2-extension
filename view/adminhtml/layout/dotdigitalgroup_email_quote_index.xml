@@ -6,7 +6,7 @@
     <update handle="dotdigitalgroup_email_quote_grid_block"/>
     <body>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Quote" name="dotdigitalgroup_email_email_quote.grid.container" template="Magento_Backend::widget/grid/container/empty.phtml"/>
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Quote" name="dotdigitalgroup.email.quote.grid.container"/>
         </referenceContainer>
     </body>
 </page>

@@ -116,7 +116,7 @@ class Product
 
 	    $this->image_path           = $this->_mediaConfigFactory->create()
 		    ->getMediaUrl($product->getSmallImage());
-	    
+
         $stock = $this->_itemFactory->create()
 	        ->loadByProduct($product);
 	    $this->stock                = (float) number_format($stock->getQty(), 2, '.', '' );

@@ -6,7 +6,7 @@
     <update handle="dotdigitalgroup_email_review_grid_block"/>
     <body>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Review" name="dotdigitalgroup_email_email_review.grid.container" template="Magento_Backend::widget/grid/container/empty.phtml"/>
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Review" name="dotdigitalgroup.email.review.grid.container"/>
         </referenceContainer>
     </body>
 </page>

@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Contact;
 
+use Magento\Backend\App\Action;
+
 class Edit extends \Magento\Backend\App\Action
 {
 	/**
@@ -16,11 +18,15 @@ class Edit extends \Magento\Backend\App\Action
 	 */
 	protected $resultPageFactory;
 
+	/**
+	 * @param Action\Context $context
+	 * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+	 * @param \Magento\Framework\Registry $registry
+	 */
 	public function __construct(
-		\Magento\Backend\App\Action\Context $context,
+		Action\Context $context,
 		\Magento\Framework\View\Result\PageFactory $resultPageFactory,
 		\Magento\Framework\Registry $registry
-
 	) {
 		$this->resultPageFactory = $resultPageFactory;
 		$this->_coreRegistry = $registry;
@@ -32,8 +38,9 @@ class Edit extends \Magento\Backend\App\Action
 	 */
 	protected function _isAllowed()
 	{
-		return true;
+		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::save');
 	}
+
 	/**
 	 * Init actions
 	 *
@@ -46,27 +53,26 @@ class Edit extends \Magento\Backend\App\Action
 		$resultPage = $this->resultPageFactory->create();
 		$resultPage->setActiveMenu('Dotdigitalgroup_Email::contact')
 		           ->addBreadcrumb(__('Contact'), __('Contact'))
-		           ->addBreadcrumb(__('Manage Contact'), __('Manage Contact'));
+		           ->addBreadcrumb(__('Reports'), __('Reports'));
 		return $resultPage;
 	}
 
 	/**
-	 * Edit grid record
+	 * Edit Blog post
 	 *
 	 * @return \Magento\Backend\Model\View\Result\Page|\Magento\Backend\Model\View\Result\Redirect
 	 * @SuppressWarnings(PHPMD.NPathComplexity)
 	 */
 	public function execute()
 	{
-		// 1. Get ID and create model
-		$contactId = $this->getRequest()->getParam('email_contact_id');
-		$contactModel = $this->_objectManager->create('\Dotdigitalgroup\Email\Model\Contact');
+		return $this->_redirect('dotdigitalgroup/*/*');
+		$id = $this->getRequest()->getParam('email_contact_id');
+		$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact');
 
-		// 2. Initial checking
-		if ($contactId) {
-			$contactModel->load($contactId);
-			if (!$contactModel->getId()) {
-				$this->messageManager->addError(__('This contact record no longer exists.'));
+		if ($id) {
+			$model->load($id);
+			if (!$model->getId()) {
+				$this->messageManager->addError(__('This contact no longer exists.'));
 				/** \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
 				$resultRedirect = $this->resultRedirectFactory->create();
 
@@ -74,29 +80,22 @@ class Edit extends \Magento\Backend\App\Action
 			}
 		}
 
-		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Contact')->syncContact($contactId);
-
-		$resultRedirect = $this->resultRedirectFactory->create();
-
-		// 3. Set entered data if was error when we do save
 		$data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
 		if (!empty($data)) {
-			$contactModel->setData($data);
+			$model->setData($data);
 		}
 
-		// 4. Register model to use later in blocks
-		$this->_coreRegistry->register('email_contact_data', $contactModel);
+		$this->_coreRegistry->register('email_contact', $model);
 
-		// 5. Build edit form
 		/** @var \Magento\Backend\Model\View\Result\Page $resultPage */
 		$resultPage = $this->_initAction();
 		$resultPage->addBreadcrumb(
-			$contactId ? __('Edit Post') : __('New Contact'),
-			$contactId ? __('Edit Post') : __('New Contact')
+			$id ? __('Edit Contact ') : __('New Contact'),
+			$id ? __('Edit Contact ') : __('New Contact')
 		);
 		$resultPage->getConfig()->getTitle()->prepend(__('Contacts'));
 		$resultPage->getConfig()->getTitle()
-			->prepend($contactModel->getId() ? $contactModel->getTitle() : __('New Contact'));
+		           ->prepend($model->getId() ? $model->getTitle() : __('New Contacts'));
 
 		return $resultPage;
 	}

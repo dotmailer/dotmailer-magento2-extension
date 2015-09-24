@@ -35,7 +35,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		\Magento\Framework\Module\Manager $moduleManager,
 		array $data = []
 	) {
-		$this->_contactCollection = $collectionFactory;
+		$this->_collectionFactory = $collectionFactory;
 		$this->_contactFactory = $gridFactory;
 		$this->_importerFactory = $importerFactory;
 		$this->moduleManager = $moduleManager;
@@ -52,9 +52,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->setId('contact');
 		$this->setDefaultSort('email_contact_id');
 		$this->setDefaultDir('DESC');
-		$this->setSaveParametersInSession(true);
-		$this->setUseAjax(true);
-		//$this->setVarNameFilter('grid_record');
 	}
 
 	/**
@@ -62,11 +59,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected function _prepareCollection()
 	{
-		$collection = $this->_contactFactory->create()->getCollection();
+		$collection = $this->_collectionFactory->create();
 		$this->setCollection($collection);
 
-		parent::_prepareCollection();
-		return $this;
+		return parent::_prepareCollection();
 	}
 
 	/**
@@ -175,19 +171,20 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		return parent::_prepareColumns();
 	}
 
+
 	/**
 	 * @return $this
 	 */
 	protected function _prepareMassaction()
 	{
-		$this->setMassactionIdField('email_contact_id');
-		$this->getMassactionBlock()->setFormFieldName('email_contact_id');
+		$this->setMassactionIdField('id');
+		$this->getMassactionBlock()->setFormFieldName('id');
 
 		$this->getMassactionBlock()->addItem(
 			'delete',
 			[
 				'label' => __('Delete'),
-				'url' => $this->getUrl('dotdigitalgroup_email/*/massDelete'),
+				'url' => $this->getUrl('*/*/massDelete'),
 				'confirm' => __('Are you sure?')
 			]
 		);
@@ -196,19 +193,13 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getGridUrl()
-	{
-		return $this->getUrl('dotdigitalgroup_email/*/grid', ['_current' => true]);
-	}
+
 
 
 	public function getRowUrl($row)
 	{
 		return $this->getUrl(
-			'dotdigitalgroup_email/*/edit',
+			'dotdigitalgroup_email/*/*',
 			['email_contact_id' => $row->getId()]
 		);
 	}

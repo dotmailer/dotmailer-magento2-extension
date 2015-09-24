@@ -7,15 +7,14 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
 	protected $_coreRegistry = null;
 
 	/**
-	 *      * Initialize blog post edit block
 	 *      *
 	 *      * @return void
 	 *      */
 	protected function _construct()
 	{
 		$this->_objectId   = 'email_contact_id';
-		$this->_blockGroup = 'dotdigitalgroup_email';
-		$this->_controller = 'adminhtml_contact';
+		$this->_blockGroup = 'Dotdigitalgroup_Email';
+		$this->_controller = 'dotdigitalgroup_email_contact';
 
 		parent::_construct();
 

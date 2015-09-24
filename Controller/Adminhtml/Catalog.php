@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 use Magento\Backend\App\Action;
 use Magento\Framework\Controller\ResultFactory;
 
-abstract class Catalog extends Action
+abstract class Catasslog extends Action
 {
 
 

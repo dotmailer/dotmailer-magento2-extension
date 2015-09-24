@@ -369,14 +369,14 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="wishlist_report" type="button" sortOrder="120" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Contact</frontend_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Wishlist</frontend_model>
                 </field>
                 <field id="review_enabled" type="select" sortOrder="130" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Review Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="review_report" type="button" sortOrder="140" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Wishlist</frontend_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Review</frontend_model>
                 </field>
                 <field id="catalog_enabled" type="select" sortOrder="150" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Catalog Enabled</label>

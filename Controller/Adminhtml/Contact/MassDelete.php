@@ -2,23 +2,23 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Contact;
 
-use Dotdigitalgroup\Email\Controller\Adminhtml\Contact as ContactController;
 use Magento\Framework\Controller\ResultFactory;
 
-class MassDelete extends ContactController
+class MassDelete extends \Magento\Backend\App\Action
 {
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
 	 */
 	public function execute()
 	{
-		$ids = $this->getRequest()->getParam('email_contact_id');
+		$ids = $this->getRequest()->getParam('id');
+
 		if (!is_array($ids)) {
-			$this->messageManager->addError(__('Please select contacts.'));
+			$this->messageManager->addError(__('Please select contact.'));
 		} else {
 			try {
 				foreach ($ids as $id) {
-					$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->load($ids);
+					$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->load($id);
 					$model->delete();
 				}
 				$this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));

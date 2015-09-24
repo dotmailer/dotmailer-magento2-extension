@@ -10,64 +10,43 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Index extends   \Magento\Backend\App\AbstractAction
 {
-	protected $scopeConfig;
-	/**
-	 * @var \Magento\Framework\View\Result\PageFactory
-	 */
 	protected $resultPageFactory;
-
-	/**
-	 * @var \Magento\Backend\Model\View\Result\Page
-	 */
-	protected $resultPage;
 
 	/**
 	 * @param Context $context
 	 * @param PageFactory $resultPageFactory
-	 * @param ScopeConfigInterface $scopeConfig
 	 */
 	public function __construct(
 		Context $context,
-		PageFactory $resultPageFactory,
-		ScopeConfigInterface $scopeConfig
-	)
-	{
+		PageFactory $resultPageFactory
+	) {
 		parent::__construct($context);
 		$this->resultPageFactory = $resultPageFactory;
-		$this->scopeConfig = $scopeConfig;
+	}
+	/**
+	 * Check the permission to run it
+	 *
+	 * @return bool
+	 */
+	protected function _isAllowed()
+	{
+		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::automation');
 	}
 
+	/**
+	 * Index action
+	 *
+	 * @return \Magento\Backend\Model\View\Result\Page
+	 */
 	public function execute()
 	{
-		$this->setPageData();
-		$this->_view->getPage()->getConfig()->getTitle()->prepend(__('Automation Enrollment'));
-
-		return $this->getResultPage();
-    }
-
-	/**
-	 * instantiate result page object
-	 *
-	 * @return \Magento\Backend\Model\View\Result\Page|\Magento\Framework\View\Result\Page
-	 */
-	public function getResultPage()
-	{
-		if (is_null($this->resultPage)) {
-			$this->resultPage = $this->resultPageFactory->create();
-		}
-		return $this->resultPage;
-	}
-
-	/**
-	 * set page data
-	 *
-	 * @return $this
-	 */
-	protected function setPageData()
-	{
-		$resultPage = $this->getResultPage();
+		/** @var \Magento\Backend\Model\View\Result\Page $resultPage */
+		$resultPage = $this->resultPageFactory->create();
 		$resultPage->setActiveMenu('Dotdigitalgroup_Email::automation');
-		$resultPage->getConfig()->getTitle()->set((__('Automaiton Status')));
-		return $this;
+		$resultPage->addBreadcrumb(__('Automation'), __('Automation'));
+		$resultPage->addBreadcrumb(__('Reports'), __('Reports'));
+		$resultPage->getConfig()->getTitle()->prepend(__('Automation Report'));
+
+		return $resultPage;
 	}
 }

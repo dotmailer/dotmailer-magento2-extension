@@ -1,48 +1,28 @@
 <?php
-namespace Sample\News\Controller\Adminhtml\Author;
 
-use Sample\News\Controller\Adminhtml\Author;
+namespace Dotdigitalgroup\Email\Controller\Adminhtml\Contact;
 
-class Delete extends Author
+class Delete extends \SweetTooth\Webhook\Controller\Adminhtml\System\Webhook
 {
     /**
+     * Delete Action
+     *
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     public function execute()
     {
+        $webhook = $this->_initWebhook();
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
-        $id = $this->getRequest()->getParam('author_id');
-        if ($id) {
-            $name = "";
+        if ($webhook->getId()) {
             try {
-                /** @var \Sample\News\Model\Author $author */
-                $author = $this->authorFactory->create();
-                $author->load($id);
-                $name = $author->getName();
-                $author->delete();
-                $this->messageManager->addSuccess(__('The author has been deleted.'));
-                $this->_eventManager->dispatch(
-                    'adminhtml_sample_news_author_on_delete',
-                    ['name' => $name, 'status' => 'success']
-                );
-                $resultRedirect->setPath('sample_news/*/');
-                return $resultRedirect;
+                $webhook->delete();
+                $this->messageManager->addSuccess(__('You deleted the webhook.'));
             } catch (\Exception $e) {
-                $this->_eventManager->dispatch(
-                    'adminhtml_sample_news_author_on_delete',
-                    ['name' => $name, 'status' => 'fail']
-                );
-                // display error message
                 $this->messageManager->addError($e->getMessage());
-                // go back to edit form
-                $resultRedirect->setPath('sample_news/*/edit', ['author_id' => $id]);
-                return $resultRedirect;
+                return $resultRedirect->setPath('adminhtml/*/edit', ['_current' => true]);
             }
         }
-        // display error message
-        $this->messageManager->addError(__('We can\'t find a author to delete.'));
-        // go to grid
-        $resultRedirect->setPath('sample_news/*/');
-        return $resultRedirect;
+        return $resultRedirect->setPath('adminhtml/*/');
     }
 }

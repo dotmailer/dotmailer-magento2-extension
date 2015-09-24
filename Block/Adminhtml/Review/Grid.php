@@ -25,7 +25,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	public function __construct(
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
-		\Dotdigitalgroup\Email\Model\ReviewFactory $gridFactory,
+		\Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $gridFactory,
 		\Magento\Framework\Module\Manager $moduleManager,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
@@ -45,8 +45,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->setId('review');
 		$this->setDefaultSort('id');
 		$this->setDefaultDir('DESC');
-		$this->setSaveParametersInSession(true);
-		$this->setUseAjax(true);
 	}
 
 	/**
@@ -54,7 +52,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected function _prepareCollection()
 	{
-		$collection = $this->_reviewFactory->create()->getCollection();
+		$collection = $this->_reviewFactory->create();
 		$this->setCollection($collection);
 
 		parent::_prepareCollection();
@@ -115,7 +113,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 		return parent::_prepareColumns();
 	}
-
 	/**
 	 * Callback action for the imported subscribers/contacts.
 	 *
@@ -154,19 +151,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getGridUrl()
-	{
-		return $this->getUrl('*/*/grid', ['_current' => true]);
-	}
-
 
 	public function getRowUrl($row)
 	{
 		return $this->getUrl(
-			'*/*/edit',
+			'dotdigitalgroup_email/*/edit',
 			['id' => $row->getId()]
 		);
 	}

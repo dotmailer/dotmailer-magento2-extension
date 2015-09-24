@@ -23,7 +23,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
-		\Dotdigitalgroup\Email\Model\CampaignFactory $gridFactory,
+		\Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $gridFactory,
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
 		\Magento\Framework\Module\Manager $moduleManager,
@@ -45,8 +45,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->setId('id');
 		$this->setDefaultSort('entity_id');
 		$this->setDefaultDir('DESC');
-		$this->setSaveParametersInSession(true);
-		$this->setUseAjax(true);
 	}
 
 	/**
@@ -54,11 +52,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected function _prepareCollection()
 	{
-		$collection = $this->_campaignFactory->create()->getCollection();
+		$collection = $this->_campaignFactory->create();
 		$this->setCollection($collection);
 
-		parent::_prepareCollection();
-		return $this;
+		return parent::_prepareCollection();
 	}
 
 	protected function _prepareColumns()
@@ -141,10 +138,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'escape'    => true
 		));
 
-		//$this->addExportType('*/*/exportCsv', Mage::helper('ddg')->__('CSV'));
 		return parent::_prepareColumns();
 	}
-
 	/**
 	 * Callback action for the imported subscribers/contacts.
 	 *
@@ -178,19 +173,13 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->getMassactionBlock()->addItem('re-create', ['label'=> __('Recreate'),'url'=>$this->getUrl('*/*/massRecreate')]);
 		return $this;
 	}
-	/**
-	 * @return string
-	 */
-	public function getGridUrl()
-	{
-		return $this->getUrl('*/*/grid', ['_current' => true]);
-	}
+
 
 
 	public function getRowUrl($row)
 	{
 		return $this->getUrl(
-			'*/*/edit',
+			'dotdigitalgroup_email/*/edit',
 			['id' => $row->getId()]
 		);
 	}
