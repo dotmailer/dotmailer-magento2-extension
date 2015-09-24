@@ -67,9 +67,9 @@ class Observer
 					$contactEmail->setSubscriberStatus( $subscriberStatus )
 						->setIsSubscriber('1');
 					$apiContact = $client->postContacts( $email );
-
 					//resubscribe suppressed contacts
 					if (isset($apiContact->message) && $apiContact->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
+						$apiContact = $client->getContactByEmail($email);
 						$client->postContactsResubscribe( $apiContact );
 					}
 				}
