@@ -64,11 +64,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 	protected function _prepareColumns()
 	{
-		$this->addColumn('order_id', array(
+		$this->addColumn('email_order_id', array(
 			'header'        => __('Order ID'),
 			'align'         => 'left',
 			'width'         => '50px',
-			'index'         => 'order_id',
+			'index'         => 'email_order_id',
 			'type'          => 'number',
 			'escape'        => true
 		))->addColumn('store_id', array(

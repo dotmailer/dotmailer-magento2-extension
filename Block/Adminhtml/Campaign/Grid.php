@@ -169,8 +169,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			)
 		);
 
-		$this->getMassactionBlock()->addItem('resend', ['label'=>  __('Resend'),'url'=> $this->getUrl('*/*/massResend')]);
-		$this->getMassactionBlock()->addItem('re-create', ['label'=> __('Recreate'),'url'=>$this->getUrl('*/*/massRecreate')]);
+		//$this->getMassactionBlock()->addItem('resend', ['label'=>  __('Resend'),'url'=> $this->getUrl('*/*/massResend')]);
+		//$this->getMassactionBlock()->addItem('re-create', ['label'=> __('Recreate'),'url'=>$this->getUrl('*/*/massRecreate')]);
 		return $this;
 	}
 

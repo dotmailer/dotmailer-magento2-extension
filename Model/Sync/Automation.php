@@ -60,8 +60,10 @@ class Automation
 		$automationCollection->getSelect()->group( 'automation_type' );
 		//active types
 		$automationTypes = $automationCollection->getColumnValues( 'automation_type' );
+
 		//send the campaign by each types
 		foreach ( $automationTypes as $type ) {
+
 			$contacts = array();
 			//reset the collection
 			$automationCollection = $this->_automationFactory->create()

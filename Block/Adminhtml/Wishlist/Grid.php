@@ -43,7 +43,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	{
 		parent::_construct();
 		$this->setId('wishlist');
-		$this->setDefaultSort('id');
+		$this->setDefaultSort('wishlist_id');
 		$this->setDefaultDir('DESC');
 	}
 

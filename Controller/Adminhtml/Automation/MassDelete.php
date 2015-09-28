@@ -2,10 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Automation;
 
-use Dotdigitalgroup\Email\Controller\Adminhtml\Automation as AutomationController;
 use Magento\Framework\Controller\ResultFactory;
 
-class MassDelete extends AutomationController
+class MassDelete extends \Magento\Backend\App\Action
 {
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
@@ -13,7 +12,6 @@ class MassDelete extends AutomationController
 	public function execute()
 	{
 		$searchIds = $this->getRequest()->getParam('id');
-
 		if (!is_array($searchIds)) {
 			$this->messageManager->addError(__('Please select automation.'));
 		} else {

@@ -189,7 +189,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			]
 		);
 
-
 		return $this;
 	}
 

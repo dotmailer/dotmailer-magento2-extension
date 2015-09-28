@@ -43,7 +43,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	{
 		parent::_construct();
 		$this->setId('id');
-		$this->setDefaultSort('entity_id');
+		$this->setDefaultSort('id');
 		$this->setDefaultDir('DESC');
 	}
 
@@ -163,12 +163,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	protected function _prepareMassaction()
 	{
 		$this->setMassactionIdField('id');
-		$this->getMassactionBlock()->setFormFieldName('automation');
-		$this->getMassactionBlock()->addItem('resend', array(
-			'label' => __('Resend'),
-			'url' => $this->getUrl('*/*/massResend'),
+		$this->getMassactionBlock()->setFormFieldName('id');
 
-		));
 		$this->getMassactionBlock()->addItem('delete', array(
 			'label'=> __('Delete'),
 			'url'  => $this->getUrl('*/*/massDelete'),
