@@ -9,8 +9,22 @@ class Observer
 	protected $_logger;
 	protected $_storeManager;
 	protected $_objectManager;
+	protected $_wishlistFactory;
+	protected $_customerFactory;
+	protected $_contactFactory;
+	protected $_automationFactory;
+	protected $_proccessorFactory;
+	protected $_reviewFactory;
+	protected $_wishlist;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
+		\Magento\Wishlist\Model\WishlistFactory $wishlist,
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+		\Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
+		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+		\Magento\Customer\Model\CustomerFactory $customerFactory,
+		\Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Psr\Log\LoggerInterface $loggerInterface,
@@ -18,6 +32,13 @@ class Observer
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_reviewFactory = $reviewFactory;
+		$this->_wishlist = $wishlist;
+		$this->_contactFactory = $contactFactory;
+		$this->_proccessorFactory  = $proccessorFactory;
+		$this->_automationFactory = $automationFactory;
+		$this->_customerFactory = $customerFactory;
+		$this->_wishlistFactory = $wishlistFactory;
 		$this->_helper = $data;
 		$this->_logger = $loggerInterface;
 		$this->_storeManager = $storeManagerInterface;
@@ -46,8 +67,8 @@ class Observer
 				return $this;
 			}
 			$this->_registry->register($email . '_customer_save', $email);
-			$emailBefore = $this->_objectManager->create('Magento\Customer\Model\Customer')->load($customer->getId())->getEmail();
-			$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->loadByCustomerEmail($emailBefore, $websiteId);
+			$emailBefore = $this->_customerFactory->create()->load($customer->getId())->getEmail();
+			$contactModel = $this->_contactFactory->create()->loadByCustomerEmail($emailBefore, $websiteId);
 			//email change detection
 			if ($email != $emailBefore) {
 				$this->_helper->log('email change detected : '  . $email . ', after : ' . $emailBefore .  ', website id : ' . $websiteId);
@@ -117,7 +138,8 @@ class Observer
 			if (!$programId)
 				return $this;
 			$email      = $customer->getEmail();
-			$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
+			$automation = $this->_automationFactory->create();
+			//save automation for new customer
 			$automation->setEmail( $email )
 				->setAutomationType( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_CUSTOMER )
 				->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
@@ -129,7 +151,7 @@ class Observer
 
 			$automation->save();
 		}catch(\Exception $e) {
-			$this->_helper->log($e->getMessage());
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 
 		return $this;
@@ -154,18 +176,21 @@ class Observer
 		if ($apiEnabled && $customerSync) {
 			try {
 				//register in queue with importer
-				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+				$check = $this->_proccessorFactory->create()->registerQueue(
 					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
 					$email,
 					\Dotdigitalgroup\Email\Model\Proccessor::MODE_CONTACT_DELETE,
 					$websiteId
 				);
-				$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->loadByCustomerEmail($email, $websiteId);
+				$contactModel = $this->_contactFactory->create()
+					->loadByCustomerEmail($email, $websiteId);
 				if ($contactModel->getId() && $check) {
 					//remove contact
 					$contactModel->delete();
 				}
 			} catch (\Exception $e) {
+				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+
 			}
 		}
 		return $this;
@@ -187,14 +212,15 @@ class Observer
 			$store = $this->_storeManager->getStore($dataObject->getStoreId());
 			$storeName = $store->getName();
 			$website = $this->_storeManager->getStore($store)->getWebsite();
-			$customer = $this->_objectManager->create('Magento\Customer\Model\Customer')->load($customerId);
+			$customer = $this->_customerFactory->create()
+				->load($customerId);
 			//if api is not enabled
 			if (! $this->_helper->isEnabled($website))
 				return $this;
 
 			$programId = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/review_automation');
 			if ($programId) {
-				$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
+				$automation = $this->_automationFactory->create();
 				$automation->setEmail( $customer->getEmail() )
 					->setAutomationType( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_REVIEW )
 					->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
@@ -209,19 +235,21 @@ class Observer
 	}
 
 	/**
-	 * register review
+	 * register review.
 	 *
 	 * @param $review
 	 */
 	private function _registerReview($review)
 	{
 		try{
-			$emailReview = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Review');
-			$emailReview->setReviewId($review->getReviewId())
+			 $this->_reviewFactory->create()
+				->setReviewId($review->getReviewId())
 				->setCustomerId($review->getCustomerId())
 				->setStoreId($review->getStoreId())
 				->save();
 		}catch(\Exception $e){
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+
 		}
 	}
 
@@ -233,25 +261,34 @@ class Observer
 	public function wishlistSaveAfter($observer)
 	{
 		if($observer->getEvent()->getObject() instanceof \Magento\Wishlist\Model\Wishlist) {
+			//wishlist
 			$wishlist = $observer->getEvent()->getObject()->getData();
-			if (is_array($wishlist) && isset($wishlist['customer_id'])) {
-				//save wishlist info in the table
-				$this->_registerWishlist( $wishlist );
+			//required data for checking the new instance of wishlist with items in it.
+			if (is_array($wishlist) && isset($wishlist['customer_id']) && isset($wishlist['wishlist_id'])) {
+
+				$wishlistModel      = $this->_wishlist->create()->load( $wishlist['wishlist_id'] );
+				$itemsCount = $wishlistModel->getItemsCount();
+				//wishlist items found
+				if ($itemsCount) {
+					//save wishlist info in the table
+					$this->_registerWishlist( $wishlist );
+				}
 			}
 		}
 	}
 
 	/**
-	 * register wishlist
-	 *
+	 * Automation new wishlist program.
 	 * @param $wishlist
+	 *
 	 * @return $this
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	private function _registerWishlist($wishlist)
 	{
 		try{
-			$emailWishlist = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist');
-			$customer = $this->_objectManager->create('Magento\Customer\Model\Customer');
+			$emailWishlist = $this->_wishlistFactory->create();
+			$customer      = $this->_customerFactory->create();
 
 			//if wishlist exist not to save again
 			if(!$emailWishlist->getWishlist($wishlist['wishlist_id'])){
@@ -266,14 +303,15 @@ class Observer
 
 				$store = $this->_storeManager->getStore($customer->getStoreId());
 				$storeName = $store->getName();
-				$website = $this->_storeManager->getStore($store)->getWebsite();
 
 				//if api is not enabled
-				if (! $this->_helper->isEnabled($website))
+				if (! $this->_helper->isEnabled($websiteId))
 					return $this;
 				$programId     = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/wishlist_automation', $websiteId);
+				//wishlist program mapped
 				if ($programId) {
-					$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
+					$automation = $this->_automationFactory->create();
+					//save automation type
 					$automation->setEmail( $email )
 						->setAutomationType( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_WISHLIST )
 						->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
@@ -285,20 +323,23 @@ class Observer
 				}
 			}
 		}catch(\Exception $e){
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}
 
 	/**
-	 * wishlist item save after
+	 * wishlist item save after/ item delete after
 	 *
 	 */
 	public function wishlistItemSaveAfter($observer)
 	{
+
 		$object        = $observer->getEvent()->getDataObject();
-		$wishlist      = $this->_objectManager->create('Magento\Wishlist\Model\Wishlist')->load( $object->getWishlistId() );
-		$emailWishlist = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist');
+		$wishlist      = $this->_wishlist->create()->load( $object->getWishlistId() );
+		$emailWishlist = $this->_wishlistFactory->create();
 		try {
 			if ( $object->getWishlistId() ) {
+
 				$itemCount = count( $wishlist->getItemCollection() );
 				$item      = $emailWishlist->getWishlist( $object->getWishlistId() );
 
@@ -319,17 +360,19 @@ class Observer
 				}
 			}
 		} catch ( \Exception $e ) {
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}
 
 	/**
-	 * wishlist delete observer
+	 * wishlist item delete observer
 	 *
 	 */
 	public function wishlistDeleteAfter($observer)
 	{
 		$object = $observer->getEvent()->getDataObject();
-		$customer = $this->_objectManager->create('Magento\Customer\Model\Customer')->load($object->getCustomerId());
+		$customer = $this->_customerFactory->create()
+			->load($object->getCustomerId());
 		$website = $this->_storeManager->getStore($customer->getStoreId())->getWebsite();
 
 		//sync enabled
@@ -340,10 +383,11 @@ class Observer
 		if ($this->_helper->isEnabled($website->getId()) && $syncEnabled) {
 			//Remove wishlist
 			try {
-				$item = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->getWishlist($object->getWishlistId());
+				$item = $this->_wishlistFactory->create()
+					->getWishlist($object->getWishlistId());
 				if ($item->getId()) {
 					//register in queue with importer
-					$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
+					$check = $this->_proccessorFactory->create()->registerQueue(
 						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
 						array($item->getId()),
 						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
@@ -354,6 +398,7 @@ class Observer
 					}
 				}
 			} catch (\Exception $e) {
+				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 			}
 		}
 	}
