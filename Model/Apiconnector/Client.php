@@ -211,18 +211,17 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Deletes all contacts from a given address book.
+     *
      * @param $addressBookId
      * @param $contactId
-     * @return null
      */
     public function deleteAddressBookContact($addressBookId, $contactId)
     {
         $url = self::REST_ADDRESS_BOOKS . $addressBookId . '/contacts/' . $contactId;
         $this->setUrl($url)
             ->setVerb('DELETE');
-        $response = $this->execute();
-
-        return $response;
+        $this->execute();
+	    $this->_helper->log('DELETE ADDRESSBOOK : ' . $addressBookId . ', CONTACT : ' . $contactId );
     }
 
     /**

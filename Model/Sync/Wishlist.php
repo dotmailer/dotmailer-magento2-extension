@@ -11,14 +11,29 @@ class Wishlist
 	protected $_wishlistIds = array();
 	protected $_start;
 	protected $_count  = 0;
+	protected $_customerFactory;
+	protected $_proccessorFactory;
+	protected $_wishlist;
+	protected $_wishlistFactory;
+	protected $_itemFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory,
+		\Dotdigitalgroup\Email\Model\Customer\WishlistFactory $wishlistFactory,
+		\Magento\Wishlist\Model\WishlistFactory $wishlist,
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+		\Magento\Customer\Model\CustomerFactory $customerFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Resource $resource,
 		\Magento\Framework\StdLib\Datetime $datetime,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_itemFactory = $itemFactory;
+		$this->_wishlistFactory = $wishlistFactory;
+		$this->_wishlist = $wishlist;
+		$this->_proccessorFactory = $proccessorFactory;
+		$this->_customerFactory = $customerFactory;
 		$this->_helper = $helper;
 		$this->_resource = $resource;
 		$this->_datetime = $datetime;
@@ -44,13 +59,13 @@ class Wishlist
 					$websiteWishlists = $this->_wishlists[$website->getId()];
 
 					//register in queue with importer
-					$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
-						$websiteWishlists,
-						\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
-						$website->getId()
-					);
-
+					$check = $this->_proccessorFactory->create()
+						->registerQueue(
+							\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
+							$websiteWishlists,
+							\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+							$website->getId()
+						);
 					//set imported
 					if ($check) {
 						$this->_setImported($this->_wishlistIds);
@@ -76,10 +91,11 @@ class Wishlist
 
 		$collection = $this->_getWishlistToImport($website, $limit);
 		foreach($collection as $emailWishlist){
-			$customer = $this->_objectManager->create('Magento\Customer\Model\Customer')->load($emailWishlist->getCustomerId());
-			$wishlist = $this->_objectManager->create('Magento\Wishlist\Model\Wishlist')->load($emailWishlist->getWishlistId());
+			$customer = $this->_customerFactory->create()->load($emailWishlist->getCustomerId());
+			$wishlist = $this->_wishlist->create()
+				->load($emailWishlist->getWishlistId());
 			//set customer for wishlist
-			$connectorWishlist = $this->_objectManager->create('Dotdigitalgroup\Emal\Model\Customer\Wishlist')
+			$connectorWishlist = $this->_wishlistFactory->create()
 				->setCutomer($customer);
 			$connectorWishlist->setId($wishlist->getId())
 			                  ->setUpdatedAt($wishlist->getUpdatedAt());
@@ -87,7 +103,7 @@ class Wishlist
 			if ($wishListItemCollection->getSize()) {
 				foreach ($wishListItemCollection as $item) {
 					$product = $item->getProduct();
-					$wishlistItem = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Customer\Wishlist\Item')
+					$wishlistItem = $this->_itemFactory->create()
 						->setProduct($product)
 		                    ->setQty($item->getQty())
 		                    ->setPrice($product);
@@ -104,7 +120,7 @@ class Wishlist
 
 	private function _getWishlistToImport($website, $limit = 100)
 	{
-		$collection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->getCollection()
+		$collection = $this->_wishlistFactory->create()->getCollection()
                ->addFieldToFilter('wishlist_imported', array('null' => true))
                ->addFieldToFilter('store_id', array('in' => $website->getStoreIds()))
                ->addFieldToFilter('item_count', array('gt' => 0));
@@ -119,16 +135,16 @@ class Wishlist
 		$collection = $this->_getModifiedWishlistToImport($website, $limit);
 		$this->_wishlistIds = array();
 		foreach($collection as $emailWishlist){
-			$customer = $this->_objectManager->create('Magento\Customer\Model\Customer')->load($emailWishlist->getCustomerId());
-			$wishlist = $this->_objectManager->create('Magento\Wishlist\Model\Wishlist')->load($emailWishlist->getWishlistId());
-			$connectorWishlist = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Customer\Wishlist')
+			$customer = $this->_customerFactory->create()->load($emailWishlist->getCustomerId());
+			$wishlist = $this->_wishlist->create()->load($emailWishlist->getWishlistId());
+			$connectorWishlist = $this->_wishlistFactory->create()
 				->setCustomer($customer);
 			$connectorWishlist->setId($wishlist->getId());
 			$wishListItemCollection = $wishlist->getItemCollection();
 			if ($wishListItemCollection->getSize()) {
 				foreach ($wishListItemCollection as $item) {
 					$product = $item->getProduct();
-					$wishlistItem = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Customer\Wishlist\Item')
+					$wishlistItem = $this->_itemFactory->create()
 						->setProduct($product)
 	                    ->setQty($item->getQty())
 	                    ->setPrice($product);
@@ -140,12 +156,13 @@ class Wishlist
 				$this->_helper->log('---------- Start wishlist single sync ----------');
 				$this->_start = microtime(true);
 				//register in queue with importer
-				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Mode\Proccessor')->registerQueue(
-					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
-					$connectorWishlist,
-					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
-					$website->getId()
-				);
+				$check = $this->_proccessorFactory->create()
+					->registerQueue(
+						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
+						$connectorWishlist,
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
+						$website->getId()
+					);
 				if ($check) {
 					$this->_wishlistIds[] = $emailWishlist->getWishlistId();
 				}
@@ -153,12 +170,13 @@ class Wishlist
 				$this->_helper->log($message);
 			}else{
 				//register in queue with importer
-				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Mode\Proccessor')->registerQueue(
-					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
-					$connectorWishlist,
-					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
-					$website->getId()
-				);
+				$check = $this->_proccessorFactory->create()
+					->registerQueue(
+						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
+						$connectorWishlist,
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+						$website->getId()
+					);
 
 				if ($check) {
 					$this->_wishlistIds[] = $emailWishlist->getWishlistId();
@@ -173,7 +191,8 @@ class Wishlist
 
 	private function _getModifiedWishlistToImport($website, $limit = 100)
 	{
-		$collection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->getCollection()
+		$collection = $this->_wishlistFactory->create()
+			->getCollection()
                ->addFieldToFilter('wishlist_modified', 1)
                ->addFieldToFilter('store_id', array('in' => $website->getStoreIds()));
 
@@ -204,7 +223,7 @@ class Wishlist
 			else
 				$write->update($tableName, array('wishlist_imported' => 1, 'updated_at' => $nowDate), "wishlist_id IN ($ids)");
 		}catch (\Exception $e){
-
+			throw new \Magento\Framework\Exception\LocalizedException(__('Failed to save wishlist as imported'));
 		}
 	}
 }

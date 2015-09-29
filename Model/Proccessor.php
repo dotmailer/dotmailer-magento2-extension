@@ -34,50 +34,52 @@ class Proccessor
 
 	protected $_helper;
 	protected $_fileHelper;
-	protected $_objectManager;
+	protected $_importerFactory;
 
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\File $fileHelper,
-		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory $importerCollectionFactory
 
 	){
+		$this->_importerFactory = $importerFactory;
 		$this->_helper = $helper;
 		$this->_fileHelper = $fileHelper;
-		$this->_objectManager = $objectManager;
 		$this->importerCollection = $importerCollectionFactory->create();
 	}
 
 	/**
-	 * register import in queue
+	 * register import in queue.
 	 *
 	 * @param $importType
 	 * @param $importData
 	 * @param $importMode
 	 * @param $websiteId
-	 * @param bool $file
-	 * @return bool
+	 * @param bool|false $file
+	 *
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	public function registerQueue($importType, $importData, $importMode, $websiteId, $file = false)
 	{
 		try {
-			$importModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Importer');
+			$importModel = $this->_importerFactory->create();
 			if (!empty($importData))
 				$importData = serialize($importData);
-
+			//filename to be imported
 			if ($file)
 				$importModel->setImportFile($file);
 
+			//save import data
 			$importModel->setImportType($importType)
 			     ->setImportData($importData)
 			     ->setWebsiteId($websiteId)
 			     ->setImportMode($importMode)
 			     ->save();
 
-			return true;
 		} catch (\Exception $e) {
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}
 
@@ -92,8 +94,7 @@ class Proccessor
 
 		if ($item = $this->_getQueue(true)) {
 			$websiteId = $item->getWebsiteId();
-			$apiEnabled = $this->_helper->isEnabled($websiteId);
-			if ($apiEnabled) {
+			if ($this->_helper->isEnabled($websiteId)) {
 				$client = $this->_helper->getWebsiteApiClient($websiteId);
 				if (
 					$item->getImportType() == self::IMPORT_TYPE_CONTACT or

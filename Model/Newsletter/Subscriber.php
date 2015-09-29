@@ -28,8 +28,10 @@ class Subscriber
 	protected $_contactFactory;
 	protected $_subscriberFactory;
 	protected $_contactCollection;
+	protected $_proccessorFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollection,
@@ -42,6 +44,7 @@ class Subscriber
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
 	)
 	{
+		$this->_proccessorFactory = $proccessorFactory;
 		$this->_contactCollection = $contactCollection;
 		$this->_file = $file;
 		$this->_helper = $helper;
@@ -114,7 +117,7 @@ class Subscriber
 	    $subscribers = $this->_contactFactory->create()
 		    ->getSubscribersToImport($website, $limit);
 
-	    if (count($subscribers)) {
+	    if ($subscribers->getSize()) {
             $subscribersFilename = strtolower($website->getCode() . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
             //get mapped storename
 		    $subscriberStoreName = $this->_helper->getMappedStoreName($website);
@@ -124,11 +127,12 @@ class Subscriber
 		    foreach ($subscribers as $subscriber) {
                 try{
                     $email = $subscriber->getEmail();
-                    $subscriber->setSubscriberImported(1)->save();
-	                $subscriberModel = $this->_subscriberFactory->create()
+                    $subscriber->setSubscriberImported(1)
+	                    ->save();
+	                $subscriberFactory = $this->_subscriberFactory->create()
 		                ->loadByEmail($email);
 
-	                $storeName = $this->storeManager->getStore($subscriberModel->getStoreId())->getName();
+	                $storeName = $this->storeManager->getStore($subscriberFactory->getStoreId())->getName();
                     // save data for subscribers
                     $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename), array($email, 'Html', $storeName));
                     $updated++;
@@ -138,17 +142,19 @@ class Subscriber
             }
             $this->_helper->log('Subscriber filename: ' . $subscribersFilename);
             //register in queue with importer
-			$this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-                \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_SUBSCRIBERS,
-                '',
-				\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
-                $website->getId(),
-                $subscribersFilename
-            );
+			$this->_proccessorFactory->create()
+				->registerQueue(
+					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_SUBSCRIBERS,
+                    '',
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                    $website->getId(),
+                    $subscribersFilename
+				);
         }
         //add updated number for the website
         $this->_countSubscriber += $updated;
-        return $updated;
+
+	    return $updated;
     }
 
 	/**
@@ -226,8 +232,8 @@ class Subscriber
 
                         //unsubscribe from the email contact table.
                         foreach ($contactCollection as $contact) {
-                            $contact->setIsSubscriber(null)
-                                ->setSuppressed('1')->save();
+                            $contact->setSuppressed('1')
+	                            ->save();
                         }
                     }catch (\Exception $e){
 						throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

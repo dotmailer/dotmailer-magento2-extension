@@ -105,12 +105,12 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	 */
 	public function getSubscribersToImport($website, $limit = 1000)
 	{
-
 		$storeIds = $website->getStoreIds();
 		$collection = $this->getCollection()
-		                   ->addFieldToFilter('is_subscriber', array('notnull' => true))
-		                   ->addFieldToFilter('subscriber_imported', array('null' => true))
-		                   ->addFieldToFilter('store_id', array('in' => $storeIds));
+            ->addFieldToFilter('is_subscriber', array('notnull' => true))
+			->addFieldToFilter('subscriber_status', '1')
+            ->addFieldToFilter('subscriber_imported', array('null' => true))
+            ->addFieldToFilter('store_id', array('in' => $storeIds));
 
 		$collection->getSelect()->limit($limit);
 

@@ -6,65 +6,57 @@ class Observer
 {
 	protected $_helper;
 	protected $_registry;
-	protected $_logger;
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_contactFactory;
+	protected $_subscriberFactory;
 
 	public function __construct(
+		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Psr\Log\LoggerInterface $loggerInterface,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_subscriberFactory = $subscriberFactory->create();
 		$this->_contactFactory = $contactFactory;
 		$this->_helper = $data;
-		$this->_logger = $loggerInterface;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_registry = $registry;
 		$this->_objectManager = $objectManagerInterface;
 
 	}
+
 	/**
 	 * Change the subscribsion for an contact.
 	 * Add new subscribers to an automation.
 	 *
+	 * @param $observer
 	 *
 	 * @return $this
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	public function handleNewsletterSubscriberSave($observer)
 	{
-		$subscriber = $observer->getEvent()->getSubscriber();
-		$email              = $subscriber->getEmail();
-		$storeId            = $subscriber->getStoreId();
-		$subscriberStatus   = $subscriber->getSubscriberStatus();
-		$websiteId = $this->_storeManager->getStore($subscriber->getStoreId())->getWebsiteId();
-
+		$subscriber     = $observer->getEvent()->getSubscriber();
+		$email          = $subscriber->getEmail();
+		$storeId        = $subscriber->getStoreId();
+		$websiteId      = $this->_storeManager->getStore($subscriber->getStoreId())->getWebsiteId();
 		//check if enabled
-		$apiEnabled = $this->_helper->isEnabled($websiteId);
-		if ( ! $apiEnabled)
+		if ( ! $this->_helper->isEnabled($websiteId))
 			return $this;
 
 		try{
-			// fix for a multiple hit of the observer
-			$emailReg =  $this->_registry->registry($email . '_subscriber_save');
-			if ($emailReg){
-				return $this;
-			}
-			$this->_registry->register($email . '_subscriber_save', $email);
-
 			$contactEmail = $this->_contactFactory->create()->loadByCustomerEmail($email, $websiteId);
-
 			// only for subsribers
-			if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED) {
+			if ($subscriber->isSubscribed()) {
 				$client = $this->_helper->getWebsiteApiClient($websiteId);
 				//check for website client
 				if ($client) {
 					//set contact as subscribed
-					$contactEmail->setSubscriberStatus( $subscriberStatus )
+					$contactEmail->setSubscriberStatus( $subscriber->getSubscriberStatus() )
 						->setIsSubscriber('1');
 					$apiContact = $client->postContacts( $email );
 					//resubscribe suppressed contacts
@@ -99,13 +91,21 @@ class Observer
 							return $this;
 						}
 					}
+					$addressBookId = $this->_helper->getSubscriberAddressBook( $websiteId );
 					//remove contact from address book
-					$client->deleteAddressBookContact( $this->_helper->getSubscriberAddressBook( $websiteId ), $contactId );
+					$client->deleteAddressBookContact($addressBookId, $contactId);
 				}
 				$contactEmail->setIsSubscriber(null)
 					->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED);
 			}
 
+
+			// fix for a multiple hit of the observer. stop adding the duplicates on the automation
+			$emailReg =  $this->_registry->registry($email . '_subscriber_save');
+			if ($emailReg){
+				return $this;
+			}
+			$this->_registry->register($email . '_subscriber_save', $email);
 			//add subscriber to automation
 			$this->_addSubscriberToAutomation($email, $subscriber, $websiteId);
 
@@ -117,6 +117,7 @@ class Observer
 			$contactEmail->save();
 
 		}catch(\Exception $e){
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 		return $this;
 	}
@@ -124,8 +125,8 @@ class Observer
 	private function _addSubscriberToAutomation($email, $subscriber, $websiteId){
 
 		$storeId            = $subscriber->getStoreId();
-		$store = $this->_storeManager->getStore($storeId);
-		$programId = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/subscriber_automation', $websiteId);
+		$store              = $this->_storeManager->getStore($storeId);
+		$programId          = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/subscriber_automation', $websiteId);
 		//not mapped ignore
 		if (! $programId)
 			return;
@@ -151,6 +152,7 @@ class Observer
 				$automation->save();
 			}
 		}catch(\Exception $e){
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}
 

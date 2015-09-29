@@ -11,9 +11,6 @@ class Item
     protected   $total_value_of_product;
 
 
-	public function __construct()
-    {
-    }
 
 	public function setProduct($product)
 	{

@@ -72,8 +72,7 @@ class Observer
 			//email change detection
 			if ($email != $emailBefore) {
 				$this->_helper->log('email change detected : '  . $email . ', after : ' . $emailBefore .  ', website id : ' . $websiteId);
-				$apiEnabled = $this->_helper->isEnabled($websiteId);
-				if ($apiEnabled) {
+				if ($this->_helper->isEnabled($websiteId)) {
 					$client = $this->_helper->getWebsiteApiClient($websiteId);
 					$subscribersAddressBook = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID, $websiteId);
 					$response = $client->postContacts($emailBefore);
@@ -101,7 +100,7 @@ class Observer
 				->setCustomerId($customerId)
 				->save();
 		}catch(\Exception $e){
-			$this->_logger->critical($e->getMessage());
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 		return $this;
 	}

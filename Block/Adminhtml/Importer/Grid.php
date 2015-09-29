@@ -184,12 +184,5 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	}
 
 
-	public function getRowUrl($row)
-	{
-		return $this->getUrl(
-			'dotdigitalgroup_email/*/edit',
-			['id' => $row->getId()]
-		);
-	}
 
 }
