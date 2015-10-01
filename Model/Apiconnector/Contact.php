@@ -19,8 +19,10 @@ class Contact
 	protected $_subscriberFactory;
 	protected $_customerCollection;
 	protected $_emailCustomer;
+	protected $_proccessorFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
 		\Magento\Framework\Registry $registry,
 		\Magento\Framework\App\Resource $resource,
@@ -28,7 +30,6 @@ class Contact
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Config $config,
 		\Magento\Backend\App\Action\Context $context,
-		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -37,13 +38,13 @@ class Contact
 		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollectionFactory
 	)
 	{
+		$this->_proccessorFactory = $proccessorFactory;
 		$this->_file = $file;
 		$this->_config = $config;
 		$this->_helper = $helper;
 		$this->_registry = $registry;
 		$this->_resource = $resource;
 		$this->_scopeConfig = $scopeConfig;
-		$this->_objectManager = $objectManager;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_messageManager = $context->getMessageManager();
 		//email contact
@@ -232,19 +233,20 @@ class Contact
 		if (is_file($this->_file->getFilePath($customersFile))) {
 			if ($customerNum > 0) {
 				//register in queue with importer
-				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
-					'',
-					\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
-					$website->getId(),
-					$customersFile
-				);
+				$this->_proccessorFactory->create()
+					->registerQueue(
+						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
+						'',
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+						$website->getId(),
+						$customersFile
+					);
 				//set imported
-				if ($check) {
-					$tableName = $this->_resource->getTableName('email_contact');
-					$ids = implode(', ', $customerIds);
-					$connection->update($tableName, array('email_imported' => 1), "customer_id IN ($ids)");
-				}
+
+				$tableName = $this->_resource->getTableName('email_contact');
+				$ids = implode(', ', $customerIds);
+				$connection->update($tableName, array('email_imported' => 1), "customer_id IN ($ids)");
+
 			}
 		}
 
@@ -320,9 +322,9 @@ class Contact
 			/**
 			 * DATA.
 			 */
-			$connectorCustomer = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Customer');
-			$connectorCustomer->setMappingHash($mappedHash);
-			$connectorCustomer->setCustomerData($customer);
+			$connectorCustomer = $this->_customerFactory->create()
+				->setMappingHash($mappedHash)
+				->setCustomerData($customer);
 
 			$customers[] = $connectorCustomer;
 			foreach ($customAttributes as $data) {
@@ -356,13 +358,14 @@ class Contact
 			//import contacts
 			if ($updated > 0) {
 				//register in queue with importer
-				$this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
-					'',
-					\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
-					$website->getId(),
-					$customersFile
-				);
+				$this->_proccessorFactory->create()
+					->registerQueue(
+						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
+						'',
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+						$website->getId(),
+						$customersFile
+					);
 				$client->postAddressBookContactsImport($customersFile,   $this->_helper->getCustomerAddressBook($website));
 			}
 		}

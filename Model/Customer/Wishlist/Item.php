@@ -16,6 +16,8 @@ class Item
 	{
 		$this->setSku($product->getSku());
 		$this->setName($product->getName());
+
+		return $this;
 	}
 
     /**

@@ -1,9 +1,11 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Contact;
+namespace Dotdigitalgroup\Email\Controller\Adminhtml\Cron;
 
+use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
+
 
 class Index extends \Magento\Backend\App\Action
 {
@@ -30,7 +32,7 @@ class Index extends \Magento\Backend\App\Action
 	 */
 	protected function _isAllowed()
 	{
-		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::contact');
+		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::cron');
 	}
 
 	/**
@@ -43,10 +45,10 @@ class Index extends \Magento\Backend\App\Action
 
 		/** @var \Magento\Backend\Model\View\Result\Page $resultPage */
 		$resultPage = $this->resultPageFactory->create();
-		$resultPage->setActiveMenu('Dotdigitalgroup_Email::contact');
-		$resultPage->addBreadcrumb(__('Contacts'), __('Contacts '));
-		$resultPage->addBreadcrumb(__('Reports'), __('Reports'));
-		$resultPage->getConfig()->getTitle()->prepend(__('Contact Report'));
+		$resultPage->setActiveMenu('Dotdigitalgroup_Email::cron');
+		$resultPage->addBreadcrumb(__('Cron'), __('Cron '));
+		$resultPage->addBreadcrumb(__('Cron'), __('Cron'));
+		$resultPage->getConfig()->getTitle()->prepend(__('Cron Scheldule Report'));
 
 		return $resultPage;
 	}

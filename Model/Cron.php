@@ -52,7 +52,7 @@ class Cron
 		$this->_quoteFactory = $quoteFactory;
 		$this->_reviewFactory = $reviewFactory;
 		$this->_orderFactory = $orderFactory;
-		$this->_wishlistFactory = $wishlistFactory;
+		$this->_wishlistFactory = $wishlistFactory->create();
 		$this->_guestFactory = $guestFactory;
 		$this->_subscriberFactory = $subscriberFactory;
 		$this->_catalogFactory = $catalogFactorty;
@@ -131,9 +131,9 @@ class Cron
 	public function reviewsAndWishlist()
 	{
 		//sync reviews
-		$this->reviewSync();
+        $this->reviewSync();
 		//sync wishlist
-		$this->_wishlistFactory->create()->sync();
+		$this->_wishlistFactory->sync();
 	}
 
 	/**

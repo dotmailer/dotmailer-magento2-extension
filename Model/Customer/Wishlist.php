@@ -43,6 +43,8 @@ class Wishlist
 	{
 		$this->setCustomerId($customer->getId());
 		$this->email = $customer->getEmail();
+
+		return $this;
 	}
 
     /**
@@ -110,7 +112,8 @@ class Wishlist
         $date = new \Zend_Date($date, \Zend_Date::ISO_8601);
 
         $this->updated_at = $date->toString(\Zend_Date::ISO_8601);
-        return $this;
+
+	    return $this;
     }
 
     /**

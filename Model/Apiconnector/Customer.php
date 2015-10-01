@@ -91,9 +91,11 @@ class Customer
 				$value = call_user_func(array('self', $function));
 				$this->customerData[$key] = $value;
 			}catch (\Exception $e){
+				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 
 			}
 		}
+		return $this;
 	}
 
 	public function setEmail($email)
@@ -116,6 +118,7 @@ class Customer
 			->setOrder('review_id','DESC');
 
 		$this->reviewCollection = $collection;
+		return $this;
 	}
 
 	public function getReviewCount()
@@ -549,6 +552,7 @@ class Customer
 	public function setMappingHash($mapping_hash)
 	{
 		$this->_mapping_hash = $mapping_hash;
+		return $this;
 	}
 
 	/**
