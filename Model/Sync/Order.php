@@ -25,18 +25,21 @@ class Order
 
 	protected $_helper;
 	protected $_storeManager;
-	protected $_objectManager;
 	protected $_resource;
 	protected $_scopeConfig;
 	protected $_contactFactory;
 	protected $_orderFactory;
-	protected $_orderModel;
+	protected $_salesOrderFactory;
+	protected $_connectorOrderFactory;
 	protected $_accountFactory;
+	protected $_proccessorFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
-		\Magento\Sales\Model\OrderFactory $orderModel,
-		\Dotdigitalgroup\Email\Model\Connector\OrderFactory $orderFactory,
+		\Magento\Sales\Model\OrderFactory $salesOrderFactory,
+		\Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
+		\Dotdigitalgroup\Email\Model\OrderFactory $orderFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
@@ -45,15 +48,16 @@ class Order
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
+		$this->_proccessorFactory = $proccessorFactory;
+		$this->_connectorOrderFactory = $connectorOrderFactory;
 		$this->_accountFactory = $accountFactory;
-		$this->_orderModel = $orderModel;
+		$this->_salesOrderFactory = $salesOrderFactory;
 		$this->_orderFactory = $orderFactory;
 		$this->_contactFactory = $contactFactory;
 		$this->_helper = $helper;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_resource = $resource;
 		$this->_scopeConfig = $scopeConfig;
-		$this->_objectManager = $objectManager;
 	}
 
 	/**
@@ -81,17 +85,16 @@ class Order
 			if ($numOrders) {
 				$this->_helper->log('--------- register Order sync with importer ---------- : ' . count($orders));
 				//register in queue with importer
-				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')
+				$this->_proccessorFactory->create()
                       ->registerQueue(
                           \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
                           $orders,
                           \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
                           $website[0]
 				);
-				//if no error then set imported
-				if ($check) {
-					$this->_setImported($orderIds);
-				}
+
+				$this->_setImported($orderIds);
+
 				$this->_helper->log('----------end order sync----------');
 			}
 
@@ -100,16 +103,13 @@ class Order
 				foreach ($ordersForSingleSync as $order) {
 					$this->_helper->log('--------- register Order sync in single with importer ---------- : ' . $order->id);
 					//register in queue with importer
-					$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')
+					$this->_proccessorFactory->create()
 	                      ->registerQueue(
 	                          \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
 	                          $order,
 	                          \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
 	                          $website[0]
 	                      );
-					if (!$check) {
-						$error = true;
-					}
 					$this->_helper->log('----------end order sync in single----------');
 				}
 				//if no error then set imported
@@ -185,25 +185,24 @@ class Order
 				$orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses, true);
 			else
 				$orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses);
-		}
-		else
+		} else
 			return array();
 
 		foreach ($orderCollection as $order) {
 
 			try {
-				$orderModel = $this->_orderModel->create()->load($order->getOrderId());
+				$salesOrder = $this->_salesOrderFactory->create()->load($order->getOrderId());
 				$storeId = $order->getStoreId();
 				$websiteId = $this->_storeManager->getStore($storeId)->getWebsiteId();
 				/**
 				 * Add guest to contacts table.
 				 */
-				if ($orderModel->getCustomerIsGuest()) {
-					$this->_createGuestContact($orderModel->getCustomerEmail(), $websiteId, $storeId);
+				if ($salesOrder->getCustomerIsGuest()) {
+					$this->_createGuestContact($salesOrder->getCustomerEmail(), $websiteId, $storeId);
 				}
-				if ($orderModel->getId()) {
-					$connectorOrder = $this->_orderFactory->create()
-						->setOrder($orderModel);
+				if ($salesOrder->getId()) {
+					$connectorOrder = $this->_connectorOrderFactory->create()
+						->setOrder($salesOrder);
 					$orders[] = $connectorOrder;
 				}
 				if ($modified)
