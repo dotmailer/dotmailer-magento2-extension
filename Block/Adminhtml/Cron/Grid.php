@@ -81,10 +81,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'index'         => 'status',
 			'type'          => 'string',
 			'escape'        => true
-		))->addColumn('message', array(
-			'header'        => __('Message'),
+		))->addColumn('messages', array(
+			'header'        => __('Messages'),
 			'align'         => 'center',
-			'index'         => 'message',
+			'index'         => 'messages',
 			'type'          => 'text',
 			'escape'        => true
 		))->addColumn('created_at', array(
@@ -93,10 +93,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'index'         => 'created_at',
 			'type'          => 'datetime',
 			'escape'        => true
-		))->addColumn('schelduled_at', array(
-			'header'        => __('Schelduled At'),
+		))->addColumn('scheduled_at', array(
+			'header'        => __('Scheduled At'),
 			'align'         => 'left',
-			'index'         => 'schelduled_at',
+			'index'         => 'scheduled_at',
 			'type'          => 'datetime',
 			'escape'        => true
 		))->addColumn('executed_at', array(
