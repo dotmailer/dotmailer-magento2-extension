@@ -77,14 +77,23 @@ class Quote
 	protected $_datetime;
 	protected $_helper;
 	protected $_objectManager;
+	protected $_customerFactory;
+	protected $_productFactory;
+	protected $_setFactory;
 
 	public function __construct(
+		\Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
+		\Magento\Catalog\Model\ProductFactory $productFactory,
+		\Magento\Customer\Model\CustomerFactory $customerFactory,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
 		\Magento\Framework\Stdlib\Datetime $datetime,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_setFactory = $setFactory;
+		$this->_productFactory = $productFactory;
+		$this->_customerFactory = $customerFactory;
 		$this->_helper = $data;
 		$this->_datetime = $datetime;
 		$this->_storeManager = $storeManagerInterface;
@@ -96,9 +105,6 @@ class Quote
      */
     public function setQuote($quoteData)
     {
-	    $customerModel = $this->_objectManager->create('Magento\Customer\Model\Customer')
-            ->load($quoteData->getCustomerId());
-
         $this->id           = $quoteData->getId();
         $this->email        = $quoteData->getCustomerEmail();
         $this->store_name   = $quoteData->getStore()->getName();
@@ -170,7 +176,7 @@ class Quote
         foreach ($quoteData->getAllItems() as $productItem) {
 
             //load product by product id, for compatibility
-			$productModel = $this->_objectManager->create('Magento\Catalog\Model\Product')
+			$productModel = $this->_productFactory->create()
 				->load($productItem->getProductId());
             if ($productModel) {
                 // category names
@@ -183,7 +189,7 @@ class Quote
                     $this->categories[]['Name'] = substr( implode( ', ', $categories ), 0, 244 );
                 }
 
-	            $attributeSetModel = $this->_objectManager->create('Magento\Eav\Model\Entity\Attribute\Set');
+	            $attributeSetModel = $this->_setFactory->create();
                 $attributeSetModel->load( $productModel->getAttributeSetId() );
                 $attributeSetName = $attributeSetModel->getAttributeSetName();
                 $this->products[] = array(
@@ -297,4 +303,25 @@ class Quote
     {
         $this->custom[$field['COLUMN_NAME']] = $value;
     }
+
+	/**
+	 * @return string[]
+	 */
+	public function __sleep()
+	{
+		$properties = array_keys(get_object_vars($this));
+		$properties = array_diff($properties, ['_storeManager', '_datetime', '_helper', '_customerFactory', '_productFactory', '_attributeCollection', '_setFactory']);
+
+		return $properties;
+	}
+
+	/**
+	 * Init not serializable fields
+	 *
+	 * @return void
+	 */
+	public function __wakeup()
+	{
+
+	}
 }

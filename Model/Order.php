@@ -89,8 +89,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
         } else
             $collection->addFieldToFilter('email_imported', array('null' => true));
 
-
         $collection->getSelect()->limit($limit);
+
         return $collection;
     }
 
@@ -109,7 +109,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
             ->addFieldToFilter('store_id', array('in' => $storeIds));
 
         $collection->getSelect()->limit($limit);
-        return $collection->load();
+
+	    return $collection->load();
     }
 
 }

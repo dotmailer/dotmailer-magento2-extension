@@ -26,7 +26,14 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	 * @param PageFactory $resultPageFactory
 	 * @param ScopeConfigInterface $scopeConfig
 	 */
+	protected $configFactory;
+
+	protected $_sessionFactory;
+
+
 	public function __construct(
+		\Magento\Backend\Model\Auth\SessionFactory $sessionFactory,
+		\Dotdigitalgroup\Email\Helper\ConfigFactory $configFactory,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Dotdigitalgroup\Email\Helper\Config $config,
 		Context $context,
@@ -34,22 +41,26 @@ class Index extends   \Magento\Backend\App\AbstractAction
 		ScopeConfigInterface $scopeConfig
 	)
 	{
+		$this->_sessionFactory = $sessionFactory;
+		$this->_configFacotry = $configFactory;
 		$this->_data = $data;
 		$this->_config = $config;
-		parent::__construct($context);
 		$this->resultPageFactory = $resultPageFactory;
 		$this->scopeConfig = $scopeConfig;
+		parent::__construct($context);
 	}
 
 	public function execute()
 	{
 		// authorize or create token.
 		$token = $this->generatetokenAction();
-		$baseUrl = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Config')->getLogUserUrl();
+		$baseUrl = $this->_configFacotry->create()
+			->getLogUserUrl();
+
 		$loginuserUrl = $baseUrl  . $token . '&suppressfooter=true';
 
-		$block = $this->_view->getLayout()
-              ->createBlock('Dotdigitalgroup\Email\Helper\Config', 'connector_iframe')
+		$this->_view->getLayout()
+              ->createBlock('Magento\Backend\Block\Template', 'connector_iframe')
               ->setText(
 	              "<iframe src=" . $loginuserUrl . " width=100% height=1650 frameborder='0' scrolling='no' style='margin:0;padding: 0;display:block;'></iframe>"
               );
@@ -73,7 +84,8 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	public function generatetokenAction()
 	{
 		//check for secure url
-		$adminUser = $this->_objectManager->get('Magento\Backend\Model\Auth\Session')->getUser();
+		$adminUser = $this->_sessionFactory->create()
+			->getUser();
 		$refreshToken = $adminUser->getRefreshToken();
 
 		if ($refreshToken) {
@@ -123,7 +135,8 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	public function disconnectAction()
 	{
 		try {
-			$adminUser = $this->_objectManager->get('Magento\Backend\Model\Auth\Session')->getUser();
+			$adminUser = $this->_sessionFactory->create()
+				->getUser();
 
 			if ($adminUser->getRefreshToken()) {
 				$adminUser->setRefreshToken()
@@ -161,6 +174,7 @@ class Index extends   \Magento\Backend\App\AbstractAction
 		$resultPage = $this->getResultPage();
 		$resultPage->setActiveMenu('Dotdigitalgroup_Email::studio');
 		$resultPage->getConfig()->getTitle()->set((__('Automaiton Studio')));
+
 		return $this;
 	}
 }

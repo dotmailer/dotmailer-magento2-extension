@@ -215,6 +215,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		$this->_logger->debug($title, $context);
 	}
 
+	public function error( $title, $error )
+	{
+		$this->_logger->error($title, $error);
+	}
+
     public function getDebugEnabled()
     {
 	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED);

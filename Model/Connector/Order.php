@@ -82,28 +82,40 @@ class Order
     public $order_status;
 	protected $_datetime;
 	protected $_helper;
-	protected $_objectManager;
+	protected $_customerFactory;
+	protected $_productFactory;
+	protected $_attributeCollection;
+	protected $_setFactory;
 
 	public function __construct(
-		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
+		\Magento\Catalog\Model\Resource\Product\Attribute\CollectionFactory $attributeCollection,
+		\Magento\Catalog\Model\ProductFactory $productFactory,
+		\Magento\Customer\Model\CustomerFactory $customerFactory,
+		\Dotdigitalgroup\Email\Helper\Data $helperData,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
 		\Magento\Framework\Stdlib\Datetime $datetime,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
-		$this->_helper = $data;
+		$this->_setFactory = $setFactory;
+		$this->_attributeCollection = $attributeCollection;
+		$this->_productFactory = $productFactory;
+		$this->_customerFactory = $customerFactory;
+		$this->_helper = $helperData;
 		$this->_datetime = $datetime;
 		$this->_storeManager = $storeManagerInterface;
-		$this->_objectManager = $objectManagerInterface;
 	}
-    /**
-     * set the order information
-     */
+
+
+	/**
+	 * set the order data information
+	 * @param $orderData
+	 *
+	 * @return $this
+	 */
     public function setOrder( $orderData)
     {
-	    $customerModel = $this->_objectManager->create('Magento\Customer\Model\Customer');
-        $customerModel->load($orderData->getCustomerId());
-
         $this->id           = $orderData->getIncrementId();
         $this->quote_id     = $orderData->getQuoteId();
         $this->email        = $orderData->getCustomerEmail();
@@ -125,8 +137,10 @@ class Order
          */
 
         //@todo check if the website object is loading as it look missing
-	    $website = $this->_storeManager->getStore($orderData->getStore())->getWebsite();
+	    $website = $this->_storeManager->getStore($orderData->getStore())
+		    ->getWebsite();
         $customAttributes = $this->_helper->getConfigSelectedCustomOrderAttributes($website);
+
         if($customAttributes){
             $fields = $this->_helper->getOrderTableDescription();
             foreach($customAttributes as $customAttribute){
@@ -184,7 +198,7 @@ class Order
                 $customOptions = $this->_getOrderItemOptions($productItem);
 
 	        //load product by product id, for compatibility
-	        $productModel = $this->_objectManager->create('Magento\Catalog\Model\Product')
+	        $productModel = $this->_productFactory->create()
 		        ->load($productItem->getProductId());
 
 	        if ($productModel) {
@@ -204,6 +218,7 @@ class Order
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES,
                     $orderData->getStore()->getWebsite()
                 );
+
                 if ($configAttributes) {
                     $configAttributes = explode(',', $configAttributes);
                     //attributes from attribute set
@@ -236,9 +251,9 @@ class Order
                     }
                 }
 
-		        $attributeSetModel = $this->_objectManager->create('Magento\Eav\Model\Entity\Attribute\Set');
-		        $attributeSetModel->load( $productModel->getAttributeSetId() );
-		        $attributeSetName = $attributeSetModel->getAttributeSetName();
+		        $attributeSetName = $this->_setFactory->create()
+		            ->load( $productModel->getAttributeSetId() )
+		            ->getAttributeSetName();
 		        $this->products[] = array(
 			        'name'          => $productItem->getName(),
 			        'sku'           => $productItem->getSku(),
@@ -270,7 +285,8 @@ class Order
         $this->order_total      = (float)number_format($orderTotal, 2 , '.', '');
         $this->order_status = $orderData->getStatus();
 
-        return true;
+	    unset($this->_storeManager);
+        return $this;
     }
     /**
      * get the street name by line number
@@ -278,7 +294,7 @@ class Order
      * @param $line
      * @return string
      */
-    private  function _getStreet($street, $line)
+    protected  function _getStreet($street, $line)
     {
         $street = explode("\n", $street);
         if ($line == 1) {
@@ -303,7 +319,7 @@ class Order
 
     }
 
-    private function _getCustomAttributeValue($field, $orderData)
+    protected function _getCustomAttributeValue($field, $orderData)
     {
         $type = $field['DATA_TYPE'];
 
@@ -336,7 +352,7 @@ class Order
                     $value = $orderData->$function();
             }
         }catch (\Exception $e){
-
+			$this->_helper->debug((string)$e, array());
         }
 
         return $value;
@@ -348,7 +364,7 @@ class Order
      * @param $field
      * @param $value
      */
-    private function _assignCustom($field, $value)
+    protected function _assignCustom($field, $value)
     {
         $this->custom[$field['COLUMN_NAME']] = $value;
     }
@@ -359,10 +375,10 @@ class Order
      * @param $attributeSetId
      * @return array
      */
-    private function _getAttributesArray($attributeSetId)
+    protected function _getAttributesArray($attributeSetId)
     {
         $result = array();
-	    $attributes = $this->_objectManager->create('Magento\Catalog\Model\Product\Attribute')->getCollection()
+	    $attributes = $this->_attributeCollection->create()
             ->setAttributeSetFilter($attributeSetId)
             ->getItems();
 
@@ -379,7 +395,7 @@ class Order
      * @param $value
      * @return string
      */
-    private function _limitLength($value)
+    protected function _limitLength($value)
     {
         if (strlen($value) > 250)
             $value = substr($value, 0, 250);
@@ -390,7 +406,7 @@ class Order
     /**
      * @return array
      */
-    private function _getOrderItemOptions($orderItem)
+    protected function _getOrderItemOptions($orderItem)
     {
         $orderItemOptions = $orderItem->getProductOptions();
 
@@ -416,6 +432,27 @@ class Order
         }
 
         return $options;
-
     }
+
+
+	/**
+	 * @return string[]
+	 */
+	public function __sleep()
+	{
+		$properties = array_keys(get_object_vars($this));
+		$properties = array_diff($properties, ['_storeManager', '_datetime', '_helper', '_customerFactory', '_productFactory', '_attributeCollection', '_setFactory']);
+
+		return $properties;
+	}
+
+	/**
+	 * Init not serializable fields
+	 *
+	 * @return void
+	 */
+	public function __wakeup()
+	{
+
+	}
 }

@@ -85,13 +85,20 @@ class Order
 			if ($numOrders) {
 				$this->_helper->log('--------- register Order sync with importer ---------- : ' . count($orders));
 				//register in queue with importer
-				$this->_proccessorFactory->create()
-                      ->registerQueue(
-                          \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
-                          $orders,
-                          \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
-                          $website[0]
-				);
+				//$this->_helper->debug('orders', $orders);
+				$this->_helper->error('orders', $orders);
+				try {
+					$this->_proccessorFactory->create()
+                         ->registerQueue(
+	                         \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
+	                         $orders,
+	                         \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+	                         $website[0]
+                         );
+				}catch (\Exception $e) {
+					$this->_helper->debug((string)$e, array() );
+					throw new \Magento\Framework\Exception\LocalizedException( __( $e->getMessage() ) );
+				}
 
 				$this->_setImported($orderIds);
 
@@ -210,7 +217,10 @@ class Order
 				else
 					$this->_orderIds[] = $order->getOrderId();
 			}catch(\Exception $e){
+
+				$this->_helper->debug((string)$e, array() );
 				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+
 			}
 		}
 		return $orders;
@@ -269,6 +279,7 @@ class Order
 
 			$this->_helper->log('-- guest found : '  . $email . ' website : ' . $websiteId . ' ,store : ' . $storeId);
 		}catch(\Exception $e){
+			$this->_helper->debug((string)$e, array() );
 			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 
@@ -297,6 +308,7 @@ class Order
 			else
 				$write->update($tableName, array('email_imported' => 1, 'updated_at' => gmdate('Y-m-d H:i:s')), "order_id IN ($ids)");
 		}catch (\Exception $e){
+			$this->_helper->debug((string)$e, array() );
 			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}

@@ -65,8 +65,9 @@ class Proccessor
 	{
 		try {
 			$importModel = $this->_importerFactory->create();
-			if (!empty($importData))
+			if (!empty($importData)){
 				$importData = serialize($importData);
+			}
 			//filename to be imported
 			if ($file)
 				$importModel->setImportFile($file);
@@ -79,6 +80,7 @@ class Proccessor
 			     ->save();
 
 		} catch (\Exception $e) {
+			$this->_helper->debug((string)$e, array());
 			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}
