@@ -13,9 +13,17 @@ class Quote
 	protected $_storeManager;
 	protected $_resource;
 	protected $_scopeConfig;
+	protected $_proccessorFactory;
+	protected $_quoteFactory;
+	protected $_connectorQuoteFactory;
+	protected $_quoteCollection;
 	protected $_objectManager;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Resource\Quote\CollectionFactory $quoteCollection,
+		\Magento\Quote\Model\QuoteFactory $quoteFactory,
+		\Dotdigitalgroup\Email\Model\Connector\QuoteFactory $connectorQuoteFactory,
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -23,11 +31,15 @@ class Quote
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
+		$this->_quoteCollection = $quoteCollection;
+		$this->_objectmanager = $objectManager;
+		$this->_connectorQuoteFactory = $connectorQuoteFactory;
+		$this->_quoteFactory = $quoteFactory;
+		$this->_proccessorFactory = $proccessorFactory;
 		$this->_helper = $helper;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_resource = $resource;
 		$this->_scopeConfig = $scopeConfig;
-		$this->_objectManager = $objectManager;
 	}
 	/**
 	 * sync
@@ -37,7 +49,6 @@ class Quote
 	public function sync()
 	{
 		$response = array('success' => true, 'message' => 'Done.');
-
 		//resource allocation
 		$this->_helper->allowResourceFullExecution();
 		$websites = $this->_helper->getWebsites(true);
@@ -54,16 +65,15 @@ class Quote
 				if (isset($this->_quotes[$website->getId()])) {
 					$websiteQuotes = $this->_quotes[$website->getId()];
 					//register in queue with importer
-					$check = $this->_objectManager->create('Dotmailer\Email\Model\Proccessor')->registerQueue(
-						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
-						$websiteQuotes,
-						\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
-						$website->getId()
+					$this->_proccessorFactory->create()
+						->registerQueue(
+							\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
+							$websiteQuotes,
+							\Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+							$website->getId()
 					);
 					//set imported
-					if ($check) {
-						$this->_setImported($this->_quoteIds);
-					}
+					$this->_setImported($this->_quoteIds);
 				}
 				$message = 'Total time for quote bulk sync : ' . gmdate("H:i:s", microtime(true) - $this->_start);
 				$this->_helper->log($message);
@@ -93,12 +103,12 @@ class Quote
 
 			foreach($collection as $emailQuote){
 				$store = $this->_storeManager->getStore($emailQuote->getStoreId());
-				$quote = $this->_objectManager->create('Magento\Quote\Model\Quote')
+				$quote = $this->_quoteFactory->create()
 					->setStore($store)
 					->load($emailQuote->getQuoteId());
 				//quote found
 				if($quote->getId()) {
-					$connectorQuote = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Connector\Quote')
+					$connectorQuote = $this->_connectorQuoteFactory->create()
 						->setQuote($quote);
 					$this->_quotes[$website->getId()][] = $connectorQuote;
 				}
@@ -106,7 +116,7 @@ class Quote
 				$this->_count++;
 			}
 		}catch(\Exception $e){
-
+			$this->_helper->debug((string)$e, array());
 		}
 	}
 
@@ -120,7 +130,7 @@ class Quote
 	 */
 	private function _getQuoteToImport( $website, $limit = 100, $modified = false)
 	{
-		$collection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Quote')->getCollection()
+		$collection = $this->_quoteCollection->create()
                ->addFieldToFilter('store_id', array('in' => $website->getStoreIds()))
                ->addFieldToFilter('customer_id', array('notnull' => true));
 
@@ -132,6 +142,7 @@ class Quote
 		}
 
 		$collection->getSelect()->limit($limit);
+
 		return $collection;
 	}
 
@@ -146,20 +157,20 @@ class Quote
 			$collection = $this->_getQuoteToImport($website, $limit, true);
 			foreach ($collection as $emailQuote) {
 				//register in queue with importer
-				$check = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
-					array($emailQuote->getQuoteId()),
-					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
-					$website->getId()
-				);
-				if ($check) {
-					$this->_helper->log('Quote updated : ' . $emailQuote->getQuoteId());
-					$emailQuote->setModified(null)
-						->save();
-					$this->_count++;
-				}
+				$this->_proccessorFactory->create()
+					->registerQueue(
+						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
+						array($emailQuote->getQuoteId()),
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
+						$website->getId()
+					);
+				$this->_helper->log('Quote updated : ' . $emailQuote->getQuoteId());
+				$emailQuote->setModified(null)
+					->save();
+				$this->_count++;
 			}
 		} catch (\Exception $e) {
+			$this->_helper->debug((string)$e, array());
 		}
 	}
 
@@ -178,6 +189,7 @@ class Quote
 			$write->update($tableName, array('imported' => 1, 'updated_at' => gmdate('Y-m-d H:i:s'),
 			                                 'modified' => new \Zend_Db_Expr('null')), "quote_id IN ($ids)");
 		}catch (\Exception $e){
+			$this->_helper->debug((string)$e, array());
 		}
 	}
 }

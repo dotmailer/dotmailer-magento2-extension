@@ -215,7 +215,7 @@ class Quote
         $this->discount_amount = (float)number_format($discountAmount, 2 , '.', '');
         $this->quote_total      = (float)number_format($quoteData->getData('grand_total'), 2 , '.', '');
 
-        return true;
+        return $this;
     }
     /**
      * get the street name by line number
@@ -310,7 +310,7 @@ class Quote
 	public function __sleep()
 	{
 		$properties = array_keys(get_object_vars($this));
-		$properties = array_diff($properties, ['_storeManager', '_datetime', '_helper', '_customerFactory', '_productFactory', '_attributeCollection', '_setFactory']);
+		$properties = array_diff($properties, ['_storeManager', '_objectManager', '_storeManager', '_datetime', '_helper', '_customerFactory', '_productFactory', '_attributeCollection', '_setFactory']);
 
 		return $properties;
 	}
