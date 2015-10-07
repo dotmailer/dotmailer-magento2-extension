@@ -11,12 +11,6 @@ class Order
 	/**
 	 * @var string
 	 */
-	private $_apiUsername;
-	/**
-	 * @var string
-	 */
-	private $_apiPassword;
-
 	/**
 	 * Global number of orders
 	 * @var int
@@ -24,8 +18,6 @@ class Order
 	private $_countOrders = 0;
 
     private $_reviewCollection = array();
-    private $_orderIds;
-    private $_orderIdsForSingleSync;
 
 	protected $_helper;
 	protected $_objectManager;
@@ -34,8 +26,18 @@ class Order
 	protected $_reviewHelper;
 	protected $_storeManager;
 	public $dateTime;
+	protected $_campaignFactory;
+	protected $_campaignCollection;
+	protected $_orderCollection;
+	protected $_rulesFactory;
+	protected $_quoteCollection;
 
 	public function __construct(
+		\Magento\Quote\Model\Resource\Quote\CollectionFactory $quoteCollection,
+		\Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
+		\Magento\Sales\Model\Resource\Order\CollectionFactory $orderCollection,
+		\Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
+		\Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
 		\Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Stdlib\Datetime $datetime,
@@ -45,6 +47,11 @@ class Order
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	)
 	{
+		$this->_quoteCollection = $quoteCollection;
+		$this->_rulesFactory = $rulesFactory;
+		$this->_orderCollection = $orderCollection;
+		$this->_campaignCollection = $campaignCollection;
+		$this->_campaignFactory = $campaignFactory;
 		$this->_helper = $helper;
 		$this->_reviewHelper  = $reviewHelper;
 		$this->_resource = $resource;
@@ -86,8 +93,7 @@ class Order
                 $this->_helper->log('-- Order Review: ' . $order->getIncrementId() . ' Campaign Id: ' . $campaignId);
 
                 try {
-                    $emailCampaign = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Camapaign');
-                    $emailCampaign
+                    $emailCampaign = $this->_campaignFactory->create()
                         ->setEmail($order->getCustomerEmail())
                         ->setStoreId($order->getStoreId())
                         ->setCampaignId($campaignId)
@@ -101,6 +107,7 @@ class Order
 
                     $emailCampaign->save();
                 } catch (\Exception $e) {
+	                $this->_helper->debug((string)$e, array());
                 }
             }
         }
@@ -129,15 +136,14 @@ class Order
                 $orderStatusFromConfig = $this->_reviewHelper->getOrderStatus($website);
                 $delayInDays = $this->_reviewHelper->getDelay($website);
 
-                $campaignCollection = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Camapaign')->getCollection();
-                $campaignCollection
+                $campaignCollection = $this->_campaignCollection->create()
                     ->addFieldToFilter('event_name', 'Order Review')
                     ->load();
 
                 $campaignOrderIds = $campaignCollection->getColumnValues('order_increment_id');
 
 
-	            $fromTime = new \Zend_date();
+	            $fromTime = new \Zend_Date();
 	            $fromTime->subDay($delayInDays);
 	            $toTime = clone $fromTime;
                 $to = $toTime->toString('YYYY-MM-dd HH:mm:ss');
@@ -146,8 +152,8 @@ class Order
 
                 $created = array( 'from' => $from, 'to' => $to, 'date' => true);
 
-                $collection = $this->_objectManager->create('Magento\Sales\Order')->getCollection();
-                    $collection->addFieldToFilter('main_table.status', $orderStatusFromConfig)
+                $collection = $this->_orderCollection->create()
+                    ->addFieldToFilter('main_table.status', $orderStatusFromConfig)
                     ->addFieldToFilter('main_table.created_at', $created)
                     ->addFieldToFilter('main_table.store_id', array('in' => $storeIds));
 
@@ -155,8 +161,8 @@ class Order
                     $collection->addFieldToFilter('main_table.increment_id', array('nin' => $campaignOrderIds));
 
                 //process rules on collection
-                $ruleModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Rules');
-                $collection = $ruleModel->process(
+                $collection = $this->_rulesFactory->create()
+	                ->process(
                     $collection, \Dotdigitalgroup\Email\Model\Rules::REVIEW, $website->getId()
                 );
 
@@ -173,8 +179,8 @@ class Order
     public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer)
     {
         $storeIds = $this->_storeManager->getWebsite($customer->getWebsiteId())->getStoreIds();
-        $collection = $this->_objectManager->create('Magento\Sales\Order')->getCollection();
-        $collection->addFieldToFilter('customer_id', $customer->getId())
+        $collection = $this->_orderCollection->create()
+            ->addFieldToFilter('customer_id', $customer->getId())
             ->addFieldToFilter('store_id', array('in' => $storeIds))
             ->setPageSize(1)
             ->setOrder('entity_id');
@@ -192,8 +198,8 @@ class Order
     public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer)
     {
         $storeIds = $this->_storeManager->getWebsite($customer->getWebsiteId())->getStoreIds();
-        $collection = $this->_objectManager->create('Magento\Quote\Model\Quote')->getCollection();
-        $collection->addFieldToFilter('customer_id', $customer->getId())
+        $collection = $this->_quoteCollection->create()
+            ->addFieldToFilter('customer_id', $customer->getId())
             ->addFieldToFilter('store_id', array('in' => $storeIds))
             ->setPageSize(1)
             ->setOrder('entity_id');

@@ -70,19 +70,15 @@ class Product
     public $websites = array();
 
 	protected $_helper;
-	protected $_resource;
 	protected $_scopeConfig;
 	protected $_storeManager;
-	protected $_objectManager;
 	protected $_statusFactory;
 	protected $_visibilityFactory;
 	protected $_mediaConfigFactory;
 	protected $_itemFactory;
 
 	public function __construct(
-		$product,
 	    \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\App\Resource $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 	    \Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -95,83 +91,91 @@ class Product
 	    $this->_itemFactory = $itemFactory;
 	    $this->_mediaConfigFactory = $mediaConfigFactory;
 	    $this->_visibilityFactory = $visibilityFactory;
-	    $this->_statusFactory = $statusFactory->create();
+	    $this->_statusFactory = $statusFactory;
 	    $this->_helper = $helper;
-	    $this->_resource = $resource;
-	    $this->_objectManager = $objectManager;
 	    $this->_storeManager = $storeManagerInterface;
+    }
 
-        $this->id                   = $product->getId();
-        $this->sku                  = $product->getSku();
-        $this->name                 = $product->getName();
+	/**
+	 * Set the product data.
+	 * @param $product
+	 *
+	 * @return $this
+	 */
+	public function setProduct($product)
+	{
+		$this->id                   = $product->getId();
+		$this->sku                  = $product->getSku();
+		$this->name                 = $product->getName();
 
-	    $statuses = $this->_statusFactory->getOptionArray();
-	    $this->status               = $statuses[$product->getStatus()];
+		$statuses = $this->_statusFactory->create()
+			->getAllOptions();
+		$this->status               = (string)$statuses[$product->getStatus()]['label'];
 
-	    $options = $this->_visibilityFactory->create()->getOptionsArray();
-        $this->visibility           = $options[$product->getVisibility()];
-        $this->price                = (float) number_format($product->getPrice(), 2, '.', '' );
-        $this->special_price        = (float) number_format($product->getSpecialPrice(), 2, '.', '' );
-        $this->url                  = $product->getProductUrl();
+		$options = $this->_visibilityFactory->create()
+			->getOptionArray();
+		$this->visibility           = (string)$options[$product->getVisibility()];
+		$this->price                = (float) number_format($product->getPrice(), 2, '.', '' );
+		$this->special_price        = (float) number_format($product->getSpecialPrice(), 2, '.', '' );
+		$this->url                  = $product->getProductUrl();
 
-	    $this->image_path           = $this->_mediaConfigFactory->create()
-		    ->getMediaUrl($product->getSmallImage());
+		$this->image_path           = $this->_mediaConfigFactory->create()
+			->getMediaUrl($product->getSmallImage());
 
-        $stock = $this->_itemFactory->create()
-	        ->loadByProduct($product);
-	    $this->stock                = (float) number_format($stock->getQty(), 2, '.', '' );
+		$stock = $this->_itemFactory->create()->setProduct($product);
+		$this->stock = (float) number_format($stock->getQty(), 2, '.', '' );
 
-        $short_description = $product->getShortDescription();
-        //limit short description
-        if(strlen($short_description) > 250)
-            $short_description = substr($short_description, 0 , 250);
+		$short_description = $product->getShortDescription();
+		//limit short description
+		if(strlen($short_description) > 250)
+			$short_description = substr($short_description, 0 , 250);
 
-        $this->short_description    = $short_description;
+		$this->short_description    = $short_description;
 
-        //category data
-        $count = 0;
-        $categoryCollection = $product->getCategoryCollection()->addNameToResult();
-        foreach ($categoryCollection as $cat) {
-            $this->categories[$count]['Id'] = $cat->getId();
-            $this->categories[$count]['Name'] = $cat->getName();
-            $count++;
-        }
+		//category data
+		$count = 0;
+		$categoryCollection = $product->getCategoryCollection()->addNameToResult();
+		foreach ($categoryCollection as $cat) {
+			$this->categories[$count]['Id'] = $cat->getId();
+			$this->categories[$count]['Name'] = $cat->getName();
+			$count++;
+		}
 
-        //website data
-        $count = 0;
-        $websiteIds = $product->getWebsiteIds();
-        foreach ($websiteIds as $websiteId) {
-            $website = $this->_storeManager->getWebsite($websiteId);
-            $this->websites[$count]['Id'] = $website->getId();
-            $this->websites[$count]['Name'] = $website->getName();
-            $count++;
-        }
+		//website data
+		$count = 0;
+		$websiteIds = $product->getWebsiteIds();
+		foreach ($websiteIds as $websiteId) {
+			$website = $this->_storeManager->getWebsite($websiteId);
+			$this->websites[$count]['Id'] = $website->getId();
+			$this->websites[$count]['Name'] = $website->getName();
+			$count++;
+		}
 
-        //bundle product options
-        if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE){
-            $optionCollection       = $product->getTypeInstance()->getOptionsCollection();
-            $selectionCollection    = $product->getTypeInstance()->getSelectionsCollection($product->getTypeInstance()->getOptionsIds());
-            $options = $optionCollection->appendSelections($selectionCollection);
-            foreach($options as $option) {
+		//bundle product options
+		if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE){
+			$optionCollection       = $product->getTypeInstance()->getOptionsCollection();
+			$selectionCollection    = $product->getTypeInstance()->getSelectionsCollection($product->getTypeInstance()->getOptionsIds());
+			$options = $optionCollection->appendSelections($selectionCollection);
+			foreach($options as $option) {
 
-                $count = 0;
-                $title = str_replace(' ', '', $option->getDefaultTitle());
-                $selections = $option->getSelections();
-                $sOptions = array();
-                foreach($selections as $selection) {
+				$count = 0;
+				$title = str_replace(' ', '', $option->getDefaultTitle());
+				$selections = $option->getSelections();
+				$sOptions = array();
+				foreach($selections as $selection) {
 
-                    $sOptions[$count]['name'] = $selection->getName();
-                    $sOptions[$count]['sku'] = $selection->getSku();
-                    $sOptions[$count]['id'] = $selection->getProductId();
-                    $sOptions[$count]['price'] = (float) number_format($selection->getPrice(), 2, '.', '' );
-                    $count++;
-                }
-                $this->$title = $sOptions;
-            }
-        }
+					$sOptions[$count]['name'] = $selection->getName();
+					$sOptions[$count]['sku'] = $selection->getSku();
+					$sOptions[$count]['id'] = $selection->getProductId();
+					$sOptions[$count]['price'] = (float) number_format($selection->getPrice(), 2, '.', '' );
+					$count++;
+				}
+				$this->$title = $sOptions;
+			}
+		}
 
-        //configurable product options
-	    //@todo configurable product option is missing for mage2, cann't find TYPE_CONFIGURABLE
+		//configurable product options
+		//@todo configurable product option is missing for mage2, cann't find TYPE_CONFIGURABLE
 //        if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_CONFIGURABLE){
 //            $productAttributeOptions = $product->getTypeInstance(true)->getConfigurableAttributesAsArray($product);
 //            foreach ($productAttributeOptions as $productAttribute) {
@@ -186,8 +190,11 @@ class Product
 //                $this->$label = $options;
 //            }
 //        }
-        return true;
-    }
+
+		unset($this->_itemFactory, $this->_mediaConfigFactory, $this->_visibilityFactory, $this->_statusFactory, $this->_helper, $this->_storeManager);
+
+		return $this;
+	}
 
     /**
      * exposes the class as an array of objects.
@@ -197,4 +204,25 @@ class Product
     {
         return get_object_vars($this);
     }
+
+
+	/**
+	 * @return string[]
+	 */
+	public function __sleep()
+	{
+		$properties = array_keys(get_object_vars($this));
+		$properties = array_diff($properties, ['_storeManager', '_scopeConfig', '_objectManager', '_storeManager', '_datetime', '_helper', '_customerFactory', '_productFactory', '_attributeCollection', '_setFactory']);
+
+		return $properties;
+	}
+	/**
+	 * Init not serializable fields
+	 *
+	 * @return void
+	 */
+	public function __wakeup()
+	{
+
+	}
 }

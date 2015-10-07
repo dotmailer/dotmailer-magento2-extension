@@ -21,6 +21,7 @@ class Rating
 	public function setRating($rating)
 	{
 		$this->setRatingScore($rating->getValue());
+		return $this;
 	}
     /**
      * @param $score

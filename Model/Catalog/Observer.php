@@ -9,11 +9,16 @@ class Observer
 	protected $_logger;
 	protected $_scopeConfig;
 	protected $_storeManager;
-	protected $_objectManager;
 	protected $_catalogFactory;
 	protected $_catalogCollection;
+	protected $_proccessorFactory;
+	protected $_connectorCatalogFactory;
+	protected $_connectorContactFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory,
+		\Dotdigitalgroup\Email\Model\Resource\CatalogFactory $connectorCatalogFactory,
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
 		\Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory,
 		\Magento\Framework\Registry $registry,
@@ -24,6 +29,9 @@ class Observer
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_connectorContactFactory = $connectorContactFactory;
+		$this->_connectorCatalogFactory = $connectorCatalogFactory;
+		$this->_proccessorFactory = $proccessorFactory;
 		$this->_helper = $data;
 		$this->_registry = $registry;
 		$this->_logger = $loggerInterface;
@@ -31,7 +39,6 @@ class Observer
 		$this->_catalogFactory = $catalogFactory;
 		$this->_catalogCollection = $catalogCollectionFactory;
 		$this->_storeManager = $storeManagerInterface;
-		$this->_objectManager = $objectManagerInterface;
 	}
 
 
@@ -51,7 +58,7 @@ class Observer
 						->save();
 			}
 		}catch (\Exception $e){
-			$this->_logger->error($e->getMessage());
+			$this->_helper->debug((string)$e, array());
 		}
 	}
 
@@ -72,7 +79,7 @@ class Observer
 				$item->delete();
 			}
 		}catch (\Exception $e){
-			$this->_logger->error($e->getMessage());
+			$this->_helper->debug((string)$e, array());
 		}
 	}
 
@@ -112,11 +119,12 @@ class Observer
 			$scope = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES);
 			if($scope == 1){
 				//register in queue with importer
-				$this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CATALOG,
-					array($key),
-					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
-					\Magento\Store\Model\Store::DEFAULT_STORE_ID
+				$this->_proccessorFactory->create()
+					->registerQueue(
+						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CATALOG,
+						array($key),
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+						\Magento\Store\Model\Store::DEFAULT_STORE_ID
 				);
 			}
 			if($scope == 2){
@@ -126,11 +134,12 @@ class Observer
 					$storeCode = $store->getCode();
 
 					//register in queue with importer
-					$this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-						'Catalog_' . $websiteCode . '_' . $storeCode,
-						array($key),
-						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
-						$store->getWebsite()->getId()
+					$this->_proccessorFactory->create()
+						->registerQueue(
+							'Catalog_' . $websiteCode . '_' . $storeCode,
+							array($key),
+							\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+							$store->getWebsite()->getId()
 					);
 				}
 			}
@@ -162,7 +171,6 @@ class Observer
 			}
 		}
 
-
 		return $this;
 	}
 
@@ -181,7 +189,8 @@ class Observer
 						$configBefore = $this->_registry->registry('core_config_data_save_before');
 						if($configAfter != $configBefore){
 							//reset catalog to re-import
-							$this->_objectManager->create('Dotdigitalgroup\Email\Model\Resource\Catalog')->reset();
+							$this->_connectorCatalogFactory->create()
+								->reset();
 						}
 						$this->_registry->register('core_config_data_save_after_done', true);
 					}
@@ -195,14 +204,17 @@ class Observer
 						$configBefore = $this->_registry->registry('core_config_data_save_before_status');
 						if ($configAfter != $configBefore) {
 							//reset all contacts
-							$this->_objectManager->create('Dotdigitalgroup\Email\Model\Resource\Contact')->resetAllContacts();
+							$this->_connectorContactFactory->create()
+								->resetAllContacts();
 						}
 						$this->_registry->register('core_config_data_save_after_done_status', true);
 					}
 				}
 			}
 		}catch (\Exception $e){
+			$this->_helper->debug((string)$e, array());
 		}
+
 		return $this;
 	}
 

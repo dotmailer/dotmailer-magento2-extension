@@ -48,4 +48,10 @@
     <event name="core_config_data_save_after">
         <observer name="ddg_config_save_after" instance="Dotdigitalgroup\Email\Model\Catalog\Observer" method="handleConfigSaveAfter" />
     </event>
+    <event name="catalog_product_save_after">
+        <observer name="ddg_catalog_product_save_after" instance="Dotdigitalgroup\Email\Model\Catalog\Observer" method="handleProductSaveAfter" />
+    </event>
+    <event name="catalog_product_delete_after">
+        <observer name="ddg_catalog_product_delete_after" instance="Dotdigitalgroup\Email\Model\Catalog\Observer" method="handleProductDeleteAfter" />
+    </event>
 </config>

@@ -88,7 +88,8 @@ class Cron
 	 */
 	public function catalogSync()
 	{
-		$result = $this->_catalogFactory->create()->sync();
+		$result = $this->_catalogFactory->create()
+			->sync();
 		return $result;
 	}
 

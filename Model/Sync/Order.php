@@ -309,7 +309,6 @@ class Order
 				$write->update($tableName, array('email_imported' => 1, 'updated_at' => gmdate('Y-m-d H:i:s')), "order_id IN ($ids)");
 		}catch (\Exception $e){
 			$this->_helper->debug((string)$e, array() );
-			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}
 }

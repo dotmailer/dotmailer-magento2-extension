@@ -46,11 +46,14 @@ class Review
 
 
 	protected $_storeManager;
+	protected $_helper;
 
     public function __construct(
+	    \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     )
     {
+	    $this->_helper = $data;
 	    $this->_storeManager = $storeManagerInterface;
     }
 
@@ -58,6 +61,7 @@ class Review
 	{
 		$this->setCustomerId($customer->getId());
 		$this->email = $customer->getEmail();
+		return $this;
 	}
 
     /**
@@ -66,6 +70,7 @@ class Review
     public function setCustomerId($customer_id)
     {
         $this->customer_id = (int) $customer_id;
+	    return $this;
     }
 
     /**
@@ -240,4 +245,25 @@ class Review
     {
         return get_object_vars($this);
     }
+
+	/**
+	 * @return string[]
+	 */
+	public function __sleep()
+	{
+		$properties = array_keys(get_object_vars($this));
+		$properties = array_diff($properties, ['_storeManager', '_helper']);
+
+		return $properties;
+	}
+
+	/**
+	 * Init not serializable fields
+	 *
+	 * @return void
+	 */
+	public function __wakeup()
+	{
+
+	}
 }

@@ -81,7 +81,6 @@ class Proccessor
 
 		} catch (\Exception $e) {
 			$this->_helper->debug((string)$e, array());
-			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 	}
 
