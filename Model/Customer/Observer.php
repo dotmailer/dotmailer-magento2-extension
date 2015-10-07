@@ -100,7 +100,7 @@ class Observer
 				->setCustomerId($customerId)
 				->save();
 		}catch(\Exception $e){
-			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+			$this->_helper->debug((string)$e, array());
 		}
 		return $this;
 	}
@@ -150,7 +150,7 @@ class Observer
 
 			$automation->save();
 		}catch(\Exception $e) {
-			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+			$this->_helper->debug((string)$e, array());
 		}
 
 		return $this;
@@ -175,7 +175,7 @@ class Observer
 		if ($apiEnabled && $customerSync) {
 			try {
 				//register in queue with importer
-				$check = $this->_proccessorFactory->create()->registerQueue(
+				$this->_proccessorFactory->create()->registerQueue(
 					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
 					$email,
 					\Dotdigitalgroup\Email\Model\Proccessor::MODE_CONTACT_DELETE,
@@ -183,13 +183,12 @@ class Observer
 				);
 				$contactModel = $this->_contactFactory->create()
 					->loadByCustomerEmail($email, $websiteId);
-				if ($contactModel->getId() && $check) {
+				if ($contactModel->getId()) {
 					//remove contact
 					$contactModel->delete();
 				}
 			} catch (\Exception $e) {
-				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-
+				$this->_helper->debug((string)$e, array());
 			}
 		}
 		return $this;
@@ -247,8 +246,7 @@ class Observer
 				->setStoreId($review->getStoreId())
 				->save();
 		}catch(\Exception $e){
-			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-
+			$this->_helper->debug((string)$e, array());
 		}
 	}
 
@@ -322,7 +320,7 @@ class Observer
 				}
 			}
 		}catch(\Exception $e){
-			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+			$this->_helper->debug((string)$e, array());
 		}
 	}
 
@@ -332,7 +330,6 @@ class Observer
 	 */
 	public function wishlistItemSaveAfter($observer)
 	{
-
 		$object        = $observer->getEvent()->getDataObject();
 		$wishlist      = $this->_wishlist->create()->load( $object->getWishlistId() );
 		$emailWishlist = $this->_wishlistFactory->create();
@@ -359,7 +356,7 @@ class Observer
 				}
 			}
 		} catch ( \Exception $e ) {
-			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+			$this->_helper->debug((string)$e, array());
 		}
 	}
 
@@ -386,18 +383,16 @@ class Observer
 					->getWishlist($object->getWishlistId());
 				if ($item->getId()) {
 					//register in queue with importer
-					$check = $this->_proccessorFactory->create()->registerQueue(
+					 $this->_proccessorFactory->create()->registerQueue(
 						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
 						array($item->getId()),
 						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
 						$website->getId()
 					);
-					if ($check) {
-						$item->delete();
-					}
+					$item->delete();
 				}
 			} catch (\Exception $e) {
-				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+				$this->_helper->debug((string)$e, array());
 			}
 		}
 	}
