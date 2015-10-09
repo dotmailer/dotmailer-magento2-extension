@@ -151,7 +151,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     //Dynamic Content Styling
     const XML_PATH_CONNECTOR_DYNAMIC_STYLING                = 'connector_configuration/dynamic_content_style/dynamic_syling';
     const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR             = 'connector_configuration/dynamic_content_style/name_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE         = 'connector_configuration/dynamic_content_style/name_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE         = 'connector_configuration/dynamic_content_style/font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE             = 'connector_configuration/dynamic_content_style/name_style';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR            = 'connector_configuration/dynamic_content_style/price_color';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE        = 'connector_configuration/dynamic_content_style/price_font_size';
