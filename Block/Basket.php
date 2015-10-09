@@ -2,17 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
-class Basket extends \Magento\Framework\View\Element\Template
+class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     protected $_quote;
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
 	public $objectManager;
+	protected $_quoteFactory;
 
 
 	public function __construct(
-		\Magento\Framework\View\Element\Template\Context $context,
+		\Magento\Quote\Model\QuoteFactory $quoteFactory,
+		\Magento\Catalog\Block\Product\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -20,11 +22,13 @@ class Basket extends \Magento\Framework\View\Element\Template
 		array $data = []
 	)
 	{
-		parent::__construct( $context, $data );
+		$this->_quoteFactory = $quoteFactory;
 		$this->helper = $helper;
 		$this->priceHelper = $priceHelper;
 		$this->scopeManager = $scopeConfig;
 		$this->objectManager = $objectManagerInterface;
+
+		parent::__construct( $context, $data );
 	}
 
     /**
@@ -42,7 +46,9 @@ class Basket extends \Magento\Framework\View\Element\Template
         }
 
         $quoteId = $params['quote_id'];
-	    $quoteModel = $this->objectManager->create('Magento\Quote\Model\Quote')->load($quoteId);
+
+	    $quoteModel = $this->_quoteFactory->create()
+		    ->load($quoteId);
 
 	    //check for any quote for this email, don't want to render further
 	    if (! $quoteModel->getId()) {

@@ -30,16 +30,15 @@ class Response extends \Magento\Framework\App\Action\Action
     {
 	    //@todo enable before going live.
         //authenticate ip address
+	    return;
         $authIp = $this->_helper->authIpAddress();
-        if(!$authIp){
-            $e = new \Exception('You are not authorised to view content of this page.');
-            throw new \Exception($e->getMessage());
+        if (! $authIp) {
+            throw new \Magento\Framework\Exception\LocalizedException(__('You are not authorised to view content of this page.'));
         }
 
-	    $helper = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Data');
         //authenticate
-        $auth = $helper->auth($this->getRequest()->getParam('code'));
-        if(!$auth){
+        $auth = $this->_helper->auth($this->getRequest()->getParam('code'));
+        if (! $auth) {
             $this->sendResponse();
             exit;
         }
@@ -53,7 +52,7 @@ class Response extends \Magento\Framework\App\Action\Action
             elseif($flag && !strpos($output, '<table'))
                 $this->sendResponse();
         } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+	        $this->_helper->debug((string)$e, array());
         }
     }
 
@@ -67,7 +66,7 @@ class Response extends \Magento\Framework\App\Action\Action
                 ->setHeader('Content-type', 'text/html; charset=UTF-8', true);
             $this->getResponse()->sendHeaders();
         } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+            $this->_helper->debug((string)$e, array());
         }
     }
 }

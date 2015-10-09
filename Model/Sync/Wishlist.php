@@ -17,9 +17,11 @@ class Wishlist
 	protected $_wishlistFactory;
 	protected $_itemFactory;
 	protected $_wishlistCollection;
+	protected $_itemCollection;
 
 
 	public function __construct(
+		\Magento\Wishlist\Model\Resource\Item\CollectionFactory $itemCollection,
 		\Dotdigitalgroup\Email\Model\Resource\Wishlist\CollectionFactory $wishlistCollection,
 		\Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory,
 		\Dotdigitalgroup\Email\Model\Customer\WishlistFactory $wishlistFactory,
@@ -32,6 +34,7 @@ class Wishlist
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_itemCollection = $itemCollection;
 		$this->_wishlistCollection = $wishlistCollection;
 		$this->_itemFactory = $itemFactory;
 		$this->_wishlistFactory = $wishlistFactory;
@@ -111,7 +114,7 @@ class Wishlist
 				->load($emailWishlist->getWishlistId());
 			//@todo IMPORTANT items collection is always empty so can't continue to sync wishlists.
 			//$wishListItemCollection = $wishlist->getItemCollection();
-			$wishListItemCollection = $this->_objectManager->create('Magento\Wishlist\Model\Resource\Item\Collection')
+			$wishListItemCollection = $this->_itemCollection->create()
 				->addFieldToFilter('wishlist_id', $wishlist->getWishlistId());
 
 			//set customer for wishlist
@@ -229,8 +232,7 @@ class Wishlist
 	 *
 	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
-	private function _setImported($ids, $modified = false)
-	{
+	private function _setImported($ids, $modified = false) {
 		try{
 			$coreResource = $this->_resource;
 			$write = $coreResource->getConnection('core_write');
@@ -240,7 +242,7 @@ class Wishlist
 			$nowDate = $this->_datetime->formatDate($now->getTimestamp());
 
 			//mark imported modified wishlists
-			if($modified)
+			if ($modified)
 				$write->update($tableName, array('wishlist_modified' => new \Zend_Db_Expr('null'), 'updated_at' => $nowDate), "wishlist_id IN ($ids)");
 			else
 				$write->update($tableName, array('wishlist_imported' => 1, 'updated_at' => $nowDate), "wishlist_id IN ($ids)");

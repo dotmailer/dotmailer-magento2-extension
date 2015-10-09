@@ -135,21 +135,22 @@ $image = 'category_page_list';
             <th class="other-text" style="border-bottom: 1px solid #cbd3d4;">Total</th>
         </tr>
 
-        <?php foreach($cartItems as $one):?>
+        <?php  foreach($cartItems as $one):?>
+
             <?php
             if($one->getParentItemId() != null)
                 continue;
-
-            $_product = $one->getProduct();
+	        $_product = $one->getProduct();
 	        $stock = $_product->isInStock();
-            $inStock = ($stock)? 'In Stock' : 'Out of stock';
+
+	        $inStock = ($stock)? 'In Stock' : 'Out of stock';
             $total = $priceHelper->currency($one->getBaseRowTotalInclTax(), true);
             $productUrl = $_product->getProductUrl();
             $grandTotal = $this->priceHelper->currency($this->getGrandTotal(), true);
             ?>
             <tr>
                 <td style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
-	                <?php echo $imageBlock->init($_product, $image)->toHtml() ?>
+	                <?php echo $block->getImage($_product, 'category_page_grid')->toHtml();?>
                 </td>
                 <td  class="product-name" style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Product Name : <a class="proudct-url" href="<?php echo $productUrl;?>"><?php echo  $_product->getName()  . '</a></br>'. $inStock;?></td>
                 <td class="product-price" style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$one->getQty();?></td>

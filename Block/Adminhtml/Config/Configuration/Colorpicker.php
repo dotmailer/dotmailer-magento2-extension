@@ -15,7 +15,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
 		parent::__construct($context);
 	}
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function _gedddtElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         // Include Procolor library JS file
         //$html = '<script type="text/javascript" src="' . $jsPath . 'js/procolor-1.0/procolor.compressed.js' .'"></script>';
