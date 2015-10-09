@@ -12,7 +12,7 @@ class Catalog
 
 	private $_start;
 	private $_countProducts = 0;
-	private $_productIds;
+	private $_productIds = array();
 	protected $_proccessorFactory;
 	protected $_connectorProductFactory;
 	protected $_catalogCollectionFactory;
@@ -149,20 +149,21 @@ class Catalog
 	 * @param $store
 	 * @return array|bool
 	 */
-	private function _exportCatalog($store)
-	{
+	private function _exportCatalog($store) {
+
 		$connectorProducts = array();
 		//all products for export
 		$products = $this->_getProductsToExport($store);
 		//get products id's
-		$this->_productIds = $products->getColumnValues('entity_id');
+		if ($products) {
+			$this->_productIds = $products->getColumnValues( 'entity_id' );
 
-		foreach($products as $product){
+			foreach ( $products as $product ) {
 
-			$connProduct = $this->_connectorProductFactory->create()
-				->setProduct($product);
-
-			$connectorProducts[] = $connProduct;
+				$connProduct         = $this->_connectorProductFactory->create()
+					->setProduct( $product );
+				$connectorProducts[] = $connProduct;
+			}
 		}
 
 		return $connectorProducts;
@@ -175,29 +176,28 @@ class Catalog
 	 * @param $collectionName
 	 * @param $websiteId
 	 */
-	private function _exportInSingle($store, $collectionName, $websiteId)
-	{
+	private function _exportInSingle($store, $collectionName, $websiteId) {
+
 		$this->_productIds = array();
-
 		$products = $this->_getProductsToExport($store, true);
+		if ($products)
+			foreach($products as $product){
+				$connectorProduct = $this->_connectorProductFactory->create();
+				$connectorProduct->setProduct($product);
+				$this->_helper->log('---------- Start catalog single sync ----------');
 
-		foreach($products as $product){
-			$connectorProduct = $this->_connectorProductFactory->create();
-			$connectorProduct->setProduct($product);
-			$this->_helper->log('---------- Start catalog single sync ----------');
+				//register in queue with importer
+				$this->_proccessorFactory->create()
+					->registerQueue(
+						$collectionName,
+						$connectorProduct,
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
+						$websiteId
+				);
+				$this->_productIds[] = $product->getId();
+			}
 
-			//register in queue with importer
-			$this->_proccessorFactory->create()
-				->registerQueue(
-					$collectionName,
-					$connectorProduct,
-					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
-					$websiteId
-			);
-			$this->_productIds[] = $product->getId();
-		}
-
-		if(!empty($this->_productIds)){
+		if (! empty($this->_productIds)) {
 			$this->_setImported($this->_productIds, true);
 			$this->_countProducts += count($this->_productIds);
 		}
@@ -215,13 +215,14 @@ class Catalog
 		$limit = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT);
 		$connectorCollection = $this->_catalogCollectionFactory->create();
 
+		//for modified catalog
 		if($modified)
 			$connectorCollection->addFieldToFilter('modified', array('eq' => '1'));
 		else
 			$connectorCollection->addFieldToFilter('imported', array('null' => 'true'));
-
+		//set limit for collection
 		$connectorCollection->setPageSize($limit);
-
+		//check number of products
 		if ($connectorCollection->getSize()) {
 			$product_ids = $connectorCollection->getColumnValues('product_id');
 			$productCollection = $this->_productCollection->create()
@@ -251,7 +252,7 @@ class Catalog
 			return $productCollection;
 		}
 
-		return array();
+		return false;
 	}
 
 	/**`
@@ -270,7 +271,7 @@ class Catalog
 
 			if ( $modified ) {
 				$write->update( $tableName, array( 'modified'   => new \Zend_Db_Expr( 'null' ), 'updated_at' => gmdate('Y-m-d H:i:s')
-				), "product_id IN ($ids)" );
+					), "product_id IN ($ids)" );
 			} else {
 				$write->update( $tableName, array( 'imported' => '1', 'updated_at' => gmdate('Y-m-d H:i:s')), "product_id IN ($ids)" );
 			}
