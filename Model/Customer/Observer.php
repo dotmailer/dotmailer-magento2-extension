@@ -202,7 +202,7 @@ class Observer
 	{
 		$dataObject = $observer->getEvent()->getDataObject();
 
-		if ($dataObject->getCustomerId() && $dataObject->getStatusId() == \Magento\Review\Model\Review::STATUS_PENDING){
+		if ($dataObject->getCustomerId() && $dataObject->getStatusId() == \Magento\Review\Model\Review::STATUS_PENDING) {
 			$customerId = $dataObject->getCustomerId();
 			$this->_helper->setConnectorContactToReImport($customerId);
 			//save review info in the table
