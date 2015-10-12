@@ -157,17 +157,27 @@ class Quote
 			$collection = $this->_getQuoteToImport($website, $limit, true);
 			foreach ($collection as $emailQuote) {
 				//register in queue with importer
-				$this->_proccessorFactory->create()
-					->registerQueue(
-						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
-						array($emailQuote->getQuoteId()),
-						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
-						$website->getId()
-					);
-				$this->_helper->log('Quote updated : ' . $emailQuote->getQuoteId());
-				$emailQuote->setModified(null)
-					->save();
-				$this->_count++;
+				$store = $this->_storeManager->getStore($emailQuote->getStoreId());
+				$quote = $this->_objectManager
+					->create('Magento\Quote\Model\Quote')
+					->setStore($store)
+					->load($emailQuote->getQuoteId());
+				if($quote->getId()){
+					$connectorQuote = $this->_objectManager
+						->create('Dotdigitalgroup\Email\Model\Connector\Quote')
+						->setQuote($quote);
+					$this->_proccessorFactory->create()
+						->registerQueue(
+							\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
+							$connectorQuote,
+							\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
+							$website->getId()
+						);
+					$this->_helper->log('Quote updated : ' . $emailQuote->getQuoteId());
+					$emailQuote->setModified(null)
+						->save();
+					$this->_count++;
+				}
 			}
 		} catch (\Exception $e) {
 			$this->_helper->debug((string)$e, array());
