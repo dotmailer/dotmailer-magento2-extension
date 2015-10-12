@@ -418,6 +418,7 @@ class Contact
 		$statuses = $this->_helper->getWebsiteConfig(
 			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS, $websiteId
 		);
+		$statuses = explode(',', $statuses);
 
 		$orderTable = $this->_resource->getTableName('sales_order');
 		$connection = $this->_resource->getConnection();
