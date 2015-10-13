@@ -243,9 +243,7 @@ class Catalog
 				$productCollection->addAttributeToFilter('type_id', array('in' => $type));
 			}
 
-			//@todo check addFinalPrice add's the admin website id, for all stores
 			$productCollection->addWebsiteNamesToResult()
-				//->addFinalPrice()
 				->addCategoryIds()
 				->addOptionsToResult();
 

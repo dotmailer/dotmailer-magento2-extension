@@ -177,21 +177,22 @@ class Product
 		}
 
 		//configurable product options
-		//@todo configurable product option is missing for mage2, cann't find TYPE_CONFIGURABLE
-//        if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_CONFIGURABLE){
-//            $productAttributeOptions = $product->getTypeInstance(true)->getConfigurableAttributesAsArray($product);
-//            foreach ($productAttributeOptions as $productAttribute) {
-//                $count = 0;
-//                $label = strtolower(str_replace(' ', '', $productAttribute['label']));
-//                $options = array();
-//                foreach ($productAttribute['values'] as $attribute) {
-//                    $options[$count]['option'] = $attribute['default_label'];
-//                    $options[$count]['price'] = (float) number_format($attribute['pricing_value'], 2, '.', '' );
-//                    $count++;
-//                }
-//                $this->$label = $options;
-//            }
-//        }
+        if ($product->getTypeId() == 'configurable'){
+            $productAttributeOptions = $product->getTypeInstance(true)->getConfigurableAttributesAsArray($product);
+
+            foreach ($productAttributeOptions as $productAttribute) {
+                $count = 0;
+                $label = strtolower(str_replace(' ', '', $productAttribute['label']));
+                $options = array();
+                foreach ($productAttribute['values'] as $attribute) {
+                    $options[$count]['option'] = $attribute['default_label'];
+					if (isset($attribute['pricing_value']))
+	                    $options[$count]['price'] = (float) number_format($attribute['pricing_value'], 2, '.', '' );
+                    $count++;
+                }
+                $this->$label = $options;
+            }
+        }
 
 		unset($this->_itemFactory, $this->_mediaConfigFactory, $this->_visibilityFactory, $this->_statusFactory, $this->_helper, $this->_storeManager);
 
