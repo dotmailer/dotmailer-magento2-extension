@@ -75,7 +75,7 @@ class Callback extends \Magento\Framework\App\Action\Action
 				$this->_helper->error('Error Number: '. curl_errno($ch), array());
 			}
 			if (isset($response->error)){
-				$this->_helper->error('OAUTH failed' . $response->error, array());
+				$this->_helper->error('OAUTH failed ' . $response->error, array());
 
 			} elseif (isset($response->refresh_tocken)) {
 				//save the refresh token to the admin user

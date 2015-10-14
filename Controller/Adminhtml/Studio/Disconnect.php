@@ -36,7 +36,7 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
 			$this->messageManager->addError($e->getMessage());
 		}
 
-		$this->_redirect('*/*/*');
+		$this->_redirect('*/system_config/*');
 	}
 
 }
