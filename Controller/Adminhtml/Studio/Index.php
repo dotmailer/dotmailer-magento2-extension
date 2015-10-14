@@ -129,27 +129,7 @@ class Index extends   \Magento\Backend\App\AbstractAction
 		$this->_redirect('*/system_config/edit', array('section' => 'connector_developer_settings'));
 	}
 
-	/**
-	 * Disconnect and remote the refresh token.
-	 */
-	public function disconnectAction()
-	{
-		try {
-			$adminUser = $this->_sessionFactory->create()
-				->getUser();
 
-			if ($adminUser->getRefreshToken()) {
-				$adminUser->setRefreshToken()
-					->save();
-			}
-			$this->messageManager->addSuccess('Successfully disconnected');
-		}catch (\Exception $e){
-
-			$this->messageManager->addError($e->getMessage());
-		}
-
-		$this->_redirectReferer('*/*/*');
-	}
 
 	/**
 	 * instantiate result page object
