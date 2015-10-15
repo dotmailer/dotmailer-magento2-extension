@@ -309,7 +309,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 			return $callback;
 		}
 
-		return $redirectUri = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+		return $redirectUri = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true);
 	}
 
     /**
