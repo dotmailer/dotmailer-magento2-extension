@@ -155,7 +155,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 			}
 			curl_close($ch);
 			$token = '';
-			if ($response->access_token) {
+			if (isset($response->access_token)) {
 				//save the refresh token to the admin user
 				$adminUser->setRefreshToken( $response->access_token )
 				          ->save();
