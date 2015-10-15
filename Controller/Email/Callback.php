@@ -18,7 +18,7 @@ class Callback extends \Magento\Framework\App\Action\Action
 		\Magento\Store\Model\StoreManager $storeManager,
 		\Magento\User\Model\UserFactory $adminUser,
 		\Magento\Framework\App\Action\Context $context,
-		\Dotdigitalgroup\Email\Helper\DataFactory $dataFactory
+		\Dotdigitalgroup\Email\Helper\Data $helper
 	)
 	{
 		$this->_adminHelper = $backendData;
@@ -26,7 +26,7 @@ class Callback extends \Magento\Framework\App\Action\Action
 		$this->scopeConfig = $scopeConfigInterface;
 		$this->_storeManager = $storeManager;
 		$this->_adminUser = $adminUser;
-		$this->_helper = $dataFactory->create();
+		$this->_helper = $helper;
 
 		parent::__construct($context);
 	}
@@ -77,9 +77,9 @@ class Callback extends \Magento\Framework\App\Action\Action
 			if (isset($response->error)){
 				$this->_helper->error('OAUTH failed ' . $response->error, array());
 
-			} elseif (isset($response->refresh_tocken)) {
+			} elseif (isset($response->refresh_token)) {
 				//save the refresh token to the admin user
-				$adminUser->setRefreshToken( $response->refresh_token )
+				$adminUser->setRefreshToken( $response->refresh_token)
 					->save();
 			}
 		}
