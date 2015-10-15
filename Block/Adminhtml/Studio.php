@@ -157,7 +157,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 			$token = '';
 			if ($response->access_token) {
 				//save the refresh token to the admin user
-				$adminUser->setRefreshToken( $response->refresh_token )
+				$adminUser->setRefreshToken( $response->access_token )
 				          ->save();
 
 				$token = $response->access_token;
