@@ -6,21 +6,21 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
 {
     protected $_statusRenderer;
     protected $_automationRenderer;
-	protected $_objectManager;
+	protected $_programFactory;
+	protected $_elementFactory;
     /**
 	 * Construct.
 	 */
     public function __construct(
-
+	    \Magento\Framework\Data\Form\Element\Factory $elementFactory,
+	    \Dotdigitalgroup\Email\Model\Config\Source\Automation\ProgramFactory $programFactory,
 	    \Magento\Backend\Block\Template\Context $context,
 	    \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		$data = []
     )
     {
-
-        $this->_addAfter = false;
-	    $this->_objectManager = $objectManagerInterface;
-        $this->_addButtonLabel = __('Add New Enrolment');
+	    $this->_elementFactory = $elementFactory;
+	    $this->_programFactory = $programFactory->create();
         parent::__construct($context, $data);
     }
 
@@ -39,26 +39,44 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
             'style' => 'width:120px',
 			)
         );
+	    $this->_addAfter = false;
+	    $this->_addButtonLabel = __('Add New Enrolment');
+
     }
 
     public function renderCellTemplate($columnName)
     {
-        $inputName  = $this->getElement()->getName() . '[#{_id}][' . $columnName . ']';
-        if ($columnName=="status") {
-            return $this->_getStatusRenderer()
-                ->setName($inputName)
-                ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
-                ->setOptions( $this->getElement()->getValues() )
-                ->toHtml();
-        } elseif ($columnName == "automation") {
-            return $this->_getAutomationRenderer()
-                ->setName($inputName)
-                ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
-                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields')->toOptionArray())
-                ->toHtml();
-        }
+	    if ($columnName == 'status' && isset($this->_columns[$columnName])) {
+
+		    $options = $this->getElement()->getValues();
+		    $element = $this->_elementFactory->create('select');
+		    $element->setForm(
+			    $this->getForm()
+		    )->setName(
+			    $this->_getCellInputElementName($columnName)
+		    )->setHtmlId(
+			    $this->_getCellInputElementId('<%- _id %>', $columnName)
+		    )->setValues(
+			    $options
+		    );
+		    return str_replace("\n", '', $element->getElementHtml());
+	    }
+	    if ($columnName == 'automation' && isset($this->_columns[$columnName])) {
+
+		    $options = $this->_programFactory->toOptionArray();
+		    $element = $this->_elementFactory->create('select');
+		    $element->setForm(
+			    $this->getForm()
+		    )->setName(
+			    $this->_getCellInputElementName($columnName)
+		    )->setHtmlId(
+			    $this->_getCellInputElementId('<%- _id %>', $columnName)
+		    )->setValues(
+			    $options
+		    );
+		    return str_replace("\n", '', $element->getElementHtml());
+	    }
+
         return parent::renderCellTemplate($columnName);
     }
 
@@ -68,15 +86,15 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
      */
     protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
-        $row->setData(
-            'option_extra_attr_' . $this->_getStatusRenderer()->calcOptionHash($row->getData('status')),
-            'selected="selected"'
-        );
-
-        $row->setData(
-            'option_extra_attr_' . $this->_getAutomationRenderer()->calcOptionHash($row->getData('automation')),
-            'selected="selected"'
-        );
+	    $optionExtraAttr = [];
+	    $optionExtraAttr['option_' . $this->_getStatusRenderer()->calcOptionHash($row->getData('status'))] =
+		    'selected="selected"';
+	    $optionExtraAttr['option_' . $this->_getAutomationRenderer()->calcOptionHash($row->getData('automation'))] =
+		    'selected="selected"';
+	    $row->setData(
+		    'option_extra_attrs',
+		    $optionExtraAttr
+	    );
     }
     protected function _getStatusRenderer()
     {

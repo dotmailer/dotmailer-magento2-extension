@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
-use Symfony\Component\Config\Definition\Exception\Exception;
-
 class Observer
 {
 	protected $_helper;
@@ -135,7 +133,7 @@ class Observer
             //admin oder when editing the first one is canceled
             $this->_registry->unregister('sales_order_status_before');
         }catch(\Exception $e){
-	        throw new \Magento\Framework\Exception\LocalizedException($e->getMessage());
+	        $this->_helper->debug((string)$e, array());
         }
         return $this;
     }
@@ -185,7 +183,7 @@ class Observer
                 ->setProgramId( $programId )
                 ->save();
         }catch(\Exception $e){
-	        throw new \Magento\Framework\Exception\LocalizedException($e->getMessage());
+	        $this->_helper->debug((string)$e, array());
         }
 
         return $this;
@@ -216,6 +214,8 @@ class Observer
             $emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
 	            ->save();
         }catch (\Exception $e){
+	        $this->_helper->debug((string)$e, array());
+
         }
 
         return $this;
@@ -280,7 +280,7 @@ class Observer
 			    }
 		    }
 	    }catch(\Exception $e){
-		    throw new \Magento\Framework\Exception\LocalizedException($e->getMessage());
+		    $this->_helper->debug((string)$e, array());
 	    }
         return $this;
     }
@@ -337,6 +337,8 @@ class Observer
                 ->setStoreId($quote->getStoreId())
                 ->save();
         }catch (\Exception $e){
+	        $this->_helper->debug((string)$e, array());
+
         }
     }
 }

@@ -17,15 +17,23 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
 
 
 	protected $_objectManager;
+
+	protected $datafieldsFactory;
+	protected $_elementFactory;
+
 	/**
 	 * Construct.
 	 */
 	public function __construct(
+		\Magento\Framework\Data\Form\Element\Factory $elementFactory,
+		\Dotdigitalgroup\Email\Model\Config\Source\Datamapping\DatafieldsFactory $datafields,
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		$data = []
 	)
 	{
+		$this->_elementFactory = $elementFactory;
+		$this->datafieldsFactory = $datafields->create();
 		$this->_objectManager = $objectManagerInterface;
 		$this->_addAfter = false;
 
@@ -53,25 +61,38 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
 
     public  function renderCellTemplate($columnName)
     {
-        $inputName  = $this->getElement()->getName() . '[#{_id}][' . $columnName . ']';
+	    if ($columnName == 'attribute' && isset($this->_columns[$columnName])) {
 
-        if ($columnName=="attribute") {
-            return $this->_getAttributeRenderer()
-                ->setName($inputName)
-                ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
-                ->setOptions(
-                    $this->getElement()->getValues()
-                )
-                ->toHtml();
-        } elseif ($columnName == "datafield") {
-            return $this->_getDatafieldRenderer()
-                ->setName($inputName)
-                ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
-                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields')->toOptionArray())
-                ->toHtml();
-        }
+		    $options = $this->getElement()->getValues();
+		    $element = $this->_elementFactory->create('select');
+		    $element->setForm(
+			    $this->getForm()
+		    )->setName(
+			    $this->_getCellInputElementName($columnName)
+		    )->setHtmlId(
+			    $this->_getCellInputElementId('<%- _id %>', $columnName)
+		    )->setValues(
+			    $options
+		    );
+		    return str_replace("\n", '', $element->getElementHtml());
+	    }
+
+	    if ($columnName == 'datafield' && isset($this->_columns[$columnName])) {
+
+		    $options = $this->datafieldsFactory->toOptionArray();
+		    $element = $this->_elementFactory->create('select');
+		    $element->setForm(
+			    $this->getForm()
+		    )->setName(
+			    $this->_getCellInputElementName($columnName)
+		    )->setHtmlId(
+			    $this->_getCellInputElementId('<%- _id %>', $columnName)
+		    )->setValues(
+			    $options
+		    );
+		    return str_replace("\n", '', $element->getElementHtml());
+	    }
+
         return parent::renderCellTemplate($columnName);
     }
 

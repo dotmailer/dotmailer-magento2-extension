@@ -146,14 +146,14 @@ class Contact
 		$headers = $mappedHash;
 
 		//custom customer attributes
-		//@todo fix the customer attributes in admin first
-//		$customAttributes = $this->_helper->getCustomAttributes($website);
-//		if ($customAttributes){
-//			foreach ($customAttributes as $data) {
-//				$headers[] = $data['datafield'];
-//				$allMappedHash[$data['attribute']] = $data['datafield'];
-//			}
-//		}
+		$customAttributes = $this->_helper->getCustomAttributes($website);
+
+		if ($customAttributes){
+			foreach ($customAttributes as $data) {
+				$headers[] = $data['datafield'];
+				$allMappedHash[$data['attribute']] = $data['datafield'];
+			}
+		}
 		$headers[] = 'Email';
 		$headers[] = 'EmailType';
 
@@ -206,14 +206,13 @@ class Contact
 			//count number of customers
 			$countIds[] = $customer->getId();
 
-			//@todo fix the customer custom attributes admin first
-//			if ($connectorCustomer) {
-//				foreach ($customAttributes as $data) {
-//					$attribute = $data['attribute'];
-//					$value = $customer->getData($attribute);
-//					$connectorCustomer->setData($value);
-//				}
-//			}
+			if ($connectorCustomer) {
+				foreach ($customAttributes as $data) {
+					$attribute = $data['attribute'];
+					$value = $customer->getData($attribute);
+					$connectorCustomer->setData($value);
+				}
+			}
 
 			//contact email and email type
 			$connectorCustomer->setData($customer->getEmail());
