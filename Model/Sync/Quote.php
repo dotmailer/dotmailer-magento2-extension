@@ -32,7 +32,7 @@ class Quote
 	)
 	{
 		$this->_quoteCollection = $quoteCollection;
-		$this->_objectmanager = $objectManager;
+		$this->_objectManager = $objectManager;
 		$this->_connectorQuoteFactory = $connectorQuoteFactory;
 		$this->_quoteFactory = $quoteFactory;
 		$this->_proccessorFactory = $proccessorFactory;
@@ -158,8 +158,7 @@ class Quote
 			foreach ($collection as $emailQuote) {
 				//register in queue with importer
 				$store = $this->_storeManager->getStore($emailQuote->getStoreId());
-				$quote = $this->_objectManager
-					->create('Magento\Quote\Model\Quote')
+				$quote = $this->_objectManager->create('Magento\Quote\Model\Quote')
 					->setStore($store)
 					->load($emailQuote->getQuoteId());
 				if($quote->getId()){

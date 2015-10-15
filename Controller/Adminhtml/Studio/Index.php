@@ -32,91 +32,21 @@ class Index extends   \Magento\Backend\App\AbstractAction
 
 
 	public function __construct(
-		\Magento\Backend\Model\Auth\SessionFactory $sessionFactory,
-		\Dotdigitalgroup\Email\Helper\ConfigFactory $configFactory,
-		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Dotdigitalgroup\Email\Helper\Config $config,
-		Context $context,
-		PageFactory $resultPageFactory,
-		ScopeConfigInterface $scopeConfig
+		Context $context
 	)
 	{
-		$this->_sessionFactory = $sessionFactory;
-		$this->_configFacotry = $configFactory;
-		$this->_data = $data;
-		$this->_config = $config;
-		$this->resultPageFactory = $resultPageFactory;
-		$this->scopeConfig = $scopeConfig;
+
 		parent::__construct($context);
 	}
 
+
 	public function execute()
 	{
-		// authorize or create token.
-//		$token = $this->generatetokenAction();
-//		$baseUrl = $this->_configFacotry->create()
-//			->getLogUserUrl();
-//
-//		$loginuserUrl = $baseUrl  . $token . '&suppressfooter=true';
-//
-//		return $this->getResponse()->setBody(
-//			$this->_view->getLayout()
-//	              ->createBlock('Magento\Backend\Block\Template', 'connector_iframe')
-//	              ->setText(
-//		              "<iframe src=" . $loginuserUrl . " width=100% height=1650 frameborder='0' scrolling='no' style='margin:0;padding: 0;display:block;'></iframe>"
-//	              )->toHtml());
-//
-//
-//		return $this->getResponse()->setBody(
-//			$this->_view->getLayout()->createBlock(
-//				'Magento\Bundle\Block\Adminhtml\Catalog\Product\Edit\Tab\Bundle\Option\Search\Grid',
-//				'adminhtml.catalog.product.edit.tab.bundle.option.search.grid'
-//			)->setIndex(
-//				$this->getRequest()->getParam('index')
-//			)->toHtml()
-//		);
-//		$this->getResponse()->setBody(
-//			$this->_view->getLayout()->createBlock(
-//				'Magento\Bundle\Block\Adminhtml\Catalog\Product\Edit\Tab\Bundle',
-//				'admin.product.bundle.items'
-//			)->setProductId(
-//				$product->getId()
-//			)->toHtml()
-//		);
+		$this->_view->loadLayout();
 
-		//return $this->getResultPage();
+		$this->_view->renderLayout();
+
     }
 
 
-
-
-
-
-
-	/**
-	 * instantiate result page object
-	 *
-	 * @return \Magento\Backend\Model\View\Result\Page|\Magento\Framework\View\Result\Page
-	 */
-	public function getResultPage()
-	{
-		if (is_null($this->resultPage)) {
-			$this->resultPage = $this->resultPageFactory->create();
-		}
-		return $this->resultPage;
-	}
-
-	/**
-	 * set page data
-	 *
-	 * @return $this
-	 */
-	protected function setPageData()
-	{
-		$resultPage = $this->getResultPage();
-		$resultPage->setActiveMenu('Dotdigitalgroup_Email::studio');
-		$resultPage->getConfig()->getTitle()->set((__('Automaiton Studio')));
-
-		return $this;
-	}
 }

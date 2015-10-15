@@ -2,73 +2,113 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
-class Studio extends \Magento\Backend\Block\Widget\Container
+class Studio extends \Magento\Backend\Block\Widget\Form
 {
-	protected $_sessionFactory;
-	protected $_data;
-	protected $_config;
 	protected $_configFactory;
+	protected $_helper;
+	protected $_sessionFactory;
+
+
 
 	public function __construct(
-		\Dotdigitalgroup\Email\Helper\ConfigFactory $configFactory,
-		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Dotdigitalgroup\Email\Helper\Config $config,
-		\Magento\Backend\Block\Widget\Context $context,
+		\Dotdigitalgroup\Email\Helper\Config $configFactory,
+		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
+		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Model\Auth\SessionFactory $sessionFactory
 	)
 	{
-		$this->_data = $data;
+		$this->_helper = $dataHelper;
 		$this->_configFactory = $configFactory;
+		$this->_sessionFactory = $sessionFactory->create();
 
-		$this->_sessionFactory = $sessionFactory;
 		parent::__construct($context, array());
 	}
-	/**
-	 * Class constructor
-	 *
-	 * @return void
-	 */
-	protected function _construct()
-	{
-		$this->addData(
-			[
-				\Magento\Backend\Block\Widget\Container::PARAM_CONTROLLER => 'adminhtml_studio',
-				\Magento\Backend\Block\Widget\Grid\Container::PARAM_BLOCK_GROUP => 'Dotdigitalgroup_Email',
-				\Magento\Backend\Block\Widget\Container::PARAM_HEADER_TEXT => __('Automation Studio'),
-			]
-		);
-		parent::_construct();
-	}
 
-	/**
-	 *
-	 *
-	 * @return array
-	 */
-	protected function _getAddButtonOptions()
-	{
+    /**
+     * Constructor. Initialization required variables for class instance.
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        $this->_blockGroup = 'Dotdigitalgroup\Email';
+        $this->_controller = 'adminhtml_studio';
+        parent::_construct();
+    }
 
-		$splitButtonOptions[] = [
-			'label' => __('Add New'),
-			'onclick' => "setLocation('" . $this->_getCreateUrl() . "')"
-		];
+    /**
+     * Returns page header
+     *
+     * @return \Magento\Framework\Phrase
+     * @codeCoverageIgnore
+     */
+    public function getHeader()
+    {
+        return __('Automation');
+    }
 
-		return $splitButtonOptions;
-	}
+    /**
+     * Returns URL for save action
+     *
+     * @return string
+     * @codeCoverageIgnore
+     */
+    public function getFormActionUrl()
+    {
+        return $this->getUrl('adminhtml/*/save');
+    }
+
+    /**
+     * Returns website id
+     *
+     * @return int
+     * @codeCoverageIgnore
+     */
+    public function getWebsiteId()
+    {
+        return $this->getRequest()->getParam('website');
+    }
+
+    /**
+     * Returns store id
+     *
+     * @return int
+     * @codeCoverageIgnore
+     */
+    public function getStoreId()
+    {
+        return $this->getRequest()->getParam('store');
+    }
+
+
+
+    /**
+     * Returns inheritance text
+     *
+     * @return \Magento\Framework\Phrase
+     * @codeCoverageIgnore
+     */
+    public function getInheritText()
+    {
+        return __('Use Standard');
+    }
 
 	public function getLoginUserHtml()
 	{
+
 		// authorize or create token.
 		$token = $this->generatetokenAction();
-		$baseUrl = $this->_configFactory->create()
+		$baseUrl = $this->_configFactory
 			->getLogUserUrl();
 
 		$loginuserUrl = $baseUrl  . $token . '&suppressfooter=true';
 
+
 		return $loginuserUrl;
 	}
-	/**
-	 * Generate new token and connect from the admin.
+
+
+	/** * Generate new token and connect from the admin.
 	 *
 	 *   POST httpsː//my.dotmailer.com/OAuth2/Tokens.ashx HTTP/1.1
 	 *   Content-Type: application/x-www-form-urlencoded
@@ -80,20 +120,20 @@ class Studio extends \Magento\Backend\Block\Widget\Container
 	public function generatetokenAction()
 	{
 		//check for secure url
-		$adminUser = $this->_sessionFactory->create()
+		$adminUser = $this->_sessionFactory
 			->getUser();
 		$refreshToken = $adminUser->getRefreshToken();
 
 		if ($refreshToken) {
-			$code = $this->_data->getCode();
-			$params = 'client_id=' . $this->_data->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID) .
-			          '&client_secret=' . $this->_data->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID) .
+			$code = $this->_helper->getCode();
+			$params = 'client_id=' . $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID) .
+			          '&client_secret=' . $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID) .
 			          '&refresh_token=' . $refreshToken .
 			          '&grant_type=refresh_token';
 
-			$url = $this->_config->getTokenUrl();
+			$url = $this->_configFactory->getTokenUrl();
 
-			$this->_data->log('token code : ' . $code . ', params : ' . $params);
+			$this->_helper->log('token code : ' . $code . ', params : ' . $params);
 
 			/**
 			 * Refresh Token request.
@@ -111,7 +151,7 @@ class Studio extends \Magento\Backend\Block\Widget\Container
 			$response = json_decode(curl_exec($ch));
 
 			if (isset($response->error)) {
-				$this->_data->log("Token Error Num`ber:" . curl_errno($ch) . "Error String:" . curl_error($ch));
+				$this->_helper->log("Token Error Num`ber:" . curl_errno($ch) . "Error String:" . curl_error($ch));
 			}
 			curl_close($ch);
 
@@ -125,26 +165,4 @@ class Studio extends \Magento\Backend\Block\Widget\Container
 		//$this->('*/system_config/edit', array('section' => 'connector_developer_settings'));
 	}
 
-	/**
-	 *
-	 *
-	 * @param string $type
-	 * @return string
-	 */
-	protected function _getCreateUrl()
-	{
-		return $this->getUrl(
-			'*/*/new'
-		);
-	}
-
-	/**
-	 * Render grid
-	 *
-	 * @return string
-	 */
-	public function getGridHtml()
-	{
-		return $this->getChildHtml('grid');
-	}
 }
