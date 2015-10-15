@@ -6,20 +6,22 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 {
 	protected $_configFactory;
 	protected $_helper;
-	protected $_sessionFactory;
-
+	protected $_auth;
+	protected $_messageManager;
 
 
 	public function __construct(
+		\Magento\Backend\Model\Auth $auth,
 		\Dotdigitalgroup\Email\Helper\Config $configFactory,
 		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
 		\Magento\Backend\Block\Template\Context $context,
-		\Magento\Backend\Model\Auth\SessionFactory $sessionFactory
+		\Magento\Framework\Message\ManagerInterface $messageManager
 	)
 	{
+		$this->_auth = $auth;
 		$this->_helper = $dataHelper;
 		$this->_configFactory = $configFactory;
-		$this->_sessionFactory = $sessionFactory->create();
+		$this->messageManager = $messageManager;
 
 		parent::__construct($context, array());
 	}
@@ -95,7 +97,6 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
 	public function getLoginUserHtml()
 	{
-
 		// authorize or create token.
 		$token = $this->generatetokenAction();
 		$baseUrl = $this->_configFactory
@@ -120,8 +121,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 	public function generatetokenAction()
 	{
 		//check for secure url
-		$adminUser = $this->_sessionFactory
-			->getUser();
+		$adminUser = $this->_auth->getUser();
 		$refreshToken = $adminUser->getRefreshToken();
 
 		if ($refreshToken) {
@@ -151,18 +151,25 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 			$response = json_decode(curl_exec($ch));
 
 			if (isset($response->error)) {
-				$this->_helper->log("Token Error Num`ber:" . curl_errno($ch) . "Error String:" . curl_error($ch));
+				$this->_helper->log("Token Error Number:" . curl_errno($ch) . "Error String:" . curl_error($ch));
 			}
 			curl_close($ch);
+			$token = '';
+			if ($response->access_token) {
+				//save the refresh token to the admin user
+				$adminUser->setRefreshToken( $response->refresh_token )
+				          ->save();
 
-			$token = $response->access_token;
+				$token = $response->access_token;
+			}
+
 			return $token;
 
 		} else {
-			//$this->messageManager->addNotice('Please Connect To Access The Page.');
+			$this->messageManager->addNotice('Please Connect To Access The Page.');
+			return;
 		}
 
-		//$this->('*/system_config/edit', array('section' => 'connector_developer_settings'));
 	}
 
 }

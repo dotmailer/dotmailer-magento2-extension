@@ -5,14 +5,14 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 class Disconnect extends \Magento\Backend\App\AbstractAction
 {
 
-	protected $_sessionFactory;
+	protected $_auth;
 
 	public function __construct(
-		\Magento\Backend\App\Action\Context $context,
-		\Magento\Backend\Model\SessionFactory $sessionFactory
+		\Magento\Backend\Model\Auth $auth,
+		\Magento\Backend\App\Action\Context $context
 	)
 	{
-		$this->_sessionFactory = $sessionFactory;
+		$this->_auth = $auth;
 
 		parent::__construct($context);
 	}
@@ -20,14 +20,12 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
 	 * Disconnect and remote the refresh token.
 	 */
 	public function execute()
-
 	{
 		try {
-			$adminUser = $this->_sessionFactory->create()
-				->getUser();
+			$adminUser = $this->_auth->getUser();
 
 			if ($adminUser->getRefreshToken()) {
-				$adminUser->setRefreshToken()
+				$adminUser->setRefreshToken('')
 				          ->save();
 			}
 			$this->messageManager->addSuccess('Successfully disconnected');

@@ -6,17 +6,21 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
 {
 	protected $_buttonLabel = 'Connect';
 
-	protected $_objectManager;
+	protected $_auth;
+	protected $_helper;
 	/**
 	 * Construct.
 	 */
 	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Backend\Model\Auth $auth,
 		\Magento\Backend\Block\Template\Context $context,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		$data = []
 	)
 	{
-		$this->_objectManager = $objectManagerInterface;
+		$this->_helper = $helper;
+		$this->_auth = $auth;
+
 		parent::__construct($context, $data);
 	}
 
@@ -40,7 +44,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
 	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
 	{
 
-		$url = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Data')->getAuthoriseUrl();
+		$url = $this->_helper->getAuthoriseUrl();
 		$ssl = $this->_checkForSecureUrl();
 		$disabled = false;
 		//disable for ssl missing
@@ -48,13 +52,13 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
 			$disabled = true;
 		}
 
-		$adminUser = $this->_objectManager->get('Magento\Backend\Model\Auth\Session')->getUser();
+		$adminUser = $this->_auth->getUser();
 		$refreshToken = $adminUser->getRefreshToken();
 
 		$title = ($refreshToken)? __('Disconnect') : __('Connect');
 
 
-		$url = ($refreshToken)? $this->getUrl('*/email_automation/disconnect') : $url;
+		$url = ($refreshToken)? $this->getUrl('dotdigitalgroup_email/studio/disconnect') : $url;
 
 		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
             ->setType('button')
