@@ -17,6 +17,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	protected $_sessionModel;
 
 	public function __construct(
+		//\Magento\Framework\ModuleFactory $module,
 		\Magento\Backend\Model\Auth\Session $sessionModel,
 		\Magento\Framework\App\ProductMetadata $productMetadata,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
@@ -28,6 +29,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		\Magento\Store\Model\StoreManagerInterface $storeManager
 	)
 	{
+
 		$this->_adapter = $adapter;
 		$this->_sessionModel = $sessionModel;
 		$this->_productMetadata = $productMetadata;
@@ -232,6 +234,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	public function getConnectorVersion()
 	{
 		//@todo get the module version from the config
+		//$moduleName = $this->_getModuleName();
+		//$version = $this->_moduleFactory->create()->getDataVersion($moduleName);
 		return'';
 		$modules = (array) Mage::getConfig()->getNode('modules')->children();
 		if (isset($modules['Dotdigitalgroup_Email'])) {
