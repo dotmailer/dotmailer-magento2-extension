@@ -29,7 +29,7 @@ class Review
 		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Magento\Review\Model\ReviewFactory $reviewFactory,
 		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Magento\Framework\App\Resource $resource,
+		\Magento\Framework\App\ResourceConnection $resource,
 		\Magento\Framework\Stdlib\Datetime $datetime,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)

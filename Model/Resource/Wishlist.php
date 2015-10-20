@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Resource;
 
 use Magento\Framework\Stdlib\DateTime as LibDateTime;
 
-class Wishlist extends \Magento\Framework\Model\Resource\Db\AbstractDb
+class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
 	/**
 	 * Initialize resource

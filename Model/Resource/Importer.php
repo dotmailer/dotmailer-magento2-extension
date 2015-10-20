@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Resource;
 
-class Importer extends \Magento\Framework\Model\Resource\Db\AbstractDb
+class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
 	/**
 	 * Initialize resource

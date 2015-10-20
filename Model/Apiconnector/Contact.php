@@ -25,7 +25,7 @@ class Contact
 		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
 		\Magento\Framework\Registry $registry,
-		\Magento\Framework\App\Resource $resource,
+		\Magento\Framework\App\ResourceConnection $resource,
 		\Dotdigitalgroup\Email\Helper\File   $file,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Config $config,
@@ -34,7 +34,7 @@ class Contact
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-		\Magento\Customer\Model\Resource\Customer\CollectionFactory $customerCollectionFactory,
+		\Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
 		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollectionFactory
 	)
 	{

@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Resource;
 
 
-class Contact extends \Magento\Framework\Model\Resource\Db\AbstractDb
+class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
 	/**
 	 * Initialize resource

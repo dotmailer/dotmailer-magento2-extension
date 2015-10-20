@@ -41,7 +41,7 @@ class Order
 		\Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
 		\Dotdigitalgroup\Email\Model\OrderFactory $orderFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-		\Magento\Framework\App\Resource $resource,
+		\Magento\Framework\App\ResourceConnection $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,

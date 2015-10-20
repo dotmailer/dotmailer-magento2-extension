@@ -89,7 +89,7 @@ class Order
 
 	public function __construct(
 		\Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
-		\Magento\Catalog\Model\Resource\Product\Attribute\CollectionFactory $attributeCollection,
+		\Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection,
 		\Magento\Catalog\Model\ProductFactory $productFactory,
 		\Magento\Customer\Model\CustomerFactory $customerFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helperData,

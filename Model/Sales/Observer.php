@@ -255,8 +255,6 @@ class Observer
     public function handleQuoteToOrder( $observer)
     {
 	    try {
-
-
 		    $order       = $observer->getOrder();
 		    $websiteId   = $order->getStore()->getWebsiteId();
 		    $apiEnabled  = $this->_helper->isEnabled( $websiteId );

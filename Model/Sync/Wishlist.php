@@ -21,7 +21,7 @@ class Wishlist
 
 
 	public function __construct(
-		\Magento\Wishlist\Model\Resource\Item\CollectionFactory $itemCollection,
+		\Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
 		\Dotdigitalgroup\Email\Model\Resource\Wishlist\CollectionFactory $wishlistCollection,
 		\Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory,
 		\Dotdigitalgroup\Email\Model\Customer\WishlistFactory $wishlistFactory,
@@ -29,7 +29,7 @@ class Wishlist
 		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Magento\Customer\Model\CustomerFactory $customerFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
-		\Magento\Framework\App\Resource $resource,
+		\Magento\Framework\App\ResourceConnection $resource,
 		\Magento\Framework\StdLib\Datetime $datetime,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)

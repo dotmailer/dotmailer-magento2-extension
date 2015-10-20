@@ -24,7 +24,7 @@ class Quote
 		\Magento\Quote\Model\QuoteFactory $quoteFactory,
 		\Dotdigitalgroup\Email\Model\Connector\QuoteFactory $connectorQuoteFactory,
 		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
-		\Magento\Framework\App\Resource $resource,
+		\Magento\Framework\App\ResourceConnection $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,

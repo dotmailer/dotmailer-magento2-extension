@@ -36,7 +36,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 	protected $_backendConfig;
 
 	public function __construct(
-		\Magento\Framework\App\Resource $adapter,
+		\Magento\Framework\App\ResourceConnection $adapter,
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Framework\App\Helper\Context $context,

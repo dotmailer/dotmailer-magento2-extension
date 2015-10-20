@@ -33,12 +33,12 @@ class Order
 	protected $_quoteCollection;
 
 	public function __construct(
-		\Magento\Quote\Model\Resource\Quote\CollectionFactory $quoteCollection,
+		\Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
 		\Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
-		\Magento\Sales\Model\Resource\Order\CollectionFactory $orderCollection,
+		\Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
 		\Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
 		\Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
-		\Magento\Framework\App\Resource $resource,
+		\Magento\Framework\App\ResourceConnection $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Stdlib\Datetime $datetime,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,

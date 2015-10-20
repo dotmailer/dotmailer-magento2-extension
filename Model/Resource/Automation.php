@@ -7,7 +7,7 @@ use Magento\Framework\Stdlib\DateTime as LibDateTime;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 
-class Automation extends \Magento\Framework\Model\Resource\Db\AbstractDb
+class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
 	/**
 	 * Initialize resource

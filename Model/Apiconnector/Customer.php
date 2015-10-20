@@ -37,8 +37,8 @@ class Customer
 	public function __construct(
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
-		\Magento\Review\Model\Resource\Review\Collection $reviewCollection,
-		\Magento\Sales\Model\Resource\Order\CollectionFactory $collectionFactory,
+		\Magento\Review\Model\ResourceModel\Review\Collection $reviewCollection,
+		\Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Customer\Model\GroupFactory $groupFactory,
 		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,

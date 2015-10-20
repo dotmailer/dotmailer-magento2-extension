@@ -23,7 +23,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
-		\Magento\Cron\Model\Resource\Schedule\CollectionFactory $gridFactory,
+		\Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory $gridFactory,
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
 		\Magento\Framework\Module\Manager $moduleManager,

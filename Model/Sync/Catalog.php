@@ -20,11 +20,11 @@ class Catalog
 
 
 	public function __construct(
-		\Magento\Catalog\Model\Resource\Product\CollectionFactory $productCollection,
+		\Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection,
 		\Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollection,
 		\Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory,
 		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
-		\Magento\Framework\App\Resource $resource,
+		\Magento\Framework\App\ResourceConnection $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Catalog\Model\ProductFactory $productFactory,
