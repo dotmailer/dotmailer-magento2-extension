@@ -1,4 +1,4 @@
-dotmailer EMAIL Connector for Magento 2 Module
+dotmailer EMAIL Connector for Magento 2 
 ==========================================
 
 Latest tested working version is on beta branch.
