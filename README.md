@@ -1,7 +1,9 @@
 dotmailer EMAIL Connector for Magento 2 
 ==========================================
 
-Latest tested working version is on beta branch.
+Use beta branch for stable merchant_beta release
+
+Master branch is used to match the development(magento2) changes.
 
 Compatibility
 -------------
