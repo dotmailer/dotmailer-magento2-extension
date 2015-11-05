@@ -21,7 +21,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
 	/**
 	 * Validate api user.
 	 */
-	public function execute()
+	public function executeInternal()
 	{
 		$params = $this->getRequest()->getParams();
 		$apiUsername     = $params['api_username'];

@@ -40,7 +40,7 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	}
 
 
-	public function execute()
+	public function executeInternal()
 	{
 		$this->_view->loadLayout();
 

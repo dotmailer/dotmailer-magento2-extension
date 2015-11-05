@@ -8,21 +8,22 @@ class Save extends \Magento\Backend\App\AbstractAction
 	protected $_helper;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context
-
 	)
 	{
+		$this->_helper = $data;
 		$this->messageManager = $context->getMessageManager();
 		parent::__construct($context);
 
 	}
-	public function execute()
+	public function executeInternal()
 	{
 		$addressBookName = $this->getRequest()->getParam('name');
 		$visibility = $this->getRequest()->getParam('visibility');
 		$website  = $this->getRequest()->getParam('website', 0);
 
-		$client = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Data')->getWebsiteApiClient($website);
+		$client = $this->_helper->getWebsiteApiClient($website);
 		if (strlen($addressBookName)) {
 			$response = $client->postAddressBooks($addressBookName, $visibility);
 			if (isset($response->message))

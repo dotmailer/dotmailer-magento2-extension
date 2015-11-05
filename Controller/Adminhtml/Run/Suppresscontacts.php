@@ -5,11 +5,14 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 class Suppresscontacts extends \Magento\Backend\App\AbstractAction
 {
 	protected $messageManager;
+	protected $_subscriberFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
 		\Magento\Backend\App\Action\Context $context
 	)
 	{
+		$this->_subscriberFactory = $subscriberFactory;
 		$this->messageManager = $context->getMessageManager();
 		parent::__construct($context);
 
@@ -17,9 +20,9 @@ class Suppresscontacts extends \Magento\Backend\App\AbstractAction
 	/**
 	 * Refresh suppressed contacts.
 	 */
-	public function execute()
+	public function executeInternal()
 	{
-		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Newsletter\Subscriber')
+		$this->_subscriberFactory->create()
 		    ->unsubscribe(true);
 		$this->messageManager->addSuccess('Done.');
 

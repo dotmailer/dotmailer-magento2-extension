@@ -5,11 +5,14 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 class Catalogsync extends \Magento\Backend\App\AbstractAction
 {
 	protected $messageManager;
+	protected $_catalogFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactory,
 		\Magento\Backend\App\Action\Context $context
 	)
 	{
+		$this->_catalogFactory = $catalogFactory;
 		$this->messageManager = $context->getMessageManager();
 		parent::__construct($context);
 
@@ -18,9 +21,10 @@ class Catalogsync extends \Magento\Backend\App\AbstractAction
 	/**
 	 * Refresh suppressed contacts.
 	 */
-	public function execute()
+	public function executeInternal()
 	{
-		$result = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sync\Catalog')->sync();
+		$result = $this->_catalogFactory->create()
+			->sync();
 
 		$this->messageManager->addSuccess($result['message']);
 

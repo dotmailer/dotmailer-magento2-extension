@@ -5,11 +5,14 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 class Reviewsync extends \Magento\Backend\App\AbstractAction
 {
 	protected $messageManager;
+	protected $_cronFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\CronFactory $cronFactory,
 		\Magento\Backend\App\Action\Context $context
 	)
 	{
+		$this->_cronFactory = $cronFactory;
 		$this->messageManager = $context->getMessageManager();
 		parent::__construct($context);
 
@@ -18,9 +21,10 @@ class Reviewsync extends \Magento\Backend\App\AbstractAction
 	/**
 	 * Refresh suppressed contacts.
 	 */
-	public function execute()
+	public function executeInternal()
 	{
-		$result = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Cron')->reviewSync();
+		$result = $this->_cronFactory->create()
+			->reviewSync();
 
 		$this->messageManager->addSuccess($result['message']);
 

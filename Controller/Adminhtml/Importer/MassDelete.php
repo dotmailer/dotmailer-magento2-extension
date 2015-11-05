@@ -10,7 +10,7 @@ class MassDelete extends ImporterController
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
 	 */
-	public function execute()
+	public function executeInternal()
 	{
 		$searchIds = $this->getRequest()->getParam('id');
 		if (!is_array($searchIds)) {

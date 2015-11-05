@@ -9,7 +9,7 @@ class MassDelete extends \Magento\Backend\App\Action
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
 	 */
-	public function execute()
+	public function executeInternal()
 	{
 		$ids = $this->getRequest()->getParam('id');
 

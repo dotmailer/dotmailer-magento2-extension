@@ -8,15 +8,17 @@ class Save extends \Magento\Backend\App\AbstractAction
 	protected $_helper;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context
 
 	)
 	{
+		$this->_helper = $data;
 		$this->messageManager = $context->getMessageManager();
 		parent::__construct($context);
 
 	}
-	public function execute()
+	public function executeInternal()
 	{
 		$datafield = $this->getRequest()->getParam('name');
 		$type = $this->getRequest()->getParam('type');
@@ -25,7 +27,8 @@ class Save extends \Magento\Backend\App\AbstractAction
 
 		$website  = $this->getRequest()->getParam('website', 0);
 
-		$client = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Data')->getWebsiteApiClient($website);
+		$client = $this->_helper->getWebsiteApiClient($website);
+
 		if (strlen($datafield)) {
 			$response = $client->postDataFields($datafield, $type, $visibility, $default);
 			if (isset($response->message))

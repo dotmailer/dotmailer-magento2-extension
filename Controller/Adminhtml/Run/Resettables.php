@@ -5,11 +5,14 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 class Resettables extends \Magento\Backend\App\AbstractAction
 {
 	protected $messageManager;
+	protected $_contactFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactFactory,
 		\Magento\Backend\App\Action\Context $context
 	)
 	{
+		$this->_contactFactory = $contactFactory;
 		$this->messageManager = $context->getMessageManager();
 		parent::__construct($context);
 
@@ -17,9 +20,10 @@ class Resettables extends \Magento\Backend\App\AbstractAction
 	/**
 	 * Refresh suppressed contacts.
 	 */
-	public function execute()
+	public function executeInternal()
 	{
-		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Resource\Contact')->resetTables();
+		$this->_contactFactory->create()
+			->resetTables();
 
 		$this->messageManager->addSuccess('All tables successfully reset.');
 
