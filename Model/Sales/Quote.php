@@ -59,7 +59,7 @@ class Quote
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
-		\Magento\Quote\Model\Resource\Quote\CollectionFactory $collectionFactory
+		\Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
 	)
 	{
 		$this->_rulesFactory = $rulesFactory;

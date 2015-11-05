@@ -59,12 +59,11 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		$customer = $observer->getEvent()->getCustomer();
-
 		$email      = $customer->getEmail();
 		$websiteId  = $customer->getWebsiteId();
-$this->_helper->error('customer ', $customer->getData());
-		$customerId = $customer->getEntityId();
-		$isSubscribed = $customer->getIsSubscribed();
+		$customerId = $customer->getId();
+
+		$isSubscribed = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')->loadByEmail($email)->isSubscribed();
 
 		try{
 			// fix for a multiple hit of the observer
