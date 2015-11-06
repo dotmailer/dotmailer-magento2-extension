@@ -288,6 +288,7 @@ class Quote
                     $value = $quoteData->$function();
             }
         }catch (\Exception $e){
+	        throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
 
         return $value;

@@ -16,8 +16,11 @@ class ResetContactImport implements ObserverInterface
 	protected $_storeManager;
 	protected $messageManager;
 	protected $_objectManager;
+	protected $_contactFactory;
+	protected $_contactResourceFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactResourceFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context,
@@ -25,13 +28,14 @@ class ResetContactImport implements ObserverInterface
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_contactFactory = $contactFactory;
+		$this->_contactResourceFactory = $contactResourceFactory;
 		$this->_helper = $data;
 		$this->_context = $context;
 		$this->_contactFactory = $contactFactory;
 		$this->_request = $context->getRequest();
 		$this->_storeManager = $storeManagerInterface;
 		$this->messageManager = $context->getMessageManager();
-		$this->_objectManager = $objectManagerInterface;
 	}
 
 	/**
@@ -41,8 +45,9 @@ class ResetContactImport implements ObserverInterface
 	 */
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
-		$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Resource\Contact');
+		$contactModel = $this->_contactResourceFactory->create();
 		$numImported = $this->_contactFactory->create()->getNumberOfImportedContacs();
+
 		$updated = $contactModel->resetAllContacts();
 
 		$this->_helper->log('-- Imported contacts: ' . $numImported  . ' reseted :  ' . $updated . ' --');

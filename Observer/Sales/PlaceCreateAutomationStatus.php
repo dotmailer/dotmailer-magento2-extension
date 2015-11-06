@@ -16,9 +16,10 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_orderFactory;
-
+	protected $_automationFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
 		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
@@ -28,6 +29,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_automationFactory = $automationFactory;
 		$this->_helper = $data;
 		$this->_orderFactory = $orderFactory;
 		$this->_scopeConfig = $scopeConfig;
@@ -64,15 +66,15 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
 			return $this;
 		}
 		try {
-			$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
-			$automation->setEmail( $email )
-		           ->setAutomationType( $automationType )
-		           ->setEnrolmentStatus( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING )
-		           ->setTypeId( $order->getId() )
-		           ->setWebsiteId( $website->getId() )
-		           ->setStoreName( $storeName )
-		           ->setProgramId( $programId )
-		           ->save();
+			$automation = $this->_automationFactory->create()
+				->setEmail( $email )
+				->setAutomationType( $automationType )
+				->setEnrolmentStatus( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING )
+				->setTypeId( $order->getId() )
+				->setWebsiteId( $website->getId() )
+				->setStoreName( $storeName )
+				->setProgramId( $programId )
+				->save();
 		}catch(\Exception $e){
 			$this->_helper->debug((string)$e, array());
 		}

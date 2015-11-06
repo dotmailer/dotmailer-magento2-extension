@@ -126,6 +126,7 @@ class Observer
                                 ->setProgramId( $programId );
                             $automation->save();
                         }catch(\Exception $e){
+	                        throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
                         }
                     }
                 }
@@ -183,7 +184,7 @@ class Observer
                 ->setProgramId( $programId )
                 ->save();
         }catch(\Exception $e){
-	        $this->_helper->debug((string)$e, array());
+	        throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
 
         return $this;
@@ -214,7 +215,7 @@ class Observer
             $emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
 	            ->save();
         }catch (\Exception $e){
-	        $this->_helper->debug((string)$e, array());
+	        throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 
         }
 
@@ -278,7 +279,7 @@ class Observer
 			    }
 		    }
 	    }catch(\Exception $e){
-		    $this->_helper->debug((string)$e, array());
+		    throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 	    }
         return $this;
     }
@@ -335,7 +336,7 @@ class Observer
                 ->setStoreId($quote->getStoreId())
                 ->save();
         }catch (\Exception $e){
-	        $this->_helper->debug((string)$e, array());
+	        throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 
         }
     }

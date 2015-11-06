@@ -16,9 +16,10 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_orderFactory;
-
+	protected $_emailOrderFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
 		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
@@ -28,6 +29,7 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_emailOrderFactory = $emailOrderFactory;
 		$this->_helper = $data;
 		$this->_orderFactory = $orderFactory;
 		$this->_scopeConfig = $scopeConfig;
@@ -50,11 +52,13 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
 			/**
 			 * Reimport transactional data.
 			 */
-			$emailOrder = $this->_objectManager->create('Dotdigitalgroup\Email\Order')->loadByOrderId($orderId, $quoteId, $storeId);
+			$emailOrder = $this->_emailOrderFactory->create()
+				->loadByOrderId($orderId, $quoteId, $storeId);
 			if (!$emailOrder->getId()) {
 				$this->_helper->log('ERROR Creditmemmo Order not found :' . $orderId . ', quote id : ' . $quoteId . ', store id ' . $storeId);
 				return $this;
 			}
+
 			$emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
 			           ->save();
 		}catch (\Exception $e){

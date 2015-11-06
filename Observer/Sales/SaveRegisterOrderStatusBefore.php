@@ -14,7 +14,6 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
 	protected $_logger;
 	protected $_scopeConfig;
 	protected $_storeManager;
-	protected $_objectManager;
 	protected $_orderFactory;
 
 
@@ -34,7 +33,6 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
 		$this->_logger = $loggerInterface;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_registry = $registry;
-		$this->_objectManager = $objectManagerInterface;
 	}
 
 
@@ -47,7 +45,7 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
 		} else {
 			// the reloaded status
 			$reloaded = $this->_orderFactory->create()
-			                                ->load( $order->getId() );
+				->load( $order->getId() );
 			$orderStatus = $reloaded->getStatus();
 		}
 		//register the order status before change

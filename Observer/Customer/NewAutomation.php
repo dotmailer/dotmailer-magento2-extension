@@ -12,7 +12,6 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 	protected $_registry;
 	protected $_logger;
 	protected $_storeManager;
-	protected $_objectManager;
 	protected $_wishlistFactory;
 	protected $_customerFactory;
 	protected $_contactFactory;
@@ -20,9 +19,11 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 	protected $_proccessorFactory;
 	protected $_reviewFactory;
 	protected $_wishlist;
+	protected $_subscriberFactory;
 
 
 	public function __construct(
+		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
 		\Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
 		\Magento\Wishlist\Model\WishlistFactory $wishlist,
 		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
@@ -33,9 +34,9 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Psr\Log\LoggerInterface $loggerInterface,
-		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface
 	) {
+		$this->_subscriberFactory = $subscriberFactory;
 		$this->_reviewFactory = $reviewFactory;
 		$this->_wishlist = $wishlist;
 		$this->_contactFactory = $contactFactory;
@@ -47,7 +48,6 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 		$this->_logger = $loggerInterface;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_registry = $registry;
-		$this->_objectManager = $objectManagerInterface;
 	}
 
 	/**
@@ -63,7 +63,8 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 		$websiteId  = $customer->getWebsiteId();
 		$customerId = $customer->getId();
 
-		$isSubscribed = $this->_objectManager->create('Magento\Newsletter\Model\Subscriber')->loadByEmail($email)->isSubscribed();
+		$isSubscribed = $this->_subscriberFactory->create()
+			->loadByEmail($email)->isSubscribed();
 
 		try{
 			// fix for a multiple hit of the observer
@@ -72,8 +73,10 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 				return $this;
 			}
 			$this->_registry->register($email . '_customer_save', $email);
-			$emailBefore = $this->_customerFactory->create()->load($customer->getId())->getEmail();
-			$contactModel = $this->_contactFactory->create()->loadByCustomerEmail($emailBefore, $websiteId);
+			$emailBefore = $this->_customerFactory->create()
+				->load($customer->getId())->getEmail();
+			$contactModel = $this->_contactFactory->create()
+				->loadByCustomerEmail($emailBefore, $websiteId);
 			//email change detection
 			if ($email != $emailBefore) {
 				$this->_helper->log('email change detected : '  . $email . ', after : ' . $emailBefore .  ', website id : ' . $websiteId);
@@ -107,6 +110,7 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 		}catch(\Exception $e){
 			$this->_helper->debug((string)$e, array());
 		}
+
 		return $this;
 	}
 }

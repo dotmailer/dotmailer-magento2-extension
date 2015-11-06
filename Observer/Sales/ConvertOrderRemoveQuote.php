@@ -16,9 +16,12 @@ class ConvertOrderRemoveQuote implements \Magento\Framework\Event\ObserverInterf
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_orderFactory;
-
+	protected $_quoteFactory;
+	protected $_proccessorFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+		\Dotdigitalgroup\Email\Model\QuoteFactory $quoteFactory,
 		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
@@ -28,6 +31,8 @@ class ConvertOrderRemoveQuote implements \Magento\Framework\Event\ObserverInterf
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_proccessorFactory = $proccessorFactory;
+		$this->_quoteFactory = $quoteFactory;
 		$this->_helper = $data;
 		$this->_orderFactory = $orderFactory;
 		$this->_scopeConfig = $scopeConfig;
@@ -38,6 +43,13 @@ class ConvertOrderRemoveQuote implements \Magento\Framework\Event\ObserverInterf
 	}
 
 
+	/**
+	 * Converting order will remove the email quote.
+	 *
+	 * @param \Magento\Framework\Event\Observer $observer
+	 *
+	 * @return $this
+	 */
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		try {
@@ -50,14 +62,16 @@ class ConvertOrderRemoveQuote implements \Magento\Framework\Event\ObserverInterf
 			);
 			if ( $apiEnabled && $syncEnabled ) {
 				$quoteId        = $order->getQuoteId();
-				$connectorQuote = $this->_objectManager->create( 'Dotdigitalgroup\Email\Model\Quote' )->loadQuote( $quoteId );
+				$connectorQuote = $this->_quoteFactory->create()
+					->loadQuote( $quoteId );
 				if ( $connectorQuote ) {
 					//register in queue with importer for single delete
-					$this->_objectManager->create( 'Dotdigitalgroup\Email\Model\Proccessor' )->registerQueue(
-						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
-						array( $connectorQuote->getQuoteId() ),
-						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
-						$order->getStore()->getWebsiteId()
+					$this->_proccessorFactory->create()
+						->registerQueue(
+							\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
+							array( $connectorQuote->getQuoteId() ),
+							\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+							$order->getStore()->getWebsiteId()
 					);
 					//delete from table
 					$connectorQuote->delete();
@@ -66,6 +80,7 @@ class ConvertOrderRemoveQuote implements \Magento\Framework\Event\ObserverInterf
 		}catch(\Exception $e){
 			$this->_helper->debug((string)$e, array());
 		}
+
 		return $this;
 	}
 }

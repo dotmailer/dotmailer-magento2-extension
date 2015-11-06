@@ -16,9 +16,14 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_orderFactory;
-
+	protected $_emailOrderFactory;
+	protected $_smsCampaignFactory;
+	protected $_automationFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
+		\Dotdigitalgroup\Email\Model\Sms\CampaignFactory $smsCampaignFactory,
+		\Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
 		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
@@ -28,6 +33,9 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_automationFactory = $automationFactory;
+		$this->_smsCampaignFactory = $smsCampaignFactory;
+		$this->_emailOrderFactory = $emailOrderFactory;
 		$this->_helper = $data;
 		$this->_orderFactory = $orderFactory;
 		$this->_scopeConfig = $scopeConfig;
@@ -38,6 +46,12 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 	}
 
 
+	/**
+	 * @param \Magento\Framework\Event\Observer $observer
+	 *
+	 * @return $this
+	 * @throws \Magento\Framework\Exception\LocalizedException
+	 */
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		try{
@@ -51,7 +65,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 			// start app emulation
 			$appEmulation = $this->_objectManager->create('Magento\Store\Model\App\Emulation');
 			$initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
-			$emailOrder = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Order')->loadByOrderId($order->getEntityId(), $order->getQuoteId());
+			$emailOrder = $this->_emailOrderFactory->create()
+				->loadByOrderId($order->getEntityId(), $order->getQuoteId());
 			//reimport email order
 			$emailOrder->setUpdatedAt($order->getUpdatedAt())
 			           ->setStoreId($storeId)
@@ -71,7 +86,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 				if($emailOrder->getEmailImported() == \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
 					$emailOrder->setModified(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
 				}
-				$smsCampaign = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Sms\Campaign');
+				$smsCampaign = $this->_smsCampaignFactory->create();
 				$smsCampaign->setOrder($order);
 				$smsCampaign->setStatus($status);
 				$smsCampaign->sendSms();
@@ -91,7 +106,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 					if($configMap['status'] == $status) {
 						try {
 							$programId  = $configMap['automation'];
-							$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
+							$automation = $this->_automationFactory->create();
 							$automation->setEmail( $customerEmail )
 							           ->setAutomationType( 'order_automation_' . $status )
 							           ->setEnrolmentStatus( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING )
@@ -101,6 +116,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 							           ->setProgramId( $programId );
 							$automation->save();
 						}catch(\Exception $e){
+							throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 						}
 					}
 				}
@@ -108,8 +124,9 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 			//admin oder when editing the first one is canceled
 			$this->_registry->unregister('sales_order_status_before');
 		}catch(\Exception $e){
-			$this->_helper->debug((string)$e, array());
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
+
 		return $this;
 	}
 }

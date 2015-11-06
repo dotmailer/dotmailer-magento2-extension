@@ -230,8 +230,10 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 	}
 
 	/**
-	 * Reset the imported contacts as guest
+	 * Reset the imported contacts as guest.
+	 *
 	 * @return int
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	public function resetAllGuestContacts()
 	{
@@ -249,6 +251,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 				$where
 			);
 		} catch (\Exception $e) {
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 		return $num;
 	}

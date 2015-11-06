@@ -24,6 +24,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 	 * Reset for re-import.
 	 *
 	 * @return int
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	public function resetCatalog()
 	{
@@ -34,7 +35,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 				array('imported' => new \Zend_Db_Expr('null'), 'modified' => new \Zend_Db_Expr('null'))
 			);
 		}catch (\Exception $e){
-
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 		return $num;
 	}

@@ -21,6 +21,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 	 * Reset the email reviews for reimport.
 	 *
 	 * @return int
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	public function resetReviews()
 	{
@@ -31,6 +32,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 				$conn->quoteInto('review_imported is ?', new \Zend_Db_Expr('not null'))
 			);
 		}catch (\Exception $e){
+			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
 		}
 
 		return $num;

@@ -11,29 +11,35 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 	protected $_helper;
 	protected $_registry;
 	protected $_storeManager;
-	protected $_objectManager;
 	protected $_contactFactory;
 	protected $_subscriberFactory;
+	protected $_automationFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
 		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface
 	)
 	{
+		$this->_automationFactory = $automationFactory;
 		$this->_subscriberFactory = $subscriberFactory->create();
 		$this->_contactFactory = $contactFactory;
 		$this->_helper = $data;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_registry = $registry;
-		$this->_objectManager = $objectManagerInterface;
-
 	}
 
 
+	/**
+	 * Change contact subscription status.
+	 *
+	 * @param \Magento\Framework\Event\Observer $observer
+	 *
+	 * @return $this
+	 */
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		$subscriber     = $observer->getEvent()->getSubscriber();
@@ -45,7 +51,8 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 			return $this;
 
 		try{
-			$contactEmail = $this->_contactFactory->create()->loadByCustomerEmail($email, $websiteId);
+			$contactEmail = $this->_contactFactory->create()
+				->loadByCustomerEmail($email, $websiteId);
 			// only for subsribers
 			if ($subscriber->isSubscribed()) {
 				$client = $this->_helper->getWebsiteApiClient($websiteId);
@@ -129,23 +136,24 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 			return;
 		try {
 			//check the subscriber alredy exists
-			$enrolment = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation')->getCollection()
-                  ->addFieldToFilter('email', $email)
-                  ->addFieldToFilter('automation_type', \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER)
-                  ->addFieldToFilter('website_id', $websiteId)
-                  ->getFirstItem();
+			$enrolment = $this->_automationFactory->create()
+				->getCollection()
+				->addFieldToFilter('email', $email)
+                ->addFieldToFilter('automation_type', \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER)
+                ->addFieldToFilter('website_id', $websiteId)
+                ->getFirstItem();
 
 			//add new subscriber to automation
 			if (! $enrolment->getId()) {
 				//save subscriber to the queue
-				$automation = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Automation');
-				$automation->setEmail( $email )
-		           ->setAutomationType( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER )
-		           ->setEnrolmentStatus( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING )
-		           ->setTypeId( $subscriber->getId() )
-		           ->setWebsiteId( $websiteId )
-		           ->setStoreName( $store->getName() )
-		           ->setProgramId( $programId );
+				$automation = $this->_automationFactory->create()
+					->setEmail( $email )
+		            ->setAutomationType( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER )
+		            ->setEnrolmentStatus( \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING )
+		            ->setTypeId( $subscriber->getId() )
+		            ->setWebsiteId( $websiteId )
+		            ->setStoreName( $store->getName() )
+		            ->setProgramId( $programId );
 				$automation->save();
 			}
 		}catch(\Exception $e){

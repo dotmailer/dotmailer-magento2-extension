@@ -16,9 +16,13 @@ class RegisterSingleQuote implements \Magento\Framework\Event\ObserverInterface
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_orderFactory;
+	protected $_quoteFactory;
+	protected $_proccessorFactory;
 
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+		\Dotdigitalgroup\Email\Model\QuoteFactory $quoteFactory,
 		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
@@ -28,6 +32,8 @@ class RegisterSingleQuote implements \Magento\Framework\Event\ObserverInterface
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_proccessorFactory = $proccessorFactory;
+		$this->_quoteFactory = $quoteFactory;
 		$this->_helper = $data;
 		$this->_orderFactory = $orderFactory;
 		$this->_scopeConfig = $scopeConfig;
@@ -37,7 +43,13 @@ class RegisterSingleQuote implements \Magento\Framework\Event\ObserverInterface
 		$this->_objectManager = $objectManagerInterface;
 	}
 
-
+	/**
+	 * Register single quote import.
+	 *
+	 * @param \Magento\Framework\Event\Observer $observer
+	 *
+	 * @return $this
+	 */
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		$quote = $observer->getEvent()->getQuote();
@@ -47,20 +59,23 @@ class RegisterSingleQuote implements \Magento\Framework\Event\ObserverInterface
 			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED,
 			$websiteId
 		);
+		//check for api and quote sync enabled
 		if ($apiEnabled && $syncEnabled) {
 			if ($quote->getCustomerId()) {
-				$connectorQuote = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Quote')->loadQuote($quote->getId());
+				$connectorQuote = $this->_quoteFactory->create()
+					->loadQuote($quote->getId());
 				$count = count($quote->getAllItems());
 				if ($connectorQuote) {
 					if ($connectorQuote->getImported() && $count > 0)
 						$connectorQuote->setModified(1)->save();
 					elseif ($connectorQuote->getImported() && $count == 0) {
 						//register in queue with importer for single delete
-						$this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-							\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
-							array($connectorQuote->getQuoteId()),
-							\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
-							$websiteId
+						$this->_proccessorFactory->create()
+							->registerQueue(
+								\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_QUOTE,
+								array($connectorQuote->getQuoteId()),
+								\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+								$websiteId
 						);
 
 						$connectorQuote->delete();
@@ -69,24 +84,24 @@ class RegisterSingleQuote implements \Magento\Framework\Event\ObserverInterface
 					$this->_registerQuote($quote);
 			}
 		}
+
 		return $this;
 	}
-
 
 	/**
 	 * register quote with connector
 	 *
 	 */
 	private function _registerQuote( $quote) {
+
 		try {
-			$connectorQuote = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Quote');
-			$connectorQuote->setQuoteId($quote->getId())
-               ->setCustomerId($quote->getCustomerId())
-               ->setStoreId($quote->getStoreId())
-               ->save();
+			$this->_quoteFactory->create()
+				->setQuoteId($quote->getId())
+                ->setCustomerId($quote->getCustomerId())
+                ->setStoreId($quote->getStoreId())
+                ->save();
 		}catch (\Exception $e){
 			$this->_helper->debug((string)$e, array());
-
 		}
 	}
 }

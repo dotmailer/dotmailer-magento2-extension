@@ -16,9 +16,10 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_orderFactory;
-
+	protected $_proccessorFactory;
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
 		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
@@ -28,6 +29,7 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
+		$this->_proccessorFactory = $proccessorFactory;
 		$this->_helper = $data;
 		$this->_orderFactory = $orderFactory;
 		$this->_scopeConfig = $scopeConfig;
@@ -48,11 +50,12 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
 
 		if ($this->_helper->isEnabled($websiteId) && $orderSync) {
 			//register in queue with importer
-			$this->_objectManager->create('Dotdigitalgroup\Email\Model\Proccessor')->registerQueue(
-				\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
-				array($incrementId),
-				\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
-				$websiteId
+			$this->_proccessorFactory->create()
+				->registerQueue(
+					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
+					array($incrementId),
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+					$websiteId
 			);
 		}
 

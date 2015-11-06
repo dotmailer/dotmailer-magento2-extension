@@ -78,7 +78,7 @@ class Guest
                     $this->_file->outputCSV($this->_file->getFilePath($guestFilename), array($email, 'Html', $storeName));
                     $this->_countGuests++;
                 }catch (\Exception $e){
-
+	                throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
                 }
             }
             if ($this->_countGuests) {
