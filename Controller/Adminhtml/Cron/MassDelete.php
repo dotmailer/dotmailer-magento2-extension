@@ -10,7 +10,7 @@ class MassDelete extends CampaignController
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
 	 */
-	public function executeInternal()
+	public function execute()
 	{
 		$searchIds = $this->getRequest()->getParam('id');
 

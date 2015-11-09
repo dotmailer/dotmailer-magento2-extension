@@ -21,7 +21,7 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
 	/**
 	 * Refresh suppressed contacts.
 	 */
-	public function executeInternal()
+	public function execute()
 	{
 
 		$this->_catalogFacotry->create()

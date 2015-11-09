@@ -21,7 +21,7 @@ class Reviewsync extends \Magento\Backend\App\AbstractAction
 	/**
 	 * Refresh suppressed contacts.
 	 */
-	public function executeInternal()
+	public function execute()
 	{
 		$result = $this->_cronFactory->create()
 			->reviewSync();

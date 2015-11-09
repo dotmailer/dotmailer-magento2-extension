@@ -19,7 +19,7 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
 	/**
 	 * Disconnect and remote the refresh token.
 	 */
-	public function executeInternal()
+	public function execute()
 	{
 		try {
 			$adminUser = $this->_auth->getUser();

@@ -17,7 +17,7 @@ class Save extends \Magento\Backend\App\AbstractAction
 		parent::__construct($context);
 
 	}
-	public function executeInternal()
+	public function execute()
 	{
 		$addressBookName = $this->getRequest()->getParam('name');
 		$visibility = $this->getRequest()->getParam('visibility');

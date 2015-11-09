@@ -17,7 +17,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
 		parent::__construct($context);
 
 	}
-	public function executeInternal()
+	public function execute()
 	{
 		$result = array('errors' => false, 'message' => '');
 		$website = $this->getRequest()->getParam('website', 0);

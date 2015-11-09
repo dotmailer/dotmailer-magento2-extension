@@ -17,7 +17,7 @@ class Save extends \Magento\Backend\App\AbstractAction
 		parent::__construct($context);
 
 	}
-	public function executeInternal()
+	public function execute()
 	{
 		$datafield = $this->getRequest()->getParam('name');
 		$type = $this->getRequest()->getParam('type');

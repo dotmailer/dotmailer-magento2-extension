@@ -10,7 +10,7 @@ class MassDelete extends OrderController
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
 	 */
-	public function executeInternal()
+	public function execute()
 	{
 		$ids = $this->getRequest()->getParam('email_order_id');
 		if (!is_array($ids)) {

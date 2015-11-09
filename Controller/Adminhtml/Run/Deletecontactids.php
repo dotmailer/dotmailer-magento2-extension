@@ -17,7 +17,7 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
 		parent::__construct($context);
 
 	}
-	public function executeInternal()
+	public function execute()
 	{
 		$redirectUrl = $this->getUrl('adminhtml/system_config/edit', array('section' => 'connector_developer_settings'));
 

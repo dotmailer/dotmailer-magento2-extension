@@ -20,7 +20,7 @@ class Resettables extends \Magento\Backend\App\AbstractAction
 	/**
 	 * Refresh suppressed contacts.
 	 */
-	public function executeInternal()
+	public function execute()
 	{
 		$this->_contactFactory->create()
 			->resetTables();

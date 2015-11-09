@@ -63,7 +63,7 @@ class Edit extends \Magento\Backend\App\Action
 	 * @return \Magento\Backend\Model\View\Result\Page|\Magento\Backend\Model\View\Result\Redirect
 	 * @SuppressWarnings(PHPMD.NPathComplexity)
 	 */
-	public function executeInternal()
+	public function execute()
 	{
 		return $this->_redirect('dotdigitalgroup/*/*');
 		$id = $this->getRequest()->getParam('email_contact_id');

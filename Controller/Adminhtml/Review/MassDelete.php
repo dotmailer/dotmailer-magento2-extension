@@ -10,7 +10,7 @@ class MassDelete extends QuoteController
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
 	 */
-	public function executeInternal()
+	public function execute()
 	{
 		$searchIds = $this->getRequest()->getParam('id');
 		if (!is_array($searchIds)) {
