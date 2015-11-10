@@ -325,7 +325,7 @@
             </sync_settings>
             <debug>
                 <debug_enabled>1</debug_enabled>
-                <api_request_time_limit>10</api_request_time_limit>
+                <api_log_time>10</api_log_time>
                 <raygun_code>JOWaQ4nf4Ox7eAFUvr+TAw==</raygun_code>
                 <raygun_async>1</raygun_async>
             </debug>
