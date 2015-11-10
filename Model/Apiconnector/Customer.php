@@ -20,6 +20,8 @@ class Customer
 	protected $_subscriberFactory;
 	protected $_categoryFactory;
 	protected $_productFactory;
+	//enterprise reward
+	public $reward;
 
 	private $subscriber_status = array(
 		\Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
@@ -732,12 +734,13 @@ class Customer
 	 */
 	public function getLastCategoryPur()
 	{
-		$id = $this->customer->getLastCategoryId();
-		if($id){
+		$categoryId = $this->customer->getLastCategoryId();
+		//customer last category id
+		if ($categoryId) {
 			return $this->_categoryFactory->create()
-			           ->setStoreId($this->customer->getStoreId())
-			           ->load($id)
-			           ->getName();
+				->setStoreId($this->customer->getStoreId())
+				->load($categoryId)
+				->getName();
 		}
 		return "";
 	}
@@ -749,14 +752,6 @@ class Customer
 	 */
 	public function getFirstBrandPur()
 	{
-//		if(!$this->attribute_check){
-//			$attribute = $this->_objectManager->create('Magento\Eav\Model\Resource\Attribute')
-//				->loadByCode('catalog_product', 'manufacturer');
-//
-//			if($attribute->getId())
-//				$this->attribute_check = true;
-//		}
-
 		if($this->attribute_check){
 			$id = $this->customer->getProductIdForFirstBrand();
 			if($id){
@@ -778,14 +773,6 @@ class Customer
 	 */
 	public function getLastBrandPur()
 	{
-//		if(!$this->attribute_check){
-//			$attribute = $this->_objectManager->create('Magento\Eav\Model\Resource\Attribute')
-//			                 ->loadByCode('catalog_product', 'manufacturer');
-//
-//			if($attribute->getId())
-//				$this->attribute_check = true;
-//		}
-
 		if($this->attribute_check){
 			$id = $this->customer->getProductIdForLastBrand();
 			if ($id) {
@@ -798,6 +785,81 @@ class Customer
 			}
 			return "";
 		}
+	}
+
+
+	/**
+	 * Reward points balance.
+	 * @return int
+	 */
+	public function getRewardPoints() {
+		if (!$this->reward)
+			$this->_setReward();
+
+		if($this->reward !== true){
+			return $this->reward->getPointsBalance();
+		}
+		return '';
+	}
+
+	/**
+	 * Currency amount points.
+	 * @return mixed
+	 */
+	public function getRewardAmount() {
+		if (!$this->reward)
+			$this->_setReward();
+
+		if($this->reward !== true){
+			return $this->reward->getCurrencyAmount();
+		}
+		return '';
+	}
+
+	/**
+	 * Expiration date to use the points.
+	 * @return string
+	 */
+	public function getExpirationDate()
+	{
+		//set reward for later use
+		if (!$this->reward)
+			$this->_setReward();
+
+		if($this->reward !== true){
+			$expiredAt = $this->reward->getExpirationDate();
+
+			if ($expiredAt) {
+				$date = $this->_objectManager->create('Magento\Framework\Stdlib\DateTime')->formatDate($expiredAt, 'short', true);
+			} else {
+				$date = '';
+			}
+			return $date;
+		}
+
+		return '';
+	}
+
+	private function _setReward() {
+
+		if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')){
+			$enHelper = $this->_objectManager->create('Magento\Reward\Helper\Reward');
+			$collection = $rewardModel->getCollection()
+				->addCustomerFilter($this->customer->getId())
+				->addWebsiteFilter($this->customer->getWebsiteId())
+				->setExpiryConfig($enHelper->getExpiryConfig())
+				->addExpirationDate($this->customer->getWebsiteId())
+				->skipExpiredDuplicates()
+				->setDefaultOrder();
+
+			$item = $collection->setPageSize(1)
+				->setCurPage(1)
+				->getFirstItem();
+
+			$this->reward = $item;
+		}
+		else
+			$this->reward = true;
 	}
 
 	/**
