@@ -3,7 +3,7 @@
     <head>
         <css src="Dotdigitalgroup_Email::styles.css"/>
     </head>
-    <update handle="dotdigitalgroup_email_importer_grid_block"/>
+    <!--<update handle="dotdigitalgroup_email_importer_grid_block"/>-->
     <body>
         <referenceContainer name="content">
             <block class="Dotdigitalgroup\Email\Block\Adminhtml\Importer" name="dotdigitalgroup.email.importer.grid.container"/>

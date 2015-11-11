@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Automation;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
 
 class Index extends   \Magento\Backend\App\AbstractAction

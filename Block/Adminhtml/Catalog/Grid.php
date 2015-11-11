@@ -15,12 +15,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	protected $_collectionFactory;
 
 	/**
+	 * Grid constructor.
+	 *
 	 * @param \Magento\Backend\Block\Template\Context $context
 	 * @param \Magento\Backend\Helper\Data $backendHelper
+	 * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $gridFactory
 	 * @param \Magento\Framework\Module\Manager $moduleManager
+	 * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	 * @param array $data
-	 *
-	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
 		\Magento\Backend\Block\Template\Context $context,
@@ -145,17 +147,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 
 		return $this;
-	}
-
-
-
-
-	public function getRowUrl($row)
-	{
-		return $this->getUrl(
-			'dotdigitalgroup_email/*/*',
-			['id' => $row->getId()]
-		);
 	}
 
 }

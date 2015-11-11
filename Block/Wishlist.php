@@ -10,9 +10,12 @@ class Wishlist extends \Magento\Framework\View\Element\Template
 	public $priceHelper;
 	public $scopeManager;
 	public $objectManager;
-
+	protected $_customerFactory;
+	protected $_wishlistFactory;
 
 	public function __construct(
+		\Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
+		\Magento\Customer\Model\CustomerFactory $customerFactory,
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -22,6 +25,8 @@ class Wishlist extends \Magento\Framework\View\Element\Template
 	)
 	{
 		parent::__construct( $context, $data );
+		$this->_wishlistFactory = $wishlistFactory;
+		$this->_customerFactory = $customerFactory;
 		$this->helper = $helper;
 		$this->priceHelper = $priceHelper;
 		$this->scopeManager = $scopeConfig;
@@ -40,16 +45,17 @@ class Wishlist extends \Magento\Framework\View\Element\Template
     protected function _getWishlist()
     {
         $customerId = $this->getRequest()->getParam('customer_id');
-        if(!$customerId)
+        if (!$customerId)
             return false;
 
-        $customer = $this->objectManager->create('Magento\Customer\Model\Customer')->load($customerId);
-        if(!$customer->getId())
+        $customer = $this->_customerFactory->create()
+	        ->load($customerId);
+        if (!$customer->getId())
             return false;
 
-        $collection = $this->objectManager->create('Magento\Wishlist\Model\Wishlist')->getCollection();
-        $collection->addFieldToFilter('customer_id', $customerId)
-                    ->setOrder('updated_at', 'DESC');
+        $collection = $this->_wishlistFactory->create()->getCollection()
+            ->addFieldToFilter('customer_id', $customerId)
+            ->setOrder('updated_at', 'DESC');
 
         if ($collection->count())
             return $collection->getFirstItem();

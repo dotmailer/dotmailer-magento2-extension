@@ -15,12 +15,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	protected $_automationFactory;
 
 	/**
+	 * Grid constructor.
+	 *
+	 * @param \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $gridFactory
 	 * @param \Magento\Backend\Block\Template\Context $context
 	 * @param \Magento\Backend\Helper\Data $backendHelper
 	 * @param \Magento\Framework\Module\Manager $moduleManager
+	 * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	 * @param array $data
-	 *
-	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $gridFactory,
@@ -159,9 +161,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		}
 	}
 
+	protected function _prepareMassaction() {
 
-	protected function _prepareMassaction()
-	{
 		$this->setMassactionIdField('id');
 		$this->getMassactionBlock()->setFormFieldName('id');
 
@@ -172,14 +173,4 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 		return $this;
 	}
-
-
-	public function getRowUrl($row)
-	{
-		return $this->getUrl(
-			'dotdigitalgroup_email/*/edit',
-			['id' => $row->getId()]
-		);
-	}
-
 }

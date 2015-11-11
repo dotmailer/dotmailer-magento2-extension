@@ -1251,7 +1251,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
                 <field id="api_log_time" translate="comment label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Debug Api calls time</label>
+                    <label>Debug Api Calls Time</label>
                     <comment>Set the number in seconds that api calls greater will be logged.</comment>
                 </field>
             </group>

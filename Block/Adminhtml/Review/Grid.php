@@ -11,8 +11,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected $moduleManager;
 	protected $_gridFactory;
-	protected $_objectManager;
 	protected $_reviewFactory;
+	protected $_importedFactory;
 
 	/**
 	 * @param \Magento\Backend\Block\Template\Context $context
@@ -23,16 +23,17 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
 		\Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $gridFactory,
 		\Magento\Framework\Module\Manager $moduleManager,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	) {
+		$this->_importedFactory = $importedFactory;
 		$this->_reviewFactory = $gridFactory;
-		$this->_objectManager = $objectManagerInterface;
 		$this->moduleManager = $moduleManager;
+
 		parent::__construct($context, $backendHelper, $data);
 	}
 
@@ -52,16 +53,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected function _prepareCollection()
 	{
-		$collection = $this->_reviewFactory->create();
-		$this->setCollection($collection);
+		$this->setCollection($this->_reviewFactory->create());
 
-		parent::_prepareCollection();
-		return $this;
+		return parent::_prepareCollection();
 	}
 
 	/**
-	 * Prepare the grid collumns.
 	 * @return $this
+	 * @throws \Exception
 	 */
 	protected function _prepareColumns()
 	{
@@ -93,7 +92,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'type'          => 'options',
 			'escape'        => true,
 			'renderer'		=> 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-			'options'       => $this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported')->getOptions(),
+			'options'       => $this->_importedFactory->create()->getOptions(),
 			'filter_condition_callback' => array($this, 'filterCallbackContact')
 		))->addColumn('created_at', array(
 			'header'        => __('Created At'),

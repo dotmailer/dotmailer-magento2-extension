@@ -13,19 +13,25 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 
 	protected $_gridFactory;
-	protected $_objectManager;
 	protected $_orderFactory;
-
+	protected $_configFactory;
+	protected $_importedFactory;
 
 	/**
+	 * Grid constructor.
+	 *
+	 * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory
+	 * @param \Magento\Sales\Model\Order\ConfigFactory $configFactory
 	 * @param \Magento\Backend\Block\Template\Context $context
 	 * @param \Magento\Backend\Helper\Data $backendHelper
+	 * @param \Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory $gridFactory
 	 * @param \Magento\Framework\Module\Manager $moduleManager
+	 * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	 * @param array $data
-	 *
-	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
+		\Magento\Sales\Model\Order\ConfigFactory $configFactory,
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
 		\Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory $gridFactory,
@@ -33,8 +39,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	) {
+		$this->_importedFactory = $importedFactory;
+		$this->_configFactory = $configFactory;
 		$this->_orderFactory = $gridFactory;
-		$this->_objectManager = $objectManagerInterface;
 		$this->moduleManager = $moduleManager;
 		parent::__construct($context, $backendHelper, $data);
 	}
@@ -84,7 +91,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'index'         => 'order_status',
 			'type'          => 'options',
 			'escape'        => true,
-			'options' => $this->_objectManager->create('Magento\Sales\Model\Order\Config')->getStatuses(),
+			'options' => $this->_configFactory->create()->getStatuses(),
 		))->addColumn('email_imported', array(
 			'header'        => __('Imported'),
 			'align'         => 'center',
@@ -93,7 +100,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'type'          => 'options',
 			'escape'        => true,
 			'renderer'		=> 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-			'options'       => $this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported')->getOptions(),
+			'options'       => $this->_importedFactory->create()->getOptions(),
 			'filter_condition_callback' => array($this, 'filterCallbackContact')
 		))->addColumn('modified', array(
 			'header' => __('Modified'),
@@ -161,17 +168,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			]
 		);
 
-
 		return $this;
-	}
-
-
-	public function getRowUrl($row)
-	{
-		return $this->getUrl(
-			'dotdigitalgroup_email/*/edit',
-			['email_order_id' => $row->getId()]
-		);
 	}
 
 }

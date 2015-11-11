@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Contact;
 
-use Magento\Backend\Block\Widget\Grid as WidgetGrid;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
@@ -11,19 +10,22 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected $moduleManager;
 
-
 	protected $_gridFactory;
 	protected $_storeFactory;
-	protected $_objectManager;
 	protected $_importerFactory;
 
 
 	/**
+	 * Grid constructor.
+	 *
+	 * @param \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $collectionFactory
+	 * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importerFactory
 	 * @param \Magento\Backend\Block\Template\Context $context
 	 * @param \Magento\Backend\Helper\Data $backendHelper
+	 * @param \Magento\Store\Model\System\StoreFactory $storeFactory
+	 * @param \Dotdigitalgroup\Email\Model\ContactFactory $gridFactory
 	 * @param \Magento\Framework\Module\Manager $moduleManager
 	 * @param array $data
-	 *
 	 */
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $collectionFactory,
@@ -59,15 +61,16 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected function _prepareCollection()
 	{
-		$collection = $this->_collectionFactory->create();
-		$this->setCollection($collection);
+		$this->setCollection($this->_collectionFactory->create());
 
 		return parent::_prepareCollection();
 	}
 
 	/**
+	 *
 	 * @return $this
-	 * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+	 * @throws \Exception
+	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	protected function _prepareColumns()
 	{
@@ -192,20 +195,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		return $this;
 	}
 
-
-
-
-	public function getRowUrl($row)
-	{
-		return $this->getUrl(
-			'dotdigitalgroup_email/*/*',
-			['email_contact_id' => $row->getId()]
-		);
-	}
-
-
 	/**
-	 * Custom callback action for the subscribers/contacts.
+	 * Filter subscribers/contacts.
 	 * @param $collection
 	 * @param $column
 	 */

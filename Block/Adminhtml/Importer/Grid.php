@@ -9,19 +9,21 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected $moduleManager;
 	protected $_gridFactory;
-	protected $_objectManager;
 	protected $_importerFactory;
 	protected $statusOptions;
 	protected $modeOptions;
 
 
 	/**
+	 * Grid constructor.
+	 *
+	 * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\ModeFactory $modeFactory
+	 * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\StatusFactory $statusFactory
+	 * @param \Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory $gridFactory
 	 * @param \Magento\Backend\Block\Template\Context $context
 	 * @param \Magento\Backend\Helper\Data $backendHelper
 	 * @param \Magento\Framework\Module\Manager $moduleManager
 	 * @param array $data
-	 *
-	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\ModeFactory $modeFactory,
@@ -30,11 +32,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		\Magento\Backend\Block\Template\Context $context,
 		\Magento\Backend\Helper\Data $backendHelper,
 		\Magento\Framework\Module\Manager $moduleManager,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	) {
 		$this->_importerFactory = $gridFactory;
-		$this->_objectManager = $objectManagerInterface;
 		$this->moduleManager = $moduleManager;
 		$this->statusOptions = $statusFactory->create()->getOptions();
 		$this->modeOptions = $modeFactory->create()->getOptions();
@@ -58,11 +58,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	protected function _prepareCollection()
 	{
-		$collection = $this->_importerFactory->create();
-		$this->setCollection($collection);
+		$this->setCollection($this->_importerFactory->create());
 
-		parent::_prepareCollection();
-		return $this;
+		return parent::_prepareCollection();
 	}
 
 	/**
@@ -145,22 +143,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 		return parent::_prepareColumns();
 	}
-	/**
-	 * Callback action for the imported subscribers/contacts.
-	 *
-	 * @param $collection
-	 * @param $column
-	 */
-	public function filterCallbackContact($collection, $column)
-	{
-		$field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
-		$value = $column->getFilter()->getValue();
-		if ($value == 'null') {
-			$collection->addFieldToFilter($field, array('null' => true));
-		} else {
-			$collection->addFieldToFilter($field, array('notnull' => true));
-		}
-	}
 
 	/**
 	 * @return $this
@@ -179,10 +161,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			]
 		);
 
-
 		return $this;
 	}
-
-
 
 }

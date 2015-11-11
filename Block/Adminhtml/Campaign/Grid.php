@@ -15,12 +15,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	protected $_campaignFactory;
 
 	/**
+	 * Grid constructor.
+	 *
+	 * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $gridFactory
 	 * @param \Magento\Backend\Block\Template\Context $context
 	 * @param \Magento\Backend\Helper\Data $backendHelper
 	 * @param \Magento\Framework\Module\Manager $moduleManager
+	 * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	 * @param array $data
-	 *
-	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
 	 */
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $gridFactory,
@@ -157,9 +159,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		}
 	}
 
+	protected function _prepareMassaction() {
 
-	protected function _prepareMassaction()
-	{
 		$this->setMassactionIdField('id');
 		$this->getMassactionBlock()->setFormFieldName('id');
 		$this->getMassactionBlock()->addItem('delete', array (
@@ -169,19 +170,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			)
 		);
 
-		//$this->getMassactionBlock()->addItem('resend', ['label'=>  __('Resend'),'url'=> $this->getUrl('*/*/massResend')]);
-		//$this->getMassactionBlock()->addItem('re-create', ['label'=> __('Recreate'),'url'=>$this->getUrl('*/*/massRecreate')]);
 		return $this;
-	}
-
-
-
-	public function getRowUrl($row)
-	{
-		return $this->getUrl(
-			'dotdigitalgroup_email/*/edit',
-			['id' => $row->getId()]
-		);
 	}
 
 }

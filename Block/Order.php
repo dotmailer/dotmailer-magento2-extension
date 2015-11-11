@@ -13,9 +13,14 @@ class Order  extends \Magento\Framework\View\Element\Template
 	public $scopeManager;
 	public $reviewHelper;
 	public $objectManager;
-
+	protected $_orderFactory;
+	protected $_reviewFactory;
+	protected $_reviewHelper;
 
 	public function __construct(
+		\Magento\Review\Model\ReviewFactory $reviewFactory,
+		\Dotdigitalgroup\Email\Helper\Review $reviewHelper,
+		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Review $reviewHelper,
@@ -27,6 +32,9 @@ class Order  extends \Magento\Framework\View\Element\Template
 	)
 	{
 		parent::__construct( $context, $data );
+		$this->_reviewHelper = $reviewHelper;
+		$this->_reviewFactory = $reviewFactory;
+		$this->_orderFactory = $orderFactory;
 		$this->helper = $helper;
 		$this->reviewHelper = $reviewHelper;
 		$this->registry = $registry;
@@ -53,7 +61,7 @@ class Order  extends \Magento\Framework\View\Element\Template
         if (! $order) {
             if(!$orderId)
                 return false;
-            $order = $this->objectManager->create('Magento\Sales\Model\Order')->load($orderId);
+            $order = $this->_orderFactory->create()->load($orderId);
             $this->registry->unregister('current_order'); // additional measure
             $this->registry->register('current_order', $order);
         }
@@ -79,7 +87,7 @@ class Order  extends \Magento\Framework\View\Element\Template
         if($order->getCustomerIsGuest())
             return $items;
 
-        if(! $this->objectManager->create('Dotdigitalgroup\Email\Helper\Review')->isNewProductOnly($websiteId))
+        if(! $this->_reviewHelper->create()->isNewProductOnly($websiteId))
             return $items;
 
         $customerId = $order->getCustomerId();
@@ -88,13 +96,13 @@ class Order  extends \Magento\Framework\View\Element\Template
         {
             $productId = $item->getProduct()->getId();
 
-            $collection = $this->objectManager->create('Magento\Review\Model\Review')->getCollection();
-            $collection->addCustomerFilter($customerId)
+            $collection = $this->_reviewFactory->create()->getCollection()
+                ->addCustomerFilter($customerId)
                 ->addStoreFilter($order->getStoreId())
                 ->addFieldToFilter('main_table.entity_pk_value', $productId);
 
             //remove item if customer has already placed review on this item
-            if($collection->getSize())
+            if ($collection->getSize())
                 unset($items[$key]);
         }
 
