@@ -19,7 +19,7 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
 	public function __construct(
 		\Magento\Catalog\Model\ProductFactory $productFactory,
 		\Magento\Catalog\Model\CategoryFactory $categtoryFactory,
-		\Magento\Reports\Model\Resource\Product\CollectionFactory $proudctCollection,
+		\Magento\Reports\Model\ResourceModel\Product\CollectionFactory $proudctCollection,
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,

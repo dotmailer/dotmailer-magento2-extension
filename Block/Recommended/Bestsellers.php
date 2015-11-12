@@ -14,7 +14,6 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
-	public $objectManager;
 
 	protected $_localeDate;
 
@@ -28,8 +27,7 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Magento\CatalogInventory\Model\StockFactory $stockFactory,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
-		\Magento\Reports\Model\Resource\Product\Sold\CollectionFactory $productSoldFactory,
+		\Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
 		array $data = []
 	)
 	{
@@ -41,10 +39,8 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 		$this->recommnededHelper = $recommended;
 		$this->_categoryFactory = $categoryFactory;
 		$this->_productSoldFactory = $productSoldFactory;
-
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
-		$this->objectManager = $objectManagerInterface;
 		parent::__construct( $context, $data );
 	}
 
@@ -54,8 +50,8 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 	 */
 	public function getLoadedProductCollection()
 	{
-        $mode = $this->getRequest()->getActionName();
-        $limit  = $this->recommnededHelper->getDisplayLimitByMode($mode);
+		$mode = $this->getRequest()->getActionName();
+		$limit  = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  =  $this->recommnededHelper->getTimeFromConfig($mode);
 	    $to = $this->_localeDate->date();
 	    $productCollection = $this->_productSoldFactory->create()
