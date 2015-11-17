@@ -1,0 +1,39 @@
+<script>
+
+	require(['prototype', 'domReady!'], function(){
+
+//<![CDATA[
+
+		$('connector_data_mapping_dynamic_datafield_datafield_button').on('click', function () {
+
+			var datafield_name  	= $('connector_data_mapping_dynamic_datafield_datafield_name').value;
+			var datafield_type  	= $('connector_data_mapping_dynamic_datafield_datafield_type').value;
+			var datafield_default  	= $('connector_data_mapping_dynamic_datafield_datafield_default').value;
+			var datafield_access    = $('connector_data_mapping_dynamic_datafield_datafield_access').value;
+
+
+			params = {
+				name : datafield_name,
+				type : datafield_type,
+				deafult : datafield_default,
+				visiblity : datafield_access
+			}
+
+			new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+				parameters: params,
+				onComplete: function(transport) {
+					window.location.reload();
+				}
+			});
+		});
+
+//]]
+	});
+
+</script>
+<div class="actions actions-create-datafield">
+	<div id="validation_result" class="message-validation hidden"></div>
+	<button class="action-create-datafield" type="button" id="<?php echo $block->getHtmlId() ?>">
+		<span><?php echo $block->escapeHtml($block->getButtonLabel()) ?></span>
+	</button>
+</div>

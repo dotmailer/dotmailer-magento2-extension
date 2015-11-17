@@ -1,0 +1,6 @@
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Core/etc/layout_generic.xsd">
+    <update handle="formkey"/>
+    <container name="root">
+        <block class="Dotdigitalgroup\Email\Block\Connect" name="dotdigitalgroup.connect.container" />
+    </container>
+</layout>

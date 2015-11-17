@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Dotdigitalgroup_Email::studio.css"/>
+    </head>
+    <update handle="styles" />
+    <body>
+        <referenceContainer name="content">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Studio" name="mage.system.currencysymbol" template="Dotdigitalgroup_Email::automation/iframe.phtml"/>
+        </referenceContainer>
+    </body>
+</page>
+

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Cron/etc/crontab.xsd">
+    <group id="default">
+        <job name="ddg_automation_customer_subscriber_guest_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="contactSync">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="ddg_automation_importer" instance="Dotdigitalgroup\Email\Model\Cron" method="emailImporter">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+        <job name="ddg_automation_status" instance="Dotdigitalgroup\Email\Model\Cron" method="syncAutomation">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="ddg_automation_abandonedcarts" instance="Dotdigitalgroup\Email\Model\Cron" method="abandonedCarts">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+        <job name="ddg_automation_reviews_and_wishlist" instance="Dotdigitalgroup\Email\Model\Cron" method="reviewsAndWishlist">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="ddg_automation_campaign" instance="Dotdigitalgroup\Email\Model\Cron" method="sendCampaigns">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+        <job name="ddg_automation_order_and_quote_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="orderAndQuoteSync">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="ddg_automation_cleaner" instance="Dotdigitalgroup\Email\Model\Cron" method="emailImporter">
+            <schedule>0 0 1 * *</schedule>
+        </job>
+        <job name="ddg_automation_catalog_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="catalogSync">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+    </group>
+</config>
