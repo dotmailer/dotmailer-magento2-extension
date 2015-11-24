@@ -193,7 +193,7 @@ class Proccessor
 				}
 			} elseif ($item->getImportMode() == self::MODE_SINGLE_DELETE) { //import to single delete
 				$importData = unserialize($item->getImportData());
-				$result = $client->deleteContactsTransactionalData($importData->id, $item->getImportType());
+				$result = $client->deleteContactsTransactionalData($importData[0], $item->getImportType());
 				if (isset($result->message)) {
 					$error = true;
 				}

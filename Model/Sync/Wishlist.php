@@ -199,7 +199,7 @@ class Wishlist
 				$this->_proccessorFactory->create()
 					->registerQueue(
 						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
-						$connectorWishlist,
+						array($wishlist->getId()),
 						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
 						$website->getId()
 					);
