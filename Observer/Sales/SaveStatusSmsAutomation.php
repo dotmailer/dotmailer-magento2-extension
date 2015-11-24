@@ -69,6 +69,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 				->loadByOrderId($order->getEntityId(), $order->getQuoteId());
 			//reimport email order
 			$emailOrder->setUpdatedAt($order->getUpdatedAt())
+					   ->setCreatedAt($order->getUpdatedAt())
 			           ->setStoreId($storeId)
 			           ->setOrderStatus($status);
 			if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
