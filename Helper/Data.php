@@ -1005,4 +1005,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 		return $email;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function isMailCheckEnabledForCurrentStore()
+    {
+        $store = $this->_storeManager->getStore();
+        return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_MAILCHECK_ENABLED, 'store', $store);
+    }
 }
