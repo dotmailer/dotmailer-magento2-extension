@@ -1014,4 +1014,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $store = $this->_storeManager->getStore();
         return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_MAILCHECK_ENABLED, 'store', $store);
     }
+
+    public function getEmailCaptureUrl()
+    {
+        return $this->_storeManager->getStore()->getUrl('connector/ajax/emailcapture');
+    }
 }

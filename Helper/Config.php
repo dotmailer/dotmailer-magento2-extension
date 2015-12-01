@@ -177,7 +177,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     //Abandoned Cart
     const XML_PATH_CONNECTOR_EMAIL_CAPTURE                  = 'connector_configuration/abandoned_carts/email_capture';
     const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT           = 'connector_configuration/abandoned_carts/limits';
-	const XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER       = 'connector_configuration/abandoned_carts/email_capture_newsletter';
+	const XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER       = 'connector_configuration/abandoned_carts/easy_capture_newsletter';
 	const XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED           = 'connector_configuration/abandoned_carts/link_enabled';
     const XML_PATH_CONNECTOR_CONTENT_LINK_TEXT              = 'connector_configuration/abandoned_carts/link_text';
     const XML_PATH_CONNECTOR_CONTENT_CART_URL               = 'connector_configuration/abandoned_carts/cart_url';
