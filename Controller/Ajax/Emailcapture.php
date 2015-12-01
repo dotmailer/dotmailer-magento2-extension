@@ -9,6 +9,13 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     protected $_helper;
     protected $_checkoutSession;
 
+    /**
+     * Emailcapture constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Checkout\Model\Session $session
+     * @param \Magento\Framework\App\Action\Context $context
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Checkout\Model\Session $session,
@@ -20,6 +27,9 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
         parent::__construct( $context );
     }
 
+    /*
+     * easy email capture for Newsletter and Checkout
+     */
     public function execute()
     {
         if($this->getRequest()->getParam('email') && $quote = $this->_checkoutSession->getQuote()){
