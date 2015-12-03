@@ -3,6 +3,23 @@
     <?php
         $style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE));
     ?>
+    <style>
+        .edc-coupon{
+            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR);?>;
+            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE);?>;
+        <?php if(in_array('bold', $style)): ?>
+            font-weight: bold;
+        <?php endif; ?>
+        <?php if(in_array('italic', $style)): ?>
+            font-style: italic;
+        <?php endif; ?>
+        <?php if(in_array('underline', $style)): ?>
+            text-decoration: underline;
+        <?php endif; ?>
+            font-family: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT);?>;
+            background-color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR);?>;
+        }
+    </style>
     <div class="edc-coupon">
         <?php echo $coupon; ?>
     </div>

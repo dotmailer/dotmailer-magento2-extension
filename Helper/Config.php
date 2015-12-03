@@ -149,26 +149,26 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS     = 'connector_configuration/admin/disable_newsletter_success';
     const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS       = 'connector_configuration/admin/disable_customer_success';
     //Dynamic Content Styling
-    const XML_PATH_CONNECTOR_DYNAMIC_STYLING                = 'connector_configuration/dynamic_content_style/dynamic_syling';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR             = 'connector_configuration/dynamic_content_style/name_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_STYLING                = 'connector_configuration/dynamic_content_style/dynamic_styling';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR             = 'connector_configuration/dynamic_content_style/font_color';
     const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE         = 'connector_configuration/dynamic_content_style/font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE             = 'connector_configuration/dynamic_content_style/name_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE             = 'connector_configuration/dynamic_content_style/font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR            = 'connector_configuration/dynamic_content_style/price_color';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE        = 'connector_configuration/dynamic_content_style/price_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE            = 'connector_configuration/dynamic_content_style/price_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR             = 'connector_configuration/dynamic_content_style/link_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE         = 'connector_configuration/dynamic_content_style/link_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE             = 'connector_configuration/dynamic_content_style/link_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT               = 'connector_configuration/dynamic_content_style/font_picker';
-    const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR           = 'connector_configuration/dynamic_content_style/doc_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE            = 'connector_configuration/dynamic_content_style/price_font_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR             = 'connector_configuration/dynamic_content_style/product_link_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE         = 'connector_configuration/dynamic_content_style/product_link_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE             = 'connector_configuration/dynamic_content_style/product_link_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT               = 'connector_configuration/dynamic_content_style/font';
+    const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR           = 'connector_configuration/dynamic_content_style/color';
     const XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR            = 'connector_configuration/dynamic_content_style/other_color';
     const XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE        = 'connector_configuration/dynamic_content_style/other_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE            = 'connector_configuration/dynamic_content_style/other_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR           = 'connector_configuration/dynamic_content_style/coupon_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE            = 'connector_configuration/dynamic_content_style/other_font_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR           = 'connector_configuration/dynamic_content_style/coupon_font_color';
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE       = 'connector_configuration/dynamic_content_style/coupon_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE           = 'connector_configuration/dynamic_content_style/coupon_styles';
+    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE           = 'connector_configuration/dynamic_content_style/coupon_font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT            = 'connector_configuration/dynamic_content_style/coupon_font_picker';
-    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR        = 'connector_configuration/dynamic_content_style/coupon_doc_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR        = 'connector_configuration/dynamic_content_style/coupon_background_color';
 
     //Catalog
     const XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES            = 'connector_configuration/catalog_sync/catalog_values';
@@ -188,7 +188,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS   = 'connector_configuration/address_book_pref/can_show_fields';
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS       = 'connector_configuration/address_book_pref/fields_to_show';
     //Dynamic Content
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT          = 'connector_configuration/dynamic_content_edit/link_text';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT          = 'connector_configuration/dynamic_content/link_text';
     //Mailcheck
     const XML_PATH_MAILCHECK_ENABLED                            = 'connector_configuration/mailcheck/enabled';
 
