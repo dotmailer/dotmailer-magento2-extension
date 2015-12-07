@@ -95,4 +95,31 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 		$conn->delete($this->getTableName('setup_module'), $cond);
 
 	}
+
+	public function unsubscribe($data)
+	{
+		$write = $this->getConnection( );
+		$emails = '"' . implode('","', $data) . '"';
+
+		try{
+			//un-subscribe from the email contact table.
+			$write->update(
+					$this->getMainTable(),
+					array(
+							'is_subscriber' => new \Zend_Db_Expr('null'),
+							'suppressed' => '1'
+					),
+					"email IN ($emails)"
+			);
+
+			// un-subscribe newsletter subscribers
+			$write->update(
+					$this->getTable('newsletter_subscriber'),
+					array('subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED),
+					"subscriber_email IN ($emails)"
+			);
+		}catch (\Exception $e){
+            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+		}
+	}
 }
