@@ -32,18 +32,32 @@ class Proccessor
 		'Failed', 'ExceedsAllowedContactLimit', 'NotAvailableInThisVersion'
 	);
 
+	private $_reasons = array(
+		'Globally Suppressed',
+		'Blocked',
+		'Unsubscribed',
+		'Hard Bounced',
+		'Isp Complaints',
+		'Domain Suppressed',
+		'Failures',
+		'Invalid Entries',
+		'Mail Blocked'
+	);
+
 	protected $_helper;
 	protected $_fileHelper;
 	protected $_importerFactory;
 
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\File $fileHelper,
 		\Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory $importerCollectionFactory
 
 	){
+		$this->_contactFactory = $contactFactory;
 		$this->_importerFactory = $importerFactory;
 		$this->_helper = $helper;
 		$this->_fileHelper = $fileHelper;
@@ -116,6 +130,16 @@ class Proccessor
 						     ->setMessage('')
 						     ->save();
 						$this->_processQueue();
+
+						if (
+							$item->getImportType() == self::IMPORT_TYPE_CONTACT or
+							$item->getImportType() == self::IMPORT_TYPE_SUBSCRIBERS or
+							$item->getImportType() == self::IMPORT_TYPE_GUEST
+
+						){
+							if($item->getImportId())
+								$this->_processContactImportReportFaults($item->getImportId(), $websiteId);
+						}
 
 					} elseif (in_array($response->status, $this->import_statuses)) {
 						$item->setImportStatus(self::FAILED)
@@ -246,6 +270,34 @@ class Proccessor
 		}
 	}
 
+
+	private function _processContactImportReportFaults($id, $websiteId) {
+
+		$client = $this->_helper->getWebsiteApiClient($websiteId);
+		$data = $client->getContactImportReportFaults($id);
+		//check if any response
+		if ($data) {
+
+			$data = $this->_remove_utf8_bom($data);
+
+			$fileName = $this->_fileHelper->getOutputFolder() . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
+			//$io = new \Varien_Io_File();
+			$check = true;
+			///$io->write($fileName, $data);
+
+			if ($check){
+				$csvArray = $this->_csv_to_array($fileName);
+				//$io->rm($fileName);
+
+
+				$this->_contactFactory->create()
+					->unsubscribe($csvArray);
+			} else {
+				$this->_helper->log('_processContactImportReportFaults: cannot save data to CSV file.');
+			}
+		}
+	}
+
 	/**
 	 * get queue items from importer.
 	 *
@@ -269,5 +321,41 @@ class Proccessor
 			return $this->importerCollection->getFirstItem();
 		}
 		return false;
+	}
+
+
+	private function _csv_to_array($filename)
+	{
+		if(!file_exists($filename) || !is_readable($filename))
+			return FALSE;
+
+		$header = NULL;
+		$data = array();
+		if (($handle = fopen($filename, 'r')) !== FALSE)
+		{
+			while (($row = fgetcsv($handle)) !== FALSE)
+			{
+				if(!$header)
+					$header = $row;
+				else
+					$data[] = array_combine($header, $row);
+			}
+			fclose($handle);
+		}
+
+		$contacts = array();
+		foreach($data as $item){
+			if(in_array($item['Reason'], $this->_reasons))
+				$contacts[] = $item['email'];
+		}
+
+		return $contacts;
+	}
+
+	private function _remove_utf8_bom($text)
+	{
+		$bom = pack('H*','EFBBBF');
+		$text = preg_replace("/^$bom/", '', $text);
+		return $text;
 	}
 }

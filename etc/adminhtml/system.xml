@@ -1170,10 +1170,6 @@
                     <label>Delete All Contact Ids</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Deletecontactids</frontend_model>
                 </field>
-                <field id="suppressed_contacts" translate="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Refresh Suppression</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Suppressedcontacts</frontend_model>
-                </field>
                 <field id="reset_all" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Reset Tables</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resettables</frontend_model>
