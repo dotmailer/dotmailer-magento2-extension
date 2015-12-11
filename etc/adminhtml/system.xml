@@ -886,10 +886,30 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="ddg_transactional" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>DDG Transactional</label>
-                <field id="enabled" translate="comment label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[<p id="smtp-warning" style="display:inline;" class="notice">DOTMAILER TRANSACTIONAL EMAIL EXTENSION HAS TO BE INSTALLED AND ENABLED IN ORDER TO USE THIS FEATURE.</p>]]></comment>
+                </field>
+                <field id="send_mode" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Send Mode</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Mode</source_model>
+                </field>
+                <field id="host" translate="label" sortOrder="30" type="text" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Host</label>
+                </field>
+                <field id="username" translate="label" sortOrder="40" type="text" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Username</label>
+                </field>
+                <field id="password" translate="label" sortOrder="50" type="password" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Password</label>
+                </field>
+                <field id="port" translate="label" sortOrder="60" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Port</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Port</source_model>
+                </field>
+                <field id="debug" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Debug</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
@@ -1084,7 +1104,7 @@
                     <comment><![CDATA[Please provide the link text. If no text provided then default text will be used.]]></comment>
                 </field>
             </group>
-            <group id="amdin" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="admin" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Admin</label>
                 <field id="disable_newsletter_success" translate="label" type="select" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Disable Newsletter Success</label>
@@ -1133,6 +1153,13 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Publicdatafields</source_model>
                     <comment><![CDATA[Only data fields with visibility public can be shown to customers. You can create more data fields within the Data Mapping section.]]></comment>
                     <depends><field id="show_datafields">1</field></depends>
+                </field>
+            </group>
+            <group id="mailcheck" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>MailCheck Settings</label>
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
@@ -1292,6 +1319,29 @@
                 <field id="custom_authorization" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Custom Authorization URI</label>
                     <comment><![CDATA[Enter the custom authorization url. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
+                </field>
+            </group>
+            <group id="cron_schedules" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Manage Cron Timings</label>
+                <field id="importer" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Importer</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsone</source_model>
+                </field>
+                <field id="contact" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Contact</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                </field>
+                <field id="order_quote" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Order And Quote</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                </field>
+                <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>catalog</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                </field>
+                <field id="review_wishlist" translate="label" sortOrder="50" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Review And Wishlist</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
             </group>
         </section>

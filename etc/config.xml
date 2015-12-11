@@ -344,6 +344,13 @@
             <ip_restriction>
                 <ip_addresses>94.143.111.2, 94.143.111.3</ip_addresses>
             </ip_restriction>
+            <cron_schedules>
+                <importer>*/5 * * * *</importer>
+                <contact>*/15 * * * *</contact>
+                <order_quote>*/15 * * * *</order_quote>
+                <catalog>*/15 * * * *</catalog>
+                <review_wishlist>*/15 * * * *</review_wishlist>
+            </cron_schedules>
         </connector_developer_settings>
 
     </default>

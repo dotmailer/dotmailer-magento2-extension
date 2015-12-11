@@ -8,6 +8,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
     <preference for="Dotdigitalgroup\Email\Api\Data\ContactSearchResultsInterface" type="Magento\Framework\Api\SearchResults" />
     <preference for="Dotdigitalgroup\Email\Api\Data\ContactInterface" type="Dotdigitalgroup\Email\Model\Contact" />
+    <preference for="Magento\Framework\Mail\Transport" type="Dotdigitalgroup\Email\Model\Mail\Transport"/>
+    <preference for="Magento\Newsletter\Model\Subscriber" type="Dotdigitalgroup\Email\Model\Newsletter\Sub"/>
 
     <virtualType name="ContactGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
         <arguments>

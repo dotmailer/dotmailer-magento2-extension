@@ -1132,33 +1132,32 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         return $response;
     }
 
-	/**
-	 * get contact import report faults.
-	 *
-	 * @param $id
-	 *
-	 * @return bool|null
-	 * @throws \Exception
-	 */
-	public function getContactImportReportFaults($id)
-	{
-		$url = self::REST_CONTACTS_IMPORT . $id . '/report-faults';
-		$this->setUrl($url)
-		     ->setVerb('GET');
+    /**
+     * get contact import report faults
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    public function getContactImportReportFaults($id)
+    {
+        $url = self::REST_CONTACTS_IMPORT . $id . '/report-faults';
+        $this->setUrl($url)
+            ->setVerb('GET');
 
-		$this->setIsNotJsonTrue();
-		$response = $this->execute();
+        $this->setIsNotJsonTrue();
+        $response = $this->execute();
 
-		//if string is JSON than there is a error message
-		if(json_decode($response)){
-			//log error
-			if (isset($response->message) && ! in_array($response->message, $this->exludeMessages)) {
-				$message = 'GET CONTACT IMPORT REPORT FAULTS: ' . $response->message;
-				$this->_helper->log($message);
-			}
-			return false;
-		}
+        //if string is JSON than there is a error message
+        if(json_decode($response)){
+            //log error
+            if (isset($response->message)) {
+                $message = 'GET CONTACT IMPORT REPORT FAULTS: ' . $response->message;
+                $this->_helper->log($message);
+            }
+            return false;
+        }
 
-		return $response;
-	}
+        return $response;
+    }
 }

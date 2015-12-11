@@ -156,5 +156,4 @@ class Subscriber
 
 	    return $updated;
     }
-
 }

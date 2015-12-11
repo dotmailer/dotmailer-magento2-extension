@@ -634,6 +634,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS, 'store', $store);
     }
 
+	/**
+	 * @param int $store
+	 * @return mixed
+	 */
+	public function isCustomerSuccessDisabled($store = 0)
+	{
+		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS, 'store', $store);
+	}
+
     /**
      * get sales_flat_order table description
      *
@@ -735,17 +744,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $client = $this->getWebsiteApiClient($website);
             $client->updateContactDatafieldsByEmail($email, $data);
         }
-    }
-
-    /**
-     * check connector SMTP installed/active status
-     * @return boolean
-     */
-    public function isSmtpEnabled()
-    {
-	    //@todo get the module config
-	    return false;
-        //return (bool)Mage::getConfig()->getModuleConfig('Ddg_Transactional')->is('active', 'true');
     }
 
 	/**
@@ -1005,4 +1003,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 		return $email;
 	}
+
+    /**
+     * Check if mailcheck feature is enabled for current store
+     *
+     * @return mixed
+     */
+    public function isMailCheckEnabledForCurrentStore()
+    {
+        $store = $this->_storeManager->getStore();
+        return (boolean) $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_MAILCHECK_ENABLED, 'store', $store);
+    }
+
+    public function getEmailCaptureUrl()
+    {
+        return $this->_storeManager->getStore()->getUrl('connector/ajax/emailcapture');
+    }
 }

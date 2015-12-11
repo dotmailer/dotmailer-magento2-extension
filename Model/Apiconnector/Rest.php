@@ -14,8 +14,8 @@ abstract class Rest
 	protected $responseBody;
 	protected $responseInfo;
 	protected $curlError;
-	protected $isNotJson = false;
 	protected $_helper;
+	protected $isNotJson = false;
 
 	public function __construct(
 		$website = 0,
@@ -294,15 +294,14 @@ abstract class Rest
 	 *
 	 * @param $ch
 	 */
-
 	protected function doExecute(&$ch)
 	{
 		$this->setCurlOpts($ch);
 
-		if($this->isNotJson)
-			$this->responseBody = curl_exec($ch);
-		else
-			$this->responseBody = json_decode(curl_exec($ch));
+        if($this->isNotJson)
+            $this->responseBody = curl_exec($ch);
+        else
+            $this->responseBody = json_decode(curl_exec($ch));
 
 		$this->responseInfo	= curl_getinfo($ch);
 
@@ -490,9 +489,9 @@ abstract class Rest
 		return false;
 	}
 
-	public function setIsNotJsonTrue()
-	{
-		$this->isNotJson = true;
-		return $this;
-	}
+    public function setIsNotJsonTrue()
+    {
+        $this->isNotJson = true;
+        return $this;
+    }
 }
