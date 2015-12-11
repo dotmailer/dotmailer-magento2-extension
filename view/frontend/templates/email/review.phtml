@@ -13,7 +13,7 @@ $image = 'category_page_list';
 
 	<?php if($items && is_array($items)): ?>
 		<?php foreach ($items as $item) :?>
-			<?php $_product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($item->getProductId()); ?>
+			<?php $_product = $item->getProduct(); ?>
 			<?php  if($i == 0):?>
 				<?php
 				$name_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE));
@@ -99,7 +99,7 @@ $image = 'category_page_list';
 			<td style="vertical-align: text-top; padding-right: 2px;">
 				<a href="<?php echo $block->getUrl('review/product/list', array('id'=> $_product->getId())). $this->reviewHelper->getAnchor($website) ?>"
 				   title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image">
-					<?php echo $imageBlock->init($_product, $image)->toHtml() ?>
+					<?php echo $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
 				</a>
 				<div class="product-name" align="center"><b><?php echo substr($_product->getName(), 0, 40);?></b></div>
 				<div align="center">

@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
-class Recentlyviewed extends \Magento\Framework\View\Element\Template
+class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	public $helper;
 	public $priceHelper;
@@ -15,7 +15,7 @@ class Recentlyviewed extends \Magento\Framework\View\Element\Template
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
-		\Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,

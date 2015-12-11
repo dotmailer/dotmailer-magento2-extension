@@ -180,12 +180,15 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         }elseif($config == 'recentlyviewed')
             $period = $this->scopeConfig->getValue(self::XML_PATH_MOSTVIEWED_TIME_PERIOD);
 
-        if ($period == 'week') {
+        if ($period == 'week' || $period == 'W') {
             $sub = \Zend_Date::WEEK;
         } elseif ($period == 'month' || $period == 'M') {
             $sub = \Zend_Date::MONTH;
         } elseif ($period == 'year') {
             $sub = \Zend_Date::YEAR;
+        }
+        elseif ($period == 'D') {
+            $sub = \Zend_Date::DAY;
         }
 
         if (isset($sub)) {

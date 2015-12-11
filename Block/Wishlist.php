@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
-class Wishlist extends \Magento\Framework\View\Element\Template
+class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	protected $_website;
 
@@ -16,7 +16,7 @@ class Wishlist extends \Magento\Framework\View\Element\Template
 	public function __construct(
 		\Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
 		\Magento\Customer\Model\CustomerFactory $customerFactory,
-		\Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Catalog\Block\Product\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,

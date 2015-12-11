@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
-class Order  extends \Magento\Framework\View\Element\Template
+class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
 	protected $_quote;
@@ -25,7 +25,7 @@ class Order  extends \Magento\Framework\View\Element\Template
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Review $reviewHelper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
-		\Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
@@ -87,7 +87,7 @@ class Order  extends \Magento\Framework\View\Element\Template
         if($order->getCustomerIsGuest())
             return $items;
 
-        if(! $this->_reviewHelper->create()->isNewProductOnly($websiteId))
+        if(! $this->_reviewHelper->isNewProductOnly($websiteId))
             return $items;
 
         $customerId = $order->getCustomerId();
