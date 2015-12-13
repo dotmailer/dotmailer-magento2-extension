@@ -138,6 +138,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     //Data Fields
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS                    = 'connector_configuration/data_fields/order_status';
+    const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE           = 'connector_configuration/data_fields/brand_attribute';
 
     //Transactional Data
     const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS                  = 'connector_configuration/transactional_data/order_statuses';

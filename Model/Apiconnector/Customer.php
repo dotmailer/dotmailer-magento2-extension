@@ -30,8 +30,6 @@ class Customer
 		\Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed'
 	);
 
-	private $attribute_check = false;
-
 	/**
 	 * constructor, mapping hash to map.
 	 *
@@ -752,18 +750,8 @@ class Customer
 	 */
 	public function getFirstBrandPur()
 	{
-		if($this->attribute_check){
-			$id = $this->customer->getProductIdForFirstBrand();
-			if($id){
-				$brand = $this->_productFactory->create()
-		             ->setStoreId($this->customer->getStoreId())
-		             ->load($id)
-		             ->getAttributeText('manufacturer');
-				if($brand)
-					return $brand;
-			}
-		}
-		return "";
+		$id = $this->customer->getProductIdForFirstBrand();
+        return $this->_getBrandValue($id);
 	}
 
 	/**
@@ -773,20 +761,26 @@ class Customer
 	 */
 	public function getLastBrandPur()
 	{
-		if($this->attribute_check){
-			$id = $this->customer->getProductIdForLastBrand();
-			if ($id) {
-				$brand = $this->_productFactory->create()
-		             ->setStoreId($this->customer->getStoreId())
-		             ->load($id)
-		             ->getAttributeText('manufacturer');
-				if($brand)
-					return $brand;
-			}
-			return "";
-		}
+        $id = $this->customer->getProductIdForLastBrand();
+        return $this->_getBrandValue($id);
 	}
 
+    private function _getBrandValue($id)
+    {
+        $attribute = $this->_helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            $this->customer->getWebsiteId()
+        );
+        if($id && $attribute){
+            $brand = $this->_productFactory->create()
+                ->setStoreId($this->customer->getStoreId())
+                ->load($id)
+                ->getAttributeText($attribute);
+            if($brand)
+                return $brand;
+        }
+        return "";
+    }
 
 	/**
 	 * Reward points balance.

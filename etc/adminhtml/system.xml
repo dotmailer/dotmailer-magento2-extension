@@ -925,6 +925,11 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
                     <comment><![CDATA[Select multiple statuses by pressing Ctrl button while selecting]]></comment>
                 </field>
+                <field id="brand_attribute" translate="comment label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Brand Attribute</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
+                    <comment><![CDATA[Select your brand attribute. If default attribute 'manufacturer' exist than will be selected automatically.]]></comment>
+                </field>
             </group>
             <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Tracking</label>
