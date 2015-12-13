@@ -1326,7 +1326,13 @@
                     <comment><![CDATA[Enter the custom authorization url. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
                 </field>
             </group>
-            <group id="cron_schedules" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="ip_restriction" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Dynamic Pages IP Restriction</label>
+                <field id="ip_addresses" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label></label>
+                </field>
+            </group>
+            <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Manage Cron Timings</label>
                 <field id="importer" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Importer</label>

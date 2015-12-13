@@ -15,6 +15,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	protected $_contactFactory;
 	protected $_productMetadata;
 	protected $_sessionModel;
+    protected $_remoteAddress;
 
 	public function __construct(
 		//\Magento\Framework\ModuleFactory $module,
@@ -26,7 +27,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\App\Helper\Context $context,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
-		\Magento\Store\Model\StoreManagerInterface $storeManager
+		\Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
 	)
 	{
 
@@ -37,15 +39,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		$this->_resourceConfig = $resourceConfig;
 		$this->_storeManager = $storeManager;
 		$this->_objectManager = $objectManager;
+        $this->_remoteAddress = $remoteAddress;
 
 		parent::__construct($context);
-	}
-
-	protected function _getConfigValue($path, $contextScope, $contextScopeId = null) {
-
-		$config = $this->scopeConfig->getValue($path, $contextScope, $contextScopeId);
-
-		return $config;
 	}
 
     /**
@@ -63,39 +59,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	        $website);
 
         return $enabled;
-    }
-
-    /**
-     * @param int/object $website
-     * @return mixed
-     */
-    public function getApiUsername($website = 0)
-    {
-	    $website = $this->_storeManager->getWebsite($website);
-	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
-		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-		    $website->getId()
-	    );
-    }
-
-    public function getApiPassword($website = 0)
-    {
-	    $website = $this->_storeManager->getWebsite($website);
-		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
-			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-			$website->getId()
-		);
-    }
-
-	/**
-	 * Get all websites.
-	 * @param bool|false $default
-	 *
-	 * @return \Magento\Store\Api\Data\WebsiteInterface[]
-	 */
-    public function getWebsites($default = false)
-    {
-        return $this->_storeManager->getWebsites($default);
     }
 
 	/**
@@ -118,6 +81,35 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         return true;
     }
+
+    public function authIpAddress()
+    {
+        if ($ipString = $this->_getConfigValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES, 'default'
+        )) {
+            //string to array
+            $ipArray = explode(',', $ipString);
+
+            //remove white spaces
+            foreach($ipArray as $key => $ip){
+                $ipArray[$key] = preg_replace('/\s+/', '', $ip);
+            }
+
+            //ip address
+            $ipAddress = $this->_remoteAddress->getRemoteAddress();
+
+            if(in_array($ipAddress, $ipArray))
+                return true;
+        }
+        return false;
+    }
+
+	protected function _getConfigValue($path, $contextScope, $contextScopeId = null) {
+
+		$config = $this->scopeConfig->getValue($path, $contextScope, $contextScopeId);
+
+		return $config;
+	}
 
     public function getMappedCustomerId()
     {
@@ -201,11 +193,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID, 'default');
     }
 
-    public function getLastQuoteId()
-    {
-	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID, 'default');
-    }
-
     public function log($data, $filename = 'api.log')
     {
 
@@ -245,7 +232,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		return '';
 	}
 
-
     public function getPageTrackingEnabled()
     {
         return (bool)$this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED);
@@ -254,16 +240,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getRoiTrackingEnabled()
     {
         return (bool)$this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED);
-    }
-
-    /**
-     * Use recommended resource allocation.
-     *
-     * @return bool
-     */
-    public function getResourceAllocationEnabled()
-    {
-        return (bool)$this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_RESOURCE_ALLOCATION);
     }
 
     public function getMappedStoreName($website)
@@ -299,6 +275,47 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 				->save();
 		}
         return $response->id;
+    }
+
+	/**
+	 * Api client by website.
+	 *
+	 * @param int $website
+	 *
+	 * @return bool
+	 */
+    public function getWebsiteApiClient($website = 0)
+    {
+	    $apiUsername = $this->getApiUsername($website);
+	    $apiPassword = $this->getApiPassword($website);
+        if (! $apiUsername || ! $apiPassword)
+            return false;
+
+	    $client = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Client', ['username' => $apiUsername, 'password' => $apiPassword]);
+
+        return $client;
+    }
+
+    /**
+     * @param int/object $website
+     * @return mixed
+     */
+    public function getApiUsername($website = 0)
+    {
+	    $website = $this->_storeManager->getWebsite($website);
+	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
+		    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website->getId()
+	    );
+    }
+
+    public function getApiPassword($website = 0)
+    {
+	    $website = $this->_storeManager->getWebsite($website);
+		return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
+			\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+			$website->getId()
+		);
     }
 
 	/**
@@ -358,6 +375,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         return $this;
     }
+
+    /**
+     * Use recommended resource allocation.
+     *
+     * @return bool
+     */
+    public function getResourceAllocationEnabled()
+    {
+        return (bool)$this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_RESOURCE_ALLOCATION);
+    }
+
     public function convert($size)
     {
         $unit=array('b','kb','mb','gb','tb','pb');
@@ -377,6 +405,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $accounts[$apiUsername] = $apiUsername . ', websiteId: ' . $websiteId . ' name ' . $website->getName();
         }
         return implode('</br>', $accounts);
+    }
+
+	/**
+	 * Get all websites.
+	 * @param bool|false $default
+	 *
+	 * @return \Magento\Store\Api\Data\WebsiteInterface[]
+	 */
+    public function getWebsites($default = false)
+    {
+        return $this->_storeManager->getWebsites($default);
     }
 
     /**
@@ -419,41 +458,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 			return false;
 		return $result;
 	}
-
-	/**
-	 * Get website level config.
-	 * @param $path
-	 * @param int $website
-	 *
-	 * @return mixed
-	 */
-    public function getWebsiteConfig($path, $website = 0)
-    {
-	    $website = $this->_storeManager->getWebsite($website);
-	    return $this->scopeConfig->getValue($path,
-	        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-		    $website->getId()
-		    );
-    }
-
-	/**
-	 * Api client by website.
-	 *
-	 * @param int $website
-	 *
-	 * @return bool
-	 */
-    public function getWebsiteApiClient($website = 0)
-    {
-	    $apiUsername = $this->getApiUsername($website);
-	    $apiPassword = $this->getApiPassword($website);
-        if (! $apiUsername || ! $apiPassword)
-            return false;
-
-	    $client = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Client', ['username' => $apiUsername, 'password' => $apiPassword]);
-
-        return $client;
-    }
 
     /**
      * Retrieve authorisation code.
@@ -515,6 +519,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
     }
 
+	/**
+	 * Get website level config.
+	 * @param $path
+	 * @param int $website
+	 *
+	 * @return mixed
+	 */
+    public function getWebsiteConfig($path, $website = 0)
+    {
+	    $website = $this->_storeManager->getWebsite($website);
+	    return $this->scopeConfig->getValue($path,
+	        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+		    $website->getId()
+		    );
+    }
+
     public function getConfigSelectedCustomOrderAttributes($website = 0)
     {
         $customAttributes = $this->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES, $website);
@@ -533,7 +553,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
     }
 
-
     public function setConnectorContactToReImport($customerId)
     {
         $contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact');
@@ -542,23 +561,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
             ->save();
     }
-
-    /**
-     * Diff between to times;
-     *
-     * @param $time1
-     * @param $time2
-     * @return int
-     */
-    public function dateDiff($time1, $time2=NULL) {
-        if (is_null($time2)) {
-            $time2 = new \Datetime();
-        }
-        $time1 = strtotime($time1);
-        $time2 = strtotime($time2);
-        return $time2 - $time1;
-    }
-
 
     /**
      * Disable website config when the request is made admin area only!
@@ -597,7 +599,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $customers;
     }
-
 
     /**
      * Generate the baseurl for the default store
@@ -688,6 +689,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	{
 		return (bool) $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER);
 	}
+
     /**
      * get feefo logon config value
      *
@@ -799,6 +801,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		$client->updateContactDatafieldsByEmail($email, $data);
 	}
 
+    public function getLastQuoteId()
+    {
+	    return $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID, 'default');
+    }
+
 	/**
 	 * Get order sync enabled value from configuration.
 	 * @param int $websiteId
@@ -812,6 +819,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 			$websiteId
 			);
 	}
+
 	/**
 	 * Get the catalog sync enabled value from config.
 	 * @param int $websiteId
@@ -923,6 +931,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 		return false;
 	}
+
+    /**
+     * Diff between to times;
+     *
+     * @param $time1
+     * @param $time2
+     * @return int
+     */
+    public function dateDiff($time1, $time2=NULL) {
+        if (is_null($time2)) {
+            $time2 = new \Datetime();
+        }
+        $time1 = strtotime($time1);
+        $time2 = strtotime($time2);
+        return $time2 - $time1;
+    }
+
 	/**
 	 * Get the config id by the automation type.
 	 * @param $automationType
@@ -937,11 +962,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 		return $automationCampaignId;
 	}
-
-    public function getAbandonedProductName()
-    {
-	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME);
-    }
 
     /**
      * api- update the product name most expensive.
@@ -965,6 +985,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
+    public function getAbandonedProductName()
+    {
+	    return $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME);
+    }
 
 	/**
 	 * Api request response time limit that should be logged.

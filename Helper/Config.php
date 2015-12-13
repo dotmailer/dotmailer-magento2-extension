@@ -249,6 +249,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 	const XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED         = 'connector_developer_settings/debug/debug_enabled';
 	const XML_PATH_CONNECTOR_DEBUG_API_REQUEST_LIMIT        = 'connector_developer_settings/debug/api_request_time_limit';
 	const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT  = 'connector_developer_settings/import_settings/transactional_data';
+    const XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES       = 'connector_developer_settings/ip_restriction/ip_addresses';
 
 	/**
      * Nosto
@@ -273,19 +274,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param int $website
      *
-     * @return bool
-     */
-    public function getAuthorizeLinkFlag($website = 0)
-    {
-	    $website = $this->_storeManager->getWebsite($website);
-        $customDomain = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN);
-
-        return (bool)$customDomain;
-    }
-
-    /**
-     * @param int $website
-     *
      * @return string
      */
     public function getAuthorizeLink($website = 0)
@@ -300,6 +288,19 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $baseUrl;
+    }
+
+    /**
+     * @param int $website
+     *
+     * @return bool
+     */
+    public function getAuthorizeLinkFlag($website = 0)
+    {
+	    $website = $this->_storeManager->getWebsite($website);
+        $customDomain = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN);
+
+        return (bool)$customDomain;
     }
 
 	/**
