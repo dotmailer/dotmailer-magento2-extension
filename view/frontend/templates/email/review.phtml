@@ -104,12 +104,7 @@ $image = 'category_page_list';
 				<div class="product-name" align="center"><b><?php echo substr($_product->getName(), 0, 40);?></b></div>
 				<div align="center">
 					<a class="proudct-url" href="<?php echo $block->getUrl('review/product/list', array('id'=> $_product->getId())).$this->reviewHelper->getAnchor($website);?>">
-						<?php
-						if($urlText = $this->getTextForUrl($_product->getStoreId()))
-							echo $urlText;
-						else
-							echo 'View Now';
-						?>
+						<?php echo 'Leave a review'; ?>
 					</a>
 				</div>
 			</td>
