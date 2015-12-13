@@ -779,7 +779,7 @@
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>
-                <field id="bestsellers" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                <!--<field id="bestsellers" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Best Sellers</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
@@ -794,7 +794,7 @@
                 <field id="bestsellers_time_period" translate="label" type="select" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Time Period</label>
                     <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
-                </field>
+                </field>-->
                 <field id="most_viewed" translate="label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Most Viewed</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
