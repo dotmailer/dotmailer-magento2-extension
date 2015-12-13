@@ -959,6 +959,15 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Quoteattributes</source_model>
                     <comment><![CDATA[Select custom quote attributes that you want to import with your quote data. Select multiple by pressing Ctrl button while selecting.]]></comment>
                 </field>
+                <field id="order_product_attributes" translate="comment label" type="multiselect" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Include Products Attributes In Order Sync</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
+                    <comment><![CDATA[Selected product attribute(s) will be exported]]></comment>
+                </field>
+                <field id="order_product_custom_options" translate="label" type="select" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Include Product Custom Options In Order Sync</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="abandoned_carts" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Abandoned Carts</label>

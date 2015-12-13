@@ -18,12 +18,7 @@ class Productattributes
         $attributes = $this->_attributes
             ->addVisibleFilter();
 
-        $attributeArray = array(
-            array(
-                'label' => 'Select Attribute....',
-                'value' => ''
-            )
-        );
+        $attributeArray = array();
 
         foreach($attributes as $attribute){
             $attributeArray[] = array(
