@@ -24,7 +24,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_BESTSELLER_TIME_PERIOD       = 'connector_dynamic_content/products/bestsellers_time_period';
     const XML_PATH_MOSTVIEWED_TIME_PERIOD       = 'connector_dynamic_content/products/most_viewed_time_period';
     const XML_PATH_PRODUCTPUSH_ITEMS            = 'connector_dynamic_content/manual_product_push/products_push_items';
-    const XML_PATH_FALLBACK_PRODUCTS_ITEMS      = 'connector_dynamic_content/fallback_products/product_list';
+    const XML_PATH_FALLBACK_PRODUCTS_ITEMS      = 'connector_dynamic_content/fallback_products/product_ids';
 
     public $periods = array('week', 'month', 'year');
 
