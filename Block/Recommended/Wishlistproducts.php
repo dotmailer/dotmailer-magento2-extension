@@ -191,4 +191,12 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->setProduct($product);
         return $this->toHtml();
     }
+
+    public function getTextForUrl($store)
+    {
+        $store = $this->_storeManager->getStore($store);
+        return $store->getConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
+        );
+    }
 }
