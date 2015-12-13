@@ -1013,7 +1013,7 @@
                     <label>Font Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
                 </field>
-                <field id="font_style" translate="label" sortOrder="50" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="font_style" translate="label" sortOrder="50" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Style</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
