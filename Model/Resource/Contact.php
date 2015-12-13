@@ -113,7 +113,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
 			// un-subscribe newsletter subscribers
 			$write->update(
-				$this->getTable('newsletter/subscriber'),
+				$this->getTable('newsletter_subscriber'),
 				array('subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED),
 				"subscriber_email IN ($emails)"
 			);
