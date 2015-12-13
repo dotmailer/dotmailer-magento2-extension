@@ -209,7 +209,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      * ROI SECTION.
      */
     const XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED           = 'connector_configuration/tracking/roi_enabled';
-    const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED          = 'connector_roi_tracking/tracking/page_enabled';
+    const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED          = 'connector_configuration/tracking/page_enabled';
 
     /**
      * OAUTH
