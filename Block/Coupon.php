@@ -7,11 +7,9 @@ class Coupon extends \Magento\Framework\View\Element\Template
 	public $helper;
 	public $scopeManager;
 	public $objectManager;
-	protected $_ruleFactory;
-	protected $_couponFactory;
+
 
 	public function __construct(
-		\Magento\Salesrule\Model\CouponFactory $couponFactory,
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -21,7 +19,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
 	{
 		parent::__construct( $context, $data );
 		$this->helper = $helper;
-		$this->_couponFactory = $couponFactory;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 		$this->objectManager = $objectManagerInterface;
@@ -59,7 +56,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
             $coupon = $rule->acquireCoupon();
             $couponCode = $coupon->getCode();
             //save the type of coupon
-            $couponModel = $this->_couponFactory->create()->loadByCode($couponCode);
+
+            $couponModel = $this->objectManager->create('Magento\Salesrule\Model\Coupon')->loadByCode($couponCode);
             $couponModel->setType(\Magento\SalesRule\Model\Rule::COUPON_TYPE_NO_COUPON);
             $couponModel->save();
 
