@@ -12,7 +12,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
 	protected $_couponFactory;
 
 	public function __construct(
-		\Magento\Salesrule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory,
+
 		\Magento\Salesrule\Model\RuleFactory $ruleFactory,
 		\Magento\Salesrule\Model\CouponFactory $couponFactory,
 		\Magento\Framework\View\Element\Template\Context $context,
@@ -25,7 +25,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
 		parent::__construct( $context, $data );
 		$this->helper = $helper;
 		$this->_ruleFactory = $ruleFactory;
-		$this->_massgeneratorFactory = $massgeneratorFactory;
+//		$this->_massgeneratorFactory = $massgeneratorFactory;
 		$this->_couponFactory = $couponFactory;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
@@ -49,8 +49,9 @@ class Coupon extends \Magento\Framework\View\Element\Template
         if ($couponCodeId) {
 
             $rule = $this->_ruleFactory->create()->load($couponCodeId);
-            $generator = $this->_massgeneratorFactory->create();
-            $generator->setFormat( \Magento\SalesRule\Helper\Coupon::COUPON_FORMAT_ALPHANUMERIC );
+//$generator = $this->_massgeneratorFactory->create();
+            $generator = $this->objectManager->getObject('Magento\SalesRule\Model\Coupon\Massgenerator');
+	        $generator->setFormat( \Magento\SalesRule\Helper\Coupon::COUPON_FORMAT_ALPHANUMERIC );
             $generator->setRuleId($couponCodeId);
             $generator->setUsesPerCoupon(1);
             $generator->setDash(3);
