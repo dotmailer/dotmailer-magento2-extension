@@ -4,85 +4,84 @@
     $items = $this->getWishlistItems();
 ?>
 <?php if($items): ?>
+    <?php
+    $name_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE));
+    $price_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE));
+    $link_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE));
+    ?>
+    <style>
+        .product-name{
+            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR);?>;
+            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE);?>;
+        <?php if(in_array('bold', $name_style)): ?>
+            font-weight: bold;
+        <?php endif; ?>
+        <?php if(in_array('italic', $name_style)): ?>
+            font-style: italic;
+        <?php endif; ?>
+        <?php if(in_array('underline', $name_style)): ?>
+            text-decoration: underline;
+        <?php endif; ?>
+        }
+        .product-price{
+            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR);?>;
+            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE);?>;
+        <?php if(in_array('bold', $price_style)): ?>
+            font-weight: bold;
+        <?php endif; ?>
+        <?php if(in_array('italic', $price_style)): ?>
+            font-style: italic;
+        <?php endif; ?>
+        <?php if(in_array('underline', $price_style)): ?>
+            text-decoration: underline;
+        <?php endif; ?>
+        }
+        .proudct-url{
+            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR);?>;
+            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE);?>;
+        <?php if(in_array('bold', $link_style)): ?>
+            font-weight: bold;
+        <?php endif; ?>
+        <?php if(in_array('italic', $link_style)): ?>
+            font-style: italic;
+        <?php endif; ?>
+        <?php if(in_array('underline', $link_style)): ?>
+            text-decoration: underline;
+        <?php endif; ?>
+        }
+        .product-table{
+            font-family: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT);?>;
+            background-color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR);?>;
+            width: 100%;
+        }
+        .product-table img{
+            display: block;
+            margin-left: auto;
+            margin-right: auto
+        }
+        .product-table td{
+            width: 25%;
+            padding-bottom: 10px;
+        }
+        /** Styling from config field **/
+        <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING);?>
+        /** Responsive  **/
+        @media (max-width: 760px) {
+            /* Force table to not be like tables anymore */
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            .product-table td{
+                width: 172px !important;
+            }
+            .product-table {
+                width: auto !important;
+            }
+        }
+    </style>
     <?php foreach ($items as $item) :?>
         <?php $_product = $item->getProduct(); ?>
         <?php  if($i == 0):?>
-            <?php
-            $name_style = explode(',', $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE));
-            $price_style = explode(',', $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE));
-            $link_style = explode(',', $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE));
-            ?>
-            <style>
-                .product-name{
-                    color: <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR);?>;
-                    font-size: <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE);?>;
-                <?php if(in_array('bold', $name_style)): ?>
-                    font-weight: bold;
-                <?php endif; ?>
-                <?php if(in_array('italic', $name_style)): ?>
-                    font-style: italic;
-                <?php endif; ?>
-                <?php if(in_array('underline', $name_style)): ?>
-                    text-decoration: underline;
-                <?php endif; ?>
-                }
-                .product-price{
-                    color: <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR);?>;
-                    font-size: <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE);?>;
-                <?php if(in_array('bold', $price_style)): ?>
-                    font-weight: bold;
-                <?php endif; ?>
-                <?php if(in_array('italic', $price_style)): ?>
-                    font-style: italic;
-                <?php endif; ?>
-                <?php if(in_array('underline', $price_style)): ?>
-                    text-decoration: underline;
-                <?php endif; ?>
-                }
-                .proudct-url{
-                    color: <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR);?>;
-                    font-size: <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE);?>;
-                <?php if(in_array('bold', $link_style)): ?>
-                    font-weight: bold;
-                <?php endif; ?>
-                <?php if(in_array('italic', $link_style)): ?>
-                    font-style: italic;
-                <?php endif; ?>
-                <?php if(in_array('underline', $link_style)): ?>
-                    text-decoration: underline;
-                <?php endif; ?>
-                }
-                .product-table{
-                    font-family: <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT);?>;
-                    background-color: <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR);?>;
-                    width: 100%;
-                }
-                .product-table img{
-                    display: block;
-                    margin-left: auto;
-                    margin-right: auto
-                }
-                .product-table td{
-                    width: 25%;
-                    padding-bottom: 10px;
-                }
-                /** Styling from config field **/
-                <?php echo $this->scopeManager(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING);?>
-                /** Responsive  **/
-                @media (max-width: 760px) {
-                    /* Force table to not be like tables anymore */
-                    table, thead, tbody, th, td, tr {
-                        display: block;
-                    }
-                    .product-table td{
-                        width: 172px !important;
-                    }
-                    .product-table {
-                        width: auto !important;
-                    }
-                }
-            </style>
-
             <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12;'><tr>
         <?php endif;?>
         <?php if($mode == 'list'):?>
@@ -90,7 +89,10 @@
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
-            <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image"><img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(135); ?>" width="140" height="135" alt="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" align="middle" /></a>
+            <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image">
+                <!--<img src="<?php //echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(135); ?>" width="140" height="135" alt="<?php //echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" align="middle" />-->
+                <?php echo $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
+            </a>
             <div class="product-name" align="center"><b><?php echo substr($_product->getName(), 0, 40);?></b></div>
             <div class="product-price" align="center"><?php echo $this->getPriceHtml($_product, true) ?></div>
             <div align="center">
@@ -99,7 +101,7 @@
                         if($urlText = $this->getTextForUrl($_product->getStoreId()))
                             echo $urlText;
                         else
-                            echo $this->__('View Now');
+                            echo 'View Now';
                     ?>
                 </a>
             </div>

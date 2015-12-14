@@ -32,22 +32,43 @@ class Proccessor
 		'Failed', 'ExceedsAllowedContactLimit', 'NotAvailableInThisVersion'
 	);
 
+    private $_reasons = array(
+        'Globally Suppressed',
+        'Blocked',
+        'Unsubscribed',
+        'Hard Bounced',
+        'Isp Complaints',
+        'Domain Suppressed',
+        'Failures',
+        'Invalid Entries',
+        'Mail Blocked',
+        'Suppressed by you'
+    );
+
 	protected $_helper;
 	protected $_fileHelper;
 	protected $_importerFactory;
+    protected $_directoryList;
+    protected $_file;
+    protected $_contact;
 
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\File $fileHelper,
-		\Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory $importerCollectionFactory
-
+		\Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory $importerCollectionFactory,
+        \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
+        \Magento\Framework\Filesystem\Io\File $file,
+        \Dotdigitalgroup\Email\Model\Resource\Contact $contact
 	){
 		$this->_importerFactory = $importerFactory;
 		$this->_helper = $helper;
 		$this->_fileHelper = $fileHelper;
 		$this->importerCollection = $importerCollectionFactory->create();
+        $this->_directoryList = $directoryList;
+        $this->_file = $file;
+        $this->_contact = $contact;
 	}
 
 	/**
@@ -115,6 +136,17 @@ class Proccessor
 						     ->setImportFinished($now)
 						     ->setMessage('')
 						     ->save();
+
+                        if (
+                            $item->getImportType() == self::IMPORT_TYPE_CONTACT or
+                            $item->getImportType() == self::IMPORT_TYPE_SUBSCRIBERS or
+                            $item->getImportType() == self::IMPORT_TYPE_GUEST
+
+                        ){
+                            if($item->getImportId())
+                                $this->_processContactImportReportFaults($item->getImportId(), $websiteId);
+                        }
+
 						$this->_processQueue();
 
 					} elseif (in_array($response->status, $this->import_statuses)) {
@@ -138,6 +170,26 @@ class Proccessor
 		}
 		return true;
 	}
+
+    private function _processContactImportReportFaults($id, $websiteId)
+    {
+        $client = $this->_helper->getWebsiteApiClient($websiteId);
+        $data = $client->getContactImportReportFaults($id);
+
+        if($data){
+            $data = $this->_remove_utf8_bom($data);
+            $fileName = $this->_directoryList->getPath('var') . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
+            $this->_file->open();
+            $check = $this->_file->write($fileName, $data);
+            if($check){
+                $csvArray = $this->_csv_to_array($fileName);
+                $this->_file->rm($fileName);
+                $this->_contact->unsubscribe($csvArray);
+            }else{
+                $this->_helper->log('_processContactImportReportFaults: cannot save data to CSV file.');
+            }
+        }
+    }
 
 	/**
 	 * actual importer queue processor
@@ -193,7 +245,7 @@ class Proccessor
 				}
 			} elseif ($item->getImportMode() == self::MODE_SINGLE_DELETE) { //import to single delete
 				$importData = unserialize($item->getImportData());
-				$result = $client->deleteContactsTransactionalData($importData->id, $item->getImportType());
+				$result = $client->deleteContactsTransactionalData($importData[0], $item->getImportType());
 				if (isset($result->message)) {
 					$error = true;
 				}
@@ -270,4 +322,39 @@ class Proccessor
 		}
 		return false;
 	}
+
+    private function _csv_to_array($filename)
+    {
+        if(!file_exists($filename) || !is_readable($filename))
+            return FALSE;
+
+        $header = NULL;
+        $data = array();
+        if (($handle = fopen($filename, 'r')) !== FALSE)
+        {
+            while (($row = fgetcsv($handle)) !== FALSE)
+            {
+                if(!$header)
+                    $header = $row;
+                else
+                    $data[] = array_combine($header, $row);
+            }
+            fclose($handle);
+        }
+
+        $contacts = array();
+        foreach($data as $item){
+            if(in_array($item['Reason'], $this->_reasons))
+                $contacts[] = $item['email'];
+        }
+
+        return $contacts;
+    }
+
+    private function _remove_utf8_bom($text)
+    {
+        $bom = pack('H*','EFBBBF');
+        $text = preg_replace("/^$bom/", '', $text);
+        return $text;
+    }
 }

@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
-class Wishlist extends \Magento\Framework\View\Element\Template
+class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	protected $_website;
 
@@ -16,7 +16,7 @@ class Wishlist extends \Magento\Framework\View\Element\Template
 	public function __construct(
 		\Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
 		\Magento\Customer\Model\CustomerFactory $customerFactory,
-		\Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Catalog\Block\Product\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -68,6 +68,14 @@ class Wishlist extends \Magento\Framework\View\Element\Template
     {
         return $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WIHSLIST_DISPLAY
+        );
+    }
+
+    public function getTextForUrl($store)
+    {
+        $store = $this->_storeManager->getStore($store);
+        return $store->getConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
     }
 }

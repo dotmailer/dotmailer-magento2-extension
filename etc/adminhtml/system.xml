@@ -687,10 +687,10 @@
                     <label>Product Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <!--<field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Best Sellers URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>
-                </field>
+                </field>-->
                 <field id="most_viewed_url" translate="comment label" sortOrder="180" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Most Viewed URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Mostviewed</frontend_model>
@@ -779,7 +779,7 @@
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>
-                <field id="bestsellers" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                <!--<field id="bestsellers" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Best Sellers</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
@@ -794,7 +794,7 @@
                 <field id="bestsellers_time_period" translate="label" type="select" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Time Period</label>
                     <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
-                </field>
+                </field>-->
                 <field id="most_viewed" translate="label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Most Viewed</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
@@ -886,10 +886,30 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="ddg_transactional" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>DDG Transactional</label>
-                <field id="enabled" translate="comment label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[<p id="smtp-warning" style="display:inline;" class="notice">DOTMAILER TRANSACTIONAL EMAIL EXTENSION HAS TO BE INSTALLED AND ENABLED IN ORDER TO USE THIS FEATURE.</p>]]></comment>
+                </field>
+                <field id="send_mode" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Send Mode</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Mode</source_model>
+                </field>
+                <field id="host" translate="label" sortOrder="30" type="text" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Host</label>
+                </field>
+                <field id="username" translate="label" sortOrder="40" type="text" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Username</label>
+                </field>
+                <field id="password" translate="label" sortOrder="50" type="password" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Password</label>
+                </field>
+                <field id="port" translate="label" sortOrder="60" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Port</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Port</source_model>
+                </field>
+                <field id="debug" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Debug</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
@@ -904,6 +924,11 @@
                     <label>Data fields calculation with status</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
                     <comment><![CDATA[Select multiple statuses by pressing Ctrl button while selecting]]></comment>
+                </field>
+                <field id="brand_attribute" translate="comment label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Brand Attribute</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
+                    <comment><![CDATA[Select your brand attribute. If default attribute 'manufacturer' exist than will be selected automatically.]]></comment>
                 </field>
             </group>
             <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -933,6 +958,15 @@
                     <label>Quote Custom Attributes</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Quoteattributes</source_model>
                     <comment><![CDATA[Select custom quote attributes that you want to import with your quote data. Select multiple by pressing Ctrl button while selecting.]]></comment>
+                </field>
+                <field id="order_product_attributes" translate="comment label" type="multiselect" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Include Products Attributes In Order Sync</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
+                    <comment><![CDATA[Selected product attribute(s) will be exported]]></comment>
+                </field>
+                <field id="order_product_custom_options" translate="label" type="select" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Include Product Custom Options In Order Sync</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
             <group id="abandoned_carts" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -988,7 +1022,7 @@
                     <label>Font Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
                 </field>
-                <field id="font_style" translate="label" sortOrder="50" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="font_style" translate="label" sortOrder="50" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Style</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
@@ -1084,7 +1118,7 @@
                     <comment><![CDATA[Please provide the link text. If no text provided then default text will be used.]]></comment>
                 </field>
             </group>
-            <group id="amdin" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="admin" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Admin</label>
                 <field id="disable_newsletter_success" translate="label" type="select" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Disable Newsletter Success</label>
@@ -1112,7 +1146,7 @@
                     <comment>Selected product type(s) will be exported.</comment>
                 </field>
             </group>
-            <group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+            <!--<group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Customer Addressbook Preference</label>
                 <field id="show_addressbooks" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Show Addressbooks to Customer</label>
@@ -1133,6 +1167,13 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Publicdatafields</source_model>
                     <comment><![CDATA[Only data fields with visibility public can be shown to customers. You can create more data fields within the Data Mapping section.]]></comment>
                     <depends><field id="show_datafields">1</field></depends>
+                </field>
+            </group>-->
+            <group id="mailcheck" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>MailCheck Settings</label>
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
@@ -1169,10 +1210,6 @@
                 <field id="delete_contact" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Delete All Contact Ids</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Deletecontactids</frontend_model>
-                </field>
-                <field id="suppressed_contacts" translate="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Refresh Suppression</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Suppressedcontacts</frontend_model>
                 </field>
                 <field id="reset_all" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Reset Tables</label>
@@ -1296,6 +1333,35 @@
                 <field id="custom_authorization" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Custom Authorization URI</label>
                     <comment><![CDATA[Enter the custom authorization url. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
+                </field>
+            </group>
+            <group id="ip_restriction" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Dynamic Pages IP Restriction</label>
+                <field id="ip_addresses" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label></label>
+                </field>
+            </group>
+            <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Manage Cron Timings</label>
+                <field id="importer" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Importer</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsone</source_model>
+                </field>
+                <field id="contact" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Contact</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                </field>
+                <field id="order_quote" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Order And Quote</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                </field>
+                <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>catalog</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                </field>
+                <field id="review_wishlist" translate="label" sortOrder="50" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Review And Wishlist</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
             </group>
         </section>

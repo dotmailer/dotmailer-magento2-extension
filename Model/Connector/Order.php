@@ -135,8 +135,6 @@ class Order
         /**
          * custom order attributes
          */
-
-        //@todo check if the website object is loading as it look missing
 	    $website = $this->_storeManager->getStore($orderData->getStore())
 		    ->getWebsite();
         $customAttributes = $this->_helper->getConfigSelectedCustomOrderAttributes($website);
@@ -245,7 +243,7 @@ class Order
                                     break;
                             }
 
-                            if ($value) // check limit on text and assign value to array
+                            if ($value && !is_array($value)) // check limit on text and assign value to array
                                 $attributes[][$attribute_code] = $this->_limitLength($value);
                         }
                     }

@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
-class Bestsellers extends \Magento\Framework\View\Element\Template
+class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
 	protected $_dateTime;
@@ -24,7 +24,7 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
 		\Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
 		\Magento\Catalog\Model\CategoryFactory  $categoryFactory,
-		\Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Catalog\Block\Product\Context $context,
 		\Magento\CatalogInventory\Model\StockFactory $stockFactory,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
@@ -45,18 +45,22 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
 	}
 
 	/**
+     * @todo refactor the code so it can accommodate filtering by category id and category name.
+     * @todo template expect the collection returned to be of type product but returned is type of order.
+     *
 	 * Get product collection.
 	 * @return array
 	 */
 	public function getLoadedProductCollection()
 	{
+        $collection = array();
 		$mode = $this->getRequest()->getActionName();
 		$limit  = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  =  $this->recommnededHelper->getTimeFromConfig($mode);
-	    $to = $this->_localeDate->date();
+        $to = new \Zend_Date($this->_localeDate->date()->getTimestamp());
 	    $productCollection = $this->_productSoldFactory->create()
 		    ->addAttributeToSelect('*')
-		    ->addOrderedQty($from, $to)
+		    ->addOrderedQty($from, $to->tostring(\Zend_Date::ISO_8601))
             ->setOrder('ordered_qty', 'desc')
 	        ->setPageSize($limit);
 
@@ -98,7 +102,16 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
             }
         }
 
-	    return $productCollection;
+        if($productCollection->getSize()){
+            foreach($productCollection as $order){
+                foreach($order->getAllVisibleItems() as $orderItem){
+                    $collection[] = $orderItem->getProduct();
+                }
+            }
+        }
+
+        //\Zend_Debug::dump($productCollection->getFirstItem()->getAllVisibleItems()[0]->getProduct()->getName());exit;
+	    return $collection;
     }
 
 	/**
@@ -123,5 +136,13 @@ class Bestsellers extends \Magento\Framework\View\Element\Template
         $this->setProduct($product);
         return $this->toHtml();
     }
+
+	public function getTextForUrl($store)
+	{
+		$store = $this->_storeManager->getStore($store);
+		return $store->getConfig(
+				\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
+		);
+	}
 
 }

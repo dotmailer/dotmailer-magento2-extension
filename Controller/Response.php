@@ -28,9 +28,7 @@ class Response extends \Magento\Framework\App\Action\Action
 
     protected function authenticate()
     {
-	    //@todo enable before going live.
         //authenticate ip address
-	    return;
         $authIp = $this->_helper->authIpAddress();
         if (! $authIp) {
             throw new \Magento\Framework\Exception\LocalizedException(__('You are not authorised to view content of this page.'));
@@ -41,18 +39,6 @@ class Response extends \Magento\Framework\App\Action\Action
         if (! $auth) {
             $this->sendResponse();
             exit;
-        }
-    }
-
-    protected function checkContentNotEmpty($output, $flag = true)
-    {
-        try{
-            if(strlen($output) < 3 && $flag == false)
-                $this->sendResponse();
-            elseif($flag && !strpos($output, '<table'))
-                $this->sendResponse();
-        } catch (\Exception $e) {
-	        $this->_helper->debug((string)$e, array());
         }
     }
 
@@ -67,6 +53,18 @@ class Response extends \Magento\Framework\App\Action\Action
             $this->getResponse()->sendHeaders();
         } catch (\Exception $e) {
             $this->_helper->debug((string)$e, array());
+        }
+    }
+
+    protected function checkContentNotEmpty($output, $flag = true)
+    {
+        try{
+            if(strlen($output) < 3 && $flag == false)
+                $this->sendResponse();
+            elseif($flag && !strpos($output, '<table'))
+                $this->sendResponse();
+        } catch (\Exception $e) {
+	        $this->_helper->debug((string)$e, array());
         }
     }
 }

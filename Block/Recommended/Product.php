@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
-class Product extends \Magento\Framework\View\Element\Template
+class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	/**
 	 * Slot div name.
@@ -19,7 +19,7 @@ class Product extends \Magento\Framework\View\Element\Template
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
-		\Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []

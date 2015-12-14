@@ -6,7 +6,6 @@ class Contact
 {
 	private $_start;
 	private $_countCustomers = 0;
-	private $_sqlExecuted = false;
 
 	protected $_helper;
 	protected $_registry;
@@ -122,8 +121,7 @@ class Contact
 			return 0;
 
 		$connection = $this->_resource->getConnection();
-		$contactTable = $this->_resource->getTableName('email_contact');
-		$select = $connection->select();
+
 		//contacts ready for website
 		$contacts = $this->_contactCollection
 			->addFieldToFilter('email_imported', array('null' => true))
@@ -161,41 +159,7 @@ class Contact
 		/**
 		 * END HEADERS.
 		 */
-		$coreResource  = $this->_resource;
-		//only execute once despite number of websites
-		if (!$this->_sqlExecuted)  {
-			//check subscriber and update in one query
-			$select->joinLeft(
-				array('s' => $coreResource->getTableName('newsletter_subscriber')),
-				"c.customer_id = s.customer_id",
-				array('subscriber_status' => 's.subscriber_status')
-			);
-			//update sql statement
-			$updateSql = $select->crossUpdateFromSelect(array('c' => $contactTable));
-			//run query and update subscriber_status column
-			$connection->query($updateSql);
-			//update is_subscriber column if subscriber_status is not null
-			$connection->update($contactTable, array('is_subscriber' => 1), "subscriber_status is not null");
 
-			//remove contact with customer id set and no customer
-			$select->reset()
-			       ->from(
-				       array('c' => $contactTable),
-				       array('c.customer_id')
-			       )
-			       ->joinLeft(
-				       array('e' => $coreResource->getTableName('customer_entity')),
-				       "c.customer_id = e.entity_id"
-			       )
-			       ->where('e.entity_id is NULL');
-			//delete sql statement
-			$deleteSql = $select->deleteFromSelect('c');
-			//run query
-			$connection->query($deleteSql);
-
-			//set flag
-			$this->_sqlExecuted = true;
-		}
 		//customer collection
 		$customerCollection = $this->_getCustomerCollection($customerIds, $website->getId());
 		$countIds = array();

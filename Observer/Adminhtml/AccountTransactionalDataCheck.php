@@ -85,4 +85,24 @@ class AccountTransactionalDataCheck implements ObserverInterface
 
 		return $this;
 	}
+
+	/**
+	 * Check for name option in array.
+	 *
+	 * @param $name
+	 * @param $data
+	 *
+	 * @return bool
+	 */
+	private function _checkForOption($name, $data) {
+		//loop for all options
+		foreach ( $data as $one ) {
+
+			if ($one->name == $name) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

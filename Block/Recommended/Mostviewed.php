@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
-class Mostviewed extends \Magento\Framework\View\Element\Template
+class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
 	public $helper;
@@ -24,7 +24,7 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
-		\Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
@@ -53,10 +53,10 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
         $mode = $this->getRequest()->getActionName();
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  = $this->recommnededHelper->getTimeFromConfig($mode);
-	    $to = $this->_localeDate->date();
+	    $to =  new \Zend_Date($this->_localeDate->date()->getTimestamp());
 
 	    $productCollection = $this->_productCollection->create()
-            ->addViewsCount($from, $to)
+            ->addViewsCount($from, $to->tostring(\Zend_Date::ISO_8601))
             ->setPageSize($limit);
 
         //filter collection by category by category_id
@@ -123,4 +123,12 @@ class Mostviewed extends \Magento\Framework\View\Element\Template
         $this->setProduct($product);
         return $this->toHtml();
     }
+
+	public function getTextForUrl($store)
+	{
+		$store = $this->_storeManager->getStore($store);
+		return $store->getConfig(
+				\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
+		);
+	}
 }

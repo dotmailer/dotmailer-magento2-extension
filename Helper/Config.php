@@ -138,6 +138,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     //Data Fields
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS                    = 'connector_configuration/data_fields/order_status';
+    const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE           = 'connector_configuration/data_fields/brand_attribute';
 
     //Transactional Data
     const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS                  = 'connector_configuration/transactional_data/order_statuses';
@@ -149,26 +150,26 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS     = 'connector_configuration/admin/disable_newsletter_success';
     const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS       = 'connector_configuration/admin/disable_customer_success';
     //Dynamic Content Styling
-    const XML_PATH_CONNECTOR_DYNAMIC_STYLING                = 'connector_configuration/dynamic_content_style/dynamic_syling';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR             = 'connector_configuration/dynamic_content_style/name_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_STYLING                = 'connector_configuration/dynamic_content_style/dynamic_styling';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR             = 'connector_configuration/dynamic_content_style/font_color';
     const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE         = 'connector_configuration/dynamic_content_style/font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE             = 'connector_configuration/dynamic_content_style/name_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE             = 'connector_configuration/dynamic_content_style/font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR            = 'connector_configuration/dynamic_content_style/price_color';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE        = 'connector_configuration/dynamic_content_style/price_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE            = 'connector_configuration/dynamic_content_style/price_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR             = 'connector_configuration/dynamic_content_style/link_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE         = 'connector_configuration/dynamic_content_style/link_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE             = 'connector_configuration/dynamic_content_style/link_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT               = 'connector_configuration/dynamic_content_style/font_picker';
-    const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR           = 'connector_configuration/dynamic_content_style/doc_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE            = 'connector_configuration/dynamic_content_style/price_font_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR             = 'connector_configuration/dynamic_content_style/product_link_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE         = 'connector_configuration/dynamic_content_style/product_link_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE             = 'connector_configuration/dynamic_content_style/product_link_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT               = 'connector_configuration/dynamic_content_style/font';
+    const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR           = 'connector_configuration/dynamic_content_style/color';
     const XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR            = 'connector_configuration/dynamic_content_style/other_color';
     const XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE        = 'connector_configuration/dynamic_content_style/other_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE            = 'connector_configuration/dynamic_content_style/other_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR           = 'connector_configuration/dynamic_content_style/coupon_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE            = 'connector_configuration/dynamic_content_style/other_font_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR           = 'connector_configuration/dynamic_content_style/coupon_font_color';
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE       = 'connector_configuration/dynamic_content_style/coupon_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE           = 'connector_configuration/dynamic_content_style/coupon_styles';
+    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE           = 'connector_configuration/dynamic_content_style/coupon_font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT            = 'connector_configuration/dynamic_content_style/coupon_font_picker';
-    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR        = 'connector_configuration/dynamic_content_style/coupon_doc_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR        = 'connector_configuration/dynamic_content_style/coupon_background_color';
 
     //Catalog
     const XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES            = 'connector_configuration/catalog_sync/catalog_values';
@@ -177,8 +178,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     //Abandoned Cart
     const XML_PATH_CONNECTOR_EMAIL_CAPTURE                  = 'connector_configuration/abandoned_carts/email_capture';
     const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT           = 'connector_configuration/abandoned_carts/limits';
-	const XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER       = 'connector_configuration/abandoned_carts/email_capture_newsletter';
-	const XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED           = 'connector_configuration/abandoned_carts/link_enabled';
+	const XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER       = 'connector_configuration/abandoned_carts/easy_capture_newsletter';
+	const XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED           = 'connector_configuration/abandoned_carts/link_back_to_cart';
     const XML_PATH_CONNECTOR_CONTENT_LINK_TEXT              = 'connector_configuration/abandoned_carts/link_text';
     const XML_PATH_CONNECTOR_CONTENT_CART_URL               = 'connector_configuration/abandoned_carts/cart_url';
     const XML_PATH_CONNECTOR_CONTENT_LOGIN_URL              = 'connector_configuration/abandoned_carts/login_url';
@@ -188,7 +189,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS   = 'connector_configuration/address_book_pref/can_show_fields';
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS       = 'connector_configuration/address_book_pref/fields_to_show';
     //Dynamic Content
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT          = 'connector_configuration/dynamic_content_edit/link_text';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT          = 'connector_configuration/dynamic_content/link_text';
+    //Mailcheck
+    const XML_PATH_MAILCHECK_ENABLED                            = 'connector_configuration/mailcheck/enabled';
 
     /**
      * Automation studio.
@@ -206,7 +209,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      * ROI SECTION.
      */
     const XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED           = 'connector_configuration/tracking/roi_enabled';
-    const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED          = 'connector_roi_tracking/tracking/page_enabled';
+    const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED          = 'connector_configuration/tracking/page_enabled';
 
     /**
      * OAUTH
@@ -246,6 +249,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 	const XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED         = 'connector_developer_settings/debug/debug_enabled';
 	const XML_PATH_CONNECTOR_DEBUG_API_REQUEST_LIMIT        = 'connector_developer_settings/debug/api_request_time_limit';
 	const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT  = 'connector_developer_settings/import_settings/transactional_data';
+    const XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES       = 'connector_developer_settings/ip_restriction/ip_addresses';
 
 	/**
      * Nosto
@@ -270,19 +274,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param int $website
      *
-     * @return bool
-     */
-    public function getAuthorizeLinkFlag($website = 0)
-    {
-	    $website = $this->_storeManager->getWebsite($website);
-        $customDomain = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN);
-
-        return (bool)$customDomain;
-    }
-
-    /**
-     * @param int $website
-     *
      * @return string
      */
     public function getAuthorizeLink($website = 0)
@@ -297,6 +288,19 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $baseUrl;
+    }
+
+    /**
+     * @param int $website
+     *
+     * @return bool
+     */
+    public function getAuthorizeLinkFlag($website = 0)
+    {
+	    $website = $this->_storeManager->getWebsite($website);
+        $customDomain = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN);
+
+        return (bool)$customDomain;
     }
 
 	/**

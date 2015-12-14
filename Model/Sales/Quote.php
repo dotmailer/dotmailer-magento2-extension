@@ -130,7 +130,6 @@ class Quote
 						    //api - set the last quote id for customer
 						    $this->_helper->updateLastQuoteId($quoteId, $email, $websiteId);
 
-                            //@todo get the most expinsive item, change the logic by not looping
                             $items = $quote->getAllItems();
                             $mostExpensiveItem = false;
                             foreach ($items as $item) {
@@ -299,8 +298,6 @@ class Quote
             'from' => $from,
             'to' => $to,
             'date' => true);
-	    //@todo reset the select is making the sql empty,
-	    //$this->quoteCollection->getSelect()->reset();
 
         $salesCollection = $this->_quoteCollection->create()
             ->addFieldToFilter('is_active', 1)

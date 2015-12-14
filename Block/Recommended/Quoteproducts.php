@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
-class Quoteproducts extends \Magento\Framework\View\Element\Template
+class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	public $helper;
 	public $priceHelper;
@@ -15,7 +15,7 @@ class Quoteproducts extends \Magento\Framework\View\Element\Template
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
-		\Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
@@ -161,5 +161,13 @@ class Quoteproducts extends \Magento\Framework\View\Element\Template
         $this->setTemplate('connector/product/price.phtml');
         $this->setProduct($product);
         return $this->toHtml();
+    }
+
+    public function getTextForUrl($store)
+    {
+        $store = $this->_storeManager->getStore($store);
+        return $store->getConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
+        );
     }
 }
