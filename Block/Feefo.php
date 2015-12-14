@@ -102,7 +102,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     {
         $check = true;
         $reviews = array();
-        $feefo_dir = '';//Mage::getModel('core/config_options')->getLibDir().DS.'connector'.DS.'feefo';
+        $feefo_dir = BP . '/app/code/Dotdigitalgroup/Email/view/frontend/templates/feefo';
         $logon = $this->helper->getFeefoLogon();
         $limit = $this->helper->getFeefoReviewsPerProduct();
         $products = $this->getQuoteProducts();
@@ -117,7 +117,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
             else
                 $doc->load($feefo_dir. DIRECTORY_SEPARATOR ."feedback-no-th.xsl");
             $xsl->importStyleSheet($doc);
-            $doc->load($url);
+            $doc->loadXML(file_get_contents($url));
             $productReview = $xsl->transformToXML($doc);
             if(strpos($productReview, '<td'))
                 $reviews[$name] = $xsl->transformToXML($doc);
