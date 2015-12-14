@@ -7,16 +7,17 @@ $products = $this->getLoadedProductCollection();
 //$imageBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\Image');
 $image = 'category_page_list';
 
-foreach ($products as $key => $_product) :?>
-<?php  if($i == 0):?>
-<?php
+?>
+
+<?php if(count($products)): ?>
+    <?php
     $name_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE));
-	$link_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE));
-	$price_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE));?>
-<style>
-    .product-name{
-        color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR);?>;
-        font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE);?>;
+    $link_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE));
+    $price_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE));?>
+    <style>
+        .product-name{
+            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR);?>;
+            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE);?>;
         <?php if(in_array('bold', $name_style)): ?>
             font-weight: bold;
         <?php endif; ?>
@@ -26,10 +27,10 @@ foreach ($products as $key => $_product) :?>
         <?php if(in_array('underline', $name_style)): ?>
             text-decoration: underline;
         <?php endif; ?>
-    }
-    .product-price{
-        color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR);?>;
-        font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE);?>;
+        }
+        .product-price{
+            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR);?>;
+            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE);?>;
         <?php if(in_array('bold', $price_style)): ?>
             font-weight: bold;
         <?php endif; ?>
@@ -39,10 +40,10 @@ foreach ($products as $key => $_product) :?>
         <?php if(in_array('underline', $price_style)): ?>
             text-decoration: underline;
         <?php endif; ?>
-    }
-    .proudct-url{
-        color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR);?>;
-        font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE);?>;
+        }
+        .proudct-url{
+            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR);?>;
+            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE);?>;
         <?php if(in_array('bold', $link_style)): ?>
             font-weight: bold;
         <?php endif; ?>
@@ -52,38 +53,41 @@ foreach ($products as $key => $_product) :?>
         <?php if(in_array('underline', $link_style)): ?>
             text-decoration: underline;
         <?php endif; ?>
-    }
-    .product-table{
-        font-family: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT);?>;
-        background-color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR);?>;
-        width: 100%;
-    }
-    .product-table img{
-        display: block;
-        margin-left: auto;
-        margin-right: auto
-    }
-    .product-table td{
-        width: 25%;
-        padding-bottom: 10px;
-    }
-    /** Styling from config field **/
-    <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING);?>
-    /** Responsive  **/
-    @media (max-width: 760px) {
-        /* Force table to not be like tables anymore */
-        table, thead, tbody, th, td, tr {
+        }
+        .product-table{
+            font-family: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT);?>;
+            background-color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR);?>;
+            width: 100%;
+        }
+        .product-table img{
             display: block;
+            margin-left: auto;
+            margin-right: auto
         }
         .product-table td{
-            width: 172px !important;
+            width: 25%;
+            padding-bottom: 10px;
         }
-        .product-table {
-            width: auto !important;
+        /** Styling from config field **/
+        <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING);?>
+        /** Responsive  **/
+        @media (max-width: 760px) {
+            /* Force table to not be like tables anymore */
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            .product-table td{
+                width: 172px !important;
+            }
+            .product-table {
+                width: auto !important;
+            }
         }
-    }
-</style>
+    </style>
+<?php endif; ?>
 
+<?php foreach ($products as $key => $_product) :?>
+<?php  if($i == 0):?>
 <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12;'><tr>
 <?php endif;?>
 <?php if($mode == 'list'):?>
