@@ -30,7 +30,7 @@ class InstallSchema implements InstallSchemaInterface
 		$contactTable = $installer->getConnection()->newTable($installer->getTable('email_contact'))
 			->addColumn('email_contact_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null, ['primary' => true, 'identity' => true, 'unsigned' => true, 'nullable' => false ], 'Primary Key')
 			->addColumn('is_guest', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, null, ['unsigned' => true, 'nullable' => true, ], 'Is Guest')
-			->addColumn('contact_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, 15, ['unsigned' => true, 'nullable' => true, ], 'Connector Contact ID')
+			->addColumn('contact_id', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 15, ['unsigned' => true, 'nullable' => true, ], 'Connector Contact ID')
 			->addColumn('customer_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, 11, ['unsigned' => true, 'nullable' => false, ], 'Customer ID')
 			->addColumn('website_id', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 5, ['unsigned' => true, 'nullable' => false, 'default' => '0' ], 'Website ID')
 			->addColumn('store_id', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 5, ['unsigned' => true, 'nullable' => false, 'default' => '0' ], 'Store ID')
