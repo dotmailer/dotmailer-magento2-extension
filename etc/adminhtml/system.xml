@@ -1146,7 +1146,7 @@
                     <comment>Selected product type(s) will be exported.</comment>
                 </field>
             </group>
-            <group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+            <!--<group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Customer Addressbook Preference</label>
                 <field id="show_addressbooks" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Show Addressbooks to Customer</label>
@@ -1168,7 +1168,7 @@
                     <comment><![CDATA[Only data fields with visibility public can be shown to customers. You can create more data fields within the Data Mapping section.]]></comment>
                     <depends><field id="show_datafields">1</field></depends>
                 </field>
-            </group>
+            </group>-->
             <group id="mailcheck" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>MailCheck Settings</label>
                 <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
