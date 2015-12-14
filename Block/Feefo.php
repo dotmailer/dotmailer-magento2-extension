@@ -102,7 +102,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
     {
         $check = true;
         $reviews = array();
-        $feefo_dir = BP . '/app/code/Dotdigitalgroup/Email/view/frontend/templates/feefo';
+        $feefo_dir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup' . DIRECTORY_SEPARATOR .
+			'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'frontend' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'feefo';
         $logon = $this->helper->getFeefoLogon();
         $limit = $this->helper->getFeefoReviewsPerProduct();
         $products = $this->getQuoteProducts();
