@@ -128,7 +128,6 @@ class File
 	 */
 	public function pathExists($path)
 	{
-		//@todo check the path creation permision rights
 		if (!is_dir($path)) {
 			mkdir($path, 0777, true);
 		} // end
