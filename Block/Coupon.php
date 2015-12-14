@@ -49,8 +49,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
         if ($couponCodeId) {
 
             $rule = $this->_ruleFactory->create()->load($couponCodeId);
-//$generator = $this->_massgeneratorFactory->create();
-            $generator = $this->objectManager->getObject('Magento\SalesRule\Model\Coupon\Massgenerator');
+            $generator = $this->objectManager->create('Magento\SalesRule\Model\Coupon\Massgenerator');
 	        $generator->setFormat( \Magento\SalesRule\Helper\Coupon::COUPON_FORMAT_ALPHANUMERIC );
             $generator->setRuleId($couponCodeId);
             $generator->setUsesPerCoupon(1);
