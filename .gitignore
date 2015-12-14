@@ -1,2 +1,7 @@
+.idea/
+DS_Store
+.swp
+.lock
+__MACOSX
 vendor
 composer.lock
