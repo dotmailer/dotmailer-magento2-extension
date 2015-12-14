@@ -8,12 +8,9 @@ class Coupon extends \Magento\Framework\View\Element\Template
 	public $scopeManager;
 	public $objectManager;
 	protected $_ruleFactory;
-	protected $_massgeneratorFactory;
 	protected $_couponFactory;
 
 	public function __construct(
-
-		\Magento\Salesrule\Model\RuleFactory $ruleFactory,
 		\Magento\Salesrule\Model\CouponFactory $couponFactory,
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
@@ -24,8 +21,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
 	{
 		parent::__construct( $context, $data );
 		$this->helper = $helper;
-		$this->_ruleFactory = $ruleFactory;
-//		$this->_massgeneratorFactory = $massgeneratorFactory;
 		$this->_couponFactory = $couponFactory;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
@@ -48,7 +43,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
 
         if ($couponCodeId) {
 
-            $rule = $this->_ruleFactory->create()->load($couponCodeId);
+            $rule = $this->objectManager->create('Magento\Salesrule\Model\Rule')->load($couponCodeId);
             $generator = $this->objectManager->create('Magento\SalesRule\Model\Coupon\Massgenerator');
 	        $generator->setFormat( \Magento\SalesRule\Helper\Coupon::COUPON_FORMAT_ALPHANUMERIC );
             $generator->setRuleId($couponCodeId);
