@@ -223,12 +223,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		//@todo get the module version from the config
 		//$moduleName = $this->_getModuleName();
 		//$version = $this->_moduleFactory->create()->getDataVersion($moduleName);
-		return'';
-		$modules = (array) Mage::getConfig()->getNode('modules')->children();
-		if (isset($modules['Dotdigitalgroup_Email'])) {
-			$moduleName = $modules['Dotdigitalgroup_Email'];
-			return (string) $moduleName->version;
-		}
 		return '';
 	}
 
