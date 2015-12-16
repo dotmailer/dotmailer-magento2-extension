@@ -8,8 +8,15 @@ class Coupon extends \Magento\Framework\View\Element\Template
 	public $scopeManager;
 	public $objectManager;
 
+	protected $_ruleFactory;
+	protected $_massGeneratorFactory;
+	protected $_couponFactory;
+
 
 	public function __construct(
+		\Magento\Salesrule\Model\RuleFactory $ruleFactory,
+		\Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory,
+		\Magento\Salesrule\Model\CouponFactory $couponFactory,
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -19,6 +26,9 @@ class Coupon extends \Magento\Framework\View\Element\Template
 	{
 		parent::__construct( $context, $data );
 		$this->helper = $helper;
+		$this->_ruleFactory = $ruleFactory;
+		$this->_couponFactory = $couponFactory;
+		$this->_massGeneratorFactory = $massgeneratorFactory;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 		$this->objectManager = $objectManagerInterface;
@@ -30,8 +40,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
     public function generateCoupon()
     {
         $params = $this->getRequest()->getParams();
+	    //check for param code and id
         if (!isset($params['id']) || !isset($params['code'])){
-            //throw new Exception('Coupon no id or code is set');
             $this->helper->log('Coupon no id or code is set');
             return false;
         }
@@ -40,8 +50,9 @@ class Coupon extends \Magento\Framework\View\Element\Template
 
         if ($couponCodeId) {
 
-            $rule = $this->objectManager->create('Magento\Salesrule\Model\Rule')->load($couponCodeId);
-            $generator = $this->objectManager->create('Magento\SalesRule\Model\Coupon\Massgenerator');
+            $rule = $this->_ruleFactory->create()
+	            ->load($couponCodeId);
+            $generator = $this->_massGeneratorFactory->create();
 	        $generator->setFormat( \Magento\SalesRule\Helper\Coupon::COUPON_FORMAT_ALPHANUMERIC );
             $generator->setRuleId($couponCodeId);
             $generator->setUsesPerCoupon(1);
@@ -57,7 +68,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
             $couponCode = $coupon->getCode();
             //save the type of coupon
 
-            $couponModel = $this->objectManager->create('Magento\Salesrule\Model\Coupon')->loadByCode($couponCode);
+            $couponModel = $this->_couponFactory->create()
+	            ->loadByCode($couponCode);
             $couponModel->setType(\Magento\SalesRule\Model\Rule::COUPON_TYPE_NO_COUPON);
             $couponModel->save();
 
