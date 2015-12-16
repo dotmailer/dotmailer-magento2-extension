@@ -8,28 +8,36 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 	public $priceHelper;
 	protected $_localeDate;
 	public $scopeManager;
-	public $objectManager;
+	public $recommnededHelper;
+
+	protected $_customerFactory;
+	protected $_wishlistFactory;
+	protected $_productFactory;
 
 
 	public function __construct(
+		\Magento\Catalog\Model\ProductFactory $productFactory,
+		\Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
+		\Magento\Customer\Model\CustomerFactory $customerFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
 		parent::__construct( $context, $data );
 		$this->helper = $helper;
+		$this->_customerFactory = $customerFactory;
 		$this->recommnededHelper = $recommended;
 		$this->priceHelper = $priceHelper;
 		$this->_localeDate = $localeDate;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
-		$this->objectManager = $objectManagerInterface;
+		$this->_wishlistFactory = $wishlistFactory;
+		$this->_productFactory = $productFactory;
 	}
 
 
@@ -48,11 +56,13 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         if(!$customerId)
             return array();
 
-        $customer = $this->objectManager->create('Magento\Customer\Model\Customer')->load($customerId);
+        $customer = $this->_customerFactory->create()
+	        ->load($customerId);
         if(!$customer->getId())
             return array();
 
-        $collection = $this->objectManager->create('Magento\Wishlist\Model\Wishlist')->getCollection();
+        $collection = $this->_wishlistFactory->create()
+	        ->getCollection();
         $collection->addFieldToFilter('customer_id', $customerId)
             ->setOrder('updated_at', 'DESC');
 
@@ -98,7 +108,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
                 $recommendedProducts = $this->_getRecommendedProduct($product, $mode);
                 foreach ($recommendedProducts as $product) {
                     //load child product
-                    $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($product->getId());
+                    $product = $this->_productFactory->create()
+	                    ->load($product->getId());
                     //check if still exists
                     if ($product->getId() && count($productsToDisplay) < $limit && $i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
                         //we have a product to display
@@ -118,7 +129,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             $fallbackIds = $this->recommnededHelper->getFallbackIds();
 
             foreach ($fallbackIds as $productId) {
-                $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
+                $product = $this->_productFactory->create()
+	                ->load($productId);
                 if($product->isSaleable())
                     $productsToDisplay[$product->getId()] = $product;
                 //stop the limit was reached

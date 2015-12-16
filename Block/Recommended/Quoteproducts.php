@@ -7,27 +7,29 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
-	public $objectManager;
 	protected $_recommendedHelper;
-
+	protected $_quoteFactory;
+	protected $_productFactory;
 
 	public function __construct(
+		\Magento\Quote\Model\QuoteFactory $quoteFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
+		\Magento\Catalog\Model\ProductFactory $productFactory,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
 		parent::__construct( $context, $data );
 		$this->helper = $helper;
+		$this->_productFactory = $productFactory;
+		$this->_quoteFactory = $quoteFactory;
 		$this->_recommendedHelper = $recommendedHelper;
 		$this->priceHelper = $priceHelper;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
-		$this->objectManager = $objectManagerInterface;
 	}
 
 	/**
@@ -40,7 +42,8 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $quoteId = $this->getRequest()->getParam('quote_id');
         //display mode based on the action name
         $mode  = $this->getRequest()->getActionName();
-        $quoteModel = $this->objectManager->create('Magento\Quote\Model\Quote')->load($quoteId);
+        $quoteModel = $this->_quoteFactory->create()
+	        ->load($quoteId);
         //number of product items to be displayed
         $limit      = $this->_recommendedHelper->getDisplayLimitByMode($mode);
         $quoteItems = $quoteModel->getAllItems();
@@ -61,14 +64,16 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             $i = 0;
             $productId = $item->getProductId();
             //parent product
-            $productModel = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
+            $productModel = $this->_productFactory->create()
+	            ->load($productId);
             //check for product exists
             if ($productModel->getId()) {
                 //get single product for current mode
                 $recommendedProducts = $this->_getRecommendedProduct($productModel, $mode);
                 foreach ($recommendedProducts as $product) {
                     //load child product
-                    $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($product->getId());
+                    $product = $this->_productFactory->create()
+	                    ->load($product->getId());
                     //check if still exists
                     if ($product->getId() && count($productsToDisplay) < $limit && $i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
                         //we have a product to display
@@ -88,7 +93,8 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             $fallbackIds = $this->_recommendedHelper->getFallbackIds();
 
             foreach ($fallbackIds as $productId) {
-                $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
+                $product = $this->_productFactory->create()
+	                ->load($productId);
                 if($product->isSaleable())
                     $productsToDisplay[$product->getId()] = $product;
                 //stop the limit was reached
@@ -99,6 +105,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $this->helper->log('quote - loaded product to display ' . count($productsToDisplay));
+
         return $productsToDisplay;
     }
 

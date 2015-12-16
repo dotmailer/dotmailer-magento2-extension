@@ -8,17 +8,17 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
-	public $objectManager;
 	protected $_quoteFactory;
+	protected $_emulationFactory;
 
 
 	public function __construct(
+		\Magento\Store\Model\App\EmulationFactory $emulationFactory,
 		\Magento\Quote\Model\QuoteFactory $quoteFactory,
 		\Magento\Catalog\Block\Product\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
@@ -26,7 +26,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->helper = $helper;
 		$this->priceHelper = $priceHelper;
 		$this->scopeManager = $scopeConfig;
-		$this->objectManager = $objectManagerInterface;
+		$this->_emulationFactory = $emulationFactory;
 
 		parent::__construct( $context, $data );
 	}
@@ -64,7 +64,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 
 	    //Start environment emulation of the specified store
 	    $storeId = $quoteModel->getStoreId();
-	    $appEmulation = $this->objectManager->create('Magento\Store\Model\App\Emulation');
+	    $appEmulation = $this->_emulationFactory->create();
 	    $appEmulation->startEnvironmentEmulation($storeId);
 
         return $quoteModel->getAllItems();

@@ -12,7 +12,6 @@ class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
 	public $priceHelper;
 	public $scopeManager;
 	public $reviewHelper;
-	public $objectManager;
 	protected $_orderFactory;
 	protected $_reviewFactory;
 	protected $_reviewHelper;
@@ -27,7 +26,6 @@ class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
@@ -41,7 +39,6 @@ class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->storeManager = $this->_storeManager;
 		$this->priceHelper = $priceHelper;
 		$this->scopeManager = $scopeConfig;
-		$this->objectManager = $objectManagerInterface;
 	}
 
     /**

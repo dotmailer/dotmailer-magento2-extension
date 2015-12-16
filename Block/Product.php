@@ -53,6 +53,7 @@ class Product extends \Magento\Framework\View\Element\Template
 	            $appEmulation = $this->_emulationFactory->create();
 	            $appEmulation->startEnvironmentEmulation($storeId);
                 //order products
+				//@todo check the recommended class is missing/not needed anymore
                 $recommended = $this->objectManager->create('Dotdigitalgroup\Email\Model\Dynamic\Recommended');
 	            $recommended->setOrder($orderModel);
                 $recommended->setMode($mode);

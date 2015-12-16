@@ -9,7 +9,6 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
-	public $objectManager;
 	protected $_customerFactory;
 	protected $_wishlistFactory;
 
@@ -20,7 +19,6 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
@@ -30,7 +28,6 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->helper = $helper;
 		$this->priceHelper = $priceHelper;
 		$this->scopeManager = $scopeConfig;
-		$this->objectManager = $objectManagerInterface;
 	}
 
     public function getWishlistItems()

@@ -6,12 +6,15 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	public $helper;
 	public $priceHelper;
-	protected $_localeDate;
 	public $scopeManager;
-	public $objectManager;
+	public $recommnededHelper;
+
+	protected $_localeDate;
+	protected $_productFactory;
 
 
 	public function __construct(
+		\Magento\Catalog\Model\ProductFactory $productFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -24,6 +27,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 	{
 		parent::__construct( $context, $data );
 		$this->helper = $helper;
+		$this->_productFactory = $productFactory;
 		$this->recommnededHelper = $recommended;
 		$this->priceHelper = $priceHelper;
 		$this->_localeDate = $localeDate;
@@ -41,13 +45,14 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $productIds = $this->recommnededHelper->getProductPushIds();
 
-        $productCollection = $this->objectManager->create('Magento\Catalog\Model\Product')->getCollection()
+        $productCollection = $this->_productFactory->create()->getCollection()
             ->addAttributeToFilter('entity_id', array('in' => $productIds))
             ->setPageSize($limit)
         ;
         foreach ($productCollection as $_product) {
             $productId = $_product->getId();
-            $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
+            $product = $this->_productFactory->create()
+	            ->load($productId);
             if($product->isSaleable())
                 $productsToDisplay[] = $product;
 

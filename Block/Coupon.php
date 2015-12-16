@@ -6,7 +6,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
 {
 	public $helper;
 	public $scopeManager;
-	public $objectManager;
 
 	protected $_ruleFactory;
 	protected $_massGeneratorFactory;
@@ -20,7 +19,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
@@ -31,7 +29,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
 		$this->_massGeneratorFactory = $massgeneratorFactory;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
-		$this->objectManager = $objectManagerInterface;
 	}
 	/**
 	 * Generates the coupon code based on the code id.

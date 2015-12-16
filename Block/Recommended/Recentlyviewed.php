@@ -9,9 +9,14 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 	protected $_localeDate;
 	public $scopeManager;
 	public $objectManager;
+	public $recommnededHelper;
 
+	protected $_sessionFactory;
+	protected $_productFactory;
 
 	public function __construct(
+		\Magento\Catalog\Model\ProductFactory $productFactory,
+		\Magento\Customer\Model\SessionFactory $sessionFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -23,13 +28,16 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 	)
 	{
 		parent::__construct( $context, $data );
+		$this->_sessionFactory = $sessionFactory;
 		$this->helper = $helper;
 		$this->recommnededHelper = $recommended;
 		$this->priceHelper = $priceHelper;
 		$this->_localeDate = $localeDate;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
+		$this->_productFactory = $productFactory;
 		$this->objectManager = $objectManagerInterface;
+
 	}
 
 	/**
@@ -44,7 +52,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $customerId = $this->getRequest()->getParam('customer_id');
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         //login customer to receive the recent products
-	    $session = $this->objectManager->create('Magento\Customer\Model\Session');
+	    $session = $this->_sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
         $collection = $this->objectManager->create('Magento\Reports\Block\Product\Viewed');
         $items = $collection->getItemsCollection()
@@ -53,7 +61,8 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->helper->log('Recentlyviewed customer  : ' . $customerId . ', mode ' . $mode . ', limit : ' . $limit .
             ', items found : ' . count($items) . ', is customer logged in : ' . $isLoggedIn . ', products :' . count($productsToDisplay));
         foreach ($items as $product) {
-            $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($product->getId());
+            $product = $this->_productFactory->create()
+	            ->load($product->getId());
             if($product->isSalable())
                 $productsToDisplay[$product->getId()] = $product;
 

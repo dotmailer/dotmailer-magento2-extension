@@ -13,24 +13,32 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
-	public $objectManager;
+	public $recommendedHelper;
+	protected $_orderFactory;
+	protected $_productFactory;
+	protected $_clientFactory;
 
 
 	public function __construct(
+		\Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
+		\Magento\Catalog\Model\ProductFactory $productFactory,
+		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
+		\Magento\Sales\Model\OrderFactory $orderFactory,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
 		parent::__construct( $context, $data );
+		$this->_clientFactory = $clientFactory;
+		$this->recommendedHelper = $recommended;
+		$this->_productFactory = $productFactory;
 		$this->helper = $helper;
 		$this->priceHelper = $priceHelper;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
-		$this->objectManager = $objectManagerInterface;
 	}
 
     /**
@@ -43,9 +51,11 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         $orderId = $this->getRequest()->getParam('order_id');
 	    //display mode based on the action name
         $mode  = $this->getRequest()->getActionName();
-        $orderModel = $this->objectManager->create('Magento\Sales\Model\Order')->load($orderId);
+        $orderModel = $this->_orderFactory->create()
+	        ->load($orderId);
 	    //number of product items to be displayed
-        $limit      = $this->objectManager->create('Dotdigitalgroup\Email\Helper\Recommended')->getDisplayLimitByMode($mode);
+        $limit = $this->recommendedHelper->create()
+	        ->getDisplayLimitByMode($mode);
         $orderItems = $orderModel->getAllItems();
 	    $numItems = count($orderItems);
 
@@ -64,14 +74,16 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 	        $i = 0;
             $productId = $item->getProductId();
             //parent product
-            $productModel = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
+            $productModel = $this->_productFactory->create()
+	            ->load($productId);
 	        //check for product exists
             if ($productModel->getId()) {
 	            //get single product for current mode
 	            $recommendedProducts = $this->_getRecommendedProduct($productModel, $mode);
                 foreach ($recommendedProducts as $product) {
 	                //load child product
-                    $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($product->getId());
+                    $product = $this->_productFactory->create()
+	                    ->load($product->getId());
 	                //check if still exists
 	                if ($product->getId() && count($productsToDisplay) < $limit && $i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
 		                //we have a product to display
@@ -88,10 +100,12 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
         //check for more space to fill up the table with fallback products
         if (count($productsToDisplay) < $limit) {
-            $fallbackIds = $this->objectManager->create('Dotdigitalgroup\Email\Helper\Recommended')->getFallbackIds();
+            $fallbackIds = $this->recommendedHelper->
+                getFallbackIds();
 
             foreach ($fallbackIds as $productId) {
-                $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($productId);
+                $product = $this->_productFactory->create()
+	                ->load($productId);
                 if($product->isSaleable())
                     $productsToDisplay[$product->getId()] = $product;
                 //stop the limit was reached
@@ -139,7 +153,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 	 */
 	public function getMode()
     {
-        return $this->objectManager->create('Dotdigitalgroup\Email\Helper\Recommended')->getDisplayType();
+        return $this->recommendedHelper->getDisplayType();
 
     }
 
@@ -149,7 +163,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 	 */
 	public function getColumnCount()
     {
-        return $this->objectManager->create('Dotdigitalgroup\Email\Helper\Recommended')->getDisplayLimitByMode($this->getRequest()->getActionName());
+        return $this->recommendedHelper->getDisplayLimitByMode($this->getRequest()->getActionName());
     }
 
 	/**
@@ -172,7 +186,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 	 */
 	public function getNostoProducts()
 	{
-		$client = $this->objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Client');
+		$client = $this->_clientFactory->create();
 		//slot name, div id
 		$slot  = $this->getRequest()->getParam('slot', false);
 

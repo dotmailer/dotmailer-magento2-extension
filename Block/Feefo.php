@@ -9,7 +9,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
-	public $objectManager;
 	protected $_orderFactory;
 	protected $_quoteFactory;
 	protected $_productFactory;
@@ -23,7 +22,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
@@ -34,7 +32,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
 		$this->_orderFactory = $orderFactory;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
-		$this->objectManager = $objectManagerInterface;
 		$this->_productFactory = $productFactory;
 		$this->_quoteFactory = $quoteFactory;
 		$this->_orderFactory = $orderFactory;

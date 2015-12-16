@@ -8,8 +8,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
-	public $objectManager;
-
+	public $recommnededHelper;
 
 	protected $_localeDate;
 	protected $_productCollection;
@@ -27,7 +26,6 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
@@ -40,7 +38,6 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->_localeDate = $localeDate;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
-		$this->objectManager = $objectManagerInterface;
 		parent::__construct( $context, $data );
 	}
 	/**
