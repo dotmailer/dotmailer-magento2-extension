@@ -1337,8 +1337,8 @@
             </group>
             <group id="ip_restriction" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Dynamic Pages IP Restriction</label>
-                <field id="ip_addresses" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label></label>
+                <field id="ip_addresses" translate="label" type="textarea" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Dynamic Pages IP Restriction</label>
                 </field>
             </group>
             <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
