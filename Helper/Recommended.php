@@ -10,7 +10,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_BESTSELLER_PRODUCT_TYPE      = 'connector_dynamic_content/products/bestsellers_display_type';
     const XML_PATH_MOSTVIEWED_PRODUCT_TYPE      = 'connector_dynamic_content/products/most_viewed_display_type';
     const XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE  = 'connector_dynamic_content/products/recently_viewed_display_type';
-    const XML_PATH_PRODUCTPUSH_TYPE             = 'connector_dynamic_content/manual_product_search/display_type';
+    const XML_PATH_PRODUCTPUSH_TYPE             = 'connector_dynamic_content/manual_product_push/display_type';
 
 
     const XML_PATH_RELATED_PRODUCTS_ITEMS       = 'connector_dynamic_content/products/related_items_to_display';
@@ -20,7 +20,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_MOSTVIEWED_PRODUCT_ITEMS     = 'connector_dynamic_content/products/most_viewed_items_to_display';
     const XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS = 'connector_dynamic_content/products/recently_viewed_items_to_display';
 
-    const XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS    = 'connector_dynamic_content/manual_product_search/items_to_display';
+    const XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS    = 'connector_dynamic_content/manual_product_push/items_to_display';
     const XML_PATH_BESTSELLER_TIME_PERIOD       = 'connector_dynamic_content/products/bestsellers_time_period';
     const XML_PATH_MOSTVIEWED_TIME_PERIOD       = 'connector_dynamic_content/products/most_viewed_time_period';
     const XML_PATH_PRODUCTPUSH_ITEMS            = 'connector_dynamic_content/manual_product_push/products_push_items';

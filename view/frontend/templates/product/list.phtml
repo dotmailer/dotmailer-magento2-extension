@@ -2,11 +2,11 @@
 $i = 0;
 //display mode
 $mode = $this->getMode();
-//products
+//products collection
 $products = $this->getLoadedProductCollection();
+//m1 way to get the image block
 //$imageBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\Image');
 $image = 'category_page_list';
-
 ?>
 
 <?php if(count($products)): ?>
@@ -85,10 +85,13 @@ $image = 'category_page_list';
         }
     </style>
 <?php endif; ?>
-
-<?php foreach ($products as $key => $_product) :?>
+<?php
+	foreach ($products as $key => $_product) :?>
+	<?php //skip products not salable
+		if (! $_product->getIsSalable())
+			continue; ?>
 <?php  if($i == 0):?>
-<table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12;'><tr>
+<table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size="12";'><tr>
 <?php endif;?>
 <?php if($mode == 'list'):?>
 		</tr><tr>
@@ -96,7 +99,7 @@ $image = 'category_page_list';
 
     <td style="vertical-align: text-top; padding-right: 2px;">
         <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image">
-<!--	        <img src="--><?php //echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(135); ?><!--" width="140" height="135" alt="--><?php //echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?><!--" align="middle" />-->
+<!--<img src="--><?php //echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(135); ?><!--" width="140" height="135" alt="--><?php //echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?><!--" align="middle" />-->
             <?php echo $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
         </a>
         <div class="product-name" align="center"><b><?php echo substr($_product->getName(), 0, 40);?></b></div>

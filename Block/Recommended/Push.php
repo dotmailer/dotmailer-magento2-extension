@@ -40,26 +40,18 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
-        $productsToDisplay = array();
         $mode  = $this->getRequest()->getActionName();
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $productIds = $this->recommnededHelper->getProductPushIds();
 
         $productCollection = $this->_productFactory->create()->getCollection()
+			->addAttributeToSelect('*')
             ->addAttributeToFilter('entity_id', array('in' => $productIds))
-            ->setPageSize($limit)
         ;
-        foreach ($productCollection as $_product) {
-            $productId = $_product->getId();
-            $product = $this->_productFactory->create()
-	            ->load($productId);
-            if($product->isSaleable())
-                $productsToDisplay[] = $product;
+	    $productCollection->getSelect()->limit($limit);
 
-        }
-
-        return $productsToDisplay;
-
+		//important check the salable product in template
+	    return $productCollection;
     }
 
 	/**
