@@ -108,9 +108,10 @@ class Product
 		$this->sku                  = $product->getSku();
 		$this->name                 = $product->getName();
 
-		$statuses = $this->_statusFactory->create()
-			->getAllOptions();
-		$this->status               = (string)$statuses[$product->getStatus()]['label'];
+		$status = $this->_statusFactory->create()
+			->getOptionText($product->getStatus());
+		
+		$this->status               = $status->getText();
 
 		$options = $this->_visibilityFactory->create()
 			->getOptionArray();
