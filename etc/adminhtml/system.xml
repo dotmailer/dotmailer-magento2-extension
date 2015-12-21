@@ -1243,6 +1243,10 @@
                     <label>Catalog Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Catalogsync</frontend_model>
                 </field>
+                <field id="importer_sync" translate="label" sortOrder="135" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Importer Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Importersync</frontend_model>
+                </field>
                 <field id="reset_sync_title" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Reset Sync Options</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
