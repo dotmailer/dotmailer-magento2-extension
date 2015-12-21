@@ -151,8 +151,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 	    $passcode = $this->_getConfigValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE, $scope, $scopeId);
 
-	    $this->_logger->debug($passcode);
-
 	    return $passcode;
     }
 

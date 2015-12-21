@@ -169,8 +169,7 @@ $other_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email
                     <div align="center" style="padding: 5px;">
                         <a href="<?php echo $this->getUrlForLink(); ?>" class="proudct-url">
                             <strong>
-                                <?php
-                                    if($text = $this->takeMeToCartTextForUrl())
+                                <?php if($text = $this->takeMeToCartTextForUrl())
                                         echo $block->escapeHtml(__($text));
                                     else
                                         echo __('Take Me To My Basket');

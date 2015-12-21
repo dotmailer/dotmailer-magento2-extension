@@ -572,11 +572,6 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Delay</source_model>
                     <comment><![CDATA[The system will send the reminder after the above mentioned amount of days upon order status selected above.]]></comment>
                 </field>
-                <field id="new_product" translate="comment label" type="select" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>New Product Only</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[Only include not purchased before products only.]]></comment>
-                </field>
                 <field id="campaign" translate="label" type="select" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Campaign to send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
