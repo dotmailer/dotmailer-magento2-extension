@@ -191,19 +191,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         return $this->recommnededHelper->getDisplayLimitByMode($this->getRequest()->getActionName());
     }
 
-    /**
-     * Price html.
-     * @param $product
-     *
-     * @return string
-     */
-    public function getPriceHtml($product)
-    {
-        $this->setTemplate('ddg/product/price.phtml');
-        $this->setProduct($product);
-        return $this->toHtml();
-    }
-
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

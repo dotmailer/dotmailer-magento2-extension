@@ -109,17 +109,6 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         return $this->recommnededHelper->getDisplayType();
     }
 
-	/**
-	 * @param $product
-	 *
-	 * @return string
-	 */
-	public function getPriceHtml($product)
-    {
-        $this->setTemplate('connector/product/price.phtml');
-        $this->setProduct($product);
-        return $this->toHtml();
-    }
 
 	public function getTextForUrl($store)
 	{

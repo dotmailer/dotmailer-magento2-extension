@@ -11,9 +11,11 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 	protected $_productSoldFactory;
 
 
+
 	public $helper;
 	public $priceHelper;
 	public $scopeManager;
+	public $recommnededHelper;
 
 	protected $_localeDate;
 
@@ -65,8 +67,8 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 	        ->setPageSize($limit);
 
 	    //@todo check inventory for products to display
-//		$this->_stockFactory->create()
-//		    ->addInStockFilterToCollection($productCollection);
+		//$this->_stockFactory->create()
+		//    ->addInStockFilterToCollection($productCollection);
 	    //$productCollection->addAttributeToFilter('is_saleable', TRUE);
 
         //filter collection by category by category_id
@@ -110,7 +112,6 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
             }
         }
 
-        //\Zend_Debug::dump($productCollection->getFirstItem()->getAllVisibleItems()[0]->getProduct()->getName());exit;
 	    return $collection;
     }
 
@@ -124,18 +125,6 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         return $this->recommnededHelper->getDisplayType();
     }
 
-	/**
-	 * Price html.
-	 * @param $product
-	 *
-	 * @return string
-	 */
-	public function getPriceHtml($product)
-    {
-        $this->setTemplate('connector/product/price.phtml');
-        $this->setProduct($product);
-        return $this->toHtml();
-    }
 
 	public function getTextForUrl($store)
 	{

@@ -84,19 +84,6 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 
     }
 
-	/**
-	 * Price html.
-	 * @param $product
-	 *
-	 * @return string
-	 */
-	public function getPriceHtml($product)
-    {
-        $this->setTemplate('connector/product/price.phtml');
-        $this->setProduct($product);
-        return $this->toHtml();
-    }
-
 	public function getTextForUrl($store)
 	{
 		$store = $this->_storeManager->getStore($store);

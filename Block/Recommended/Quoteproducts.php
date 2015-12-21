@@ -150,24 +150,11 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Number of the colums.
      * @return int|mixed
-     * @throws Exception
+     * @throws \Exception
      */
     public function getColumnCount()
     {
         return $this->_recommendedHelper->getDisplayLimitByMode($this->getRequest()->getActionName());
-    }
-
-    /**
-     * Price html.
-     * @param $product
-     *
-     * @return string
-     */
-    public function getPriceHtml($product)
-    {
-        $this->setTemplate('connector/product/price.phtml');
-        $this->setProduct($product);
-        return $this->toHtml();
     }
 
     public function getTextForUrl($store)

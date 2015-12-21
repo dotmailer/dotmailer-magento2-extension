@@ -767,16 +767,19 @@ class Customer
 
     private function _getBrandValue($id)
     {
+	    //attribute mapped from the config
         $attribute = $this->_helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
             $this->customer->getWebsiteId()
         );
+	    //if the id and attribute found
         if($id && $attribute){
             $brand = $this->_productFactory->create()
                 ->setStoreId($this->customer->getStoreId())
                 ->load($id)
                 ->getAttributeText($attribute);
-            if($brand)
+            //check for brand text
+	        if ($brand)
                 return $brand;
         }
         return "";

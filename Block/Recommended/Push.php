@@ -21,7 +21,6 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Block\Product\Context $context,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	)
 	{
@@ -33,7 +32,6 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->_localeDate = $localeDate;
 		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
-		$this->objectManager = $objectManagerInterface;
 	}
     /**
      * get the products to display for table
@@ -44,7 +42,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $productIds = $this->recommnededHelper->getProductPushIds();
 
-        $productCollection = $this->_productFactory->create()->getCollection()
+	    $productCollection = $this->_productFactory->create()->getCollection()
 			->addAttributeToSelect('*')
             ->addAttributeToFilter('entity_id', array('in' => $productIds))
         ;
@@ -63,19 +61,6 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         return $this->recommnededHelper->getDisplayType();
 
-    }
-
-	/**
-	 * Price html.
-	 * @param $product
-	 *
-	 * @return string
-	 */
-	public function getPriceHtml($product)
-    {
-        $this->setTemplate('connector/product/price.phtml');
-        $this->setProduct($product);
-        return $this->toHtml();
     }
 
 	public function getTextForUrl($store)

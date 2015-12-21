@@ -1,10 +1,7 @@
 <?php
-
 $cartItems = $this->getBasketItems();
 $priceHelper = $this->priceHelper;
-$imageBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\Image');
 $image = 'category_page_list';
-
 ?>
 <?php if($cartItems): ?>
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -142,7 +139,6 @@ $image = 'category_page_list';
                 continue;
 	        $_product = $one->getProduct();
 	        $stock = $_product->isInStock();
-
 	        $inStock = ($stock)? 'In Stock' : 'Out of stock';
             $total = $priceHelper->currency($one->getBaseRowTotalInclTax(), true);
             $productUrl = $_product->getProductUrl();
@@ -152,7 +148,8 @@ $image = 'category_page_list';
                 <td style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
 	                <?php echo $block->getImage($_product, 'category_page_grid')->toHtml();?>
                 </td>
-                <td  class="product-name" style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Product Name : <a class="proudct-url" href="<?php echo $productUrl;?>"><?php echo  $_product->getName()  . '</a></br>'. $inStock;?></td>
+                <td  class="product-name" style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
+	                Product Name : <a class="proudct-url" href="<?php echo $productUrl;?>"><?php echo  $_product->getName()  . '</a></br>'. $inStock;?></td>
                 <td class="product-price" style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$one->getQty();?></td>
                 <td class="product-price" style="padding: 1px; border-bottom: 1px solid #cbd3d4;"><?php echo $total;?></td>
             </tr>
@@ -161,7 +158,6 @@ $image = 'category_page_list';
         <tr>
             <td style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;"></td>
             <td style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;"></td>
-
             <td class="other-text" style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;">Order Total</td>
             <td class="other-text" style="padding: 1px; border-bottom: 1px solid #cbd3d4;">
                 <?php echo $grandTotal;?>
