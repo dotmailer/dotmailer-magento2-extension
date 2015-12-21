@@ -171,9 +171,9 @@ $other_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email
                             <strong>
                                 <?php
                                     if($text = $this->takeMeToCartTextForUrl())
-                                        echo $this->helper->__($text);
+                                        echo $block->escapeHtml(__($text));
                                     else
-                                        echo $this->helper->__('Take Me To My Basket');
+                                        echo __('Take Me To My Basket');
                                 ?>
                             </strong>
                         </a>
