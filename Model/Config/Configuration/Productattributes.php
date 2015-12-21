@@ -19,6 +19,10 @@ class Productattributes
             ->addVisibleFilter();
 
         $attributeArray = array();
+        $attributeArray[] = array(
+	        'label' => __('---- Default Option ----'),
+	        'value' => '0'
+        );
 
         foreach($attributes as $attribute){
             $attributeArray[] = array(
