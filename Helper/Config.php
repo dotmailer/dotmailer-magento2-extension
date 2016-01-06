@@ -184,10 +184,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CONTENT_CART_URL               = 'connector_configuration/abandoned_carts/cart_url';
     const XML_PATH_CONNECTOR_CONTENT_LOGIN_URL              = 'connector_configuration/abandoned_carts/login_url';
     // Address Book Pref
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS  = 'connector_configuration/address_book_pref/can_change';
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS        = 'connector_configuration/address_book_pref/show_books';
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS   = 'connector_configuration/address_book_pref/can_show_fields';
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS       = 'connector_configuration/address_book_pref/fields_to_show';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS  = 'connector_configuration/customer_addressbook/can_change';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS        = 'connector_configuration/customer_addressbook/show_books';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS   = 'connector_configuration/customer_addressbook/can_show_fields';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS       = 'connector_configuration/customer_addressbook/fields_to_show';
     //Dynamic Content
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT          = 'connector_configuration/dynamic_content/link_text';
     //Mailcheck

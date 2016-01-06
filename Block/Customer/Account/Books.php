@@ -2,23 +2,28 @@
 
 namespace Dotdigitalgroup\Email\Block\Customer\Account;
 
-class Books extends \Magento\Customer\Block\Account\Dashboard
+class Books extends \Magento\Framework\View\Element\Template
 {
     private $_client;
     private $contact_id;
+    private $_helper;
+    protected $customerSession;
 
 	public function __construct(
-		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Customer\Model\Session $customerSession,
 		\Magento\Framework\View\Element\Template\Context $context,
-		\Magento\Customer\Model\Session $customerSession,
-		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
-		\Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
-		\Magento\Customer\Api\AccountManagementInterface $customerAccountManagement,
-		array $data = []
+        array $data = []
 	) {
-		$this->_helper = $data;
-		parent::__construct($context, $customerSession, $subscriberFactory,$customerRepository, $customerAccountManagement);
+		$this->_helper = $helper;
+        $this->customerSession = $customerSession;
+        parent::__construct($context, $data);
 	}
+
+    protected function getCustomer()
+    {
+        return $this->customerSession->getCustomer();
+    }
 
     /**
      * subscription pref save url
@@ -27,7 +32,7 @@ class Books extends \Magento\Customer\Block\Account\Dashboard
      */
     public function getSaveUrl()
     {
-        return $this->getUrl('connector/customer_newsletter/save');
+        return $this->getUrl('connector/customer/newsletter');
     }
 
     /**
@@ -165,8 +170,8 @@ class Books extends \Magento\Customer\Block\Account\Dashboard
                             if($processedConnectorDataFields[$dataFieldFromConfig]->type == "Date"){
                                 $type = "Date";
                                 $value = $processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name];
-                                $value = new \Magento\Framework\Stdlib\DateTime($value);
-	                            $value = $value->formatDate('Y/M/d');
+                                $value = new \Zend_Date($value, \Zend_Date::ISO_8601);
+	                            $value = $value->toString('M/d/Y');
                             }
                             else
                                 $value = $processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name];
@@ -209,13 +214,15 @@ class Books extends \Magento\Customer\Block\Account\Dashboard
     public function getConnectorContact()
     {
         $contact = $this->_getApiClient()->getContactByEmail($this->getCustomer()->getEmail());
-        if ($contact->id) {
+        if($contact->id){
+            $this->customerSession->setConnectorContactId($contact->id);
             $this->contact_id = $contact->id;
-        } else {
+        }else{
             $contact = $this->_getApiClient()->postContacts($this->getCustomer()->getEmail());
-            if ($contact->id)
+            if($contact->id){
+                $this->customerSession->setConnectorContactId($contact->id);
                 $this->contact_id = $contact->id;
-
+            }
         }
         return $contact;
     }
