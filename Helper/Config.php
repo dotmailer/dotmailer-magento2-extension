@@ -41,7 +41,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED                         = 'sync_settings/sync/order_enabled';
     const XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED                      = 'sync_settings/sync/wishlist_enabled';
     const XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED                        = 'sync_settings/sync/review_enabled';
-    const XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED                         = 'sync_settings/sync/quote_enabled';
     const XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED                       = 'sync_settings/sync/catalog_enabled';
 
     const XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID                  = 'sync_settings/addressbook/customers';
@@ -143,7 +142,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     //Transactional Data
     const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS                  = 'connector_configuration/transactional_data/order_statuses';
     const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES            = 'connector_configuration/transactional_data/order_custom_attributes';
-    const XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES            = 'connector_configuration/transactional_data/quote_custom_attributes';
 	const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES      = 'connector_configuration/transactional_data/order_product_attributes';
 	const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS  = 'connector_configuration/transactional_data/order_product_custom_options';
     //Admin

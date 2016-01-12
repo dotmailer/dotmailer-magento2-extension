@@ -361,10 +361,6 @@
                 <field id="order_report" type="button" sortOrder="80" showInDefault="1" showInStore="1" showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Order</frontend_model>
                 </field>
-                <field id="quote_enabled" type="select" sortOrder="90" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <label>Quote Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="quote_report" type="button" sortOrder="100" showInDefault="1" showInStore="1" showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Quote</frontend_model>
                 </field>
@@ -949,11 +945,6 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Attributes</source_model>
                     <comment><![CDATA[Select custom order attributes that you want to import with your order data. Select multiple by pressing Ctrl button while selecting.]]></comment>
                 </field>
-                <field id="quote_custom_attributes" translate="comment label" type="multiselect" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Quote Custom Attributes</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Quoteattributes</source_model>
-                    <comment><![CDATA[Select custom quote attributes that you want to import with your quote data. Select multiple by pressing Ctrl button while selecting.]]></comment>
-                </field>
                 <field id="order_product_attributes" translate="comment label" type="multiselect" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Include Products Attributes In Order Sync</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
@@ -1235,10 +1226,6 @@
                     <label>Review Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Reviewsync</frontend_model>
                 </field>
-                <field id="quote_sync" translate="label" sortOrder="120" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Quote Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Quotesync</frontend_model>
-                </field>
                 <field id="catalog_sync" translate="label" sortOrder="130" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Catalog Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Catalogsync</frontend_model>
@@ -1262,10 +1249,6 @@
                 <field id="reset_orders" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Reset Order Data</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetorders</frontend_model>
-                </field>
-                <field id="reset_quotes" translate="label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Reset Quote Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetquotes</frontend_model>
                 </field>
                 <field id="reset_reviews" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Reset Review Data</label>
@@ -1350,7 +1333,7 @@
                     <label>Contact</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
-                <field id="order_quote" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Order And Quote</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>

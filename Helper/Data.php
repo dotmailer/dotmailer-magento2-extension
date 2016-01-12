@@ -536,15 +536,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
     }
 
-    public function getConfigSelectedCustomQuoteAttributes($website = 0)
-    {
-        $customAttributes = $this->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES, $website);
-        if($customAttributes)
-            return explode(',',$customAttributes);
-        else
-            return false;
-    }
-
     public function setConnectorContactToReImport($customerId)
     {
         $contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact');

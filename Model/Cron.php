@@ -19,7 +19,6 @@ class Cron
 	protected $_wishlistFactory;
 	protected $_orderFactory;
 	protected $_reviewFactory;
-	protected $_quoteFactory;
 	protected $_syncOrderFactory;
 	protected $_syncQuoteFactory;
 	protected $_campaignFactory;
@@ -29,7 +28,6 @@ class Cron
 		\Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
 		\Dotdigitalgroup\Email\Model\Sync\QuoteFactory $syncQuoteFactory,
 		\Dotdigitalgroup\Email\Model\Sync\OrderFactory  $syncOrderFactory,
-		\Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
 		\Dotdigitalgroup\Email\Model\Sync\ReviewFactory $reviewFactory,
 		\Dotdigitalgroup\Email\Model\Sales\OrderFactory $orderFactory,
 		\Dotdigitalgroup\Email\Model\Sync\WishlistFactory $wishlistFactory,
@@ -49,7 +47,6 @@ class Cron
 		$this->_campaignFactory = $campaignFactory;
 		$this->_syncQuoteFactory = $syncQuoteFactory;
 		$this->_syncOrderFactory = $syncOrderFactory;
-		$this->_quoteFactory = $quoteFactory;
 		$this->_reviewFactory = $reviewFactory;
 		$this->_orderFactory = $orderFactory;
 		$this->_wishlistFactory = $wishlistFactory->create();
@@ -156,28 +153,6 @@ class Cron
 	}
 
 	/**
-	 * order sync
-	 *
-	 * @return mixed
-	 */
-	public function orderSync()
-	{
-		// send order
-		$orderResult = $this->_syncOrderFactory->create()->sync();
-		return $orderResult;
-	}
-
-	/**
-	 * quote sync
-	 *
-	 * @return mixed
-	 */
-	public function quoteSync()
-	{
-		return $this->_syncQuoteFactory->create()->sync();
-	}
-
-	/**
 	 * CRON FOR AUTOMATION
 	 */
 	public function syncAutomation()
@@ -228,16 +203,12 @@ class Cron
 
 
 	/**
-	 * CRON FOR ORDER & QUOTE TRANSACTIONAL DATA
+	 * CRON FOR ORDER TRANSACTIONAL DATA
 	 */
-	public function orderAndQuoteSync()
+	public function orderSync()
 	{
 		// send order
-		$orderResult = $this->orderSync();
-
-		//send quote
-		$quoteResult = $this->quoteSync();
-
-		return $orderResult['message'] . '  ' .$quoteResult['message'];
+		$orderResult = $this->_syncOrderFactory->create()->sync();
+		return $orderResult['message'];
 	}
 }
