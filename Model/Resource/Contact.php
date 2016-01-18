@@ -81,20 +81,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 		return $num;
 	}
 
-	/**
-	 * Simulate fresh install.
-	 */
-	public function resetTables()
-	{
-		return ;
-		//@todo removing the setup module will also remove the extension and will require setup install.
-		$conn = $this->getConnection();
-
-		//remove dotmailer code from setup_module table
-		$cond = $conn->quoteInto('code = ?', 'Dotdigitalgroup_Email');
-		$conn->delete($this->getTableName('setup_module'), $cond);
-	}
-
 	public function unsubscribe($data)
 	{
 		$write = $this->getConnection();

@@ -1197,11 +1197,6 @@
                     <label>Delete All Contact Ids</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Deletecontactids</frontend_model>
                 </field>
-                <field id="reset_all" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Reset Tables</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resettables</frontend_model>
-                    <comment><![CDATA[All dotmailer tables will be removed, re-created and all data will be re-filled. Just like doing a fresh install.]]></comment>
-                </field>
                 <field id="manual_sync_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Manyally Run Sync</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
