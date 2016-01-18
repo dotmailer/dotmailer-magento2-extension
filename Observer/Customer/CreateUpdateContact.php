@@ -20,6 +20,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 	protected $_proccessorFactory;
 	protected $_reviewFactory;
 	protected $_wishlist;
+	protected $_proccessor;
 
 
 	public function __construct(
@@ -34,7 +35,8 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Psr\Log\LoggerInterface $loggerInterface,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		\Dotdigitalgroup\Email\Model\Proccessor $proccessor
 	) {
 		$this->_reviewFactory = $reviewFactory;
 		$this->_wishlist = $wishlist;
@@ -48,6 +50,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 		$this->_storeManager = $storeManagerInterface;
 		$this->_registry = $registry;
 		$this->_objectManager = $objectManagerInterface;
+		$this->_proccessor  = $proccessor;
 	}
 
 	/**
@@ -77,29 +80,22 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 			//email change detection
 			if ($email != $emailBefore) {
 				$this->_helper->log('email change detected : '  . $email . ', after : ' . $emailBefore .  ', website id : ' . $websiteId);
-				if ($this->_helper->isEnabled($websiteId)) {
-					$client = $this->_helper->getWebsiteApiClient($websiteId);
-					$subscribersAddressBook = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID, $websiteId);
-					$response = $client->postContacts($emailBefore);
-					//check for matching email
-					if (isset($response->id)) {
-						if ($email != $response->email) {
-							$data = array(
-								'Email' => $email,
-								'EmailType' => 'Html'
-							);
-							//update the contact with same id - different email
-							$client->updateContact($response->id, $data);
 
-						}
-						if (!$isSubscribed && $response->status == 'Subscribed') {
-							$client->deleteAddressBookContact($subscribersAddressBook, $response->id);
-						}
-					} elseif (isset($response->message)) {
-						$this->_helper->log('Email change error : ' . $response->message);
-					}
-				}
-				$contactModel->setEmail($email);
+				$data = array(
+					'emailBefore' => $emailBefore,
+					'email' => $email,
+					'isSubscribed' => $isSubscribed
+				);
+				$this->_proccessor->registerQueue(
+					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT_UPDATE,
+					$data,
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_CONTACT_EMAIL_UPDATE,
+					$websiteId
+				);
+
+			}elseif (!$emailBefore) {
+				//for new contacts update email
+				$contactModel->setEmail( $email );
 			}
 			$contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
 			             ->setCustomerId($customerId)

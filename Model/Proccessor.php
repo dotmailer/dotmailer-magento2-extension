@@ -16,6 +16,9 @@ class Proccessor
 	const MODE_SINGLE = 'Single';
 	const MODE_SINGLE_DELETE = 'Single_Delete';
 	const MODE_CONTACT_DELETE = 'Contact_Delete';
+	const MODE_CONTACT_EMAIL_UPDATE = 'Contact_Email_Update';
+    const MODE_SUBSCRIBER_UPDATE = 'Subscriber_Update';
+    const MODE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber_Resubscribed';
 
 	//import type
 	const IMPORT_TYPE_GUEST = 'Guest';
@@ -26,6 +29,9 @@ class Proccessor
 	const IMPORT_TYPE_WISHLIST = 'Wishlist';
 	const IMPORT_TYPE_SUBSCRIBERS = 'Subscriber';
 	const IMPORT_TYPE_CATALOG = 'Catalog_Default';
+	const IMPORT_TYPE_CONTACT_UPDATE = 'Contact';
+    const IMPORT_TYPE_SUBSCRIBER_UPDATE = 'Subscriber';
+    const IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber';
 
 	private $import_statuses = array(
 		'RejectedByWatchdog', 'InvalidFileFormat', 'Unknown',
@@ -51,6 +57,7 @@ class Proccessor
     protected $_directoryList;
     protected $_file;
     protected $_contact;
+	protected $_contactModel;
 
 
 	public function __construct(
@@ -60,7 +67,8 @@ class Proccessor
 		\Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory $importerCollectionFactory,
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
         \Magento\Framework\Filesystem\Io\File $file,
-        \Dotdigitalgroup\Email\Model\Resource\Contact $contact
+        \Dotdigitalgroup\Email\Model\Resource\Contact $contact,
+		\Dotdigitalgroup\Email\Model\Contact $contactModel
 	){
 		$this->_importerFactory = $importerFactory;
 		$this->_helper = $helper;
@@ -69,6 +77,7 @@ class Proccessor
         $this->_directoryList = $directoryList;
         $this->_file = $file;
         $this->_contact = $contact;
+		$this->_contactModel = $contactModel;
 	}
 
 	/**
@@ -200,6 +209,7 @@ class Proccessor
 		if ($item = $this->_getQueue()) {
 			$websiteId = $item->getWebsiteId();
 
+			/** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
 			$client = $this->_helper->getWebsiteApiClient($websiteId);
 
 			$now = gmdate('Y-m-d H:i:s');
@@ -262,6 +272,56 @@ class Proccessor
 					if (isset($result->message)) {
 						$error = true;
 					}
+				} elseif ($item->getImportMode() == self::MODE_CONTACT_EMAIL_UPDATE){
+					$emailBefore = $importData['emailBefore'];
+					$email = $importData['email'];
+					$isSubscribed = $importData['isSubscribed'];
+					$subscribersAddressBook = $this->_helper->getWebsiteConfig(
+						\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID, $websiteId);
+					$result = $client->postContacts($emailBefore);
+					//check for matching email
+					if (isset($result->id)) {
+						if ($email != $result->email) {
+							$data = array(
+								'Email' => $email,
+								'EmailType' => 'Html'
+							);
+							//update the contact with same id - different email
+							$client->updateContact($result->id, $data);
+						}
+						if (!$isSubscribed && $result->status == 'Subscribed') {
+							$client->deleteAddressBookContact($subscribersAddressBook, $result->id);
+						}
+					} elseif (isset($result->message)) {
+						$error = true;
+					}
+				} elseif ($item->getImportMode() == self::MODE_SUBSCRIBER_UPDATE){
+					$email = $importData['email'];
+					$id = $importData['id'];
+					$contactEmail = $this->_contactModel->load($id);
+					$result = $client->postContacts( $email );
+					if ( isset( $result->id ) ) {
+						$contactId = $result->id;
+						$client->deleteAddressBookContact(
+							$this->_helper->getSubscriberAddressBook( $websiteId ), $contactId
+						);
+						$contactEmail->setContactId($contactId)
+							->save();
+					} else {
+						$contactEmail->setSuppressed( '1' )
+							->save();
+					}
+				} elseif ($item->getImportMode() == self::MODE_SUBSCRIBER_RESUBSCRIBED){
+					$email = $importData['email'];
+					$apiContact = $client->postContacts( $email );
+
+					//resubscribe suppressed contacts
+					if (isset($apiContact->message)
+						&& $apiContact->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED)
+					{
+						$apiContact = $client->getContactByEmail($email);
+						$client->postContactsResubscribe( $apiContact );
+					}
 				} else { //bulk import transactional data
 					$result = $client->postContactsTransactionalDataImport($importData, $item->getImportType());
 					if (isset($result->message) && !isset($result->id)) {
@@ -272,7 +332,10 @@ class Proccessor
 			if (!$error) {
 				if ($item->getImportMode() == self::MODE_SINGLE_DELETE or
 				    $item->getImportMode() == self::MODE_SINGLE or
-				    $item->getImportMode() == self::MODE_CONTACT_DELETE
+					$item->getImportMode() == self::MODE_CONTACT_DELETE or
+					$item->getImportMode() == self::MODE_CONTACT_EMAIL_UPDATE or
+					$item->getImportMode() == self::MODE_SUBSCRIBER_RESUBSCRIBED or
+					$item->getImportMode() == self::MODE_SUBSCRIBER_UPDATE
 				) {
 					$item->setImportStatus(self::IMPORTED)
 					     ->setImportFinished($now)

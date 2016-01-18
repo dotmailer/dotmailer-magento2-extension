@@ -14,6 +14,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 	protected $_contactFactory;
 	protected $_subscriberFactory;
 	protected $_automationFactory;
+	protected $_proccessor;
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -21,7 +22,8 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+		\Dotdigitalgroup\Email\Model\Proccessor $proccessor
 	)
 	{
 		$this->_automationFactory = $automationFactory;
@@ -30,6 +32,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 		$this->_helper = $data;
 		$this->_storeManager = $storeManagerInterface;
 		$this->_registry = $registry;
+		$this->_proccessor  = $proccessor;
 	}
 
 
@@ -45,6 +48,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 		$subscriber     = $observer->getEvent()->getSubscriber();
 		$email          = $subscriber->getEmail();
 		$storeId        = $subscriber->getStoreId();
+		$subscriberStatus   = $subscriber->getSubscriberStatus();
 		$websiteId      = $this->_storeManager->getStore($subscriber->getStoreId())->getWebsiteId();
 		//check if enabled
 		if ( ! $this->_helper->isEnabled($websiteId))
@@ -55,19 +59,17 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 				->loadByCustomerEmail($email, $websiteId);
 			// only for subsribers
 			if ($subscriber->isSubscribed()) {
-				$client = $this->_helper->getWebsiteApiClient($websiteId);
-				//check for website client
-				if ($client) {
-					//set contact as subscribed
-					$contactEmail->setSubscriberStatus( $subscriber->getSubscriberStatus() )
-					             ->setIsSubscriber('1');
-					$apiContact = $client->postContacts( $email );
-					//resubscribe suppressed contacts
-					if (isset($apiContact->message) && $apiContact->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
-						$apiContact = $client->getContactByEmail($email);
-						$client->postContactsResubscribe( $apiContact );
-					}
-				}
+
+				//set contact as subscribed
+				$contactEmail->setSubscriberStatus( $subscriberStatus )
+					->setIsSubscriber('1');
+				$this->_proccessor->registerQueue(
+					\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
+					array('email' => $email),
+					\Dotdigitalgroup\Email\Model\Proccessor::MODE_SUBSCRIBER_RESUBSCRIBED,
+					$websiteId
+				);
+
 				// reset the subscriber as suppressed
 				$contactEmail->setSuppressed(null);
 
@@ -76,32 +78,21 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 				//skip if contact is suppressed
 				if ($contactEmail->getSuppressed())
 					return $this;
+
 				//update contact id for the subscriber
-				$client = $this->_helper->getWebsiteApiClient($websiteId);
-				//check for website client
-				if ($client) {
-					$contactId = $contactEmail->getContactId();
-					//get the contact id
-					if ( !$contactId ) {
-						//if contact id is not set get the contact_id
-						$result = $client->postContacts( $email );
-						if ( isset( $result->id ) ) {
-							$contactId = $result->id;
-						} else {
-							//no contact id skip
-							$contactEmail->setSuppressed( '1' )
-							             ->save();
-							return $this;
-						}
-					}
-					$addressBookId = $this->_helper->getSubscriberAddressBook( $websiteId );
-					//remove contact from address book
-					$client->deleteAddressBookContact($addressBookId, $contactId);
+				$contactId = $contactEmail->getContactId();
+				//get the contact id
+				if ( !$contactId ) {
+					$this->_proccessor->registerQueue(
+						\Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_SUBSCRIBER_UPDATE,
+						array('email' => $email, 'id' => $contactEmail->getId()),
+						\Dotdigitalgroup\Email\Model\Proccessor::MODE_SUBSCRIBER_UPDATE,
+						$websiteId
+					);
 				}
 				$contactEmail->setIsSubscriber(null)
 				             ->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED);
 			}
-
 
 			// fix for a multiple hit of the observer. stop adding the duplicates on the automation
 			$emailReg =  $this->_registry->registry($email . '_subscriber_save');
@@ -114,8 +105,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 
 			//update the contact
 			$contactEmail->setStoreId($storeId);
-			if (isset($contactId))
-				$contactEmail->setContactId($contactId);
+
 			//update contact
 			$contactEmail->save();
 
