@@ -9,6 +9,7 @@
     <menu>
         <add id="Dotdigitalgroup_Email::marketing_automation" title="Marketing Automation" module="Dotdigitalgroup_Email" sortOrder="100" parent="Magento_Backend::marketing" resource="Dotdigitalgroup_Email::contact"/>
         <add id="Dotdigitalgroup_Email::automation_studio" title="Automation Studio" module="Dotdigitalgroup_Email" sortOrder="120" action="dotdigitalgroup_email/studio" resource="Dotdigitalgroup_Email::studio" parent="Dotdigitalgroup_Email::marketing_automation" />
+        <add id="Dotdigitalgroup_Email::exclusion_rules" title="Exclusion Rules" module="Dotdigitalgroup_Email" sortOrder="125" action="dotdigitalgroup_email/rules" resource="Dotdigitalgroup_Email::rules" parent="Dotdigitalgroup_Email::marketing_automation" />
         <add id="Dotdigitalgroup_Email::reports" title="Marketing Automation" module="Dotdigitalgroup_Email" sortOrder="130" action="dotdigitalgroup_email/reports" resource="Dotdigitalgroup_Email::reports" parent="Magento_Reports::report" />
         <add id="Dotdigitalgroup_Email::importer" title="Importer Status" module="Dotdigitalgroup_Email" sortOrder="140" action="dotdigitalgroup_email/importer" resource="Dotdigitalgroup_Email::importer" parent="Dotdigitalgroup_Email::reports" />
         <add id="Dotdigitalgroup_Email::automation" title="Automation Enrollment" module="Dotdigitalgroup_Email" sortOrder="150" action="dotdigitalgroup_email/automation" resource="Dotdigitalgroup_Email::automation" parent="Dotdigitalgroup_Email::reports" />

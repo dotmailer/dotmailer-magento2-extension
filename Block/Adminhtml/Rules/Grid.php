@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
 
-use Magento\Backend\Block\Widget\Grid as WidgetGrid;
-
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
 	/**

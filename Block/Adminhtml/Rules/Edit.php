@@ -5,7 +5,7 @@
  */
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
 
-class Edit extends \Magento\Backend\Block\Widget\Container
+class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
 
 	protected $_registry;
@@ -16,16 +16,17 @@ class Edit extends \Magento\Backend\Block\Widget\Container
      */
     public function __construct(
 	    \Magento\Framework\Registry $registry,
-	    \Magento\Backend\Block\Widget\Context $context)
+	    \Magento\Backend\Block\Widget\Context $context
+    )
     {
 	    $this->_registry = $registry;
         $this->_objectId = 'id';
-        $this->_blockGroup = 'ddg_automation';
+        $this->_blockGroup = 'Dotdigitalgroup_Email';
         $this->_controller = 'adminhtml_rules';
 		$data =[];
         parent::__construct($context, $data);
 
-        $this->_addButton('save_and_continue_edit', array(
+        $this->addButton('save_and_continue_edit', array(
             'class'   => 'save',
             'label'   => __('Save and Continue Edit'),
             'onclick' => 'editForm.submit($(\'edit_form\').action + \'back/edit/\')',

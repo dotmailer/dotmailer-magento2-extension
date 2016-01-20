@@ -2,25 +2,22 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-class Main extends \Magento\Config\Block\System\Config\Form\Field
+class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
+    protected $_systemStore;
 
-	protected $_registry;
-	protected $_objectManager;
-	/**
-	 * Initialize form
-	 * Add standard buttons
-	 * Add "Save and Continue" button
-	 */
 	public function __construct(
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+        \Magento\Framework\Data\FormFactory $formFactory,
 		\Magento\Framework\Registry $registry,
-		\Magento\Backend\Block\Widget\Context $context)
+		\Magento\Backend\Block\Widget\Context $context,
+        \Magento\Store\Model\System\Store $systemStore,
+        array $data = []
+    )
 	{
-		$this->_objectManager = $objectManagerInterface;
-		$this->_registry = $registry;
-		parent::__construct($context);
+        $this->_systemStore = $systemStore;
+        parent::__construct($context, $registry, $formFactory, $data);
 	}
+
     /**
      * Prepare content for tab
      *
@@ -63,9 +60,9 @@ class Main extends \Magento\Config\Block\System\Config\Form\Field
 
     protected function _prepareForm()
     {
-        $model = $this->_registry->registry('current_ddg_rule');
+        $model = $this->_coreRegistry->registry('current_ddg_rule');
 
-        $form = $this->_objectManager('Magento\Framework\Data\Form');
+        $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
 
         $fieldset = $form->addFieldset('base_fieldset',
@@ -111,6 +108,27 @@ class Main extends \Magento\Config\Block\System\Config\Form\Field
             $model->setData('status', '0');
         }
 
+        if ($this->_storeManager->isSingleStoreMode()) {
+            $websiteId = $this->_storeManager->getStore(true)->getWebsiteId();
+            $fieldset->addField('website_ids', 'hidden', ['name' => 'website_ids[]', 'value' => $websiteId]);
+            $model->setWebsiteIds($websiteId);
+        } else {
+            $field = $fieldset->addField(
+                'website_ids',
+                'multiselect',
+                [
+                    'name' => 'website_ids[]',
+                    'label' => __('Websites'),
+                    'title' => __('Websites'),
+                    'required' => true,
+                    'values' => $this->_systemStore->getWebsiteValuesForForm()
+                ]
+            );
+            $renderer = $this->getLayout()->createBlock(
+                'Magento\Backend\Block\Store\Switcher\Form\Renderer\Fieldset\Element'
+            );
+            $field->setRenderer($renderer);
+        }
 
         $form->setValues($model->getData());
         $this->setForm($form);

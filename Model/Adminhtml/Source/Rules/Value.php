@@ -12,7 +12,7 @@ class Value
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
 	)
 	{
-		$this->_configFactory = $configFactory;
+		$this->_configFactory = $configFactory->create();
 		$this->_objectManager = $objectManagerInterface;
 	}
     /**
@@ -53,7 +53,7 @@ class Value
 
         switch ($attribute) {
             case 'country_id':
-                $options = $this->_objectManager->create('Magento\Config\Model\Config\Source\Country')
+                $options = $this->_objectManager->create('Magento\Directory\Model\Config\Source\Country')
                     ->toOptionArray();
                 break;
 
@@ -68,7 +68,7 @@ class Value
                 break;
 
             case 'method':
-                $options = $this->_objectManager->create('Magento\Shipping\Model\Config\Source\Allmethods')
+                $options = $this->_objectManager->create('Magento\Payment\Model\Config\Source\Allmethods')
                     ->toOptionArray();
                 break;
 
@@ -78,9 +78,9 @@ class Value
                 break;
 
             default:
-                $attribute = $this->_config->getAttribute('catalog_product', $attribute);
+                $attribute = $this->_configFactory->getAttribute('catalog_product', $attribute);
                 if ($attribute->usesSource()) {
-                    $options = $attribute->getSource()->getAllOptions(false);
+                    $options = $attribute->getSource()->getAllOptions();
                 }
         }
         return $options;
@@ -93,7 +93,7 @@ class Value
      */
     public function toOptionArray()
     {
-        $options = $this->_objectManager->create('Magento\Shipping\Model\Config\Source\Allmethods')
+        $options = $this->_objectManager->create('Magento\Payment\Model\Config\Source\Allmethods')
             ->toOptionArray();
 
         return $options;

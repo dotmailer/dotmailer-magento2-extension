@@ -67,6 +67,18 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         $this->_init('Dotdigitalgroup\Email\Model\Resource\Rules');
     }
 
+    public function beforeSave()
+    {
+        parent::beforeSave();
+        if ($this->isObjectNew()) {
+            $this->setCreatedAt(time());
+        }else {
+            $this->setUpdatedAt(time());
+        }
+        $this->setCondition(serialize($this->getCondition()));
+        $this->setWebsiteIds(implode(',', $this->getWebsiteIds()));
+        return $this;
+    }
 
     /**
      * after load
@@ -148,26 +160,26 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         if($type == self::ABANDONED){
             $collection->getSelect()
                 ->joinLeft(
-                    array('quote_address' => 'sales_flat_quote_address'),
+                    array('quote_address' => 'quote_address'),
                     "main_table.entity_id = quote_address.quote_id",
                     array('shipping_method', 'country_id', 'city', 'region_id')
                 )->joinLeft(
-                    array('quote_payment' => 'sales_flat_quote_payment'),
+                    array('quote_payment' => 'quote_payment'),
                     "main_table.entity_id = quote_payment.quote_id",
                     array('method')
                 )->where('address_type = ?', 'shipping');
         }elseif($type == self::REVIEW){
             $collection->getSelect()
                 ->join(
-                    array('order_address' => 'sales_flat_order_address'),
+                    array('order_address' => 'sales_order_address'),
                     "main_table.entity_id = order_address.parent_id",
                     array('country_id', 'city', 'region_id')
                 )->join(
-                    array('order_payment' => 'sales_flat_order_payment'),
+                    array('order_payment' => 'sales_order_payment'),
                     "main_table.entity_id = order_payment.parent_id",
                     array('method')
                 )->join(
-                    array('quote' => 'sales_flat_quote'),
+                    array('quote' => 'quote'),
                     "main_table.quote_id = quote.entity_id",
                     array('items_qty')
                 )->where('order_address.address_type = ?', 'shipping');

@@ -13,6 +13,7 @@
                 <resource id="Magento_Backend::marketing">
                     <resource id="Dotdigitalgroup_Email::marketing_automation">
                         <resource id="Dotdigitalgroup_Email::automation_studio" title="Marketing Automation" sortOrder="10" />
+                        <resource id="Dotdigitalgroup_Email::exclusion_rules" title="Exclusion Rules" sortOrder="20" />
                     </resource>
                 </resource>
                 <resource id="Magento_Reports::report">
