@@ -209,6 +209,6 @@ class Cron
 	{
 		// send order
 		$orderResult = $this->_syncOrderFactory->create()->sync();
-		return $orderResult['message'];
+		return $orderResult;
 	}
 }
