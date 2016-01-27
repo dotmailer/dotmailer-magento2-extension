@@ -255,6 +255,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const API_ENDPOINT                                      = 'https://api.nosto.com';
     const API_ENDPOINT_TEST                                 = 'https://test.api.nosto.com';
 
+    /**
+     * API endpoint
+     */
+    const PATH_FOR_API_ENDPOINT = 'connector/api/endpoint';
+
 	protected $_storeManager;
 
 	public function __construct(

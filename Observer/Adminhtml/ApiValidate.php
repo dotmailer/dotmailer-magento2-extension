@@ -9,20 +9,21 @@ use Magento\Framework\Event\ObserverInterface;
 
 class ApiValidate implements ObserverInterface
 {
-
 	protected $_helper;
 	protected $_context;
 	protected $_request;
 	protected $_storeManager;
 	protected $messageManager;
 	protected $_objectManager;
+	protected $_writer;
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+		\Magento\Framework\App\Config\Storage\Writer $writer
 	)
 	{
 		$this->_helper = $data;
@@ -32,6 +33,7 @@ class ApiValidate implements ObserverInterface
 		$this->_storeManager = $storeManagerInterface;
 		$this->messageManager = $context->getMessageManager();
 		$this->_objectManager = $objectManagerInterface;
+		$this->_writer = $writer;
 	}
 
 	/**
@@ -55,6 +57,15 @@ class ApiValidate implements ObserverInterface
 			$testModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Test');
 			$isValid = $testModel->validate($apiUsername, $apiPassword);
 			if ($isValid) {
+
+				//save endpoint for account
+				foreach($isValid->properties as $property){
+					if($property->name == 'ApiEndpoint' && strlen($property->value)){
+						$this->_saveApiEndpoint($property->value);
+						break;
+					}
+				}
+
 				/**
 				 * Send install info
 				 */
@@ -66,5 +77,13 @@ class ApiValidate implements ObserverInterface
 			}
 		}
 		return $this;
+	}
+
+	protected function _saveApiEndpoint($apiEndpoint)
+	{
+		$this->_writer->save(
+			\Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+			$apiEndpoint
+		);
 	}
 }
