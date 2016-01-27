@@ -19,15 +19,15 @@ class Cron
 	protected $_wishlistFactory;
 	protected $_orderFactory;
 	protected $_reviewFactory;
+	protected $_quoteFactory;
 	protected $_syncOrderFactory;
-	protected $_syncQuoteFactory;
 	protected $_campaignFactory;
 
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
-		\Dotdigitalgroup\Email\Model\Sync\QuoteFactory $syncQuoteFactory,
 		\Dotdigitalgroup\Email\Model\Sync\OrderFactory  $syncOrderFactory,
+		\Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
 		\Dotdigitalgroup\Email\Model\Sync\ReviewFactory $reviewFactory,
 		\Dotdigitalgroup\Email\Model\Sales\OrderFactory $orderFactory,
 		\Dotdigitalgroup\Email\Model\Sync\WishlistFactory $wishlistFactory,
@@ -45,8 +45,8 @@ class Cron
 		\Dotdigitalgroup\Email\Model\Apiconnector\Contact $contact
 	) {
 		$this->_campaignFactory = $campaignFactory;
-		$this->_syncQuoteFactory = $syncQuoteFactory;
 		$this->_syncOrderFactory = $syncOrderFactory;
+		$this->_quoteFactory = $quoteFactory;
 		$this->_reviewFactory = $reviewFactory;
 		$this->_orderFactory = $orderFactory;
 		$this->_wishlistFactory = $wishlistFactory->create();
