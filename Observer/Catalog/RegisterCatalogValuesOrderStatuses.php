@@ -6,7 +6,7 @@
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
 
-class RegisterCatalgoValuesOrderStatuses implements \Magento\Framework\Event\ObserverInterface
+class RegisterCatalogValuesOrderStatuses implements \Magento\Framework\Event\ObserverInterface
 {
 
 	protected $_helper;
