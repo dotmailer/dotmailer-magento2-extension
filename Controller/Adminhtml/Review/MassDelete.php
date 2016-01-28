@@ -2,10 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Review;
 
-use Dotdigitalgroup\Email\Controller\Adminhtml\Quote as QuoteController;
+use Magento\Backend\App\Action;
 use Magento\Framework\Controller\ResultFactory;
 
-class MassDelete extends QuoteController
+class MassDelete extends Action
 {
 	/**
 	 * @return \Magento\Backend\Model\View\Result\Redirect
