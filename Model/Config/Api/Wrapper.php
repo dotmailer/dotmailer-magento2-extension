@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Config\Api\Wrapper;
+namespace Dotdigitalgroup\Email\Model\Config\Api;
 
 class Wrapper implements \Magento\Framework\Option\ArrayInterface
 {
