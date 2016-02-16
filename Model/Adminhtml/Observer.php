@@ -15,8 +15,7 @@ class Observer
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context,
-		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface
 	)
 	{
 		$this->_helper = $data;
@@ -25,7 +24,7 @@ class Observer
 		$this->_request = $context->getRequest();
 		$this->_storeManager = $storeManagerInterface;
 		$this->messageManager = $context->getMessageManager();
-		$this->_objectManager = $objectManagerInterface;
+		$this->_objectManager = $context->getObjectManager();
 	}
     /**
      * API Sync and Data Mapping.

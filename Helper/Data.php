@@ -15,7 +15,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	protected $_contactFactory;
 	protected $_productMetadata;
 	protected $_sessionModel;
-    protected $_remoteAddress;
 
 	public function __construct(
 		//\Magento\Framework\ModuleFactory $module,
@@ -24,11 +23,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Magento\Config\Model\ResourceModel\Config $resourceConfig,
 		\Magento\Framework\App\ResourceConnection $adapter,
-		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\App\Helper\Context $context,
 		\Magento\Framework\ObjectManagerInterface $objectManager,
-		\Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
+		\Magento\Store\Model\StoreManagerInterface $storeManager
 	)
 	{
 
@@ -39,7 +36,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		$this->_resourceConfig = $resourceConfig;
 		$this->_storeManager = $storeManager;
 		$this->_objectManager = $objectManager;
-        $this->_remoteAddress = $remoteAddress;
 
 		parent::__construct($context);
 	}

@@ -7,10 +7,8 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 
 	public $helper;
 	public $priceHelper;
-	public $scopeManager;
 	public $recommnededHelper;
 
-	protected $_localeDate;
 	protected $_productCollection;
 	protected $_categoryFactory;
 	protected $_productFactory;
@@ -19,13 +17,10 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Magento\Catalog\Model\ProductFactory $productFactory,
 		\Magento\Catalog\Model\CategoryFactory $categtoryFactory,
 		\Magento\Reports\Model\ResourceModel\Product\CollectionFactory $proudctCollection,
-		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		array $data = []
 	)
 	{
@@ -35,8 +30,6 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->helper = $helper;
 		$this->recommnededHelper = $recommended;
 		$this->priceHelper = $priceHelper;
-		$this->_localeDate = $localeDate;
-		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 		parent::__construct( $context, $data );
 	}

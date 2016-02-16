@@ -10,12 +10,12 @@ class Stats extends \Magento\Framework\View\Element\Template
 	protected $_objectManager;
 
 	public function __construct(
-		\Dotdigitalgroup\Email\Helper\Data $data,
+		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		\Magento\Backend\Block\Template\Context $context)
 	{
 		$data = [];
-		$this->_helper = $data;
+		$this->_helper = $helper;
 		$this->_objectManager = $objectManagerInterface;
 		parent::__construct($context, $data);
 	}

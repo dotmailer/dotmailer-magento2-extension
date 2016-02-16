@@ -7,7 +7,6 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     protected $_quote;
 	public $helper;
 	public $priceHelper;
-	public $scopeManager;
 	protected $_quoteFactory;
 	protected $_emulationFactory;
 
@@ -17,7 +16,6 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Magento\Quote\Model\QuoteFactory $quoteFactory,
 		\Magento\Catalog\Block\Product\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		array $data = []
 	)
@@ -25,7 +23,6 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->_quoteFactory = $quoteFactory;
 		$this->helper = $helper;
 		$this->priceHelper = $priceHelper;
-		$this->scopeManager = $scopeConfig;
 		$this->_emulationFactory = $emulationFactory;
 
 		parent::__construct( $context, $data );

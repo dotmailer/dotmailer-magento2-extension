@@ -8,17 +8,14 @@ use Magento\Backend\App\Action\Context;
 
 class Value extends \Magento\Backend\App\AbstractAction
 {
-	protected $_objectManager;
 	protected $_http;
 
 	public function __construct(
 		Context $context,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		\Magento\Framework\App\Response\Http $http
 	)
 	{
 		parent::__construct($context);
-		$this->_objectManager = $objectManagerInterface;
 		$this->_http = $http;
 	}
 

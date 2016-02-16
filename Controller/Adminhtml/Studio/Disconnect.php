@@ -4,16 +4,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 
 class Disconnect extends \Magento\Backend\App\AbstractAction
 {
-
-	protected $_auth;
-
 	public function __construct(
-		\Magento\Backend\Model\Auth $auth,
 		\Magento\Backend\App\Action\Context $context
 	)
 	{
-		$this->_auth = $auth;
-
 		parent::__construct($context);
 	}
 	/**

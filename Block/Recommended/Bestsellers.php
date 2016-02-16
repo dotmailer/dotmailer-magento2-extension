@@ -14,13 +14,10 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 
 	public $helper;
 	public $priceHelper;
-	public $scopeManager;
 	public $recommnededHelper;
 
-	protected $_localeDate;
 
 	public function __construct(
-		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -28,12 +25,10 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Magento\Catalog\Model\CategoryFactory  $categoryFactory,
         \Magento\Catalog\Block\Product\Context $context,
 		\Magento\CatalogInventory\Model\StockFactory $stockFactory,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
 		array $data = []
 	)
 	{
-		$this->_localeDate = $localeDate;
 		$this->helper = $helper;
 		$this->_dateTime = $dateTime;
 		$this->priceHelper = $priceHelper;
@@ -41,7 +36,6 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->recommnededHelper = $recommended;
 		$this->_categoryFactory = $categoryFactory;
 		$this->_productSoldFactory = $productSoldFactory;
-		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 		parent::__construct( $context, $data );
 	}

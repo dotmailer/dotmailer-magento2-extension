@@ -7,10 +7,8 @@ class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
 
 	protected $_quote;
 	public $helper;
-	public $registry;
 	public $storeManager;
 	public $priceHelper;
-	public $scopeManager;
 	public $reviewHelper;
 	protected $_orderFactory;
 	protected $_reviewFactory;
@@ -20,12 +18,10 @@ class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Magento\Review\Model\ReviewFactory $reviewFactory,
 		\Dotdigitalgroup\Email\Helper\Review $reviewHelper,
 		\Magento\Sales\Model\OrderFactory $orderFactory,
-		\Magento\Framework\Registry $registry,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Dotdigitalgroup\Email\Helper\Review $reviewHelper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		array $data = []
 	)
 	{
@@ -35,10 +31,8 @@ class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->_orderFactory = $orderFactory;
 		$this->helper = $helper;
 		$this->reviewHelper = $reviewHelper;
-		$this->registry = $registry;
 		$this->storeManager = $this->_storeManager;
 		$this->priceHelper = $priceHelper;
-		$this->scopeManager = $scopeConfig;
 	}
 
     /**
@@ -46,21 +40,21 @@ class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
 	 */
     public function getOrder()
     {
-        $orderId = $this->registry->registry('order_id');
-        $order = $this->registry->registry('current_order');
+        $orderId = $this->_coreRegistry->registry('order_id');
+        $order = $this->_coreRegistry->registry('current_order');
         if (! $orderId) {
             $orderId = $this->getRequest()->getParam('order_id');
             if(!$orderId)
                 return false;
-            $this->registry->unregister('order_id'); // additional measure
-            $this->registry->register('order_id', $orderId);
+            $this->_coreRegistry->unregister('order_id'); // additional measure
+            $this->_coreRegistry->register('order_id', $orderId);
         }
         if (! $order) {
             if(!$orderId)
                 return false;
             $order = $this->_orderFactory->create()->load($orderId);
-            $this->registry->unregister('current_order'); // additional measure
-            $this->registry->register('current_order', $order);
+            $this->_coreRegistry->unregister('current_order'); // additional measure
+            $this->_coreRegistry->register('current_order', $order);
         }
 
         return $order;

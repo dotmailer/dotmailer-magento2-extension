@@ -6,10 +6,8 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	public $helper;
 	public $priceHelper;
-	public $scopeManager;
 	public $recommnededHelper;
 
-	protected $_localeDate;
 	protected $_productFactory;
 
 
@@ -19,8 +17,6 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		array $data = []
 	)
 	{
@@ -29,8 +25,6 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->_productFactory = $productFactory;
 		$this->recommnededHelper = $recommended;
 		$this->priceHelper = $priceHelper;
-		$this->_localeDate = $localeDate;
-		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 	}
     /**

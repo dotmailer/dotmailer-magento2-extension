@@ -15,7 +15,6 @@ class ResetContactImport implements ObserverInterface
 	protected $_request;
 	protected $_storeManager;
 	protected $messageManager;
-	protected $_objectManager;
 	protected $_contactFactory;
 	protected $_contactResourceFactory;
 
@@ -24,8 +23,7 @@ class ResetContactImport implements ObserverInterface
 		\Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context,
-		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface
 	)
 	{
 		$this->_contactFactory = $contactFactory;

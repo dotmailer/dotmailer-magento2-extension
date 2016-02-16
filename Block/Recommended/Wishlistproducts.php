@@ -6,8 +6,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	public $helper;
 	public $priceHelper;
-	protected $_localeDate;
-	public $scopeManager;
 	public $recommnededHelper;
 
 	protected $_customerFactory;
@@ -23,8 +21,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		array $data = []
 	)
 	{
@@ -33,8 +29,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->_customerFactory = $customerFactory;
 		$this->recommnededHelper = $recommended;
 		$this->priceHelper = $priceHelper;
-		$this->_localeDate = $localeDate;
-		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 		$this->_wishlistFactory = $wishlistFactory;
 		$this->_productFactory = $productFactory;

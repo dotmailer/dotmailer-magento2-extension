@@ -5,16 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Connector;
 
 class Ajaxvalidation extends \Magento\Backend\App\Action
 {
-	protected $_objectManager;
 	protected $data;
 
 	public function __construct(
 		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Backend\App\Action\Context $context)
 	{
 		$this->data = $data;
-		$this->_objectManager = $objectManager;
 		parent::__construct($context);
 
 	}

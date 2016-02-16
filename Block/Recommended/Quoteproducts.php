@@ -6,7 +6,6 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 	public $helper;
 	public $priceHelper;
-	public $scopeManager;
 	protected $_recommendedHelper;
 	protected $_quoteFactory;
 	protected $_productFactory;
@@ -18,7 +17,6 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		array $data = []
 	)
 	{
@@ -28,7 +26,6 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->_quoteFactory = $quoteFactory;
 		$this->_recommendedHelper = $recommendedHelper;
 		$this->priceHelper = $priceHelper;
-		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 	}
 

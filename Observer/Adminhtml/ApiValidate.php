@@ -22,7 +22,6 @@ class ApiValidate implements ObserverInterface
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		\Magento\Framework\App\Config\Storage\Writer $writer
 	)
 	{
@@ -32,7 +31,7 @@ class ApiValidate implements ObserverInterface
 		$this->_request = $context->getRequest();
 		$this->_storeManager = $storeManagerInterface;
 		$this->messageManager = $context->getMessageManager();
-		$this->_objectManager = $objectManagerInterface;
+		$this->_objectManager = $context->getObjectManager();
 		$this->_writer = $writer;
 	}
 

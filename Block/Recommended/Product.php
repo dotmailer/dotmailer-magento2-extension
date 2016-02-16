@@ -12,7 +12,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
 	public $helper;
 	public $priceHelper;
-	public $scopeManager;
 	public $recommendedHelper;
 	protected $_orderFactory;
 	protected $_productFactory;
@@ -27,7 +26,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		array $data = []
 	)
 	{
@@ -37,7 +35,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 		$this->_productFactory = $productFactory;
 		$this->helper = $helper;
 		$this->priceHelper = $priceHelper;
-		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 	}
 

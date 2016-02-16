@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Block;
 class Coupon extends \Magento\Framework\View\Element\Template
 {
 	public $helper;
-	public $scopeManager;
 
 	protected $_ruleFactory;
 	protected $_massGeneratorFactory;
@@ -18,7 +17,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
 		\Magento\Salesrule\Model\CouponFactory $couponFactory,
 		\Magento\Framework\View\Element\Template\Context $context,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		array $data = []
 	)
 	{
@@ -27,7 +25,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
 		$this->_ruleFactory = $ruleFactory;
 		$this->_couponFactory = $couponFactory;
 		$this->_massGeneratorFactory = $massgeneratorFactory;
-		$this->scopeManager = $scopeConfig;
 		$this->storeManager = $this->_storeManager;
 	}
 	/**

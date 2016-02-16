@@ -6,11 +6,9 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
 
 	public function __construct(
 		\Magento\Backend\Block\Template\Context $context,
-		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\Data\Form\Element\Text $text
 	)
 	{
-		$this->_urlBuilder = $urlBuilder;
 		$this->_text = $text;
 		parent::__construct($context);
 	}
