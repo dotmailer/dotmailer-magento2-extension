@@ -60,6 +60,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 	protected $_helper;
 	public $client;
     protected $_apiEndpoint;
+    protected $_writer;
+
 
 
 	/**
@@ -72,11 +74,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 		$username,
 		$password,
 		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Dotdigitalgroup\Email\Helper\File $fileHelper
+		\Dotdigitalgroup\Email\Helper\File $fileHelper,
+        \Magento\Framework\App\Config\Storage\Writer $writer
 	)
 	{
 		$this->_helper = $data;
 		$this->_fileHelper = $fileHelper;
+        $this->_writer = $writer;
         $this->_checkApiEndPoint();
 
 		parent::__construct(0, $this->_helper);
@@ -106,13 +110,42 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     protected function _checkApiEndPoint()
     {
         $apiEndpoint = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT);
+
         if(!$apiEndpoint){
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __('API endpoint cannot be empty. Re-save api credentials to retrieve API endpoint.')
-            );
+            if(!$this->getApiUsername() && !$this->getApiPassword()){
+                $this->setApiUsername($this->_helper->getApiUsername())
+                    ->setApiPassword($this->_helper->getApiPassword());
+            }
+
+            $accountInfo = $this->getAccountInfo();
+            if(is_object($accountInfo) && !isset($accountInfo->message)){
+                //save endpoint for account
+                foreach($accountInfo->properties as $property){
+                    if($property->name == 'ApiEndpoint' && strlen($property->value)){
+                        $apiEndpoint = $property->value;
+                        $this->_saveApiEndpoint($property->value);
+                        break;
+                    }
+                }
+            }
+
+            //check api endpoint again
+            if(!$apiEndpoint){
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    __('API endpoint cannot be empty. Re-save api credentials to retrieve API endpoint.')
+                );
+            }
         }
 
         $this->_apiEndpoint = $apiEndpoint;
+    }
+
+    protected function _saveApiEndpoint($apiEndpoint)
+    {
+        $this->_writer->save(
+            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+            $apiEndpoint
+        );
     }
 
     /**
