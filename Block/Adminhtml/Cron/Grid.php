@@ -6,6 +6,7 @@ use Magento\Backend\Block\Widget\Grid as WidgetGrid;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
+
 	/**
 	 * @var \Magento\Framework\Module\Manager
 	 */
@@ -15,12 +16,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	protected $_campaignFactory;
 
 	/**
-	 * @param \Magento\Backend\Block\Template\Context $context
-	 * @param \Magento\Backend\Helper\Data $backendHelper
-	 * @param \Magento\Framework\Module\Manager $moduleManager
-	 * @param array $data
+	 * Grid constructor.
 	 *
-	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+	 * @param \Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory $gridFactory
+	 * @param \Magento\Backend\Block\Template\Context                      $context
+	 * @param \Magento\Backend\Helper\Data                                 $backendHelper
+	 * @param \Magento\Framework\Module\Manager                            $moduleManager
+	 * @param \Magento\Framework\ObjectManagerInterface                    $objectManagerInterface
+	 * @param array                                                        $data
 	 */
 	public function __construct(
 		\Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory $gridFactory,
@@ -30,9 +33,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	) {
-		$this->_gridFactory = $gridFactory;
+		$this->_gridFactory   = $gridFactory;
 		$this->_objectManager = $objectManagerInterface;
-		$this->moduleManager = $moduleManager;
+		$this->moduleManager  = $moduleManager;
 		parent::__construct($context, $backendHelper, $data);
 	}
 
@@ -60,52 +63,66 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 	protected function _prepareColumns()
 	{
-		$this->addColumn('schedule_id', array(
-			'header'        => __('ID'),
-			'width'         => '20px',
-			'index'         => 'schedule_id',
-			'type'          => 'number',
-			'truncate'      => 50,
-			'escape'        => true
-		))->addColumn('job_code', array(
-			'header'        => __('Job Code'),
-			'align'         => 'left',
-			'width'         => '50px',
-			'index'         => 'job_code',
-			'type'          => 'string',
-			'escape'        => true
-		))->addColumn('status', array(
-			'header'        => __('Status'),
-			'align'         => 'left',
-			'width'         => '50px',
-			'index'         => 'status',
-			'type'          => 'string',
-			'escape'        => true
-		))->addColumn('messages', array(
-			'header'        => __('Messages'),
-			'align'         => 'center',
-			'index'         => 'messages',
-			'type'          => 'text',
-			'escape'        => true
-		))->addColumn('created_at', array(
-			'header'		=> __('Created At'),
-			'align'		    => 'left',
-			'index'         => 'created_at',
-			'type'          => 'datetime',
-			'escape'        => true
-		))->addColumn('scheduled_at', array(
-			'header'        => __('Scheduled At'),
-			'align'         => 'left',
-			'index'         => 'scheduled_at',
-			'type'          => 'datetime',
-			'escape'        => true
-		))->addColumn('executed_at', array(
-			'header'        => __('Executed At'),
-			'align'         => 'left',
-			'index'         => 'executed_at',
-			'type'          => 'datetime',
-			'escape'        => true
-		));
+		$this->addColumn(
+			'schedule_id', array(
+			'header'   => __('ID'),
+			'width'    => '20px',
+			'index'    => 'schedule_id',
+			'type'     => 'number',
+			'truncate' => 50,
+			'escape'   => true
+		)
+		)->addColumn(
+			'job_code', array(
+			'header' => __('Job Code'),
+			'align'  => 'left',
+			'width'  => '50px',
+			'index'  => 'job_code',
+			'type'   => 'string',
+			'escape' => true
+		)
+		)->addColumn(
+			'status', array(
+			'header' => __('Status'),
+			'align'  => 'left',
+			'width'  => '50px',
+			'index'  => 'status',
+			'type'   => 'string',
+			'escape' => true
+		)
+		)->addColumn(
+			'messages', array(
+			'header' => __('Messages'),
+			'align'  => 'center',
+			'index'  => 'messages',
+			'type'   => 'text',
+			'escape' => true
+		)
+		)->addColumn(
+			'created_at', array(
+			'header' => __('Created At'),
+			'align'  => 'left',
+			'index'  => 'created_at',
+			'type'   => 'datetime',
+			'escape' => true
+		)
+		)->addColumn(
+			'scheduled_at', array(
+			'header' => __('Scheduled At'),
+			'align'  => 'left',
+			'index'  => 'scheduled_at',
+			'type'   => 'datetime',
+			'escape' => true
+		)
+		)->addColumn(
+			'executed_at', array(
+			'header' => __('Executed At'),
+			'align'  => 'left',
+			'index'  => 'executed_at',
+			'type'   => 'datetime',
+			'escape' => true
+		)
+		);
 
 		return parent::_prepareColumns();
 	}
@@ -115,10 +132,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	{
 		$this->setMassactionIdField('id');
 		$this->getMassactionBlock()->setFormFieldName('id');
-		$this->getMassactionBlock()->addItem('delete', array (
-				'label'=> __('Delete'),
-				'url'  => $this->getUrl('*/*/massDelete'),
-				'confirm'  => __('Are you sure?')
+		$this->getMassactionBlock()->addItem(
+			'delete', array(
+				'label'   => __('Delete'),
+				'url'     => $this->getUrl('*/*/massDelete'),
+				'confirm' => __('Are you sure?')
 			)
 		);
 

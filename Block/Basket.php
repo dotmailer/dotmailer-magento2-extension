@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Block;
 class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     protected $_quote;
-	public $helper;
+    public $helper;
 	public $priceHelper;
 	protected $_quoteFactory;
 	protected $_emulationFactory;

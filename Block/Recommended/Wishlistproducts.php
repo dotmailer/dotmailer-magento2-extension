@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
+
 	public $helper;
 	public $priceHelper;
 	public $recommnededHelper;
@@ -20,176 +21,197 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Pricing\Helper\Data $priceHelper,
 		\Dotdigitalgroup\Email\Helper\Recommended $recommended,
-        \Magento\Catalog\Block\Product\Context $context,
+		\Magento\Catalog\Block\Product\Context $context,
 		array $data = []
-	)
-	{
-		parent::__construct( $context, $data );
-		$this->helper = $helper;
-		$this->_customerFactory = $customerFactory;
+	) {
+		parent::__construct($context, $data);
+		$this->helper            = $helper;
+		$this->_customerFactory  = $customerFactory;
 		$this->recommnededHelper = $recommended;
-		$this->priceHelper = $priceHelper;
-		$this->storeManager = $this->_storeManager;
-		$this->_wishlistFactory = $wishlistFactory;
-		$this->_productFactory = $productFactory;
+		$this->priceHelper       = $priceHelper;
+		$this->storeManager      = $this->_storeManager;
+		$this->_wishlistFactory  = $wishlistFactory;
+		$this->_productFactory   = $productFactory;
 	}
 
 
-    protected function _getWishlistItems()
-    {
-        $wishlist = $this->_getWishlist();
-        if($wishlist && count($wishlist->getItemCollection()))
-            return $wishlist->getItemCollection();
-        else
-            return array();
-    }
+	protected function _getWishlistItems()
+	{
+		$wishlist = $this->_getWishlist();
+		if ($wishlist && count($wishlist->getItemCollection())) {
+			return $wishlist->getItemCollection();
+		} else {
+			return array();
+		}
+	}
 
-    protected function _getWishlist()
-    {
-        $customerId = $this->getRequest()->getParam('customer_id');
-        if(!$customerId)
-            return array();
+	protected function _getWishlist()
+	{
+		$customerId = $this->getRequest()->getParam('customer_id');
+		if ( ! $customerId) {
+			return array();
+		}
 
-        $customer = $this->_customerFactory->create()
-	        ->load($customerId);
-        if(!$customer->getId())
-            return array();
+		$customer = $this->_customerFactory->create()
+			->load($customerId);
+		if ( ! $customer->getId()) {
+			return array();
+		}
 
-        $collection = $this->_wishlistFactory->create()
-	        ->getCollection();
-        $collection->addFieldToFilter('customer_id', $customerId)
-            ->setOrder('updated_at', 'DESC');
+		$collection = $this->_wishlistFactory->create()
+			->getCollection();
+		$collection->addFieldToFilter('customer_id', $customerId)
+			->setOrder('updated_at', 'DESC');
 
-        if ($collection->count())
-            return $collection->getFirstItem();
-        else
-            return array();
+		if ($collection->getSize()) {
+			return $collection->getFirstItem();
+		} else {
+			return array();
+		}
 
-    }
+	}
 
-    /**
-     * get the products to display for table
-     */
-    public function getLoadedProductCollection()
-    {
-        //products to be display for recommended pages
-        $productsToDisplay = array();
-        //display mode based on the action name
-        $mode  = $this->getRequest()->getActionName();
-        //number of product items to be displayed
-        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
-        $items = $this->_getWishlistItems();
-        $numItems = count($items);
+	/**
+	 * get the products to display for table
+	 */
+	public function getLoadedProductCollection()
+	{
+		//products to be display for recommended pages
+		$productsToDisplay = array();
+		//display mode based on the action name
+		$mode = $this->getRequest()->getActionName();
+		//number of product items to be displayed
+		$limit    = $this->recommnededHelper->getDisplayLimitByMode($mode);
+		$items    = $this->_getWishlistItems();
+		$numItems = count($items);
 
-        //no product found to display
-        if ($numItems == 0 || ! $limit) {
-            return array();
-        }elseif (count($items) > $limit) {
-            $maxPerChild = 1;
-        } else {
-            $maxPerChild = number_format($limit / count($items));
-        }
+		//no product found to display
+		if ($numItems == 0 || ! $limit) {
+			return array();
+		} elseif (count($items) > $limit) {
+			$maxPerChild = 1;
+		} else {
+			$maxPerChild = number_format($limit / count($items));
+		}
 
-        $this->helper->log('DYNAMIC WISHLIST PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
+		$this->helper->log(
+			'DYNAMIC WISHLIST PRODUCTS : limit ' . $limit . ' products : '
+			. $numItems . ', max per child : ' . $maxPerChild
+		);
 
-        foreach ($items as $item) {
-            $i = 0;
-            //parent product
-            $product = $item->getProduct();
-            //check for product exists
-            if ($product->getId()) {
-                //get single product for current mode
-                $recommendedProducts = $this->_getRecommendedProduct($product, $mode);
-                foreach ($recommendedProducts as $product) {
-                    //load child product
-                    $product = $this->_productFactory->create()
-	                    ->load($product->getId());
-                    //check if still exists
-                    if ($product->getId() && count($productsToDisplay) < $limit && $i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
-                        //we have a product to display
-                        $productsToDisplay[$product->getId()] = $product;
-                        $i++;
-                    }
-                }
-            }
-            //have reached the limit don't loop for more
-            if (count($productsToDisplay) == $limit) {
-                break;
-            }
-        }
+		foreach ($items as $item) {
+			$i = 0;
+			//parent product
+			$product = $item->getProduct();
+			//check for product exists
+			if ($product->getId()) {
+				//get single product for current mode
+				$recommendedProducts = $this->_getRecommendedProduct(
+					$product, $mode
+				);
+				foreach ($recommendedProducts as $product) {
+					//load child product
+					$product = $this->_productFactory->create()
+						->load($product->getId());
+					//check if still exists
+					if ($product->getId() && count($productsToDisplay) < $limit
+						&& $i <= $maxPerChild
+						&& $product->isSaleable()
+						&& ! $product->getParentId()
+					) {
+						//we have a product to display
+						$productsToDisplay[$product->getId()] = $product;
+						$i++;
+					}
+				}
+			}
+			//have reached the limit don't loop for more
+			if (count($productsToDisplay) == $limit) {
+				break;
+			}
+		}
 
-        //check for more space to fill up the table with fallback products
-        if (count($productsToDisplay) < $limit) {
-            $fallbackIds = $this->recommnededHelper->getFallbackIds();
+		//check for more space to fill up the table with fallback products
+		if (count($productsToDisplay) < $limit) {
+			$fallbackIds = $this->recommnededHelper->getFallbackIds();
 
-            foreach ($fallbackIds as $productId) {
-                $product = $this->_productFactory->create()
-	                ->load($productId);
-                if($product->isSaleable())
-                    $productsToDisplay[$product->getId()] = $product;
-                //stop the limit was reached
-                if (count($productsToDisplay) == $limit) {
-                    break;
-                }
-            }
-        }
+			foreach ($fallbackIds as $productId) {
+				$product = $this->_productFactory->create()
+					->load($productId);
+				if ($product->isSaleable()) {
+					$productsToDisplay[$product->getId()] = $product;
+				}
+				//stop the limit was reached
+				if (count($productsToDisplay) == $limit) {
+					break;
+				}
+			}
+		}
 
-        $this->helper->log('wishlist - loaded product to display ' . count($productsToDisplay));
-        return $productsToDisplay;
-    }
+		$this->helper->log(
+			'wishlist - loaded product to display ' . count($productsToDisplay)
+		);
 
-    /**
-     * Product related items.
-     *
-     * @param $mode
-     *
-     * @return array
-     */
-    private  function _getRecommendedProduct($productModel, $mode)
-    {
-        //array of products to display
-        $products = array();
-        switch($mode){
-            case 'related':
-                $products = $productModel->getRelatedProducts();
-                break;
-            case 'upsell':
-                $products = $productModel->getUpSellProducts();
-                break;
-            case 'crosssell':
-                $products = $productModel->getCrossSellProducts();
-                break;
+		return $productsToDisplay;
+	}
 
-        }
+	/**
+	 * Product related items.
+	 *
+	 * @param $productModel
+	 * @param $mode
+	 *
+	 * @return array
+	 */
+	private function _getRecommendedProduct($productModel, $mode)
+	{
+		//array of products to display
+		$products = array();
+		switch ($mode) {
+			case 'related':
+				$products = $productModel->getRelatedProducts();
+				break;
+			case 'upsell':
+				$products = $productModel->getUpSellProducts();
+				break;
+			case 'crosssell':
+				$products = $productModel->getCrossSellProducts();
+				break;
 
-        return $products;
-    }
+		}
 
-    /**
-     * Diplay mode type.
-     *
-     * @return mixed|string
-     */
-    public function getMode()
-    {
-        return $this->recommnededHelper->getDisplayType();
+		return $products;
+	}
 
-    }
+	/**
+	 * Diplay mode type.
+	 *
+	 * @return mixed|string
+	 */
+	public function getMode()
+	{
+		return $this->recommnededHelper->getDisplayType();
 
-    /**
-     * Number of the colums.
-     * @return int|mixed
-     */
-    public function getColumnCount()
-    {
-        return $this->recommnededHelper->getDisplayLimitByMode($this->getRequest()->getActionName());
-    }
+	}
 
-    public function getTextForUrl($store)
-    {
-        $store = $this->_storeManager->getStore($store);
-        return $store->getConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
-        );
-    }
+	/**
+	 * Number of the colums.
+	 *
+	 * @return int|mixed
+	 */
+	public function getColumnCount()
+	{
+		return $this->recommnededHelper->getDisplayLimitByMode(
+			$this->getRequest()->getActionName()
+		);
+	}
+
+	public function getTextForUrl($store)
+	{
+		$store = $this->_storeManager->getStore($store);
+
+		return $store->getConfig(
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
+		);
+	}
 }

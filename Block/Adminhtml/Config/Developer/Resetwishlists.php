@@ -15,6 +15,7 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
 	public function setButtonLabel($buttonLabel)
 	{
 		$this->_buttonLabel = $buttonLabel;
+
 		return $this;
 	}
 
@@ -22,17 +23,22 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
 	 * Get the button and scripts contents
 	 *
 	 * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+	 *
 	 * @return string
 	 */
-	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-	{
-		$url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/wishlistsreset');
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element
+	) {
+		$url = $this->_urlBuilder->getUrl(
+			'dotdigitalgroup_email/run/wishlistsreset'
+		);
 
-		return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
-		            ->setType('button')
-		            ->setLabel(__($this->_buttonLabel))
-		            ->setOnClick("window.location.href='" . $url . "'")
-		            ->toHtml();
+		return $this->getLayout()->createBlock(
+			'Magento\Backend\Block\Widget\Button'
+		)
+			->setType('button')
+			->setLabel(__($this->_buttonLabel))
+			->setOnClick("window.location.href='" . $url . "'")
+			->toHtml();
 
 	}
 

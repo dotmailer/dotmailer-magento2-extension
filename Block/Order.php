@@ -70,7 +70,7 @@ class Order  extends \Magento\Catalog\Block\Product\AbstractProduct
     public function filterItemsForReview($items, $websiteId)
     {
         if (!count($items))
-            return;
+            return false;
 
         $order = $this->getOrder();
 

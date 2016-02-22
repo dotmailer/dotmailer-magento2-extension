@@ -7,13 +7,18 @@ class Wrapper extends \Magento\Config\Block\System\Config\Form\Field
 
 	/**
 	 * Ajax Validate the api credentials.
+	 *
+	 * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+	 *
+	 * @return string
 	 */
-	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-	{
+	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element
+	) {
 		$url = $this->getUrl('dotdigitalgroup_email/connector/ajaxvalidation');
 
-        $element->setData('after_element_html',
-            "<script type='text/javascript'>
+		$element->setData(
+			'after_element_html',
+			"<script type='text/javascript'>
 
 			require(['prototype', 'domReady'], function(){
 
@@ -52,7 +57,8 @@ class Wrapper extends \Magento\Config\Block\System\Config\Form\Field
 	            elem.addEventListener('change', onChange);
 	        })();
 	        });
-			</script>");
+			</script>"
+		);
 
 		return parent::_getElementHtml($element);
 

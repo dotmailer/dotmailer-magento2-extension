@@ -45,14 +45,14 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
     protected function _getJs($htmlId)
     {
         return '<script type="text/javascript">
-                    require([\'jquery\', \'domReady!\'], function($){
-                            $(\'' . '#'.$htmlId . '\').colpick({
-                                onChange:function(hsb,hex,rgb,el,bySetColor)
-                                {
-                                    $(el).val(\'#\'+hex);
-                                }
-                            });
-                        });
-                </script>';
+			require([\'jquery\', \'domReady!\'], function($){
+    			$(\'' . '#'.$htmlId . '\').colpick({
+		        onChange:function(hsb,hex,rgb,el)
+		        {
+		            $(el).val(\'#\'+hex);
+		        }
+            });
+		});
+		</script>';
     }
 }

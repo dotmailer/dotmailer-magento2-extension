@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Customer\Tab;
 
 class Stats extends \Magento\Framework\View\Element\Template
 {
-    private $_stat = array();
+    protected $_stat = array();
 
 	protected $_helper;
 	protected $_objectManager;
@@ -26,7 +26,7 @@ class Stats extends \Magento\Framework\View\Element\Template
         $this->setTemplate('connector/customer/stats.phtml');
     }
 
-    private function _getCampaignStatsForCustomer()
+    protected function _getCampaignStatsForCustomer()
     {
 	    $id = $this->_request->getParam('id');
         $customer = $this->_objectManager->create('Magento\Customer\Model\Customer')

@@ -2,167 +2,189 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules;
 
-class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
+class Customdatafields extends
+	\Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
-    protected $_getAttributeRenderer;
-    protected $_getConditionsRenderer;
-    protected $_getValueRenderer;
+
+	protected $_getAttributeRenderer;
+	protected $_getConditionsRenderer;
+	protected $_getValueRenderer;
 
 	protected $_objectManager;
 
-    public function __construct(
-	    \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+	public function __construct(
+		\Magento\Backend\Block\Template\Context $context,
+		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		$data = []
-    )
-    {
-	    $this->_objectManager = $objectManagerInterface;
-        $this->_addAfter = false;
+	) {
+		$this->_objectManager = $objectManagerInterface;
+		$this->_addAfter      = false;
 
-        $this->_addButtonLabel = __('Add New Condition');
-        parent::__construct($context, $data);
+		$this->_addButtonLabel = __('Add New Condition');
+		parent::__construct($context, $data);
 
-    }
+	}
 
-    /**
-     * prepare render
-     */
-    protected function _prepareToRender()
-    {
-        $this->_getConditionsRenderer = null;
-        $this->_getAttributeRenderer = null;
-        $this->_getValueRenderer = null;
-        $this->addColumn('attribute',
-	        array(
-	            'label' => __('Attribute'),
-                'style' => 'width:120px',
-            )
-        );
-        $this->addColumn('conditions',
-            array(
-                'label' => __('Condition'),
-                'style' => 'width:120px',
+	/**
+	 * prepare render
+	 */
+	protected function _prepareToRender()
+	{
+		$this->_getConditionsRenderer = null;
+		$this->_getAttributeRenderer  = null;
+		$this->_getValueRenderer      = null;
+		$this->addColumn(
+			'attribute',
+			array(
+				'label' => __('Attribute'),
+				'style' => 'width:120px',
 			)
-        );
-        $this->addColumn('cvalue',
-            array(
-                'label' => __('Value'),
-                'style' => 'width:120px',
-            )
-        );
-    }
+		);
+		$this->addColumn(
+			'conditions',
+			array(
+				'label' => __('Condition'),
+				'style' => 'width:120px',
+			)
+		);
+		$this->addColumn(
+			'cvalue',
+			array(
+				'label' => __('Value'),
+				'style' => 'width:120px',
+			)
+		);
+	}
 
-    /**
-     * render cell template
-     *
-     * @param string $columnName
-     * @return string
-     */
-    public function renderCellTemplate($columnName)
-    {
-        if ($columnName=="attribute") {
-            return $this->_getAttributeRenderer()
-                ->setName($this->_getCellInputElementName($columnName))
-                ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
-                ->setOptions(
-                    $this->getElement()->getValues()
-                )
-                ->toHtml();
-        }elseif ($columnName == "conditions") {
-            return $this->_getConditionsRenderer()
-                ->setName($this->_getCellInputElementName($columnName))
-                ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
-                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition')->toOptionArray())
-                ->toHtml();
-        }elseif ($columnName == "cvalue") {
-            return $this->_getValueRenderer()
-                ->setName($this->_getCellInputElementName($columnName))
-                ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
-                ->setOptions($this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value')->toOptionArray())
-                ->toHtml();
-        }
-        return parent::renderCellTemplate($columnName);
-    }
+	/**
+	 * render cell template
+	 *
+	 * @param string $columnName
+	 *
+	 * @return string
+	 */
+	public function renderCellTemplate($columnName)
+	{
+		if ($columnName == "attribute") {
+			return $this->_getAttributeRenderer()
+				->setName($this->_getCellInputElementName($columnName))
+				->setTitle($columnName)
+				->setExtraParams('style="width:160px"')
+				->setOptions(
+					$this->getElement()->getValues()
+				)
+				->toHtml();
+		} elseif ($columnName == "conditions") {
+			return $this->_getConditionsRenderer()
+				->setName($this->_getCellInputElementName($columnName))
+				->setTitle($columnName)
+				->setExtraParams('style="width:160px"')
+				->setOptions(
+					$this->_objectManager->create(
+						'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition'
+					)->toOptionArray()
+				)
+				->toHtml();
+		} elseif ($columnName == "cvalue") {
+			return $this->_getValueRenderer()
+				->setName($this->_getCellInputElementName($columnName))
+				->setTitle($columnName)
+				->setExtraParams('style="width:160px"')
+				->setOptions(
+					$this->_objectManager->create(
+						'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value'
+					)->toOptionArray()
+				)
+				->toHtml();
+		}
 
-    /**
-     * Assign extra parameters to row
-     *
-     */
-    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
-    {
-        $options = [];
+		return parent::renderCellTemplate($columnName);
+	}
 
-        $options['option_' . $this->_getAttributeRenderer()->calcOptionHash($row->getData('attribute'))]
-            = 'selected="selected"';
-        $options['option_' . $this->_getConditionsRenderer()->calcOptionHash($row->getData('conditions'))]
-            = 'selected="selected"';
-        $options['option_' . $this->_getValueRenderer()->calcOptionHash($row->getData('cvalue'))]
-            = 'selected="selected"';
+	/**
+	 * @param \Magento\Framework\DataObject $row
+	 */
+	protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
+	{
+		$options = [];
 
-        $row->setData('option_extra_attrs', $options);
-    }
+		$options['option_' . $this->_getAttributeRenderer()->calcOptionHash(
+			$row->getData('attribute')
+		)]
+			= 'selected="selected"';
+		$options['option_' . $this->_getConditionsRenderer()->calcOptionHash(
+			$row->getData('conditions')
+		)]
+			= 'selected="selected"';
+		$options['option_' . $this->_getValueRenderer()->calcOptionHash(
+			$row->getData('cvalue')
+		)]
+			= 'selected="selected"';
 
-    /**
-     * get rendered for attribute field
-     *
-     * @return mixed
-     */
-    protected function _getAttributeRenderer()
-    {
-        if (!$this->_getAttributeRenderer) {
-            $this->_getAttributeRenderer = $this->getLayout()
-                ->createBlock(
-                    'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
-                    '',
-                    ['data' => ['is_render_to_js_template' => true]]
-            );
-        }
-        return $this->_getAttributeRenderer;
-    }
+		$row->setData('option_extra_attrs', $options);
+	}
 
-    /**
-     * get renderer for conditions field
-     *
-     * @return mixed
-     */
-    protected function _getConditionsRenderer()
-    {
-        if (!$this->_getConditionsRenderer) {
-            $this->_getConditionsRenderer = $this->getLayout()
-                ->createBlock(
-                    'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
-                    '',
-                    ['data' => ['is_render_to_js_template' => true]]
-                );
-        }
-        return $this->_getConditionsRenderer;
-    }
+	/**
+	 * get rendered for attribute field
+	 *
+	 * @return mixed
+	 */
+	protected function _getAttributeRenderer()
+	{
+		if ( ! $this->_getAttributeRenderer) {
+			$this->_getAttributeRenderer = $this->getLayout()
+				->createBlock(
+					'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+					'',
+					['data' => ['is_render_to_js_template' => true]]
+				);
+		}
 
-    /**
-     * get renderer for value field
-     *
-     * @return mixed
-     */
-    protected function _getValueRenderer()
-    {
-        if (!$this->_getValueRenderer) {
-            $this->_getValueRenderer = $this->getLayout()
-                ->createBlock(
-                    'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
-                    '',
-                    ['data' => ['is_render_to_js_template' => true]]
-                );
-        }
-        return $this->_getValueRenderer;
-    }
+		return $this->_getAttributeRenderer;
+	}
 
-    public function _toHtml()
-    {
-        $script =
-            "<script type=\"text/javascript\">
+	/**
+	 * get renderer for conditions field
+	 *
+	 * @return mixed
+	 */
+	protected function _getConditionsRenderer()
+	{
+		if ( ! $this->_getConditionsRenderer) {
+			$this->_getConditionsRenderer = $this->getLayout()
+				->createBlock(
+					'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+					'',
+					['data' => ['is_render_to_js_template' => true]]
+				);
+		}
+
+		return $this->_getConditionsRenderer;
+	}
+
+	/**
+	 * get renderer for value field
+	 *
+	 * @return mixed
+	 */
+	protected function _getValueRenderer()
+	{
+		if ( ! $this->_getValueRenderer) {
+			$this->_getValueRenderer = $this->getLayout()
+				->createBlock(
+					'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+					'',
+					['data' => ['is_render_to_js_template' => true]]
+				);
+		}
+
+		return $this->_getValueRenderer;
+	}
+
+	public function _toHtml()
+	{
+		$script
+			= "<script type=\"text/javascript\">
                 require([
                     'prototype',
                     'domReady!'
@@ -195,7 +217,9 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
                     });
 
                     function doUpdate(item){
-                        var url = '". $this->getUrl('dotdigitalgroup_email/rules/ajax')."';
+                        var url = '" . $this->getUrl(
+				'dotdigitalgroup_email/rules/ajax'
+			) . "';
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
                         var value = item.up(1).down().next(1);
@@ -225,7 +249,9 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
                     }
 
                     function doUpdateWithValues(item){
-                        var url = '". $this->getUrl('dotdigitalgroup_email/rules/selected')."';
+                        var url = '" . $this->getUrl(
+				'dotdigitalgroup_email/rules/selected'
+			) . "';
                         var arrayKey = item.up(1).readAttribute('id');
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
@@ -259,7 +285,9 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
                     }
 
                     function doUpdateForCondition(item){
-                        var url = '". $this->getUrl('dotdigitalgroup_email/rules/value')."';
+                        var url = '" . $this->getUrl(
+				'dotdigitalgroup_email/rules/value'
+			) . "';
                         var attribute = item.up(1).down();
                         var attributeValue = attribute.down().value;
                         var value = item.up().next();
@@ -280,8 +308,10 @@ class Customdatafields  extends \Magento\Config\Block\System\Config\Form\Field\F
                     }
                 });
             </script>";
-        return '<input type="hidden" id="'.$this->getElement()->getHtmlId().'"/>'.parent::_toHtml().$script;
 
-    }
+		return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
+		. '"/>' . parent::_toHtml() . $script;
+
+	}
 
 }

@@ -6,6 +6,7 @@ use Magento\Backend\Block\Widget\Grid as WidgetGrid;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
+
 	/**
 	 * @var \Magento\Framework\Module\Manager
 	 */
@@ -21,13 +22,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 * Grid constructor.
 	 *
 	 * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory
-	 * @param \Magento\Sales\Model\Order\ConfigFactory $configFactory
-	 * @param \Magento\Backend\Block\Template\Context $context
-	 * @param \Magento\Backend\Helper\Data $backendHelper
-	 * @param \Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory $gridFactory
-	 * @param \Magento\Framework\Module\Manager $moduleManager
-	 * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
-	 * @param array $data
+	 * @param \Magento\Sales\Model\Order\ConfigFactory                              $configFactory
+	 * @param \Magento\Backend\Block\Template\Context                               $context
+	 * @param \Magento\Backend\Helper\Data                                          $backendHelper
+	 * @param \Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory         $gridFactory
+	 * @param \Magento\Framework\Module\Manager                                     $moduleManager
+	 * @param array                                                                 $data
 	 */
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
@@ -36,13 +36,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		\Magento\Backend\Helper\Data $backendHelper,
 		\Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory $gridFactory,
 		\Magento\Framework\Module\Manager $moduleManager,
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
 		array $data = []
 	) {
 		$this->_importedFactory = $importedFactory;
-		$this->_configFactory = $configFactory;
-		$this->_orderFactory = $gridFactory;
-		$this->moduleManager = $moduleManager;
+		$this->_configFactory   = $configFactory;
+		$this->_orderFactory    = $gridFactory;
+		$this->moduleManager    = $moduleManager;
 		parent::__construct($context, $backendHelper, $data);
 	}
 
@@ -66,70 +65,86 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->setCollection($collection);
 
 		parent::_prepareCollection();
+
 		return $this;
 	}
 
 	protected function _prepareColumns()
 	{
-		$this->addColumn('email_order_id', array(
-			'header'        => __('Order ID'),
-			'align'         => 'left',
-			'width'         => '50px',
-			'index'         => 'email_order_id',
-			'type'          => 'number',
-			'escape'        => true
-		))->addColumn('store_id', array(
-			'header'        => __('Store ID'),
-			'width'         => '50px',
-			'index'         => 'store_id',
-			'type'          => 'number',
-			'escape'        => true,
-		))->addColumn('order_status', array(
-			'header'        => __('Order Status'),
-			'align'         => 'right',
-			'width'         => '50px',
-			'index'         => 'order_status',
-			'type'          => 'options',
-			'escape'        => true,
-			'options' => $this->_configFactory->create()->getStatuses(),
-		))->addColumn('email_imported', array(
-			'header'        => __('Imported'),
-			'align'         => 'center',
-			'width'         => '50px',
-			'index'         => 'email_imported',
-			'type'          => 'options',
-			'escape'        => true,
-			'renderer'		=> 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-			'options'       => $this->_importedFactory->create()->getOptions(),
-			'filter_condition_callback' => array($this, 'filterCallbackContact')
-		))->addColumn('modified', array(
-			'header' => __('Modified'),
-			'align' => 'center',
-			'width' => '50px',
-			'index' => 'modified',
-			'type' => 'options',
+		$this->addColumn(
+			'email_order_id', array(
+			'header' => __('Order ID'),
+			'align'  => 'left',
+			'width'  => '50px',
+			'index'  => 'email_order_id',
+			'type'   => 'number',
+			'escape' => true
+		)
+		)->addColumn(
+			'store_id', array(
+			'header' => __('Store ID'),
+			'width'  => '50px',
+			'index'  => 'store_id',
+			'type'   => 'number',
 			'escape' => true,
-			'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-			'options' => [
-				1 => 'Modified',
+		)
+		)->addColumn(
+			'order_status', array(
+			'header'  => __('Order Status'),
+			'align'   => 'right',
+			'width'   => '50px',
+			'index'   => 'order_status',
+			'type'    => 'options',
+			'escape'  => true,
+			'options' => $this->_configFactory->create()->getStatuses(),
+		)
+		)->addColumn(
+			'email_imported', array(
+			'header'                    => __('Imported'),
+			'align'                     => 'center',
+			'width'                     => '50px',
+			'index'                     => 'email_imported',
+			'type'                      => 'options',
+			'escape'                    => true,
+			'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+			'options'                   => $this->_importedFactory->create()
+				->getOptions(),
+			'filter_condition_callback' => array($this, 'filterCallbackContact')
+		)
+		)->addColumn(
+			'modified', array(
+			'header'                    => __('Modified'),
+			'align'                     => 'center',
+			'width'                     => '50px',
+			'index'                     => 'modified',
+			'type'                      => 'options',
+			'escape'                    => true,
+			'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+			'options'                   => [
+				1    => 'Modified',
 				null => 'Not Modified',
 			],
 			'filter_condition_callback' => array($this, 'filterCallbackContact')
-		))->addColumn('created_at', array(
-			'header'        => __('Created At'),
-			'width'         => '50px',
-			'align'         => 'center',
-			'index'         => 'created_at',
-			'type'          => 'datetime',
-			'escape'        => true,
-		))->addColumn('updated_at', array(
-			'header'        => __('Updated At'),
-			'width'         => '50px',
-			'align'         => 'center',
-			'index'         => 'updated_at',
-			'type'          => 'datetime',
-			'escape'        => true,
-		));
+		)
+		)->addColumn(
+			'created_at', array(
+			'header' => __('Created At'),
+			'width'  => '50px',
+			'align'  => 'center',
+			'index'  => 'created_at',
+			'type'   => 'datetime',
+			'escape' => true,
+		)
+		)->addColumn(
+			'updated_at', array(
+			'header' => __('Updated At'),
+			'width'  => '50px',
+			'align'  => 'center',
+			'index'  => 'updated_at',
+			'type'   => 'datetime',
+			'escape' => true,
+		)
+		);
 
 		return parent::_prepareColumns();
 	}
@@ -142,7 +157,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 	 */
 	public function filterCallbackContact($collection, $column)
 	{
-		$field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
+		$field = $column->getFilterIndex() ? $column->getFilterIndex()
+			: $column->getIndex();
 		$value = $column->getFilter()->getValue();
 		if ($value == 'null') {
 			$collection->addFieldToFilter($field, array('null' => true));
@@ -162,8 +178,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		$this->getMassactionBlock()->addItem(
 			'delete',
 			[
-				'label' => __('Delete'),
-				'url' => $this->getUrl('*/*/massDelete'),
+				'label'   => __('Delete'),
+				'url'     => $this->getUrl('*/*/massDelete'),
 				'confirm' => __('Are you sure?')
 			]
 		);

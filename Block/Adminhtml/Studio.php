@@ -167,7 +167,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
 		} else {
 			$this->messageManager->addNotice('Please Connect To Access The Page.');
-			return;
+			return '';
 		}
 
 	}
