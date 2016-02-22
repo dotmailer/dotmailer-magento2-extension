@@ -361,9 +361,6 @@
                 <field id="order_report" type="button" sortOrder="80" showInDefault="1" showInStore="1" showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Order</frontend_model>
                 </field>
-                <field id="quote_report" type="button" sortOrder="100" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Quote</frontend_model>
-                </field>
                 <field id="wishlist_enabled" type="select" sortOrder="110" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Wishlist Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
