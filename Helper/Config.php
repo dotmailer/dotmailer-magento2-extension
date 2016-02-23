@@ -249,12 +249,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 	const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT  = 'connector_developer_settings/import_settings/transactional_data';
     const XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES       = 'connector_developer_settings/ip_restriction/ip_addresses';
 
-	/**
-     * Nosto
-     */
-    const API_ENDPOINT                                      = 'https://api.nosto.com';
-    const API_ENDPOINT_TEST                                 = 'https://test.api.nosto.com';
-
     /**
      * API endpoint
      */

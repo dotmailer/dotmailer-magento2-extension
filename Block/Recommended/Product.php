@@ -4,12 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-	/**
-	 * Slot div name.
-	 * @var string
-	 */
-	public $slot;
-
 	public $helper;
 	public $priceHelper;
 	public $recommendedHelper;
@@ -162,44 +156,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         return $this->recommendedHelper->getDisplayLimitByMode($this->getRequest()->getActionName());
     }
-
-	/**
-	 * Nosto products data.
-	 * @return object
-	 */
-	public function getNostoProducts()
-	{
-		$client = $this->_clientFactory->create();
-		//slot name, div id
-		$slot  = $this->getRequest()->getParam('slot', false);
-
-		//email recommendation
-		$email = $this->getRequest()->getParam('email', false);
-
-		//no valid data for nosto recommendation
-		if (!$slot || ! $email)
-			return false;
-		else
-			$this->slot = $slot;
-
-		//html data from nosto
-		$data = $client->getNostoProducts($slot, $email);
-
-		//check for valid response
-		if (! isset($data->$email) && !isset($data->$email->$slot))
-			return false;
-		return $data->$email->$slot;
-	}
-
-	/**
-	 * Slot name.
-	 * Should be called after getNostoProducts.
-	 * @return string
-	 */
-	public function getSlotName()
-	{
-		return $this->slot;
-	}
 
 	public function getTextForUrl($store)
 	{

@@ -855,17 +855,6 @@
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Fallbackcontainer</frontend_model>
                 </field>
             </group>
-            <!--<group id="nosto_recommendation" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                <!--<label>Nosto Recommendations</label>-->
-                <!--<field id="api" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">-->
-                    <!--<label>API key</label>-->
-                <!--</field>-->
-                <!--<field id="dynamic_url" translate="comment label" sortOrder="20" type="label" showInStore="1" showInWebsite="1" showInDefault="1">-->
-                    <!--<label>Recommendation URL</label>-->
-                    <!--<frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Nosto</frontend_model>-->
-                    <!--<comment><![CDATA[Replace @SLOT_NAME@ with the slot name created in your Nosto account.]]></comment>-->
-                <!--</field>-->
-            <!--</group>-->
         </section>
         <section id="transactional_emails" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
             <class>separator-top</class>
