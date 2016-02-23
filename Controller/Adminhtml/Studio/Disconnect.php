@@ -4,12 +4,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 
 class Disconnect extends \Magento\Backend\App\AbstractAction
 {
+
 	public function __construct(
 		\Magento\Backend\App\Action\Context $context
-	)
-	{
+	) {
 		parent::__construct($context);
 	}
+
 	/**
 	 * Disconnect and remote the refresh token.
 	 */
@@ -20,10 +21,10 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
 
 			if ($adminUser->getRefreshToken()) {
 				$adminUser->setRefreshToken('')
-				          ->save();
+					->save();
 			}
 			$this->messageManager->addSuccess('Successfully disconnected');
-		}catch (\Exception $e){
+		} catch (\Exception $e) {
 
 			$this->messageManager->addError($e->getMessage());
 		}
