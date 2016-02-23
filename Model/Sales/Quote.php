@@ -237,14 +237,14 @@ class Quote
         }
     }
 
-    private function _getLostBasketCustomerCampaignId($num, $storeId)
+    protected function _getLostBasketCustomerCampaignId($num, $storeId)
     {
 	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_' . $num),
 		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
 		    $storeId
 	    );
     }
-    private function _getLostBasketGuestCampaignId($num, $storeId)
+    protected function _getLostBasketGuestCampaignId($num, $storeId)
     {
 	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_' . $num),
 		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
@@ -252,7 +252,7 @@ class Quote
 	    );
     }
 
-    private function _getLostBasketCustomerInterval($num, $storeId)
+    protected function _getLostBasketCustomerInterval($num, $storeId)
     {
 	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_' . $num),
 		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
@@ -260,7 +260,7 @@ class Quote
 	    );
     }
 
-    private function _getLostBasketGuestIterval($num, $storeId)
+    protected function _getLostBasketGuestIterval($num, $storeId)
     {
 	    return $this->scopeConfig->getValue(constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_' . $num),
 		    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
@@ -292,7 +292,7 @@ class Quote
 	 *
 	 * @return $this
 	 */
-    private function _getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
+    protected function _getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
     {
 	    $updated = array(
             'from' => $from,
@@ -332,7 +332,7 @@ class Quote
 	 *
 	 * @return bool
 	 */
-	private function _checkCustomerCartLimit($email, $storeId) {
+	protected function _checkCustomerCartLimit($email, $storeId) {
 
 		$cartLimit = $this->scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT,
 			\Magento\Store\Model\ScopeInterface::SCOPE_STORE,

@@ -2,9 +2,8 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
 use Magento\Backend\App\Action;
-use Magento\Framework\Controller\ResultFactory;
 
-abstract class Automadtion extends Action
+abstract class Automation extends Action
 {
 
 	/**

@@ -22,9 +22,13 @@ class Edit extends \Magento\Backend\App\Action
 	protected $_sessionFactory;
 
 	/**
-	 * @param Action\Context $context
-	 * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-	 * @param \Magento\Framework\Registry $registry
+	 * Edit constructor.
+	 *
+	 * @param \Magento\Backend\Model\SessionFactory       $sessionFactory
+	 * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+	 * @param Action\Context                              $context
+	 * @param \Magento\Framework\View\Result\PageFactory  $resultPageFactory
+	 * @param \Magento\Framework\Registry                 $registry
 	 */
 	public function __construct(
 		\Magento\Backend\Model\SessionFactory $sessionFactory,

@@ -2,25 +2,23 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-class Conditions extends \Magento\Config\Block\System\Config\Form\Field
+class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
+    implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
 
-	protected $_registry;
-	protected $_objectManager;
-	/**
-	 * Initialize form
-	 * Add standard buttons
-	 * Add "Save and Continue" button
-	 */
-	public function __construct(
-		\Magento\Framework\ObjectManagerInterface $objectManagerInterface,
-		\Magento\Framework\Registry $registry,
-		\Magento\Backend\Block\Widget\Context $context)
-	{
-		$this->_objectManager = $objectManagerInterface;
-		$this->_registry = $registry;
-		parent::__construct($context);
-	}
+    protected $options;
+
+    public function __construct(
+        \Magento\Framework\Data\FormFactory $formFactory,
+        \Magento\Framework\Registry $registry,
+        \Magento\Backend\Block\Widget\Context $context,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $options,
+        array $data = []
+    ) {
+        $this->options = $options;
+        parent::__construct($context, $registry, $formFactory, $data);
+    }
+
     /**
      * Prepare content for tab
      *
@@ -63,8 +61,8 @@ class Conditions extends \Magento\Config\Block\System\Config\Form\Field
 
     protected function _prepareForm()
     {
-        $model = $this->_registry->registry('current_ddg_rule');
-        $form = $this->_objectManager->create('Magento\Framework\Data\Form');
+        $model = $this->_coreRegistry->registry('current_ddg_rule');
+        $form  = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
 
         $fieldset = $form->addFieldset('base_fieldset',
@@ -72,11 +70,11 @@ class Conditions extends \Magento\Config\Block\System\Config\Form\Field
         );
 
         $fieldset->addField('combination', 'select', array(
-            'label'     => __('Conditions Combination Match'),
-            'title'     => __('Conditions Combination Match'),
-            'name'      => 'combination',
-            'required'  => true,
-            'options'   => array(
+            'label'              => __('Conditions Combination Match'),
+            'title'              => __('Conditions Combination Match'),
+            'name'               => 'combination',
+            'required'           => true,
+            'options'            => array(
                 '1' => __('ALL'),
                 '2' => __('ANY'),
             ),
@@ -84,14 +82,15 @@ class Conditions extends \Magento\Config\Block\System\Config\Form\Field
 If multi line conditions for same attribute is used and ALL is chosen then multiple lines for same attribute will be ignored.</small>',
         ));
 
-        $field = $fieldset->addField('condition', 'select', array(
-            'name' => 'condition',
-            'label' => __('Condition'),
-            'title' => __('Condition'),
+        $field    = $fieldset->addField('condition', 'select', array(
+            'name'     => 'condition',
+            'label'    => __('Condition'),
+            'title'    => __('Condition'),
             'required' => true,
-            'options'    => $this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type')->toOptionArray(),
+            'options'  => $this->options->toOptionArray(),
         ));
-        $renderer = $this->getLayout()->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules\Customdatafields');
+        $renderer = $this->getLayout()
+            ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules\Customdatafields');
         $field->setRenderer($renderer);
 
         $form->setValues($model->getData());

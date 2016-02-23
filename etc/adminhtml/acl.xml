@@ -13,13 +13,13 @@
                 <resource id="Magento_Backend::marketing">
                     <resource id="Dotdigitalgroup_Email::marketing_automation">
                         <resource id="Dotdigitalgroup_Email::automation_studio" title="Marketing Automation" sortOrder="10" />
+                        <resource id="Dotdigitalgroup_Email::exclusion_rules" title="Exclusion Rules" sortOrder="20" />
                     </resource>
                 </resource>
                 <resource id="Magento_Reports::report">
                     <resource id="Dotdigitalgroup_Email::reports">
                         <resource id="Dotdigitalgroup_Email::contact" title="Contact" sortOrder="20" />
                         <resource id="Dotdigitalgroup_Email::order" title="Dotmailer" sortOrder="30" />
-                        <resource id="Dotdigitalgroup_Email::quote" title="Dotmailer" sortOrder="40" />
                         <resource id="Dotdigitalgroup_Email::review" title="Dotmailer" sortOrder="50" />
                         <resource id="Dotdigitalgroup_Email::wishlist" title="Dotmailer" sortOrder="60" />
                         <resource id="Dotdigitalgroup_Email::catalog" title="Dotmailer" sortOrder="70" />

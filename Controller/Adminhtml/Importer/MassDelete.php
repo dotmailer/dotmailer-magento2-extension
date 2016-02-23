@@ -7,6 +7,7 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends ImporterController
 {
+
 	protected $_importerFactory;
 
 	public function __construct(

@@ -7,11 +7,11 @@ class Review extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * configs
      */
-    const XML_PATH_REVIEW_STATUS                                  = 'connector_automation_studio/review_settings/status';
-    const XML_PATH_REVIEW_DELAY                                   = 'connector_automation_studio/review_settings/delay';
-    const XML_PATH_REVIEW_NEW_PRODUCT                             = 'connector_automation_studio/review_settings/new_product';
-    const XML_PATH_REVIEW_CAMPAIGN                                = 'connector_automation_studio/review_settings/campaign';
-    const XML_PATH_REVIEW_ANCHOR                                  = 'connector_automation_studio/review_settings/anchor';
+    const XML_PATH_REVIEW_STATUS                                  = 'connector_automation/review_settings/status';
+    const XML_PATH_REVIEW_DELAY                                   = 'connector_automation/review_settings/delay';
+    const XML_PATH_REVIEW_NEW_PRODUCT                             = 'connector_automation/review_settings/new_product';
+    const XML_PATH_REVIEW_CAMPAIGN                                = 'connector_automation/review_settings/campaign';
+    const XML_PATH_REVIEW_ANCHOR                                  = 'connector_automation/review_settings/anchor';
     const XML_PATH_REVIEW_DISPLAY_TYPE                            = 'connector_dynamic_content/products/review_display_type';
 
 
@@ -20,10 +20,19 @@ class Review extends \Magento\Framework\App\Helper\AbstractHelper
 	protected $_storeManager;
 	protected $_objectManager;
 	protected $_backendConfig;
+	protected $_adapter;
 
+	/**
+	 * Review constructor.
+	 *
+	 * @param \Magento\Framework\App\ResourceConnection  $adapter
+	 * @param Data                                       $data
+	 * @param \Magento\Framework\App\Helper\Context      $context
+	 * @param \Magento\Framework\ObjectManagerInterface  $objectManager
+	 * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+	 */
 	public function __construct(
 		\Magento\Framework\App\ResourceConnection $adapter,
-		\Magento\Framework\UrlInterface $urlBuilder,
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Framework\App\Helper\Context $context,
 		\Magento\Framework\ObjectManagerInterface $objectManager,

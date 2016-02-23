@@ -9,7 +9,7 @@ class Campaign
     public $contacts = array();
     public $emails = array();
     public $emailSendId = array();
-    private $_storeId;
+    protected $_storeId;
 
     /**
      * @param mixed $storeId
@@ -29,11 +29,13 @@ class Campaign
 
     /**
      * @param $emailSendId
+     *
      * @return $this
      */
     public function setEmailSendId($emailSendId)
     {
         $this->emailSendId[] = $emailSendId;
+
         return $this;
     }
 
@@ -47,11 +49,13 @@ class Campaign
 
     /**
      * @param $contact
+     *
      * @return $this
      */
     public function setContactId($contact)
     {
         $this->contacts[] = $contact;
+
         return $this;
     }
 
@@ -65,11 +69,13 @@ class Campaign
 
     /**
      * @param $emails
+     *
      * @return $this
      */
     public function setEmails($emails)
     {
         $this->emails = $emails;
+
         return $this;
     }
 
@@ -83,11 +89,13 @@ class Campaign
 
     /**
      * @param $id
+     *
      * @return $this
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 

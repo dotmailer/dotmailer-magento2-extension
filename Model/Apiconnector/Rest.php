@@ -4,494 +4,522 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 abstract class Rest
 {
-	protected $url;
-	protected $verb;
-	protected $requestBody;
-	protected $requestLength;
-	protected $_apiUsername;
-	protected $_apiPassword;
-	protected $acceptType;
-	protected $responseBody;
-	protected $responseInfo;
-	protected $curlError;
-	protected $_helper;
-	protected $isNotJson = false;
 
-	public function __construct(
-		$website = 0,
-		\Dotdigitalgroup\Email\Helper\Data $data
-	) // ($url = null, $verb = 'GET', $requestBody = null)
-	{
-		$this->_helper = $data;
-		$this->url				= null; //$url;
-		$this->verb				= 'GET'; //$verb;
-		$this->requestBody		= null; //$requestBody;
-		$this->requestLength	= 0;
-		$this->_apiUsername     = (string)$this->_helper->getApiUsername($website);
-		$this->_apiPassword 	= (string)$this->_helper->getApiPassword($website);
-		$this->acceptType		= 'application/json';
-		$this->responseBody		= null;
-		$this->responseInfo		= null;
+    protected $url;
+    protected $verb;
+    protected $requestBody;
+    protected $requestLength;
+    protected $_apiUsername;
+    protected $_apiPassword;
+    protected $acceptType;
+    protected $responseBody;
+    protected $responseInfo;
+    protected $curlError;
+    protected $_helper;
+    protected $isNotJson = false;
 
-		if ($this->requestBody !== null) {
-			$this->buildPostBody();
-		}
-	}
+    /**
+     * Rest constructor.
+     *
+     * @param int                                $website
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     */
+    public function __construct(
+        $website = 0,
+        \Dotdigitalgroup\Email\Helper\Data $data
+    )
+    {
+        $this->_helper       = $data;
+        $this->url           = null; //$url;
+        $this->verb          = 'GET'; //$verb;
+        $this->requestBody   = null; //$requestBody;
+        $this->requestLength = 0;
+        $this->_apiUsername  = (string)$this->_helper->getApiUsername($website);
+        $this->_apiPassword  = (string)$this->_helper->getApiPassword($website);
+        $this->acceptType    = 'application/json';
+        $this->responseBody  = null;
+        $this->responseInfo  = null;
 
-	private function prettyPrint($json)
-	{
-		$result = '';
-		$level = 0;
-		$prev_char = '';
-		$in_quotes = false;
-		$ends_line_level = NULL;
-		$json_length = strlen( $json );
+        if ($this->requestBody !== null) {
+            $this->buildPostBody();
+        }
+    }
 
-		for ($i = 0; $i < $json_length; $i++) {
-			$char = $json[$i];
-			$new_line_level = NULL;
-			$post = "";
-			if ($ends_line_level !== NULL) {
-				$new_line_level = $ends_line_level;
-				$ends_line_level = NULL;
-			}
-			if ($char === '"' && $prev_char != '\\') {
-				$in_quotes = !$in_quotes;
-			} elseif (! $in_quotes) {
-				switch ($char) {
-					case '}': case ']':
-					$level--;
-					$ends_line_level = NULL;
-					$new_line_level = $level;
-					break;
+    protected function prettyPrint($json)
+    {
+        $result          = '';
+        $level           = 0;
+        $prev_char       = '';
+        $in_quotes       = false;
+        $ends_line_level = null;
+        $json_length     = strlen($json);
 
-					case '{': case '[':
-					$level++;
-					case ',':
-						$ends_line_level = $level;
-						break;
+        for ($i = 0; $i < $json_length; $i++) {
+            $char           = $json[$i];
+            $new_line_level = null;
+            $post           = "";
+            if ($ends_line_level !== null) {
+                $new_line_level  = $ends_line_level;
+                $ends_line_level = null;
+            }
+            if ($char === '"' && $prev_char != '\\') {
+                $in_quotes = ! $in_quotes;
+            } elseif ( ! $in_quotes) {
+                switch ($char) {
+                    case '}':
+                    case ']':
+                        $level--;
+                        $ends_line_level = null;
+                        $new_line_level  = $level;
+                        break;
 
-					case ':':
-						$post = " ";
-						break;
+                    case '{':
+                    case '[':
+                        $level++;
+                    case ',':
+                        $ends_line_level = $level;
+                        break;
 
-					case " ": case "\t": case "\n": case "\r":
-					$char = "";
-					$ends_line_level = $new_line_level;
-					$new_line_level = NULL;
-					break;
-				}
-			}
-			if ($new_line_level !== NULL) {
-				$result .= "\n".str_repeat( "\t", $new_line_level );
-			}
-			$result .= $char.$post;
-			$prev_char = $char;
-		}
+                    case ':':
+                        $post = " ";
+                        break;
 
-		return $result;
-	}
+                    case " ":
+                    case "\t":
+                    case "\n":
+                    case "\r":
+                        $char            = "";
+                        $ends_line_level = $new_line_level;
+                        $new_line_level  = null;
+                        break;
+                }
+            }
+            if ($new_line_level !== null) {
+                $result .= "\n" . str_repeat("\t", $new_line_level);
+            }
+            $result .= $char . $post;
+            $prev_char = $char;
+        }
 
-	/**
-	 * returns the object as JSON.
-	 *
-	 * @param bool $pretty
-	 *
-	 * @return string
-	 */
-	public function toJSON($pretty=false)
-	{
+        return $result;
+    }
 
-		if (!$pretty) {
-			return json_encode($this->expose());
-		} else {
-			return $this->prettyPrint(json_encode($this->expose()));
-		}
-	}
+    /**
+     * returns the object as JSON.
+     *
+     * @param bool $pretty
+     *
+     * @return string
+     */
+    public function toJSON($pretty = false)
+    {
 
-	/**
-	 * exposes the class as an array of objects
-	 * @return array
-	 */
-	public function expose()
-	{
+        if ( ! $pretty) {
+            return json_encode($this->expose());
+        } else {
+            return $this->prettyPrint(json_encode($this->expose()));
+        }
+    }
 
-		return get_object_vars($this);
+    /**
+     * exposes the class as an array of objects
+     *
+     * @return array
+     */
+    public function expose()
+    {
 
-	}
+        return get_object_vars($this);
+
+    }
 
 
-	/**
-	 * Reset the client.
-	 *
-	 * @return $this
-	 */
-	public function flush ()
-	{
-		$this->_apiUsername = '';
-		$this->_apiPassword = '';
-		$this->requestBody		= null;
-		$this->requestLength	= 0;
-		$this->verb				= 'GET';
-		$this->responseBody		= null;
-		$this->responseInfo		= null;
-		return $this;
-	}
+    /**
+     * Reset the client.
+     *
+     * @return $this
+     */
+    public function flush()
+    {
+        $this->_apiUsername  = '';
+        $this->_apiPassword  = '';
+        $this->requestBody   = null;
+        $this->requestLength = 0;
+        $this->verb          = 'GET';
+        $this->responseBody  = null;
+        $this->responseInfo  = null;
 
-	/**
-	 * Execute the curl request.
-	 *
-	 * @return null
-	 * @throws Exception
-	 */
-	public function execute()
-	{
-		$ch = curl_init();
-		$this->setAuth($ch);
-		try
-		{
-			switch (strtoupper($this->verb))
-			{
-				case 'GET':
-					$this->executeGet($ch);
-					break;
-				case 'POST':
-					$this->executePost($ch);
-					break;
-				case 'PUT':
-					$this->executePut($ch);
-					break;
-				case 'DELETE':
-					$this->executeDelete($ch);
-					break;
-				default:
-					throw new \InvalidArgumentException('Current verb (' . $this->verb . ') is an invalid REST verb.');
-			}
-		}catch (\InvalidArgumentException $e){
-			curl_close($ch);
-			throw $e;
-		}catch (\Exception $e){
-			curl_close($ch);
-			throw $e;
-		}
+        return $this;
+    }
 
-		/**
-		 * check and debug api request total time
-		 */
-		if ($this->_helper->getDebugEnabled()){
-			$info = $this->getResponseInfo();
-			//the response info data is set
-			if (isset($info['url']) && isset($info['total_time'])){
-				$url       = $info['url'];
-				$time      = $info['total_time'];
-				$totalTime = sprintf(' time : %g sec', $time);
-				$check = $this->_helper->getApiResponseTimeLimit();
-				$limit = ($check)? $check : '2';
-				$message = $this->verb . ', ' .  $url. $totalTime;
-				//check for slow queries
-				if ( $time >  $limit) {
-					//log the slow queries
-					$this->_helper->log( $message );
-				}
-			}
-		}
+    /**
+     * @return null
+     * @throws \Exception
+     */
+    public function execute()
+    {
+        $ch = curl_init();
+        $this->setAuth($ch);
+        try {
+            switch (strtoupper($this->verb)) {
+                case 'GET':
+                    $this->executeGet($ch);
+                    break;
+                case 'POST':
+                    $this->executePost($ch);
+                    break;
+                case 'PUT':
+                    $this->executePut($ch);
+                    break;
+                case 'DELETE':
+                    $this->executeDelete($ch);
+                    break;
+                default:
+                    throw new \InvalidArgumentException(
+                        'Current verb (' . $this->verb
+                        . ') is an invalid REST verb.'
+                    );
+            }
+        } catch (\InvalidArgumentException $e) {
+            curl_close($ch);
+            throw $e;
+        } catch (\Exception $e) {
+            curl_close($ch);
+            throw $e;
+        }
 
-		return $this->responseBody;
-	}
+        /**
+         * check and debug api request total time
+         */
+        if ($this->_helper->getDebugEnabled()) {
+            $info = $this->getResponseInfo();
+            //the response info data is set
+            if (isset($info['url']) && isset($info['total_time'])) {
+                $url       = $info['url'];
+                $time      = $info['total_time'];
+                $totalTime = sprintf(' time : %g sec', $time);
+                $check     = $this->_helper->getApiResponseTimeLimit();
+                $limit     = ($check) ? $check : '2';
+                $message   = $this->verb . ', ' . $url . $totalTime;
+                //check for slow queries
+                if ($time > $limit) {
+                    //log the slow queries
+                    $this->_helper->log($message);
+                }
+            }
+        }
 
-	/**
-	 * Post data.
-	 *
-	 * @param null $data
-	 *
-	 * @return $this
-	 */
-	public function buildPostBody($data = null)
-	{
-		$this->requestBody = json_encode($data);
-		return $this;
-	}
+        return $this->responseBody;
+    }
 
-	/**
-	 * Execute curl get request.
-	 *
-	 * @param $ch
-	 */
-	protected function executeGet($ch)
-	{
-		$this->doExecute($ch);
-	}
+    /**
+     * Post data.
+     *
+     * @param null $data
+     *
+     * @return $this
+     */
+    public function buildPostBody($data = null)
+    {
+        $this->requestBody = json_encode($data);
 
-	/**
-	 * Execute post request.
-	 *
-	 * @param $ch
-	 */
-	protected function executePost($ch)
-	{
-		if (!is_string($this->requestBody)) {
-			$this->buildPostBody();
-		}
+        return $this;
+    }
 
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $this->requestBody);
-		curl_setopt($ch, CURLOPT_POST, true);
+    /**
+     * Execute curl get request.
+     *
+     * @param $ch
+     */
+    protected function executeGet($ch)
+    {
+        $this->doExecute($ch);
+    }
 
-		$this->doExecute($ch);
-	}
+    /**
+     * Execute post request.
+     *
+     * @param $ch
+     */
+    protected function executePost($ch)
+    {
+        if ( ! is_string($this->requestBody)) {
+            $this->buildPostBody();
+        }
 
-	/**
-	 * Post from the file.
-	 *
-	 * @param $filename
-	 */
-	protected function buildPostBodyFromFile($filename)
-	{
-		$this->requestBody = array (
-			'file' => '@'.$filename
-		);
-	}
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $this->requestBody);
+        curl_setopt($ch, CURLOPT_POST, true);
 
-	/**
-	 * Execute put.
-	 *
-	 * @param $ch
-	 */
-	protected function executePut($ch)
-	{
-		if (!is_string($this->requestBody)) {
-			$this->buildPostBody();
-		}
+        $this->doExecute($ch);
+    }
 
-		$this->requestLength = strlen($this->requestBody);
+    /**
+     * Post from the file.
+     *
+     * @param $filename
+     */
+    protected function buildPostBodyFromFile($filename)
+    {
+        $this->requestBody = array(
+            'file' => '@' . $filename
+        );
+    }
 
-		$fh = fopen('php://memory', 'rw');
-		fwrite($fh, $this->requestBody);
-		rewind($fh);
+    /**
+     * Execute put.
+     *
+     * @param $ch
+     */
+    protected function executePut($ch)
+    {
+        if ( ! is_string($this->requestBody)) {
+            $this->buildPostBody();
+        }
 
-		curl_setopt($ch, CURLOPT_INFILE, $fh);
-		curl_setopt($ch, CURLOPT_INFILESIZE, $this->requestLength);
-		curl_setopt($ch, CURLOPT_PUT, true);
+        $this->requestLength = strlen($this->requestBody);
 
-		$this->doExecute($ch);
+        $fh = fopen('php://memory', 'rw');
+        fwrite($fh, $this->requestBody);
+        rewind($fh);
 
-		fclose($fh);
-	}
+        curl_setopt($ch, CURLOPT_INFILE, $fh);
+        curl_setopt($ch, CURLOPT_INFILESIZE, $this->requestLength);
+        curl_setopt($ch, CURLOPT_PUT, true);
 
-	/**
-	 * Ececute delete.
-	 *
-	 * @param $ch
-	 */
-	protected function executeDelete($ch)
-	{
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        $this->doExecute($ch);
 
-		$this->doExecute($ch);
-	}
+        fclose($fh);
+    }
 
-	/**
-	 * Execute request.
-	 *
-	 * @param $ch
-	 */
-	protected function doExecute(&$ch)
-	{
-		$this->setCurlOpts($ch);
+    /**
+     * Ececute delete.
+     *
+     * @param $ch
+     */
+    protected function executeDelete($ch)
+    {
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
-        if($this->isNotJson)
+        $this->doExecute($ch);
+    }
+
+    /**
+     * Execute request.
+     *
+     * @param $ch
+     */
+    protected function doExecute(&$ch)
+    {
+        $this->setCurlOpts($ch);
+
+        if ($this->isNotJson) {
             $this->responseBody = curl_exec($ch);
-        else
+        } else {
             $this->responseBody = json_decode(curl_exec($ch));
+        }
 
-		$this->responseInfo	= curl_getinfo($ch);
+        $this->responseInfo = curl_getinfo($ch);
 
-		//if curl error found
-		if(curl_errno($ch))
-		{
-			//save the error
-			$this->curlError = curl_error($ch);
-		}
+        //if curl error found
+        if (curl_errno($ch)) {
+            //save the error
+            $this->curlError = curl_error($ch);
+        }
 
-		curl_close($ch);
-	}
+        curl_close($ch);
+    }
 
-	/**
-	 * curl options.
-	 *
-	 * @param $ch
-	 */
-	protected function setCurlOpts(&$ch)
-	{
-		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-		curl_setopt($ch, CURLOPT_URL, $this->url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->acceptType ,'Content-Type: application/json'));
-	}
+    /**
+     * curl options.
+     *
+     * @param $ch
+     */
+    protected function setCurlOpts(&$ch)
+    {
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_URL, $this->url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt(
+            $ch, CURLOPT_HTTPHEADER, array(
+                'Accept: ' . $this->acceptType,
+                'Content-Type: application/json'
+            )
+        );
+    }
 
-	/**
-	 * basic auth.
-	 *
-	 * @param $ch
-	 */
-	protected function setAuth(&$ch)
-	{
-		if ($this->_apiUsername !== null && $this->_apiPassword !== null)
-		{
-			curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
-			curl_setopt($ch, CURLOPT_USERPWD, $this->_apiUsername . ':' . $this->_apiPassword);
-		}
-	}
+    /**
+     * basic auth.
+     *
+     * @param $ch
+     */
+    protected function setAuth(&$ch)
+    {
+        if ($this->_apiUsername !== null && $this->_apiPassword !== null) {
+            curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
+            curl_setopt(
+                $ch, CURLOPT_USERPWD,
+                $this->_apiUsername . ':' . $this->_apiPassword
+            );
+        }
+    }
 
-	/**
-	 * Get accept type.
-	 *
-	 * @return string
-	 */
-	public function getAcceptType()
-	{
-		return $this->acceptType;
-	}
+    /**
+     * Get accept type.
+     *
+     * @return string
+     */
+    public function getAcceptType()
+    {
+        return $this->acceptType;
+    }
 
-	/**
-	 * set accept type.
-	 *
-	 * @param $acceptType
-	 */
-	public function setAcceptType($acceptType)
-	{
-		$this->acceptType = $acceptType;
-	}
+    /**
+     * set accept type.
+     *
+     * @param $acceptType
+     */
+    public function setAcceptType($acceptType)
+    {
+        $this->acceptType = $acceptType;
+    }
 
 
-	/**
-	 * get api username.
-	 *
-	 * @return string
-	 */
-	public function getApiUsername()
-	{
-		return $this->_apiUsername;
-	}
+    /**
+     * get api username.
+     *
+     * @return string
+     */
+    public function getApiUsername()
+    {
+        return $this->_apiUsername;
+    }
 
-	/**
-	 * set api username.
-	 *
-	 * @param $apiUsername
-	 *
-	 * @return $this
-	 */
-	public function setApiUsername($apiUsername)
-	{
-		$this->_apiUsername = $apiUsername;
-		return $this;
-	}
-	/**
-	 * Get api password.
-	 *
-	 * @return string
-	 */
-	public function getApiPassword()
-	{
-		return $this->_apiPassword;
-	}
+    /**
+     * set api username.
+     *
+     * @param $apiUsername
+     *
+     * @return $this
+     */
+    public function setApiUsername($apiUsername)
+    {
+        $this->_apiUsername = $apiUsername;
 
-	/**
-	 * set api password.
-	 * @param $apiPassword
-	 *
-	 * @return $this
-	 */
-	public function setApiPassword($apiPassword)
-	{
-		$this->_apiPassword = $apiPassword;
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * get response body.
-	 *
-	 * @return string/object
-	 */
-	public function getResponseBody()
-	{
-		return $this->responseBody;
-	}
+    /**
+     * Get api password.
+     *
+     * @return string
+     */
+    public function getApiPassword()
+    {
+        return $this->_apiPassword;
+    }
 
-	/**
-	 * get response info.
-	 *
-	 * @return null
-	 */
-	public function getResponseInfo()
-	{
-		return $this->responseInfo;
-	}
+    /**
+     * set api password.
+     *
+     * @param $apiPassword
+     *
+     * @return $this
+     */
+    public function setApiPassword($apiPassword)
+    {
+        $this->_apiPassword = $apiPassword;
 
-	/**
-	 * get url.
-	 *
-	 * @return string
-	 */
-	public function getUrl()
-	{
-		return $this->url;
-	}
+        return $this;
+    }
 
-	/**
-	 * set url.
-	 *
-	 * @param $url
-	 *
-	 * @return $this
-	 */
-	public function setUrl($url)
-	{
-		$this->url = $url;
-		return $this;
-	}
+    /**
+     * get response body.
+     *
+     * @return string/object
+     */
+    public function getResponseBody()
+    {
+        return $this->responseBody;
+    }
 
-	/**
-	 * get the verb.
-	 *
-	 * @return string
-	 */
-	public function getVerb ()
-	{
-		return $this->verb;
-	}
+    /**
+     * get response info.
+     *
+     * @return null
+     */
+    public function getResponseInfo()
+    {
+        return $this->responseInfo;
+    }
 
-	/**
-	 * set the verb.
-	 *
-	 * @param $verb
-	 *
-	 * @return $this
-	 */
-	public function setVerb ($verb)
-	{
-		$this->verb = $verb;
-		return $this;
-	}
+    /**
+     * get url.
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
 
-	public function getCurlError()
-	{
-		//if curl error
-		if(!empty($this->curlError)){
-			//log curl error
-			$message = 'CURL ERROR '. $this->curlError;
-			$this->_helper->log($message);
+    /**
+     * set url.
+     *
+     * @param $url
+     *
+     * @return $this
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
 
-			return $this->curlError;
-		}
+        return $this;
+    }
 
-		return false;
-	}
+    /**
+     * get the verb.
+     *
+     * @return string
+     */
+    public function getVerb()
+    {
+        return $this->verb;
+    }
+
+    /**
+     * set the verb.
+     *
+     * @param $verb
+     *
+     * @return $this
+     */
+    public function setVerb($verb)
+    {
+        $this->verb = $verb;
+
+        return $this;
+    }
+
+    public function getCurlError()
+    {
+        //if curl error
+        if ( ! empty($this->curlError)) {
+            //log curl error
+            $message = 'CURL ERROR ' . $this->curlError;
+            $this->_helper->log($message);
+
+            return $this->curlError;
+        }
+
+        return false;
+    }
 
     public function setIsNotJsonTrue()
     {
         $this->isNotJson = true;
+
         return $this;
     }
 }

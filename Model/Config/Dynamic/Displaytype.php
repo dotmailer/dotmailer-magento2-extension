@@ -4,12 +4,13 @@ namespace Dotdigitalgroup\Email\Model\Config\Dynamic;
 
 class Displaytype
 {
-	/**
-	 * Display type mode.
-	 *
-	 * @return array
-	 */
-	public function toOptionArray()
+
+    /**
+     * Display type mode.
+     *
+     * @return array
+     */
+    public function toOptionArray()
     {
         return array(
             array('value' => 'grid', 'label' => 'Grid'),

@@ -4,15 +4,16 @@ namespace Dotdigitalgroup\Email\Model\Customer;
 
 class Review
 {
-    /**
-     * @var int
-     */
-    public  $id;
 
     /**
      * @var int
      */
-    public  $customer_id;
+    public $id;
+
+    /**
+     * @var int
+     */
+    public $customer_id;
 
     /**
      * @var string
@@ -45,32 +46,35 @@ class Review
     public $store_name;
 
 
-	protected $_storeManager;
-	protected $_helper;
+    protected $_storeManager;
+    protected $_helper;
 
     public function __construct(
-	    \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-    )
-    {
-	    $this->_helper = $data;
-	    $this->_storeManager = $storeManagerInterface;
+    ) {
+        $this->_helper       = $data;
+        $this->_storeManager = $storeManagerInterface;
     }
 
-	public function setCustomer( $customer)
-	{
-		$this->setCustomerId($customer->getId());
-		$this->email = $customer->getEmail();
-		return $this;
-	}
+    public function setCustomer($customer)
+    {
+        $this->setCustomerId($customer->getId());
+        $this->email = $customer->getEmail();
+
+        return $this;
+    }
 
     /**
-     * @param mixed $customer_id
+     * @param $customer_id
+     *
+     * @return $this
      */
     public function setCustomerId($customer_id)
     {
-        $this->customer_id = (int) $customer_id;
-	    return $this;
+        $this->customer_id = (int)$customer_id;
+
+        return $this;
     }
 
     /**
@@ -78,16 +82,18 @@ class Review
      */
     public function getCustomerId()
     {
-        return (int) $this->customer_id;
+        return (int)$this->customer_id;
     }
 
     /**
      * @param $id
+     *
      * @return $this
      */
     public function setId($id)
     {
-        $this->id = (int) $id;
+        $this->id = (int)$id;
+
         return $this;
     }
 
@@ -96,7 +102,7 @@ class Review
      */
     public function getId()
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -114,6 +120,7 @@ class Review
      * set review date.
      *
      * @param $date
+     *
      * @return $this;
      */
     public function setReviewDate($date)
@@ -121,6 +128,7 @@ class Review
         $created_at = new \Zend_Date($date, \Zend_Date::ISO_8601);
 
         $this->review_date = $created_at->toString(\Zend_Date::ISO_8601);;
+
         return $this;
     }
 
@@ -141,6 +149,7 @@ class Review
     {
         $this->setProductName($product->getName());
         $this->setProductSku($product->getSku());
+
         return $this;
     }
 
@@ -151,9 +160,9 @@ class Review
      */
     public function setReviewData(\Magento\Review\Model\Review $review)
     {
-        $store = $this->_storeManager->getStore($review->getStoreId());
+        $store       = $this->_storeManager->getStore($review->getStoreId());
         $websiteName = $store->getWebsite()->getName();
-        $storeName = $store->getName();
+        $storeName   = $store->getName();
         $this->setId($review->getReviewId())
             ->setWebsiteName($websiteName)
             ->setStoreName($storeName)
@@ -202,11 +211,13 @@ class Review
      * set website name
      *
      * @param $name
+     *
      * @return $this
      */
     public function setWebsiteName($name)
     {
         $this->website_name = $name;
+
         return $this;
     }
 
@@ -222,11 +233,13 @@ class Review
      * set store name
      *
      * @param $name
+     *
      * @return $this
      */
     public function setStoreName($name)
     {
         $this->store_name = $name;
+
         return $this;
     }
 
@@ -246,24 +259,24 @@ class Review
         return get_object_vars($this);
     }
 
-	/**
-	 * @return string[]
-	 */
-	public function __sleep()
-	{
-		$properties = array_keys(get_object_vars($this));
-		$properties = array_diff($properties, ['_storeManager', '_helper']);
+    /**
+     * @return string[]
+     */
+    public function __sleep()
+    {
+        $properties = array_keys(get_object_vars($this));
+        $properties = array_diff($properties, ['_storeManager', '_helper']);
 
-		return $properties;
-	}
+        return $properties;
+    }
 
-	/**
-	 * Init not serializable fields
-	 *
-	 * @return void
-	 */
-	public function __wakeup()
-	{
+    /**
+     * Init not serializable fields
+     *
+     * @return void
+     */
+    public function __wakeup()
+    {
 
-	}
+    }
 }

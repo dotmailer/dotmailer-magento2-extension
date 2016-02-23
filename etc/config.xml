@@ -27,7 +27,6 @@
                 <order_enabled>0</order_enabled>
                 <wishlist_enabled>0</wishlist_enabled>
                 <review_enabled>0</review_enabled>
-                <quote_enabled>0</quote_enabled>
                 <catalog_enabled>0</catalog_enabled>
             </sync>
             <dynamic_addressbook>
@@ -172,11 +171,11 @@
         <connector_configuration>
             <data_fields>
                 <order_statuses>complete,pending</order_statuses>
+                <brand_attribute>0</brand_attribute>
             </data_fields>
             <transactional_data>
                 <order_statuses>complete,pending</order_statuses>
                 <order_custom_attributes></order_custom_attributes>
-                <quote_custom_attributes></quote_custom_attributes>
                 <order_product_attributes></order_product_attributes>
                 <order_product_custom_options>0</order_product_custom_options>
             </transactional_data>

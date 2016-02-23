@@ -4,29 +4,31 @@ namespace Dotdigitalgroup\Email\Model\Customer\Wishlist;
 
 class Item
 {
-	protected   $sku;
-	protected   $qty;
-	protected   $name;
-	protected   $price;
-    protected   $total_value_of_product;
+
+    protected $sku;
+    protected $qty;
+    protected $name;
+    protected $price;
+    protected $total_value_of_product;
 
 
+    public function setProduct($product)
+    {
+        $this->setSku($product->getSku());
+        $this->setName($product->getName());
 
-	public function setProduct($product)
-	{
-		$this->setSku($product->getSku());
-		$this->setName($product->getName());
-
-		return $this;
-	}
+        return $this;
+    }
 
     /**
      * @param $name
+     *
      * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -40,11 +42,13 @@ class Item
 
     /**
      * @param $qty
+     *
      * @return $this
      */
     public function setQty($qty)
     {
         $this->qty = (int)$qty;
+
         return $this;
     }
 
@@ -66,14 +70,16 @@ class Item
 
     /**
      * @param $product
+     *
      * @return $this
      */
     public function setPrice($product)
     {
         $this->price = $product->getFinalPrice();
-        $total = $this->price * $this->qty;
+        $total       = $this->price * $this->qty;
 
         $this->total_value_of_product = number_format($total, 2, '.', ',');
+
         return $this;
     }
 
@@ -87,11 +93,13 @@ class Item
 
     /**
      * @param $sku
+     *
      * @return $this
      */
     public function setSku($sku)
     {
         $this->sku = $sku;
+
         return $this;
     }
 

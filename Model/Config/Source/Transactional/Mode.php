@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional;
 
 class Mode
 {
+
     /**
      * Options getter
      *
@@ -11,9 +12,8 @@ class Mode
      */
     public function toOptionArray()
     {
-		return array(
-            array('value' => 'smtp', 'label' => 'SMTP'),
-            //array('value' => 'api', 'label' => 'API'),
-		);
+        return array(
+            array('value' => 'smtp', 'label' => 'SMTP')
+        );
     }
 }
