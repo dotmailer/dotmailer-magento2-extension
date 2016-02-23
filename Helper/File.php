@@ -141,9 +141,7 @@ class File
 		if ( ! is_dir($path)) {
 			mkdir($path, 0777, true);
 		} // end
-
-		return;
-	} // end
+	}
 
 
 	protected function arrayToCsv(array &$fields, $delimiter, $enclosure,

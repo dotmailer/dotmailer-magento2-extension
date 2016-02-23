@@ -229,9 +229,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		);
 	}
 
-	public function log($data, $filename = 'api.log')
+	public function log($data)
 	{
-
 		$this->_logger->info($data);
 	}
 
@@ -887,28 +886,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		}
 
 		return true;
-	}
-
-	public function getTemplateList()
-	{
-		$website = $this->_storeManager->getWebsite();
-		$client  = $this->getWebsiteApiClient($website);
-		if ( ! $client) {
-			return array();
-		}
-
-		$templates = $client->getApiTemplateList();
-		$fields[]  = array('value' => '', 'label' => '');
-		foreach ($templates as $one) {
-			if (isset($one->id)) {
-				$fields[] = array(
-					'value' => $one->id,
-					'label' => __(addslashes($one->name))
-				);
-			}
-		}
-
-		return $fields;
 	}
 
 	/**
