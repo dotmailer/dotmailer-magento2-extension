@@ -2,8 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
+class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
+    implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
+
     protected $options;
 
     public function __construct(
@@ -12,8 +14,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements \
         \Magento\Backend\Block\Widget\Context $context,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $options,
         array $data = []
-    )
-    {
+    ) {
         $this->options = $options;
         parent::__construct($context, $registry, $formFactory, $data);
     }
@@ -61,7 +62,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements \
     protected function _prepareForm()
     {
         $model = $this->_coreRegistry->registry('current_ddg_rule');
-        $form = $this->_formFactory->create();
+        $form  = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
 
         $fieldset = $form->addFieldset('base_fieldset',
@@ -69,11 +70,11 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements \
         );
 
         $fieldset->addField('combination', 'select', array(
-            'label'     => __('Conditions Combination Match'),
-            'title'     => __('Conditions Combination Match'),
-            'name'      => 'combination',
-            'required'  => true,
-            'options'   => array(
+            'label'              => __('Conditions Combination Match'),
+            'title'              => __('Conditions Combination Match'),
+            'name'               => 'combination',
+            'required'           => true,
+            'options'            => array(
                 '1' => __('ALL'),
                 '2' => __('ANY'),
             ),
@@ -81,14 +82,15 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements \
 If multi line conditions for same attribute is used and ALL is chosen then multiple lines for same attribute will be ignored.</small>',
         ));
 
-        $field = $fieldset->addField('condition', 'select', array(
-            'name' => 'condition',
-            'label' => __('Condition'),
-            'title' => __('Condition'),
+        $field    = $fieldset->addField('condition', 'select', array(
+            'name'     => 'condition',
+            'label'    => __('Condition'),
+            'title'    => __('Condition'),
             'required' => true,
-            'options'    => $this->options->toOptionArray(),
+            'options'  => $this->options->toOptionArray(),
         ));
-        $renderer = $this->getLayout()->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules\Customdatafields');
+        $renderer = $this->getLayout()
+            ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules\Customdatafields');
         $field->setRenderer($renderer);
 
         $form->setValues($model->getData());

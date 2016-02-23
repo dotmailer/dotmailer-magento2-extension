@@ -4,49 +4,57 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
 {
-	protected $_dataHelper;
 
-	public function __construct(
-		\Dotdigitalgroup\Email\Helper\Data $dataHelper,
-		\Magento\Backend\Block\Template\Context $context
-	) {
-		$this->_dataHelper = $dataHelper;
+    protected $_dataHelper;
 
-		parent::__construct($context);
-	}
+    /**
+     * Abandoned constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data      $dataHelper
+     * @param \Magento\Backend\Block\Template\Context $context
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Helper\Data $dataHelper,
+        \Magento\Backend\Block\Template\Context $context
+    ) {
+        $this->_dataHelper = $dataHelper;
 
-	/**
-	 * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-	 *
-	 * @return string
-	 */
-	protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element
-	) {
-		//base url for dynamic content
-		$baseUrl = $this->_dataHelper->generateDynamicUrl();
-		$passcode = $this->_dataHelper->getPasscode();
+        parent::__construct($context);
+    }
 
-		//last quote id for dynamic page
-		$lastQuoteId = $this->_dataHelper->getLastQuoteId();
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return string
+     */
+    protected function _getElementHtml(
+        \Magento\Framework\Data\Form\Element\AbstractElement $element
+    ) {
+        //base url for dynamic content
+        $baseUrl  = $this->_dataHelper->generateDynamicUrl();
+        $passcode = $this->_dataHelper->getPasscode();
 
-		//config passcode
-		if ( ! strlen($passcode)) {
-			$passcode = '[PLEASE SET UP A PASSCODE]';
-		}
-		//alert message for last order id is not mapped
-		if ( ! $lastQuoteId) {
-			$lastQuoteId = '[PLEASE MAP THE LAST QUOTE ID]';
-		}
+        //last quote id for dynamic page
+        $lastQuoteId = $this->_dataHelper->getLastQuoteId();
 
-		// full url
-		$text = sprintf(
-			"%sconnector/email/basket/code/%s/quote_id/@%s@", $baseUrl,
-			$passcode, $lastQuoteId
-		);
+        //config passcode
+        if ( ! strlen($passcode)) {
+            $passcode = '[PLEASE SET UP A PASSCODE]';
+        }
+        //alert message for last order id is not mapped
+        if ( ! $lastQuoteId) {
+            $lastQuoteId = '[PLEASE MAP THE LAST QUOTE ID]';
+        }
 
-		$element->setData('value', $text);
+        // full url
+        $text = sprintf(
+            "%sconnector/email/basket/code/%s/quote_id/@%s@", $baseUrl,
+            $passcode, $lastQuoteId
+        );
 
-		return parent::_getElementHtml($element);
-	}
+        $element->setData('value', $text);
+
+        return parent::_getElementHtml($element);
+    }
 
 }
