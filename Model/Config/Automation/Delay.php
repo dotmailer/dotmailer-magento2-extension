@@ -4,8 +4,10 @@ namespace Dotdigitalgroup\Email\Model\Config\Automation;
 
 class Delay
 {
+
     /**
      * Returns the values for field delay
+     *
      * @return array
      */
     public function toOptionArray()
