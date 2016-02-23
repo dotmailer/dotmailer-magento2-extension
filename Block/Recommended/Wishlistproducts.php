@@ -59,9 +59,10 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 		}
 
 		$collection = $this->_wishlistFactory->create()
-			->getCollection();
-		$collection->addFieldToFilter('customer_id', $customerId)
+			->getCollection()
+			->addFieldToFilter('customer_id', $customerId)
 			->setOrder('updated_at', 'DESC');
+		$collection->getSelect()->limit(1);
 
 		if ($collection->getSize()) {
 			return $collection->getFirstItem();
@@ -163,7 +164,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 	 *
 	 * @return array
 	 */
-	private function _getRecommendedProduct($productModel, $mode)
+	protected function _getRecommendedProduct($productModel, $mode)
 	{
 		//array of products to display
 		$products = array();

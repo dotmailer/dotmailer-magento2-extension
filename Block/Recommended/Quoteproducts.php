@@ -126,7 +126,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 	 *
 	 * @return array
 	 */
-	private function _getRecommendedProduct($productModel, $mode)
+	protected function _getRecommendedProduct($productModel, $mode)
 	{
 		//array of products to display
 		$products = array();

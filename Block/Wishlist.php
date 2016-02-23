@@ -53,10 +53,9 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 		$collection = $this->_wishlistFactory->create()->getCollection()
 			->addFieldToFilter('customer_id', $customerId)
 			->setOrder('updated_at', 'DESC')
-			->setPageSize(1)
-		;
+			->setPageSize(1);
 
-		if ($collection->count()) {
+		if ($collection->getSize()) {
 			return $collection->getFirstItem();
 		} else {
 			return false;
