@@ -9,7 +9,7 @@ class Campaign
     public $contacts = array();
     public $emails = array();
     public $emailSendId = array();
-    private $_storeId;
+    protected $_storeId;
 
     /**
      * @param mixed $storeId

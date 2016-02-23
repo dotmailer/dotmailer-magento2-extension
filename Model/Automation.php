@@ -8,12 +8,12 @@ class Automation extends \Magento\Framework\Model\AbstractModel
 	protected $_dateTime;
 
 	/**
-	 * @param \Magento\Framework\Model\Context $context
-	 * @param \Magento\Framework\Registry $registry
-	 * @param \Magento\Framework\Stdlib\DateTime $dateTime
+	 * @param \Magento\Framework\Model\Context                        $context
+	 * @param \Magento\Framework\Registry                             $registry
+	 * @param \Magento\Framework\Stdlib\DateTime                      $dateTime
 	 * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-	 * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
-	 * @param array $data
+	 * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+	 * @param array                                                   $data
 	 */
 	public function __construct(
 		\Magento\Framework\Model\Context $context,
@@ -24,7 +24,9 @@ class Automation extends \Magento\Framework\Model\AbstractModel
 		array $data = []
 	) {
 		$this->_dateTime = $dateTime;
-		parent::__construct($context, $registry, $resource, $resourceCollection, $data);
+		parent::__construct(
+			$context, $registry, $resource, $resourceCollection, $data
+		);
 	}
 
 	/**
@@ -48,6 +50,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
 			$this->setCreatedAt($this->_dateTime->formatDate(true));
 		}
 		$this->setUpdatedAt($this->_dateTime->formatDate(true));
+
 		return $this;
 	}
 

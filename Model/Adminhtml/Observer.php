@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml;
 
 class Observer
 {
+
 	protected $_helper;
 	protected $_context;
 	protected $_request;
@@ -16,149 +17,178 @@ class Observer
 		\Dotdigitalgroup\Email\Helper\Data $data,
 		\Magento\Backend\App\Action\Context $context,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-	)
-	{
-		$this->_helper = $data;
-		$this->_context = $context;
+	) {
+		$this->_helper         = $data;
+		$this->_context        = $context;
 		$this->_contactFactory = $contactFactory;
-		$this->_request = $context->getRequest();
-		$this->_storeManager = $storeManagerInterface;
-		$this->messageManager = $context->getMessageManager();
-		$this->_objectManager = $context->getObjectManager();
+		$this->_request        = $context->getRequest();
+		$this->_storeManager   = $storeManagerInterface;
+		$this->messageManager  = $context->getMessageManager();
+		$this->_objectManager  = $context->getObjectManager();
 	}
-    /**
-     * API Sync and Data Mapping.
-     * Reset contacts for reimport.
-     * @return $this
-     */
-    public function actionConfigResetContacts()
-    {
-	    $contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Resource\Contact');
-        $numImported = $this->_contactFactory->create()->getNumberOfImportedContacs();
-        $updated = $contactModel->resetAllContacts();
 
-        $this->_helper->log('-- Imported contacts: ' . $numImported  . ' reseted :  ' . $updated . ' --');
+	/**
+	 * API Sync and Data Mapping.
+	 * Reset contacts for reimport.
+	 *
+	 * @return $this
+	 */
+	public function actionConfigResetContacts()
+	{
+		$contactModel = $this->_objectManager->create(
+			'Dotdigitalgroup\Email\Model\Resource\Contact'
+		);
+		$numImported  = $this->_contactFactory->create()
+			->getNumberOfImportedContacs();
+		$updated      = $contactModel->resetAllContacts();
 
-        return $this;
-    }
+		$this->_helper->log(
+			'-- Imported contacts: ' . $numImported . ' reseted :  ' . $updated
+			. ' --'
+		);
 
-    /**
-     * Check if the transactional data feature is enabled
-     * To use the wishlist and order sync this needs to be enabled.
-     */
-    public function checkFeatureActive()
-    {
-        //scope to retrieve the website id
-        $scopeId = 0;
-	    $request = $this->_context->getRequest();
-        if ($website = $request->getParam('website')) {
-            //use webiste
-            $scope = 'websites';
-            $scopeId = $this->_storeManager->getWebsite($website)->getId();
-        } else {
-            //set to default
-            $scope = "default";
-        }
-        //webiste by id
-        $website = $this->_storeManager->getWebsite($scopeId);
+		return $this;
+	}
 
-        //configuration saved for the wishlist and order sync
-        $wishlistEnabled = $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, $scope, $scopeId);
-        $orderEnabled = $website->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED);
+	/**
+	 * Check if the transactional data feature is enabled
+	 * To use the wishlist and order sync this needs to be enabled.
+	 */
+	public function checkFeatureActive()
+	{
+		//scope to retrieve the website id
+		$scopeId = 0;
+		$request = $this->_context->getRequest();
+		if ($website = $request->getParam('website')) {
+			//use webiste
+			$scope   = 'websites';
+			$scopeId = $this->_storeManager->getWebsite($website)->getId();
+		} else {
+			//set to default
+			$scope = "default";
+		}
+		//webiste by id
+		$website = $this->_storeManager->getWebsite($scopeId);
 
-        //only for modification for order and wishlist
-        if ($orderEnabled || $wishlistEnabled) {
-            //client by website id
-            $client = $this->_helper->getWebsiteApiClient($scopeId);
+		//configuration saved for the wishlist and order sync
+		$wishlistEnabled = $website->getConfig(
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
+			$scope, $scopeId
+		);
+		$orderEnabled    = $website->getConfig(
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED
+		);
 
-            //call request for account info
-            $response = $client->getAccountInfo();
+		//only for modification for order and wishlist
+		if ($orderEnabled || $wishlistEnabled) {
+			//client by website id
+			$client = $this->_helper->getWebsiteApiClient($scopeId);
 
-            //properties must be checked
-            if (isset($response->properties)) {
-                $accountInfo = $response->properties;
-                $result = $this->_checkForOption(\Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_TRANS_ALLOWANCE, $accountInfo);
+			//call request for account info
+			$response = $client->getAccountInfo();
 
-                //account is disabled to use transactional data
-                if (! $result) {
-                    $message = 'Transactional Data For This Account Is Disabled. Call Support To Enable.';
-                    //send admin message
-                    $this->messageManager->addError($message);
-                    //disable the config for wishlist and order sync
-	                $this->_helper->disableTransactionalDataConfig($scope, $scopeId);
-                }
-            }
-        }
+			//properties must be checked
+			if (isset($response->properties)) {
+				$accountInfo = $response->properties;
+				$result      = $this->_checkForOption(
+					\Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_TRANS_ALLOWANCE,
+					$accountInfo
+				);
 
-        return $this;
-    }
+				//account is disabled to use transactional data
+				if ( ! $result) {
+					$message
+						= 'Transactional Data For This Account Is Disabled. Call Support To Enable.';
+					//send admin message
+					$this->messageManager->addError($message);
+					//disable the config for wishlist and order sync
+					$this->_helper->disableTransactionalDataConfig(
+						$scope, $scopeId
+					);
+				}
+			}
+		}
 
-    /**
-     * API Credentials.
-     * Installation and validation confirmation.
-     * @return $this
-     */
-    public function actionConfigSaveApi(\Magento\Framework\Event\Observer $observer)
-    {
-	    $groups = $this->_context->getRequest()->getPost('groups');
+		return $this;
+	}
 
-        if (isset($groups['api']['fields']['username']['inherit']) || isset($groups['api']['fields']['password']['inherit']))
-            return $this;
+	/**
+	 * API Credentials.
+	 * Installation and validation confirmation.
+	 *
+	 * @return $this
+	 */
+	public function actionConfigSaveApi(\Magento\Framework\Event\Observer $observer
+	) {
+		$groups = $this->_context->getRequest()->getPost('groups');
 
-        $apiUsername =  isset($groups['api']['fields']['username']['value'])? $groups['api']['fields']['username']['value'] : false;
-        $apiPassword =  isset($groups['api']['fields']['password']['value'])? $groups['api']['fields']['password']['value'] : false;
+		if (isset($groups['api']['fields']['username']['inherit'])
+			|| isset($groups['api']['fields']['password']['inherit'])
+		) {
+			return $this;
+		}
 
-        //skip if the inherit option is selected
-        if ($apiUsername && $apiPassword) {
-            $this->_helper->log('----VALIDATING ACCOUNT---');
-            $testModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Test');
-            $isValid = $testModel->validate($apiUsername, $apiPassword);
-            if ($isValid) {
-                /**
-                 * Send install info
-                 */
-                //$testModel->sendInstallConfirmation();
-	            $this->messageManager->addSuccess(__('API Credentials Valid.'));
-            } else {
+		$apiUsername = isset($groups['api']['fields']['username']['value'])
+			? $groups['api']['fields']['username']['value'] : false;
+		$apiPassword = isset($groups['api']['fields']['password']['value'])
+			? $groups['api']['fields']['password']['value'] : false;
 
-	            $this->messageManager->addWarning(__('Authorization has been denied for this request.'));
-            }
-        }
-        return $this;
-    }
+		//skip if the inherit option is selected
+		if ($apiUsername && $apiPassword) {
+			$this->_helper->log('----VALIDATING ACCOUNT---');
+			$testModel = $this->_objectManager->create(
+				'Dotdigitalgroup\Email\Model\Apiconnector\Test'
+			);
+			$isValid   = $testModel->validate($apiUsername, $apiPassword);
 
-    /**
-     * Check for name option in array.
-     *
-     * @param $name
-     * @param $data
-     *
-     * @return bool
-     */
-    private function _checkForOption($name, $data) {
-        //loop for all options
-        foreach ( $data as $one ) {
+			if ($isValid) {
+				$this->messageManager->addSuccess(__('API Credentials Valid.'));
+			} else {
 
-            if ($one->name == $name) {
-                return true;
-            }
-        }
+				$this->messageManager->addWarning(
+					__('Authorization has been denied for this request.')
+				);
+			}
+		}
 
-        return false;
-    }
+		return $this;
+	}
 
-    /**
-     * Update Feed for latest releases.
-     *
-     */
-    public function updateFeed()
-    {
-        $this->_objectManager->create('Dotdigitalgroup\Email\Model\Feed')->checkForUpgrade();
-    }
+	/**
+	 * Check for name option in array.
+	 *
+	 * @param $name
+	 * @param $data
+	 *
+	 * @return bool
+	 */
+	protected function _checkForOption($name, $data)
+	{
+		//loop for all options
+		foreach ($data as $one) {
+
+			if ($one->name == $name) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Update Feed for latest releases.
+	 *
+	 */
+	public function updateFeed()
+	{
+		$this->_objectManager->create('Dotdigitalgroup\Email\Model\Feed')
+			->checkForUpgrade();
+	}
 
 
 	/**
 	 * Add modified segment for contact.
+	 *
 	 * @param $observer
 	 *
 	 * @return $this
@@ -166,11 +196,15 @@ class Observer
 	public function connectorCustomerSegmentChanged($observer)
 	{
 		$segmentsIds = $observer->getEvent()->getSegmentIds();
-		$customerId = $this->_objectManager->get('Magento\Customer\Model\Session')->getCustomerId();
-		$websiteId = $this->_storeManager->getStore()->getWebsiteId();
+		$customerId  = $this->_objectManager->get(
+			'Magento\Customer\Model\Session'
+		)->getCustomerId();
+		$websiteId   = $this->_storeManager->getStore()->getWebsiteId();
 
-		if (!empty($segmentsIds) && $customerId) {
-			$this->addContactsFromWebsiteSegments($customerId, $segmentsIds, $websiteId);
+		if ( ! empty($segmentsIds) && $customerId) {
+			$this->addContactsFromWebsiteSegments(
+				$customerId, $segmentsIds, $websiteId
+			);
 		}
 
 		return $this;
@@ -187,10 +221,13 @@ class Observer
 	 * @return $this
 	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
-	protected function addContactsFromWebsiteSegments($customerId, $segmentIds, $websiteId){
+	protected function addContactsFromWebsiteSegments($customerId, $segmentIds,
+		$websiteId
+	) {
 
-		if (empty($segmentIds))
+		if (empty($segmentIds)) {
 			return $this;
+		}
 		$segmentIds = implode(',', $segmentIds);
 
 		$contact = $this->_contactFactory->create()
@@ -200,17 +237,20 @@ class Observer
 		try {
 
 			$contact->setSegmentIds($segmentIds)
-			        ->setEmailImported()
-			        ->save();
+				->setEmailImported()
+				->save();
 
-		}catch (\Exception $e){
-			throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+		} catch (\Exception $e) {
+			throw new \Magento\Framework\Exception\LocalizedException(
+				__($e->getMessage())
+			);
 		}
 
 		return $this;
 	}
 
-	protected function getCustomerSegmentIdsForWebsite($customerId, $websiteId){
+	protected function getCustomerSegmentIdsForWebsite($customerId, $websiteId)
+	{
 
 		$segmentIds = $this->_contactFactory->create()
 			->addFieldToFilter('website_id', $websiteId)

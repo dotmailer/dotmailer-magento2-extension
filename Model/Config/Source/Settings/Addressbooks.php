@@ -3,8 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Config\Source\Settings;
 
 
-use Dotdigitalgroup\Email\Model\Apiconnector\Rest;
-
 class Addressbooks implements \Magento\Framework\Option\ArrayInterface
 {
 	/**

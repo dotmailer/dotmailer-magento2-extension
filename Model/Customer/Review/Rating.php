@@ -9,14 +9,7 @@ class Rating
      */
     public $rating_score;
 
-    /**
-     * constructor
-     *
-     * @param $rating
-     */
-    public function __construct()
-    {
-    }
+
 
 	public function setRating($rating)
 	{

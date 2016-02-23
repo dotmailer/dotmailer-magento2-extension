@@ -31,7 +31,7 @@ class Datafield
 	 *
 	 * @var array
 	 */
-	private $_contactDatafields = array(
+	protected $_contactDatafields = array(
         'customer_id' => array(
             'name' => 'CUSTOMER_ID',
             'type' => 'numeric',

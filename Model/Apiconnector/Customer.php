@@ -23,16 +23,26 @@ class Customer
 	//enterprise reward
 	public $reward;
 
-	private $subscriber_status = array(
-		\Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
-		\Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
-		\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-		\Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed'
-	);
+	protected $subscriber_status
+		= array(
+			\Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED   => 'Subscribed',
+			\Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE   => 'Not Active',
+			\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
+			\Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED  => 'Unconfirmed'
+		);
 
 	/**
-	 * constructor, mapping hash to map.
+	 * Customer constructor.
 	 *
+	 * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
+	 * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
+	 * @param \Magento\Review\Model\ResourceModel\Review\Collection      $reviewCollection
+	 * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
+	 * @param \Dotdigitalgroup\Email\Helper\Data                         $helper
+	 * @param \Magento\Customer\Model\GroupFactory                       $groupFactory
+	 * @param \Magento\Newsletter\Model\SubscriberFactory                $subscriberFactory
+	 * @param \Magento\Catalog\Model\CategoryFactory                     $categoryFactory
+	 * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
 	 */
 	public function __construct(
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -44,17 +54,16 @@ class Customer
 		\Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
 		\Magento\Catalog\Model\CategoryFactory $categoryFactory,
 		\Magento\Catalog\Model\ProductFactory $productFactory
-	)
-	{
-		$this->_helper = $helper;
-		$this->_store = $storeManager;
-		$this->_objectManager = $objectManager;
-		$this->reviewCollection = $reviewCollection;
-		$this->orderCollection = $collectionFactory;
-		$this->_groupFactory = $groupFactory;
+	) {
+		$this->_helper            = $helper;
+		$this->_store             = $storeManager;
+		$this->_objectManager     = $objectManager;
+		$this->reviewCollection   = $reviewCollection;
+		$this->orderCollection    = $collectionFactory;
+		$this->_groupFactory      = $groupFactory;
 		$this->_subscriberFactory = $subscriberFactory;
-		$this->_categoryFactory = $categoryFactory;
-		$this->_productFactory = $productFactory;
+		$this->_categoryFactory   = $categoryFactory;
+		$this->_productFactory    = $productFactory;
 
 	}
 
@@ -87,14 +96,19 @@ class Customer
 			foreach ($exploded as $one) {
 				$function .= ucfirst($one);
 			}
-			try{
-				$value = call_user_func(array('self', $function));
+			try {
+				$value                    = call_user_func(
+					array('self', $function)
+				);
 				$this->customerData[$key] = $value;
-			}catch (\Exception $e){
-				throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+			} catch (\Exception $e) {
+				throw new \Magento\Framework\Exception\LocalizedException(
+					__($e->getMessage())
+				);
 
 			}
 		}
+
 		return $this;
 	}
 
@@ -114,10 +128,11 @@ class Customer
 	public function setReviewCollection()
 	{
 		$customer_id = $this->customer->getId();
-		$collection = $this->reviewCollection->addCustomerFilter($customer_id)
-			->setOrder('review_id','DESC');
+		$collection  = $this->reviewCollection->addCustomerFilter($customer_id)
+			->setOrder('review_id', 'DESC');
 
 		$this->reviewCollection = $collection;
+
 		return $this;
 	}
 
@@ -126,9 +141,12 @@ class Customer
 		return count($this->reviewCollection);
 	}
 
-	public function getLastReviewDate(){
-		if(count($this->reviewCollection))
+	public function getLastReviewDate()
+	{
+		if (count($this->reviewCollection)) {
 			return $this->reviewCollection->getFirstItem()->getCreatedAt();
+		}
+
 		return '';
 	}
 
@@ -147,7 +165,8 @@ class Customer
 	 *
 	 * @return mixed
 	 */
-	public function getFirstname(){
+	public function getFirstname()
+	{
 		return $this->customer->getFirstname();
 	}
 
@@ -356,7 +375,8 @@ class Customer
 	 *
 	 * @return mixed
 	 */
-	public function getDeliveryCountry(){
+	public function getDeliveryCountry()
+	{
 		return $this->customer->getShippingCountryCode();
 	}
 
@@ -385,7 +405,8 @@ class Customer
 	 *
 	 * @return mixed
 	 */
-	public function getDeliveryTelephone(){
+	public function getDeliveryTelephone()
+	{
 		return $this->customer->getShippingTelephone();
 	}
 
@@ -498,6 +519,7 @@ class Customer
 	public function toCSVArray()
 	{
 		$result = $this->customerData;
+
 		return $result;
 	}
 
@@ -519,39 +541,48 @@ class Customer
 		return '';
 	}
 
-	private function _getStreet($street, $line){
+	private function _getStreet($street, $line)
+	{
 		$street = explode("\n", $street);
-		if(isset($street[$line - 1]))
+		if (isset($street[$line - 1])) {
 			return $street[$line - 1];
+		}
+
 		return '';
 	}
 
-	private function _getWebsiteName(){
+	private function _getWebsiteName()
+	{
 		$websiteId = $this->customer->getWebsiteId();
-		$website = $this->_store->getWebsite($websiteId);
-		if($website)
+		$website   = $this->_store->getWebsite($websiteId);
+		if ($website) {
 			return $website->getName();
+		}
 
 		return '';
 	}
 
-	private  function _getStoreName()
+	private function _getStoreName()
 	{
 		$storeId = $this->customer->getStoreId();
-		$store = $this->_store->getStore($storeId);
+		$store   = $this->_store->getStore($storeId);
 
-		if($store)
+		if ($store) {
 			return $store->getName();
+		}
 
 		return '';
 	}
 
 	/**
-	 * @param mixed $mapping_hash
+	 * @param $mapping_hash
+	 *
+	 * @return $this
 	 */
 	public function setMappingHash($mapping_hash)
 	{
 		$this->_mapping_hash = $mapping_hash;
+
 		return $this;
 	}
 
@@ -563,8 +594,9 @@ class Customer
 		return $this->_mapping_hash;
 	}
 
-	private function _getCustomerGroup(){
-		$groupId = $this->customer->getGroupId();
+	private function _getCustomerGroup()
+	{
+		$groupId    = $this->customer->getGroupId();
 		$groupModel = $this->_groupFactory->create()
 			->load($groupId);
 		if ($groupModel) {
@@ -584,20 +616,24 @@ class Customer
 	public function setMappigHash($value)
 	{
 		$this->_mapping_hash = $value;
+
 		return $this;
 	}
 
 
 	public function cleanString($string)
 	{
-		$cleanedString = preg_replace("/[^0-9]/","",$string);
-		if($cleanedString != "")
-			return (int) number_format($cleanedString, 0, '.', '');
+		$cleanedString = preg_replace("/[^0-9]/", "", $string);
+		if ($cleanedString != "") {
+			return (int)number_format($cleanedString, 0, '.', '');
+		}
+
 		return 0;
 	}
 
 	/**
 	 * Subscriber status for Customer.
+	 *
 	 * @return mixed
 	 */
 	public function getSubscriberStatus()
@@ -605,53 +641,60 @@ class Customer
 		$subscriberModel = $this->_subscriberFactory->create()
 			->loadByCustomerId($this->customer->getId());
 
-		if($subscriberModel->getCustomerId())
-			return $this->subscriber_status[$subscriberModel->getSubscriberStatus()];
+		if ($subscriberModel->getCustomerId()) {
+			return $this->subscriber_status[$subscriberModel->getSubscriberStatus(
+			)];
+		}
 	}
 
 
 	/**
 	 * Customer segments id.
+	 *
 	 * @return string
 	 */
 	public function getCustomerSegments()
 	{
-		$contactModel = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->getCollection()
-	        ->addFieldToFilter('customer_id', $this->getCustomerId())
-	        ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
-	        ->getFirstItem();
-		if ($contactModel)
+		$contactModel = $this->_objectManager->create(
+			'Dotdigitalgroup\Email\Model\Contact'
+		)->getCollection()
+			->addFieldToFilter('customer_id', $this->getCustomerId())
+			->addFieldToFilter('website_id', $this->customer->getWebsiteId())
+			->getFirstItem();
+		if ($contactModel) {
 			return $contactModel->getSegmentIds();
+		}
 
 		return '';
 	}
 
 
-
 	/**
 	 * Last used reward points.
+	 *
 	 * @return mixed
 	 */
 	public function getLastUsedDate()
 	{
 		//last used from the reward history based on the points delta used
 		//enterprise module
-		$lastUsed = $this->_objectManager->create('Magento\Reward\Model\Reward\History')
-            ->addCustomerFilter($this->customer->getId())
-            ->addWebsiteFilter($this->customer->getWebsiteId())
-            ->addFieldToFilter('points_delta', array('lt'=> 0))
-            ->setDefaultOrder()
-            ->getFirstItem()
-            ->getCreatedAt()
-		;
+		$lastUsed = $this->_objectManager->create(
+			'Magento\Reward\Model\Reward\History'
+		)
+			->addCustomerFilter($this->customer->getId())
+			->addWebsiteFilter($this->customer->getWebsiteId())
+			->addFieldToFilter('points_delta', array('lt' => 0))
+			->setDefaultOrder()
+			->getFirstItem()
+			->getCreatedAt();
 
 		//for any valid date
-		if ($lastUsed)
+		if ($lastUsed) {
 			return $date = $this->_helper->formatDate($lastUsed, 'short', true);
+		}
 
 		return '';
 	}
-
 
 
 	/**
@@ -664,9 +707,10 @@ class Customer
 		$id = $this->customer->getMostCategoryId();
 		if ($id) {
 			return $this->_categoryFactory->create()->load($id)
-	           ->setStoreId($this->customer->getStoreId())
-	           ->getName();
+				->setStoreId($this->customer->getStoreId())
+				->getName();
 		}
+
 		return "";
 	}
 
@@ -678,8 +722,10 @@ class Customer
 	public function getMostPurBrand()
 	{
 		$brand = $this->customer->getMostBrand();
-		if($brand)
+		if ($brand) {
 			return $brand;
+		}
+
 		return "";
 	}
 
@@ -691,8 +737,10 @@ class Customer
 	public function getMostFreqPurDay()
 	{
 		$day = $this->customer->getWeekDay();
-		if($day)
+		if ($day) {
 			return $day;
+		}
+
 		return "";
 	}
 
@@ -704,8 +752,10 @@ class Customer
 	public function getMostFreqPurMon()
 	{
 		$month = $this->customer->getMonthDay();
-		if($month)
+		if ($month) {
 			return $month;
+		}
+
 		return "";
 	}
 
@@ -719,9 +769,10 @@ class Customer
 		$id = $this->customer->getFirstCategoryId();
 		if ($id) {
 			return $this->_categoryFactory->create()->load($id)
-	           ->setStoreId($this->customer->getStoreId())
-	           ->getName();
+				->setStoreId($this->customer->getStoreId())
+				->getName();
 		}
+
 		return "";
 	}
 
@@ -740,6 +791,7 @@ class Customer
 				->load($categoryId)
 				->getName();
 		}
+
 		return "";
 	}
 
@@ -751,7 +803,8 @@ class Customer
 	public function getFirstBrandPur()
 	{
 		$id = $this->customer->getProductIdForFirstBrand();
-        return $this->_getBrandValue($id);
+
+		return $this->_getBrandValue($id);
 	}
 
 	/**
@@ -761,86 +814,108 @@ class Customer
 	 */
 	public function getLastBrandPur()
 	{
-        $id = $this->customer->getProductIdForLastBrand();
-        return $this->_getBrandValue($id);
+		$id = $this->customer->getProductIdForLastBrand();
+
+		return $this->_getBrandValue($id);
 	}
 
-    private function _getBrandValue($id)
-    {
-	    //attribute mapped from the config
-        $attribute = $this->_helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
-            $this->customer->getWebsiteId()
-        );
-	    //if the id and attribute found
-        if($id && $attribute){
-            $brand = $this->_productFactory->create()
-                ->setStoreId($this->customer->getStoreId())
-                ->load($id)
-                ->getAttributeText($attribute);
-            //check for brand text
-	        if ($brand)
-                return $brand;
-        }
-        return "";
-    }
+	private function _getBrandValue($id)
+	{
+		//attribute mapped from the config
+		$attribute = $this->_helper->getWebsiteConfig(
+			\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+			$this->customer->getWebsiteId()
+		);
+		//if the id and attribute found
+		if ($id && $attribute) {
+			$brand = $this->_productFactory->create()
+				->setStoreId($this->customer->getStoreId())
+				->load($id)
+				->getAttributeText($attribute);
+			//check for brand text
+			if ($brand) {
+				return $brand;
+			}
+		}
+
+		return "";
+	}
 
 	/**
 	 * Reward points balance.
+	 *
 	 * @return int
 	 */
-	public function getRewardPoints() {
-		if (!$this->reward)
+	public function getRewardPoints()
+	{
+		if ( ! $this->reward) {
 			$this->_setReward();
+		}
 
-		if($this->reward !== true){
+		if ($this->reward !== true) {
 			return $this->reward->getPointsBalance();
 		}
+
 		return '';
 	}
 
 	/**
 	 * Currency amount points.
+	 *
 	 * @return mixed
 	 */
-	public function getRewardAmount() {
-		if (!$this->reward)
+	public function getRewardAmount()
+	{
+		if ( ! $this->reward) {
 			$this->_setReward();
+		}
 
-		if($this->reward !== true){
+		if ($this->reward !== true) {
 			return $this->reward->getCurrencyAmount();
 		}
+
 		return '';
 	}
 
 	/**
 	 * Expiration date to use the points.
+	 *
 	 * @return string
 	 */
 	public function getExpirationDate()
 	{
 		//set reward for later use
-		if (!$this->reward)
+		if ( ! $this->reward) {
 			$this->_setReward();
+		}
 
-		if($this->reward !== true){
+		if ($this->reward !== true) {
 			$expiredAt = $this->reward->getExpirationDate();
 
 			if ($expiredAt) {
-				$date = $this->_objectManager->create('Magento\Framework\Stdlib\DateTime')->formatDate($expiredAt, 'short', true);
+				$date = $this->_objectManager->create(
+					'Magento\Framework\Stdlib\DateTime'
+				)->formatDate($expiredAt, 'short', true);
 			} else {
 				$date = '';
 			}
+
 			return $date;
 		}
 
 		return '';
 	}
 
-	private function _setReward() {
+	private function _setReward()
+	{
 
-		if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')){
-			$enHelper = $this->_objectManager->create('Magento\Reward\Helper\Reward');
+		if ($rewardModel = $this->_objectManager->create(
+			'Magento\Reward\Model\Reward\History'
+		)
+		) {
+			$enHelper   = $this->_objectManager->create(
+				'Magento\Reward\Helper\Reward'
+			);
 			$collection = $rewardModel->getCollection()
 				->addCustomerFilter($this->customer->getId())
 				->addWebsiteFilter($this->customer->getWebsiteId())
@@ -854,9 +929,9 @@ class Customer
 				->getFirstItem();
 
 			$this->reward = $item;
-		}
-		else
+		} else {
 			$this->reward = true;
+		}
 	}
 
 	/**

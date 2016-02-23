@@ -10,9 +10,9 @@ class Catalog
 	protected $_scopeConfig;
 	protected $_productFactory;
 
-	private $_start;
-	private $_countProducts = 0;
-	private $_productIds = array();
+	protected $_start;
+	protected $_countProducts = 0;
+	protected $_productIds = array();
 	protected $_proccessorFactory;
 	protected $_connectorProductFactory;
 	protected $_catalogCollectionFactory;
@@ -149,7 +149,7 @@ class Catalog
 	 * @param $store
 	 * @return array|bool
 	 */
-	private function _exportCatalog($store) {
+	protected function _exportCatalog($store) {
 
 		$connectorProducts = array();
 		//all products for export
@@ -176,7 +176,7 @@ class Catalog
 	 * @param $collectionName
 	 * @param $websiteId
 	 */
-	private function _exportInSingle($store, $collectionName, $websiteId) {
+	protected function _exportInSingle($store, $collectionName, $websiteId) {
 
 		$this->_productIds = array();
 		$products = $this->_getProductsToExport($store, true);
@@ -210,7 +210,7 @@ class Catalog
 	 *
 	 * @return array
 	 */
-	private function _getProductsToExport($store, $modified = false)
+	protected function _getProductsToExport($store, $modified = false)
 	{
 		$limit = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT);
 		$connectorCollection = $this->_catalogCollectionFactory->create();
@@ -259,7 +259,7 @@ class Catalog
 	 * @param $ids
 	 * @param $modified
 	 */
-	private function _setImported($ids, $modified = false)
+	protected function _setImported($ids, $modified = false)
 	{
 		try {
 			$coreResource = $this->_resource;

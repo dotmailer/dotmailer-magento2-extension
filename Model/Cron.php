@@ -9,6 +9,7 @@ use Magento\Framework\Api\FilterBuilder;
 
 class Cron
 {
+
 	protected $csv;
 
 	protected $_automationFactory;
@@ -24,9 +25,31 @@ class Cron
 	protected $_campaignFactory;
 
 
+	/**
+	 * Cron constructor.
+	 *
+	 * @param Sync\CampaignFactory                      $campaignFactory
+	 * @param Sync\OrderFactory                         $syncOrderFactory
+	 * @param Sales\QuoteFactory                        $quoteFactory
+	 * @param Sync\ReviewFactory                        $reviewFactory
+	 * @param Sales\OrderFactory                        $orderFactory
+	 * @param Sync\WishlistFactory                      $wishlistFactory
+	 * @param Customer\GuestFactory                     $guestFactory
+	 * @param Newsletter\SubscriberFactory              $subscriberFactory
+	 * @param Sync\CatalogFactory                       $catalogFactorty
+	 * @param ProccessorFactory                         $proccessorFactory
+	 * @param Sync\AutomationFactory                    $automationFactory
+	 * @param FilterBuilder                             $filterBuilder
+	 * @param Csv                                       $csv
+	 * @param \Psr\Log\LoggerInterface                  $logger
+	 * @param SearchCriteriaBuilder                     $searchCriteriaBuilder
+	 * @param ProductRepositoryInterface                $productRepository
+	 * @param \Magento\Framework\ObjectManagerInterface $objectManager
+	 * @param Apiconnector\Contact                      $contact
+	 */
 	public function __construct(
 		\Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
-		\Dotdigitalgroup\Email\Model\Sync\OrderFactory  $syncOrderFactory,
+		\Dotdigitalgroup\Email\Model\Sync\OrderFactory $syncOrderFactory,
 		\Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
 		\Dotdigitalgroup\Email\Model\Sync\ReviewFactory $reviewFactory,
 		\Dotdigitalgroup\Email\Model\Sales\OrderFactory $orderFactory,
@@ -44,22 +67,22 @@ class Cron
 		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Dotdigitalgroup\Email\Model\Apiconnector\Contact $contact
 	) {
-		$this->_campaignFactory = $campaignFactory;
-		$this->_syncOrderFactory = $syncOrderFactory;
-		$this->_quoteFactory = $quoteFactory;
-		$this->_reviewFactory = $reviewFactory;
-		$this->_orderFactory = $orderFactory;
-		$this->_wishlistFactory = $wishlistFactory->create();
-		$this->_guestFactory = $guestFactory;
-		$this->_subscriberFactory = $subscriberFactory;
-		$this->_catalogFactory = $catalogFactorty;
-		$this->_proccessorFactory = $proccessorFactory;
-		$this->_automationFactory = $automationFactory;
-		$this->productRepository = $productRepository;
+		$this->_campaignFactory      = $campaignFactory;
+		$this->_syncOrderFactory     = $syncOrderFactory;
+		$this->_quoteFactory         = $quoteFactory;
+		$this->_reviewFactory        = $reviewFactory;
+		$this->_orderFactory         = $orderFactory;
+		$this->_wishlistFactory      = $wishlistFactory->create();
+		$this->_guestFactory         = $guestFactory;
+		$this->_subscriberFactory    = $subscriberFactory;
+		$this->_catalogFactory       = $catalogFactorty;
+		$this->_proccessorFactory    = $proccessorFactory;
+		$this->_automationFactory    = $automationFactory;
+		$this->productRepository     = $productRepository;
 		$this->searchCriteriaBuilder = $searchCriteriaBuilder;
-		$this->filterBuilder = $filterBuilder;
-		$this->csv = $csv;
-		$this->contact = $contact;
+		$this->filterBuilder         = $filterBuilder;
+		$this->csv                   = $csv;
+		$this->contact               = $contact;
 	}
 
 	/**
@@ -75,8 +98,11 @@ class Cron
 		//run subscribers and guests sync
 		$subscriberResult = $this->subscribersAndGuestSync();
 
-		if(isset($subscriberResult['message']) && isset($result['message']))
-			$result['message'] = $result['message'] . ' - ' . $subscriberResult['message'];
+		if (isset($subscriberResult['message']) && isset($result['message'])) {
+			$result['message'] = $result['message'] . ' - '
+				. $subscriberResult['message'];
+		}
+
 		return $result;
 	}
 
@@ -87,6 +113,7 @@ class Cron
 	{
 		$result = $this->_catalogFactory->create()
 			->sync();
+
 		return $result;
 	}
 
@@ -112,7 +139,7 @@ class Cron
 	{
 		//sync subscribers
 		$subscriberModel = $this->_subscriberFactory->create();
-		$result = $subscriberModel->sync();
+		$result          = $subscriberModel->sync();
 
 		//sync guests
 		$this->_guestFactory->create()->sync();
@@ -126,7 +153,7 @@ class Cron
 	public function reviewsAndWishlist()
 	{
 		//sync reviews
-        $this->reviewSync();
+		$this->reviewSync();
 		//sync wishlist
 		$this->_wishlistFactory->sync();
 	}
@@ -140,6 +167,7 @@ class Cron
 		$this->_orderFactory->create()->createReviewCampaigns();
 		//sync reviews
 		$result = $this->_reviewFactory->create()->sync();
+
 		return $result;
 	}
 
@@ -160,10 +188,11 @@ class Cron
 		$this->_automationFactory->create()->sync();
 
 	}
+
 	public function getProducts()
 	{
-		$filters = [];
-		$now = new \DateTime();
+		$filters  = [];
+		$now      = new \DateTime();
 		$interval = new \DateInterval('P1Y');
 		$lastWeek = $now->sub($interval);
 
@@ -176,7 +205,7 @@ class Cron
 		$this->searchCriteriaBuilder->addFilters($filters);
 
 		$searchCriteria = $this->searchCriteriaBuilder->create();
-		$searchResults = $this->productRepository->getList($searchCriteria);
+		$searchResults  = $this->productRepository->getList($searchCriteria);
 
 
 		return $searchResults->getItems();
@@ -187,13 +216,18 @@ class Cron
 		if (count($items) > 0) {
 			$this->csv->setHeaderCols(['id', 'created_at', 'sku']);
 			foreach ($items as $item) {
-				$this->csv->writeRow(['id'=>$item->getId(), 'created_at' => $item->getCreatedAt(), 'sku' => $item->getSku()]);
+				$this->csv->writeRow(
+					['id'         => $item->getId(),
+					 'created_at' => $item->getCreatedAt(),
+					 'sku'        => $item->getSku()]
+				);
 			}
 		}
 	}
 
 	/**
 	 * Send email campaigns.
+	 *
 	 * @throws \Magento\Framework\Exception\LocalizedException
 	 */
 	public function sendCampaigns()
@@ -209,6 +243,7 @@ class Cron
 	{
 		// send order
 		$orderResult = $this->_syncOrderFactory->create()->sync();
+
 		return $orderResult;
 	}
 }
