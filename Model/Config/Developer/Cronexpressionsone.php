@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Developer;
 
 class Cronexpressionsone
 {
+
     /**
      * @return array
      */

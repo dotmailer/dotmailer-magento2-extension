@@ -3,6 +3,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Fontsize
 {
+
     /**
      * Options getter. Styling options
      *

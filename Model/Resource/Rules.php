@@ -8,14 +8,15 @@ use Magento\Store\Model\Store;
 
 class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-	/**
-	 * Initialize resource
-	 *
-	 * @return void
-	 */
-	public function _construct()
-	{
-		$this->_init('email_rules', 'id');
-	}
+
+    /**
+     * Initialize resource
+     *
+     * @return void
+     */
+    public function _construct()
+    {
+        $this->_init('email_rules', 'id');
+    }
 
 }

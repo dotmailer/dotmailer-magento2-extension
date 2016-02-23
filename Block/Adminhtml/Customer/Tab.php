@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Customer;
 
 class Tab
 {
+
     public function getTabLabel()
     {
         return __('Email Activity');

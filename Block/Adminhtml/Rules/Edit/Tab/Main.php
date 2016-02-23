@@ -2,21 +2,31 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
+class Main extends \Magento\Backend\Block\Widget\Form\Generic
+    implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
+
     protected $_systemStore;
 
-	public function __construct(
+    /**
+     * Main constructor.
+     *
+     * @param \Magento\Framework\Data\FormFactory   $formFactory
+     * @param \Magento\Framework\Registry           $registry
+     * @param \Magento\Backend\Block\Widget\Context $context
+     * @param \Magento\Store\Model\System\Store     $systemStore
+     * @param array                                 $data
+     */
+    public function __construct(
         \Magento\Framework\Data\FormFactory $formFactory,
-		\Magento\Framework\Registry $registry,
-		\Magento\Backend\Block\Widget\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Backend\Block\Widget\Context $context,
         \Magento\Store\Model\System\Store $systemStore,
         array $data = []
-    )
-	{
+    ) {
         $this->_systemStore = $systemStore;
         parent::__construct($context, $registry, $formFactory, $data);
-	}
+    }
 
     /**
      * Prepare content for tab
@@ -76,52 +86,53 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
         }
 
         $fieldset->addField('name', 'text', array(
-            'name' => 'name',
-            'label' => __('Rule Name'),
-            'title' => __('Rule Name'),
+            'name'     => 'name',
+            'label'    => __('Rule Name'),
+            'title'    => __('Rule Name'),
             'required' => true,
         ));
 
         $fieldset->addField('type', 'select', array(
-            'label'     => __('Rule Type'),
-            'title'     => __('Rule Type'),
-            'name'      => 'type',
+            'label'    => __('Rule Type'),
+            'title'    => __('Rule Type'),
+            'name'     => 'type',
             'required' => true,
-            'options'   => array(
+            'options'  => array(
                 \Dotdigitalgroup\Email\Model\Rules::ABANDONED => 'Abandoned Cart Exclusion Rule',
-                \Dotdigitalgroup\Email\Model\Rules::REVIEW => 'Review Email Exclusion Rule',
+                \Dotdigitalgroup\Email\Model\Rules::REVIEW    => 'Review Email Exclusion Rule',
             ),
         ));
 
         $fieldset->addField('status', 'select', array(
-            'label'     => __('Status'),
-            'title'     => __('Status'),
-            'name'      => 'status',
+            'label'    => __('Status'),
+            'title'    => __('Status'),
+            'name'     => 'status',
             'required' => true,
-            'options'    => array(
+            'options'  => array(
                 '1' => __('Active'),
                 '0' => __('Inactive'),
             ),
         ));
 
-        if (!$model->getId()) {
+        if ( ! $model->getId()) {
             $model->setData('status', '0');
         }
 
         if ($this->_storeManager->isSingleStoreMode()) {
             $websiteId = $this->_storeManager->getStore(true)->getWebsiteId();
-            $fieldset->addField('website_ids', 'hidden', ['name' => 'website_ids[]', 'value' => $websiteId]);
+            $fieldset->addField('website_ids', 'hidden',
+                ['name' => 'website_ids[]', 'value' => $websiteId]);
             $model->setWebsiteIds($websiteId);
         } else {
-            $field = $fieldset->addField(
+            $field    = $fieldset->addField(
                 'website_ids',
                 'multiselect',
                 [
-                    'name' => 'website_ids[]',
-                    'label' => __('Websites'),
-                    'title' => __('Websites'),
+                    'name'     => 'website_ids[]',
+                    'label'    => __('Websites'),
+                    'title'    => __('Websites'),
                     'required' => true,
-                    'values' => $this->_systemStore->getWebsiteValuesForForm()
+                    'values'   => $this->_systemStore->getWebsiteValuesForForm()
                 ]
             );
             $renderer = $this->getLayout()->createBlock(

@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Dynamic;
 
 class Gridview
 {
+
     /**
      * grid display options.
      *

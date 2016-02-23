@@ -4,75 +4,95 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-	public $helper;
-	public $priceHelper;
-	protected $_recommendedHelper;
-	protected $_quoteFactory;
-	protected $_productFactory;
 
-	public function __construct(
-		\Magento\Quote\Model\QuoteFactory $quoteFactory,
-		\Dotdigitalgroup\Email\Helper\Data $helper,
-		\Magento\Catalog\Model\ProductFactory $productFactory,
-		\Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
-		\Magento\Framework\Pricing\Helper\Data $priceHelper,
+    public $helper;
+    public $priceHelper;
+    protected $_recommendedHelper;
+    protected $_quoteFactory;
+    protected $_productFactory;
+
+    /**
+     * Quoteproducts constructor.
+     *
+     * @param \Magento\Quote\Model\QuoteFactory         $quoteFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data        $helper
+     * @param \Magento\Catalog\Model\ProductFactory     $productFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
+     * @param \Magento\Framework\Pricing\Helper\Data    $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context    $context
+     * @param array                                     $data
+     */
+    public function __construct(
+        \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
-		array $data = []
-	)
-	{
-		parent::__construct( $context, $data );
-		$this->helper = $helper;
-		$this->_productFactory = $productFactory;
-		$this->_quoteFactory = $quoteFactory;
-		$this->_recommendedHelper = $recommendedHelper;
-		$this->priceHelper = $priceHelper;
-		$this->storeManager = $this->_storeManager;
-	}
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+        $this->helper             = $helper;
+        $this->_productFactory    = $productFactory;
+        $this->_quoteFactory      = $quoteFactory;
+        $this->_recommendedHelper = $recommendedHelper;
+        $this->priceHelper        = $priceHelper;
+        $this->storeManager       = $this->_storeManager;
+    }
 
-	/**
+    /**
      * get the products to display for table
      */
     public function getLoadedProductCollection()
     {
         //products to be diplayd for recommended pages
         $productsToDisplay = array();
-        $quoteId = $this->getRequest()->getParam('quote_id');
+        $quoteId           = $this->getRequest()->getParam('quote_id');
         //display mode based on the action name
-        $mode  = $this->getRequest()->getActionName();
+        $mode       = $this->getRequest()->getActionName();
         $quoteModel = $this->_quoteFactory->create()
-	        ->load($quoteId);
+            ->load($quoteId);
         //number of product items to be displayed
         $limit      = $this->_recommendedHelper->getDisplayLimitByMode($mode);
         $quoteItems = $quoteModel->getAllItems();
-        $numItems = count($quoteItems);
+        $numItems   = count($quoteItems);
 
         //no product found to display
         if ($numItems == 0 || ! $limit) {
             return array();
-        }elseif (count($quoteItems) > $limit) {
+        } elseif (count($quoteItems) > $limit) {
             $maxPerChild = 1;
         } else {
             $maxPerChild = number_format($limit / count($quoteItems));
         }
 
-        $this->helper->log('DYNAMIC QUOTE PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
+        $this->helper->log(
+            'DYNAMIC QUOTE PRODUCTS : limit ' . $limit . ' products : '
+            . $numItems . ', max per child : ' . $maxPerChild
+        );
 
         foreach ($quoteItems as $item) {
-            $i = 0;
+            $i         = 0;
             $productId = $item->getProductId();
             //parent product
             $productModel = $this->_productFactory->create()
-	            ->load($productId);
+                ->load($productId);
             //check for product exists
             if ($productModel->getId()) {
                 //get single product for current mode
-                $recommendedProducts = $this->_getRecommendedProduct($productModel, $mode);
+                $recommendedProducts = $this->_getRecommendedProduct(
+                    $productModel, $mode
+                );
                 foreach ($recommendedProducts as $product) {
                     //load child product
                     $product = $this->_productFactory->create()
-	                    ->load($product->getId());
+                        ->load($product->getId());
                     //check if still exists
-                    if ($product->getId() && count($productsToDisplay) < $limit && $i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
+                    if ($product->getId() && count($productsToDisplay) < $limit
+                        && $i <= $maxPerChild
+                        && $product->isSaleable()
+                        && ! $product->getParentId()
+                    ) {
                         //we have a product to display
                         $productsToDisplay[$product->getId()] = $product;
                         $i++;
@@ -91,9 +111,10 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
             foreach ($fallbackIds as $productId) {
                 $product = $this->_productFactory->create()
-	                ->load($productId);
-                if($product->isSaleable())
+                    ->load($productId);
+                if ($product->isSaleable()) {
                     $productsToDisplay[$product->getId()] = $product;
+                }
                 //stop the limit was reached
                 if (count($productsToDisplay) == $limit) {
                     break;
@@ -101,7 +122,9 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             }
         }
 
-        $this->helper->log('quote - loaded product to display ' . count($productsToDisplay));
+        $this->helper->log(
+            'quote - loaded product to display ' . count($productsToDisplay)
+        );
 
         return $productsToDisplay;
     }
@@ -109,15 +132,16 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product related items.
      *
+     * @param $productModel
      * @param $mode
      *
      * @return array
      */
-    private  function _getRecommendedProduct($productModel, $mode)
+    protected function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = array();
-        switch($mode){
+        switch ($mode) {
             case 'related':
                 $products = $productModel->getRelatedProducts();
                 break;
@@ -146,17 +170,21 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Number of the colums.
+     *
      * @return int|mixed
      * @throws \Exception
      */
     public function getColumnCount()
     {
-        return $this->_recommendedHelper->getDisplayLimitByMode($this->getRequest()->getActionName());
+        return $this->_recommendedHelper->getDisplayLimitByMode(
+            $this->getRequest()->getActionName()
+        );
     }
 
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);
+
         return $store->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );

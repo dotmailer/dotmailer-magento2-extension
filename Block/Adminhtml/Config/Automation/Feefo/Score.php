@@ -5,21 +5,32 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo;
 class Score extends \Magento\Config\Block\System\Config\Form\Field
 {
 
-	public function __construct(
-		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Magento\Backend\Block\Template\Context $context)
-	{
-		$this->_helper = $data;
-		return parent::__construct($context);
-	}
+    protected $_helper;
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
+    /**
+     * Score constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data      $data
+     * @param \Magento\Backend\Block\Template\Context $context
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Magento\Backend\Block\Template\Context $context
+    ) {
+        $this->_helper = $data;
 
-		$passcode = $this->_helper->getPasscode();
+        return parent::__construct($context);
+    }
 
-        if(!strlen($passcode))
+    protected function _getElementHtml(
+        \Magento\Framework\Data\Form\Element\AbstractElement $element
+    ) {
+
+        $passcode = $this->_helper->getPasscode();
+
+        if ( ! strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
+        }
 
         //generate the base url and display for default store id
         $baseUrl = $this->_helper->generateDynamicUrl();

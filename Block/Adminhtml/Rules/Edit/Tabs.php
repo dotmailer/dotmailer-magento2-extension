@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit;
 
 class Tabs extends \Magento\Backend\Block\Widget\Tabs
 {
+
     protected function _construct()
     {
         parent::_construct();

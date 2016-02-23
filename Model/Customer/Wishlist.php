@@ -4,29 +4,31 @@ namespace Dotdigitalgroup\Email\Model\Customer;
 
 class Wishlist
 {
-	/**
-	 * @var int
-	 */
-	public  $id;
-	/**
-	 * @var int
-	 */
-	public  $customer_id;
-	/**
-	 * @var string
-	 */
-	public $email;
 
-	/**
-	 * wishlist items.
-	 * @var array
-	 */
-	public $items = array();
+    /**
+     * @var int
+     */
+    public $id;
+    /**
+     * @var int
+     */
+    public $customer_id;
+    /**
+     * @var string
+     */
+    public $email;
 
-	/**
-	 * @var float
-	 */
-	protected $total_wishlist_value;
+    /**
+     * wishlist items.
+     *
+     * @var array
+     */
+    public $items = array();
+
+    /**
+     * @var float
+     */
+    protected $total_wishlist_value;
 
     /**
      * @var string
@@ -34,25 +36,20 @@ class Wishlist
     public $updated_at;
 
 
-	public function __construct( )
+    public function setCustomer($customer)
     {
+        $this->setCustomerId($customer->getId());
+        $this->email = $customer->getEmail();
 
+        return $this;
     }
-
-	public function setCustomer( $customer )
-	{
-		$this->setCustomerId($customer->getId());
-		$this->email = $customer->getEmail();
-
-		return $this;
-	}
 
     /**
      * @param mixed $customer_id
      */
     public function setCustomerId($customer_id)
     {
-        $this->customer_id = (int) $customer_id;
+        $this->customer_id = (int)$customer_id;
     }
 
     /**
@@ -60,16 +57,18 @@ class Wishlist
      */
     public function getCustomerId()
     {
-        return (int) $this->customer_id;
+        return (int)$this->customer_id;
     }
 
     /**
      * @param $id
+     *
      * @return $this
      */
     public function setId($id)
     {
-        $this->id = (int) $id;
+        $this->id = (int)$id;
+
         return $this;
     }
 
@@ -78,26 +77,26 @@ class Wishlist
      */
     public function getId()
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
-	/**
-	 * set wishlist item.
-	 *
-	 * @param $item
-	 */
-	public function setItem($item)
+    /**
+     * set wishlist item.
+     *
+     * @param $item
+     */
+    public function setItem($item)
     {
         $this->items[] = $item->expose();
 
         $this->total_wishlist_value += $item->getTotalValueOfProduct();
     }
 
-	/**
-	 * @return array
-	 */
-	public function expose()
-	{
+    /**
+     * @return array
+     */
+    public function expose()
+    {
         return get_object_vars($this);
     }
 
@@ -105,6 +104,7 @@ class Wishlist
      * set wishlist date.
      *
      * @param $date
+     *
      * @return $this;
      */
     public function setUpdatedAt($date)
@@ -113,7 +113,7 @@ class Wishlist
 
         $this->updated_at = $date->toString(\Zend_Date::ISO_8601);
 
-	    return $this;
+        return $this;
     }
 
     /**

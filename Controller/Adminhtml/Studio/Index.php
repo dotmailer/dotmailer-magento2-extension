@@ -8,8 +8,9 @@ use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
 
-class Index extends   \Magento\Backend\App\AbstractAction
+class Index extends \Magento\Backend\App\AbstractAction
 {
+
 	protected $scopeConfig;
 	/**
 	 * @var \Magento\Framework\View\Result\PageFactory
@@ -22,8 +23,8 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	protected $resultPage;
 
 	/**
-	 * @param Context $context
-	 * @param PageFactory $resultPageFactory
+	 * @param Context              $context
+	 * @param PageFactory          $resultPageFactory
 	 * @param ScopeConfigInterface $scopeConfig
 	 */
 	protected $configFactory;
@@ -31,22 +32,12 @@ class Index extends   \Magento\Backend\App\AbstractAction
 	protected $_sessionFactory;
 
 
-	public function __construct(
-		Context $context
-	)
-	{
-
-		parent::__construct($context);
-	}
-
-
 	public function execute()
 	{
 		$this->_view->loadLayout();
-
 		$this->_view->renderLayout();
 
-    }
+	}
 
 
 }
