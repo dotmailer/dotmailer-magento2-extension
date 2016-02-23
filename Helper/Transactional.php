@@ -11,7 +11,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_DDG_TRANSACTIONAL_PORT      = 'transactional_emails/ddg_transactional/port';
     const XML_PATH_DDG_TRANSACTIONAL_DEBUG     = 'transactional_emails/ddg_transactional/debug';
 
-    private $_storeManager;
+    protected $_storeManager;
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,

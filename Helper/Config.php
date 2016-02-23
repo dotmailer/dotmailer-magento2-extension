@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Helper;
 
 class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const MODULE_NAME                                                           = 'Dotdigitalgroup_Email';
+    const MODULE_NAME = 'Dotdigitalgroup_Email';
 
     /**
      * API SECTION.
@@ -262,14 +262,18 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
 	protected $_storeManager;
 
+	/**
+	 * Config constructor.
+	 *
+	 * @param \Magento\Framework\App\Helper\Context      $context
+	 * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+	 */
 	public function __construct(
 		\Magento\Framework\App\Helper\Context $context,
-		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Store\Model\StoreManagerInterface $storeManager
 	)
 	{
 		$this->_storeManager = $storeManager;
-		$this->_objectManager = $objectManager;
 
 		parent::__construct($context);
 	}
