@@ -69,7 +69,7 @@ class Response extends \Magento\Framework\App\Action\Action
 		try {
 			if (strlen($output) < 3 && $flag == false) {
 				$this->sendResponse();
-			} elseif ($flag && ! strpos($output, '<table')) {
+			} elseif ($flag && ! strpos($output, '<table') !== false) {
 				$this->sendResponse();
 			}
 		} catch (\Exception $e) {

@@ -138,7 +138,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
             $xsl->importStyleSheet($doc);
             $doc->loadXML(file_get_contents($url));
             $productReview = $xsl->transformToXML($doc);
-            if (strpos($productReview, '<td')) {
+            if (strpos($productReview, '<td') !== false) {
                 $reviews[$name] = $xsl->transformToXML($doc);
             }
             $check = false;
