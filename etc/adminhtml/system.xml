@@ -20,16 +20,12 @@
                 <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>API Username</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Wrapper</frontend_model>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                    <tooltip>Click anywhere on the page after entering the api username and api password to quick check if credentials are valid before saving.</tooltip>
                 </field>
                 <field id="password" translate="label" type="password" sortOrder="3" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>API Password</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Ajaxvalidate</frontend_model>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -249,41 +245,6 @@
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
                 </field>
             </group>
-            <!--<group id="enterprise_data" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                <!--<label>Enterpirse Data</label>-->
-                <!--<field id="enterprise_title" type="select" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                    <!--<label>Reward Points</label>-->
-                    <!--<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>-->
-                <!--</field>-->
-                <!--<field id="reward_points" type="select" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                    <!--<label>Points</label>-->
-                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
-                <!--</field>-->
-                <!--<field id="reward_amount" type="select" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                    <!--<label>Reward Amount</label>-->
-                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
-                <!--</field>-->
-                <!--<field id="expiration_date" type="select" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                    <!--<label>Expiration Date</label>-->
-                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
-                <!--</field>-->
-                <!--<field id="last_used_date" type="select" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                    <!--<label>Last Used Date</label>-->
-                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
-                <!--</field>-->
-                <!--<field id="enterprise_header" translate="label" sortOrder="60" showInDefault="1" showInStore="1" showInWebsite="1">-->
-                    <!--<label>Customer Information</label>-->
-                    <!--<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>-->
-                <!--</field>-->
-                <!--<field id="customer_segments" type="select" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                    <!--<label>Segments</label>-->
-                    <!--<source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>-->
-                <!--</field>-->
-                <!--<field id="validator" translate="label" sortOrder="80" showInStore="1" showInWebsite="1" showInDefault="1">-->
-                    <!--<label></label>-->
-                    <!--<frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\System\Enterprisevalidator</frontend_model>-->
-                <!--</field>-->
-            <!--</group>-->
             <group id="dynamic_datafield" translate="comment label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Create Datafield</label>
                 <field id="datafield_name" type="text" translate="label" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
@@ -387,7 +348,6 @@
                 <label>Create Address Book</label>
                 <field id="addressbook_name" type="text" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
                     <label>Addressbook Name</label>
-                    <!--<frontend_model>Dotdigitalgroup\Email\Block\Config\Addressbook</frontend_model>-->
                 </field>
                 <field id="visibility" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Visibility</label>
@@ -767,22 +727,6 @@
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>
-                <!--<field id="bestsellers" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Best Sellers</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                </field>
-                <field id="bestsellers_display_type" translate="label" type="select" sortOrder="150" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Display Type</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
-                </field>
-                <field id="bestsellers_items_to_display" translate="label" type="select" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Items To Display</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
-                </field>
-                <field id="bestsellers_time_period" translate="label" type="select" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Time Period</label>
-                    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
-                </field>-->
                 <field id="most_viewed" translate="label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Most Viewed</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
@@ -830,42 +774,18 @@
                     <label>Products</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <!--<field id="products_chooser_button" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">-->
-                    <!--<frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Manualchooser</frontend_model>-->
-                    <!--<comment><![CDATA[Click To Open Product Chooser. After Choosing Products Save Config.]]></comment>-->
-                <!--</field>-->
                 <field id="products_push_items" translate="label" type="text" sortOrder="55" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Products</label>
                     <comment><![CDATA[Comma Separated Product Id's]]></comment>
                 </field>
-                <field id="product_chooser_container" translate="comment label" type="text" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Manualcontainer</frontend_model>
-                </field>
             </group>
             <group id="fallback_products" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Fallback Products</label>
-                <!--<field id="fallback_chooser" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">-->
-                    <!--<frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Fallbackchooser</frontend_model>-->
-                <!--</field>-->
                 <field id="product_ids" translate="comment label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Products</label>
                     <comment><![CDATA[Comma Separated Product Id's]]></comment>
                 </field>
-                <field id="products_chooser_container" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Fallbackcontainer</frontend_model>
-                </field>
             </group>
-            <!--<group id="nosto_recommendation" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">-->
-                <!--<label>Nosto Recommendations</label>-->
-                <!--<field id="api" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">-->
-                    <!--<label>API key</label>-->
-                <!--</field>-->
-                <!--<field id="dynamic_url" translate="comment label" sortOrder="20" type="label" showInStore="1" showInWebsite="1" showInDefault="1">-->
-                    <!--<label>Recommendation URL</label>-->
-                    <!--<frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Nosto</frontend_model>-->
-                    <!--<comment><![CDATA[Replace @SLOT_NAME@ with the slot name created in your Nosto account.]]></comment>-->
-                <!--</field>-->
-            <!--</group>-->
         </section>
         <section id="transactional_emails" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
             <class>separator-top</class>
