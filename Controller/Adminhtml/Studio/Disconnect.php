@@ -5,12 +5,6 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 class Disconnect extends \Magento\Backend\App\AbstractAction
 {
 
-	public function __construct(
-		\Magento\Backend\App\Action\Context $context
-	) {
-		parent::__construct($context);
-	}
-
 	/**
 	 * Disconnect and remote the refresh token.
 	 */
