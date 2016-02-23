@@ -17,6 +17,7 @@ class Condition
             array('value' => 'neq', 'label' => __('is not')),
             array('value' => 'null', 'label' => __('is empty')),
         );
+
         return $options;
     }
 
@@ -24,6 +25,7 @@ class Condition
      * get condition options according to type
      *
      * @param $type
+     *
      * @return array
      */
     public function getInputTypeOptions($type)
@@ -38,6 +40,8 @@ class Condition
             case 'string':
                 return $this->optionsForStringType();
         }
+
+        return $this->optionsForStringType();
     }
 
     /**
@@ -47,11 +51,18 @@ class Condition
      */
     public function optionsForNumericType()
     {
-        $options = $this->toOptionArray();
-        $options[] = array('value' => 'gteq', 'label' => __('equals or greater than'));
-        $options[] = array('value' => 'lteq', 'label' => __('equals or less then'));
+        $options   = $this->toOptionArray();
+        $options[] = array(
+            'value' => 'gteq',
+            'label' => __('equals or greater than')
+        );
+        $options[] = array(
+            'value' => 'lteq',
+            'label' => __('equals or less then')
+        );
         $options[] = array('value' => 'gt', 'label' => __('greater than'));
         $options[] = array('value' => 'lt', 'label' => __('less than'));
+
         return $options;
     }
 
@@ -62,9 +73,13 @@ class Condition
      */
     public function optionsForStringType()
     {
-        $options = $this->toOptionArray();
+        $options   = $this->toOptionArray();
         $options[] = array('value' => 'like', 'label' => __('contains'));
-        $options[] = array('value' => 'nlike', 'label' => __('does not contains'));
+        $options[] = array(
+            'value' => 'nlike',
+            'label' => __('does not contains')
+        );
+
         return $options;
     }
 }

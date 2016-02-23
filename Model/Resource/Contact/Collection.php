@@ -2,17 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Model\Resource\Contact;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends
+    \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
-	/**
-	 * Initialize resource collection
-	 *
-	 * @return void
-	 */
-	public function _construct()
-	{
-		$this->_init('Dotdigitalgroup\Email\Model\Contact', 'Dotdigitalgroup\Email\Model\Resource\Contact');
-	}
+
+    /**
+     * Initialize resource collection
+     *
+     * @return void
+     */
+    public function _construct()
+    {
+        $this->_init('Dotdigitalgroup\Email\Model\Contact',
+            'Dotdigitalgroup\Email\Model\Resource\Contact');
+    }
 
 
 }

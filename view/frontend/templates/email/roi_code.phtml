@@ -1,0 +1,16 @@
+<?php if($this->getRoiTrackingEnabled()):
+    $order = $this->getOrder();
+    $orderId = $order->getId();
+    $items = $order->getAllItems();
+    $total = number_format($order->getBaseGrandTotal(), 2, '.', ',');
+?>
+    <script type="text/javascript">
+        require(['domReady!'],function(){
+            <?php foreach ($items as $item):?>
+                <?php if($item->getParentItemId() != null) continue;?>
+                _dmTrack("product", "<?php echo str_replace('"', ' ',  $item->getName())?>");
+            <?php endforeach;?>
+            _dmTrack("CheckOutAmount", "<?php echo $total;?>");
+        });
+    </script>
+<?php endif;

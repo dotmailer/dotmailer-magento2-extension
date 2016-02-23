@@ -5,17 +5,17 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Order;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Index extends \Magento\Backend\App\Action
 {
+
 	/**
 	 * @var PageFactory
 	 */
 	protected $resultPageFactory;
 
 	/**
-	 * @param Context $context
+	 * @param Context     $context
 	 * @param PageFactory $resultPageFactory
 	 */
 	public function __construct(
@@ -25,6 +25,7 @@ class Index extends \Magento\Backend\App\Action
 		parent::__construct($context);
 		$this->resultPageFactory = $resultPageFactory;
 	}
+
 	/**
 	 * Check the permission to run it
 	 *

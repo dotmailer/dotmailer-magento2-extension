@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 class Sub extends \Magento\Newsletter\Model\Subscriber
 {
+
     /**
      * Sends out confirmation success email
      *
@@ -11,9 +12,12 @@ class Sub extends \Magento\Newsletter\Model\Subscriber
      */
     public function sendConfirmationSuccessEmail()
     {
-        if($this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS, 'store', $this->getStoreId()))
+        if ($this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS,
+            'store', $this->getStoreId())
+        ) {
             return $this;
-        else
+        } else {
             return parent::sendConfirmationSuccessEmail();
+        }
     }
 }

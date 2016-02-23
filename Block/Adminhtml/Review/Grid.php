@@ -6,157 +6,161 @@ use Magento\Backend\Block\Widget\Grid as WidgetGrid;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-	/**
-	 * @var \Magento\Framework\Module\Manager
-	 */
-	protected $moduleManager;
-	protected $_gridFactory;
-	protected $_reviewFactory;
-	protected $_importedFactory;
 
-	/**
-	 * @param \Magento\Backend\Block\Template\Context $context
-	 * @param \Magento\Backend\Helper\Data $backendHelper
-	 * @param \Magento\Framework\Module\Manager $moduleManager
-	 * @param array $data
-	 *
-	 * @SuppressWarnings(PHPMD.ExcessiveParameterList)
-	 */
-	public function __construct(
-		\Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
-		\Magento\Backend\Block\Template\Context $context,
-		\Magento\Backend\Helper\Data $backendHelper,
-		\Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $gridFactory,
-		\Magento\Framework\Module\Manager $moduleManager,
-		array $data = []
-	) {
-		$this->_importedFactory = $importedFactory;
-		$this->_reviewFactory = $gridFactory;
-		$this->moduleManager = $moduleManager;
+    /**
+     * @var \Magento\Framework\Module\Manager
+     */
+    protected $moduleManager;
+    protected $_gridFactory;
+    protected $_reviewFactory;
+    protected $_importedFactory;
 
-		parent::__construct($context, $backendHelper, $data);
-	}
+    /**
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data            $backendHelper
+     * @param \Magento\Framework\Module\Manager       $moduleManager
+     * @param array                                   $data
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Backend\Helper\Data $backendHelper,
+        \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $gridFactory,
+        \Magento\Framework\Module\Manager $moduleManager,
+        array $data = []
+    ) {
+        $this->_importedFactory = $importedFactory;
+        $this->_reviewFactory   = $gridFactory;
+        $this->moduleManager    = $moduleManager;
 
-	/**
-	 * @return void
-	 */
-	protected function _construct()
-	{
-		parent::_construct();
-		$this->setId('review');
-		$this->setDefaultSort('id');
-		$this->setDefaultDir('DESC');
-	}
+        parent::__construct($context, $backendHelper, $data);
+    }
 
-	/**
-	 * @return $this
-	 */
-	protected function _prepareCollection()
-	{
-		$this->setCollection($this->_reviewFactory->create());
+    /**
+     * @return void
+     */
+    protected function _construct()
+    {
+        parent::_construct();
+        $this->setId('review');
+        $this->setDefaultSort('id');
+        $this->setDefaultDir('DESC');
+    }
 
-		return parent::_prepareCollection();
-	}
+    /**
+     * @return $this
+     */
+    protected function _prepareCollection()
+    {
+        $this->setCollection($this->_reviewFactory->create());
 
-	/**
-	 * @return $this
-	 * @throws \Exception
-	 */
-	protected function _prepareColumns()
-	{
-		$this->addColumn('review_id', array(
-			'header'        => __('Review ID'),
-			'align'         => 'left',
-			'width'         => '50px',
-			'index'         => 'review_id',
-			'type'          => 'number',
-			'escape'        => true
-		))->addColumn('customer_id', array(
-			'header'        => __('Customer ID'),
-			'align'         => 'left',
-			'width'         => '50px',
-			'index'         => 'customer_id',
-			'type'          => 'number',
-			'escape'        => true
-		))->addColumn('store_id', array(
-			'header'        => __('Store ID'),
-			'width'         => '50px',
-			'index'         => 'store_id',
-			'type'          => 'number',
-			'escape'        => true,
-		))->addColumn('review_imported', array(
-			'header'        => __('Review Imported'),
-			'align'         => 'center',
-			'width'         => '50px',
-			'index'         => 'review_imported',
-			'type'          => 'options',
-			'escape'        => true,
-			'renderer'		=> 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-			'options'       => $this->_importedFactory->create()->getOptions(),
-			'filter_condition_callback' => array($this, 'filterCallbackContact')
-		))->addColumn('created_at', array(
-			'header'        => __('Created At'),
-			'width'         => '50px',
-			'align'         => 'center',
-			'index'         => 'created_at',
-			'type'          => 'datetime',
-			'escape'        => true,
-		))->addColumn('updated_at', array(
-			'header'        => __('Updated At'),
-			'width'         => '50px',
-			'align'         => 'center',
-			'index'         => 'updated_at',
-			'type'          => 'datetime',
-			'escape'        => true,
-		));
+        return parent::_prepareCollection();
+    }
 
-		return parent::_prepareColumns();
-	}
-	/**
-	 * Callback action for the imported subscribers/contacts.
-	 *
-	 * @param $collection
-	 * @param $column
-	 */
-	public function filterCallbackContact($collection, $column)
-	{
-		$field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
-		$value = $column->getFilter()->getValue();
-		if ($value == 'null') {
-			$collection->addFieldToFilter($field, array('null' => true));
-		} else {
-			$collection->addFieldToFilter($field, array('notnull' => true));
-		}
-	}
+    /**
+     * @return $this
+     * @throws \Exception
+     */
+    protected function _prepareColumns()
+    {
+        $this->addColumn('review_id', array(
+            'header' => __('Review ID'),
+            'align'  => 'left',
+            'width'  => '50px',
+            'index'  => 'review_id',
+            'type'   => 'number',
+            'escape' => true
+        ))->addColumn('customer_id', array(
+            'header' => __('Customer ID'),
+            'align'  => 'left',
+            'width'  => '50px',
+            'index'  => 'customer_id',
+            'type'   => 'number',
+            'escape' => true
+        ))->addColumn('store_id', array(
+            'header' => __('Store ID'),
+            'width'  => '50px',
+            'index'  => 'store_id',
+            'type'   => 'number',
+            'escape' => true,
+        ))->addColumn('review_imported', array(
+            'header'                    => __('Review Imported'),
+            'align'                     => 'center',
+            'width'                     => '50px',
+            'index'                     => 'review_imported',
+            'type'                      => 'options',
+            'escape'                    => true,
+            'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+            'options'                   => $this->_importedFactory->create()
+                ->getOptions(),
+            'filter_condition_callback' => array($this, 'filterCallbackContact')
+        ))->addColumn('created_at', array(
+            'header' => __('Created At'),
+            'width'  => '50px',
+            'align'  => 'center',
+            'index'  => 'created_at',
+            'type'   => 'datetime',
+            'escape' => true,
+        ))->addColumn('updated_at', array(
+            'header' => __('Updated At'),
+            'width'  => '50px',
+            'align'  => 'center',
+            'index'  => 'updated_at',
+            'type'   => 'datetime',
+            'escape' => true,
+        ));
 
-	/**
-	 * @return $this
-	 */
-	protected function _prepareMassaction()
-	{
-		$this->setMassactionIdField('id');
-		$this->getMassactionBlock()->setFormFieldName('id');
+        return parent::_prepareColumns();
+    }
 
-		$this->getMassactionBlock()->addItem(
-			'delete',
-			[
-				'label' => __('Delete'),
-				'url' => $this->getUrl('*/*/massDelete'),
-				'confirm' => __('Are you sure?')
-			]
-		);
+    /**
+     * Callback action for the imported subscribers/contacts.
+     *
+     * @param $collection
+     * @param $column
+     */
+    public function filterCallbackContact($collection, $column)
+    {
+        $field = $column->getFilterIndex() ? $column->getFilterIndex()
+            : $column->getIndex();
+        $value = $column->getFilter()->getValue();
+        if ($value == 'null') {
+            $collection->addFieldToFilter($field, array('null' => true));
+        } else {
+            $collection->addFieldToFilter($field, array('notnull' => true));
+        }
+    }
+
+    /**
+     * @return $this
+     */
+    protected function _prepareMassaction()
+    {
+        $this->setMassactionIdField('id');
+        $this->getMassactionBlock()->setFormFieldName('id');
+
+        $this->getMassactionBlock()->addItem(
+            'delete',
+            [
+                'label'   => __('Delete'),
+                'url'     => $this->getUrl('*/*/massDelete'),
+                'confirm' => __('Are you sure?')
+            ]
+        );
 
 
-		return $this;
-	}
+        return $this;
+    }
 
 
-	public function getRowUrl($row)
-	{
-		return $this->getUrl(
-			'dotdigitalgroup_email/*/edit',
-			['id' => $row->getId()]
-		);
-	}
+    public function getRowUrl($row)
+    {
+        return $this->getUrl(
+            'dotdigitalgroup_email/*/edit',
+            ['id' => $row->getId()]
+        );
+    }
 
 }

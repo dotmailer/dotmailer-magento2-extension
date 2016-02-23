@@ -4,25 +4,20 @@ namespace Dotdigitalgroup\Email\Model\Customer\Review;
 
 class Rating
 {
+
     /**
      * @var int
      */
     public $rating_score;
 
-    /**
-     * constructor
-     *
-     * @param $rating
-     */
-    public function __construct()
+
+    public function setRating($rating)
     {
+        $this->setRatingScore($rating->getValue());
+
+        return $this;
     }
 
-	public function setRating($rating)
-	{
-		$this->setRatingScore($rating->getValue());
-		return $this;
-	}
     /**
      * @param $score
      *
@@ -31,6 +26,7 @@ class Rating
     public function setRatingScore($score)
     {
         $this->rating_score = (int)$score;
+
         return $this;
     }
 

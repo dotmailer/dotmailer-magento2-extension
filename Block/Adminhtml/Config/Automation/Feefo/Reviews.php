@@ -3,28 +3,41 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo;
 
 class Reviews extends \Magento\Config\Block\System\Config\Form\Field
 {
-	public function __construct(
-		\Dotdigitalgroup\Email\Helper\Data $data,
-		\Magento\Backend\Block\Template\Context $context)
-	{
-		$this->_helper = $data;
-		return parent::__construct($context);
-	}
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
-	    $passcode = $this->_helper->getPasscode();
+    protected $_helper;
 
-	    if(!strlen($passcode))
-		    $passcode = '[PLEASE SET UP A PASSCODE]';
+    /**
+     * Reviews constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data      $data
+     * @param \Magento\Backend\Block\Template\Context $context
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Magento\Backend\Block\Template\Context $context
+    ) {
+        $this->_helper = $data;
 
-	    //generate the base url and display for default store id
-	    $baseUrl = $this->_helper->generateDynamicUrl();
+        return parent::__construct($context);
+    }
 
-	    //display the full url
-	    $text = sprintf('%sconnector/feefo/reviews/code/%s/quote_id/@QUOTE_ID@', $baseUrl, $passcode);
-	    $element->setData('value', $text);
+    protected function _getElementHtml(
+        \Magento\Framework\Data\Form\Element\AbstractElement $element
+    ) {
+        $passcode = $this->_helper->getPasscode();
 
-	    return parent::_getElementHtml($element);
+        if ( ! strlen($passcode)) {
+            $passcode = '[PLEASE SET UP A PASSCODE]';
+        }
+
+        //generate the base url and display for default store id
+        $baseUrl = $this->_helper->generateDynamicUrl();
+
+        //display the full url
+        $text = sprintf('%sconnector/feefo/reviews/code/%s/quote_id/@QUOTE_ID@',
+            $baseUrl, $passcode);
+        $element->setData('value', $text);
+
+        return parent::_getElementHtml($element);
     }
 }

@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Helper;
 
 class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const MODULE_NAME                                                           = 'Dotdigitalgroup_Email';
+    const MODULE_NAME = 'Dotdigitalgroup_Email';
 
     /**
      * API SECTION.
@@ -41,7 +41,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED                         = 'sync_settings/sync/order_enabled';
     const XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED                      = 'sync_settings/sync/wishlist_enabled';
     const XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED                        = 'sync_settings/sync/review_enabled';
-    const XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED                         = 'sync_settings/sync/quote_enabled';
     const XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED                       = 'sync_settings/sync/catalog_enabled';
 
     const XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID                  = 'sync_settings/addressbook/customers';
@@ -143,7 +142,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     //Transactional Data
     const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS                  = 'connector_configuration/transactional_data/order_statuses';
     const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES            = 'connector_configuration/transactional_data/order_custom_attributes';
-    const XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES            = 'connector_configuration/transactional_data/quote_custom_attributes';
 	const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES      = 'connector_configuration/transactional_data/order_product_attributes';
 	const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS  = 'connector_configuration/transactional_data/order_product_custom_options';
     //Admin
@@ -184,10 +182,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CONTENT_CART_URL               = 'connector_configuration/abandoned_carts/cart_url';
     const XML_PATH_CONNECTOR_CONTENT_LOGIN_URL              = 'connector_configuration/abandoned_carts/login_url';
     // Address Book Pref
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS  = 'connector_configuration/address_book_pref/can_change';
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS        = 'connector_configuration/address_book_pref/show_books';
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS   = 'connector_configuration/address_book_pref/can_show_fields';
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS       = 'connector_configuration/address_book_pref/fields_to_show';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS  = 'connector_configuration/customer_addressbook/can_change';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS        = 'connector_configuration/customer_addressbook/show_books';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS   = 'connector_configuration/customer_addressbook/can_show_fields';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS       = 'connector_configuration/customer_addressbook/fields_to_show';
     //Dynamic Content
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT          = 'connector_configuration/dynamic_content/link_text';
     //Mailcheck
@@ -257,16 +255,25 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const API_ENDPOINT                                      = 'https://api.nosto.com';
     const API_ENDPOINT_TEST                                 = 'https://test.api.nosto.com';
 
+    /**
+     * API endpoint
+     */
+    const PATH_FOR_API_ENDPOINT = 'connector/api/endpoint';
+
 	protected $_storeManager;
 
+	/**
+	 * Config constructor.
+	 *
+	 * @param \Magento\Framework\App\Helper\Context      $context
+	 * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+	 */
 	public function __construct(
 		\Magento\Framework\App\Helper\Context $context,
-		\Magento\Framework\ObjectManagerInterface $objectManager,
 		\Magento\Store\Model\StoreManagerInterface $storeManager
 	)
 	{
 		$this->_storeManager = $storeManager;
-		$this->_objectManager = $objectManager;
 
 		parent::__construct($context);
 	}

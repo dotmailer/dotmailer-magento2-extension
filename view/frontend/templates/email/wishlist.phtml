@@ -2,6 +2,7 @@
     $i = 0;
     $mode = $this->getMode();
     $items = $this->getWishlistItems();
+	$priceHelper = $this->priceHelper;
 ?>
 <?php if($items): ?>
     <?php
@@ -87,14 +88,16 @@
         <?php if($mode == 'list'):?>
             </tr><tr>
         <?php endif;?>
+		<?php
+			$total = $priceHelper->currency($_product->getPrice(), true);
+		?>
 
-        <td style="vertical-align: text-top; padding-right: 2px;">
+		<td style="vertical-align: text-top; padding-right: 2px;">
             <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image">
-                <!--<img src="<?php //echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(135); ?>" width="140" height="135" alt="<?php //echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" align="middle" />-->
                 <?php echo $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
             </a>
             <div class="product-name" align="center"><b><?php echo substr($_product->getName(), 0, 40);?></b></div>
-            <div class="product-price" align="center"><?php echo $this->getPriceHtml($_product, true) ?></div>
+            <div class="product-price" align="center"><?php echo $total; ?></div>
             <div align="center">
                 <a class="proudct-url" href="<?php echo $_product->getProductUrl();?>">
                     <?php

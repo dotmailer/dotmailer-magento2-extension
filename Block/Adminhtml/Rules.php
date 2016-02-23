@@ -2,17 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
-class Rules extends \Magento\Backend\Block\Widget\Container
+class Rules extends \Magento\Backend\Block\Widget\Grid\Container
 {
-    public function __construct(
-	    \Magento\Backend\Block\Widget\Context $context
-	    )
-    {
-        parent::__construct($context);
 
-	    $this->_controller = 'adminhtml_rules';
-	    $this->_blockGroup = 'dotdigitalgroup_email';
-	    $this->_headerText = 'Email Exclusion Rule(s)';
+    public function _construct()
+    {
+        $this->_controller = 'adminhtml_rules';
+        $this->_blockGroup = 'Dotdigitalgroup_Email';
+        $this->_headerText = 'Email Exclusion Rule(s)';
+        parent::_construct();
         $this->_addButtonLabel = 'Add New Rule';
     }
 }

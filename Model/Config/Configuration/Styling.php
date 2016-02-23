@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Styling
 {
+
     /**
      * Options getter. Styling options
      *

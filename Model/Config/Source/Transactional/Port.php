@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional;
 
 class Port
 {
+
     /**
      * Options getter
      *

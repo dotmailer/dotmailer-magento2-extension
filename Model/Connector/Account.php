@@ -4,29 +4,32 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 class Account
 {
-    private  $_api_username;
-    private  $_api_password;
-    private  $_limit;
-    private  $_contactBookId;
-    private  $_subscriberBookId;
-    private  $_websites = array();
-    private  $_csv_headers;
-    private  $_customers_filename;
-    private  $_subscribers_filename;
-    private  $_mapping_hash;
-    private  $_contacts = array();
-    private  $_orders = array();
-    private  $_orderIds;
-    private $_ordersForSingleSync = array();
-    private $_orderIdsForSingleSync;
+
+    protected $_api_username;
+    protected $_api_password;
+    protected $_limit;
+    protected $_contactBookId;
+    protected $_subscriberBookId;
+    protected $_websites = array();
+    protected $_csv_headers;
+    protected $_customers_filename;
+    protected $_subscribers_filename;
+    protected $_mapping_hash;
+    protected $_contacts = array();
+    protected $_orders = array();
+    protected $_orderIds;
+    protected $_ordersForSingleSync = array();
+    protected $_orderIdsForSingleSync;
 
     /**
      * @param $api_password
+     *
      * @return $this
      */
     public function setApiPassword($api_password)
     {
         $this->_api_password = $api_password;
+
         return $this;
     }
 
@@ -40,11 +43,13 @@ class Account
 
     /**
      * @param $api_username
+     *
      * @return $this
      */
     public function setApiUsername($api_username)
     {
         $this->_api_username = $api_username;
+
         return $this;
     }
 
@@ -77,7 +82,7 @@ class Account
      */
     public function setContacts($contacts)
     {
-        if (!empty($this->_contacts)) {
+        if ( ! empty($this->_contacts)) {
             $this->_contacts += $contacts;
         } else {
             $this->_contacts[] = $contacts;
@@ -206,6 +211,7 @@ class Account
     {
         return $this->_csv_headers;
     }
+
     /**
      * @param mixed $websites
      */
