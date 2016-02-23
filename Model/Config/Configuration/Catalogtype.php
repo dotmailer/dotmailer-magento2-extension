@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class CatalogType
+class Catalogtype
 {
 
     protected $_objectManager;
