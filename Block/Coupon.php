@@ -15,27 +15,29 @@ class Coupon extends \Magento\Framework\View\Element\Template
     /**
      * Coupon constructor.
      *
-     * @param \Magento\Salesrule\Model\RuleFactory                 $ruleFactory
      * @param \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory
      * @param \Magento\Salesrule\Model\CouponFactory               $couponFactory
      * @param \Magento\Framework\View\Element\Template\Context     $context
      * @param \Dotdigitalgroup\Email\Helper\Data                   $helper
+     * @param \Magento\Salesrule\Model\RuleFactory                 $ruleFactory
      * @param array                                                $data
      */
     public function __construct(
-        \Magento\Salesrule\Model\RuleFactory $ruleFactory,
+
         \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory,
         \Magento\Salesrule\Model\CouponFactory $couponFactory,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Salesrule\Model\RuleFactory $ruleFactory,
         array $data = []
     ) {
-        parent::__construct($context, $data);
         $this->helper                = $helper;
         $this->_ruleFactory          = $ruleFactory;
         $this->_couponFactory        = $couponFactory;
         $this->_massGeneratorFactory = $massgeneratorFactory;
         $this->storeManager          = $this->_storeManager;
+
+        parent::__construct($context, $data);
     }
 
     /**
