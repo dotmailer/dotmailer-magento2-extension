@@ -9,7 +9,6 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     public $helper;
     public $storeManager;
     public $priceHelper;
-    public $reviewHelper;
     protected $_orderFactory;
     protected $_reviewFactory;
     protected $_reviewHelper;
@@ -18,7 +17,6 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
      * Order constructor.
      *
      * @param \Magento\Review\Model\ReviewFactory    $reviewFactory
-     * @param \Dotdigitalgroup\Email\Helper\Review   $reviewHelper
      * @param \Magento\Sales\Model\OrderFactory      $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data     $helper
      * @param \Dotdigitalgroup\Email\Helper\Review   $reviewHelper
@@ -28,7 +26,6 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Magento\Review\Model\ReviewFactory $reviewFactory,
-        \Dotdigitalgroup\Email\Helper\Review $reviewHelper,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Review $reviewHelper,
@@ -36,14 +33,14 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
-        parent::__construct($context, $data);
         $this->_reviewHelper  = $reviewHelper;
         $this->_reviewFactory = $reviewFactory;
         $this->_orderFactory  = $orderFactory;
         $this->helper         = $helper;
-        $this->reviewHelper   = $reviewHelper;
         $this->storeManager   = $this->_storeManager;
         $this->priceHelper    = $priceHelper;
+
+        parent::__construct($context, $data);
     }
 
     /**
