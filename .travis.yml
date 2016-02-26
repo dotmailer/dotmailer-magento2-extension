@@ -1,0 +1,23 @@
+language: php
+php:
+  - 5.5
+  - 5.6
+  - 7.0
+
+env:
+  - TEST_SUITE=unit
+  - TEST_SUITE=phpcs
+
+
+script:
+  - wget https://github.com/magento/magento2/archive/2.0.2.zip
+  - unzip -qq 2.0.2.zip
+  - cd magento2-2.0.2/
+  - wget https://gist.githubusercontent.com/cdiacon/457f0e09fb936e5cc859/raw/a9d46ee07b550b9a742a3cb418c28b5d49b1753b/auth.json
+  - composer require --prefer-source --no-interaction dotmailer/dotmailer-magento2-extension:dev-master
+  - sh -c "if [ '$TEST_SUITE' = 'unit' ]; then /bin/cp ../phpunit_config.xml dev/tests/unit/ && ./vendor/bin/phpunit -c dev/tests/unit/phpunit_config.xml --coverage-text; fi"
+  - sh -c "if [ '$TEST_SUITE' = 'phpcs' ]; then composer require --prefer-source --no-interaction "squizlabs/php_codesniffer=*" magento-ecg/coding-standard && vendor/squizlabs/php_codesniffer/scripts/phpcs --config-set installed_paths vendor/magento-ecg/coding-standard &&./vendor/squizlabs/php_codesniffer/scripts/phpcs -n --standard="EcgM2" ./vendor/dotmailer/dotmailer-magento2-extension/; fi"
+
+notifications:
+  email:
+    - calin.diacon@dotmailer.com
