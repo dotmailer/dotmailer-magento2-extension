@@ -5,7 +5,6 @@ dist: musty
 	  - 5.6
 	  - 7.0
 
-
 	env:
 	  - TEST_SUITE=unit
 	  - TEST_SUITE=phpcs
