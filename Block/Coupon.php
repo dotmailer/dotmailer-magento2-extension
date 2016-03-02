@@ -23,9 +23,9 @@ class Coupon extends \Magento\Framework\View\Element\Template
      * @param array                                                $data
      */
     public function __construct(
-        \Magento\Salesrule\Model\RuleFactory $ruleFactory,
+        \Magento\SalesRule\Model\RuleFactory $ruleFactory,
         \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory,
-        \Magento\Salesrule\Model\CouponFactory $couponFactory,
+        \Magento\SalesRule\Model\CouponFactory $couponFactory,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         array $data = []
