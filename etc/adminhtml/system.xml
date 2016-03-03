@@ -635,10 +635,6 @@
                     <label>Product Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <!--<field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Best Sellers URL</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>
-                </field>-->
                 <field id="most_viewed_url" translate="comment label" sortOrder="180" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Most Viewed URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Mostviewed</frontend_model>
