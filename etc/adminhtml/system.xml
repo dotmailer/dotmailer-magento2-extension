@@ -173,7 +173,6 @@
                     <label>Last Increment ID</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-
                 <field id="total_refund" type="select" translate="label" sortOrder="380" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Total Refund</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
@@ -239,7 +238,7 @@
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="custom_attributes" translate="label" sortOrder="550" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label></label>
+                    <label>Customer</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>

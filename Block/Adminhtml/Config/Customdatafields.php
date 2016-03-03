@@ -136,7 +136,7 @@ class Customdatafields extends
     protected function _getDatafieldRenderer()
     {
         $this->_datafieldRenderer = $this->getLayout()->createBlock(
-            'Dotdigitalgroup\Email\Block\Adminhtml\Form\Datafield',
+            'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
