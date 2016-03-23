@@ -475,7 +475,7 @@ class Proccessor
 
         $this->importerCollection->setPageSize(1);
 
-        if ($this->importerCollection->getSize()) {
+        if ($this->importerCollection->count()) {
             return $this->importerCollection->getFirstItem();
         }
 
