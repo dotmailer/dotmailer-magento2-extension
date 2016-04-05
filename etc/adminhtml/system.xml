@@ -1115,7 +1115,7 @@
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Deletecontactids</frontend_model>
                 </field>
                 <field id="manual_sync_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Manyally Run Sync</label>
+                    <label>Manually Run Sync</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="contact_sync" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
