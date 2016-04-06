@@ -9,7 +9,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     public $priceHelper;
     public $objectManager;
     public $recommnededHelper;
-
+    public $scopeManager;
     protected $_sessionFactory;
     protected $_productFactory;
 
@@ -29,6 +29,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Customer\Model\SessionFactory $sessionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
@@ -40,6 +41,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->helper            = $helper;
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
+        $this->scopeManager = $scopeConfig;
         $this->storeManager      = $this->_storeManager;
         $this->_productFactory   = $productFactory;
         $this->objectManager     = $objectManagerInterface;
