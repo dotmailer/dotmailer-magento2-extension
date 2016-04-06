@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use DotMailer\Api\DataTypes\ApiFileMedia;
 
 class Proccessor
 {
@@ -221,10 +222,12 @@ class Proccessor
     protected function _processContactImportReportFaults($id, $websiteId)
     {
         $client = $this->_helper->getWebsiteApiClient($websiteId);
-        $data   = $client->getContactImportReportFaults($id);
+        //$data   = $client->getContactImportReportFaults($id);
+        $data   = $client->GetContactsImportReport($id);
 
         if ($data) {
             $data     = $this->_remove_utf8_bom($data);
+
             $fileName = $this->_directoryList->getPath('var')
                 . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
             $this->_file->open();
@@ -250,7 +253,6 @@ class Proccessor
         if ($item = $this->_getQueue()) {
             $websiteId = $item->getWebsiteId();
 
-            /** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
             $client = $this->_helper->getWebsiteApiClient($websiteId);
 
             $now   = gmdate('Y-m-d H:i:s');
@@ -302,14 +304,26 @@ class Proccessor
                         );
                     }
 
-                    $file = $item->getImportFile();
-                    if ( ! empty($file) && ! empty($addressbook)) {
-                        $result = $client->postAddressBookContactsImport(
-                            $file, $addressbook
-                        );
+                    $file     = $item->getImportFile();
+                    $filePath = $this->_fileHelper->getFilePath($file);
 
-                        if (isset($result->message) && ! isset($result->id)) {
+                    if ( ! empty($file) && ! empty($addressbook)) {
+
+                        $client = $this->_helper->getWebsiteApiClient();
+                        if (! $client) {
                             $error = true;
+                        } else {
+                            $apiFileMedia           = new ApiFileMedia();
+                            $apiFileMedia->fileName = pathinfo(
+                                $file, PATHINFO_FILENAME
+                            );
+                            $apiFileMedia->data     = base64_encode(
+                                file_get_contents($filePath)
+                            );
+
+                            $result = $client->PostAddressBookContactsImport(
+                                $addressbook, $apiFileMedia
+                            );
                         }
                     }
                 }
@@ -338,12 +352,20 @@ class Proccessor
                 } elseif ($item->getImportMode()
                     == self::MODE_SINGLE
                 ) { // single contact import
-                    $result = $client->postContactsTransactionalData(
+
+                    //$result = $client->postContactsTransactionalData($importData, $item->getImportType());
+
+                    $apiTransData = new ApiTransactionalData();
+
+                    $result = $client->PostContactsTransactionalData(
                         $importData, $item->getImportType()
                     );
+
+
                     if (isset($result->message)) {
                         $error = true;
                     }
+
                 } elseif ($item->getImportMode()
                     == self::MODE_CONTACT_EMAIL_UPDATE
                 ) {
@@ -420,7 +442,11 @@ class Proccessor
                     }
                 }
             }
-            if ( ! $error) {
+            if ($error) {
+                $item->setImportStatus(self::FAILED)
+                    ->setMessage($result->message)
+                    ->save();
+            } else {
                 if ($item->getImportMode() == self::MODE_SINGLE_DELETE or
                     $item->getImportMode() == self::MODE_SINGLE or
                     $item->getImportMode() == self::MODE_CONTACT_DELETE or
@@ -433,20 +459,16 @@ class Proccessor
                         ->setImportFinished($now)
                         ->setImportStarted($now)
                         ->save();
-                } elseif (isset($result->id)) {
+                } elseif ((string)$result->id) {
                     $item->setImportStatus(self::IMPORTING)
                         ->setImportId($result->id)
                         ->setImportStarted($now)
                         ->save();
                 } else {
                     $item->setImportStatus(self::FAILED)
-                        ->setMessage($result->message)
+                        ->setMessage((string)$result->message)
                         ->save();
                 }
-            } elseif ($error) {
-                $item->setImportStatus(self::FAILED)
-                    ->setMessage($result->message)
-                    ->save();
             }
         }
     }

@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use \Dotdigitalgroup\Email\Helper\Config as EmailConfig;
-
+use DotMailer\Api\Container;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -321,7 +321,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 	 *
 	 * @param int $website
 	 *
-	 * @return bool
+	 * @return \DotMailer\Api\Resources\Resources
 	 */
 	public function getWebsiteApiClient($website = 0)
 	{
@@ -331,12 +331,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 			return false;
 		}
 
-		$client = $this->_objectManager->create(
-			'Dotdigitalgroup\Email\Model\Apiconnector\Client',
-			['username' => $apiUsername, 'password' => $apiPassword]
+		//@todo replace the client with the wrapper
+		 $credentials = array(
+			Container::USERNAME => $apiUsername,
+			Container::PASSWORD => $apiPassword
 		);
+		
+		$resources = Container::newResources($credentials);
 
-		return $client;
+		return $resources;
 	}
 
 	/**

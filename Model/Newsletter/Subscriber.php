@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Magento\Framework\Exception\LocalizedException;
+use DotMailer\Api\Container;
 
 class Subscriber
 {

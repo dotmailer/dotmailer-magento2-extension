@@ -14,10 +14,10 @@ class Datafieldtype implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         $dataType = [
-            array('value' => 'String', 'label' => 'String'),
-            array('value' => 'Numeric', 'label' => 'Numeric'),
-            array('value' => 'Date', 'label' => 'Date'),
-            array('value' => 'Boolean', 'label' => 'Yes/No')
+            array('value' => 'String', 'label' => __('String')),
+            array('value' => 'Numeric', 'label' => __('Numeric')),
+            array('value' => 'Date', 'label' => __('Date')),
+            array('value' => 'Boolean', 'label' => __('Yes/No'))
         ];
 
         return $dataType;
