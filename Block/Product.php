@@ -8,6 +8,7 @@ class Product extends \Magento\Framework\View\Element\Template
     public $helper;
     public $priceHelper;
     public $objectManager;
+    public $scopeManager;
     protected $_orderFactory;
     protected $_emulationFactory;
     protected $_recommendedFactory;
@@ -30,6 +31,7 @@ class Product extends \Magento\Framework\View\Element\Template
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
@@ -40,6 +42,7 @@ class Product extends \Magento\Framework\View\Element\Template
         $this->_emulationFactory = $emulationFactory;
         $this->_orderFactory     = $orderFactory;
         $this->helper            = $helper;
+        $this->scopeManager = $scopeConfig;
         $this->priceHelper       = $priceHelper;
         $this->storeManager      = $this->_storeManager;
         $this->objectManager     = $objectManagerInterface;

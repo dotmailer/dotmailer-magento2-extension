@@ -14,6 +14,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
     public $helper;
     public $priceHelper;
+    public $scopeManager;
     public $recommendedHelper;
     protected $_orderFactory;
     protected $_productFactory;
@@ -36,6 +37,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
@@ -45,6 +47,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->recommendedHelper = $recommended;
         $this->_productFactory   = $productFactory;
         $this->helper            = $helper;
+        $this->scopeManager      = $scopeConfig;
         $this->priceHelper       = $priceHelper;
         $this->storeManager      = $this->_storeManager;
     }

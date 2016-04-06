@@ -9,6 +9,7 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     public $helper;
     public $storeManager;
     public $priceHelper;
+    public $scopeManager;
     protected $_orderFactory;
     protected $_reviewFactory;
     protected $_reviewHelper;
@@ -30,15 +31,16 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Review $reviewHelper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
-
         $this->_reviewHelper  = $reviewHelper;
         $this->_reviewFactory = $reviewFactory;
         $this->_orderFactory  = $orderFactory;
         $this->helper         = $helper;
         $this->storeManager   = $this->_storeManager;
+        $this->scopeManager = $scopeConfig;
         $this->priceHelper    = $priceHelper;
 
         parent::__construct($context, $data);
