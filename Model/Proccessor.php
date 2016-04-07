@@ -2,7 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use DotMailer\Api\DataTypes\ApiContact;
 use DotMailer\Api\DataTypes\ApiFileMedia;
+use DotMailer\Api\DataTypes\ApiTransactionalDataList;
 
 class Proccessor
 {
@@ -223,10 +225,10 @@ class Proccessor
     {
         $client = $this->_helper->getWebsiteApiClient($websiteId);
         //$data   = $client->getContactImportReportFaults($id);
-        $data   = $client->GetContactsImportReport($id);
+        $data = $client->GetContactsImportReport($id);
 
         if ($data) {
-            $data     = $this->_remove_utf8_bom($data);
+            $data = $this->_remove_utf8_bom($data);
 
             $fileName = $this->_directoryList->getPath('var')
                 . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
@@ -265,24 +267,18 @@ class Proccessor
             ) {
                 if ($item->getImportMode() == self::MODE_CONTACT_DELETE) {
                     //remove from account
-                    $client     = $this->_helper->getWebsiteApiClient(
+                    $client = $this->_helper->getWebsiteApiClient(
                         $websiteId
                     );
-                    $email      = unserialize($item->getImportData());
-                    $apiContact = $client->postContacts($email);
-                    if ( ! isset($apiContact->message)
-                        && isset($apiContact->id)
-                    ) {
-                        $result = $client->deleteContact($apiContact->id);
-                        if (isset($result->message)) {
-                            $error = true;
-                        }
-                    } elseif (isset($apiContact->message)
-                        && ! isset($apiContact->id)
-                    ) {
-                        $error  = true;
-                        $result = $apiContact;
-                    }
+                    //get contact id to remove from account
+                    $email             = unserialize($item->getImportData());
+                    $apiContact        = new ApiContact();
+                    $apiContact->email = $email;
+                    $apiContact        = $client->PostContacts($apiContact);
+
+                    // remove contact id
+                    $client->DeleteContact($apiContact->id);
+
                 } else {
                     //address book
                     $addressbook = '';
@@ -298,7 +294,7 @@ class Proccessor
                             $websiteId
                         );
                     }
-var_dump($addressbook);die;
+
                     if ($item->getImportType() == self::IMPORT_TYPE_GUEST) {
                         $addressbook = $this->_helper->getGuestAddressBook(
                             $websiteId
@@ -311,7 +307,7 @@ var_dump($addressbook);die;
                     if ( ! empty($file) && ! empty($addressbook)) {
 
                         $client = $this->_helper->getWebsiteApiClient();
-                        if (! $client) {
+                        if ( ! $client) {
                             $error = true;
                         } else {
                             $apiFileMedia           = new ApiFileMedia();
@@ -321,7 +317,7 @@ var_dump($addressbook);die;
                             $apiFileMedia->data     = base64_encode(
                                 file_get_contents($filePath)
                             );
-
+                            //import contacts from csv file
                             $result = $client->PostAddressBookContactsImport(
                                 $addressbook, $apiFileMedia
                             );
@@ -332,24 +328,30 @@ var_dump($addressbook);die;
                 == self::MODE_SINGLE_DELETE
             ) { //import to single delete
                 $importData = unserialize($item->getImportData());
-                $result     = $client->deleteContactsTransactionalData(
-                    $importData[0], $item->getImportType()
+
+                $client->DeleteContactsTransactionalData(
+                    $item->getImportType(), $importData[0]
                 );
-                if (isset($result->message)) {
-                    $error = true;
-                }
+
             } else {
                 $importData = unserialize($item->getImportData());
                 //catalog type and bulk mode
                 if (strpos($item->getImportType(), 'Catalog_') !== false
                     && $item->getImportMode() == self::MODE_BULK
                 ) {
-                    $result = $client->postAccountTransactionalDataImport(
-                        $importData, $item->getImportType()
-                    );
-                    if (isset($result->message) && ! isset($result->id)) {
-                        $error = true;
+                    $data = array();
+                    foreach ($importData as $one) {
+                        if (isset($one->id)) {
+                            $data[] = array(
+                                'Key'               => $one->id,
+                                'ContactIdentifier' => 'account',
+                                'Json'              => json_encode($one->expose())
+                            );
+                        }
                     }
+                    $apiData = new ApiTransactionalDataList($data);
+                    $result = $client->PostContactsTransactionalDataImport('Catalog_Default', $apiData);
+
                 } elseif ($item->getImportMode()
                     == self::MODE_SINGLE
                 ) { // single contact import
@@ -435,12 +437,22 @@ var_dump($addressbook);die;
                         $client->postContactsResubscribe($apiContact);
                     }
                 } else { //bulk import transactional data
-                    $result = $client->postContactsTransactionalDataImport(
-                        $importData, $item->getImportType()
-                    );
-                    if (isset($result->message) && ! isset($result->id)) {
-                        $error = true;
+
+                    $data = array();
+                    foreach ($importData as $one) {
+                        //email used as contact identifier
+                        if (isset($one->email)) {
+                            $data[] = array(
+                                'Key'               => $one->id,
+                                'ContactIdentifier' => $one->email,
+                                'Json'              => json_encode($one)
+                            );
+                        }
                     }
+                    $importData = new ApiTransactionalDataList($data);
+                    $result     = $client->PostContactsTransactionalDataImport(
+                        $item->getImportType(), $importData
+                    );
                 }
             }
             if ($error) {
