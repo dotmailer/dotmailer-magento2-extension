@@ -2,7 +2,7 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 
-class ClientDepricated extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
+class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 {
 
     const APICONNECTOR_VERSION = 'V2';

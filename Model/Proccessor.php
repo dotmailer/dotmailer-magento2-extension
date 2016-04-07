@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Model;
 use DotMailer\Api\DataTypes\ApiContact;
 use DotMailer\Api\DataTypes\ApiFileMedia;
 use DotMailer\Api\DataTypes\ApiTransactionalDataList;
+use DotMailer\Api\DataTypes\ApiTransactionalData;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 class Proccessor
 {
@@ -345,28 +347,45 @@ class Proccessor
                             $data[] = array(
                                 'Key'               => $one->id,
                                 'ContactIdentifier' => 'account',
-                                'Json'              => json_encode($one->expose())
+                                'Json'              => json_encode(
+                                    $one->expose()
+                                )
                             );
                         }
                     }
                     $apiData = new ApiTransactionalDataList($data);
-                    $result = $client->PostContactsTransactionalDataImport('Catalog_Default', $apiData);
+                    $result  = $client->PostContactsTransactionalDataImport(
+                        'Catalog_Default', $apiData
+                    );
 
                 } elseif ($item->getImportMode()
                     == self::MODE_SINGLE
                 ) { // single contact import
 
                     //$result = $client->postContactsTransactionalData($importData, $item->getImportType());
+                    $collectionName = $item->getImportType();
+                    $key            = $importData->id;
+                    try {
 
-                    $apiTransData = new ApiTransactionalData();
+                        $dataKey
+                            = $client->GetContactsTransactionalDataByKey(
+                            $collectionName, $key
+                        );
+                        //$existingData = $this->getContactsTransactionalDataByKey($collectionName, $data->id);
+                        $apiData = array(
+                            'Key'  => $key,
+                            'Json' => json_encode($importData->expose())
+                        );
 
-                    $result = $client->PostContactsTransactionalData(
-                        $importData, $item->getImportType()
-                    );
 
+                        $apiTransData = new ApiTransactionalData($apiData);
 
-                    if (isset($result->message)) {
-                        $error = true;
+                        $result = $client->PostContactsTransactionalData(
+                            $collectionName, $apiTransData
+                        );
+
+                    }  catch (\DotMailer\Api\Rest\Exception $e) {
+
                     }
 
                 } elseif ($item->getImportMode()
