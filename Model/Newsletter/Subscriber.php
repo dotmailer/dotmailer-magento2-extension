@@ -31,10 +31,10 @@ class Subscriber
     protected $_contactFactory;
     protected $_subscriberFactory;
     protected $_contactCollection;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
 
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollection,
@@ -45,7 +45,7 @@ class Subscriber
         \Magento\Framework\Stdlib\DateTime\DateTimeFactory $dateFactory,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
-        $this->_proccessorFactory = $proccessorFactory;
+        $this->_importerFactory = $importerFactory;
         $this->_contactCollection = $contactCollection;
         $this->_file              = $file;
         $this->_helper            = $helper;
@@ -153,11 +153,11 @@ class Subscriber
             }
             $this->_helper->log('Subscriber filename: ' . $subscribersFilename);
             //register in queue with importer
-            $this->_proccessorFactory->create()
+            $this->_importerFactory->create()
                 ->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_SUBSCRIBERS,
+                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBERS,
                     '',
-                    \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                     $website->getId(),
                     $subscribersFilename
                 );

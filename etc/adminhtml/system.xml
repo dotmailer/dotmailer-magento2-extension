@@ -1098,6 +1098,10 @@
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>
+                <field id="importer_bulk_limit" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
+                    <label>Importer Bulk Limit</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Importer\Builklimit</source_model>
+                </field>
             </group>
             <group id="sync_settings" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Sync Settings</label>

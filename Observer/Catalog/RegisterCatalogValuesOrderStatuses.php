@@ -14,7 +14,6 @@ class RegisterCatalogValuesOrderStatuses
     protected $_storeManager;
     protected $_catalogFactory;
     protected $_catalogCollection;
-    protected $_proccessorFactory;
     protected $_connectorCatalogFactory;
     protected $_connectorContactFactory;
 
@@ -23,7 +22,6 @@ class RegisterCatalogValuesOrderStatuses
      *
      * @param \Dotdigitalgroup\Email\Model\Resource\ContactFactory            $connectorContactFactory
      * @param \Dotdigitalgroup\Email\Model\Resource\CatalogFactory            $connectorCatalogFactory
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory                  $proccessorFactory
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory                     $catalogFactory
      * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory
      * @param \Magento\Framework\Registry                                     $registry
@@ -36,7 +34,6 @@ class RegisterCatalogValuesOrderStatuses
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory,
         \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $connectorCatalogFactory,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory,
         \Magento\Framework\Registry $registry,
@@ -48,7 +45,6 @@ class RegisterCatalogValuesOrderStatuses
     ) {
         $this->_connectorContactFactory = $connectorContactFactory;
         $this->_connectorCatalogFactory = $connectorCatalogFactory;
-        $this->_proccessorFactory       = $proccessorFactory;
         $this->_helper                  = $data;
         $this->_registry                = $registry;
         $this->_logger                  = $loggerInterface;

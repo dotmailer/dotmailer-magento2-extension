@@ -13,7 +13,7 @@ class Wishlist
     protected $_start;
     protected $_count = 0;
     protected $_customerFactory;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
     protected $_wishlist;
     protected $_wishlistFactory;
     protected $_itemFactory;
@@ -29,7 +29,6 @@ class Wishlist
      * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory       $itemFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\WishlistFactory            $wishlistFactory
      * @param \Magento\Wishlist\Model\WishlistFactory                          $wishlist
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory                   $proccessorFactory
      * @param \Magento\Customer\Model\CustomerFactory                          $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
      * @param \Magento\Framework\App\ResourceConnection                        $resource
@@ -41,7 +40,7 @@ class Wishlist
         \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory,
         \Dotdigitalgroup\Email\Model\Customer\WishlistFactory $wishlistFactory,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\ResourceConnection $resource,
@@ -52,7 +51,7 @@ class Wishlist
         $this->_itemFactory        = $itemFactory;
         $this->_wishlistFactory    = $wishlistFactory;
         $this->_wishlist           = $wishlist;
-        $this->_proccessorFactory  = $proccessorFactory;
+        $this->_importerFactory  = $importerFactory;
         $this->_customerFactory    = $customerFactory;
         $this->_helper             = $helper;
         $this->_resource           = $resource;
@@ -90,11 +89,11 @@ class Wishlist
                     );
                     $websiteWishlists = $this->_wishlists[$website->getId()];
                     //register in queue with importer
-                    $this->_proccessorFactory->create()
+                    $this->_importerFactory->create()
                         ->registerQueue(
-                            \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
+                            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
                             $websiteWishlists,
-                            \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                             $website->getId()
                         );
                     //mark connector wishlist as  imported
@@ -222,11 +221,11 @@ class Wishlist
                 );
                 $this->_start = microtime(true);
                 //register in queue with importer
-                $this->_proccessorFactory->create()
+                $this->_importerFactory>create()
                     ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
                         $connectorWishlist,
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
                         $website->getId()
                     );
 
@@ -236,11 +235,11 @@ class Wishlist
                 $this->_helper->log($message);
             } else {
                 //register in queue with importer
-                $this->_proccessorFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_WISHLIST,
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
                         array($wishlist->getId()),
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                         $website->getId()
                     );
 

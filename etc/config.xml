@@ -1,10 +1,5 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
--->
+
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Store/etc/config.xsd">
     <default>
         <connector_api_credentials>
@@ -310,6 +305,7 @@
                 <memory_limit>0</memory_limit>
                 <batch_size>500</batch_size>
                 <orders>50</orders>
+                <importer_bulk_limit>1</importer_bulk_limit>
             </import_settings>
             <sync_settings>
                 <setup_data_fields></setup_data_fields>
@@ -351,6 +347,5 @@
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
         </connector_developer_settings>
-
     </default>
 </config>

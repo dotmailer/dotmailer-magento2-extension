@@ -10,16 +10,16 @@ class Guest
     protected $_helper;
     protected $_file;
     protected $_contactFactory;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
 
 
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper
     ) {
-        $this->_proccessorFactory = $proccessorFactory;
+        $this->_importerFactory = $importerFactory;
         $this->_contactFactory    = $contactFactory;
         $this->_helper            = $helper;
         $this->_file              = $file;
@@ -86,11 +86,11 @@ class Guest
             }
             if ($this->_countGuests) {
                 //register in queue with importer
-                $this->_proccessorFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_GUEST,
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_GUEST,
                         '',
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                         $website->getId(),
                         $guestFilename
                     );

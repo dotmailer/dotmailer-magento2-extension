@@ -362,7 +362,6 @@ class Proccessor
                     == self::MODE_SINGLE
                 ) { // single contact import
 
-                    //$result = $client->postContactsTransactionalData($importData, $item->getImportType());
                     $collectionName = $item->getImportType();
                     $key            = $importData->id;
                     try {
@@ -371,12 +370,13 @@ class Proccessor
                             = $client->GetContactsTransactionalDataByKey(
                             $collectionName, $key
                         );
-                        //$existingData = $this->getContactsTransactionalDataByKey($collectionName, $data->id);
+
+                        //@todo check if the collection data exists and use replace
+                        //the url for request must end with id if exists
                         $apiData = array(
                             'Key'  => $key,
                             'Json' => json_encode($importData->expose())
                         );
-
 
                         $apiTransData = new ApiTransactionalData($apiData);
 
@@ -385,7 +385,7 @@ class Proccessor
                         );
 
                     }  catch (\DotMailer\Api\Rest\Exception $e) {
-
+                        $result = $e->getMessage();
                     }
 
                 } elseif ($item->getImportMode()

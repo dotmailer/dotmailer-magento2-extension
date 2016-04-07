@@ -13,7 +13,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
     protected $_customerFactory;
     protected $_contactFactory;
     protected $_automationFactory;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
     protected $_reviewFactory;
     protected $_wishlist;
 
@@ -21,7 +21,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -34,7 +34,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         $this->_reviewFactory     = $reviewFactory;
         $this->_wishlist          = $wishlist;
         $this->_contactFactory    = $contactFactory;
-        $this->_proccessorFactory = $proccessorFactory;
+        $this->_importerFactory = $importerFactory;
         $this->_automationFactory = $automationFactory;
         $this->_customerFactory   = $customerFactory;
         $this->_wishlistFactory   = $wishlistFactory;
@@ -65,10 +65,10 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         if ($apiEnabled && $customerSync) {
             try {
                 //register in queue with importer
-                $this->_proccessorFactory->create()->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
+                $this->_importerFactory->create()->registerQueue(
+                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
                     $email,
-                    \Dotdigitalgroup\Email\Model\Proccessor::MODE_CONTACT_DELETE,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_DELETE,
                     $websiteId
                 );
                 $contactModel = $this->_contactFactory->create()

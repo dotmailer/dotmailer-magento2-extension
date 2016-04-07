@@ -13,7 +13,7 @@ class Cron
     protected $csv;
 
     protected $_automationFactory;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
     protected $_catalogFactory;
     protected $_subscriberFactory;
     protected $_guestFactory;
@@ -37,7 +37,6 @@ class Cron
      * @param Customer\GuestFactory        $guestFactory
      * @param Newsletter\SubscriberFactory $subscriberFactory
      * @param Sync\CatalogFactory          $catalogFactorty
-     * @param ProccessorFactory            $proccessorFactory
      * @param Sync\AutomationFactory       $automationFactory
      * @param FilterBuilder                $filterBuilder
      * @param Csv                          $csv
@@ -55,7 +54,7 @@ class Cron
         \Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
         FilterBuilder $filterBuilder,
         Csv $csv,
@@ -72,7 +71,7 @@ class Cron
         $this->_guestFactory         = $guestFactory;
         $this->_subscriberFactory    = $subscriberFactory;
         $this->_catalogFactory       = $catalogFactorty;
-        $this->_proccessorFactory    = $proccessorFactory;
+        $this->_importerFactory    = $importerFactory;
         $this->_automationFactory    = $automationFactory;
         $this->productRepository     = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -121,11 +120,11 @@ class Cron
 
 
     /**
-     * CRON FOR EMAIL IMPORTER PROCESSOR
+     * CRON FOR EMAIL IMPORTER 
      */
     public function emailImporter()
     {
-        return $this->_proccessorFactory->create()->processQueue();
+        return $this->_importerFactory->create()->processQueue();
     }
 
     /**

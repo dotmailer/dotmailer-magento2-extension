@@ -13,12 +13,11 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
     protected $_scopeConfig;
     protected $_storeManager;
     protected $_orderFactory;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
 
     /**
      * CancelRegisterRemove constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory     $proccessorFactory
      * @param \Magento\Sales\Model\OrderFactory                  $orderFactory
      * @param \Magento\Framework\Registry                        $registry
      * @param \Dotdigitalgroup\Email\Helper\Data                 $data
@@ -27,7 +26,7 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Store\Model\StoreManagerInterface         $storeManagerInterface
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory ,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
@@ -35,7 +34,7 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_proccessorFactory = $proccessorFactory;
+        $this->_importerFactory = $importerFactory;
         $this->_helper            = $data;
         $this->_orderFactory      = $orderFactory;
         $this->_scopeConfig       = $scopeConfig;
@@ -56,11 +55,11 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
 
         if ($this->_helper->isEnabled($websiteId) && $orderSync) {
             //register in queue with importer
-            $this->_proccessorFactory->create()
+            $this->_importerFactory->create()
                 ->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
+                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
                     array($incrementId),
-                    \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                     $websiteId
                 );
         }
