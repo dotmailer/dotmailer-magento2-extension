@@ -298,6 +298,7 @@ class Proccessor
                             $websiteId
                         );
                     }
+var_dump($addressbook);die;
                     if ($item->getImportType() == self::IMPORT_TYPE_GUEST) {
                         $addressbook = $this->_helper->getGuestAddressBook(
                             $websiteId
