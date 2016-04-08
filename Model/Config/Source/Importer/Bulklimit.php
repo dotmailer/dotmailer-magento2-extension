@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Importer;
 
 class Bulklimit implements \Magento\Framework\Option\ArrayInterface
 {
+
     /**
      * @return array
      */
