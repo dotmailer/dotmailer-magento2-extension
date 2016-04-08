@@ -2,50 +2,54 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+use Magento\Catalog\Model\Product;
+
 class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
     public $helper;
     public $priceHelper;
-    public $scopeManager;
     public $recommnededHelper;
 
     protected $_localeDate;
     protected $_productCollection;
     protected $_categoryFactory;
     protected $_productFactory;
+    protected $_productCollectionFactory;
 
     /**
      * Mostviewed constructor.
      *
-     * @param \Magento\Catalog\Model\ProductFactory                          $productFactory
-     * @param \Magento\Catalog\Model\CategoryFactory                         $categtoryFactory
-     * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $proudctCollection
      * @param \Dotdigitalgroup\Email\Helper\Data                             $helper
-     * @param \Magento\Framework\Pricing\Helper\Data                         $priceHelper
-     * @param \Dotdigitalgroup\Email\Helper\Recommended                      $recommended
      * @param \Magento\Catalog\Block\Product\Context                         $context
+     * @param \Magento\Framework\Pricing\Helper\Data                         $priceHelper
+     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productFactory
+     * @param \Magento\Catalog\Model\ProductFactory                          $productFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended                      $recommended
+     * @param \Magento\Catalog\Model\CategoryFactory                         $categtoryFactory
+     * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $productCollection
      * @param array                                                          $data
      */
     public function __construct(
-        \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Catalog\Model\CategoryFactory $categtoryFactory,
-        \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $proudctCollection,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Dotdigitalgroup\Email\Helper\Recommended $recommended,
+        \Magento\Catalog\Model\CategoryFactory $categtoryFactory,
+        \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection,
         array $data = []
     ) {
+        $this->_productCollectionFactory = $productCollectionFactory;
         $this->_productFactory    = $productFactory;
         $this->_categoryFactory   = $categtoryFactory;
-        $this->_productCollection = $proudctCollection;
+        $this->_reportProductCollection = $reportProductCollection;
         $this->helper             = $helper;
         $this->recommnededHelper  = $recommended;
         $this->priceHelper        = $priceHelper;
-        $this->scopeManager       = $scopeConfig;
         $this->storeManager       = $this->_storeManager;
+
         parent::__construct($context, $data);
     }
 
@@ -64,7 +68,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $to                = new \Zend_Date($this->_localeDate->date()
             ->getTimestamp());
 
-        $productCollection = $this->_productCollection->create()
+        $reportProductCollection = $this->_reportProductCollection->create()
             ->addViewsCount($from, $to->tostring(\Zend_Date::ISO_8601))
             ->setPageSize($limit);
 
@@ -72,7 +76,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         if ($cat_id = $this->getRequest()->getParam('category_id')) {
             $category = $this->_categoryFactory->create()->load($cat_id);
             if ($category->getId()) {
-                $productCollection->getSelect()
+                $reportProductCollection->getSelect()
                     ->joinLeft(
                         array("ccpi" => 'catalog_category_product_index'),
                         "e.entity_id = ccpi.product_id",
@@ -90,7 +94,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             $category = $this->_categoryFactory->create()
                 ->loadByAttribute('name', $cat_name);
             if ($category) {
-                $productCollection->getSelect()
+                $reportProductCollection->getSelect()
                     ->joinLeft(
                         array("ccpi" => 'catalog_category_product_index'),
                         "e.entity_id  = ccpi.product_id",
@@ -102,13 +106,21 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
                     . ' is invalid. It does not exist.');
             }
         }
-        //proudct collection
-        foreach ($productCollection as $_product) {
-            $productId = $_product->getId();
-            $product   = $this->_productFactory->create()->load($productId);
-            //available for sale
-            if ($product->isSalable()) {
-                $productsToDisplay[] = $product;
+
+        //product ids from the report product collection
+        $productIds = $reportProductCollection->getColumnValues('entity_id');
+
+        $productCollectionFactory = $this->_productCollectionFactory->create();
+        $productCollectionFactory->addIdFilter($productIds)
+            ->addAttributeToSelect(
+                array('product_url', 'name', 'store_id', 'small_image', 'price')
+            );
+
+        //product collection
+        foreach ($productCollectionFactory as $_product) {
+            //add only saleable products
+            if ($_product->isSalable()) {
+                $productsToDisplay[] = $_product;
             }
         }
 
