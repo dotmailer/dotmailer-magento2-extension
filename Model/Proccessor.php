@@ -8,7 +8,7 @@ use DotMailer\Api\DataTypes\ApiTransactionalDataList;
 use DotMailer\Api\DataTypes\ApiTransactionalData;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
-class Proccessor
+class ProccessorDepricate
 {
 
     //import statuses

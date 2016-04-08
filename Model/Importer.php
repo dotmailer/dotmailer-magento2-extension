@@ -2,12 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
-use DotMailer\Api\DataTypes\ApiContact;
-use DotMailer\Api\DataTypes\ApiFileMedia;
-use DotMailer\Api\DataTypes\ApiTransactionalDataList;
-use DotMailer\Api\DataTypes\ApiTransactionalData;
-use Symfony\Component\Config\Definition\Exception\Exception;
-
 class Importer extends \Magento\Framework\Model\AbstractModel
 {
 
@@ -290,7 +284,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     $this->_totalItems += $collection->getSize();
 
                     //@todo remove me Mage::getModel($bulk['model'], $collection);
-                    $this->_objectManager->create($bulk['model'], $collection);
+                    $bulkModel = $this->_objectManager->create($bulk['model']);
+                    $bulkModel->sync($collection);
                 }
             }
         }
@@ -306,9 +301,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     );
                     if ($collection->getSize()) {
                         $this->_totalItems += $collection->getSize();
-
                         //@todo remove me Mage::getModel($single['model'], $collection);
-                        $this->_objectManager->create($bulk['model'], $collection);
+                        $singleModel = $this->_objectManager->create($bulk['model']);
+                        $singleModel->sync($collection);
                     }
                 }
             }

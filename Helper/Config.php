@@ -290,7 +290,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         if ($this->getAuthorizeLinkFlag($website)){
 	        $website = $this->_storeManager->getWebsite($website);
             $baseUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
-
         } else {
             $baseUrl = self::API_CONNECTOR_OAUTH_URL .  self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         }
