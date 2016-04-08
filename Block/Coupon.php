@@ -6,8 +6,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
 {
 
     public $helper;
-    public $scopeManager;
-
     protected $_ruleFactory;
     protected $_massGeneratorFactory;
     protected $_couponFactory;
@@ -29,7 +27,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
         \Magento\Salesrule\Model\CouponFactory $couponFactory,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Salesrule\Model\RuleFactory $ruleFactory,
         array $data = []
     ) {
@@ -37,7 +34,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
         $this->_ruleFactory          = $ruleFactory;
         $this->_couponFactory        = $couponFactory;
         $this->_massGeneratorFactory = $massgeneratorFactory;
-        $this->scopeManager          = $scopeConfig;
         $this->storeManager          = $this->_storeManager;
 
         parent::__construct($context, $data);
@@ -95,5 +91,43 @@ class Coupon extends \Magento\Framework\View\Element\Template
         }
 
         return false;
+    }
+
+
+    public function getStyle()
+    {
+        return explode(
+            ',', $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE
+        )
+        );
+    }
+
+    public function getCouponColor()
+    {
+        return $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR
+        );
+    }
+
+    public function getFontSize()
+    {
+        return $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE
+        );
+    }
+
+    public function getFont()
+    {
+        return $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT
+        );
+    }
+
+    public function getBackgroundColor()
+    {
+        return $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR
+        );
     }
 }

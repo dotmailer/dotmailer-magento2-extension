@@ -1,12 +1,10 @@
 <?php $coupon = $this->generateCoupon(); ?>
-<?php if($coupon): ?>
-    <?php
-        $style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE));
-    ?>
+<?php if ($coupon): ?>
+    <?php $style = $this->getStyle(); ?>
     <style>
         .edc-coupon{
-            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR);?>;
-            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE);?>;
+            color: <?php echo $this->getCouponColor();?>;
+            font-size: <?php echo $this->getFontSize();?>;
         <?php if(in_array('bold', $style)): ?>
             font-weight: bold;
         <?php endif; ?>
@@ -16,12 +14,12 @@
         <?php if(in_array('underline', $style)): ?>
             text-decoration: underline;
         <?php endif; ?>
-            font-family: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT);?>;
-            background-color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR);?>;
+            font-family: <?php echo $this->getFont();?>;
+            background-color: <?php echo $this->getBackgroundColor();?>;
         }
     </style>
     <div class="edc-coupon">
         <?php echo $coupon; ?>
     </div>
-<?php endif; ?>
+<?php endif;
 
