@@ -135,9 +135,8 @@ class Bulk
 
     protected function _checkCurlError($item)
     {
-        //@doto check for error from the response
         return false;
-        //if curl error 28
+        
         $curlError = $this->_client->getCurlError();
         if ($curlError) {
             $item->setMessage($curlError)

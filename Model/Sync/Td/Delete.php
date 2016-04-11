@@ -9,12 +9,16 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
     {
         foreach($collection as $item)
         {
+            $result = true;
             $websiteId = $item->getWebsiteId();
             $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
             $importData = unserialize($item->getImportData());
 
             if ($this->_client) {
-                $result = $this->_client->deleteContactsTransactionalData($importData[0], $item->getImportType());
+
+                $key = $importData[0];
+                $collectionName = $item->getImportType();
+                $this->_client->DeleteContactsTransactionalData($collectionName, $key);
                 $this->_handleSingleItemAfterSync($item, $result);
             }
         }

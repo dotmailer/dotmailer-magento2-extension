@@ -2,10 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
+use DotMailer\Api\DataTypes\ApiTransactionalData;
+
 class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
     
-    protected function _processCollection($collection)
+    public function sync($collection)
     {
         foreach($collection as $item)
         {
@@ -14,10 +16,20 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
             $importData = unserialize($item->getImportData());
 
             if ($this->_client) {
-                if (strpos($item->getImportType(), 'Catalog_') !== false)
-                    $result = $this->_client->postContactsTransactionalData($importData, $item->getImportType(), true);
-                else
-                    $result = $this->_client->postContactsTransactionalData($importData, $item->getImportType());
+
+                $apiTransactionalData = new ApiTransactionalData();
+                $apiTransactionalData->key = $importData->id;
+                $apiTransactionalData->ContactIdentifier = $importData->email;
+                $apiTransactionalData->Json = $importData->toJson();
+                $collectionName= $item->getImportType();
+
+                if (strpos($item->getImportType(), 'Catalog_') !== false) {
+                    $apiTransactionalData->ContactIdentifier = $importData->email;
+                }else {
+
+                    $apiTransactionalData->ContactIdentifier = $importData->id;
+                }
+                $result = $this->_client->PostContactsTransactionalData($collectionName, $apiTransactionalData);
 
                 $this->_handleSingleItemAfterSync($item, $result);
             }

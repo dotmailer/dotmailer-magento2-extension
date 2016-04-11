@@ -1,6 +1,8 @@
 <?php
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
+use DotMailer\Api\DataTypes\ApiContact;
+
 class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
 
@@ -9,17 +11,24 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
     {
         foreach($collection as $item)
         {
+            $result = true;
             $websiteId = $item->getWebsiteId();
             $email = unserialize($item->getImportData());
             $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
 
             if ($this->_client) {
-                $apiContact = $this->_client->postContacts($email);
-                if (!isset($apiContact->message) && isset($apiContact->id))
-                    $result = $this->_client->deleteContact($apiContact->id);
-                elseif (isset($apiContact->message) && !isset($apiContact->id))
+                $apiContact = new ApiContact();
+                $apiContact->email = $email;
+
+                $response = $this->_client->PostContacts($apiContact);
+
+                if (isset($apiContact->id)) {
+                    $this->_client->DeleteContact($response->id);
+
+                }elseif (! isset($response->id)) {
                     $result = $apiContact;
 
+                }
                 $this->_handleSingleItemAfterSync($item, $result);
             }
         }
@@ -27,23 +36,13 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 
     protected function _handleSingleItemAfterSync($item, $result)
     {
-        $curlError = $this->_checkCurlError($item);
+        if (! $result){
 
-        if(!$curlError){
-            if (isset($result->message)){
-                $message = (isset($result->message))? $result->message : 'Error unknown';
-
-                $item->setImportStatus(Dotdigitalgroup_Email_Model_Importer::FAILED)
-                    ->setMessage($message)
-                    ->save();
-            }else {
-                $now = Mage::getSingleton('core/date')->gmtDate();
-                $item->setImportStatus(Dotdigitalgroup_Email_Model_Importer::IMPORTED)
-                    ->setImportFinished($now)
-                    ->setImportStarted($now)
-                    ->setMessage('')
-                    ->save();
-            }
+            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTED)
+                ->setImportFinished(time())
+                ->setImportStarted(time())
+                ->setMessage('')
+                ->save();
         }
     }
 }

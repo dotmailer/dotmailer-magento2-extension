@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use DotMailer\Api\DataTypes\Guid;
+
 class Importer extends \Magento\Framework\Model\AbstractModel
 {
 
@@ -64,6 +66,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     protected $_file;
     protected $_contact;
     protected $_objectManager;
+    protected $_directoryList;
+
 
     /**
      * @param \Magento\Framework\Model\Context                        $context
@@ -78,6 +82,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         \Dotdigitalgroup\Email\Model\Resource\Contact $contact,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Filesystem\Io\File $file,
         \Magento\Framework\Stdlib\DateTime $dateTime,
@@ -85,11 +90,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_file              = $file;
-        $this->_helper   = $helper;
+        $this->_file          = $file;
+        $this->_helper        = $helper;
+        $this->_directoryList = $directoryList;
         $this->_objectManager = $objectManager;
-        $this->_contact           = $contact;
-        $this->_dateTime = $dateTime;
+        $this->_contact       = $contact;
+        $this->_dateTime      = $dateTime;
         parent::__construct(
             $context, $registry, $resource, $resourceCollection, $data
         );
@@ -151,113 +157,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         return false;
     }
 
-    protected function _checkImportStatus()
-    {
-
-        $this->_helper->allowResourceFullExecution();
-        if ($items = $this->_getImportingItems($this->_bulkSyncLimit)) {
-            foreach ($items as $item) {
-                $websiteId = $item->getWebsiteId();
-                $client    = $this->_helper->getWebsiteApiClient(
-                    $websiteId
-                );
-                if ($client) {
-                    if (
-                        $item->getImportType() == self::IMPORT_TYPE_CONTACT or
-                        $item->getImportType() == self::IMPORT_TYPE_SUBSCRIBERS
-                        or
-                        $item->getImportType() == self::IMPORT_TYPE_GUEST
-
-                    ) {
-                        $response = $client->GetContactsImportByImportId(
-                            $item->getImportId()
-                        );
-                    } else {
-                        $response
-                            = $client->GetContactsTransactionalDataImportByImportId(
-                            $item->getImportId()
-                        );
-                    }
-                    //if curl error 28
-                    $curlError = $client->getCurlError();
-                    if ($curlError) {
-                        $item->setMessage($curlError)
-                            ->setImportStatus(self::FAILED)
-                            ->save();
-                    } else {
-                        if ($response && ! isset($response->message)) {
-                            if ($response->status == 'Finished') {
-                                $now = gmDate('Y-m-d H:i:s');
-
-                                $item->setImportStatus(self::IMPORTED)
-                                    ->setImportFinished($now)
-                                    ->setMessage('')
-                                    ->save();
-                                if (
-                                    $item->getImportType()
-                                    == self::IMPORT_TYPE_CONTACT or
-                                    $item->getImportType()
-                                    == self::IMPORT_TYPE_SUBSCRIBERS or
-                                    $item->getImportType()
-                                    == self::IMPORT_TYPE_GUEST
-
-                                ) {
-                                    if ($item->getImportId()) {
-                                        $this->_processContactImportReportFaults(
-                                            $item->getImportId(), $websiteId
-                                        );
-                                    }
-                                }
-                            } elseif (in_array(
-                                $response->status, $this->import_statuses
-                            )) {
-                                $item->setImportStatus(self::FAILED)
-                                    ->setMessage(
-                                        'Import failed with status '
-                                        . $response->status
-                                    )
-                                    ->save();
-                            } else {
-                                //Not finished
-                                $this->_totalItems += 1;
-                            }
-                        }
-                        if ($response && isset($response->message)) {
-                            $item->setImportStatus(self::FAILED)
-                                ->setMessage($response->message)
-                                ->save();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected function _processContactImportReportFaults($id, $websiteId)
-    {
-        $client = $this->_helper->getWebsiteApiClient($websiteId);
-        $data   = $client->GetContactsImportReportFaults($id);
-
-        if ($data) {
-            $data     = $this->_remove_utf8_bom($data);
-
-            $fileName = $this->_directoryList->getPath('var')
-                . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
-            $this->_file->open();
-            $check = $this->_file->write($fileName, $data);
-
-            if ($check) {
-                $csvArray = $this->_csv_to_array($fileName);
-                $this->_file->rm($fileName);
-                $this->_contact->unsubscribe($csvArray);
-            } else {
-                $this->_helper->log(
-                    '_processContactImportReportFaults: cannot save data to CSV file.'
-                );
-            }
-        }
-    }
-
     public function processQueue()
     {
         //Set items to 0
@@ -282,8 +181,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 );
                 if ($collection->getSize()) {
                     $this->_totalItems += $collection->getSize();
-
-                    //@todo remove me Mage::getModel($bulk['model'], $collection);
                     $bulkModel = $this->_objectManager->create($bulk['model']);
                     $bulkModel->sync($collection);
                 }
@@ -301,8 +198,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     );
                     if ($collection->getSize()) {
                         $this->_totalItems += $collection->getSize();
-                        //@todo remove me Mage::getModel($single['model'], $collection);
-                        $singleModel = $this->_objectManager->create($bulk['model']);
+                        $singleModel = $this->_objectManager->create(
+                            $bulk['model']
+                        );
                         $singleModel->sync($collection);
                     }
                 }
@@ -432,34 +330,83 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     }
 
-    protected function _getQueue($importType, $importMode, $limit)
+    protected function _checkImportStatus()
     {
-        $collection = $this->getCollection();
 
-        if (is_array($importType)) {
-            $condition = array();
-            foreach ($importType as $type) {
-                if ($type == 'Catalog') {
-                    $condition[] = array('like' => $type . '%');
-                } else {
-                    $condition[] = array('eq' => $type);
+        $this->_helper->allowResourceFullExecution();
+        if ($items = $this->_getImportingItems($this->_bulkSyncLimit)) {
+            foreach ($items as $item) {
+                $websiteId = $item->getWebsiteId();
+                $client    = $this->_helper->getWebsiteApiClient(
+                    $websiteId
+                );
+                if ($client) {
+                    try {
+                        if (
+                            $item->getImportType() == self::IMPORT_TYPE_CONTACT
+                            or
+                            $item->getImportType()
+                            == self::IMPORT_TYPE_SUBSCRIBERS
+                            or
+                            $item->getImportType() == self::IMPORT_TYPE_GUEST
+
+                        ) {
+                            $response = $client->GetContactsImportByImportId(
+                                $item->getImportId()
+                            );
+                        } else {
+                            $response
+                                = $client->GetContactsTransactionalDataImportByImportId(
+                                $item->getImportId()
+                            );
+                        }
+                    } catch (\Exception $e) {
+                        $item->setMessage($e->getMessage())
+                            ->setImportStatus(self::FAILED)
+                            ->save();
+                        continue;
+                    }
+
+                    if ($response) {
+                        if ($response->status == 'Finished') {
+                            $now = gmDate('Y-m-d H:i:s');
+
+                            $item->setImportStatus(self::IMPORTED)
+                                ->setImportFinished($now)
+                                ->setMessage('')
+                                ->save();
+                            if (
+                                $item->getImportType()
+                                == self::IMPORT_TYPE_CONTACT or
+                                $item->getImportType()
+                                == self::IMPORT_TYPE_SUBSCRIBERS or
+                                $item->getImportType()
+                                == self::IMPORT_TYPE_GUEST
+
+                            ) {
+                                if ($item->getImportId()) {
+                                    $this->_processContactImportReportFaults(
+                                        $item->getImportId(), $websiteId
+                                    );
+                                }
+                            }
+                        } elseif (in_array(
+                            $response->status, $this->import_statuses
+                        )) {
+                            $item->setImportStatus(self::FAILED)
+                                ->setMessage(
+                                    'Import failed with status '
+                                    . $response->status
+                                )
+                                ->save();
+                        } else {
+                            //Not finished
+                            $this->_totalItems += 1;
+                        }
+                    }
                 }
             }
-            $collection->addFieldToFilter('import_type', $condition);
-        } else {
-            $collection->addFieldToFilter(
-                'import_type', array('eq' => $importType)
-            );
         }
-
-        $collection->addFieldToFilter('import_mode', array('eq' => $importMode))
-            ->addFieldToFilter(
-                'import_status', array('eq' => self::NOT_IMPORTED)
-            )
-            ->setPageSize($limit)
-            ->setCurPage(1);
-
-        return $collection;
     }
 
     protected function _getImportingItems($limit)
@@ -476,7 +423,42 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         return false;
     }
 
-    protected function _csv_to_array($filename)
+    protected function _processContactImportReportFaults($id, $websiteId)
+    {
+        $client   = $this->_helper->getWebsiteApiClient($websiteId);
+        $guId     = new Guid($id);
+        $response = $client->GetContactsImportReportFaults($guId);
+
+        if ($response) {
+
+            $data = $this->_removeUtf8Bom($response);
+
+            $fileName = $this->_directoryList->getPath('var')
+                . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
+            $this->_file->open();
+            $check = $this->_file->write($fileName, $data);
+
+            if ($check) {
+                $csvArray = $this->_csvToArray($fileName);
+                $this->_file->rm($fileName);
+                $this->_contact->unsubscribe($csvArray);
+            } else {
+                $this->_helper->log(
+                    '_processContactImportReportFaults: cannot save data to CSV file.'
+                );
+            }
+        }
+    }
+
+    protected function _removeUtf8Bom($text)
+    {
+        $bom  = pack('H*', 'EFBBBF');
+        $text = preg_replace("/^$bom/", '', $text);
+
+        return $text;
+    }
+
+    protected function _csvToArray($filename)
     {
         if ( ! file_exists($filename) || ! is_readable($filename)) {
             return false;
@@ -507,11 +489,33 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         return $contacts;
     }
 
-    protected function _remove_utf8_bom($text)
+    protected function _getQueue($importType, $importMode, $limit)
     {
-        $bom  = pack('H*', 'EFBBBF');
-        $text = preg_replace("/^$bom/", '', $text);
+        $collection = $this->getCollection();
 
-        return $text;
+        if (is_array($importType)) {
+            $condition = array();
+            foreach ($importType as $type) {
+                if ($type == 'Catalog') {
+                    $condition[] = array('like' => $type . '%');
+                } else {
+                    $condition[] = array('eq' => $type);
+                }
+            }
+            $collection->addFieldToFilter('import_type', $condition);
+        } else {
+            $collection->addFieldToFilter(
+                'import_type', array('eq' => $importType)
+            );
+        }
+
+        $collection->addFieldToFilter('import_mode', array('eq' => $importMode))
+            ->addFieldToFilter(
+                'import_status', array('eq' => self::NOT_IMPORTED)
+            )
+            ->setPageSize($limit)
+            ->setCurPage(1);
+
+        return $collection;
     }
 }

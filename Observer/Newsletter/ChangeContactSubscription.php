@@ -41,7 +41,7 @@ class ChangeContactSubscription
         $this->_helper            = $data;
         $this->_storeManager      = $storeManagerInterface;
         $this->_registry          = $registry;
-        $this->_importerFactory   = $importerFactory;
+        $this->_importerFactory   = $importerFactory->create();
     }
 
 
@@ -54,12 +54,12 @@ class ChangeContactSubscription
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $subscriber = $observer->getEvent()->getSubscriber();
-        $email = $subscriber->getEmail();
-        $storeId = $subscriber->getStoreId();
+        $subscriber       = $observer->getEvent()->getSubscriber();
+        $email            = $subscriber->getEmail();
+        $storeId          = $subscriber->getStoreId();
         $subscriberStatus = $subscriber->getSubscriberStatus();
         $websiteId
-            = $this->_storeManager->getStore(
+                          = $this->_storeManager->getStore(
             $subscriber->getStoreId()
         )
             ->getWebsiteId();
@@ -98,17 +98,17 @@ class ChangeContactSubscription
                 $contactId = $contactEmail->getContactId();
                 //get the contact id
                 if ( ! $contactId) {
-                    Mage::getModel('ddg_automation/importer')->registerQueue(
-                        Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
+                    $this->_importerFactory->registerQueue(
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
                         array('email' => $email,
                               'id'    => $contactEmail->getId()),
-                        Dotdigitalgroup_Email_Model_Importer::MODE_SUBSCRIBER_UPDATE,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
                         $websiteId
                     );
                 }
                 $contactEmail->setIsSubscriber(null)
                     ->setSubscriberStatus(
-                        Mage_Newsletter_Model_Subscriber::STATUS_UNSUBSCRIBED
+                        \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED
                     );
             }
 
