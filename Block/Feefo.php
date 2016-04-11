@@ -9,7 +9,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
 
     public $helper;
     public $priceHelper;
-    public $scopeManager;
     protected $_orderFactory;
     protected $_quoteFactory;
     protected $_productFactory;
@@ -32,13 +31,11 @@ class Feefo extends \Magento\Framework\View\Element\Template
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->helper          = $helper;
-        $this->scopeManager    = $scopeConfig;
         $this->priceHelper     = $priceHelper;
         $this->_orderFactory   = $orderFactory;
         $this->storeManager    = $this->_storeManager;
@@ -114,7 +111,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     {
         $check     = true;
         $reviews   = array();
-        $feefo_dir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
+        $feefoDir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
             . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup'
             . DIRECTORY_SEPARATOR .
             'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR
@@ -131,10 +128,10 @@ class Feefo extends \Magento\Framework\View\Element\Template
             $doc = new \DOMDocument();
             $xsl = new \XSLTProcessor();
             if ($check) {
-                $doc->load($feefo_dir . DIRECTORY_SEPARATOR . "feedback.xsl");
+                $doc->load($feefoDir . DIRECTORY_SEPARATOR . "feedback.xsl");
             } else {
                 $doc->load(
-                    $feefo_dir . DIRECTORY_SEPARATOR . "feedback-no-th.xsl"
+                    $feefoDir . DIRECTORY_SEPARATOR . "feedback-no-th.xsl"
                 );
             }
             $xsl->importStyleSheet($doc);

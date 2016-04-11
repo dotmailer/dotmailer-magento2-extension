@@ -21,9 +21,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Data constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Backend\Model\Auth\Session         $sessionModel
      * @param \Magento\Framework\App\ProductMetadata      $productMetadata
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Config\Model\ResourceModel\Config  $resourceConfig
      * @param \Magento\Framework\App\ResourceConnection   $adapter
      * @param \Magento\Framework\App\Helper\Context       $context
@@ -31,9 +31,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\StoreManagerInterface  $storeManager
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Framework\App\ProductMetadata $productMetadata,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
@@ -1219,7 +1219,27 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    /**
+     * Product review from config to link the product link.
+     *
+     * @param $website
+     *
+     * @return mixed
+     */
+    public function getReviewReminderAnchor($website)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_ANCHOR,
+            $website
+        );
+    }
 
+
+    /**
+     * Dynamic styles from config.
+     * 
+     * @return array
+     */
     public function getDynamicStyles()
     {
         return $dynamicStyle = array(
@@ -1277,5 +1297,90 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING
             )
         );
+    }
+
+
+    public function getReviewDisplayType($website)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_REVIEW_DISPLAY_TYPE,
+            $website
+        );
+    }
+
+
+    /**
+     * get config value on website level
+     *
+     * @param $path
+     * @param $website
+     * @return mixed
+     */
+    public function getReviewWebsiteSettings($path, $website)
+    {
+        return $this->getWebsiteConfig($path, $website);
+    }
+
+    /**
+     * @param $website
+     * @return boolean
+     */
+    public function isReviewReminderEnabled($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEWS_ENABLED, $website);
+    }
+
+    /**
+     * @param $website
+     * @return string
+     */
+    public function getOrderStatus($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_STATUS, $website);
+    }
+
+    /**
+     * @param $website
+     * @return int
+     */
+    public function getDelay($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DELAY, $website);
+    }
+
+    /**
+     * @param $website
+     * @return boolean
+     */
+    public function isNewProductOnly($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_NEW_PRODUCT, $website);
+    }
+
+    /**
+     * @param $website
+     * @return int
+     */
+    public function getCampaign($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_CAMPAIGN, $website);
+    }
+
+    /**
+     * @param $website
+     * @return string
+     */
+    public function getAnchor($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_ANCHOR, $website);
+    }
+
+    /**
+     * @param $website
+     * @return string
+     */
+    public function getDisplayType($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE, $website);
     }
 }
