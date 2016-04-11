@@ -4,10 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
 class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
-    public function __construct($collection)
-    {
-        parent::__construct($collection);
-    }
+    
 
     protected function _processCollection($collection)
     {

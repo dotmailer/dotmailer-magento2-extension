@@ -1,12 +1,9 @@
 <?php
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
-class Delete extends \Dotdigitalgroup_Email\Model\Sync\Contact\Bulk
+class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
-    public function __construct($collection)
-    {
-        parent::__construct($collection);
-    }
+
 
     protected function _processCollection($collection)
     {

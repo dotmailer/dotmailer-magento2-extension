@@ -27,7 +27,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        //\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []
     ) {
@@ -35,7 +35,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->_wishlistFactory = $wishlistFactory;
         $this->_customerFactory = $customerFactory;
         $this->helper           = $helper;
-        $this->scopeManager = $scopeConfig;
+        //$this->scopeManager = $scopeConfig;
         $this->priceHelper      = $priceHelper;
     }
 

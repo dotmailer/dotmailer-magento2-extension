@@ -95,7 +95,7 @@ $products = $this->getLoadedProductCollection();
 
 <?php foreach ($products as $key => $_product) :?>
     <?php  if($i == 0):?>
-        <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12;'><tr>
+        <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12';><tr>
     <?php endif;?>
     <?php if($mode == 'list'):?>
         </tr><tr>
@@ -103,12 +103,12 @@ $products = $this->getLoadedProductCollection();
 
     <td style="vertical-align: text-top; padding-right: 2px;">
         <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>"
-           class="product-image">
-            <?php echo $block->getImage($_product, 'category_page_grid')->toHtml();?>
-
-
+           class="product-image"><?php echo $block->getImage($_product, 'category_page_grid')->toHtml();?>
+            </a>
         <div class="product-name" align="center"><b><?php echo $this->escapeHtml(substr($_product->getName(), 0, 40));?></b></div>
-        <div class="product-price" align="center"><?php echo $this->getPriceHtml($_product, true) ?></div>
+        <div class="product-price" align="center">
+            <?php echo $this->getLayout()->getBlock('ddg.product.price.render.default')->render('final_price', $_product, array());?>
+        </div>
         <div align="center">
             <a class="proudct-url" href="<?php echo $_product->getProductUrl();?>">
                 <?php

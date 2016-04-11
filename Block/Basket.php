@@ -88,7 +88,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
                 ? 'In Stock'
                 : 'Out of stock';
             $total   = $this->priceHelper->currency(
-                $quoteItem->getBaseRowTotalInclTax()
+                $quoteItem->getPrice()
             );
 
             $productUrl  = $_product->getProductUrl();

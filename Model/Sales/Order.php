@@ -12,6 +12,8 @@ class Order
 	/**
 	 * @var string
 	 */
+	public $dateTime;
+
 	/**
 	 * Global number of orders
 	 *
@@ -20,14 +22,11 @@ class Order
 	protected $_countOrders = 0;
 
 	protected $_reviewCollection = array();
-
 	protected $_helper;
 	protected $_objectManager;
 	protected $_resource;
 	protected $_scopeConfig;
-	protected $_reviewHelper;
 	protected $_storeManager;
-	public $dateTime;
 	protected $_campaignFactory;
 	protected $_campaignCollection;
 	protected $_orderCollection;
@@ -44,7 +43,6 @@ class Order
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Stdlib\Datetime $datetime,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Dotdigitalgroup\Email\Helper\Review $reviewHelper,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\ObjectManagerInterface $objectManager
 	) {
@@ -54,7 +52,6 @@ class Order
 		$this->_campaignCollection = $campaignCollection;
 		$this->_campaignFactory    = $campaignFactory;
 		$this->_helper             = $helper;
-		$this->_reviewHelper       = $reviewHelper;
 		$this->_resource           = $resource;
 		$this->dateTime            = $datetime;
 		$this->_storeManager       = $storeManagerInterface;
@@ -87,7 +84,7 @@ class Order
 	protected function registerCampaign($collection, $websiteId)
 	{
 		//review campaign id
-		$campaignId = $this->_reviewHelper->getCampaign($websiteId);
+		$campaignId = $this->_helper->getCampaign($websiteId);
 
 		if ($campaignId) {
 			foreach ($collection as $order) {
@@ -133,8 +130,8 @@ class Order
 					\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
 					$website
 				)
-				&& $this->_reviewHelper->getOrderStatus($website)
-				&& $this->_reviewHelper->getDelay($website)
+				&& $this->_helper->getOrderStatus($website)
+				&& $this->_helper->getDelay($website)
 			) {
 
 				$storeIds = $website->getStoreIds();
@@ -142,10 +139,10 @@ class Order
 					continue;
 				}
 
-				$orderStatusFromConfig = $this->_reviewHelper->getOrderStatus(
+				$orderStatusFromConfig = $this->_helper->getOrderStatus(
 					$website
 				);
-				$delayInDays           = $this->_reviewHelper->getDelay(
+				$delayInDays           = $this->_helper->getDelay(
 					$website
 				);
 

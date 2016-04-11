@@ -72,12 +72,15 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
 
-    public function getMode()
+    public function getMode($mode = 'list')
     {
-        $website = $this->_storeManager->getStore($this->getOrder()->getStoreId())
-            ->getWebsite();
-        $mode    = $this->helper->getReviewDisplayType($website);
-
+        if ($this->getOrder()) {
+            $website = $this->_storeManager->getStore(
+                $this->getOrder()->getStoreId()
+            )
+                ->getWebsite();
+            $mode    = $this->helper->getReviewDisplayType($website);
+        }
         return $mode;
     }
 

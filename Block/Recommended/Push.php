@@ -26,7 +26,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        //\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
@@ -36,7 +36,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->_productFactory   = $productFactory;
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
-        $this->scopeManager = $scopeConfig;
+        //$this->scopeManager = $scopeConfig;
         $this->storeManager      = $this->_storeManager;
     }
 

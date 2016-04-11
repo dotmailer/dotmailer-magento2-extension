@@ -1,7 +1,6 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Block;
-
 class Coupon extends \Magento\Framework\View\Element\Template
 {
 

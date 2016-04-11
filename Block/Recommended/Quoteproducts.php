@@ -25,7 +25,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     public function __construct(
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        //\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -38,7 +38,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->_quoteFactory      = $quoteFactory;
         $this->_recommendedHelper = $recommendedHelper;
         $this->priceHelper        = $priceHelper;
-        $this->scopeManager = $scopeConfig;
+        //$this->scopeManager = $scopeConfig;
         $this->storeManager       = $this->_storeManager;
     }
 

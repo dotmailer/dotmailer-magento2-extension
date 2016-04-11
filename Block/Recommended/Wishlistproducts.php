@@ -31,7 +31,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        //\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
@@ -42,7 +42,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->_customerFactory  = $customerFactory;
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
-        $this->scopeManager = $scopeConfig;
+        //$this->scopeManager = $scopeConfig;
         $this->storeManager      = $this->_storeManager;
         $this->_wishlistFactory  = $wishlistFactory;
         $this->_productFactory   = $productFactory;

@@ -102,8 +102,7 @@ $website = $this->getWebsite();
         <td style="vertical-align: text-top; padding-right: 2px;">
 
             <?php echo $block->getImage($item, 'category_page_grid')->toHtml(); ?>
-
-
+            
             <div class="product-name" align="center"><b><?php echo substr($this->escapeHtml($item->getName()), 0, 40);?></b></div>
             <div align="center">
                 <a class="proudct-url" href="<?php echo $this->getReviewItemUrl($item->getId()) .
