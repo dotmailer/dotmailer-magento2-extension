@@ -35,8 +35,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper = $helper;
-
+        $this->helper          = $helper;
         $this->priceHelper     = $priceHelper;
         $this->_orderFactory   = $orderFactory;
         $this->storeManager    = $this->_storeManager;
@@ -67,6 +66,50 @@ class Feefo extends \Magento\Framework\View\Element\Template
             "<a href=\"$vendorUrl\" target='_blank'>
                 <img alt='Feefo logo' border='0' src=\"$fullUrl\" title='See what our customers say about us'>
              </a>";
+    }
+
+    /**
+     * get product reviews from feefo
+     *
+     * @return array
+     */
+    public function getProductsReview()
+    {
+        $check    = true;
+        $reviews  = array();
+        $feefoDir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
+            . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup'
+            . DIRECTORY_SEPARATOR .
+            'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR
+            . 'frontend' . DIRECTORY_SEPARATOR . 'templates'
+            . DIRECTORY_SEPARATOR . 'feefo';
+        $logon    = $this->helper->getFeefoLogon();
+        $limit    = $this->helper->getFeefoReviewsPerProduct();
+        $products = $this->getQuoteProducts();
+
+        foreach ($products as $sku => $name) {
+            $url = "http://www.feefo.com/feefo/xmlfeed.jsp?logon=" . $logon
+                . "&limit=" . $limit . "&vendorref=" . $sku
+                . "&mode=productonly";
+            $doc = new \DOMDocument();
+            $xsl = new \XSLTProcessor();
+            if ($check) {
+                $doc->load($feefoDir . DIRECTORY_SEPARATOR . "feedback.xsl");
+            } else {
+                $doc->load(
+                    $feefoDir . DIRECTORY_SEPARATOR . "feedback-no-th.xsl"
+                );
+            }
+            $xsl->importStyleSheet($doc);
+            $doc->loadXML(file_get_contents($url));
+            $productReview = $xsl->transformToXML($doc);
+            if (strpos($productReview, '<td') !== false) {
+                $reviews[$name] = $xsl->transformToXML($doc);
+            }
+            $check = false;
+        }
+
+        return $reviews;
     }
 
     /**
@@ -101,49 +144,5 @@ class Feefo extends \Magento\Framework\View\Element\Template
         }
 
         return $products;
-    }
-
-    /**
-     * get product reviews from feefo
-     *
-     * @return array
-     */
-    public function getProductsReview()
-    {
-        $check     = true;
-        $reviews   = array();
-        $feefo_dir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
-            . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup'
-            . DIRECTORY_SEPARATOR .
-            'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR
-            . 'frontend' . DIRECTORY_SEPARATOR . 'templates'
-            . DIRECTORY_SEPARATOR . 'feefo';
-        $logon     = $this->helper->getFeefoLogon();
-        $limit     = $this->helper->getFeefoReviewsPerProduct();
-        $products  = $this->getQuoteProducts();
-
-        foreach ($products as $sku => $name) {
-            $url = "http://www.feefo.com/feefo/xmlfeed.jsp?logon=" . $logon
-                . "&limit=" . $limit . "&vendorref=" . $sku
-                . "&mode=productonly";
-            $doc = new \DOMDocument();
-            $xsl = new \XSLTProcessor();
-            if ($check) {
-                $doc->load($feefo_dir . DIRECTORY_SEPARATOR . "feedback.xsl");
-            } else {
-                $doc->load(
-                    $feefo_dir . DIRECTORY_SEPARATOR . "feedback-no-th.xsl"
-                );
-            }
-            $xsl->importStyleSheet($doc);
-            $doc->loadXML(file_get_contents($url));
-            $productReview = $xsl->transformToXML($doc);
-            if (strpos($productReview, '<td') !== false) {
-                $reviews[$name] = $xsl->transformToXML($doc);
-            }
-            $check = false;
-        }
-
-        return $reviews;
     }
 }

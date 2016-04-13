@@ -5,12 +5,11 @@ namespace Dotdigitalgroup\Email\Block;
 class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
-    protected $_quote;
     public $helper;
     public $priceHelper;
+    protected $_quote;
     protected $_quoteFactory;
     protected $_emulationFactory;
-
 
     /**
      * Basket constructor.
@@ -52,12 +51,9 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 
             return false;
         }
-
-        $quoteId = $params['quote_id'];
-
+        $quoteId    = $params['quote_id'];
         $quoteModel = $this->_quoteFactory->create()
             ->load($quoteId);
-
         //check for any quote for this email, don't want to render further
         if ( ! $quoteModel->getId()) {
             $this->helper->log('no quote found for ' . $quoteId);
@@ -77,7 +73,40 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         $appEmulation = $this->_emulationFactory->create();
         $appEmulation->startEnvironmentEmulation($storeId);
 
-        return $quoteModel->getAllItems();
+        $quoteItems = $quoteModel->getAllItems();
+
+        $itemsData = array();
+
+        foreach ($quoteItems as $quoteItem) {
+            if ($quoteItem->getParentItemId() != null) {
+                continue;
+            }
+
+            $_product = $quoteItem->getProduct();
+
+            $inStock = ($_product->isInStock())
+                ? 'In Stock'
+                : 'Out of stock';
+            $total   = $this->priceHelper->currency(
+                $quoteItem->getPrice()
+            );
+
+            $productUrl  = $_product->getProductUrl();
+            $grandTotal  = $this->priceHelper->currency(
+                $this->getGrandTotal()
+            );
+            $itemsData[] = array(
+                'grandTotal' => $grandTotal,
+                'total'      => $total,
+                'inStock'    => $inStock,
+                'productUrl' => $productUrl,
+                'product'    => $_product,
+                'qty'        => $quoteItem->getQty()
+
+            );
+        }
+
+        return $itemsData;
     }
 
     /**
@@ -122,4 +151,19 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_TEXT
         );
     }
+
+
+    /**
+     * Get dynamic style configuration.
+     *
+     * @return array
+     */
+    public function getDynamicStyle()
+    {
+
+        $dynamicStyle = $this->helper->getDynamicStyles();
+
+        return $dynamicStyle;
+    }
+
 }

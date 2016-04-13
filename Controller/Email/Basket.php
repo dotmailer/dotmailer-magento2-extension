@@ -7,7 +7,7 @@ class Basket extends \Dotdigitalgroup\Email\Controller\Response
 {
 
 	/**
-	 * Basket page to display the user items with specific email.
+	 * Abandoned cart page.
 	 */
 	public function execute()
 	{
@@ -15,6 +15,5 @@ class Basket extends \Dotdigitalgroup\Email\Controller\Response
 		$this->authenticate();
 		$this->_view->loadLayout();
 		$this->_view->renderLayout();
-		//$this->checkContentNotEmpty( $this->_view->getLayout()->getOutput() );
 	}
 }

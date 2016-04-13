@@ -1,61 +1,70 @@
 <?php
 $i = 0;
-//display mode(grid,list)
 $mode = $this->getMode();
 $products = $this->getLoadedProductCollection();
-$image = 'category_page_list';
-$priceHelper = $this->priceHelper;
 ?>
 
-<?php if(count($products)): ?>
+<?php if (!empty($products)): ?>
     <?php
-    $name_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE));
-    $link_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE));
-    $price_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE));?>
+    $dynamicStyle = $this->helper->getDynamicStyles();
+    ?>
     <style>
         .product-name{
-            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR);?>;
-            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE);?>;
-        <?php if(in_array('bold', $name_style)): ?>
+            color: <?php echo $dynamicStyle['nameColor'];?>;
+            font-size: <?php echo $dynamicStyle['fontSize'];?>;
+        <?php if(in_array('bold', $dynamicStyle['nameStyle'])): ?>
             font-weight: bold;
         <?php endif; ?>
-        <?php if(in_array('italic', $name_style)): ?>
+        <?php if(in_array('italic', $dynamicStyle['nameStyle'])): ?>
             font-style: italic;
         <?php endif; ?>
-        <?php if(in_array('underline', $name_style)): ?>
+        <?php if(in_array('underline', $dynamicStyle['nameStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-price{
-            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR);?>;
-            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE);?>;
-        <?php if(in_array('bold', $price_style)): ?>
+            color: <?php echo $dynamicStyle['priceColor'];?>;
+            font-size: <?php echo $dynamicStyle['priceFontSize'];?>;
+        <?php if(in_array('bold', $dynamicStyle['priceStyle'])): ?>
             font-weight: bold;
         <?php endif; ?>
-        <?php if(in_array('italic', $price_style)): ?>
+        <?php if(in_array('italic', $dynamicStyle['priceStyle'])): ?>
             font-style: italic;
         <?php endif; ?>
-        <?php if(in_array('underline', $price_style)): ?>
+        <?php if(in_array('underline', $dynamicStyle['priceStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .proudct-url{
-            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR);?>;
-            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE);?>;
-        <?php if(in_array('bold', $link_style)): ?>
+            color: <?php echo $dynamicStyle['urlColor'];?>;
+            font-size: <?php echo $dynamicStyle['urlFontSize'];?>;
+        <?php if(in_array('bold', $dynamicStyle['linkStyle'])): ?>
             font-weight: bold;
         <?php endif; ?>
-        <?php if(in_array('italic', $link_style)): ?>
+        <?php if(in_array('italic', $dynamicStyle['linkStyle'])): ?>
             font-style: italic;
         <?php endif; ?>
-        <?php if(in_array('underline', $link_style)): ?>
+        <?php if(in_array('underline', $dynamicStyle['linkStyle'])): ?>
+            text-decoration: underline;
+        <?php endif; ?>
+        }
+        .other-text{
+            color: <?php echo $dynamicStyle['otherColor'];?>;
+            font-size: <?php echo $dynamicStyle['otherFontSize'];?>;
+        <?php if(in_array('bold', $dynamicStyle['otherStyle'])): ?>
+            font-weight: bold;
+        <?php endif; ?>
+        <?php if(in_array('italic', $dynamicStyle['otherStyle'])): ?>
+            font-style: italic;
+        <?php endif; ?>
+        <?php if(in_array('underline', $dynamicStyle['otherStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-table{
-            font-family: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT);?>;
-            background-color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR);?>;
-            width: 100%;
+            font-family: <?php echo $dynamicStyle['docFont'];?>;
+            background-color: <?php echo $dynamicStyle['docBackgroundColor'];?>;
+            width: 100% !important;
         }
         .product-table img{
             display: block;
@@ -67,7 +76,7 @@ $priceHelper = $this->priceHelper;
             padding-bottom: 10px;
         }
         /** Styling from config field **/
-        <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING);?>
+        <?php echo $dynamicStyle['dynamicStyling'];?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
@@ -83,33 +92,30 @@ $priceHelper = $this->priceHelper;
         }
     </style>
 <?php endif; ?>
+
 <?php foreach ($products as $key => $_product) :?>
-	<?php //skip products not salable
-		if (! $_product->getIsSalable())
-			continue; ?>
-		<?php  if($i == 0):?>
-			<table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size="12";'><tr>
-		<?php endif;?>
-		<?php if($mode == 'list'):?>
-			</tr><tr>
-		<?php endif;?>
-		<?php
-			$total = $priceHelper->currency($_product->getPrice(), true);
-		?>
-        <td style="vertical-align: text-top; padding-right: 2px;">
-        <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel(
-	        $_product, 'small_image'), null, true) ?>" class="product-image">
-            <?php echo $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
-        </a>
-        <div class="product-name" align="center"><b><?php echo substr($_product->getName(), 0, 40);?></b></div>
-        <div class="product-price" align="center"><?php echo $total;?></div>
+    <?php  if($i == 0):?>
+        <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12';><tr>
+    <?php endif;?>
+    <?php if($mode == 'list'):?>
+        </tr><tr>
+    <?php endif;?>
+
+    <td style="vertical-align: text-top; padding-right: 2px;">
+        <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>"
+           class="product-image"><?php echo $block->getImage($_product, 'category_page_grid')->toHtml();?>
+            </a>
+        <div class="product-name" align="center"><b><?php echo $this->escapeHtml(substr($_product->getName(), 0, 40));?></b></div>
+        <div class="product-price" align="center">
+            <?php echo $this->getLayout()->getBlock('ddg.product.price.render.default')->render('final_price', $_product, array());?>
+        </div>
         <div align="center">
             <a class="proudct-url" href="<?php echo $_product->getProductUrl();?>">
                 <?php
-                    if($urlText = $this->getTextForUrl($_product->getStoreId()))
-                        echo $urlText;
-                    else
-                        echo 'View Now';
+                if ($urlText = $this->getTextForUrl($_product->getStoreId()))
+                    echo $this->escapeHtml($urlText);
+                else
+                    echo __('View Now');
                 ?>
             </a>
         </div>
