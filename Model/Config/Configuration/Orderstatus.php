@@ -31,7 +31,7 @@ class Orderstatus
         foreach ($statuses as $status) {
             $options[] = array(
                 'value' => $status['value'],
-                'label' => $status['label']->getText()
+                'label' => $status['label']
             );
         }
 
