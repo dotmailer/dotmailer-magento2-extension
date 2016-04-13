@@ -248,7 +248,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 
 		}
 
-		return $period->tostring(\Zend_Date::ISO_8601);
+		return $period->toString(\Zend_Date::ISO_8601);
 	}
 
 	public function getProductPushIds()
