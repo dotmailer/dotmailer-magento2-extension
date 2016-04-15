@@ -27,7 +27,7 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
         if ($apiEnabled) {
             $savedCampaigns = $this->_registry->registry('campaigns');
 
-            if ($savedCampaigns) {
+            if (isset($savedCampaigns)) {
                 $campaigns = $savedCampaigns;
             } else {
                 //grab the datafields request and save to register
