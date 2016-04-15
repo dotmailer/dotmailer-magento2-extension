@@ -47,32 +47,26 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * If it's configured to capture on shipment - do this
-     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if ($observer->getEvent()->getObject() instanceof
-            \Magento\Wishlist\Model\Wishlist
+        //wishlist
+        $wishlist = $observer->getEvent()->getObject()->getData();
+        //required data for checking the new instance of wishlist with items in it.
+        if (is_array($wishlist) && isset($wishlist['customer_id'])
+            && isset($wishlist['wishlist_id'])
         ) {
-            //wishlist
-            $wishlist = $observer->getEvent()->getObject()->getData();
-            //required data for checking the new instance of wishlist with items in it.
-            if (is_array($wishlist) && isset($wishlist['customer_id'])
-                && isset($wishlist['wishlist_id'])
-            ) {
 
-                $wishlistModel = $this->_wishlist->create()
-                    ->load($wishlist['wishlist_id']);
-                $itemsCount    = $wishlistModel->getItemsCount();
-                //wishlist items found
-                if ($itemsCount) {
-                    //save wishlist info in the table
-                    $this->_registerWishlist($wishlist);
-                }
+            $wishlistModel = $this->_wishlist->create()
+                ->load($wishlist['wishlist_id']);
+            $itemsCount    = $wishlistModel->getItemsCount();
+            //wishlist items found
+            if ($itemsCount) {
+                //save wishlist info in the table
+                $this->_registerWishlist($wishlist);
             }
         }
     }
@@ -128,7 +122,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->error((string)$e, array());
         }
     }
 }
