@@ -121,6 +121,10 @@
                     <label>Billing Telephone</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
+                <field id="billing_company" type="select" translate="label" sortOrder="225" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Billing Company</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
                 <field id="delivery_address_1" type="select" translate="label" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery Address 1</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
@@ -147,6 +151,10 @@
                 </field>
                 <field id="delivery_telephone" type="select" translate="label" sortOrder="290" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery Telephone</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
+                <field id="delivery_company" type="select" translate="label" sortOrder="295" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Delivery Company</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="sales" translate="label" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1">

@@ -448,6 +448,10 @@ class Contact
                 null, 'left'
             )
             ->joinAttribute(
+                'billing_company', 'customer_address/company', 'default_billing',
+                null, 'left'
+            )
+            ->joinAttribute(
                 'shipping_street', 'customer_address/street',
                 'default_shipping', null, 'left'
             )
@@ -469,6 +473,10 @@ class Contact
             )
             ->joinAttribute(
                 'shipping_region', 'customer_address/region',
+                'default_shipping', null, 'left'
+            )
+            ->joinAttribute(
+                'shipping_company', 'customer_address/company',
                 'default_shipping', null, 'left'
             )
             ->addAttributeToFilter('entity_id', array('in' => $customerIds));

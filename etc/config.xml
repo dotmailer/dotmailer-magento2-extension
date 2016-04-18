@@ -273,6 +273,8 @@
                 <custom_attributes></custom_attributes>
                 <validator></validator>
                 <last_increment_id></last_increment_id>
+                <billing_company></billing_company>
+                <delivery_company></delivery_company>
             </customer_data>
             <dynamic_datafield>
                 <datafield_name></datafield_name>
