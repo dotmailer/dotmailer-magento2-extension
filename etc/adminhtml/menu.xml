@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Backend/etc/menu.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Dotdigitalgroup_Email::marketing_automation" title="Marketing Automation" module="Dotdigitalgroup_Email" sortOrder="100" parent="Magento_Backend::marketing" resource="Dotdigitalgroup_Email::contact"/>
         <add id="Dotdigitalgroup_Email::automation_studio" title="Automation Studio" module="Dotdigitalgroup_Email" sortOrder="120" action="dotdigitalgroup_email/studio" resource="Dotdigitalgroup_Email::studio" parent="Dotdigitalgroup_Email::marketing_automation" />
