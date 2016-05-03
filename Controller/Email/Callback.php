@@ -48,10 +48,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         $result = $resources->GetContactsImportReport('11384ace-b722-4e56-b6d3-a1b8ecdca2b3');
 
         $response = $resources->GetAccountInfo();
-var_dump($result);
 
-
-return;
         $code   = $this->getRequest()->getParam('code', false);
         $userId = $this->getRequest()->getParam('state');
         //load admin user

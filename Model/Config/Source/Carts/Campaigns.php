@@ -27,13 +27,12 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
         if ($apiEnabled) {
             $savedCampaigns = $this->_registry->registry('campaigns');
 
-            if ($savedCampaigns) {
+            if ($savedCampaigns || empty($savedCampaigns)) {
                 $campaigns = $savedCampaigns;
             } else {
                 //grab the datafields request and save to register
-                $client = $this->_helper->getWebsiteApiClient();
-
-                $campaigns = $client->GetCampaigns();
+                $client    = $this->_helper->getWebsiteApiClient();
+                $campaigns = $client->getCampaigns();
                 $this->_registry->register('campaigns', $campaigns);
             }
 
@@ -44,10 +43,12 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
             } else {
                 //loop for all campaing option
                 foreach ($campaigns as $campaign) {
-                    $fields[] = array(
-                        'value' => (string)$campaign->id,
-                        'label' => addslashes((string)$campaign->name)
-                    );
+                    if (isset($campaign->name)) {
+                        $fields[] = array(
+                            'value' => $campaign->id,
+                            'label' => addslashes($campaign->name)
+                        );
+                    }
                 }
             }
         }

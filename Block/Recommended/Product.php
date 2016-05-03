@@ -8,7 +8,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
     public $helper;
     public $priceHelper;
-    public $scopeManager;
     public $recommendedHelper;
     protected $_orderFactory;
     protected $_productFactory;

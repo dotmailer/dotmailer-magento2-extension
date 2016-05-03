@@ -118,13 +118,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if (in_array($ipAddress, $ipArray)) {
                 return true;
             }
-
-            return false;
         } else {
             //empty ip list from configuration will ignore the validation
             return true;
         }
 
+        return false;
     }
 
     protected function _getConfigValue($path, $contextScope = 'default',
@@ -334,8 +333,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if ( ! $apiUsername || ! $apiPassword) {
             return false;
         }
-
-        //@todo replace the client with the wrapper
+        
         $credentials = array(
             Container::USERNAME => $apiUsername,
             Container::PASSWORD => $apiPassword

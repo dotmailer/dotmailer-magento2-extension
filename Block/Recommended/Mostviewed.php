@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
-use Magento\Catalog\Model\Product;
 
 class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
@@ -16,6 +15,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     protected $_categoryFactory;
     protected $_productFactory;
     protected $_productCollectionFactory;
+    protected $_reportProductCollection;
 
     /**
      * Mostviewed constructor.
@@ -69,7 +69,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             ->getTimestamp());
 
         $reportProductCollection = $this->_reportProductCollection->create()
-            ->addViewsCount($from, $to->tostring(\Zend_Date::ISO_8601))
+            ->addViewsCount($from, $to->toString(\Zend_Date::ISO_8601))
             ->setPageSize($limit);
 
         //filter collection by category by category_id
