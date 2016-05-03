@@ -34,13 +34,12 @@ class Order
     protected $_salesOrderFactory;
     protected $_connectorOrderFactory;
     protected $_accountFactory;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
 
 
     /**
      * Order constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory        $proccessorFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
      * @param \Magento\Sales\Model\OrderFactory                     $salesOrderFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory   $connectorOrderFactory
@@ -52,7 +51,7 @@ class Order
      * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
@@ -63,7 +62,7 @@ class Order
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
-        $this->_proccessorFactory     = $proccessorFactory;
+        $this->_importerFactory     = $importerFactory;
         $this->_connectorOrderFactory = $connectorOrderFactory;
         $this->_accountFactory        = $accountFactory;
         $this->_salesOrderFactory     = $salesOrderFactory;
@@ -108,11 +107,11 @@ class Order
                 //$this->_helper->debug('orders', $orders);
                 $this->_helper->error('orders', $orders);
                 try {
-                    $this->_proccessorFactory->create()
+                    $this->_importerFactory->create()
                         ->registerQueue(
-                            \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
+                            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
                             $orders,
-                            \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                             $website[0]
                         );
                 } catch (\Exception $e) {
@@ -135,11 +134,11 @@ class Order
                         . $order->id
                     );
                     //register in queue with importer
-                    $this->_proccessorFactory->create()
+                    $this->_importerFactory->create()
                         ->registerQueue(
-                            \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_ORDERS,
+                            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
                             $order,
-                            \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
+                            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
                             $website[0]
                         );
                     $this->_helper->log(

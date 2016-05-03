@@ -9,41 +9,39 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     public $helper;
     public $storeManager;
     public $priceHelper;
-    public $reviewHelper;
     protected $_orderFactory;
     protected $_reviewFactory;
     protected $_reviewHelper;
+    protected $_productCollection;
 
     /**
      * Order constructor.
      *
      * @param \Magento\Review\Model\ReviewFactory    $reviewFactory
-     * @param \Dotdigitalgroup\Email\Helper\Review   $reviewHelper
      * @param \Magento\Sales\Model\OrderFactory      $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data     $helper
-     * @param \Dotdigitalgroup\Email\Helper\Review   $reviewHelper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param array                                  $data
      */
     public function __construct(
+        \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection,
         \Magento\Review\Model\ReviewFactory $reviewFactory,
-        \Dotdigitalgroup\Email\Helper\Review $reviewHelper,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\Review $reviewHelper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
-        parent::__construct($context, $data);
-        $this->_reviewHelper  = $reviewHelper;
+         
+        $this->_productCollection = $productCollection;
         $this->_reviewFactory = $reviewFactory;
         $this->_orderFactory  = $orderFactory;
         $this->helper         = $helper;
-        $this->reviewHelper   = $reviewHelper;
         $this->storeManager   = $this->_storeManager;
         $this->priceHelper    = $priceHelper;
+
+        parent::__construct($context, $data);
     }
 
     /**
@@ -73,6 +71,19 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         return $order;
     }
 
+
+    public function getMode($mode = 'list')
+    {
+        if ($this->getOrder()) {
+            $website = $this->_storeManager->getStore(
+                $this->getOrder()->getStoreId()
+            )
+                ->getWebsite();
+            $mode    = $this->helper->getReviewDisplayType($website);
+        }
+        return $mode;
+    }
+
     /**
      * Filter items for review. If a customer has already placed a review for a product then exclude the product.
      *
@@ -94,7 +105,7 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
             return $items;
         }
 
-        if ( ! $this->_reviewHelper->isNewProductOnly($websiteId)) {
+        if ( ! $this->helper->isNewProductOnly($websiteId)) {
             return $items;
         }
 
@@ -115,5 +126,28 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         return $items;
+    }
+
+
+    public function getItems()
+    {
+        $order = $this->getOrder();
+        $items = $order->getAllVisibleItems();
+        $productIds = array();
+        //get the product ids for the collection
+        foreach ($items as $item) {
+            $productIds[] = $item->getProductId();
+        }
+        $items = $this->_productCollection
+            ->addAttributeToSelect('*')
+            ->addFieldToFilter('entity_id', array('in' => $productIds));
+
+        return $items;
+    }
+
+    public function getReviewItemUrl($productId)
+    {
+
+        return $this->_urlBuilder->getUrl('review/product/list', array('id' => $productId));
     }
 }

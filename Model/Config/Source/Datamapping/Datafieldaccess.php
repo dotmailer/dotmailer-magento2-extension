@@ -11,8 +11,8 @@ class Datafieldaccess implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         $dataType = array(
-            array('value' => 'Private', 'label' => 'Private'),
-            array('value' => 'Public', 'label' => 'Public'),
+            array('value' => 'Private', 'label' => __('Private')),
+            array('value' => 'Public', 'label' => __('Public')),
         );
 
         return $dataType;

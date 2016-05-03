@@ -2,29 +2,21 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+
 class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
     public $helper;
     public $priceHelper;
+    public $scopeManager;
     public $recommendedHelper;
     protected $_orderFactory;
     protected $_productFactory;
     protected $_clientFactory;
 
 
-    /**
-     * Product constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
-     * @param \Magento\Catalog\Model\ProductFactory                   $productFactory
-     * @param \Dotdigitalgroup\Email\Helper\Recommended               $recommended
-     * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
-     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context                  $context
-     * @param array                                                   $data
-     */
     public function __construct(
+        \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -34,6 +26,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
+        $this->_orderFactory = $orderFactory;
         $this->_clientFactory    = $clientFactory;
         $this->recommendedHelper = $recommended;
         $this->_productFactory   = $productFactory;
@@ -55,7 +48,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         $orderModel = $this->_orderFactory->create()
             ->load($orderId);
         //number of product items to be displayed
-        $limit      = $this->recommendedHelper->create()
+        $limit      = $this->recommendedHelper
             ->getDisplayLimitByMode($mode);
         $orderItems = $orderModel->getAllItems();
         $numItems   = count($orderItems);
@@ -191,5 +184,23 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         return $store->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
+    }
+
+
+    /**
+     * Price html block.
+     *
+     * @param $product
+     *
+     * @return string
+     */
+    public function getPriceHtml($product)
+    {
+
+        $this->setTemplate('Magento_Catalog::product/price/amount/default.phtml');
+
+        $this->setProduct($product);
+
+        return $this->toHtml();
     }
 }

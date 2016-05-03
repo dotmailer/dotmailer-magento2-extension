@@ -6,6 +6,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
 {
 
     protected $_helper;
+    protected $_registry;
 
 
     /**
@@ -53,7 +54,8 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
             } else {
                 //grab the datafields request and save to register
                 $client     = $this->_helper->getWebsiteApiClient();
-                $datafields = $client->getDatafields();
+                $datafields = $client->GetDataFields();
+                
                 $this->_registry->register('datafields', $datafields);
             }
 
@@ -67,12 +69,10 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
             } else {
                 //loop for all datafields option
                 foreach ($datafields as $datafield) {
-                    if (isset($datafield->name)) {
-                        $fields[] = array(
-                            'value' => $datafield->name,
-                            'label' => $datafield->name
-                        );
-                    }
+                    $fields[] = array(
+                        'value' => (string)$datafield->name,
+                        'label' => (string)$datafield->name
+                    );
                 }
             }
         }

@@ -173,6 +173,7 @@
                     <label>Last Increment ID</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
+
                 <field id="total_refund" type="select" translate="label" sortOrder="380" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Total Refund</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
@@ -238,7 +239,7 @@
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="custom_attributes" translate="label" sortOrder="550" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Customer</label>
+                    <label></label>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
@@ -634,6 +635,10 @@
                     <label>Product Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
+                <!--<field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="1" showInWebsite="1" showInDefault="1">-->
+                    <!--<label>Best Sellers URL</label>-->
+                    <!--<frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>-->
+                <!--</field>-->
                 <field id="most_viewed_url" translate="comment label" sortOrder="180" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Most Viewed URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Mostviewed</frontend_model>
@@ -1093,6 +1098,10 @@
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>
+                <field id="importer_bulk_limit" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
+                    <label>Importer Bulk Limit</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Importer\Bulklimit</source_model>
+                </field>
             </group>
             <group id="sync_settings" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Sync Settings</label>
@@ -1110,7 +1119,7 @@
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Deletecontactids</frontend_model>
                 </field>
                 <field id="manual_sync_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Manyally Run Sync</label>
+                    <label>Manually Run Sync</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="contact_sync" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
@@ -1228,8 +1237,6 @@
                 <label>Dynamic Pages IP Restriction</label>
                 <field id="ip_addresses" translate="label" type="textarea" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Dynamic Pages IP Restriction</label>
-                    <comment>Enter ip addresses separated by comma (,). Always keep these ip's 94.143.111.2, 94.143.111.3 to stay secure,
-                        empty list will ignore security check.</comment>
                 </field>
             </group>
             <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">

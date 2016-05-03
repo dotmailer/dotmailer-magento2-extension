@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use \Dotdigitalgroup\Email\Helper\Config as EmailConfig;
-
+use DotMailer\Api\Container;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -21,9 +21,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Data constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Backend\Model\Auth\Session         $sessionModel
      * @param \Magento\Framework\App\ProductMetadata      $productMetadata
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Config\Model\ResourceModel\Config  $resourceConfig
      * @param \Magento\Framework\App\ResourceConnection   $adapter
      * @param \Magento\Framework\App\Helper\Context       $context
@@ -31,9 +31,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\StoreManagerInterface  $storeManager
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Framework\App\ProductMetadata $productMetadata,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
@@ -109,7 +109,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
             //remove white spaces
             foreach ($ipArray as $key => $ip) {
-                $ipArray[$key] = preg_replace('/\s+/', '', $ip);
+                $ipArray[$key] = trim($ip);
             }
 
             //ip address
@@ -118,17 +118,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if (in_array($ipAddress, $ipArray)) {
                 return true;
             }
+
+            return false;
         } else {
-            //empty ip list will ignore the validation
+            //empty ip list from configuration will ignore the validation
             return true;
         }
 
-        return false;
     }
 
-    protected function _getConfigValue(
-        $path,
-        $contextScope,
+    protected function _getConfigValue($path, $contextScope = 'default',
         $contextScopeId = null
     ) {
 
@@ -326,7 +325,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $website
      *
-     * @return bool
+     * @return \DotMailer\Api\Resources\Resources
      */
     public function getWebsiteApiClient($website = 0)
     {
@@ -336,12 +335,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
 
-        $client = $this->_objectManager->create(
-            'Dotdigitalgroup\Email\Model\Apiconnector\Client',
-            ['username' => $apiUsername, 'password' => $apiPassword]
+        //@todo replace the client with the wrapper
+        $credentials = array(
+            Container::USERNAME => $apiUsername,
+            Container::PASSWORD => $apiPassword
         );
 
-        return $client;
+        $resources = Container::newResources($credentials);
+
+        return $resources;
     }
 
     /**
@@ -993,6 +995,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Sync bulk limit.
+     *
+     * @param int $website
+     *
+     * @return mixed
+     */
+    public function getSyncBulkLimit($website = 0)
+    {
+        $website = $this->_storeManager->getWebsite($website);
+
+        return $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_IMPORTER_BULK_LIMIT,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $website
+        );
+    }
+
+    /**
      * Get the guest sync enabled value.
      *
      * @param int $websiteId
@@ -1197,5 +1217,170 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->_storeManager->getStore()->getUrl(
             'connector/ajax/emailcapture'
         );
+    }
+
+    /**
+     * Product review from config to link the product link.
+     *
+     * @param $website
+     *
+     * @return mixed
+     */
+    public function getReviewReminderAnchor($website)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_ANCHOR,
+            $website
+        );
+    }
+
+
+    /**
+     * Dynamic styles from config.
+     * 
+     * @return array
+     */
+    public function getDynamicStyles()
+    {
+        return $dynamicStyle = array(
+            'nameStyle'          => explode(
+                ',', $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE
+            )
+            ),
+            'priceStyle'         => explode(
+                ',', $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE
+            )
+            ),
+            'linkStyle'          => explode(
+                ',', $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE
+            )
+            ),
+            'otherStyle'         => explode(
+                ',', $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE
+            )
+            ),
+            'nameColor'          => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR
+            ),
+            'fontSize'           => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE
+            ),
+            'priceColor'         => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR
+            ),
+            'priceFontSize'      => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE
+            ),
+            'urlColor'           => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR
+            ),
+            'urlFontSize'        => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE
+            ),
+            'otherColor'         => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR
+            ),
+            'otherFontSize'      => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE
+            ),
+            'docFont'            => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT
+            ),
+            'docBackgroundColor' => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR
+            ),
+            'dynamicStyling'     => $this->_getConfigValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING
+            )
+        );
+    }
+
+
+    public function getReviewDisplayType($website)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_REVIEW_DISPLAY_TYPE,
+            $website
+        );
+    }
+
+
+    /**
+     * get config value on website level
+     *
+     * @param $path
+     * @param $website
+     * @return mixed
+     */
+    public function getReviewWebsiteSettings($path, $website)
+    {
+        return $this->getWebsiteConfig($path, $website);
+    }
+
+    /**
+     * @param $website
+     * @return boolean
+     */
+    public function isReviewReminderEnabled($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEWS_ENABLED, $website);
+    }
+
+    /**
+     * @param $website
+     * @return string
+     */
+    public function getOrderStatus($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_STATUS, $website);
+    }
+
+    /**
+     * @param $website
+     * @return int
+     */
+    public function getDelay($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DELAY, $website);
+    }
+
+    /**
+     * @param $website
+     * @return boolean
+     */
+    public function isNewProductOnly($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_NEW_PRODUCT, $website);
+    }
+
+    /**
+     * @param $website
+     * @return int
+     */
+    public function getCampaign($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_CAMPAIGN, $website);
+    }
+
+    /**
+     * @param $website
+     * @return string
+     */
+    public function getAnchor($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_ANCHOR, $website);
+    }
+
+    /**
+     * @param $website
+     * @return string
+     */
+    public function getDisplayType($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE, $website);
     }
 }

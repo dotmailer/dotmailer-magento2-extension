@@ -13,7 +13,7 @@ class Review
     protected $_objectManager;
     protected $_reviewIds;
     protected $_reviewFactory;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
     protected $_productFactory;
     protected $_customerFactory;
     protected $_connectorReviewFactory;
@@ -29,7 +29,6 @@ class Review
      * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory            $connectorFactory
      * @param \Magento\Customer\Model\CustomerFactory                        $customerFactory
      * @param \Magento\Catalog\Model\ProductFactory                          $productFactory
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory                 $proccessorFactory
      * @param \Magento\Review\Model\ReviewFactory                            $reviewFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                             $data
      * @param \Magento\Framework\App\ResourceConnection                      $resource
@@ -42,7 +41,7 @@ class Review
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
@@ -55,7 +54,7 @@ class Review
         $this->_customerFactory        = $customerFactory;
         $this->_productFactory         = $productFactory;
         $this->_reviewFactory          = $reviewFactory;
-        $this->_proccessorFactory      = $proccessorFactory;
+        $this->_importerFactory      = $importerFactory;
         $this->_helper                 = $data;
         $this->_resource               = $resource;
         $this->_dateTime               = $datetime;
@@ -94,11 +93,11 @@ class Review
                 $reviews = $this->_reviews[$website->getId()];
                 //send reviews as transactional data
                 //register in queue with importer
-                $this->_proccessorFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_REVIEWS,
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_REVIEWS,
                         $reviews,
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                         $website->getId()
                     );
                 //if no error then set imported

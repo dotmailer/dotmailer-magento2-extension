@@ -14,7 +14,7 @@ class ChangeContactSubscription
     protected $_contactFactory;
     protected $_subscriberFactory;
     protected $_automationFactory;
-    protected $_proccessor;
+    protected $_importerFactory;
 
     /**
      * ChangeContactSubscription constructor.
@@ -25,7 +25,6 @@ class ChangeContactSubscription
      * @param \Magento\Framework\Registry                    $registry
      * @param \Dotdigitalgroup\Email\Helper\Data             $data
      * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Model\Proccessor        $proccessor
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -34,7 +33,7 @@ class ChangeContactSubscription
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Dotdigitalgroup\Email\Model\Proccessor $proccessor
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
         $this->_automationFactory = $automationFactory;
         $this->_subscriberFactory = $subscriberFactory->create();
@@ -42,7 +41,7 @@ class ChangeContactSubscription
         $this->_helper            = $data;
         $this->_storeManager      = $storeManagerInterface;
         $this->_registry          = $registry;
-        $this->_proccessor        = $proccessor;
+        $this->_importerFactory   = $importerFactory->create();
     }
 
 
@@ -60,7 +59,9 @@ class ChangeContactSubscription
         $storeId          = $subscriber->getStoreId();
         $subscriberStatus = $subscriber->getSubscriberStatus();
         $websiteId
-                          = $this->_storeManager->getStore($subscriber->getStoreId())
+                          = $this->_storeManager->getStore(
+            $subscriber->getStoreId()
+        )
             ->getWebsiteId();
         //check if enabled
         if ( ! $this->_helper->isEnabled($websiteId)) {
@@ -76,10 +77,10 @@ class ChangeContactSubscription
                 //set contact as subscribed
                 $contactEmail->setSubscriberStatus($subscriberStatus)
                     ->setIsSubscriber('1');
-                $this->_proccessor->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
+                $this->_importerFactory->registerQueue(
+                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
                     array('email' => $email),
-                    \Dotdigitalgroup\Email\Model\Proccessor::MODE_SUBSCRIBER_RESUBSCRIBED,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
                     $websiteId
                 );
 
@@ -97,18 +98,18 @@ class ChangeContactSubscription
                 $contactId = $contactEmail->getContactId();
                 //get the contact id
                 if ( ! $contactId) {
-                    $this->_proccessor->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_SUBSCRIBER_UPDATE,
-                        array(
-                            'email' => $email,
-                            'id'    => $contactEmail->getId()
-                        ),
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_SUBSCRIBER_UPDATE,
+                    $this->_importerFactory->registerQueue(
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
+                        array('email' => $email,
+                              'id'    => $contactEmail->getId()),
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
                         $websiteId
                     );
                 }
                 $contactEmail->setIsSubscriber(null)
-                    ->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED);
+                    ->setSubscriberStatus(
+                        \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED
+                    );
             }
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
@@ -140,8 +141,10 @@ class ChangeContactSubscription
         $storeId = $subscriber->getStoreId();
         $store   = $this->_storeManager->getStore($storeId);
         $programId
-                 = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/subscriber_automation',
-            $websiteId);
+                 = $this->_helper->getWebsiteConfig(
+            'connector_automation/visitor_automation/subscriber_automation',
+            $websiteId
+        );
         //not mapped ignore
         if ( ! $programId) {
             return;
@@ -151,8 +154,10 @@ class ChangeContactSubscription
             $enrolment = $this->_automationFactory->create()
                 ->getCollection()
                 ->addFieldToFilter('email', $email)
-                ->addFieldToFilter('automation_type',
-                    \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER)
+                ->addFieldToFilter(
+                    'automation_type',
+                    \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
+                )
                 ->addFieldToFilter('website_id', $websiteId)
                 ->getFirstItem();
 
@@ -161,8 +166,12 @@ class ChangeContactSubscription
                 //save subscriber to the queue
                 $automation = $this->_automationFactory->create()
                     ->setEmail($email)
-                    ->setAutomationType(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER)
-                    ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                    ->setAutomationType(
+                        \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
+                    )
+                    ->setEnrolmentStatus(
+                        \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING
+                    )
                     ->setTypeId($subscriber->getId())
                     ->setWebsiteId($websiteId)
                     ->setStoreName($store->getName())
@@ -170,7 +179,9 @@ class ChangeContactSubscription
                 $automation->save();
             }
         } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __($e->getMessage())
+            );
         }
     }
 }

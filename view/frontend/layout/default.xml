@@ -5,13 +5,13 @@
     <body>
         <referenceContainer name="before.body.end">
             <block class="Magento\Framework\View\Element\Template"
-                   name="mailcheck_init" template="Dotdigitalgroup_Email::mailcheck/init.phtml"/>
+                   name="ddg.mailcheck.init" template="Dotdigitalgroup_Email::mailcheck/init.phtml"/>
             <block class="Magento\Framework\View\Element\Template"
                    name="emailCapture" template="Dotdigitalgroup_Email::email/email_capture_newsletter.phtml"/>
         </referenceContainer>
         <referenceContainer name="after.body.start">
             <block class="Magento\Framework\View\Element\Template"
-                   name="checkout.tag" template="Dotdigitalgroup_Email::email/tracking_code.phtml"/>
+                   name="ddg.checkout.tag" template="Dotdigitalgroup_Email::email/tracking_code.phtml"/>
         </referenceContainer>
     </body>
 </page>

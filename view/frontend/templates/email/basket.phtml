@@ -1,115 +1,100 @@
-<?php
-$cartItems = $this->getBasketItems();
-$priceHelper = $this->priceHelper;
-$image = 'category_page_list';
-$name_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE));
-$price_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE));
-$link_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE));
-$other_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE));
+<?php $items = $this->getBasketItems();
+$image       = 'category_page_list';
 ?>
-<?php if($cartItems): ?>
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
-    <head>
-        <title>Basket</title>
-    </head>
+<?php if ($items): ?>
+
     <body>
+    <?php $dynamicStyle = $this->getDynamicStyle(); ?>
     <style>
-        .product-name{
-            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR);?>;
-            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE);?>;
-        <?php if(in_array('bold', $name_style)): ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if(in_array('italic', $name_style)): ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if(in_array('underline', $name_style)): ?>
-            text-decoration: underline;
+        .product-name {
+            color: <?php echo $dynamicStyle['nameColor'];?>;
+            font-size: <?php echo $dynamicStyle['fontSize'];?>;
+        <?php if(in_array('bold', $dynamicStyle['nameStyle'])): ?> font-weight: bold;
+        <?php endif; ?><?php if(in_array('italic', $dynamicStyle['nameStyle'])): ?> font-style: italic;
+        <?php endif; ?><?php if(in_array('underline', $dynamicStyle['nameStyle'])): ?> text-decoration: underline;
         <?php endif; ?>
         }
-        .product-price{
-            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR);?>;
-            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE);?>;
-        <?php if(in_array('bold', $price_style)): ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if(in_array('italic', $price_style)): ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if(in_array('underline', $price_style)): ?>
-            text-decoration: underline;
+
+        .product-price {
+            color: <?php echo $dynamicStyle['priceColor'];?>;
+            font-size: <?php echo $dynamicStyle['priceFontSize'];?>;
+        <?php if(in_array('bold', $dynamicStyle['priceStyle'])): ?> font-weight: bold;
+        <?php endif; ?><?php if(in_array('italic', $dynamicStyle['priceStyle'])): ?> font-style: italic;
+        <?php endif; ?><?php if(in_array('underline', $dynamicStyle['priceStyle'])): ?> text-decoration: underline;
         <?php endif; ?>
         }
-        .proudct-url{
-            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR);?>;
-            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE);?>;
-        <?php if(in_array('bold', $link_style)): ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if(in_array('italic', $link_style)): ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if(in_array('underline', $link_style)): ?>
-            text-decoration: underline;
+
+        .proudct-url {
+            color: <?php echo $dynamicStyle['urlColor'];?>;
+            font-size: <?php echo $dynamicStyle['urlFontSize'];?>;
+        <?php if(in_array('bold', $dynamicStyle['linkStyle'])): ?> font-weight: bold;
+        <?php endif; ?><?php if(in_array('italic', $dynamicStyle['linkStyle'])): ?> font-style: italic;
+        <?php endif; ?><?php if(in_array('underline', $dynamicStyle['linkStyle'])): ?> text-decoration: underline;
         <?php endif; ?>
         }
-        .other-text{
-            color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR);?>;
-            font-size: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE);?>;
-        <?php if(in_array('bold', $other_style)): ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if(in_array('italic', $other_style)): ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if(in_array('underline', $other_style)): ?>
-            text-decoration: underline;
+
+        .other-text {
+            color: <?php echo $dynamicStyle['otherColor'];?>;
+            font-size: <?php echo $dynamicStyle['otherFontSize'];?>;
+        <?php if(in_array('bold', $dynamicStyle['otherStyle'])): ?> font-weight: bold;
+        <?php endif; ?><?php if(in_array('italic', $dynamicStyle['otherStyle'])): ?> font-style: italic;
+        <?php endif; ?><?php if(in_array('underline', $dynamicStyle['otherStyle'])): ?> text-decoration: underline;
         <?php endif; ?>
         }
-        .product-table{
-            font-family: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT);?>;
-            background-color: <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR);?>;
+
+        .product-table {
+            font-family: <?php echo $dynamicStyle['docFont'];?>;
+            background-color: <?php echo $dynamicStyle['docBackgroundColor'];?>;
             width: 100% !important;
         }
-        .product-table img{
+
+        .product-table img {
             display: block;
             margin-left: auto;
             margin-right: auto
         }
-        .product-table td{
+
+        .product-table td {
             width: 25%;
             padding-bottom: 10px;
         }
-        <?php echo $this->scopeManager->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING);?>
+
+        <?php echo $dynamicStyle['dynamicStyling'];?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
             table, thead, tbody, th, td, tr {
                 display: block;
             }
-            .product-table td{
+
+            .product-table td {
                 width: 200px !important;
             }
-            .product-table{
+
+            .product-table {
                 width: auto !important;
             }
+
             tr {
                 border: none;
                 border-bottom: 1px solid #eee;
                 margin-bottom: 10px !important;
             }
+
             td {
                 border: none !important;
                 position: relative;
             }
+
             td:before {
                 position: relative;
             }
+
             tr th {
                 display: none !important;
                 border: none !important;
             }
+
             /** Does not work in email clients
             td:nth-of-type(1):before { content: ""; }
             td:nth-of-type(2):before { content: ""; }
@@ -122,57 +107,79 @@ $other_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email
             td:before { font-weight: bold; }**/
         }
     </style>
-    <table style ='float:left; width:600px; border: 1px solid #cbd3d4; border-collapse: collapse; padding: 5px;' class="product-table">
+    <table
+        style='float:left; width:600px; border: 1px solid #cbd3d4; border-collapse: collapse; padding: 5px;'
+        class="product-table">
         <tr>
-            <th class="other-text" style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Image</th>
-            <th class="other-text" style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Description</th>
-            <th class="other-text" style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Quantity</th>
-            <th class="other-text" style="border-bottom: 1px solid #cbd3d4;">Total</th>
+            <th class="other-text"
+                style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo __(
+                    "Image"
+                ); ?></th>
+            <th class="other-text"
+                style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo __(
+                    "Description"
+                ); ?></th>
+            <th class="other-text"
+                style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo __(
+                    "Quantity"
+                ); ?></th>
+            <th class="other-text" style="border-bottom: 1px solid #cbd3d4;">
+                Total
+            </th>
         </tr>
 
-        <?php  foreach($cartItems as $one):?>
-            <?php
-            if ($one->getParentItemId() != null)
-                continue;
-	        $_product = $one->getProduct();
-	        $stock = $_product->isInStock();
-	        $inStock = ($stock)? 'In Stock' : 'Out of stock';
-            $total = $priceHelper->currency($one->getBaseRowTotalInclTax(), true);
-            $productUrl = $_product->getProductUrl();
-            $grandTotal = $this->priceHelper->currency($this->getGrandTotal(), true);
-            ?>
+        <?php foreach ($items as $item): ?>
             <tr>
                 <td style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
-	                <?php echo $block->getImage($_product, 'category_page_grid')->toHtml();?>
+                    <?php echo $block->getImage(
+                        $item['product'], 'category_page_grid'
+                    )->toHtml(); ?>
                 </td>
-                <td  class="product-name" style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
-	                Product Name : <a class="proudct-url" href="<?php echo $productUrl;?>"><?php echo  $_product->getName()  . '</a></br>'. $inStock;?></td>
-                <td class="product-price" style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$one->getQty();?></td>
-                <td class="product-price" style="padding: 1px; border-bottom: 1px solid #cbd3d4;"><?php echo $total;?></td>
+                <td class="product-name"
+                    style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
+                    Product Name : <a class="proudct-url"
+                                      href="<?php echo $item['productUrl']; ?>"><?php echo
+                        $this->escapeHtml($item['product']->getName())
+                        . '</a></br>' . $item['inStock']; ?></td>
+                <td class="product-qty"
+                    style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$item['qty']; ?></td>
+                <td class="product-price"
+                    style="padding: 1px; border-bottom: 1px solid #cbd3d4;">
+                    <?php echo $this->getLayout()->getBlock(
+                        'ddg.product.price.render.default'
+                    )->render('final_price', $item['product'], array()); ?>
+                </td>
             </tr>
-
-        <?php endforeach;?>
+        <?php endforeach; ?>
         <tr>
             <td style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;"></td>
             <td style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;"></td>
-            <td class="other-text" style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;">Order Total</td>
-            <td class="other-text" style="padding: 1px; border-bottom: 1px solid #cbd3d4;">
-                <?php echo $grandTotal;?>
+
+            <td class="other-text"
+                style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;">
+                Order Total
+            </td>
+            <td class="other-text"
+                style="padding: 1px; border-bottom: 1px solid #cbd3d4;">
+                <?php echo $item['grandTotal']; ?>
             </td>
         </tr>
-        <?php if($this->canShowUrl()): ?>
+        <?php if ($this->canShowUrl()): ?>
             <tr>
                 <td class="other-text" style="padding: 1px;"></td>
                 <td class="other-text" style="padding: 1px;"></td>
                 <td class="other-text" style="padding: 1px;"></td>
                 <td class="other-text" style="padding: 1px;">
                     <div align="center" style="padding: 5px;">
-                        <a href="<?php echo $this->getUrlForLink(); ?>" class="proudct-url">
+                        <a href="<?php echo $this->getUrlForLink(); ?>"
+                           class="proudct-url">
                             <strong>
-                                <?php if($text = $this->takeMeToCartTextForUrl())
-                                        echo $block->escapeHtml(__($text));
-                                    else
-                                        echo __('Take Me To My Basket');
+                                <?php
+                                if ($text = $this->takeMeToCartTextForUrl()) {
+                                    echo __($text);
+                                } else {
+                                    echo __('Take Me To My Basket');
+                                }
                                 ?>
                             </strong>
                         </a>
@@ -181,6 +188,4 @@ $other_style = explode(',', $this->scopeManager->getValue(\Dotdigitalgroup\Email
             </tr>
         <?php endif; ?>
     </table>
-    </body>
-    </html>
-<?php endif; ?>
+<?php endif;
