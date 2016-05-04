@@ -40,7 +40,7 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
             if (isset($campaigns->message)) {
                 //message
                 $fields[] = array('value' => 0, 'label' => $campaigns->message);
-            } else {
+            } elseif (!empty($campaigns)) {
                 //loop for all campaing option
                 foreach ($campaigns as $campaign) {
                     if (isset($campaign->name)) {
