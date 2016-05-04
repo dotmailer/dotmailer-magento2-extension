@@ -27,7 +27,7 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
         if ($apiEnabled) {
             $savedCampaigns = $this->_registry->registry('campaigns');
 
-            if ($savedCampaigns || empty($savedCampaigns)) {
+            if (is_array($savedCampaigns)) {
                 $campaigns = $savedCampaigns;
             } else {
                 //grab the datafields request and save to register
@@ -40,8 +40,9 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
             if (isset($campaigns->message)) {
                 //message
                 $fields[] = array('value' => 0, 'label' => $campaigns->message);
-            } else {
-                //loop for all campaing option
+
+            } elseif (! empty($campaigns)) {
+                //loop for all campaing options
                 foreach ($campaigns as $campaign) {
                     if (isset($campaign->name)) {
                         $fields[] = array(
@@ -52,7 +53,6 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
                 }
             }
         }
-
 
         return $fields;
     }
