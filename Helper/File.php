@@ -28,7 +28,7 @@ class File
 		$var                          = $directoryList->getPath('var');
 		$this->_output_folder         = $var . DIRECTORY_SEPARATOR . 'export'
 			. DIRECTORY_SEPARATOR . 'email';
-		$this->_output_archive_folder = $var . $this->_output_folder
+		$this->_output_archive_folder = $this->_output_folder
 			. DIRECTORY_SEPARATOR . 'archive';
 
 		$this->delimiter = ','; // tab character
