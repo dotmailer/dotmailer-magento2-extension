@@ -5,10 +5,13 @@ namespace Dotdigitalgroup\Email\Model;
 class Cron
 {
 
-    protected $csv;
 
+    /**
+     * @var Apiconnector\Contact
+     */
+    public $contact;
     protected $_automationFactory;
-    protected $_importerFactory;
+    protected $_proccessorFactory;
     protected $_catalogFactory;
     protected $_subscriberFactory;
     protected $_guestFactory;
@@ -19,29 +22,21 @@ class Cron
     protected $_syncOrderFactory;
     protected $_campaignFactory;
 
-    public $contactFactory;
-    public $csvFactory;
-
-
     /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory                                  $campaignFactory
-     * @param Sync\OrderFactory                                     $syncOrderFactory
-     * @param Sales\QuoteFactory                                    $quoteFactory
-     * @param Sync\ReviewFactory                                    $reviewFactory
-     * @param Sales\OrderFactory                                    $orderFactory
-     * @param Sync\WishlistFactory                                  $wishlistFactory
-     * @param Customer\GuestFactory                                 $guestFactory
-     * @param Newsletter\SubscriberFactory                          $subscriberFactory
-     * @param Sync\CatalogFactory                                   $catalogFactorty
-     * @param ImporterFactory                                       $importerFactory
-     * @param Sync\AutomationFactory                                $automationFactory
-     * @param \Magento\Framework\Api\FilterBuilderFactory           $filterBuilder
-     * @param \Magento\ImportExport\Model\Export\Adapter\CsvFactory $csv
-     * @param \Magento\Framework\Api\SearchCriteriaBuilderFactory   $searchCriteriaBuilder
-     * @param \Magento\Catalog\Api\ProductRepositoryInterface       $productRepository
-     * @param Apiconnector\ContactFactory                           $contact
+     * @param Sync\CampaignFactory         $campaignFactory
+     * @param Sync\OrderFactory            $syncOrderFactory
+     * @param Sales\QuoteFactory           $quoteFactory
+     * @param Sync\ReviewFactory           $reviewFactory
+     * @param Sales\OrderFactory           $orderFactory
+     * @param Sync\WishlistFactory         $wishlistFactory
+     * @param Customer\GuestFactory        $guestFactory
+     * @param Newsletter\SubscriberFactory $subscriberFactory
+     * @param Sync\CatalogFactory          $catalogFactorty
+     * @param ProccessorFactory            $proccessorFactory
+     * @param Sync\AutomationFactory       $automationFactory
+     * @param Apiconnector\Contact         $contact
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
@@ -53,30 +48,22 @@ class Cron
         \Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
+        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
         \Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
-        \Magento\Framework\Api\FilterBuilderFactory $filterBuilder,
-        \Magento\ImportExport\Model\Export\Adapter\CsvFactory $csv,
-        \Magento\Framework\Api\SearchCriteriaBuilderFactory $searchCriteriaBuilder,
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
-        \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact
+        \Dotdigitalgroup\Email\Model\Apiconnector\Contact $contact
     ) {
-        $this->_campaignFactory      = $campaignFactory;
-        $this->_syncOrderFactory     = $syncOrderFactory;
-        $this->_quoteFactory         = $quoteFactory;
-        $this->_reviewFactory        = $reviewFactory;
-        $this->_orderFactory         = $orderFactory;
-        $this->_wishlistFactory      = $wishlistFactory->create();
-        $this->_guestFactory         = $guestFactory;
-        $this->_subscriberFactory    = $subscriberFactory;
-        $this->_catalogFactory       = $catalogFactorty;
-        $this->_importerFactory    = $importerFactory;
-        $this->_automationFactory    = $automationFactory;
-        $this->productRepository     = $productRepository;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->filterBuilder         = $filterBuilder;
-        $this->csvFactory            = $csv;
-        $this->contactFactory        = $contact;
+        $this->_campaignFactory   = $campaignFactory;
+        $this->_syncOrderFactory  = $syncOrderFactory;
+        $this->_quoteFactory      = $quoteFactory;
+        $this->_reviewFactory     = $reviewFactory;
+        $this->_orderFactory      = $orderFactory;
+        $this->_wishlistFactory   = $wishlistFactory;
+        $this->_guestFactory      = $guestFactory;
+        $this->_subscriberFactory = $subscriberFactory;
+        $this->_catalogFactory    = $catalogFactorty;
+        $this->_proccessorFactory = $proccessorFactory;
+        $this->_automationFactory = $automationFactory;
+        $this->contact            = $contact;
     }
 
     /**
@@ -88,7 +75,7 @@ class Cron
     {
 
         //run the sync for contacts
-        $result = $this->contactFactory->create()->sync();
+        $result = $this->contact->sync();
         //run subscribers and guests sync
         $subscriberResult = $this->subscribersAndGuestSync();
 
@@ -98,32 +85,6 @@ class Cron
         }
 
         return $result;
-    }
-
-    /**
-     * CRON FOR CATALOG SYNC
-     */
-    public function catalogSync()
-    {
-        $result = $this->_catalogFactory->create()
-            ->sync();
-
-        return $result;
-    }
-
-    public function export()
-    {
-        $items = $this->getProducts();
-        $this->writeToFile($items);
-    }
-
-
-    /**
-     * CRON FOR EMAIL IMPORTER 
-     */
-    public function emailImporter()
-    {
-        $this->_importerFactory->create()->processQueue();
     }
 
     /**
@@ -142,6 +103,25 @@ class Cron
     }
 
     /**
+     * CRON FOR CATALOG SYNC
+     */
+    public function catalogSync()
+    {
+        $result = $this->_catalogFactory->create()
+            ->sync();
+
+        return $result;
+    }
+
+    /**
+     * CRON FOR EMAIL IMPORTER PROCESSOR
+     */
+    public function emailImporter()
+    {
+        return $this->_proccessorFactory->create()->processQueue();
+    }
+
+    /**
      * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS
      */
     public function reviewsAndWishlist()
@@ -149,7 +129,7 @@ class Cron
         //sync reviews
         $this->reviewSync();
         //sync wishlist
-        $this->_wishlistFactory->sync();
+        $this->_wishlistFactory->create()->sync();
     }
 
     /**
@@ -181,46 +161,6 @@ class Cron
     {
         $this->_automationFactory->create()->sync();
 
-    }
-
-    public function getProducts()
-    {
-        $filters  = [];
-        $now      = new \DateTime();
-        $interval = new \DateInterval('P1Y');
-        $lastWeek = $now->sub($interval);
-
-        $filters[] = $this->filterBuilder
-            ->setField('created_at')
-            ->setConditionType('gt')
-            ->setValue($lastWeek->format('Y-m-d H:i:s'))
-            ->create();
-
-        $this->searchCriteriaBuilder->create()->addFilters($filters);
-
-        $searchCriteria = $this->searchCriteriaBuilder->create();
-        $searchCriteria->addFilters($filters);
-        $searchResults  = $this->productRepository
-            ->getList($searchCriteria);
-
-        return $searchResults->getItems();
-    }
-
-    protected function writeToFile($items)
-    {
-        if (count($items) > 0) {
-            $csvModel = $this->csvFactory->create();
-            $csvModel->setHeaderCols(['id', 'created_at', 'sku']);
-            foreach ($items as $item) {
-                $csvModel->writeRow(
-                    [
-                        'id'         => $item->getId(),
-                        'created_at' => $item->getCreatedAt(),
-                        'sku'        => $item->getSku()
-                    ]
-                );
-            }
-        }
     }
 
     /**
