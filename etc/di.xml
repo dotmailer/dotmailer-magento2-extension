@@ -26,4 +26,9 @@
             <argument name="target" xsi:type="object">Magento\Catalog\Pricing\Price\Pool</argument>
         </arguments>
     </virtualType>
+    <type name="Dotdigitalgroup\Email\Model\Cron">
+        <arguments>
+            <argument name="csv" xsi:type="object">Magento\ImportExport\Model\Export\Adapter\Csv\Proxy</argument>
+        </arguments>
+    </type>
 </config>
