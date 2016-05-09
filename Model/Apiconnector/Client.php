@@ -220,7 +220,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         //case the deprication of @filename for uploading
         if (function_exists('curl_file_create')) {
-            curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false);
+
             $args['file']
                 = curl_file_create($this->_fileHelper->getFilePath($filename),
                 'text/csv');

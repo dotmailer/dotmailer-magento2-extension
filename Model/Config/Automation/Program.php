@@ -44,12 +44,13 @@ class Program implements \Magento\Framework\Option\ArrayInterface
             $savedPrograms = $this->_registry->registry('programs');
 
             //get saved datafileds from registry
-            if ($savedPrograms) {
+            if (is_array($savedPrograms)) {
                 $programs = $savedPrograms;
             } else {
                 //grab the datafields request and save to register
                 $client   = $this->_helper->getWebsiteApiClient($website);
                 $programs = $client->getPrograms();
+                $this->_registry->unregister('programs');
                 $this->_registry->register('programs', $programs);
             }
 
@@ -57,19 +58,18 @@ class Program implements \Magento\Framework\Option\ArrayInterface
             if (isset($programs->message)) {
                 //message
                 $fields[] = array('value' => 0, 'label' => $programs->message);
-            } else {
+            } elseif (!empty($programs)) {
                 //loop for all programs option
                 foreach ($programs as $program) {
                     if (isset($program->id) && $program->status == 'Active') {
                         $fields[] = array(
                             'value' => $program->id,
-                            'label' => $program->name
+                            'label' => addslashes($program->name)
                         );
                     }
                 }
             }
         }
-
 
         return $fields;
     }
