@@ -8,7 +8,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     public $helper;
     public $priceHelper;
     public $recommnededHelper;
-
     protected $_customerFactory;
     protected $_wishlistFactory;
     protected $_productFactory;

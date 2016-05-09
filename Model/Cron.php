@@ -2,11 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
-use Magento\ImportExport\Model\Export\Adapter\Csv;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Api\FilterBuilder;
-
 class Cron
 {
 
@@ -27,25 +22,29 @@ class Cron
     protected $_fileHelper;
     protected $_importerResource;
 
+    public $contactFactory;
+    public $csvFactory;
+
 
     /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory         $campaignFactory
-     * @param Sync\OrderFactory            $syncOrderFactory
-     * @param Sales\QuoteFactory           $quoteFactory
-     * @param Sync\ReviewFactory           $reviewFactory
-     * @param Sales\OrderFactory           $orderFactory
-     * @param Sync\WishlistFactory         $wishlistFactory
-     * @param Customer\GuestFactory        $guestFactory
-     * @param Newsletter\SubscriberFactory $subscriberFactory
-     * @param Sync\CatalogFactory          $catalogFactorty
-     * @param Sync\AutomationFactory       $automationFactory
-     * @param FilterBuilder                $filterBuilder
-     * @param Csv                          $csv
-     * @param SearchCriteriaBuilder        $searchCriteriaBuilder
-     * @param ProductRepositoryInterface   $productRepository
-     * @param Apiconnector\Contact         $contact
+     * @param Sync\CampaignFactory                                  $campaignFactory
+     * @param Sync\OrderFactory                                     $syncOrderFactory
+     * @param Sales\QuoteFactory                                    $quoteFactory
+     * @param Sync\ReviewFactory                                    $reviewFactory
+     * @param Sales\OrderFactory                                    $orderFactory
+     * @param Sync\WishlistFactory                                  $wishlistFactory
+     * @param Customer\GuestFactory                                 $guestFactory
+     * @param Newsletter\SubscriberFactory                          $subscriberFactory
+     * @param Sync\CatalogFactory                                   $catalogFactorty
+     * @param ImporterFactory                                       $importerFactory
+     * @param Sync\AutomationFactory                                $automationFactory
+     * @param \Magento\Framework\Api\FilterBuilderFactory           $filterBuilder
+     * @param \Magento\ImportExport\Model\Export\Adapter\CsvFactory $csv
+     * @param \Magento\Framework\Api\SearchCriteriaBuilderFactory   $searchCriteriaBuilder
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface       $productRepository
+     * @param Apiconnector\ContactFactory                           $contact
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
@@ -59,11 +58,11 @@ class Cron
         \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
-        FilterBuilder $filterBuilder,
-        Csv $csv,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        ProductRepositoryInterface $productRepository,
-        \Dotdigitalgroup\Email\Model\Apiconnector\Contact $contact,
+        \Magento\Framework\Api\FilterBuilderFactory $filterBuilder,
+        \Magento\ImportExport\Model\Export\Adapter\CsvFactory $csv,
+        \Magento\Framework\Api\SearchCriteriaBuilderFactory $searchCriteriaBuilder,
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\Resource\Importer $importerResource
@@ -82,8 +81,8 @@ class Cron
         $this->productRepository     = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->filterBuilder         = $filterBuilder;
-        $this->csv                   = $csv;
-        $this->contact               = $contact;
+        $this->csvFactory            = $csv;
+        $this->contactFactory        = $contact;
         $this->_helper               = $helper;
         $this->_fileHelper           = $fileHelper;
         $this->_importerResource     = $importerResource;
@@ -98,7 +97,7 @@ class Cron
     {
 
         //run the sync for contacts
-        $result = $this->contact->sync();
+        $result = $this->contactFactory->create()->sync();
         //run subscribers and guests sync
         $subscriberResult = $this->subscribersAndGuestSync();
 
@@ -133,7 +132,7 @@ class Cron
      */
     public function emailImporter()
     {
-        return $this->_importerFactory->create()->processQueue();
+        $this->_importerFactory->create()->processQueue();
     }
 
     /**
@@ -206,11 +205,12 @@ class Cron
             ->setValue($lastWeek->format('Y-m-d H:i:s'))
             ->create();
 
-        $this->searchCriteriaBuilder->addFilters($filters);
+        $this->searchCriteriaBuilder->create()->addFilters($filters);
 
         $searchCriteria = $this->searchCriteriaBuilder->create();
-        $searchResults  = $this->productRepository->getList($searchCriteria);
-
+        $searchCriteria->addFilters($filters);
+        $searchResults  = $this->productRepository
+            ->getList($searchCriteria);
 
         return $searchResults->getItems();
     }
@@ -218,9 +218,10 @@ class Cron
     protected function writeToFile($items)
     {
         if (count($items) > 0) {
-            $this->csv->setHeaderCols(['id', 'created_at', 'sku']);
+            $csvModel = $this->csvFactory->create();
+            $csvModel->setHeaderCols(['id', 'created_at', 'sku']);
             foreach ($items as $item) {
-                $this->csv->writeRow(
+                $csvModel->writeRow(
                     [
                         'id'         => $item->getId(),
                         'created_at' => $item->getCreatedAt(),

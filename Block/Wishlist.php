@@ -6,7 +6,6 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
     protected $_website;
-
     public $helper;
     public $priceHelper;
     protected $_customerFactory;
