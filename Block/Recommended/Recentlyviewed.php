@@ -9,7 +9,6 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     public $priceHelper;
     public $objectManager;
     public $recommnededHelper;
-
     protected $_sessionFactory;
     protected $_productFactory;
 

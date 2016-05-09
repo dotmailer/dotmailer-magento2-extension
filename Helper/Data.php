@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use \Dotdigitalgroup\Email\Helper\Config as EmailConfig;
-use DotMailer\Api\Container;
+
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -21,9 +21,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Data constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Backend\Model\Auth\Session         $sessionModel
      * @param \Magento\Framework\App\ProductMetadata      $productMetadata
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Config\Model\ResourceModel\Config  $resourceConfig
      * @param \Magento\Framework\App\ResourceConnection   $adapter
      * @param \Magento\Framework\App\Helper\Context       $context
@@ -31,9 +31,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\StoreManagerInterface  $storeManager
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Framework\App\ProductMetadata $productMetadata,
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
@@ -333,7 +333,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if ( ! $apiUsername || ! $apiPassword) {
             return false;
         }
-        
+
         $credentials = array(
             Container::USERNAME => $apiUsername,
             Container::PASSWORD => $apiPassword

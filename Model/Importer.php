@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
-use DotMailer\Api\DataTypes\Guid;
 
 class Importer extends \Magento\Framework\Model\AbstractModel
 {

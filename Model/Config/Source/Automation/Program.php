@@ -41,15 +41,16 @@ class Program
         if ($apiEnabled) {
 
             $client   = $this->_helper->getWebsiteApiClient($website);
-            $programs = $client->GetPrograms();
+            $programs = $client->getPrograms();
 
             foreach ($programs as $one) {
-
-                if ((string)$one->status == 'Active') {
-                    $fields[] = array(
-                        'value' => (string)$one->id,
-                        'label' => (string)__($one->name)
-                    );
+                if (isset($one->id)) {
+                    if ($one->status == 'Active') {
+                        $fields[] = array(
+                            'value' => $one->id,
+                            'label' => __($one->name)
+                        );
+                    }
                 }
             }
         }

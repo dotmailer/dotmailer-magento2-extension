@@ -44,6 +44,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * If it's configured to capture on shipment - do this
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
