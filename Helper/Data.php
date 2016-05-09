@@ -333,7 +333,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if ( ! $apiUsername || ! $apiPassword) {
             return false;
         }
-        
+
         $credentials = array(
             Container::USERNAME => $apiUsername,
             Container::PASSWORD => $apiPassword
