@@ -18,6 +18,9 @@ class Cron
     protected $_quoteFactory;
     protected $_syncOrderFactory;
     protected $_campaignFactory;
+    protected $_helper;
+    protected $_fileHelper;
+    protected $_importerResource;
 
     public $contactFactory;
     public $csvFactory;
@@ -59,7 +62,10 @@ class Cron
         \Magento\ImportExport\Model\Export\Adapter\CsvFactory $csv,
         \Magento\Framework\Api\SearchCriteriaBuilderFactory $searchCriteriaBuilder,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
-        \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact
+        \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
+        \Dotdigitalgroup\Email\Model\Resource\Importer $importerResource
     ) {
         $this->_campaignFactory      = $campaignFactory;
         $this->_syncOrderFactory     = $syncOrderFactory;
@@ -77,6 +83,9 @@ class Cron
         $this->filterBuilder         = $filterBuilder;
         $this->csvFactory            = $csv;
         $this->contactFactory        = $contact;
+        $this->_helper               = $helper;
+        $this->_fileHelper           = $fileHelper;
+        $this->_importerResource     = $importerResource;
     }
 
     /**
@@ -243,5 +252,25 @@ class Cron
         $orderResult = $this->_syncOrderFactory->create()->sync();
 
         return $orderResult;
+    }
+
+    public function cleaning()
+    {
+        //Clean tables
+        $tables = array(
+            'automation' => 'email_automation',
+            'importer' => 'email_importer',
+            'campaign' => 'email_campaign'
+        );
+        $message = 'Cleaning cron job result :';
+        foreach ($tables as $key => $table) {
+            $result = $this->_importerResource->cleanup($table);
+            $message .= " $result records removed from $key .";
+        }
+        $archivedFolder = $this->_fileHelper->getArchiveFolder();
+        $result         = $this->_fileHelper->deleteDir($archivedFolder);
+        $message .= ' Deleting archived folder result : ' . $result;
+        $this->_helper->log($message);
+        return $message;
     }
 }

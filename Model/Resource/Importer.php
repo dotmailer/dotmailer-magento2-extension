@@ -5,6 +5,17 @@ namespace Dotdigitalgroup\Email\Model\Resource;
 class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
 
+    protected $_localeDate;
+
+    public function __construct(
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+    )
+    {
+        $this->_localeDate = $localeDate;
+        parent::__construct($context);
+    }
+
     /**
      * Initialize resource
      *
@@ -35,4 +46,25 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
     }
 
+    /**
+     * delete completed records older then 30 days from provided table
+     *
+     * @param $tableName
+     * @return \Exception|int
+     */
+    public function cleanup($tableName)
+    {
+        try {
+            $interval = new \DateInterval("P30D");
+            $date = $this->_localeDate->date()->sub($interval)->format('Y-m-d H:i:s');
+            $conn = $this->getConnection();
+            $num = $conn->delete(
+                $tableName,
+                array('created_at < ?' => $date)
+            );
+            return $num;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }
