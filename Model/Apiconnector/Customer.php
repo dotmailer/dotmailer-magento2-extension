@@ -942,4 +942,23 @@ class Customer
     {
         return $this->customer->getLastIncrementId();
     }
+
+    /**
+     * get billing company name
+     *
+     * @return mixed
+     */
+    public function getBillingCompany()
+    {
+        return $this->customer->getBillingCompany();
+    }
+    /**
+     * get shipping company name
+     *
+     * @return mixed
+     */
+    public function getDeliveryCompany()
+    {
+        return $this->customer->getShippingCompany();
+    }
 }

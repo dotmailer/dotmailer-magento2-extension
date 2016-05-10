@@ -117,6 +117,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_BRAND_PURCHASED = 'connector_data_mapping/customer_data/last_brand_pur';
     const XML_PATH_CONNECTOR_CUSTOMER_SUBSCRIBER_STATUS = 'connector_data_mapping/customer_data/subscriber_status';
     const XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME = 'connector_data_mapping/customer_data/abandoned_prod_name';
+    const XML_PATH_CONNECTOR_CUSTOMER_BILLING_COMPANY_NAME = 'connector_data_mapping/customer_data/billing_company';
+    const XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_COMPANY_NAME = 'connector_data_mapping/customer_data/delivery_company';
 
     const XML_PATH_CONNECTOR_ENTERPRISE_CURRENT_BALANCE = 'connector_data_mapping/enterprise_data/reward_points';
     const XML_PATH_CONNECTOR_ENTERPRISE_REWARD_AMOUNT = 'connector_data_mapping/enterprise_data/reward_amount';
