@@ -1,6 +1,0 @@
-<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Core/etc/layout_generic.xsd">
-    <update handle="formkey"/>
-    <container name="root">
-        <block class="Dotdigitalgroup\Email\Block\Disconnect" name="ddg.disconnect.container" />
-    </container>
-</layout>

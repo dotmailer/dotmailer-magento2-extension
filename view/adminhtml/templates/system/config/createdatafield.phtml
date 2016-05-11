@@ -19,7 +19,7 @@
 				visiblity : datafield_access
 			}
 
-			new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+			new Ajax.Request('<?php echo $block->escapeHtml($block->getAjaxUrl()) ?>', {
 				parameters: params,
 				onComplete: function(transport) {
 					window.location.reload();

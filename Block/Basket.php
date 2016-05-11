@@ -54,6 +54,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         $quoteId    = $params['quote_id'];
         $quoteModel = $this->_quoteFactory->create()
             ->load($quoteId);
+
         //check for any quote for this email, don't want to render further
         if ( ! $quoteModel->getId()) {
             $this->helper->log('no quote found for ' . $quoteId);
@@ -70,6 +71,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 
         //Start environment emulation of the specified store
         $storeId      = $quoteModel->getStoreId();
+
         $appEmulation = $this->_emulationFactory->create();
         $appEmulation->startEnvironmentEmulation($storeId);
 
@@ -78,6 +80,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         $itemsData = array();
 
         foreach ($quoteItems as $quoteItem) {
+            //skip configurable products
             if ($quoteItem->getParentItemId() != null) {
                 continue;
             }
