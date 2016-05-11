@@ -1,5 +1,5 @@
-<?php if($this->getRoiTrackingEnabled()):
-    $order = $this->getOrder();
+<?php if ($block->getRoiTrackingEnabled()):
+    $order = $block->getOrder();
     $orderId = $order->getId();
     $items = $order->getAllItems();
     $total = number_format($order->getBaseGrandTotal(), 2, '.', ',');
@@ -7,10 +7,10 @@
     <script type="text/javascript">
         require(['domReady!'],function(){
             <?php foreach ($items as $item):?>
-                <?php if($item->getParentItemId() != null) continue;?>
-                _dmTrack("product", "<?php echo str_replace('"', ' ',  $item->getName())?>");
+                <?php if ($item->getParentItemId() != null) continue;?>
+                _dmTrack("product", "<?php echo $block->escapeHtml(str_replace('"', ' ',  $item->getName()))?>");
             <?php endforeach;?>
-            _dmTrack("CheckOutAmount", "<?php echo $total;?>");
+            _dmTrack("CheckOutAmount", "<?php echo $block->escapeHtml($total);?>");
         });
     </script>
 <?php endif;

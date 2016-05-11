@@ -1,13 +1,13 @@
-<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Core/etc/layout_generic.xsd">
+<?xml version="1.0"?>
+
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/layout_generic.xsd">
     <update handle="formkey"/>
     <container name="root">
         <block class="Dotdigitalgroup\Email\Block\Recommended\Push" name="ddg.push.container" template="Dotdigitalgroup_Email::product/list.phtml" >
             <block class="Magento\Framework\Pricing\Render" name="ddg.product.price.render.default">
                 <arguments>
-                    <!-- here you specify layout handle name -->
                     <argument name="price_render_handle" xsi:type="string">catalog_product_prices</argument>
                     <argument name="use_link_for_as_low_as" xsi:type="boolean">true</argument>
-                    <!-- set "override" configuration settings here -->
                 </arguments>
             </block>
         </block>

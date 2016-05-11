@@ -1,38 +1,38 @@
-<?php $stats = $this->getStats(); ?>
-<?php if(!empty($stats)): ?>
+<?php $stats = $block->getStats(); ?>
+<?php if (!empty($stats)) : ?>
 	<div class="entry-edit">
-		<?php foreach($stats as $title => $campaignStat): ?>
+		<?php foreach ($stats as $title => $campaignStat) : ?>
 			<div class="entry-edit">
 				<div class="entry-edit-head" style="color: #fff;">
-					<strong><?php echo __('Campaign Name: ') . __($title); ?></strong>
+					<strong><?php echo $block->escapeHtml(__('Campaign Name: ')) . $block->escapeHtml(__($title)); ?></strong>
 				</div>
 				<fieldset>
-					<table cellspacing="10" class="">
+					<table cellspacing="10">
 						<tbody>
-						<?php foreach($campaignStat as $key => $value): ?>
+						<?php foreach ($campaignStat as $key => $value) : ?>
 							<tr>
-								<td><strong><?php echo $this->__($key) ?></strong></td>
-								<?php if($key == 'unsubscribed' or $key == 'softBounced' or $key == 'hardBounced'): ?>
+								<td><strong><?php echo $block->escapeHtml(__($key)) ?></strong></td>
+								<?php if ($key == 'unsubscribed' or $key == 'softBounced' or $key == 'hardBounced') : ?>
 									<?php
-									if($value)
+									if ($value)
 										$value = 'TRUE';
 									else
 										$value = 'FALSE';
 									?>
-									<td><?php echo $value ?></td>
-								<?php elseif($key == 'dateSent' or $key == 'dateFirstOpened' or $key == 'dateLastOpened'): ?>
+									<td><?php echo $block->escapeHtml($value) ?></td>
+								<?php elseif ($key == 'dateSent' or $key == 'dateFirstOpened' or $key == 'dateLastOpened') : ?>
 									<?php
-									if($value == '1970-01-01T00:00:00Z')
+									if ($value == '1970-01-01T00:00:00Z')
 										$value = '';
 									?>
 									<td>
 										<?php
-										if(!empty($value))
+										if (!empty($value))
 											echo new \Zend_Date($value, Zend_Date::ISO_8601)
 										?>
 									</td>
 								<?php else: ?>
-									<td><?php echo $value ?></td>
+									<td><?php echo $block->escapeHtml($value); ?></td>
 								<?php endif; ?>
 							</tr>
 						<?php endforeach; ?>
