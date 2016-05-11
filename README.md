@@ -3,4 +3,4 @@
 dotmailer for Magento2 
 ==========================================
 
-Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
+Full support documentation  and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
