@@ -17,7 +17,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_productMetadata;
     protected $_sessionModel;
     protected $_adapter;
-    protected $_remoteAddress;
     protected $_localeDate;
     protected $_dataField;
 
@@ -45,7 +44,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
         \Magento\Framework\Stdlib\DateTime\Timezone $localeDate,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
     ) {
@@ -57,7 +55,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_resourceConfig  = $resourceConfig;
         $this->_storeManager    = $storeManager;
         $this->_objectManager   = $objectManager;
-        $this->_remoteAddress = $remoteAddress;
         $this->_localeDate = $localeDate;
         $this->_dataField = $dataField;
 
