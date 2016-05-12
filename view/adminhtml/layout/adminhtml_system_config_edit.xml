@@ -3,8 +3,6 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
         <script src="Dotdigitalgroup_Email::js/colpick.js"/>
-        <script src="Dotdigitalgroup_Email::js/jquery.fancybox.pack.js"/>
         <css src="Dotdigitalgroup_Email::colpick.css"/>
-        <css src="Dotdigitalgroup_Email::jquery.fancybox.css"/>
     </head>
 </page>
