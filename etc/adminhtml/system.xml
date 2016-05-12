@@ -9,6 +9,10 @@
             <label>API Credentials</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="trial" translate="label" type="text" sortOrder="5" showInWebsite="1" showInStore="0"
+                   showInDefault="1">
+                <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Trial</frontend_model>
+            </group>
             <group id="api" translate="label" type="text" sortOrder="10" showInWebsite="1" showInStore="0" showInDefault="1">
                 <label>Settings</label>
                 <attribute type="expanded">1</attribute>
@@ -731,7 +735,7 @@
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="crossell_items_to_display" translate="label" type="select" sortOrder="130" showInStore="1"
+                <field id="crosssell_items_to_display" translate="label" type="select" sortOrder="130" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
