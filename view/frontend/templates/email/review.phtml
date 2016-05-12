@@ -13,9 +13,11 @@ $website = $block->getWebsite();
             font-size: <?php echo $block->escapeHtml($dynamicStyle['fontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
+        <?php endif; ?>
+        <?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
+        <?php endif; ?>
+        <?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
@@ -24,9 +26,11 @@ $website = $block->getWebsite();
             font-size: <?php echo $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
+        <?php endif; ?>
+        <?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
+        <?php endif; ?>
+        <?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
@@ -35,9 +39,11 @@ $website = $block->getWebsite();
             font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
+        <?php endif; ?>
+        <?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
+        <?php endif; ?>
+        <?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
@@ -55,7 +61,6 @@ $website = $block->getWebsite();
             width: 25%;
             padding-bottom: 10px;
         }
-
         /** Styling from config field **/
         <?php echo $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
         /** Responsive  **/
@@ -67,35 +72,33 @@ $website = $block->getWebsite();
             .product-table td{
                 width: 172px !important;
             }
-
             .product-table {
                 width: auto !important;
             }
         }
     </style>
 
-    <?php $items = $block->getItems(); ?>
+    <?php $items = $block->getItems();?>
 
-    <?php foreach ($items as $item) : ?>
-        <?php if ($i == 0) : ?>
+    <?php foreach ($items as $item) :?>
+        <?php  if ($i == 0) :?>
             <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse;'><tr>
         <?php endif;?>
-        <?php if ($mode == 'list') : ?>
+        <?php if ($mode == 'list') :?>
             </tr><tr>
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
             <?php echo $block->getImage($item, 'category_page_grid')->toHtml(); ?>
-            <div class="product-name" align="center"><b><?php echo substr($block->escapeHtml($item->getName()), 0,
-                        40); ?></b></div>
+            <div class="product-name" align="center"><b><?php echo substr($block->escapeHtml($item->getName()), 0, 40);?></b></div>
             <div align="center">
                 <a class="proudct-url" href="<?php echo $block->escapeHtml($block->getReviewItemUrl($item->getId())) .
-                    $helper->getReviewReminderAnchor($website); ?>"><?php echo $block->escapeHtml(__('Leave a review')); ?>
+                    $helper->getReviewReminderAnchor($website);?>"><?php echo $block->escapeHtml(__('Leave a review')); ?>
                 </a>
             </div>
         </td>
 
-        <?php if ($i++ % 4 == 3 && $mode == 'grid') : ?></tr><tr><?php endif; ?>
+        <?php if ($i++ % 4 ==3 && $mode == 'grid') :?></tr><tr><?php endif;?>
     <?php endforeach;?>
     <?php if ( $i > 0):?>
         </table>
