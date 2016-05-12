@@ -14,11 +14,9 @@ $products = $block->getLoadedProductCollection();
             font-size: <?php echo $block->escapeHtml($dynamicStyle['fontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
             font-weight: bold;
-        <?php endif; ?>
-        <?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
             font-style: italic;
-        <?php endif; ?>
-        <?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
@@ -27,11 +25,9 @@ $products = $block->getLoadedProductCollection();
             font-size: <?php echo $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
             font-weight: bold;
-        <?php endif; ?>
-        <?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
             font-style: italic;
-        <?php endif; ?>
-        <?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
@@ -40,11 +36,9 @@ $products = $block->getLoadedProductCollection();
             font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
             font-weight: bold;
-        <?php endif; ?>
-        <?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
             font-style: italic;
-        <?php endif; ?>
-        <?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
@@ -81,7 +75,7 @@ $products = $block->getLoadedProductCollection();
 <?php endif; ?>
 
 <?php foreach ($products as $key => $_product) :?>
-    <?php  if ($i == 0) :?>
+    <?php if ($i == 0) : ?>
         <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12';><tr>
     <?php endif;?>
     <?php if($mode == 'list'):?>
@@ -89,26 +83,31 @@ $products = $block->getLoadedProductCollection();
     <?php endif;?>
 
     <td style="vertical-align: text-top; padding-right: 2px;">
-        <a href="<?php echo $block->escapeHtml($_product->getProductUrl()) ?>" title="<?php echo $block->escapeHtml($block->stripTags($block->getImageLabel($_product, 'small_image'), null, true)); ?>"
-           class="product-image"><?php echo $block->getImage($_product, 'product_small_image')->toHtml();?>
+        <a href="<?php echo $block->escapeHtml($_product->getProductUrl()) ?>"
+           title="<?php echo $block->escapeHtml($block->stripTags($block->getImageLabel($_product, 'small_image'), null,
+               true)); ?>"
+           class="product-image"><?php echo $block->getImage($_product, 'product_small_image')->toHtml(); ?>
             </a>
-        <div class="product-name" align="center"><b><?php echo $block->escapeHtml(substr($_product->getName(), 0, 40));?></b></div>
+        <div class="product-name" align="center"><b><?php echo $block->escapeHtml(substr($_product->getName(), 0,
+                    40)); ?></b></div>
         <div class="product-price" align="center">
-            <?php echo $block->getLayout()->getBlock('ddg.product.price.render.default')->render('final_price', $_product, array());?>
+            <?php echo $block->getLayout()->getBlock('ddg.product.price.render.default')->render('final_price',
+                $_product, array()); ?>
         </div>
         <div align="center">
-            <a class="proudct-url" href="<?php echo $block->escapeHtml($_product->getProductUrl());?>">
-                <?php if ($urlText = $block->getTextForUrl($_product->getStoreId()))
-                        echo $block->escapeHtml(__($urlText));
-                    else
-                        echo $block->escapehtml(__('View Now'));?>
+            <a class="proudct-url" href="<?php echo $block->escapeHtml($_product->getProductUrl()); ?>">
+                <?php if ($urlText = $block->getTextForUrl($_product->getStoreId())) {
+                    echo $block->escapeHtml(__($urlText));
+                } else {
+                    echo $block->escapehtml(__('View Now'));
+                } ?>
             </a>
         </div>
     </td>
 
-    <?php if ($i++ % 4 ==3 && $mode == 'grid') :?></tr><tr>
+    <?php if ($i++ % 4 == 3 && $mode == 'grid') : ?></tr><tr>
     <?php endif;?>
-<?php endforeach;?>
-<?php if ( $i > 0) :?></table>
+<?php endforeach; ?>
+<?php if ($i > 0) : ?></table>
 <?php endif;
 
