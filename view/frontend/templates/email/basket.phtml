@@ -1,79 +1,65 @@
-<?php $items = $block->getBasketItems();?>
+<?php $items = $block->getBasketItems(); ?>
 <?php if ($items): ?>
-        <?php
+    <?php
 
     $dynamicStyle = $block->getDynamicStyle();
     ?>
     <style>
-        .product-name{
+        .product-name {
             color: <?php echo $block->escapeHtml($dynamicStyle['nameColor']);?>;
             font-size: <?php echo $block->escapeHtml($dynamicStyle['fontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
-            text-decoration: underline;
+        <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?> font-weight: bold;
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?> font-style: italic;
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?> text-decoration: underline;
         <?php endif; ?>
         }
-        .product-price{
+
+        .product-price {
             color: <?php echo $block->escapeHtml($dynamicStyle['priceColor']);?>;
             font-size: <?php echo $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
-            text-decoration: underline;
+        <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?> font-weight: bold;
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?> font-style: italic;
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?> text-decoration: underline;
         <?php endif; ?>
         }
-        .product-url{
+
+        .product-url {
             color: <?php echo $block->escapeHtml($dynamicStyle['urlColor']);?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']);?>
-        <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
-            text-decoration: underline;
+            font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']);?> <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?> font-weight: bold;
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?> font-style: italic;
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?> text-decoration: underline;
         <?php endif; ?>
         }
-        .other-text{
+
+        .other-text {
             color: <?php echo $block->escapeHtml($dynamicStyle['otherColor']);?>;
             font-size: <?php echo $block->escapeHtml($dynamicStyle['otherFontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['otherStyle'])) : ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if (in_array('italic', $dynamicStyle['otherStyle'])) : ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if (in_array('underline', $dynamicStyle['otherStyle'])) : ?>
-            text-decoration: underline;
+        <?php if (in_array('bold', $dynamicStyle['otherStyle'])) : ?> font-weight: bold;
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['otherStyle'])) : ?> font-style: italic;
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['otherStyle'])) : ?> text-decoration: underline;
         <?php endif; ?>
         }
-        .product-table{
+
+        .product-table {
             font-family: <?php echo $block->escapeHtml($dynamicStyle['docFont']);?>;
             background-color: <?php echo $block->escapeHtml($dynamicStyle['docBackgroundColor']);?>;
             width: 100% !important;
         }
-        .product-table img{
+
+        .product-table img {
             display: block;
             margin-left: auto;
             margin-right: auto
         }
-        .product-table td{
+
+        .product-table td {
             width: 25%;
             padding-bottom: 10px;
             text-align: center;
         }
+
         tr.noborder td {
-            border: none!important;
+            border: none !important;
         }
 
         <?php echo $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
@@ -92,7 +78,7 @@
             .product-table {
                 width: auto !important;
                 margin: 0 auto;
-                float: none!important;
+                float: none !important;
             }
 
             .product-table tr {
@@ -118,25 +104,32 @@
                 display: none !important;
                 border: none !important;
             }
+
             .hidemob {
-                display: none!important;
+                display: none !important;
             }
         }
     </style>
-    <table class="product-table" style ='float:left; width:600px; border: 1px solid #cbd3d4; border-collapse: collapse; padding: 5px;'>
+    <table class="product-table"
+           style='float:left; width:600px; border: 1px solid #cbd3d4; border-collapse: collapse; padding: 5px;'>
         <tr>
-            <th class="other-text" style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Image"));?></th>
-            <th class="other-text" style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Description"));?></th>
-            <th class="other-text" style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Quantity"));?></th>
-            <th class="other-text" style="padding: 5px; border-bottom: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__('Total'));?></th>
+            <th class="other-text"
+                style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Image")); ?></th>
+            <th class="other-text"
+                style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Description")); ?></th>
+            <th class="other-text"
+                style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Quantity")); ?></th>
+            <th class="other-text"
+                style="padding: 5px; border-bottom: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__('Total')); ?></th>
         </tr>
-        <?php foreach($items as $item):?>
+        <?php foreach ($items as $item): ?>
             <tr>
                 <td style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
                     <?php echo $block->getImage(
                         $item['product'], 'product_small_image')->toHtml(); ?>
                 </td>
-                <td class="product-name" style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
+                <td class="product-name"
+                    style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
                     <a class="product-url" href="<?php echo $block->escapeHtml($item['productUrl']); ?>"><?php echo
                         $block->escapeHtml($item['product']->getName())
                         . '</a></br>' . $item['inStock']; ?></td>
@@ -149,13 +142,13 @@
                     )->render('final_price', $item['product'], array()); ?>
                 </td>
             </tr>
-        <?php endforeach;?>
+        <?php endforeach; ?>
         <tr style="border: none!important;">
             <td class="hidemob" style="border: none;"></td>
             <td class="hidemob" style="border: none;"></td>
             <td class="hidemob" style="border: none;"></td>
             <td class="other-text" style="padding: 5px;">
-                <?php echo 'Order Total: ' . $item['grandTotal'];?>
+                <?php echo 'Order Total: ' . $item['grandTotal']; ?>
             </td>
         </tr>
     </table>
@@ -166,9 +159,9 @@
             <a href="<?php echo $block->escapeHtml($block->getUrlForLink()); ?>" class="product-url">
                 <strong>
                     <?php
-                    $link = ($block->takeMeToCartTextForUrl())? $block->takeMeToCartTextForUrl() : __('Take Me To My Basket');
-                    echo $block->escapeHtml($link);?>
+                    $link = ($block->takeMeToCartTextForUrl()) ? $block->takeMeToCartTextForUrl() : __('Take Me To My Basket');
+                    echo $block->escapeHtml($link); ?>
                 </strong>
             </a></p>
     <?php endif; ?>
-<?php endif;?>
+<?php endif; ?>
