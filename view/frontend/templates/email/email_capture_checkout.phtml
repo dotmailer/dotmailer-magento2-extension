@@ -7,7 +7,7 @@
             $("body").on("blur","input[name=username]", function(){
                 var email = $(this).val();
                 if(email && validateEmail(email)){
-                    $.post("<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>", {email: email});
+                    $.post( "<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>", { email: email} );
                 }
             });
         });

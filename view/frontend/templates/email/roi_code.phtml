@@ -7,10 +7,8 @@
     <script type="text/javascript">
         require(['domReady!'],function(){
             <?php foreach ($items as $item):?>
-            <?php if ($item->getParentItemId() != null) {
-            continue;
-        }?>
-            _dmTrack("product", "<?php echo $block->escapeHtml(str_replace('"', ' ', $item->getName()))?>");
+                <?php if ($item->getParentItemId() != null) continue;?>
+                _dmTrack("product", "<?php echo $block->escapeHtml(str_replace('"', ' ',  $item->getName()))?>");
             <?php endforeach;?>
             _dmTrack("CheckOutAmount", "<?php echo $block->escapeHtml($total);?>");
         });

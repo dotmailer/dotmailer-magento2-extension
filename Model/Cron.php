@@ -25,20 +25,21 @@ class Cron
     /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory $campaignFactory
-     * @param Sync\OrderFactory $syncOrderFactory
-     * @param Sales\QuoteFactory $quoteFactory
-     * @param Sync\ReviewFactory $reviewFactory
-     * @param Sales\OrderFactory $orderFactory
-     * @param Sync\WishlistFactory $wishlistFactory
-     * @param Customer\GuestFactory $guestFactory
-     * @param Newsletter\SubscriberFactory $subscriberFactory
-     * @param Sync\CatalogFactory $catalogFactorty
-     * @param Sync\AutomationFactory $automationFactory
-     * @param Apiconnector\ContactFactory $contact
+     * @param Sync\CampaignFactory               $campaignFactory
+     * @param Sync\OrderFactory                  $syncOrderFactory
+     * @param Sales\QuoteFactory                 $quoteFactory
+     * @param Sync\ReviewFactory                 $reviewFactory
+     * @param Sales\OrderFactory                 $orderFactory
+     * @param Sync\WishlistFactory               $wishlistFactory
+     * @param Customer\GuestFactory              $guestFactory
+     * @param Newsletter\SubscriberFactory       $subscriberFactory
+     * @param Sync\CatalogFactory                $catalogFactorty
+
+     * @param Sync\AutomationFactory             $automationFactory
+     * @param Apiconnector\ContactFactory        $contact
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param Resource\Importer $importerResource
+     * @param Resource\Importer                  $importerResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
@@ -57,21 +58,21 @@ class Cron
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\Resource\Importer $importerResource
     ) {
-        $this->_campaignFactory = $campaignFactory;
-        $this->_syncOrderFactory = $syncOrderFactory;
-        $this->_quoteFactory = $quoteFactory;
-        $this->_reviewFactory = $reviewFactory;
-        $this->_orderFactory = $orderFactory;
-        $this->_wishlistFactory = $wishlistFactory;
-        $this->_guestFactory = $guestFactory;
+        $this->_campaignFactory   = $campaignFactory;
+        $this->_syncOrderFactory  = $syncOrderFactory;
+        $this->_quoteFactory      = $quoteFactory;
+        $this->_reviewFactory     = $reviewFactory;
+        $this->_orderFactory      = $orderFactory;
+        $this->_wishlistFactory   = $wishlistFactory;
+        $this->_guestFactory      = $guestFactory;
         $this->_subscriberFactory = $subscriberFactory;
-        $this->_catalogFactory = $catalogFactorty;
+        $this->_catalogFactory    = $catalogFactorty;
         $this->_importerFactory    = $importerFactory;
         $this->_automationFactory = $automationFactory;
-        $this->contactFactory = $contact;
-        $this->_helper = $helper;
-        $this->_fileHelper = $fileHelper;
-        $this->_importerResource = $importerResource;
+        $this->contactFactory     = $contact;
+        $this->_helper            = $helper;
+        $this->_fileHelper        = $fileHelper;
+        $this->_importerResource  = $importerResource;
 
     }
 
@@ -103,7 +104,7 @@ class Cron
     {
         //sync subscribers
         $subscriberModel = $this->_subscriberFactory->create();
-        $result = $subscriberModel->sync();
+        $result          = $subscriberModel->sync();
 
         //sync guests
         $this->_guestFactory->create()->sync();
@@ -197,10 +198,10 @@ class Cron
     public function cleaning()
     {
         //Clean tables
-        $tables = array(
+        $tables  = array(
             'automation' => 'email_automation',
-            'importer' => 'email_importer',
-            'campaign' => 'email_campaign'
+            'importer'   => 'email_importer',
+            'campaign'   => 'email_campaign'
         );
         $message = 'Cleaning cron job result :';
         foreach ($tables as $key => $table) {
