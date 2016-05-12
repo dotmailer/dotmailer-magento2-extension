@@ -22,9 +22,7 @@
     }
   ],
   "autoload": {
-    "files": [
-      "registration.php"
-    ],
+    "files": [ "registration.php" ],
     "psr-4": {
       "Dotdigitalgroup\\Email\\": ""
     }
