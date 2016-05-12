@@ -9,6 +9,10 @@
             <label>API Credentials</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="trial" translate="label" type="text" sortOrder="5" showInWebsite="1" showInStore="0"
+                   showInDefault="1">
+                <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Trial</frontend_model>
+            </group>
             <group id="api" translate="label" type="text" sortOrder="10" showInWebsite="1" showInStore="0" showInDefault="1">
                 <label>Settings</label>
                 <attribute type="expanded">1</attribute>
