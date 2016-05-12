@@ -9,7 +9,7 @@
                 $(element).on('blur', function() {
                     var email = $(element).val();
                     if(email && validateEmail(email)){
-                        $.post( "<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>", { email: email} );
+                        $.post("<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>", {email: email});
                     }
                 });
             });

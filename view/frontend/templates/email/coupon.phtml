@@ -7,14 +7,11 @@
             font-size: <?php echo $block->escapeHtml($block->getFontSize());?>;
         <?php if (in_array('bold', $style)) : ?>
             font-weight: bold;
-        <?php endif; ?>
-        <?php if (in_array('italic', $style)) : ?>
+        <?php endif; ?><?php if (in_array('italic', $style)) : ?>
             font-style: italic;
-        <?php endif; ?>
-        <?php if (in_array('underline', $style)) : ?>
+        <?php endif; ?><?php if (in_array('underline', $style)) : ?>
             text-decoration: underline;
-        <?php endif; ?>
-            font-family: <?php echo $block->escapeHtml($block->getFont());?>;
+        <?php endif; ?> font-family: <?php echo $block->escapeHtml($block->getFont());?>;
             background-color: <?php echo $block->escapeHtml($block->getBackgroundColor());?>;
         }
     </style>
