@@ -153,15 +153,15 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS = 'connector_configuration/admin/disable_customer_success';
     //Dynamic Content Styling
     const XML_PATH_CONNECTOR_DYNAMIC_STYLING = 'connector_configuration/dynamic_content_style/dynamic_styling';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR = 'connector_configuration/dynamic_content_style/font_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE = 'connector_configuration/dynamic_content_style/font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR = 'connector_configuration/dynamic_content_style/name_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE = 'connector_configuration/dynamic_content_style/name_font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE = 'connector_configuration/dynamic_content_style/font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR = 'connector_configuration/dynamic_content_style/price_color';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE = 'connector_configuration/dynamic_content_style/price_font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE = 'connector_configuration/dynamic_content_style/price_font_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR = 'connector_configuration/dynamic_content_style/product_link_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE = 'connector_configuration/dynamic_content_style/product_link_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE = 'connector_configuration/dynamic_content_style/product_link_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR = 'connector_configuration/dynamic_content_style/link_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE = 'connector_configuration/dynamic_content_style/link_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE = 'connector_configuration/dynamic_content_style/link_style';
     const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT = 'connector_configuration/dynamic_content_style/font';
     const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR = 'connector_configuration/dynamic_content_style/color';
     const XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR = 'connector_configuration/dynamic_content_style/other_color';

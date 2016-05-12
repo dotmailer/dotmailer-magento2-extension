@@ -1,5 +1,4 @@
-<?php $reviews = $this->getProductsReview(); ?>
-
+<?php $reviews = $block->getProductsReview();?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
     <head>
@@ -11,7 +10,7 @@
                 <?php foreach($reviews as $name => $review): ?>
                     <tr>
                         <td style="border-bottom: 2px #d3d3d3 dotted; padding-top: 5px; padding-bottom: 5px">
-                            <?php echo $review; ?>
+                            <?php echo $block->escapeHtml($review); ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

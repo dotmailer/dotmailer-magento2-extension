@@ -7,8 +7,6 @@ use Magento\Framework\View\Result\PageFactory;
 
 class Contact extends \Magento\Backend\App\Action
 {
-	const ADMIN_RESOURCE = 'Ashsmith_Blog::post';
-
 	/**
 	 * @var PageFactory
 	 */

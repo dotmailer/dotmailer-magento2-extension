@@ -218,7 +218,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     public function getTimeFromConfig($config)
     {
         $now    = new \Zend_Date();
-        $period = new \Zend_Date();
+        $period = 'M';
 
         if ($config == 'mostviewed') {
             $period = $this->scopeConfig->getValue(
@@ -250,7 +250,8 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
             $period = $now->sub(1, $sub);
         }
 
-        return $period->tostring(\Zend_Date::ISO_8601);
+
+        return $period->toString(\Zend_Date::ISO_8601);
     }
 
     public function getProductPushIds()

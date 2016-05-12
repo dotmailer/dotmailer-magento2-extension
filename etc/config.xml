@@ -104,10 +104,10 @@
                 <crossell_items_to_display>2</crossell_items_to_display>
                 <bestsellers_display_type>grid</bestsellers_display_type>
                 <bestsellers_items_to_display>2</bestsellers_items_to_display>
-                <bestsellers_time_period></bestsellers_time_period>
+                <bestsellers_time_period>M</bestsellers_time_period>
                 <most_viewed_display_type>grid</most_viewed_display_type>
                 <most_viewed_items_to_display>2</most_viewed_items_to_display>
-                <most_viewed_time_period></most_viewed_time_period>
+                <most_viewed_time_period>M</most_viewed_time_period>
                 <recently_viewed_display_type>grid</recently_viewed_display_type>
                 <recently_viewed_items_to_display>2</recently_viewed_items_to_display>
                 <review_display_type>grid</review_display_type>
@@ -188,6 +188,7 @@
             </tracking>
             <dynamic_content_style>
                 <dynamic_syling><![CDATA[table{font-family: Arial, Helvetica, sans-serif; font-size:12px;}]]></dynamic_syling>
+                <font><![CDATA[Arial, Helvetica, sans-serif;]]></font>
                 <name_color><![CDATA[#000000]]></name_color>
                 <name_font_size><![CDATA[12px]]></name_font_size>
                 <name_style></name_style>

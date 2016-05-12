@@ -101,8 +101,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
             )
         ) {
-
-            //throw new Exception('Authentication failed : ' . $authRequest);
             return false;
         }
 
@@ -346,14 +344,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
 
-        $credentials = array(
-            Container::USERNAME => $apiUsername,
-            Container::PASSWORD => $apiPassword
+        $client = $this->_objectManager->create(
+            'Dotdigitalgroup\Email\Model\Apiconnector\Client',
+            ['username' => $apiUsername, 'password' => $apiPassword]
         );
 
-        $resources = Container::newResources($credentials);
-
-        return $resources;
+        return $client;
     }
 
     /**
