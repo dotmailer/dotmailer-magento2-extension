@@ -5,19 +5,23 @@
     $canShowAddressBook = $block->getCanShowAdditionalBooks();
     $canShowDataFields = $block->getCanShowDataFields();
     ?>
-    <form id="connector-newsletter-form-validate" method="post" action="<?php echo $block->escapeHtml($block->getSaveUrl()) ?>" style="margin-top: 35px;">
+    <form id="connector-newsletter-form-validate" method="post"
+          action="<?php echo $block->escapeHtml($block->getSaveUrl()) ?>" style="margin-top: 35px;">
         <div class="fieldset">
-            <?php echo $block->getBlockHtml('formkey')?>
+            <?php echo $block->getBlockHtml('formkey') ?>
             <legend class="legend"><span><?php echo $block->escapeHtml(__('Newsletter Preferences')) ?></span></legend>
             <ul class="form-list" style="padding-left: 0">
                 <?php if (!empty($additionalBooks) && $canShowAddressBook): ?>
                     <h4 style="margin-top: 10px;"><?php echo $block->escapeHtml(__('Additional Newsletter Subscriptions')) ?></h4>
                     <?php foreach($additionalBooks as $books): ?>
                         <li class="control" style="display: block">
-                            <input type="checkbox" name="additional_subscriptions[]" id ="<?php echo $block->escapeHtml($books["name"]); ?>"
-                                   value="<?php echo $block->escapeHtml($books["value"]) ?>" title="<?php echo $block->escapeHtml($books["name"]) ?>"
+                            <input type="checkbox" name="additional_subscriptions[]"
+                                   id="<?php echo $block->escapeHtml($books["name"]); ?>"
+                                   value="<?php echo $block->escapeHtml($books["value"]) ?>"
+                                   title="<?php echo $block->escapeHtml($books["name"]) ?>"
                                 <?php if($books["subscribed"]): ?> checked="checked"<?php endif; ?> class="checkbox" />
-                            <label for="additional_subscription"><?php echo $block->escapeHtml($books["name"]) ?></label>
+                            <label
+                                for="additional_subscription"><?php echo $block->escapeHtml($books["name"]) ?></label>
                         </li>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -27,13 +31,15 @@
                         <div>
                             <?php foreach($dataFields as $dataField): ?>
                                 <div class="field" style="margin-bottom: 10px;">
-                                    <label for="<?php echo $block->escapeHtml($dataField['name']) ?>"><?php echo $block->escapeHtml($dataField['name']) ?></label>
+                                    <label
+                                        for="<?php echo $block->escapeHtml($dataField['name']) ?>"><?php echo $block->escapeHtml($dataField['name']) ?></label>
                                     <div class="input-box">
                                         <input style="width: 50%" type="text"
                                                class="input-text <?php if($dataField['type'] == "Date") echo 'date-field' ?>"
                                                title="<?php echo $block->escapeHtml($dataField['name']) ?>"
-                                               value="<?php echo $block->escapeHtml($dataField['value']) ?>" name="data_fields[<?php echo $block->escapeHtml($dataField['name']) ?>]"
-                                               id="<?php echo $block->escapeHtml($dataField['name']) ?>" />
+                                               value="<?php echo $block->escapeHtml($dataField['value']) ?>"
+                                               name="data_fields[<?php echo $block->escapeHtml($dataField['name']) ?>]"
+                                               id="<?php echo $block->escapeHtml($dataField['name']) ?>"/>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
