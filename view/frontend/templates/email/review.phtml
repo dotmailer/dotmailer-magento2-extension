@@ -1,68 +1,55 @@
 <?php
 $i = 0;
-$helper = $this->helper;
-$order = $this->getOrder();
-$mode = $this->getMode();
-$website = $this->getWebsite();
+$helper = $block->helper;
+$order = $block->getOrder();
+$mode = $block->getMode();
+$website = $block->getWebsite();
 ?>
-<?php if($order): ?>
+<?php if ($order) : ?>
     <?php $dynamicStyle = $helper->getDynamicStyles(); ?>
     <style>
         .product-name{
-            color: <?php echo $dynamicStyle['nameColor'];?>;
-            font-size: <?php echo $dynamicStyle['fontSize'];?>;
-        <?php if(in_array('bold', $dynamicStyle['nameStyle'])): ?>
+            color: <?php echo $block->escapeHtml($dynamicStyle['nameColor']);?>;
+            font-size: <?php echo $block->escapeHtml($dynamicStyle['fontSize']);?>;
+        <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?>
-        <?php if(in_array('italic', $dynamicStyle['nameStyle'])): ?>
+        <?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
             font-style: italic;
         <?php endif; ?>
-        <?php if(in_array('underline', $dynamicStyle['nameStyle'])): ?>
+        <?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-price{
-            color: <?php echo $dynamicStyle['priceColor'];?>;
-            font-size: <?php echo $dynamicStyle['priceFontSize'];?>;
-        <?php if(in_array('bold', $dynamicStyle['priceStyle'])): ?>
+            color: <?php echo $block->escapeHtml($dynamicStyle['priceColor']);?>;
+            font-size: <?php echo $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
+        <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?>
-        <?php if(in_array('italic', $dynamicStyle['priceStyle'])): ?>
+        <?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
             font-style: italic;
         <?php endif; ?>
-        <?php if(in_array('underline', $dynamicStyle['priceStyle'])): ?>
+        <?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .proudct-url{
-            color: <?php echo $dynamicStyle['urlColor'];?>;
-            font-size: <?php echo $dynamicStyle['urlFontSize'];?>;
-        <?php if(in_array('bold', $dynamicStyle['linkStyle'])): ?>
+            color: <?php echo $block->escapeHtml($dynamicStyle['urlColor']);?>;
+            font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
+        <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?>
-        <?php if(in_array('italic', $dynamicStyle['linkStyle'])): ?>
+        <?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
             font-style: italic;
         <?php endif; ?>
-        <?php if(in_array('underline', $dynamicStyle['linkStyle'])): ?>
-            text-decoration: underline;
-        <?php endif; ?>
-        }
-        .other-text{
-            color: <?php echo $dynamicStyle['otherColor'];?>;
-            font-size: <?php echo $dynamicStyle['otherFontSize'];?>;
-        <?php if(in_array('bold', $dynamicStyle['otherStyle'])): ?>
-            font-weight: bold;
-        <?php endif; ?>
-        <?php if(in_array('italic', $dynamicStyle['otherStyle'])): ?>
-            font-style: italic;
-        <?php endif; ?>
-        <?php if(in_array('underline', $dynamicStyle['otherStyle'])): ?>
+        <?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-table{
-            font-family: <?php echo $dynamicStyle['docFont'];?>;
-            background-color: <?php echo $dynamicStyle['docBackgroundColor'];?>;
+            font-family: <?php echo $block->escapeHtml($dynamicStyle['docFont']);?>;
+            background-color: <?php echo $block->escapeHtml($dynamicStyle['docBackgroundColor']);?>;
             width: 100% !important;
         }
         .product-table img{
@@ -74,7 +61,8 @@ $website = $this->getWebsite();
             width: 25%;
             padding-bottom: 10px;
         }
-        <?php echo $dynamicStyle['dynamicStyling'];?>
+        /** Styling from config field **/
+        <?php echo $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
@@ -84,34 +72,33 @@ $website = $this->getWebsite();
             .product-table td{
                 width: 172px !important;
             }
-            .product-table table{
+            .product-table {
                 width: auto !important;
             }
         }
     </style>
 
+    <?php $items = $block->getItems();?>
 
-    <?php foreach ($this->getItems() as $item) :?>
-        <?php  if($i == 0):?>
+    <?php foreach ($items as $item) :?>
+        <?php  if ($i == 0) :?>
             <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse;'><tr>
         <?php endif;?>
-        <?php if($mode == 'list'):?>
+        <?php if ($mode == 'list') :?>
             </tr><tr>
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
-
             <?php echo $block->getImage($item, 'category_page_grid')->toHtml(); ?>
-            
-            <div class="product-name" align="center"><b><?php echo substr($this->escapeHtml($item->getName()), 0, 40);?></b></div>
+            <div class="product-name" align="center"><b><?php echo substr($block->escapeHtml($item->getName()), 0, 40);?></b></div>
             <div align="center">
-                <a class="proudct-url" href="<?php echo $this->getReviewItemUrl($item->getId()) .
-                    $helper->getReviewReminderAnchor($website);?>"><?php echo __('Leave a review'); ?>
+                <a class="proudct-url" href="<?php echo $block->escapeHtml($block->getReviewItemUrl($item->getId())) .
+                    $helper->getReviewReminderAnchor($website);?>"><?php echo $block->escapeHtml(__('Leave a review')); ?>
                 </a>
             </div>
         </td>
 
-        <?php if ($i++ % 4 ==3 && $mode == 'grid'):?></tr><tr><?php endif;?>
+        <?php if ($i++ % 4 ==3 && $mode == 'grid') :?></tr><tr><?php endif;?>
     <?php endforeach;?>
     <?php if ( $i > 0):?>
         </table>
