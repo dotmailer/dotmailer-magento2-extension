@@ -346,10 +346,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } else {
             $apiUsername = $this->getApiUsername($website);
             $apiPassword = $this->getApiPassword($website);
-        }
 
-        if ( ! $apiUsername || ! $apiPassword) {
-            return false;
+            if (!$apiUsername || !$apiPassword) {
+                return false;
+            }
         }
 
         $client = $this->_objectManager->create(
