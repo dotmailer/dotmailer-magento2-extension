@@ -333,13 +333,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Api client by website.
      *
      * @param int $website
+     * @param string $username
+     * @param string $password
      *
      * @return \DotMailer\Api\Resources\Resources
      */
-    public function getWebsiteApiClient($website = 0)
+    public function getWebsiteApiClient($website = 0, $username = '', $password = '')
     {
-        $apiUsername = $this->getApiUsername($website);
-        $apiPassword = $this->getApiPassword($website);
+        if ($username && $password) {
+            $apiUsername = $username;
+            $apiPassword = $password;
+        } else {
+            $apiUsername = $this->getApiUsername($website);
+            $apiPassword = $this->getApiPassword($website);
+        }
+
         if ( ! $apiUsername || ! $apiPassword) {
             return false;
         }
@@ -1926,12 +1934,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * setup data fields
      *
+     * @param $username
+     * @param $password
+     *
      * @return bool
      */
-    public function setupDataFields()
+
+    public function setupDataFields($username, $password)
     {
         $error = false;
-        $apiModel = $this->getWebsiteApiClient();
+        $apiModel = $this->getWebsiteApiClient(0, $username, $password);
         if (!$apiModel) {
             return false;
         } else {
@@ -1967,9 +1979,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * create certain address books
      *
+     * @param $username
+     * @param $password
+     *
      * @return bool
      */
-    public function createAddressBooks()
+    public function createAddressBooks($username, $password)
     {
         $addressBooks = array(
             array('name' => 'Magento_Customers', 'visibility' => 'Private'),
@@ -1985,7 +2000,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID
         );
         $error = false;
-        $client = $this->getWebsiteApiClient();
+        $client = $this->getWebsiteApiClient(0, $username, $password);
         if (!$client) {
             return false;
         } else {
