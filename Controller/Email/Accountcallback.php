@@ -11,12 +11,12 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * Accountcallback constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\Trial $helper
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\Trial $helper,
         \Magento\Framework\Json\Helper\Data $jsonHelper
     ) {
         $this->_helper = $helper;
