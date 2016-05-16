@@ -23,7 +23,6 @@
                 </field>
                 <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>API Username</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Wrapper</frontend_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

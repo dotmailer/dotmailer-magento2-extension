@@ -74,6 +74,8 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
         $email      = $customer->getEmail();
         $websiteId  = $customer->getWebsiteId();
         $customerId = $customer->getId();
+        $store = $this->_storeManager->getStore($customer->getStoreId());
+        $storeName = $store->getName();
 
         $isSubscribed = $this->_subscriberFactory->create()
             ->loadByEmail($email)->isSubscribed();
@@ -128,6 +130,25 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
             $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
                 ->setCustomerId($customerId)
                 ->save();
+
+            //Automation enrolment
+            $programId
+                = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/customer_automation',
+                $websiteId);
+            //new contact program mapped
+            if ($programId) {
+                $automation = $this->_automationFactory->create();
+                //save automation type
+                $automation->setEmail($email)
+                    ->setAutomationType(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_CUSTOMER)
+                    ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                    ->setTypeId($customerId)
+                    ->setWebsiteId($websiteId)
+                    ->setStoreName($storeName)
+                    ->setProgramId($programId);
+                $automation->save();
+            }
+
         } catch (\Exception $e) {
             $this->_helper->debug((string)$e, array());
         }

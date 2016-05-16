@@ -6,6 +6,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
 {
     protected $_helper;
     protected $_jsonHelper;
+    protected $_dataField;
+    protected $_storeManager;
+    protected $_objectManager;
 
     /**
      * Accountcallback constructor.
@@ -13,14 +16,23 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Json\Helper\Data $jsonHelper
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
     ) {
         $this->_helper = $helper;
         $this->_jsonHelper = $jsonHelper;
+        $this->_dataField = $dataField;
+        $this->_storeManager = $storeManager;
+        $this->_objectManager = $objectManager;
 
         parent::__construct($context);
     }
@@ -32,12 +44,12 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         $error = false;
         if (!empty($params['accountId']) && !empty($params['apiUser']) && !empty($params['pass']) && !empty($params['secret'])) {
             if ($params['secret'] == \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_SECRET) {
-                $apiConfigStatus = $this->_helper->saveApiCreds($params['apiUser'], $params['pass']);
-                $dataFieldsStatus = $this->_helper->setupDataFields();
-                $addressBookStatus = $this->_helper->createAddressBooks();
-                $syncStatus = $this->_helper->enableSyncForTrial();
+                $apiConfigStatus = $this->_saveApiCreds($params['apiUser'], $params['pass']);
+                $dataFieldsStatus = $this->_setupDataFields($params['apiUser'], $params['pass']);
+                $addressBookStatus = $this->_createAddressBooks($params['apiUser'], $params['pass']);
+                $syncStatus = $this->_enableSyncForTrial();
                 if (isset($params['apiEndpoint'])) {
-                    $this->_helper->saveApiEndPoint($params['apiEndpoint']);
+                    $this->_saveApiEndPoint($params['apiEndpoint']);
                 }
                 if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
                     $this->sendAjaxResponse(false, $this->_getSuccessHtml());
@@ -108,5 +120,166 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
                     <a class='submit secondary center' href='mailto:support@dotmailer.com'>Contact support@dotmailer.com</a>
                 </div>
             </div>";
+    }
+
+
+    /**
+     * save api credentials
+     *
+     * @param $apiUser
+     * @param $apiPass
+     * @return bool
+     */
+    protected function _saveApiCreds($apiUser, $apiPass)
+    {
+        $this->_helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, '1', 'default', 0
+        );
+        $this->_helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME, $apiUser, 'default', 0
+        );
+        $this->_helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD, $apiPass, 'default', 0
+        );
+
+        //Clear config cache
+        $this->_objectManager->get('Magento\Framework\App\Config\ReinitableConfigInterface')->reinit();
+        return true;
+    }
+
+    /**
+     * setup data fields
+     *
+     * @param $username
+     * @param $password
+     *
+     * @return bool
+     */
+
+    protected function _setupDataFields($username, $password)
+    {
+        $error = false;
+        $apiModel = $this->_helper->getWebsiteApiClient(0, $username, $password);
+        if (!$apiModel) {
+            $error = true;
+            $this->_helper->log('setupDataFields client is not enabled');
+        } else {
+            $dataFields = $this->_dataField->getContactDatafields();
+            foreach ($dataFields as $key => $dataField) {
+                $response = $apiModel->postDataFields($dataField);
+                //ignore existing datafields message
+                if (isset($response->message) &&
+                    $response->message != \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_DATAFIELD_EXISTS
+                ) {
+                    $error = true;
+                } else {
+                    //map the successfully created data field
+                    $this->_helper->saveConfigData(
+                        'connector_data_mapping/customer_data/' . $key,
+                        strtoupper($dataField['name']), 'default', 0);
+                    $this->_helper->log('successfully connected : ' . $dataField['name']);
+                }
+            }
+        }
+        return $error == true ? false : true;
+    }
+
+    /**
+     * create certain address books
+     *
+     * @param $username
+     * @param $password
+     *
+     * @return bool
+     */
+    protected function _createAddressBooks($username, $password)
+    {
+        $addressBooks = array(
+            array('name' => 'Magento_Customers', 'visibility' => 'Private'),
+            array('name' => 'Magento_Subscribers', 'visibility' => 'Private'),
+            array('name' => 'Magento_Guests', 'visibility' => 'Private'),
+        );
+        $addressBookMap = array(
+            'Magento_Customers'
+            => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
+            'Magento_Subscribers'
+            => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
+            'Magento_Guests'
+            => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID
+        );
+        $error = false;
+        $client = $this->_helper->getWebsiteApiClient(0, $username, $password);
+        if (!$client) {
+            $error = true;
+            $this->_helper->log('createAddressBooks client is not enabled');
+        } else {
+            foreach ($addressBooks as $addressBook) {
+                $addressBookName = $addressBook['name'];
+                $visibility = $addressBook['visibility'];
+                if (strlen($addressBookName)) {
+                    $response = $client->postAddressBooks($addressBookName, $visibility);
+                    if (isset($response->message)) {
+                        $error = true;
+                    } else {
+                        //map the successfully created address book
+                        $this->_helper->saveConfigData($addressBookMap[$addressBookName], $response->id, 'default', 0);
+                        $this->_helper->log('successfully connected address book : ' . $addressBookName);
+                    }
+                }
+            }
+        }
+        return $error == true ? false : true;
+    }
+
+    /**
+     * enable certain syncs for newly created trial account
+     *
+     * @return bool
+     */
+    protected function _enableSyncForTrial()
+    {
+        $this->_helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED, '1', 'default', 0
+        );
+        $this->_helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED, '1', 'default', 0
+        );
+        $this->_helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED, '1', 'default', 0
+        );
+        $this->_helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, '1', 'default', 0
+        );
+        return true;
+    }
+
+    /**
+     * save api endpoint
+     *
+     * @param $value
+     */
+    protected function _saveApiEndPoint($value)
+    {
+        $this->_helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT, $value, 'default', 0
+        );
+    }
+
+    /**
+     * check if both frotnend and backend secure(HTTPS)
+     *
+     * @return bool
+     */
+    protected function _isFrontendAdminSecure()
+    {
+        $frontend = $this->_storeManager->getStore()->isFrontUrlSecure();
+        $admin = $this->_helper->getWebsiteConfig(\Magento\Store\Model\Store::XML_PATH_SECURE_IN_ADMINHTML);
+        $current = $this->_storeManager->getStore()->isCurrentlySecure();
+
+        if ($frontend && $admin && $current) {
+            return true;
+        }
+
+        return false;
     }
 }
