@@ -101,7 +101,7 @@
                 <upsell_display_type>grid</upsell_display_type>
                 <upsell_items_to_display>2</upsell_items_to_display>
                 <crosssell_display_type>grid</crosssell_display_type>
-                <crossell_items_to_display>2</crossell_items_to_display>
+                <crosssell_items_to_display>2</crosssell_items_to_display>
                 <bestsellers_display_type>grid</bestsellers_display_type>
                 <bestsellers_items_to_display>2</bestsellers_items_to_display>
                 <bestsellers_time_period>M</bestsellers_time_period>

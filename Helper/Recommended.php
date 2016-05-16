@@ -16,7 +16,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 
     const XML_PATH_RELATED_PRODUCTS_ITEMS = 'connector_dynamic_content/products/related_items_to_display';
     const XML_PATH_UPSELL_PRODUCTS_ITEMS = 'connector_dynamic_content/products/upsell_items_to_display';
-    const XML_PATH_CROSSSELL_PRODUCTS_ITEMS = 'connector_dynamic_content/products/crossell_items_to_display';
+    const XML_PATH_CROSSSELL_PRODUCTS_ITEMS = 'connector_dynamic_content/products/crosssell_items_to_display';
     const XML_PATH_BESTSELLER_PRODUCT_ITEMS = 'connector_dynamic_content/products/bestsellers_items_to_display';
     const XML_PATH_MOSTVIEWED_PRODUCT_ITEMS = 'connector_dynamic_content/products/most_viewed_items_to_display';
     const XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS = 'connector_dynamic_content/products/recently_viewed_items_to_display';

@@ -735,7 +735,8 @@
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="crossell_items_to_display" translate="label" type="select" sortOrder="130" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="crosssell_items_to_display" translate="label" type="select" sortOrder="130" showInStore="1"
+                       showInWebsite="1" showInDefault="1">
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>

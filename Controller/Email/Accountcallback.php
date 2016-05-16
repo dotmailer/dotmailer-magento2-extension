@@ -33,8 +33,8 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         if (!empty($params['accountId']) && !empty($params['apiUser']) && !empty($params['pass']) && !empty($params['secret'])) {
             if ($params['secret'] == \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_SECRET) {
                 $apiConfigStatus = $this->_helper->saveApiCreds($params['apiUser'], $params['pass']);
-                $dataFieldsStatus = $this->_helper->setupDataFields();
-                $addressBookStatus = $this->_helper->createAddressBooks();
+                $dataFieldsStatus = $this->_helper->setupDataFields($params['apiUser'], $params['pass']);
+                $addressBookStatus = $this->_helper->createAddressBooks($params['apiUser'], $params['pass']);
                 $syncStatus = $this->_helper->enableSyncForTrial();
                 if (isset($params['apiEndpoint'])) {
                     $this->_helper->saveApiEndPoint($params['apiEndpoint']);
