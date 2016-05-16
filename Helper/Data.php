@@ -1923,7 +1923,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $this->saveConfigData(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD, $apiPass, 'default', 0
             );
-
+            
+            //Clear config cache
+            $this->_objectManager->get('Magento\Framework\App\Config\ReinitableConfigInterface')->reinit();
             return true;
         } catch (\Exception $e) {
             $this->_logger->critical($e);
@@ -1945,7 +1947,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $error = false;
         $apiModel = $this->getWebsiteApiClient(0, $username, $password);
         if (!$apiModel) {
-            return false;
+            $error = true;
+            $this->log('setupDataFields client is not enabled');
         } else {
             $dataFields = $this->_dataField->getContactDatafields();
             foreach ($dataFields as $key => $dataField) {
@@ -1968,12 +1971,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                 }
             }
-            if ($error) {
-                return false;
-            } else {
-                return true;
-            }
         }
+        return $error == true ? false : true;
     }
 
     /**
@@ -2002,7 +2001,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $error = false;
         $client = $this->getWebsiteApiClient(0, $username, $password);
         if (!$client) {
-            return false;
+            $error = true;
+            $this->log('createAddressBooks client is not enabled');
         } else {
             foreach ($addressBooks as $addressBook) {
                 $addressBookName = $addressBook['name'];
@@ -2024,11 +2024,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 }
             }
         }
-        if ($error) {
-            return false;
-        } else {
-            return true;
-        }
+        return $error == true ? false : true;
     }
 
     /**
