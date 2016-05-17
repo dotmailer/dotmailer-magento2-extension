@@ -76,65 +76,15 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
         $customerId = $customer->getId();
         $store = $this->_storeManager->getStore($customer->getStoreId());
         $storeName = $store->getName();
-
-        $isSubscribed = $this->_subscriberFactory->create()
-            ->loadByEmail($email)->isSubscribed();
-
         try {
-            // fix for a multiple hit of the observer
-            $emailReg = $this->_registry->registry($email . '_customer_save');
-            if ($emailReg) {
+
+            //Api is not enabled
+            $apiEnabled = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
+            if (! $apiEnabled)
                 return $this;
-            }
-            $this->_registry->register($email . '_customer_save', $email);
-            $emailBefore  = $this->_customerFactory->create()
-                ->load($customer->getId())->getEmail();
-            $contactModel = $this->_contactFactory->create()
-                ->loadByCustomerEmail($emailBefore, $websiteId);
-            //email change detection
-            if ($email != $emailBefore) {
-                $this->_helper->log('email change detected : ' . $email
-                    . ', after : ' . $emailBefore . ', website id : '
-                    . $websiteId);
-                if ($this->_helper->isEnabled($websiteId)) {
-                    $client = $this->_helper->getWebsiteApiClient($websiteId);
-                    $subscribersAddressBook
-                            = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
-                        $websiteId);
-                    $response
-                            = $client->postContacts($emailBefore);
-                    //check for matching email
-                    if (isset($response->id)) {
-                        if ($email != $response->email) {
-                            $data = array(
-                                'Email'     => $email,
-                                'EmailType' => 'Html'
-                            );
-                            //update the contact with same id - different email
-                            $client->updateContact($response->id, $data);
-
-                        }
-                        if ( ! $isSubscribed
-                            && $response->status == 'Subscribed'
-                        ) {
-                            $client->deleteAddressBookContact($subscribersAddressBook,
-                                $response->id);
-                        }
-                    } elseif (isset($response->message)) {
-                        $this->_helper->log('Email change error : '
-                            . $response->message);
-                    }
-                }
-                $contactModel->setEmail($email);
-            }
-            $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
-                ->setCustomerId($customerId)
-                ->save();
-
             //Automation enrolment
-            $programId
-                = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/customer_automation',
-                $websiteId);
+            $programId = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER, $websiteId);
+
             //new contact program mapped
             if ($programId) {
                 $automation = $this->_automationFactory->create();
