@@ -105,7 +105,7 @@ class Catalog
                         //register in queue with importer
                         $this->_importerFactory->create()
                             ->registerQueue(
-                                \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CATALOG,
+                                'Catalog_Default',
                                 $products,
                                 \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                                 \Magento\Store\Model\Store::DEFAULT_STORE_ID
@@ -187,15 +187,19 @@ class Catalog
         //all products for export
         $products = $this->_getProductsToExport($store);
         //get products id's
-        if ($products) {
-            $this->_productIds = $products->getColumnValues('entity_id');
+        try {
+            if ($products) {
+                $this->_productIds = $products->getColumnValues('entity_id');
 
-            foreach ($products as $product) {
+                foreach ($products as $product) {
 
-                $connProduct         = $this->_connectorProductFactory->create()
-                    ->setProduct($product);
-                $connectorProducts[] = $connProduct;
+                    $connProduct = $this->_connectorProductFactory->create()
+                        ->setProduct($product);
+                    $connectorProducts[] = $connProduct;
+                }
             }
+        } catch (\Exception $e) {
+            $this->_helper->debug((string)$e, array());
         }
 
         return $connectorProducts;

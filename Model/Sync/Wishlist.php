@@ -221,7 +221,7 @@ class Wishlist
                 );
                 $this->_start = microtime(true);
                 //register in queue with importer
-                $this->_importerFactory>create()
+                $this->_importerFactory->create()
                     ->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
                         $connectorWishlist,

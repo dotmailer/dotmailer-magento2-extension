@@ -3,9 +3,9 @@ namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
 class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
-    
 
-    protected function _processCollection($collection)
+
+    public function sync($collection)
     {
         foreach($collection as $item)
         {
@@ -15,10 +15,9 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
             $importData = unserialize($item->getImportData());
 
             if ($this->_client) {
-
                 $key = $importData[0];
                 $collectionName = $item->getImportType();
-                $this->_client->DeleteContactsTransactionalData($collectionName, $key);
+                $this->_client->deleteContactsTransactionalData($key, $collectionName);
                 $this->_handleSingleItemAfterSync($item, $result);
             }
         }
