@@ -997,24 +997,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Sync bulk limit.
-     *
-     * @param int $website
-     *
-     * @return mixed
-     */
-    public function getSyncBulkLimit($website = 0)
-    {
-        $website = $this->_storeManager->getWebsite($website);
-
-        return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_IMPORTER_BULK_LIMIT,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website
-        );
-    }
-
-    /**
      * Get the guest sync enabled value.
      *
      * @param int $websiteId

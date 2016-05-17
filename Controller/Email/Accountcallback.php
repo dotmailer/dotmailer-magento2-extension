@@ -8,7 +8,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     protected $_jsonHelper;
     protected $_dataField;
     protected $_storeManager;
-    protected $_objectManager;
 
     /**
      * Accountcallback constructor.
@@ -16,7 +15,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
      */
@@ -24,7 +22,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
     ) {
@@ -32,7 +29,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         $this->_jsonHelper = $jsonHelper;
         $this->_dataField = $dataField;
         $this->_storeManager = $storeManager;
-        $this->_objectManager = $objectManager;
 
         parent::__construct($context);
     }
