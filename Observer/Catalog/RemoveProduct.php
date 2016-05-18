@@ -13,7 +13,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     protected $_storeManager;
     protected $_catalogFactory;
     protected $_catalogCollection;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
     protected $_connectorCatalogFactory;
     protected $_connectorContactFactory;
 
@@ -22,7 +22,6 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @param \Dotdigitalgroup\Email\Model\Resource\ContactFactory            $connectorContactFactory
      * @param \Dotdigitalgroup\Email\Model\Resource\CatalogFactory            $connectorCatalogFactory
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory                  $proccessorFactory
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory                     $catalogFactory
      * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory
      * @param \Magento\Framework\Registry                                     $registry
@@ -34,7 +33,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory,
         \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $connectorCatalogFactory,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory,
         \Magento\Framework\Registry $registry,
@@ -45,7 +44,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     ) {
         $this->_connectorContactFactory = $connectorContactFactory;
         $this->_connectorCatalogFactory = $connectorCatalogFactory;
-        $this->_proccessorFactory       = $proccessorFactory;
+        $this->_importerFactory       = $importerFactory;
         $this->_helper                  = $data;
         $this->_registry                = $registry;
         $this->_logger                  = $loggerInterface;
@@ -113,11 +112,11 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                 = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES);
             if ($scope == 1) {
                 //register in queue with importer
-                $this->_proccessorFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CATALOG,
+                        'Catalog_Default',
                         array($key),
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                         \Magento\Store\Model\Store::DEFAULT_STORE_ID
                     );
             }
@@ -128,11 +127,11 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                     $storeCode   = $store->getCode();
 
                     //register in queue with importer
-                    $this->_proccessorFactory->create()
+                    $this->_importerFactory->create()
                         ->registerQueue(
                             'Catalog_' . $websiteCode . '_' . $storeCode,
                             array($key),
-                            \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE_DELETE,
+                            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                             $store->getWebsite()->getId()
                         );
                 }

@@ -5,15 +5,15 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 class Importersync extends \Magento\Backend\App\AbstractAction
 {
 	protected $messageManager;
-	protected $_proccessorFactory;
+	protected $_importerFactory;
 
 	public function __construct(
-		\Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+		\Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
 
 		\Magento\Backend\App\Action\Context $context
 	)
 	{
-		$this->_proccessorFactory = $proccessorFactory;
+		$this->_importerFactory = $importerFactory;
 		$this->messageManager = $context->getMessageManager();
 
 		parent::__construct($context);
@@ -24,7 +24,7 @@ class Importersync extends \Magento\Backend\App\AbstractAction
 	 */
 	public function execute()
 	{
-		$result =  $this->_proccessorFactory->create()->processQueue();
+		$result =  $this->_importerFactory->create()->processQueue();
 
 
 		$this->messageManager->addSuccess($result['message']);

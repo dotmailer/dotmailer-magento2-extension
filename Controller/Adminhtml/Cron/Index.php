@@ -2,32 +2,30 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Cron;
 
-use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\View\Result\PageFactory;
-
 
 class Index extends \Magento\Backend\App\Action
 {
+
 	/**
-	 * @var PageFactory
+	 * @var \Magento\Framework\View\Result\PageFactory
 	 */
 	protected $resultPageFactory;
 
 	/**
-	 * @param Context $context
-	 * @param PageFactory $resultPageFactory
+	 * Index constructor.
+	 *
+	 * @param \Magento\Backend\App\Action\Context        $context
+	 * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
 	 */
 	public function __construct(
-		Context $context,
-		PageFactory $resultPageFactory
+		\Magento\Backend\App\Action\Context $context,
+		\Magento\Framework\View\Result\PageFactory $resultPageFactory
 	) {
-		parent::__construct($context);
 		$this->resultPageFactory = $resultPageFactory;
+		parent::__construct($context);
 	}
+
 	/**
-	 * Check the permission to run it
-	 *
 	 * @return bool
 	 */
 	protected function _isAllowed()
@@ -36,8 +34,6 @@ class Index extends \Magento\Backend\App\Action
 	}
 
 	/**
-	 * Index action
-	 *
 	 * @return \Magento\Backend\Model\View\Result\Page
 	 */
 	public function execute()
@@ -48,7 +44,7 @@ class Index extends \Magento\Backend\App\Action
 		$resultPage->setActiveMenu('Dotdigitalgroup_Email::cron');
 		$resultPage->addBreadcrumb(__('Cron'), __('Cron '));
 		$resultPage->addBreadcrumb(__('Cron'), __('Cron'));
-		$resultPage->getConfig()->getTitle()->prepend(__('Cron Scheldule Report'));
+		$resultPage->getConfig()->getTitle()->prepend(__('Cron Tasks'));
 
 		return $resultPage;
 	}

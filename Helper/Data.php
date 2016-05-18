@@ -21,14 +21,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Data constructor.
      *
-     * @param \Magento\Backend\Model\Auth\Session         $sessionModel
-     * @param \Magento\Framework\App\ProductMetadata      $productMetadata
+     * @param \Magento\Backend\Model\Auth\Session $sessionModel
+     * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Magento\Config\Model\ResourceModel\Config  $resourceConfig
-     * @param \Magento\Framework\App\ResourceConnection   $adapter
-     * @param \Magento\Framework\App\Helper\Context       $context
-     * @param \Magento\Framework\ObjectManagerInterface   $objectManager
-     * @param \Magento\Store\Model\StoreManagerInterface  $storeManager
+     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
+     * @param \Magento\Framework\App\ResourceConnection $adapter
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\Backend\Model\Auth\Session $sessionModel,
@@ -89,8 +89,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
             )
         ) {
-
-            //throw new Exception('Authentication failed : ' . $authRequest);
             return false;
         }
 
@@ -109,7 +107,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
             //remove white spaces
             foreach ($ipArray as $key => $ip) {
-                $ipArray[$key] = preg_replace('/\s+/', '', $ip);
+                $ipArray[$key] = trim($ip);
             }
 
             //ip address
@@ -322,16 +320,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Api client by website.
      *
-     * @param int $website
+     * @param int    $website
+     * @param string $username
+     * @param string $password
      *
-     * @return bool
+     * @return bool|mixed
      */
-    public function getWebsiteApiClient($website = 0)
+    public function getWebsiteApiClient($website = 0, $username = '', $password = '')
     {
-        $apiUsername = $this->getApiUsername($website);
-        $apiPassword = $this->getApiPassword($website);
-        if ( ! $apiUsername || ! $apiPassword) {
-            return false;
+        if ($username && $password) {
+            $apiUsername = $username;
+            $apiPassword = $password;
+        } else {
+            $apiUsername = $this->getApiUsername($website);
+            $apiPassword = $this->getApiPassword($website);
+
+            if (!$apiUsername || !$apiPassword) {
+                return false;
+            }
         }
 
         $client = $this->_objectManager->create(
@@ -1215,7 +1221,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Dynamic styles from config.
-     *
+     * 
      * @return array
      */
     public function getDynamicStyles()
@@ -1286,25 +1292,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-    /**
-     * @param $website
-     *
-     * @return boolean
-     */
-    public function isReviewReminderEnabled($website)
-    {
-        return $this->getReviewWebsiteSettings(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEWS_ENABLED,
-            $website
-        );
-    }
 
     /**
      * get config value on website level
      *
      * @param $path
      * @param $website
-     *
      * @return mixed
      */
     public function getReviewWebsiteSettings($path, $website)
@@ -1314,79 +1307,64 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param $website
-     *
+     * @return boolean
+     */
+    public function isReviewReminderEnabled($website)
+    {
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEWS_ENABLED, $website);
+    }
+
+    /**
+     * @param $website
      * @return string
      */
     public function getOrderStatus($website)
     {
-        return $this->getReviewWebsiteSettings(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_STATUS,
-            $website
-        );
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_STATUS, $website);
     }
 
     /**
      * @param $website
-     *
      * @return int
      */
     public function getDelay($website)
     {
-        return $this->getReviewWebsiteSettings(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DELAY,
-            $website
-        );
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DELAY, $website);
     }
 
     /**
      * @param $website
-     *
      * @return boolean
      */
     public function isNewProductOnly($website)
     {
-        return $this->getReviewWebsiteSettings(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_NEW_PRODUCT,
-            $website
-        );
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_NEW_PRODUCT, $website);
     }
 
     /**
      * @param $website
-     *
      * @return int
      */
     public function getCampaign($website)
     {
-        return $this->getReviewWebsiteSettings(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_CAMPAIGN,
-            $website
-        );
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_CAMPAIGN, $website);
     }
 
     /**
      * @param $website
-     *
      * @return string
      */
     public function getAnchor($website)
     {
-        return $this->getReviewWebsiteSettings(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_ANCHOR,
-            $website
-        );
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_ANCHOR, $website);
     }
 
     /**
      * @param $website
-     *
      * @return string
      */
     public function getDisplayType($website)
     {
-        return $this->getReviewWebsiteSettings(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE,
-            $website
-        );
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE, $website);
     }
 }

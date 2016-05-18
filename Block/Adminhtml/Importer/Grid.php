@@ -162,6 +162,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'confirm' => __('Are you sure?')
             ]
         );
+        $this->getMassactionBlock()->addItem(
+            'resend',
+            [
+                'label'   => __('Reset'),
+                'url'     => $this->getUrl('*/*/massResend'),
+                'confirm' => __('Are you sure?')
+            ]
+        );
 
         return $this;
     }

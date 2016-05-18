@@ -15,10 +15,9 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     protected $_customerFactory;
     protected $_contactFactory;
     protected $_automationFactory;
-    protected $_proccessorFactory;
     protected $_reviewFactory;
     protected $_wishlist;
-    protected $_proccessor;
+    protected $_importerFactory;
 
 
     /**
@@ -26,7 +25,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      *
      * @param \Dotdigitalgroup\Email\Model\ReviewFactory     $reviewFactory
      * @param \Magento\Wishlist\Model\WishlistFactory        $wishlist
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory    $contactFactory
      * @param \Magento\Customer\Model\CustomerFactory        $customerFactory
@@ -35,12 +33,10 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @param \Dotdigitalgroup\Email\Helper\Data             $data
      * @param \Psr\Log\LoggerInterface                       $loggerInterface
      * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Model\Proccessor        $proccessor
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -49,12 +45,11 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Psr\Log\LoggerInterface $loggerInterface,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Dotdigitalgroup\Email\Model\Proccessor $proccessor
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
         $this->_reviewFactory     = $reviewFactory;
         $this->_wishlist          = $wishlist;
         $this->_contactFactory    = $contactFactory;
-        $this->_proccessorFactory = $proccessorFactory;
         $this->_automationFactory = $automationFactory;
         $this->_customerFactory   = $customerFactory;
         $this->_wishlistFactory   = $wishlistFactory;
@@ -62,7 +57,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         $this->_logger            = $loggerInterface;
         $this->_storeManager      = $storeManagerInterface;
         $this->_registry          = $registry;
-        $this->_proccessor        = $proccessor;
+        $this->_importerFactory   = $importerFactory;
     }
 
     /**
@@ -103,10 +98,10 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                     'email'        => $email,
                     'isSubscribed' => $isSubscribed
                 );
-                $this->_proccessor->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT_UPDATE,
+                $this->_importerFactory->registerQueue(
+                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT_UPDATE,
                     $data,
-                    \Dotdigitalgroup\Email\Model\Proccessor::MODE_CONTACT_EMAIL_UPDATE,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_EMAIL_UPDATE,
                     $websiteId
                 );
 

@@ -43,7 +43,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
         $rule = $this->_registry->registry('current_ddg_rule');
 
         if ($rule->getId()) {
-            return __("Edit Rule '%s'", $this->escapeHtml($rule->getName()));
+            return __("Edit Rule " . $this->escapeHtml($rule->getName()));
         } else {
             return __('New Rule');
         }

@@ -13,7 +13,7 @@ class Catalog
     protected $_start;
     protected $_countProducts = 0;
     protected $_productIds = array();
-    protected $_proccessorFactory;
+    protected $_importerFactory;
     protected $_connectorProductFactory;
     protected $_catalogCollectionFactory;
     protected $_productCollection;
@@ -25,7 +25,6 @@ class Catalog
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory  $productCollection
      * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollection
      * @param \Dotdigitalgroup\Email\Model\Connector\ProductFactory           $connectorProductFactory
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory                  $proccessorFactory
      * @param \Magento\Framework\App\ResourceConnection                       $resource
      * @param \Dotdigitalgroup\Email\Helper\Data                              $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
@@ -35,7 +34,7 @@ class Catalog
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection,
         \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollection,
         \Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -44,7 +43,7 @@ class Catalog
         $this->_productCollection        = $productCollection;
         $this->_catalogCollectionFactory = $catalogCollection;
         $this->_connectorProductFactory  = $connectorProductFactory;
-        $this->_proccessorFactory        = $proccessorFactory;
+        $this->_importerFactory        = $importerFactory;
         $this->_helper                   = $helper;
         $this->_resource                 = $resource;
         $this->_scopeConfig              = $scopeConfig;
@@ -104,11 +103,11 @@ class Catalog
 
                     if ($products) {
                         //register in queue with importer
-                        $this->_proccessorFactory->create()
+                        $this->_importerFactory->create()
                             ->registerQueue(
-                                \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CATALOG,
+                                'Catalog_Default',
                                 $products,
-                                \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                                 \Magento\Store\Model\Store::DEFAULT_STORE_ID
                             );
 
@@ -134,12 +133,12 @@ class Catalog
                         $products    = $this->_exportCatalog($store);
                         if ($products) {
                             //register in queue with importer
-                            $this->_proccessorFactory->create()
+                            $this->_importerFactory->create()
                                 ->registerQueue(
                                     'Catalog_' . $websiteCode . '_'
                                     . $storeCode,
                                     $products,
-                                    \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                                    \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                                     $store->getWebsite()->getId()
                                 );
                             //set imported
@@ -188,15 +187,19 @@ class Catalog
         //all products for export
         $products = $this->_getProductsToExport($store);
         //get products id's
-        if ($products) {
-            $this->_productIds = $products->getColumnValues('entity_id');
+        try {
+            if ($products) {
+                $this->_productIds = $products->getColumnValues('entity_id');
 
-            foreach ($products as $product) {
+                foreach ($products as $product) {
 
-                $connProduct         = $this->_connectorProductFactory->create()
-                    ->setProduct($product);
-                $connectorProducts[] = $connProduct;
+                    $connProduct = $this->_connectorProductFactory->create()
+                        ->setProduct($product);
+                    $connectorProducts[] = $connProduct;
+                }
             }
+        } catch (\Exception $e) {
+            $this->_helper->debug((string)$e, array());
         }
 
         return $connectorProducts;
@@ -223,11 +226,11 @@ class Catalog
                 );
 
                 //register in queue with importer
-                $this->_proccessorFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
                         $collectionName,
                         $connectorProduct,
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_SINGLE,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
                         $websiteId
                     );
                 $this->_productIds[] = $product->getId();

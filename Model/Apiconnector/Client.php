@@ -1106,36 +1106,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         return $result;
     }
 
-
-    public function getNostoProducts($slotName, $email)
-    {
-        $recommended = \Dotdigitalgroup\Email\Helper\Config::API_ENDPOINT
-            . '/recommendations/email';
-        $token
-                     = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_NOSTO);
-
-        //check for strin length
-        if (strlen($slotName) > 1 && strlen($email) > 1) {
-            $recommended .= '?elements=' . $slotName;
-            $recommended .= '&emails=' . $email;
-        }
-
-        $this->setApiUsername('')
-            ->setApiPassword($token)
-            ->setUrl($recommended)
-            ->setVerb('GET');
-
-        $result = $this->execute();
-
-        if (isset($result->message)) {
-            $message = $result->message;
-            $this->_helper->log($message);
-            $this->_helper->log("Nosto recommendation slot name : $slotName , email : $email");
-        }
-
-        return $result;
-    }
-
     /**
      * get contact address books
      *

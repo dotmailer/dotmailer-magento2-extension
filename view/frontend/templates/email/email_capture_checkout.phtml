@@ -1,13 +1,13 @@
 <?php $helper = $this->helper('Dotdigitalgroup\Email\Helper\Data'); ?>
 
-<?php if($helper->getEasyEmailCapture()): ?>
+<?php if ($helper->getEasyEmailCapture()) : ?>
 
     <script type="text/javascript">
         require(['jquery','domReady!'],function($){
             $("body").on("blur","input[name=username]", function(){
                 var email = $(this).val();
                 if(email && validateEmail(email)){
-                    $.post( "<?php echo $helper->getEmailCaptureUrl(); ?>", { email: email} );
+                    $.post("<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>", {email: email});
                 }
             });
         });

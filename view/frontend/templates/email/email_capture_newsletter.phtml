@@ -1,6 +1,6 @@
 <?php $helper = $this->helper('Dotdigitalgroup\Email\Helper\Data'); ?>
 
-<?php if($helper->getEasyEmailCaptureForNewsletter()): ?>
+<?php if ($helper->getEasyEmailCaptureForNewsletter()) : ?>
 
     <script type="text/javascript">
         require(['jquery','domReady!'],function($){
@@ -9,7 +9,7 @@
                 $(element).on('blur', function() {
                     var email = $(element).val();
                     if(email && validateEmail(email)){
-                        $.post( "<?php echo $helper->getEmailCaptureUrl(); ?>", { email: email} );
+                        $.post("<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>", {email: email});
                     }
                 });
             });

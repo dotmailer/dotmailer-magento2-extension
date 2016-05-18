@@ -19,12 +19,11 @@ class Contact
     protected $_subscriberFactory;
     protected $_customerCollection;
     protected $_emailCustomer;
-    protected $_proccessorFactory;
+    protected $_importerFactory;
 
     /**
      * Contact constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory                   $proccessorFactory
      * @param CustomerFactory                                                  $customerFactory
      * @param \Magento\Framework\Registry                                      $registry
      * @param \Magento\Framework\App\ResourceConnection                        $resource
@@ -40,7 +39,7 @@ class Contact
      * @param \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory  $contactCollectionFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\ResourceConnection $resource,
@@ -55,7 +54,7 @@ class Contact
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
         \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollectionFactory
     ) {
-        $this->_proccessorFactory = $proccessorFactory;
+        $this->_importerFactory = $importerFactory;
         $this->_file              = $file;
         $this->_config            = $config;
         $this->_helper            = $helper;
@@ -244,11 +243,11 @@ class Contact
         if (is_file($this->_file->getFilePath($customersFile))) {
             if ($customerNum > 0) {
                 //register in queue with importer
-                $this->_proccessorFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
                         '',
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                         $website->getId(),
                         $customersFile
                     );
@@ -392,11 +391,11 @@ class Contact
             //import contacts
             if ($updated > 0) {
                 //register in queue with importer
-                $this->_proccessorFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Proccessor::IMPORT_TYPE_CONTACT,
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
                         '',
-                        \Dotdigitalgroup\Email\Model\Proccessor::MODE_BULK,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                         $website->getId(),
                         $customersFile
                     );
@@ -448,6 +447,10 @@ class Contact
                 null, 'left'
             )
             ->joinAttribute(
+                'billing_company', 'customer_address/company', 'default_billing',
+                null, 'left'
+            )
+            ->joinAttribute(
                 'shipping_street', 'customer_address/street',
                 'default_shipping', null, 'left'
             )
@@ -469,6 +472,10 @@ class Contact
             )
             ->joinAttribute(
                 'shipping_region', 'customer_address/region',
+                'default_shipping', null, 'left'
+            )
+            ->joinAttribute(
+                'shipping_company', 'customer_address/company',
                 'default_shipping', null, 'left'
             )
             ->addAttributeToFilter('entity_id', array('in' => $customerIds));

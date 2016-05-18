@@ -64,8 +64,10 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
         $originalData = $element->getOriginalData();
         $buttonLabel  = ! empty($originalData['button_label'])
             ? $originalData['button_label'] : $this->_vatButtonLabel;
-        $url
-                      = $this->_urlBuilder->getUrl('dotdigitalgroup_email/addressbook/save');
+        $url          = $this->_urlBuilder->getUrl(
+            'dotdigitalgroup_email/addressbook/save'
+        );
+
         $this->addData(
             [
                 'button_label' => __($buttonLabel),

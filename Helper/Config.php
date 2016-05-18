@@ -117,6 +117,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_BRAND_PURCHASED = 'connector_data_mapping/customer_data/last_brand_pur';
     const XML_PATH_CONNECTOR_CUSTOMER_SUBSCRIBER_STATUS = 'connector_data_mapping/customer_data/subscriber_status';
     const XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME = 'connector_data_mapping/customer_data/abandoned_prod_name';
+    const XML_PATH_CONNECTOR_CUSTOMER_BILLING_COMPANY_NAME = 'connector_data_mapping/customer_data/billing_company';
+    const XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_COMPANY_NAME = 'connector_data_mapping/customer_data/delivery_company';
 
     const XML_PATH_CONNECTOR_ENTERPRISE_CURRENT_BALANCE = 'connector_data_mapping/enterprise_data/reward_points';
     const XML_PATH_CONNECTOR_ENTERPRISE_REWARD_AMOUNT = 'connector_data_mapping/enterprise_data/reward_amount';
@@ -151,15 +153,15 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS = 'connector_configuration/admin/disable_customer_success';
     //Dynamic Content Styling
     const XML_PATH_CONNECTOR_DYNAMIC_STYLING = 'connector_configuration/dynamic_content_style/dynamic_styling';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR = 'connector_configuration/dynamic_content_style/font_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE = 'connector_configuration/dynamic_content_style/font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR = 'connector_configuration/dynamic_content_style/name_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE = 'connector_configuration/dynamic_content_style/name_font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE = 'connector_configuration/dynamic_content_style/font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR = 'connector_configuration/dynamic_content_style/price_color';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE = 'connector_configuration/dynamic_content_style/price_font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE = 'connector_configuration/dynamic_content_style/price_font_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR = 'connector_configuration/dynamic_content_style/product_link_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE = 'connector_configuration/dynamic_content_style/product_link_font_size';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE = 'connector_configuration/dynamic_content_style/product_link_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR = 'connector_configuration/dynamic_content_style/link_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE = 'connector_configuration/dynamic_content_style/link_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE = 'connector_configuration/dynamic_content_style/link_style';
     const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT = 'connector_configuration/dynamic_content_style/font';
     const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR = 'connector_configuration/dynamic_content_style/color';
     const XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR = 'connector_configuration/dynamic_content_style/other_color';
@@ -274,6 +276,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     const PATH_FOR_API_ENDPOINT = 'connector/api/endpoint';
 
+    /**
+     * Trial Account
+     */
+    const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';
+    const API_CONNECTOR_TRIAL_FORM_SECRET = 'DmTrialFormSecret';
+
     protected $_storeManager;
 
     /**
@@ -304,7 +312,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             $baseUrl = $website->getConfig(
                     self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
                 ) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
-
         } else {
             $baseUrl = self::API_CONNECTOR_OAUTH_URL
                 . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;

@@ -1,50 +1,48 @@
-<?php $items = $this->getBasketItems();
-$image       = 'category_page_list';
-?>
+<?php $items = $block->getBasketItems(); ?>
 <?php if ($items): ?>
+    <?php
 
-    <body>
-    <?php $dynamicStyle = $this->getDynamicStyle(); ?>
+    $dynamicStyle = $block->getDynamicStyle();
+    ?>
     <style>
         .product-name {
-            color: <?php echo $dynamicStyle['nameColor'];?>;
-            font-size: <?php echo $dynamicStyle['fontSize'];?>;
-        <?php if(in_array('bold', $dynamicStyle['nameStyle'])): ?> font-weight: bold;
-        <?php endif; ?><?php if(in_array('italic', $dynamicStyle['nameStyle'])): ?> font-style: italic;
-        <?php endif; ?><?php if(in_array('underline', $dynamicStyle['nameStyle'])): ?> text-decoration: underline;
+            color: <?php echo $block->escapeHtml($dynamicStyle['nameColor']);?>;
+            font-size: <?php echo $block->escapeHtml($dynamicStyle['fontSize']);?>;
+        <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?> font-weight: bold;
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?> font-style: italic;
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?> text-decoration: underline;
         <?php endif; ?>
         }
 
         .product-price {
-            color: <?php echo $dynamicStyle['priceColor'];?>;
-            font-size: <?php echo $dynamicStyle['priceFontSize'];?>;
-        <?php if(in_array('bold', $dynamicStyle['priceStyle'])): ?> font-weight: bold;
-        <?php endif; ?><?php if(in_array('italic', $dynamicStyle['priceStyle'])): ?> font-style: italic;
-        <?php endif; ?><?php if(in_array('underline', $dynamicStyle['priceStyle'])): ?> text-decoration: underline;
+            color: <?php echo $block->escapeHtml($dynamicStyle['priceColor']);?>;
+            font-size: <?php echo $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
+        <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?> font-weight: bold;
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?> font-style: italic;
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?> text-decoration: underline;
         <?php endif; ?>
         }
 
-        .proudct-url {
-            color: <?php echo $dynamicStyle['urlColor'];?>;
-            font-size: <?php echo $dynamicStyle['urlFontSize'];?>;
-        <?php if(in_array('bold', $dynamicStyle['linkStyle'])): ?> font-weight: bold;
-        <?php endif; ?><?php if(in_array('italic', $dynamicStyle['linkStyle'])): ?> font-style: italic;
-        <?php endif; ?><?php if(in_array('underline', $dynamicStyle['linkStyle'])): ?> text-decoration: underline;
+        .product-url {
+            color: <?php echo $block->escapeHtml($dynamicStyle['urlColor']);?>;
+            font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']);?> <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?> font-weight: bold;
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?> font-style: italic;
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?> text-decoration: underline;
         <?php endif; ?>
         }
 
         .other-text {
-            color: <?php echo $dynamicStyle['otherColor'];?>;
-            font-size: <?php echo $dynamicStyle['otherFontSize'];?>;
-        <?php if(in_array('bold', $dynamicStyle['otherStyle'])): ?> font-weight: bold;
-        <?php endif; ?><?php if(in_array('italic', $dynamicStyle['otherStyle'])): ?> font-style: italic;
-        <?php endif; ?><?php if(in_array('underline', $dynamicStyle['otherStyle'])): ?> text-decoration: underline;
+            color: <?php echo $block->escapeHtml($dynamicStyle['otherColor']);?>;
+            font-size: <?php echo $block->escapeHtml($dynamicStyle['otherFontSize']);?>;
+        <?php if (in_array('bold', $dynamicStyle['otherStyle'])) : ?> font-weight: bold;
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['otherStyle'])) : ?> font-style: italic;
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['otherStyle'])) : ?> text-decoration: underline;
         <?php endif; ?>
         }
 
         .product-table {
-            font-family: <?php echo $dynamicStyle['docFont'];?>;
-            background-color: <?php echo $dynamicStyle['docBackgroundColor'];?>;
+            font-family: <?php echo $block->escapeHtml($dynamicStyle['docFont']);?>;
+            background-color: <?php echo $block->escapeHtml($dynamicStyle['docBackgroundColor']);?>;
             width: 100% !important;
         }
 
@@ -57,13 +55,19 @@ $image       = 'category_page_list';
         .product-table td {
             width: 25%;
             padding-bottom: 10px;
+            text-align: center;
         }
 
-        <?php echo $dynamicStyle['dynamicStyling'];?>
+        tr.noborder td {
+            border: none !important;
+        }
+
+        <?php echo $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
-            table, thead, tbody, th, td, tr {
+            .product-table table, .product-table thead, .product-table tbody,
+            .product-table th, .product-table td, .product-table tr {
                 display: block;
             }
 
@@ -73,119 +77,91 @@ $image       = 'category_page_list';
 
             .product-table {
                 width: auto !important;
+                margin: 0 auto;
+                float: none !important;
             }
 
-            tr {
+            .product-table tr {
                 border: none;
                 border-bottom: 1px solid #eee;
                 margin-bottom: 10px !important;
             }
 
-            td {
+            .product-table td {
                 border: none !important;
                 position: relative;
             }
 
-            td:before {
+            .quantity:before {
+                content: 'Quantity:';
+            }
+
+            .product-table td:before {
                 position: relative;
             }
 
-            tr th {
+            .product-table tr th {
                 display: none !important;
                 border: none !important;
             }
 
-            /** Does not work in email clients
-            td:nth-of-type(1):before { content: ""; }
-            td:nth-of-type(2):before { content: ""; }
-            td:nth-of-type(3):before { content: "Quantity: ";}
-            td:nth-of-type(4):before { content: "Total: "; }
-            tr:last-child td:nth-of-type(1):before { content: ""; }
-            tr:last-child td:nth-of-type(2):before { content: ""; }
-            tr:last-child td:nth-of-type(3):before { content: ""; }
-            tr:last-child td:nth-of-type(4):before { content: ""; }
-            td:before { font-weight: bold; }**/
+            .hidemob {
+                display: none !important;
+            }
         }
     </style>
-    <table
-        style='float:left; width:600px; border: 1px solid #cbd3d4; border-collapse: collapse; padding: 5px;'
-        class="product-table">
+    <table class="product-table"
+           style='float:left; width:600px; border: 1px solid #cbd3d4; border-collapse: collapse; padding: 5px;'>
         <tr>
             <th class="other-text"
-                style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo __(
-                    "Image"
-                ); ?></th>
+                style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Image")); ?></th>
             <th class="other-text"
-                style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo __(
-                    "Description"
-                ); ?></th>
+                style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Description")); ?></th>
             <th class="other-text"
-                style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo __(
-                    "Quantity"
-                ); ?></th>
-            <th class="other-text" style="border-bottom: 1px solid #cbd3d4;">
-                Total
-            </th>
+                style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__("Quantity")); ?></th>
+            <th class="other-text"
+                style="padding: 5px; border-bottom: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__('Total')); ?></th>
         </tr>
-
         <?php foreach ($items as $item): ?>
             <tr>
-                <td style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
+                <td style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
                     <?php echo $block->getImage(
-                        $item['product'], 'category_page_grid'
-                    )->toHtml(); ?>
+                        $item['product'], 'product_small_image')->toHtml(); ?>
                 </td>
                 <td class="product-name"
                     style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
-                    Product Name : <a class="proudct-url"
-                                      href="<?php echo $item['productUrl']; ?>"><?php echo
-                        $this->escapeHtml($item['product']->getName())
+                    <a class="product-url" href="<?php echo $block->escapeHtml($item['productUrl']); ?>"><?php echo
+                        $block->escapeHtml($item['product']->getName())
                         . '</a></br>' . $item['inStock']; ?></td>
-                <td class="product-qty"
+                <td class="product-price quantity"
                     style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$item['qty']; ?></td>
                 <td class="product-price"
-                    style="padding: 1px; border-bottom: 1px solid #cbd3d4;">
-                    <?php echo $this->getLayout()->getBlock(
+                    style="padding: 5px; border-bottom: 1px solid #cbd3d4;">
+                    <?php echo $block->getLayout()->getBlock(
                         'ddg.product.price.render.default'
                     )->render('final_price', $item['product'], array()); ?>
                 </td>
             </tr>
         <?php endforeach; ?>
-        <tr>
-            <td style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;"></td>
-            <td style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;"></td>
-
-            <td class="other-text"
-                style="padding: 1px; border-right: 1px solid #cbd3d4; border-bottom: 1px solid #cbd3d4;">
-                Order Total
-            </td>
-            <td class="other-text"
-                style="padding: 1px; border-bottom: 1px solid #cbd3d4;">
-                <?php echo $item['grandTotal']; ?>
+        <tr style="border: none!important;">
+            <td class="hidemob" style="border: none;"></td>
+            <td class="hidemob" style="border: none;"></td>
+            <td class="hidemob" style="border: none;"></td>
+            <td class="other-text" style="padding: 5px;">
+                <?php echo 'Order Total: ' . $item['grandTotal']; ?>
             </td>
         </tr>
-        <?php if ($this->canShowUrl()): ?>
-            <tr>
-                <td class="other-text" style="padding: 1px;"></td>
-                <td class="other-text" style="padding: 1px;"></td>
-                <td class="other-text" style="padding: 1px;"></td>
-                <td class="other-text" style="padding: 1px;">
-                    <div align="center" style="padding: 5px;">
-                        <a href="<?php echo $this->getUrlForLink(); ?>"
-                           class="proudct-url">
-                            <strong>
-                                <?php
-                                if ($text = $this->takeMeToCartTextForUrl()) {
-                                    echo __($text);
-                                } else {
-                                    echo __('Take Me To My Basket');
-                                }
-                                ?>
-                            </strong>
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        <?php endif; ?>
     </table>
-<?php endif;
+    <?php
+
+    if ($block->canShowUrl()) : ?>
+        <p style="text-align: center">
+            <a href="<?php echo $block->escapeHtml($block->getUrlForLink()); ?>" class="product-url">
+                <strong>
+                    <?php
+                    $link = ($block->takeMeToCartTextForUrl()) ? $block->takeMeToCartTextForUrl() : __('Take Me To My Basket');
+                    echo $block->escapeHtml($link); ?>
+                </strong>
+            </a></p>
+    <?php endif; ?>
+<?php endif; ?>

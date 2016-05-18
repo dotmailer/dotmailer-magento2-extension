@@ -2,17 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Cron;
 
-use Magento\Backend\Block\Widget\Grid as WidgetGrid;
-
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-
-    /**
-     * @var \Magento\Framework\Module\Manager
-     */
     protected $moduleManager;
     protected $_gridFactory;
-    protected $_objectManager;
     protected $_campaignFactory;
 
     /**
@@ -22,7 +15,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param \Magento\Backend\Block\Template\Context                      $context
      * @param \Magento\Backend\Helper\Data                                 $backendHelper
      * @param \Magento\Framework\Module\Manager                            $moduleManager
-     * @param \Magento\Framework\ObjectManagerInterface                    $objectManagerInterface
      * @param array                                                        $data
      */
     public function __construct(
@@ -30,12 +22,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
         $this->_gridFactory   = $gridFactory;
-        $this->_objectManager = $objectManagerInterface;
         $this->moduleManager  = $moduleManager;
+
         parent::__construct($context, $backendHelper, $data);
     }
 
@@ -92,7 +83,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             )
         )->addColumn(
             'messages', array(
-                'header' => __('Messages'),
+                'header' => __('Message'),
                 'align'  => 'center',
                 'index'  => 'messages',
                 'type'   => 'text',
@@ -122,11 +113,18 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'type'   => 'datetime',
                 'escape' => true
             )
+        )->addColumn(
+            'finished_at', array(
+                'header' => __('Finished At'),
+                'align'  => 'left',
+                'index'  => 'finished_at',
+                'type'   => 'datetime',
+                'escape' => true
+            )
         );
 
         return parent::_prepareColumns();
     }
-
 
     protected function _prepareMassaction()
     {

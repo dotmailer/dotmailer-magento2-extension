@@ -104,10 +104,10 @@
                 <crosssell_items_to_display>2</crosssell_items_to_display>
                 <bestsellers_display_type>grid</bestsellers_display_type>
                 <bestsellers_items_to_display>2</bestsellers_items_to_display>
-                <bestsellers_time_period></bestsellers_time_period>
+                <bestsellers_time_period>M</bestsellers_time_period>
                 <most_viewed_display_type>grid</most_viewed_display_type>
                 <most_viewed_items_to_display>2</most_viewed_items_to_display>
-                <most_viewed_time_period></most_viewed_time_period>
+                <most_viewed_time_period>M</most_viewed_time_period>
                 <recently_viewed_display_type>grid</recently_viewed_display_type>
                 <recently_viewed_items_to_display>2</recently_viewed_items_to_display>
                 <review_display_type>grid</review_display_type>
@@ -188,6 +188,7 @@
             </tracking>
             <dynamic_content_style>
                 <dynamic_syling><![CDATA[table{font-family: Arial, Helvetica, sans-serif; font-size:12px;}]]></dynamic_syling>
+                <font><![CDATA[Arial, Helvetica, sans-serif;]]></font>
                 <name_color><![CDATA[#000000]]></name_color>
                 <name_font_size><![CDATA[12px]]></name_font_size>
                 <name_style></name_style>
@@ -273,6 +274,8 @@
                 <custom_attributes></custom_attributes>
                 <validator></validator>
                 <last_increment_id></last_increment_id>
+                <billing_company></billing_company>
+                <delivery_company></delivery_company>
             </customer_data>
             <dynamic_datafield>
                 <datafield_name></datafield_name>
@@ -304,6 +307,7 @@
                 <memory_limit>0</memory_limit>
                 <batch_size>500</batch_size>
                 <orders>50</orders>
+                <importer_bulk_limit>1</importer_bulk_limit>
             </import_settings>
             <sync_settings>
                 <setup_data_fields></setup_data_fields>
@@ -345,6 +349,5 @@
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
         </connector_developer_settings>
-
     </default>
 </config>

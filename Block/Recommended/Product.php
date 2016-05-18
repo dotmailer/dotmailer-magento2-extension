@@ -6,13 +6,6 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
-    /**
-     * Slot div name.
-     *
-     * @var string
-     */
-    public $slot;
-
     public $helper;
     public $priceHelper;
     public $recommendedHelper;
@@ -183,49 +176,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         );
     }
 
-    /**
-     * Nosto products data.
-     *
-     * @return object
-     */
-    public function getNostoProducts()
-    {
-        $client = $this->_clientFactory->create();
-        //slot name, div id
-        $slot = $this->getRequest()->getParam('slot', false);
-
-        //email recommendation
-        $email = $this->getRequest()->getParam('email', false);
-
-        //no valid data for nosto recommendation
-        if ( ! $slot || ! $email) {
-            return false;
-        } else {
-            $this->slot = $slot;
-        }
-
-        //html data from nosto
-        $data = $client->getNostoProducts($slot, $email);
-
-        //check for valid response
-        if ( ! isset($data->$email) && ! isset($data->$email->$slot)) {
-            return false;
-        }
-
-        return $data->$email->$slot;
-    }
-
-    /**
-     * Slot name.
-     * Should be called after getNostoProducts.
-     *
-     * @return string
-     */
-    public function getSlotName()
-    {
-        return $this->slot;
-    }
-
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);
@@ -233,6 +183,24 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         return $store->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
+    }
+
+
+    /**
+     * Price html block.
+     *
+     * @param $product
+     *
+     * @return string
+     */
+    public function getPriceHtml($product)
+    {
+
+        $this->setTemplate('Magento_Catalog::product/price/amount/default.phtml');
+
+        $this->setProduct($product);
+
+        return $this->toHtml();
     }
 
 

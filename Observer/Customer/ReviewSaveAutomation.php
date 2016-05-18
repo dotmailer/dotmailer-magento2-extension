@@ -14,7 +14,6 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     protected $_customerFactory;
     protected $_contactFactory;
     protected $_automationFactory;
-    protected $_proccessorFactory;
     protected $_reviewFactory;
     protected $_wishlist;
 
@@ -24,7 +23,6 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
      *
      * @param \Dotdigitalgroup\Email\Model\ReviewFactory     $reviewFactory
      * @param \Magento\Wishlist\Model\WishlistFactory        $wishlist
-     * @param \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory    $contactFactory
      * @param \Magento\Customer\Model\CustomerFactory        $customerFactory
@@ -37,7 +35,6 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
-        \Dotdigitalgroup\Email\Model\ProccessorFactory $proccessorFactory,
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -50,7 +47,6 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
         $this->_reviewFactory     = $reviewFactory;
         $this->_wishlist          = $wishlist;
         $this->_contactFactory    = $contactFactory;
-        $this->_proccessorFactory = $proccessorFactory;
         $this->_automationFactory = $automationFactory;
         $this->_customerFactory   = $customerFactory;
         $this->_wishlistFactory   = $wishlistFactory;

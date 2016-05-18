@@ -69,50 +69,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get product reviews from feefo
-     *
-     * @return array
-     */
-    public function getProductsReview()
-    {
-        $check    = true;
-        $reviews  = array();
-        $feefoDir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
-            . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup'
-            . DIRECTORY_SEPARATOR .
-            'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR
-            . 'frontend' . DIRECTORY_SEPARATOR . 'templates'
-            . DIRECTORY_SEPARATOR . 'feefo';
-        $logon    = $this->helper->getFeefoLogon();
-        $limit    = $this->helper->getFeefoReviewsPerProduct();
-        $products = $this->getQuoteProducts();
-
-        foreach ($products as $sku => $name) {
-            $url = "http://www.feefo.com/feefo/xmlfeed.jsp?logon=" . $logon
-                . "&limit=" . $limit . "&vendorref=" . $sku
-                . "&mode=productonly";
-            $doc = new \DOMDocument();
-            $xsl = new \XSLTProcessor();
-            if ($check) {
-                $doc->load($feefoDir . DIRECTORY_SEPARATOR . "feedback.xsl");
-            } else {
-                $doc->load(
-                    $feefoDir . DIRECTORY_SEPARATOR . "feedback-no-th.xsl"
-                );
-            }
-            $xsl->importStyleSheet($doc);
-            $doc->loadXML(file_get_contents($url));
-            $productReview = $xsl->transformToXML($doc);
-            if (strpos($productReview, '<td') !== false) {
-                $reviews[$name] = $xsl->transformToXML($doc);
-            }
-            $check = false;
-        }
-
-        return $reviews;
-    }
-
-    /**
      * get quote products to show feefo reviews
      *
      * @return array
@@ -144,5 +100,49 @@ class Feefo extends \Magento\Framework\View\Element\Template
         }
 
         return $products;
+    }
+
+    /**
+     * get product reviews from feefo
+     *
+     * @return array
+     */
+    public function getProductsReview()
+    {
+        $check     = true;
+        $reviews   = array();
+        $feefoDir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
+            . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup'
+            . DIRECTORY_SEPARATOR .
+            'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR
+            . 'frontend' . DIRECTORY_SEPARATOR . 'templates'
+            . DIRECTORY_SEPARATOR . 'feefo';
+        $logon     = $this->helper->getFeefoLogon();
+        $limit     = $this->helper->getFeefoReviewsPerProduct();
+        $products  = $this->getQuoteProducts();
+
+        foreach ($products as $sku => $name) {
+            $url = "http://www.feefo.com/feefo/xmlfeed.jsp?logon=" . $logon
+                . "&limit=" . $limit . "&vendorref=" . $sku
+                . "&mode=productonly";
+            $doc = new \DOMDocument();
+            $xsl = new \XSLTProcessor();
+            if ($check) {
+                $doc->load($feefoDir . DIRECTORY_SEPARATOR . "feedback.xsl");
+            } else {
+                $doc->load(
+                    $feefoDir . DIRECTORY_SEPARATOR . "feedback-no-th.xsl"
+                );
+            }
+            $xsl->importStyleSheet($doc);
+            $doc->loadXML(file_get_contents($url));
+            $productReview = $xsl->transformToXML($doc);
+            if (strpos($productReview, '<td') !== false) {
+                $reviews[$name] = $xsl->transformToXML($doc);
+            }
+            $check = false;
+        }
+
+        return $reviews;
     }
 }

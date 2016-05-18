@@ -1,39 +1,45 @@
-<?php if($this->canShowAnything()): ?>
+<?php if ($block->canShowAnything()) : ?>
     <?php
-    $additionalBooks = $this->getAdditionalBooksToShow();
-    $dataFields = $this->getDataFieldsToShow();
-    $canShowAddressBook = $this->getCanShowAdditionalBooks();
-    $canShowDataFields = $this->getCanShowDataFields();
+    $additionalBooks = $block->getAdditionalBooksToShow();
+    $dataFields = $block->getDataFieldsToShow();
+    $canShowAddressBook = $block->getCanShowAdditionalBooks();
+    $canShowDataFields = $block->getCanShowDataFields();
     ?>
-    <form id="connector-newsletter-form-validate" method="post" action="<?php echo $this->getSaveUrl() ?>" style="margin-top: 35px;">
+    <form id="connector-newsletter-form-validate" method="post"
+          action="<?php echo $block->escapeHtml($block->getSaveUrl()) ?>" style="margin-top: 35px;">
         <div class="fieldset">
-            <?php echo $this->getBlockHtml('formkey')?>
-            <legend class="legend"><span><?php echo __('Newsletter Preferences') ?></span></legend>
+            <?php echo $block->getBlockHtml('formkey') ?>
+            <legend class="legend"><span><?php echo $block->escapeHtml(__('Newsletter Preferences')) ?></span></legend>
             <ul class="form-list" style="padding-left: 0">
                 <?php if (!empty($additionalBooks) && $canShowAddressBook): ?>
-                    <h4 style="margin-top: 10px;"><?php echo __('Additional Newsletter Subscriptions') ?></h4>
+                    <h4 style="margin-top: 10px;"><?php echo $block->escapeHtml(__('Additional Newsletter Subscriptions')) ?></h4>
                     <?php foreach($additionalBooks as $books): ?>
                         <li class="control" style="display: block">
-                            <input type="checkbox" name="additional_subscriptions[]" id ="<?php echo $books["name"] ?>"
-                                   value="<?php echo $books["value"] ?>" title="<?php echo $books["name"] ?>"
+                            <input type="checkbox" name="additional_subscriptions[]"
+                                   id="<?php echo $block->escapeHtml($books["name"]); ?>"
+                                   value="<?php echo $block->escapeHtml($books["value"]) ?>"
+                                   title="<?php echo $block->escapeHtml($books["name"]) ?>"
                                 <?php if($books["subscribed"]): ?> checked="checked"<?php endif; ?> class="checkbox" />
-                            <label for="additional_subscription"><?php echo $books["name"] ?></label>
+                            <label
+                                for="additional_subscription"><?php echo $block->escapeHtml($books["name"]) ?></label>
                         </li>
                     <?php endforeach; ?>
                 <?php endif; ?>
                 <?php if (!empty($dataFields) && $canShowDataFields): ?>
-                    <h4 style="margin-top: 25px;"><?php echo __('Data Fields') ?></h4>
+                    <h4 style="margin-top: 25px;"><?php echo $block->escapeHtml(__('Data Fields')) ?></h4>
                     <li class="fields" style="display: block">
                         <div>
                             <?php foreach($dataFields as $dataField): ?>
                                 <div class="field" style="margin-bottom: 10px;">
-                                    <label for="<?php echo $dataField['name'] ?>"><?php echo $dataField['name'] ?></label>
+                                    <label
+                                        for="<?php echo $block->escapeHtml($dataField['name']) ?>"><?php echo $block->escapeHtml($dataField['name']) ?></label>
                                     <div class="input-box">
                                         <input style="width: 50%" type="text"
                                                class="input-text <?php if($dataField['type'] == "Date") echo 'date-field' ?>"
-                                               title="<?php echo $dataField['name'] ?>"
-                                               value="<?php echo $dataField['value'] ?>" name="data_fields[<?php echo $dataField['name'] ?>]"
-                                               id="<?php echo $dataField['name'] ?>" />
+                                               title="<?php echo $block->escapeHtml($dataField['name']) ?>"
+                                               value="<?php echo $block->escapeHtml($dataField['value']) ?>"
+                                               name="data_fields[<?php echo $block->escapeHtml($dataField['name']) ?>]"
+                                               id="<?php echo $block->escapeHtml($dataField['name']) ?>"/>
                                     </div>
                                 </div>
                             <?php endforeach; ?>

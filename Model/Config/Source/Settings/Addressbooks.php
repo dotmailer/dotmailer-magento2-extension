@@ -68,8 +68,8 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
             foreach ($addressBooks as $book) {
                 if (isset($book->id)) {
                     $fields[] = array(
-                        'value' => $book->id,
-                        'label' => $book->name
+                        'value' => (string)$book->id,
+                        'label' => (string)$book->name
                     );
                 }
             }
