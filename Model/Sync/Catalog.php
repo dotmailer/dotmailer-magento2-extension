@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
-use Magento\Framework\Webapi\Exception;
-
 class Catalog
 {
 
