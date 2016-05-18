@@ -429,13 +429,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     protected function _processContactImportReportFaults($id, $websiteId)
     {
         $client   = $this->_helper->getWebsiteApiClient($websiteId);
-        $guId     = new Guid($id);
-        $response = $client->GetContactsImportReportFaults($guId);
+        $response = $client->getContactImportReportFaults($id);
 
         if ($response) {
-
             $data = $this->_removeUtf8Bom($response);
-
             $fileName = $this->_directoryList->getPath('var')
                 . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
             $this->_file->open();
