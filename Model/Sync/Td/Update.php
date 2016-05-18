@@ -15,9 +15,16 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 
             if ($this->_client) {
                 if (strpos($item->getImportType(), 'Catalog_') !== false) {
-                    $result = $this->_client->postContactsTransactionalData($importData, $item->getImportType(), true);
+                    $result = $this->_client->postContactsTransactionalData(
+                        $importData,
+                        $item->getImportType(),
+                        true
+                    );
                 } else {
-                    $result = $this->_client->postContactsTransactionalData($importData, $item->getImportType());
+                    $result = $this->_client->postContactsTransactionalData(
+                        $importData,
+                        $item->getImportType()
+                    );
                 }
 
                 $this->_handleSingleItemAfterSync($item, $result);

@@ -2,12 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
-use DotMailer\Api\DataTypes\ApiContact;
-use DotMailer\Api\DataTypes\ApiContactEmailTypes;
-
 class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
-    
 
     public function sync($collection)
     {
@@ -24,7 +20,9 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                     $email = $importData['email'];
                     $isSubscribed = $importData['isSubscribed'];
                     $subscribersAddressBook = $this->_helper->getWebsiteConfig(
-                        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID, $websiteId);
+                        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
+                        $websiteId
+                    );
 
                     $result = $this->_client->postContacts($emailBefore);
 
@@ -42,13 +40,17 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                             $this->_client->deleteAddressBookContact($subscribersAddressBook, $result->id);
                         }
                     }
-                } elseif ($item->getImportMode() == \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED){
+                } elseif ($item->getImportMode()
+                    == \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED
+                ) {
                     $email = $importData['email'];
                     $apiContact = $this->_client->postContacts($email);
 
                     //resubscribe suppressed contacts
                     if (isset($apiContact->message) &&
-                        $apiContact->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED)
+                        $apiContact->message
+                        == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED
+                    )
                     {
                         $apiContact = $this->_client->getContactByEmail($email);
                         $result = $this->_client->postContactsResubscribe($apiContact);
