@@ -1,9 +1,9 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
 class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
-
 
     public function sync($collection)
     {

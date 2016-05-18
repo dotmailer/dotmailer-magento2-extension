@@ -13,7 +13,6 @@ class Bulk
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
         $this->_helper     = $helper;
