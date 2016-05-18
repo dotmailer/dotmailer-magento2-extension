@@ -202,22 +202,4 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
         return $this->toHtml();
     }
-
-
-    /**
-     * Price html block.
-     *
-     * @param $product
-     *
-     * @return string
-     */
-    public function getPriceHtml($product)
-    {
-
-        $this->setTemplate('Magento_Catalog::product/price/amount/default.phtml');
-
-        $this->setProduct($product);
-
-        return $this->toHtml();
-    }
 }
