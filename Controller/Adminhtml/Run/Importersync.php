@@ -8,7 +8,7 @@ class Importersync extends \Magento\Backend\App\AbstractAction
 	protected $_importerFactory;
 
 	public function __construct(
-		\Dotdigitalgroup\Email\Model\importerFactory $importerFactory,
+		\Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
 
 		\Magento\Backend\App\Action\Context $context
 	)
