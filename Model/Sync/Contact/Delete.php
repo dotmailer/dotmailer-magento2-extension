@@ -1,13 +1,11 @@
 <?php
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
-use DotMailer\Api\DataTypes\ApiContact;
-
 class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
 
 
-    protected function _processCollection($collection)
+    public function sync($collection)
     {
         foreach($collection as $item)
         {
@@ -17,27 +15,28 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
             $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
 
             if ($this->_client) {
-                $apiContact = new ApiContact();
-                $apiContact->email = $email;
-
-                $response = $this->_client->PostContacts($apiContact);
-
-                if (isset($apiContact->id)) {
-                    $this->_client->DeleteContact($response->id);
-
-                }elseif (! isset($response->id)) {
+                $apiContact = $this->_client->postContacts($email);
+                if (!isset($apiContact->message) && isset($apiContact->id)) {
+                    $result = $this->_client->deleteContact($apiContact->id);
+                } elseif (isset($apiContact->message) && !isset($apiContact->id)) {
                     $result = $apiContact;
-
                 }
-                $this->_handleSingleItemAfterSync($item, $result);
+
+                if ($result) {
+                    $this->_handleSingleItemAfterSync($item, $result);
+                }
             }
         }
     }
 
     protected function _handleSingleItemAfterSync($item, $result)
     {
-        if (! $result){
-
+        if (isset($result->message) or !$result) {
+            $message = (isset($result->message)) ? $result->message : 'Error unknown';
+            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                ->setMessage($message)
+                ->save();
+        } else {
             $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTED)
                 ->setImportFinished(time())
                 ->setImportStarted(time())

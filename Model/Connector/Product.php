@@ -176,10 +176,11 @@ class Product
             == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
         ) {
             $optionCollection    = $product->getTypeInstance()
-                ->getOptionsCollection();
+                ->getOptionsCollection($product);
             $selectionCollection = $product->getTypeInstance()
                 ->getSelectionsCollection(
-                    $product->getTypeInstance()->getOptionsIds()
+                    $product->getTypeInstance()->getOptionsIds($product),
+                    $product
                 );
             $options             = $optionCollection->appendSelections(
                 $selectionCollection

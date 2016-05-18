@@ -22,7 +22,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     const MODE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber_Resubscribed';
 
     //import type
-    const IMPORT_TYPE_QUOTE = 'Quote';
     const IMPORT_TYPE_GUEST = 'Guest';
     const IMPORT_TYPE_ORDERS = 'Orders';
     const IMPORT_TYPE_CONTACT = 'Contact';
@@ -162,7 +161,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $this->_totalItems = 0;
 
         //Set bulk sync limit
-        $this->_bulkSyncLimit = $this->_helper->getSyncBulkLimit();
+        $this->_bulkSyncLimit = 5;
 
         //Set priority
         $this->_setPriority();
@@ -186,22 +185,23 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             }
         }
 
-        //Single/Update priority. Process group 2 if nothing from group 1 to process
-        if (empty($this->_totalItems)) {
-            foreach ($this->_singlePriority as $single) {
-                if ($this->_totalItems < $single['limit']) {
-                    $collection = $this->_getQueue(
-                        $single['type'],
-                        $single['mode'],
-                        $single['limit'] - $this->_totalItems
+        //reset total items to 0
+        $this->_totalItems = 0;
+
+        //Single/Update priority.
+        foreach ($this->_singlePriority as $single) {
+            if ($this->_totalItems < $single['limit']) {
+                $collection = $this->_getQueue(
+                    $single['type'],
+                    $single['mode'],
+                    $single['limit'] - $this->_totalItems
+                );
+                if ($collection->getSize()) {
+                    $this->_totalItems += $collection->getSize();
+                    $singleModel = $this->_objectManager->create(
+                        $single['model']
                     );
-                    if ($collection->getSize()) {
-                        $this->_totalItems += $collection->getSize();
-                        $singleModel = $this->_objectManager->create(
-                            $bulk['model']
-                        );
-                        $singleModel->sync($collection);
-                    }
+                    $singleModel->sync($collection);
                 }
             }
         }
@@ -213,29 +213,30 @@ class Importer extends \Magento\Framework\Model\AbstractModel
          * Bulk
          */
 
-        //Bulk Contact
-        $contact = array(
-            'model' => 'Dotdigitalgroup\Email\Model\Sync\Contact\Bulk',
+        $defaultBulk = array(
+            'model' => '',
             'mode'  => self::MODE_BULK,
-            'type'  => array(
-                self::IMPORT_TYPE_CONTACT,
-                self::IMPORT_TYPE_GUEST,
-                self::IMPORT_TYPE_SUBSCRIBERS
-            ),
+            'type' => '',
             'limit' => $this->_bulkSyncLimit
         );
-        $order   = $contact;
+
+        //Contact Bulk
+        $contact = $defaultBulk;
+        $contact['model'] = 'Dotdigitalgroup\Email\Model\Sync\Contact\Bulk';
+        $contact['type'] = array(
+            self::IMPORT_TYPE_CONTACT,
+            self::IMPORT_TYPE_GUEST,
+            self::IMPORT_TYPE_SUBSCRIBERS
+        );
 
         //Bulk Order
+        $order = $defaultBulk;
         $order['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Bulk';
-        $order['type']  = self::IMPORT_TYPE_ORDERS;
-
-        $quote = $other = $order;
-
-        //Bulk Quote
-        $quote['type'] = self::IMPORT_TYPE_QUOTE;
+        $order['type'] = self::IMPORT_TYPE_ORDERS;
 
         //Bulk Other TD
+        $other = $defaultBulk;
+        $other['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Bulk';
         $other['type'] = array(
             'Catalog',
             self::IMPORT_TYPE_REVIEWS,
@@ -246,38 +247,38 @@ class Importer extends \Magento\Framework\Model\AbstractModel
          * Update
          */
 
-        //Subscriber resubscribe
-        $subscriberResubscribe = array(
+        $defaultSingleUpdate = array(
             'model' => 'Dotdigitalgroup\Email\Model\Sync\Contact\Update',
-            'mode'  => self::MODE_SUBSCRIBER_RESUBSCRIBED,
-            'type'  => self::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
+            'mode' => '',
+            'type' => '',
             'limit' => self::SYNC_SINGLE_LIMIT_NUMBER
         );
 
+        //Subscriber resubscribe
+        $subscriberResubscribe = $defaultSingleUpdate;
+        $subscriberResubscribe['mode'] = self::MODE_SUBSCRIBER_RESUBSCRIBED;
+        $subscriberResubscribe['type'] = self::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED;
+
         //Subscriber update/suppressed
-        $subscriberUpdate    = $subscriberResubscribe;
-        $emailChange['mode'] = self::MODE_SUBSCRIBER_UPDATE;
-        $emailChange['type'] = self::IMPORT_TYPE_SUBSCRIBER_UPDATE;
+        $subscriberUpdate = $defaultSingleUpdate;
+        $subscriberUpdate['mode'] = self::MODE_SUBSCRIBER_UPDATE;
+        $subscriberUpdate['type'] = self::IMPORT_TYPE_SUBSCRIBER_UPDATE;
 
         //Email Change
-        $emailChange         = $subscriberResubscribe;
+        $emailChange = $defaultSingleUpdate;
         $emailChange['mode'] = self::MODE_CONTACT_EMAIL_UPDATE;
         $emailChange['type'] = self::IMPORT_TYPE_CONTACT_UPDATE;
 
         //Order Update
-        $orderUpdate = array(
-            'model' => 'Dotdigitalgroup\Email\Model\Sync\Td\Update',
-            'mode'  => self::MODE_SINGLE,
-            'type'  => self::IMPORT_TYPE_ORDERS,
-            'limit' => self::SYNC_SINGLE_LIMIT_NUMBER
-        );
-
-        //Quote Update
-        $quoteUpdate         = $orderUpdate;
-        $quoteUpdate['type'] = self::IMPORT_TYPE_QUOTE;
+        $orderUpdate = $defaultSingleUpdate;
+        $orderUpdate['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Update';
+        $orderUpdate['mode'] = self::MODE_SINGLE;
+        $orderUpdate['type'] = self::IMPORT_TYPE_ORDERS;
 
         //Update Other TD
-        $updateOtherTd         = $orderUpdate;
+        $updateOtherTd = $defaultSingleUpdate;
+        $updateOtherTd['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Update';
+        $updateOtherTd['mode'] = self::MODE_SINGLE;
         $updateOtherTd['type'] = array(
             'Catalog',
             self::IMPORT_TYPE_WISHLIST
@@ -287,24 +288,28 @@ class Importer extends \Magento\Framework\Model\AbstractModel
          * Delete
          */
 
-        //Contact Delete
-        $contactDelete = array(
-            'model' => 'Dotdigitalgroup\Email\Model\Sync\Contact\Delete',
-            'mode'  => self::MODE_CONTACT_DELETE,
-            'type'  => self::IMPORT_TYPE_CONTACT,
+        $defaultSingleDelete = array(
+            'model' => '',
+            'mode' => '',
+            'type' => '',
             'limit' => self::SYNC_SINGLE_LIMIT_NUMBER
         );
 
+        //Contact Delete
+        $contactDelete = $defaultSingleDelete;
+        $contactDelete['model'] = 'Dotdigitalgroup\Email\Model\Sync\Contact\Delete';
+        $contactDelete['mode'] = self::MODE_CONTACT_DELETE;
+        $contactDelete['type'] = self::IMPORT_TYPE_CONTACT;
+
         //TD Delete
-        $tdDelete          = $contactDelete;
-        $tdDelete['model'] = 'Dotgigitalgroup\Email\Model\Sync\Td\Delete';
+        $tdDelete = $defaultSingleDelete;
+        $tdDelete['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Delete';
         $tdDelete['mode']  = self::MODE_SINGLE_DELETE;
         $tdDelete['type']  = array(
             'Catalog',
             self::IMPORT_TYPE_REVIEWS,
             self::IMPORT_TYPE_WISHLIST,
-            self::IMPORT_TYPE_ORDERS,
-            self::IMPORT_TYPE_QUOTE
+            self::IMPORT_TYPE_ORDERS
         );
 
 
@@ -312,7 +317,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $this->_bulkPriority = array(
             $contact,
             $order,
-            $quote,
             $other
         );
 
@@ -321,7 +325,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             $subscriberUpdate,
             $emailChange,
             $orderUpdate,
-            $quoteUpdate,
             $updateOtherTd,
             $contactDelete,
             $tdDelete
@@ -350,12 +353,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             $item->getImportType() == self::IMPORT_TYPE_GUEST
 
                         ) {
-                            $response = $client->GetContactsImportByImportId(
+                            $response = $client->getContactsImportByImportId(
                                 $item->getImportId()
                             );
                         } else {
                             $response
-                                = $client->GetContactsTransactionalDataImportByImportId(
+                                = $client->getContactsTransactionalDataImportByImportId(
                                 $item->getImportId()
                             );
                         }
@@ -368,7 +371,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
                     if ($response) {
                         if ($response->status == 'Finished') {
-                            $now = gmDate('Y-m-d H:i:s');
+                            $now = gmdate('Y-m-d H:i:s');
 
                             $item->setImportStatus(self::IMPORTED)
                                 ->setImportFinished($now)
@@ -412,6 +415,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('import_status', array('eq' => self::IMPORTING))
+            ->addFieldToFilter('import_id', array('neq' => ''))
             ->setPageSize($limit)
             ->setCurPage(1);
 
