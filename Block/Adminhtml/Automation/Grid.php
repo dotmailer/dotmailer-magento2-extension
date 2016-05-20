@@ -123,14 +123,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type'   => 'text',
             'escape' => true
         ))->addColumn('created_at', array(
-            'header' => __('Created_at'),
+            'header' => __('Created At'),
             'width'  => '20px',
             'align'  => 'center',
             'index'  => 'created_at',
             'escape' => true,
-            'type'   => 'date'
+            'type'   => 'datetime'
         ))->addColumn('updated_at', array(
-            'header' => __('Updated at'),
+            'header' => __('Updated At'),
             'align'  => 'center',
             'index'  => 'updated_at',
             'escape' => true,

@@ -112,7 +112,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type'   => 'string',
             'escape' => true
         ))->addColumn('quote_id', array(
-            'header' => __('Quote Id'),
+            'header' => __('Quote ID'),
             'align'  => 'left',
             'width'  => '50px',
             'index'  => 'quote_id',
