@@ -8,6 +8,14 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     protected $_jsonHelper;
     protected $_dataField;
     protected $_storeManager;
+    protected $_ipRange = array(
+        '104.40.179.234',
+        '104.40.159.161',
+        '191.233.82.46',
+        '104.46.48.100',
+        '104.40.187.26'
+    );
+    protected $_remoteAddress;
 
     /**
      * Accountcallback constructor.
@@ -17,18 +25,21 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
+     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
+        \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
+        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
     ) {
         $this->_helper = $helper;
         $this->_jsonHelper = $jsonHelper;
         $this->_dataField = $dataField;
         $this->_storeManager = $storeManager;
+        $this->_remoteAddress = $remoteAddress;
 
         parent::__construct($context);
     }
@@ -37,30 +48,29 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $params = $this->getRequest()->getParams();
-        $error = false;
-        if (!empty($params['accountId']) && !empty($params['apiUser']) && !empty($params['pass']) && !empty($params['secret'])) {
-            if ($params['secret'] == \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_SECRET) {
-                $apiConfigStatus = $this->_saveApiCreds($params['apiUser'], $params['pass']);
-                $dataFieldsStatus = $this->_setupDataFields($params['apiUser'], $params['pass']);
-                $addressBookStatus = $this->_createAddressBooks($params['apiUser'], $params['pass']);
-                $syncStatus = $this->_enableSyncForTrial();
-                if (isset($params['apiEndpoint'])) {
-                    $this->_saveApiEndPoint($params['apiEndpoint']);
-                }
-                if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
-                    $this->sendAjaxResponse(false, $this->_getSuccessHtml());
-                } else {
-                    $error = true;
-                }
-            } else {
-                $error = true;
-            }
-        } else {
-            $error = true;
+
+        //if ip is not in range or any of the required params not set send error response
+        if (!in_array($this->_remoteAddress->getRemoteAddress(), $this->_ipRange) or
+            !isset($params['accountId']) or !isset($params['apiUser']) or !isset($params['pass'])
+        ) {
+            $this->sendAjaxResponse(true, $this->_getErrorHtml());
         }
 
-        //If error true then send error html
-        if ($error) {
+        //if no value to any of the required params send error response
+        if (empty($params['accountId']) or empty($params['apiUser']) or empty($params['pass'])) {
+            $this->sendAjaxResponse(true, $this->_getErrorHtml());
+        }
+
+        $apiConfigStatus = $this->_saveApiCreds($params['apiUser'], $params['pass']);
+        $dataFieldsStatus = $this->_setupDataFields($params['apiUser'], $params['pass']);
+        $addressBookStatus = $this->_createAddressBooks($params['apiUser'], $params['pass']);
+        $syncStatus = $this->_enableSyncForTrial();
+        if (isset($params['apiEndpoint'])) {
+            $this->_saveApiEndPoint($params['apiEndpoint']);
+        }
+        if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
+            $this->sendAjaxResponse(false, $this->_getSuccessHtml());
+        } else {
             $this->sendAjaxResponse(true, $this->_getErrorHtml());
         }
     }
