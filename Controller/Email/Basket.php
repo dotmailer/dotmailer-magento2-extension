@@ -2,10 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-
 class Basket extends \Dotdigitalgroup\Email\Controller\Response
 {
-
     /**
      * Abandoned cart page.
      */
