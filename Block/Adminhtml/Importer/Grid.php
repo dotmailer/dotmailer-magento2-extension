@@ -122,11 +122,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'index'  => 'import_finished',
             'type'   => 'datetime',
             'escape' => true
-        ))->addColumn('script', array(
-            'header'           => __('Script'),
-            'renderer'         => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Script',
-            'column_css_class' => 'no-display',
-            'header_css_class' => 'no-display'
         ))->addColumn('created_at', array(
             'header' => __('Created At'),
             'width'  => '50px',
