@@ -15,25 +15,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_API_PASSWORD = 'connector_api_credentials/api/password';
 
     /**
-     * SMS SECTION.
-     */
-    //enabled
-    const XML_PATH_CONNECTOR_SMS_ENABLED_1 = 'connector_automation/sms/sms_one_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_2 = 'connector_automation/sms/sms_two_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_3 = 'connector_automation/sms/sms_three_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_4 = 'connector_automation/sms/sms_four_enabled';
-    //status
-    const XML_PATH_CONNECTOR_SMS_STATUS_1 = 'connector_automation/sms/sms_one_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_2 = 'connector_automation/sms/sms_two_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_3 = 'connector_automation/sms/sms_three_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_4 = 'connector_automation/sms/sms_four_status';
-    //message
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_1 = 'connector_automation/sms/sms_one_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_2 = 'connector_automation/sms/sms_two_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_3 = 'connector_automation/sms/sms_three_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_4 = 'connector_automation/sms/sms_four_message';
-
-    /**
      * SYNC SECTION.
      */
     const XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED = 'sync_settings/sync/customer_enabled';
@@ -132,7 +113,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      * Dynamic Content
      */
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_NOSTO = 'connector_dynamic_content/nosto_recommendation/api';
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WIHSLIST_DISPLAY = 'connector_dynamic_content/products/wishlist_display_type';
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_REVIEW_DISPLAY_TYPE = 'connector_dynamic_content/products/review_display_type';
 
@@ -264,12 +244,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_DEBUG_API_REQUEST_LIMIT = 'connector_developer_settings/debug/api_request_time_limit';
     const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT = 'connector_developer_settings/import_settings/transactional_data';
     const XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES = 'connector_developer_settings/ip_restriction/ip_addresses';
-
-    /**
-     * Nosto
-     */
-    const API_ENDPOINT = 'https://api.nosto.com';
-    const API_ENDPOINT_TEST = 'https://test.api.nosto.com';
+    
 
     /**
      * API endpoint

@@ -79,20 +79,6 @@
                 <service_score_url></service_score_url>
                 <product_reviews_url></product_reviews_url>
             </feefo_feedback_engine>
-            <sms>
-                <sms_one_enabled>0</sms_one_enabled>
-                <sms_one_status></sms_one_status>
-                <sms_one_message></sms_one_message>
-                <sms_two_enabled>0</sms_two_enabled>
-                <sms_two_status></sms_two_status>
-                <sms_two_message></sms_two_message>
-                <sms_three_enabled>0</sms_three_enabled>
-                <sms_three_status></sms_three_status>
-                <sms_three_message></sms_three_message>
-                <sms_four_enabled>0</sms_four_enabled>
-                <sms_four_status></sms_four_status>
-                <sms_four_message></sms_four_message>
-            </sms>
         </connector_automation_studio>
         <connector_dynamic_content>
             <products>
@@ -152,10 +138,6 @@
             <fallback_products>
                 <product_list></product_list>
             </fallback_products>
-            <nosto_recommendation>
-                <api></api>
-                <dynamic_url></dynamic_url>
-            </nosto_recommendation>
         </connector_dynamic_content>
         <connector_transactional_emails>
             <ddg_transactional>

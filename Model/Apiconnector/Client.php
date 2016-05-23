@@ -19,7 +19,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_CAMPAIGN_SEND = '/v2/campaigns/send';
     const REST_CONTACTS_SUPPRESSED_SINCE = '/v2/contacts/suppressed-since/';
     const REST_DATA_FIELDS_CAMPAIGNS = '/v2/campaigns';
-    const REST_SMS_MESSAGE_SEND_TO = '/v2/sms-messages/send-to/';
     const REST_CONTACTS_RESUBSCRIBE = '/v2/contacts/resubscribe';
     const REST_CAMPAIGN_FROM_ADDRESS_LIST = '/v2/custom-from-addresses';
     const REST_CREATE_CAMPAIGN = '/v2/campaigns';
@@ -834,35 +833,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         return $response;
     }
-
-    /**
-     * Send a single SMS message.
-     *
-     * @param $telephoneNumber
-     * @param $message
-     *
-     * @return object
-     */
-    public function postSmsMessagesSendTo($telephoneNumber, $message)
-    {
-        $data = array('Message' => $message);
-        $url  = $this->_apiEndpoint . self::REST_SMS_MESSAGE_SEND_TO
-            . $telephoneNumber;
-        $this->setUrl($url)
-            ->setVerb('POST')
-            ->buildPostBody($data);
-
-        $response = $this->execute();
-        if (isset($response->message)) {
-            $message = 'POST SMS MESSAGE SEND to ' . $telephoneNumber
-                . ' message: ' . $message . ' error: ' . $response->message;
-            $this->_helper->log($message);
-        }
-
-        return $response;
-    }
-
-
+    
     /**
      * Deletes multiple contacts from an address book.
      *
