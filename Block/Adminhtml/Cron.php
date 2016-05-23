@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Cron
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Cron.
  */
 class Cron extends \Magento\Backend\Block\Widget\Grid\Container
 {

@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Automation
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Automation.
  */
 class Automation extends \Magento\Backend\Block\Widget\Grid\Container
 {

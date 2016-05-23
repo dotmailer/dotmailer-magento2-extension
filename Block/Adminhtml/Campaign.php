@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Campaign
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Campaign.
  */
 class Campaign extends \Magento\Backend\Block\Widget\Grid\Container
 {

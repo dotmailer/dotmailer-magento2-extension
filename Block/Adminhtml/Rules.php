@@ -3,13 +3,10 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Rules
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Rules.
  */
 class Rules extends \Magento\Backend\Block\Widget\Grid\Container
 {
-
     /**
      * Constructor.
      */

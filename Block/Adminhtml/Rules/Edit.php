@@ -7,7 +7,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
  */
 class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
-
     /**
      * @var \Magento\Framework\Registry
      */

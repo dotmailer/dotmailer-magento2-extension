@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Order
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Order.
  */
 class Order extends \Magento\Backend\Block\Widget\Grid\Container
 {

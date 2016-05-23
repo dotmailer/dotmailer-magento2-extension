@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
     implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
@@ -73,6 +72,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
 
     /**
      * @return $this
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _prepareForm()

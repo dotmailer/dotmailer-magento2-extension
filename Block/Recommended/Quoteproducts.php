@@ -4,11 +4,25 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
     protected $_recommendedHelper;
+    /**
+     * @var \Magento\Quote\Model\QuoteFactory
+     */
     protected $_quoteFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
 
     /**
@@ -25,7 +39,6 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     public function __construct(
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        //\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -33,35 +46,35 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper             = $helper;
-        $this->_productFactory    = $productFactory;
-        $this->_quoteFactory      = $quoteFactory;
+        $this->helper = $helper;
+        $this->_productFactory = $productFactory;
+        $this->_quoteFactory = $quoteFactory;
         $this->_recommendedHelper = $recommendedHelper;
-        $this->priceHelper        = $priceHelper;
-        //$this->scopeManager = $scopeConfig;
-        $this->storeManager       = $this->_storeManager;
+        $this->priceHelper = $priceHelper;
     }
 
     /**
-     * get the products to display for table
+     * Get the products to display for table.
+     * 
+     * @return array
      */
     public function getLoadedProductCollection()
     {
         //products to be diplayd for recommended pages
-        $productsToDisplay = array();
-        $quoteId           = $this->getRequest()->getParam('quote_id');
+        $productsToDisplay = [];
+        $quoteId = $this->getRequest()->getParam('quote_id');
         //display mode based on the action name
-        $mode       = $this->getRequest()->getActionName();
+        $mode = $this->getRequest()->getActionName();
         $quoteModel = $this->_quoteFactory->create()
             ->load($quoteId);
         //number of product items to be displayed
-        $limit      = $this->_recommendedHelper->getDisplayLimitByMode($mode);
+        $limit = $this->_recommendedHelper->getDisplayLimitByMode($mode);
         $quoteItems = $quoteModel->getAllItems();
-        $numItems   = count($quoteItems);
+        $numItems = count($quoteItems);
 
         //no product found to display
-        if ($numItems == 0 || ! $limit) {
-            return array();
+        if ($numItems == 0 || !$limit) {
+            return [];
         } elseif (count($quoteItems) > $limit) {
             $maxPerChild = 1;
         } else {
@@ -69,12 +82,12 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $this->helper->log(
-            'DYNAMIC QUOTE PRODUCTS : limit ' . $limit . ' products : '
-            . $numItems . ', max per child : ' . $maxPerChild
+            'DYNAMIC QUOTE PRODUCTS : limit '.$limit.' products : '
+            .$numItems.', max per child : '.$maxPerChild
         );
 
         foreach ($quoteItems as $item) {
-            $i         = 0;
+            $i = 0;
             $productId = $item->getProductId();
             //parent product
             $productModel = $this->_productFactory->create()
@@ -93,11 +106,11 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
                     if ($product->getId() && count($productsToDisplay) < $limit
                         && $i <= $maxPerChild
                         && $product->isSaleable()
-                        && ! $product->getParentId()
+                        && !$product->getParentId()
                     ) {
                         //we have a product to display
                         $productsToDisplay[$product->getId()] = $product;
-                        $i++;
+                        ++$i;
                     }
                 }
             }
@@ -125,7 +138,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $this->helper->log(
-            'quote - loaded product to display ' . count($productsToDisplay)
+            'quote - loaded product to display '.count($productsToDisplay)
         );
 
         return $productsToDisplay;
@@ -142,7 +155,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     protected function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
-        $products = array();
+        $products = [];
         switch ($mode) {
             case 'related':
                 $products = $productModel->getRelatedProducts();
@@ -167,13 +180,13 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getMode()
     {
         return $this->_recommendedHelper->getDisplayType();
-
     }
 
     /**
      * Number of the colums.
      *
      * @return int|mixed
+     *
      * @throws \Exception
      */
     public function getColumnCount()
@@ -183,6 +196,11 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         );
     }
 
+    /**
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

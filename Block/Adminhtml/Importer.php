@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Importer
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Importer.
  */
 class Importer extends \Magento\Backend\Block\Widget\Grid\Container
 {

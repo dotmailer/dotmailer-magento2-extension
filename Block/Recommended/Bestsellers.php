@@ -4,17 +4,35 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
     protected $_dateTime;
+    /**
+     * @var \Magento\CatalogInventory\Model\StockFactory
+     */
     protected $_stockFactory;
+    /**
+     * @var \Magento\Catalog\Model\CategoryFactory
+     */
     protected $_categoryFactory;
+    /**
+     * @var \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory
+     */
     protected $_productSoldFactory;
 
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
     public $recommnededHelper;
-
 
     /**
      * Bestsellers constructor.
@@ -40,36 +58,35 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
         array $data = []
     ) {
-        $this->helper              = $helper;
-        $this->_dateTime           = $dateTime;
-        $this->priceHelper         = $priceHelper;
-        $this->_stockFactory       = $stockFactory;
-        $this->recommnededHelper   = $recommended;
-        $this->_categoryFactory    = $categoryFactory;
+        $this->helper = $helper;
+        $this->_dateTime = $dateTime;
+        $this->priceHelper = $priceHelper;
+        $this->_stockFactory = $stockFactory;
+        $this->recommnededHelper = $recommended;
+        $this->_categoryFactory = $categoryFactory;
         $this->_productSoldFactory = $productSoldFactory;
-        $this->storeManager        = $this->_storeManager;
         parent::__construct($context, $data);
     }
 
-    /***
-     * Get product collection.
-     *
+    /**
+     * Collection.
+     * 
      * @return array
      */
     public function getLoadedProductCollection()
     {
-        $collection        = array();
-        $mode              = $this->getRequest()->getActionName();
-        $limit             = $this->recommnededHelper->getDisplayLimitByMode(
+        $collection = [];
+        $mode = $this->getRequest()->getActionName();
+        $limit = $this->recommnededHelper->getDisplayLimitByMode(
             $mode
         );
-        $from              = $this->recommnededHelper->getTimeFromConfig($mode);
-        $to                = new \Zend_Date(
+        $from = $this->recommnededHelper->getTimeFromConfig($mode);
+        $to = new \Zend_Date(
             $this->_localeDate->date()->getTimestamp()
         );
         $productCollection = $this->_productSoldFactory->create()
             ->addAttributeToSelect('*')
-            ->addOrderedQty($from, $to->tostring(\Zend_Date::ISO_8601))
+            ->addOrderedQty($from, $to->toString(\Zend_Date::ISO_8601))
             ->setOrder('ordered_qty', 'desc')
             ->setPageSize($limit);
 
@@ -79,15 +96,15 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($category->getId()) {
                 $productCollection->getSelect()
                     ->joinLeft(
-                        array("ccpi" => 'catalog_category_product_index'),
-                        "e.entity_id  = ccpi.product_id",
-                        array("category_id")
+                        array('ccpi' => 'catalog_category_product_index'),
+                        'e.entity_id  = ccpi.product_id',
+                        array('category_id')
                     )
                     ->where('ccpi.category_id =?', $cat_id);
             } else {
                 $this->helper->log(
-                    'Best seller. Category id ' . $cat_id
-                    . ' is invalid. It does not exist.'
+                    'Best seller. Category id '.$cat_id
+                    .' is invalid. It does not exist.'
                 );
             }
         }
@@ -99,15 +116,15 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($category) {
                 $productCollection->getSelect()
                     ->joinLeft(
-                        array("ccpi" => 'catalog_category_product_index'),
-                        "e.entity_id  = ccpi.product_id",
-                        array("category_id")
+                        array('ccpi' => 'catalog_category_product_index'),
+                        'e.entity_id  = ccpi.product_id',
+                        array('category_id')
                     )
                     ->where('ccpi.category_id =?', $category->getId());
             } else {
                 $this->helper->log(
-                    'Best seller. Category name ' . $cat_name
-                    . ' is invalid. It does not exist.'
+                    'Best seller. Category name '.$cat_name
+                    .' is invalid. It does not exist.'
                 );
             }
         }
@@ -133,7 +150,11 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         return $this->recommnededHelper->getDisplayType();
     }
 
-
+    /**
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);
@@ -142,5 +163,4 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
     }
-
 }

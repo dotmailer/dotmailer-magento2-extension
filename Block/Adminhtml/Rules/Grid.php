@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-
     /**
      * @var
      */
@@ -117,7 +116,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'align' => 'left',
                 'width' => '120px',
                 'type' => 'datetime',
-                'index' => 'created_at'
+                'index' => 'created_at',
         ]);
 
         $this->addColumn(
@@ -126,7 +125,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'align' => 'left',
                 'width' => '120px',
                 'type' => 'datetime',
-                'index' => 'updated_at'
+                'index' => 'updated_at',
         ]);
 
         return parent::_prepareColumns();

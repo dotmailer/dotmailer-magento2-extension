@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Wishlist
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Wishlist.
  */
 class Wishlist extends \Magento\Backend\Block\Widget\Grid\Container
 {

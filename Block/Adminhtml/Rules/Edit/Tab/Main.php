@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 class Main extends \Magento\Backend\Block\Widget\Form\Generic
     implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
-
     /**
      * @var \Magento\Store\Model\System\Store
      */
@@ -73,6 +72,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
 
     /**
      * @return $this
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _prepareForm()

@@ -3,13 +3,10 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Studio
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Studio.
  */
 class Studio extends \Magento\Backend\Block\Widget\Form
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
      */

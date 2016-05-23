@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Review
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Review.
  */
 class Review extends \Magento\Backend\Block\Widget\Grid\Container
 {

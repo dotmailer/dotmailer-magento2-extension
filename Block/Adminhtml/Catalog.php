@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Catalog
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Catalog.
  */
 class Catalog extends \Magento\Backend\Block\Widget\Grid\Container
 {

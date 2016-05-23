@@ -4,12 +4,29 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
     public $objectManager;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
     public $recommnededHelper;
+    /**
+     * @var \Magento\Customer\Model\SessionFactory
+     */
     protected $_sessionFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
 
     /**
@@ -35,14 +52,12 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_sessionFactory   = $sessionFactory;
-        $this->helper            = $helper;
+        $this->_sessionFactory = $sessionFactory;
+        $this->helper = $helper;
         $this->recommnededHelper = $recommended;
-        $this->priceHelper       = $priceHelper;
-        $this->storeManager      = $this->_storeManager;
-        $this->_productFactory   = $productFactory;
-        $this->objectManager     = $objectManagerInterface;
-
+        $this->priceHelper = $priceHelper;
+        $this->_productFactory = $productFactory;
+        $this->objectManager = $objectManagerInterface;
     }
 
     /**
@@ -52,26 +67,26 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
-        $productsToDisplay = array();
-        $mode              = $this->getRequest()->getActionName();
-        $customerId        = $this->getRequest()->getParam('customer_id');
-        $limit             = $this->recommnededHelper->getDisplayLimitByMode(
+        $productsToDisplay = [];
+        $mode = $this->getRequest()->getActionName();
+        $customerId = $this->getRequest()->getParam('customer_id');
+        $limit = $this->recommnededHelper->getDisplayLimitByMode(
             $mode
         );
         //login customer to receive the recent products
-        $session    = $this->_sessionFactory->create();
+        $session = $this->_sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
         $collection = $this->objectManager->create(
             'Magento\Reports\Block\Product\Viewed'
         );
-        $items      = $collection->getItemsCollection()
+        $items = $collection->getItemsCollection()
             ->setPageSize($limit);
 
         $this->helper->log(
-            'Recentlyviewed customer  : ' . $customerId . ', mode ' . $mode
-            . ', limit : ' . $limit .
-            ', items found : ' . count($items) . ', is customer logged in : '
-            . $isLoggedIn . ', products :' . count($productsToDisplay)
+            'Recentlyviewed customer  : '.$customerId.', mode '.$mode
+            .', limit : '.$limit.
+            ', items found : '.count($items).', is customer logged in : '
+            .$isLoggedIn.', products :'.count($productsToDisplay)
         );
         foreach ($items as $product) {
             $product = $this->_productFactory->create()
@@ -79,13 +94,11 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($product->isSalable()) {
                 $productsToDisplay[$product->getId()] = $product;
             }
-
         }
         $session->logout();
 
         return $productsToDisplay;
     }
-
 
     /**
      * Display mode type.
@@ -95,9 +108,13 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getMode()
     {
         return $this->recommnededHelper->getDisplayType();
-
     }
 
+    /**
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

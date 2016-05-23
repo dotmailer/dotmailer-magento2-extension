@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Wishlist;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-
     /**
      * @var
      */
@@ -62,6 +61,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
     /**
      * @return $this
+     *
      * @throws \Exception
      */
     protected function _prepareColumns()
@@ -103,7 +103,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
             'options' => $this->_importedFactory->create()
                 ->getOptions(),
-            'filter_condition_callback' => [$this, 'filterCallbackContact']
+            'filter_condition_callback' => [$this, 'filterCallbackContact'],
         ])->addColumn('created_at', [
             'header' => __('Created At'),
             'align' => 'center',

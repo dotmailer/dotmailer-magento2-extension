@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Review;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-
     /**
      * @var
      */

@@ -3,9 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Contact
- *
- * @package Dotdigitalgroup\Email\Block\Adminhtml
+ * Class Contact.
  */
 class Contact extends \Magento\Backend\Block\Widget\Grid\Container
 {
