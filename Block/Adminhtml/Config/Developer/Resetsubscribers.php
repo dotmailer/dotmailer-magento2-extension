@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Resetsubscribers extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_buttonLabel = 'Run Now';
 
     /**
@@ -20,7 +19,7 @@ class Resetsubscribers extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Get the button and scripts contents
+     * Get the button and scripts contents.
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
@@ -32,15 +31,13 @@ class Resetsubscribers extends \Magento\Config\Block\System\Config\Form\Field
         $website = $this->getRequest()->getParam('website', 0);
         $url
                  = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/subscribersreset/website'
-            . $website);
+            .$website);
 
         return $this->getLayout()
             ->createBlock('Magento\Backend\Block\Widget\Button')
             ->setType('button')
             ->setLabel(__($this->_buttonLabel))
-            ->setOnClick("window.location.href='" . $url . "'")
+            ->setOnClick("window.location.href='".$url."'")
             ->toHtml();
-
     }
-
 }

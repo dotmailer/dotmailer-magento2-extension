@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
@@ -22,6 +21,11 @@ class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
         parent::__construct($context);
     }
 
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return string
+     */
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
@@ -29,13 +33,13 @@ class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
         $baseUrl = $this->_dataHelper->generateDynamicUrl();
 
         //config passcode
-        $passcode   = $this->_dataHelper->getPasscode();
+        $passcode = $this->_dataHelper->getPasscode();
         $customerId = $this->_dataHelper->getMappedCustomerId();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
-        if ( ! $customerId) {
+        if (!$customerId) {
             $customerId = '[PLEASE MAP THE CUSTOMER ID]';
         }
         //dynamic content url
@@ -45,6 +49,5 @@ class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);
-
     }
 }

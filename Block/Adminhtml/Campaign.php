@@ -2,13 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
+/**
+ * Class Campaign
+ *
+ * @package Dotdigitalgroup\Email\Block\Adminhtml
+ */
 class Campaign extends \Magento\Backend\Block\Widget\Grid\Container
 {
-
     /**
-     * Block constructor
-     *
-     * @return void
+     * Block constructor.
      */
     protected function _construct()
     {

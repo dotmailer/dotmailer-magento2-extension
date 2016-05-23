@@ -2,62 +2,65 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules;
 
-class Customdatafields extends
-    \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
+class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
-
     protected $_getAttributeRenderer;
+
     protected $_getConditionsRenderer;
+
     protected $_getValueRenderer;
 
     protected $_objectManager;
 
+    /**
+     * Customdatafields constructor.
+     *
+     * @param \Magento\Backend\Block\Template\Context   $context
+     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+     * @param array                                     $data
+     */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
-        $data = []
+        array $data = []
     ) {
         $this->_objectManager = $objectManagerInterface;
-        $this->_addAfter      = false;
+        $this->_addAfter = false;
 
         $this->_addButtonLabel = __('Add New Condition');
         parent::__construct($context, $data);
-
     }
 
-    /**
-     * prepare render
-     */
     protected function _prepareToRender()
     {
         $this->_getConditionsRenderer = null;
-        $this->_getAttributeRenderer  = null;
-        $this->_getValueRenderer      = null;
+        $this->_getAttributeRenderer = null;
+        $this->_getValueRenderer = null;
         $this->addColumn(
             'attribute',
-            array(
+            [
                 'label' => __('Attribute'),
                 'style' => 'width:120px',
-            )
+            ]
         );
         $this->addColumn(
             'conditions',
-            array(
+            [
                 'label' => __('Condition'),
                 'style' => 'width:120px',
-            )
+            ]
         );
         $this->addColumn(
             'cvalue',
-            array(
+            [
                 'label' => __('Value'),
                 'style' => 'width:120px',
-            )
+            ]
         );
     }
 
     /**
-     * render cell template
+     * render cell template.
      *
      * @param string $columnName
      *
@@ -65,7 +68,7 @@ class Customdatafields extends
      */
     public function renderCellTemplate($columnName)
     {
-        if ($columnName == "attribute") {
+        if ($columnName == 'attribute') {
             return $this->_getAttributeRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
@@ -74,7 +77,7 @@ class Customdatafields extends
                     $this->getElement()->getValues()
                 )
                 ->toHtml();
-        } elseif ($columnName == "conditions") {
+        } elseif ($columnName == 'conditions') {
             return $this->_getConditionsRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
@@ -85,7 +88,7 @@ class Customdatafields extends
                     )->toOptionArray()
                 )
                 ->toHtml();
-        } elseif ($columnName == "cvalue") {
+        } elseif ($columnName == 'cvalue') {
             return $this->_getValueRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
@@ -108,15 +111,15 @@ class Customdatafields extends
     {
         $options = [];
 
-        $options['option_' . $this->_getAttributeRenderer()->calcOptionHash(
+        $options['option_'.$this->_getAttributeRenderer()->calcOptionHash(
             $row->getData('attribute')
         )]
             = 'selected="selected"';
-        $options['option_' . $this->_getConditionsRenderer()->calcOptionHash(
+        $options['option_'.$this->_getConditionsRenderer()->calcOptionHash(
             $row->getData('conditions')
         )]
             = 'selected="selected"';
-        $options['option_' . $this->_getValueRenderer()->calcOptionHash(
+        $options['option_'.$this->_getValueRenderer()->calcOptionHash(
             $row->getData('cvalue')
         )]
             = 'selected="selected"';
@@ -125,13 +128,13 @@ class Customdatafields extends
     }
 
     /**
-     * get rendered for attribute field
+     * Get rendered for attribute field.
      *
      * @return mixed
      */
     protected function _getAttributeRenderer()
     {
-        if ( ! $this->_getAttributeRenderer) {
+        if (!$this->_getAttributeRenderer) {
             $this->_getAttributeRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -144,13 +147,13 @@ class Customdatafields extends
     }
 
     /**
-     * get renderer for conditions field
+     * Get renderer for conditions field.
      *
      * @return mixed
      */
     protected function _getConditionsRenderer()
     {
-        if ( ! $this->_getConditionsRenderer) {
+        if (!$this->_getConditionsRenderer) {
             $this->_getConditionsRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -163,13 +166,13 @@ class Customdatafields extends
     }
 
     /**
-     * get renderer for value field
+     * Get renderer for value field.
      *
      * @return mixed
      */
     protected function _getValueRenderer()
     {
-        if ( ! $this->_getValueRenderer) {
+        if (!$this->_getValueRenderer) {
             $this->_getValueRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -181,6 +184,11 @@ class Customdatafields extends
         return $this->_getValueRenderer;
     }
 
+    /**
+     * @return string
+     *
+     * @throws \Exception
+     */
     public function _toHtml()
     {
         $script
@@ -217,9 +225,9 @@ class Customdatafields extends
                     });
 
                     function doUpdate(item){
-                        var url = '" . $this->getUrl(
+                        var url = '".$this->getUrl(
                 'dotdigitalgroup_email/rules/ajax'
-            ) . "';
+            )."';
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
                         var value = item.up(1).down().next(1);
@@ -249,9 +257,9 @@ class Customdatafields extends
                     }
 
                     function doUpdateWithValues(item){
-                        var url = '" . $this->getUrl(
+                        var url = '".$this->getUrl(
                 'dotdigitalgroup_email/rules/selected'
-            ) . "';
+            )."';
                         var arrayKey = item.up(1).readAttribute('id');
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
@@ -285,9 +293,9 @@ class Customdatafields extends
                     }
 
                     function doUpdateForCondition(item){
-                        var url = '" . $this->getUrl(
+                        var url = '".$this->getUrl(
                 'dotdigitalgroup_email/rules/value'
-            ) . "';
+            )."';
                         var attribute = item.up(1).down();
                         var attributeValue = attribute.down().value;
                         var value = item.up().next();
@@ -309,9 +317,7 @@ class Customdatafields extends
                 });
             </script>";
 
-        return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
-        . '"/>' . parent::_toHtml() . $script;
-
+        return '<input type="hidden" id="'.$this->getElement()->getHtmlId()
+        .'"/>'.parent::_toHtml().$script;
     }
-
 }

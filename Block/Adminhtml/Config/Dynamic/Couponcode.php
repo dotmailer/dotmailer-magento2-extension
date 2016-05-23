@@ -4,13 +4,12 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
      * Couponcode constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
+     * @param \Dotdigitalgroup\Email\Helper\Data      $dataHelper
      * @param \Magento\Backend\Block\Template\Context $context
      */
     public function __construct(
@@ -35,17 +34,16 @@ class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
         //config code
         $passcode = $this->_dataHelper->getPasscode();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
 
         //full url
-        $text = $baseUrl . 'connector/email/coupon/id/[INSERT ID HERE]/code/'
-            . $passcode . '/@EMAIL@';
+        $text = $baseUrl.'connector/email/coupon/id/[INSERT ID HERE]/code/'
+            .$passcode.'/@EMAIL@';
         $element->setData('value', $text);
         $element->setData('disabled', 'disabled');
 
         return parent::_getElementHtml($element);
     }
-
 }
