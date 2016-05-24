@@ -36,9 +36,9 @@ class Roi extends \Magento\Framework\View\Element\Template
     /**
      * @return bool
      */
-    public function getRoiTrackingEnabled()
+    public function isRoiTrackingEnabled()
     {
-        return $this->helper->getRoiTrackingEnabled();
+        return $this->helper->isRoiTrackingEnabled();
     }
 
     /**

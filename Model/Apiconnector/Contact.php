@@ -92,7 +92,7 @@ class Contact
         //export bulk contacts
         foreach ($this->_helper->getWebsites() as $website) {
             $apiEnabled          = $this->_helper->isEnabled($website);
-            $customerSyncEnabled = $this->_helper->getCustomerSyncEnabled(
+            $customerSyncEnabled = $this->_helper->isCustomerSyncEnabled(
                 $website
             );
             $customerAddressBook = $this->_helper->getCustomerAddressBook(

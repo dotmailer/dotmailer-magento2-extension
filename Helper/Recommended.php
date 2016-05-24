@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Helper;
 
 class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
     const XML_PATH_RELATED_PRODUCTS_TYPE = 'connector_dynamic_content/products/related_display_type';
     const XML_PATH_UPSELL_PRODUCTS_TYPE = 'connector_dynamic_content/products/upsell_display_type';
     const XML_PATH_CROSSSELL_PRODUCTS_TYPE = 'connector_dynamic_content/products/crosssell_display_type';
@@ -12,7 +11,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_MOSTVIEWED_PRODUCT_TYPE = 'connector_dynamic_content/products/most_viewed_display_type';
     const XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE = 'connector_dynamic_content/products/recently_viewed_display_type';
     const XML_PATH_PRODUCTPUSH_TYPE = 'connector_dynamic_content/manual_product_push/display_type';
-
 
     const XML_PATH_RELATED_PRODUCTS_ITEMS = 'connector_dynamic_content/products/related_items_to_display';
     const XML_PATH_UPSELL_PRODUCTS_ITEMS = 'connector_dynamic_content/products/upsell_items_to_display';
@@ -27,21 +25,41 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_PRODUCTPUSH_ITEMS = 'connector_dynamic_content/manual_product_push/products_push_items';
     const XML_PATH_FALLBACK_PRODUCTS_ITEMS = 'connector_dynamic_content/fallback_products/product_ids';
 
-    public $periods = array('week', 'month', 'year');
+    /**
+     * @var array
+     */
+    public $periods = ['week', 'month', 'year'];
 
-
+    /**
+     * @var \Magento\Framework\App\Helper\Context
+     */
     protected $_context;
+    /**
+     * @var Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
     protected $_objectManager;
+    /**
+     * @var
+     */
     protected $_backendConfig;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
     protected $_adapter;
 
     /**
      * Recommended constructor.
      *
      * @param \Magento\Framework\App\ResourceConnection  $adapter
-     * @param Data                                       $data
+     * @param \Dotdigitalgroup\Email\Helper\Data         $data
      * @param \Magento\Framework\App\Helper\Context      $context
      * @param \Magento\Framework\ObjectManagerInterface  $objectManager
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -53,17 +71,17 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_adapter       = $adapter;
-        $this->_helper        = $data;
-        $this->_context       = $context;
-        $this->_storeManager  = $storeManager;
+        $this->_adapter = $adapter;
+        $this->_helper = $data;
+        $this->_context = $context;
+        $this->_storeManager = $storeManager;
         $this->_objectManager = $objectManager;
 
         parent::__construct($context);
     }
 
     /**
-     * Dispay type
+     * Dispay type.
      *
      * @return mixed|string grid:list
      */
@@ -99,6 +117,11 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         return $type;
     }
 
+    /**
+     * Get related product type.
+     *
+     * @return mixed
+     */
     public function getRelatedProductsType()
     {
         return $this->scopeConfig->getValue(
@@ -106,14 +129,23 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    /**
+     * Get upsell product type.
+     *
+     * @return mixed
+     */
     public function getUpsellProductsType()
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_UPSELL_PRODUCTS_TYPE
         );
-
     }
 
+    /**
+     * Get crosssell product type.
+     *
+     * @return mixed
+     */
     public function getCrosssellProductsType()
     {
         return $this->scopeConfig->getValue(
@@ -121,6 +153,11 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    /**
+     * Get bestseller product type.
+     *
+     * @return mixed
+     */
     public function getBestSellerProductsType()
     {
         return $this->scopeConfig->getValue(
@@ -128,6 +165,11 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    /**
+     * Get most viewed product type.
+     *
+     * @return mixed
+     */
     public function getMostViewedProductsType()
     {
         return $this->scopeConfig->getValue(
@@ -135,6 +177,11 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    /**
+     * Get recently viewed product type.
+     *
+     * @return mixed
+     */
     public function getRecentlyviewedProductsType()
     {
         return $this->scopeConfig->getValue(
@@ -142,16 +189,20 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    /**
+     * Get product push product type.
+     *
+     * @return mixed
+     */
     public function getProductpushProductsType()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_PRODUCTPUSH_TYPE);
     }
 
-
     /**
      * Limit of products displayed.
      *
-     * @param $mode
+     * @param string $mode
      *
      * @return int|mixed
      */
@@ -199,6 +250,11 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         return $result;
     }
 
+    /**
+     * Fallback product ids.
+     *
+     * @return array
+     */
     public function getFallbackIds()
     {
         $fallbackIds = $this->scopeConfig->getValue(
@@ -212,12 +268,19 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
             );
         }
 
-        return array();
+        return [];
     }
 
+    /**
+     * Get time period from config.
+     *
+     * @param string $config
+     *
+     * @return string
+     */
     public function getTimeFromConfig($config)
     {
-        $now    = new \Zend_Date();
+        $now = new \Zend_Date();
         $period = 'M';
 
         if ($config == 'mostviewed') {
@@ -225,11 +288,9 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
                 self::XML_PATH_MOSTVIEWED_TIME_PERIOD
             );
         } elseif ($config == 'bestsellers') {
-
             $period = $this->scopeConfig->getValue(
                 self::XML_PATH_BESTSELLER_TIME_PERIOD
             );
-
         } elseif ($config == 'recentlyviewed') {
             $period = $this->scopeConfig->getValue(
                 self::XML_PATH_MOSTVIEWED_TIME_PERIOD
@@ -250,10 +311,14 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
             $period = $now->sub(1, $sub);
         }
 
-
         return $period->toString(\Zend_Date::ISO_8601);
     }
 
+    /**
+     * Get product push product ids.
+     * 
+     * @return array
+     */
     public function getProductPushIds()
     {
         $productIds = $this->scopeConfig->getValue(
@@ -262,5 +327,4 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 
         return explode(',', $productIds);
     }
-
 }

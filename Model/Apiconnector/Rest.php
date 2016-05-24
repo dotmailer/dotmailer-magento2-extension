@@ -191,7 +191,7 @@ abstract class Rest
         /**
          * check and debug api request total time
          */
-        if ($this->_helper->getDebugEnabled()) {
+        if ($this->_helper->isDebugEnabled()) {
             $info = $this->getResponseInfo();
             //the response info data is set
             if (isset($info['url']) && isset($info['total_time'])) {

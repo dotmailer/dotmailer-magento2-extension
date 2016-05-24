@@ -38,7 +38,7 @@ class Guest
 
             //check if the guest is mapped and enabled
             $addresbook       = $this->_helper->getGuestAddressBook($website);
-            $guestSyncEnabled = $this->_helper->getGuestSyncEnabled($website);
+            $guestSyncEnabled = $this->_helper->isGuestSyncEnabled($website);
             $apiEnabled       = $this->_helper->isEnabled($website);
             if ($addresbook && $guestSyncEnabled && $apiEnabled) {
 

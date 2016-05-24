@@ -51,7 +51,7 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
         $websiteId   = $this->_storeManager->getStore($order->getStoreId())
             ->getWebsiteId();
 
-        $orderSync = $this->_helper->getOrderSyncEnabled($websiteId);
+        $orderSync = $this->_helper->isOrderSyncEnabled($websiteId);
 
         if ($this->_helper->isEnabled($websiteId) && $orderSync) {
             //register in queue with importer

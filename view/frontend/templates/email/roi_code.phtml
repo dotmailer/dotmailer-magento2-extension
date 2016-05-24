@@ -1,4 +1,4 @@
-<?php if ($block->getRoiTrackingEnabled()):
+<?php if ($block->isRoiTrackingEnabled()):
     $order = $block->getOrder();
     $orderId = $order->getId();
     $items = $order->getAllItems();

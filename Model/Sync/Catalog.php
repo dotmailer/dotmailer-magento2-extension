@@ -64,7 +64,7 @@ class Catalog
         //resource allocation
         $this->_helper->allowResourceFullExecution();
         $enabled            = $this->_helper->isEnabled();
-        $catalogSyncEnabled = $this->_helper->getCatalogSyncEnabled();
+        $catalogSyncEnabled = $this->_helper->isCatalogSyncEnabled();
         //api and catalog sync enabled
         if ($enabled && $catalogSyncEnabled) {
             try {

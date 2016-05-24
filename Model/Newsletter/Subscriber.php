@@ -73,7 +73,7 @@ class Subscriber
             //if subscriber is enabled and mapped
             $apiEnabled = $this->_helper->isEnabled($website->getid());
             $subscriberEnaled
-                        = $this->_helper->getSubscriberSyncEnabled($website->getid());
+                        = $this->_helper->isSubscriberSyncEnabled($website->getid());
             $addressBook
                         = $this->_helper->getSubscriberAddressBook($website->getId());
             //enabled and mapped
