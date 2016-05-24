@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Catalog
 {
-
     protected $_helper;
     protected $_resource;
     protected $_scopeConfig;
@@ -17,7 +16,6 @@ class Catalog
     protected $_connectorProductFactory;
     protected $_catalogCollectionFactory;
     protected $_productCollection;
-
 
     /**
      * Catalog constructor.
@@ -40,30 +38,29 @@ class Catalog
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Catalog\Model\ProductFactory $productFactory
     ) {
-        $this->_productCollection        = $productCollection;
+        $this->_productCollection = $productCollection;
         $this->_catalogCollectionFactory = $catalogCollection;
-        $this->_connectorProductFactory  = $connectorProductFactory;
-        $this->_importerFactory        = $importerFactory;
-        $this->_helper                   = $helper;
-        $this->_resource                 = $resource;
-        $this->_scopeConfig              = $scopeConfig;
-        $this->_productFactory           = $productFactory;
+        $this->_connectorProductFactory = $connectorProductFactory;
+        $this->_importerFactory = $importerFactory;
+        $this->_helper = $helper;
+        $this->_resource = $resource;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_productFactory = $productFactory;
     }
 
     /**
-     *
-     * catalog sync
+     * catalog sync.
      *
      * @return array
      */
     public function sync()
     {
-        $response     = array('success' => true, 'message' => 'Done.');
+        $response = array('success' => true, 'message' => 'Done.');
         $this->_start = microtime(true);
 
         //resource allocation
         $this->_helper->allowResourceFullExecution();
-        $enabled            = $this->_helper->isEnabled();
+        $enabled = $this->_helper->isEnabled();
         $catalogSyncEnabled = $this->_helper->isCatalogSyncEnabled();
         //api and catalog sync enabled
         if ($enabled && $catalogSyncEnabled) {
@@ -71,9 +68,9 @@ class Catalog
                 $this->_helper->log('---------- Start catalog sync ----------');
 
                 //remove product with product id set and no product
-                $write        = $this->_resource->getConnection('core_write');
+                $write = $this->_resource->getConnection('core_write');
                 $catalogTable = $this->_resource->getTableName('email_catalog');
-                $select       = $write->select();
+                $select = $write->select();
                 $select->reset()
                     ->from(
                         array('c' => $catalogTable),
@@ -83,9 +80,9 @@ class Catalog
                         array(
                             'e' => $this->_resource->getTableName(
                                 'catalog_product_entity'
-                            )
+                            ),
                         ),
-                        "c.product_id = e.entity_id"
+                        'c.product_id = e.entity_id'
                     )
                     ->where('e.entity_id is NULL');
                 //delete sql statement
@@ -129,14 +126,14 @@ class Catalog
 
                     foreach ($stores as $store) {
                         $websiteCode = $store->getWebsite()->getCode();
-                        $storeCode   = $store->getCode();
-                        $products    = $this->_exportCatalog($store);
+                        $storeCode = $store->getCode();
+                        $products = $this->_exportCatalog($store);
                         if ($products) {
                             //register in queue with importer
                             $this->_importerFactory->create()
                                 ->registerQueue(
-                                    'Catalog_' . $websiteCode . '_'
-                                    . $storeCode,
+                                    'Catalog_'.$websiteCode.'_'
+                                    .$storeCode,
                                     $products,
                                     \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                                     $store->getWebsite()->getId()
@@ -150,21 +147,20 @@ class Catalog
                         //using single api
                         $this->_exportInSingle(
                             $store,
-                            'Catalog_' . $websiteCode . '_' . $storeCode,
+                            'Catalog_'.$websiteCode.'_'.$storeCode,
                             $store->getWebsite()->getId()
                         );
                     }
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, array());
+                $this->_helper->debug((string) $e, array());
             }
-
         }
 
         if ($this->_countProducts) {
-            $message = 'Total time for sync : ' . gmdate(
-                    "H:i:s", microtime(true) - $this->_start
-                ) . ', Total synced = ' . $this->_countProducts;
+            $message = 'Total time for sync : '.gmdate(
+                    'H:i:s', microtime(true) - $this->_start
+                ).', Total synced = '.$this->_countProducts;
             $this->_helper->log($message);
             $response['message'] = $message;
         }
@@ -172,9 +168,8 @@ class Catalog
         return $response;
     }
 
-
     /**
-     * export catalog
+     * export catalog.
      *
      * @param $store
      *
@@ -182,7 +177,6 @@ class Catalog
      */
     protected function _exportCatalog($store)
     {
-
         $connectorProducts = array();
         //all products for export
         $products = $this->_getProductsToExport($store);
@@ -192,21 +186,20 @@ class Catalog
                 $this->_productIds = $products->getColumnValues('entity_id');
 
                 foreach ($products as $product) {
-
                     $connProduct = $this->_connectorProductFactory->create()
                         ->setProduct($product);
                     $connectorProducts[] = $connProduct;
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string) $e, array());
         }
 
         return $connectorProducts;
     }
 
     /**
-     * export in single
+     * export in single.
      *
      * @param $store
      * @param $collectionName
@@ -214,9 +207,8 @@ class Catalog
      */
     protected function _exportInSingle($store, $collectionName, $websiteId)
     {
-
         $this->_productIds = array();
-        $products          = $this->_getProductsToExport($store, true);
+        $products = $this->_getProductsToExport($store, true);
         if ($products) {
             foreach ($products as $product) {
                 $connectorProduct = $this->_connectorProductFactory->create();
@@ -237,11 +229,10 @@ class Catalog
             }
         }
 
-        if ( ! empty($this->_productIds)) {
+        if (!empty($this->_productIds)) {
             $this->_setImported($this->_productIds, true);
             $this->_countProducts += count($this->_productIds);
         }
-
     }
 
     /**
@@ -252,7 +243,7 @@ class Catalog
      */
     protected function _getProductsToExport($store, $modified = false)
     {
-        $limit               = $this->_helper->getWebsiteConfig(
+        $limit = $this->_helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
         );
         $connectorCollection = $this->_catalogCollectionFactory->create();
@@ -271,7 +262,7 @@ class Catalog
         $connectorCollection->setPageSize($limit);
         //check number of products
         if ($connectorCollection->getSize()) {
-            $product_ids       = $connectorCollection->getColumnValues(
+            $product_ids = $connectorCollection->getColumnValues(
                 'product_id'
             );
             $productCollection = $this->_productCollection->create()
@@ -322,29 +313,29 @@ class Catalog
     {
         try {
             $coreResource = $this->_resource;
-            $write        = $coreResource->getConnection('core_write');
-            $tableName    = $coreResource->getTableName('email_catalog');
-            $ids          = implode(', ', $ids);
+            $write = $coreResource->getConnection('core_write');
+            $tableName = $coreResource->getTableName('email_catalog');
+            $ids = implode(', ', $ids);
 
             if ($modified) {
                 $write->update(
                     $tableName, array(
-                    'modified'   => new \Zend_Db_Expr('null'),
-                    'updated_at' => gmdate('Y-m-d H:i:s')
+                    'modified' => new \Zend_Db_Expr('null'),
+                    'updated_at' => gmdate('Y-m-d H:i:s'),
                 ), "product_id IN ($ids)"
                 );
             } else {
                 $write->update(
                     $tableName, array(
-                    'imported'   => '1',
+                    'imported' => '1',
                     'updated_at' => gmdate(
                         'Y-m-d H:i:s'
-                    )
+                    ),
                 ), "product_id IN ($ids)"
                 );
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string) $e, array());
         }
     }
 }

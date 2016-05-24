@@ -5,31 +5,80 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Customer
 {
 
+    /**
+     * @var
+     */
     public $customer;
+    /**
+     * @var
+     */
     public $customerData;
+    /**
+     * @var \Magento\Review\Model\ResourceModel\Review\Collection
+     */
     public $reviewCollection;
 
+    /**
+     * @var
+     */
     public $rewardCustomer;
-    public $rewardLastSpent = "";
-    public $rewardLastEarned = "";
-    public $rewardExpiry = "";
+    /**
+     * @var string
+     */
+    public $rewardLastSpent = '';
+    /**
+     * @var string
+     */
+    public $rewardLastEarned = '';
+    /**
+     * @var string
+     */
+    public $rewardExpiry = '';
 
-    protected $_mapping_hash;
+    /**
+     * @var
+     */
+    protected $_mappingHash;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Customer\Model\GroupFactory
+     */
     protected $_groupFactory;
+    /**
+     * @var \Magento\Newsletter\Model\SubscriberFactory
+     */
     protected $_subscriberFactory;
+    /**
+     * @var \Magento\Catalog\Model\CategoryFactory
+     */
     protected $_categoryFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
-    //enterprise reward
+    /**
+     * @var
+     */
     public $reward;
 
+    /**
+     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     */
+    protected $orderCollection;
+
+    /**
+     * @var array
+     */
     protected $subscriber_status
-        = array(
-            \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED   => 'Subscribed',
-            \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE   => 'Not Active',
+        = [
+            \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
+            \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
             \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-            \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED  => 'Unconfirmed'
-        );
+            \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed'
+        ];
 
     /**
      * Customer constructor.
@@ -55,16 +104,15 @@ class Customer
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory
     ) {
-        $this->_helper            = $helper;
-        $this->_store             = $storeManager;
-        $this->_objectManager     = $objectManager;
-        $this->reviewCollection   = $reviewCollection;
-        $this->orderCollection    = $collectionFactory;
-        $this->_groupFactory      = $groupFactory;
+        $this->_helper = $helper;
+        $this->_store = $storeManager;
+        $this->_objectManager = $objectManager;
+        $this->reviewCollection = $reviewCollection;
+        $this->orderCollection = $collectionFactory;
+        $this->_groupFactory = $groupFactory;
         $this->_subscriberFactory = $subscriberFactory;
-        $this->_categoryFactory   = $categoryFactory;
-        $this->_productFactory    = $productFactory;
-
+        $this->_categoryFactory = $categoryFactory;
+        $this->_productFactory = $productFactory;
     }
 
     /**
@@ -79,16 +127,19 @@ class Customer
 
     /**
      * Set customer data.
+     * 
+     * @param $customer
      *
+     * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setCustomerData($customer)
     {
         $this->customer = $customer;
         $this->setReviewCollection();
 
-
         foreach ($this->getMappingHash() as $key => $field) {
-            /**
+            /*
              * call user function based on the attribute mapped.
              */
             $function = 'get';
@@ -97,26 +148,31 @@ class Customer
                 $function .= ucfirst($one);
             }
             try {
-                $value                    = call_user_func(
-                    array('self', $function)
+                $value = call_user_func(
+                    ['self', $function]
                 );
                 $this->customerData[$key] = $value;
             } catch (\Exception $e) {
                 throw new \Magento\Framework\Exception\LocalizedException(
                     __($e->getMessage())
                 );
-
             }
         }
 
         return $this;
     }
 
+    /**
+     * @param string $email
+     */
     public function setEmail($email)
     {
         $this->customerData['email'] = $email;
     }
 
+    /**
+     * @param string $emailType
+     */
     public function setEmailType($emailType)
     {
         $this->customerData['email_type'] = $emailType;
@@ -124,11 +180,13 @@ class Customer
 
     /**
      * Customer reviews.
+     * 
+     * @return $this
      */
     public function setReviewCollection()
     {
-        $customer_id = $this->customer->getId();
-        $collection  = $this->reviewCollection->addCustomerFilter($customer_id)
+        $customerId = $this->customer->getId();
+        $collection = $this->reviewCollection->addCustomerFilter($customerId)
             ->setOrder('review_id', 'DESC');
 
         $this->reviewCollection = $collection;
@@ -136,11 +194,21 @@ class Customer
         return $this;
     }
 
+    /**
+     * Number of reviews.
+     * 
+     * @return int
+     */
     public function getReviewCount()
     {
         return count($this->reviewCollection);
     }
 
+    /**
+     * Last review date.
+     * 
+     * @return string
+     */
     public function getLastReviewDate()
     {
         if (count($this->reviewCollection)) {
@@ -151,7 +219,7 @@ class Customer
     }
 
     /**
-     * get customer id.
+     * Get customer id.
      *
      * @return mixed
      */
@@ -161,7 +229,7 @@ class Customer
     }
 
     /**
-     * get first name.
+     * Get first name.
      *
      * @return mixed
      */
@@ -171,7 +239,7 @@ class Customer
     }
 
     /**
-     * get last name.
+     * Get last name.
      *
      * @return mixed
      */
@@ -181,7 +249,7 @@ class Customer
     }
 
     /**
-     * get date of birth.
+     * Get date of birth.
      *
      * @return mixed
      */
@@ -191,7 +259,7 @@ class Customer
     }
 
     /**
-     * get customer gender.
+     * Get customer gender.
      *
      * @return bool|string
      */
@@ -201,7 +269,7 @@ class Customer
     }
 
     /**
-     * get customer prefix.
+     * Get customer prefix.
      *
      * @return mixed
      */
@@ -211,7 +279,7 @@ class Customer
     }
 
     /**
-     * get customer suffix.
+     * Get customer suffix.
      *
      * @return mixed
      */
@@ -221,7 +289,7 @@ class Customer
     }
 
     /**
-     * get website name.
+     * Get website name.
      *
      * @return string
      */
@@ -231,7 +299,7 @@ class Customer
     }
 
     /**
-     * get store name.
+     * Get store name.
      *
      * @return null|string
      */
@@ -241,7 +309,7 @@ class Customer
     }
 
     /**
-     * get customer created at date.
+     * Get customer created at date.
      *
      * @return mixed
      */
@@ -251,7 +319,7 @@ class Customer
     }
 
     /**
-     * get customer last logged in date.
+     * Get customer last logged in date.
      *
      * @return mixed
      */
@@ -261,7 +329,7 @@ class Customer
     }
 
     /**
-     * get cutomer group.
+     * Get cutomer group.
      *
      * @return string
      */
@@ -271,7 +339,7 @@ class Customer
     }
 
     /**
-     * get billing address line 1.
+     * Get billing address line 1.
      *
      * @return string
      */
@@ -281,7 +349,7 @@ class Customer
     }
 
     /**
-     * get billing address line 2.
+     * Get billing address line 2.
      *
      * @return string
      */
@@ -291,7 +359,7 @@ class Customer
     }
 
     /**
-     * get billing city.
+     * Get billing city.
      *
      * @return mixed
      */
@@ -301,7 +369,7 @@ class Customer
     }
 
     /**
-     * get billing country.
+     * Get billing country.
      *
      * @return mixed
      */
@@ -311,7 +379,7 @@ class Customer
     }
 
     /**
-     * get billing state.
+     * Get billing state.
      *
      * @return mixed
      */
@@ -321,7 +389,7 @@ class Customer
     }
 
     /**
-     * get billing postcode.
+     * Get billing postcode.
      *
      * @return mixed
      */
@@ -331,7 +399,7 @@ class Customer
     }
 
     /**
-     * get billing phone.
+     * Get billing phone.
      *
      * @return mixed
      */
@@ -341,7 +409,7 @@ class Customer
     }
 
     /**
-     * get delivery address line 1.
+     * Get delivery address line 1.
      *
      * @return string
      */
@@ -351,7 +419,7 @@ class Customer
     }
 
     /**
-     * get delivery addrss line 2.
+     * Get delivery addrss line 2.
      *
      * @return string
      */
@@ -361,7 +429,7 @@ class Customer
     }
 
     /**
-     * get delivery city.
+     * Get delivery city.
      *
      * @return mixed
      */
@@ -371,7 +439,7 @@ class Customer
     }
 
     /**
-     * get delivery country.
+     * Get delivery country.
      *
      * @return mixed
      */
@@ -381,7 +449,7 @@ class Customer
     }
 
     /**
-     * get delivery state.
+     * Get delivery state.
      *
      * @return mixed
      */
@@ -391,7 +459,7 @@ class Customer
     }
 
     /**
-     * get delivery postcode.
+     * Get delivery postcode.
      *
      * @return mixed
      */
@@ -401,7 +469,7 @@ class Customer
     }
 
     /**
-     * get delivery phone.
+     * Get delivery phone.
      *
      * @return mixed
      */
@@ -411,7 +479,7 @@ class Customer
     }
 
     /**
-     * get numbser of orders.
+     * Get numbser of orders.
      *
      * @return mixed
      */
@@ -421,7 +489,7 @@ class Customer
     }
 
     /**
-     * get average order value.
+     * Get average order value.
      *
      * @return mixed
      */
@@ -431,7 +499,7 @@ class Customer
     }
 
     /**
-     * get total spend.
+     * Get total spend.
      *
      * @return mixed
      */
@@ -441,7 +509,7 @@ class Customer
     }
 
     /**
-     * get last order date.
+     * Get last order date.
      *
      * @return mixed
      */
@@ -451,7 +519,7 @@ class Customer
     }
 
     /**
-     * get last order id.
+     * Get last order id.
      *
      * @return mixed
      */
@@ -461,7 +529,7 @@ class Customer
     }
 
     /**
-     * get last quote id.
+     * Get last quote id.
      *
      * @return mixed
      */
@@ -471,7 +539,7 @@ class Customer
     }
 
     /**
-     * get cutomer id.
+     * Get cutomer id.
      *
      * @return mixed
      */
@@ -481,7 +549,7 @@ class Customer
     }
 
     /**
-     * get customer title.
+     * Get customer title.
      *
      * @return mixed
      */
@@ -554,7 +622,7 @@ class Customer
     protected function _getWebsiteName()
     {
         $websiteId = $this->customer->getWebsiteId();
-        $website   = $this->_store->getWebsite($websiteId);
+        $website = $this->_store->getWebsite($websiteId);
         if ($website) {
             return $website->getName();
         }
@@ -565,7 +633,7 @@ class Customer
     protected function _getStoreName()
     {
         $storeId = $this->customer->getStoreId();
-        $store   = $this->_store->getStore($storeId);
+        $store = $this->_store->getStore($storeId);
 
         if ($store) {
             return $store->getName();
@@ -581,7 +649,7 @@ class Customer
      */
     public function setMappingHash($mapping_hash)
     {
-        $this->_mapping_hash = $mapping_hash;
+        $this->_mappingHash = $mapping_hash;
 
         return $this;
     }
@@ -591,12 +659,12 @@ class Customer
      */
     public function getMappingHash()
     {
-        return $this->_mapping_hash;
+        return $this->_mappingHash;
     }
 
     protected function _getCustomerGroup()
     {
-        $groupId    = $this->customer->getGroupId();
+        $groupId = $this->customer->getGroupId();
         $groupModel = $this->_groupFactory->create()
             ->load($groupId);
         if ($groupModel) {
@@ -615,17 +683,16 @@ class Customer
      */
     public function setMappigHash($value)
     {
-        $this->_mapping_hash = $value;
+        $this->_mappingHash = $value;
 
         return $this;
     }
 
-
     public function cleanString($string)
     {
-        $cleanedString = preg_replace("/[^0-9]/", "", $string);
-        if ($cleanedString != "") {
-            return (int)number_format($cleanedString, 0, '.', '');
+        $cleanedString = preg_replace('/[^0-9]/', '', $string);
+        if ($cleanedString != '') {
+            return (int) number_format($cleanedString, 0, '.', '');
         }
 
         return 0;
@@ -645,7 +712,6 @@ class Customer
             return $this->subscriber_status[$subscriberModel->getSubscriberStatus()];
         }
     }
-
 
     /**
      * Customer segments id.
@@ -667,7 +733,6 @@ class Customer
         return '';
     }
 
-
     /**
      * Last used reward points.
      *
@@ -682,22 +747,21 @@ class Customer
         )
             ->addCustomerFilter($this->customer->getId())
             ->addWebsiteFilter($this->customer->getWebsiteId())
-            ->addFieldToFilter('points_delta', array('lt' => 0))
+            ->addFieldToFilter('points_delta', ['lt' => 0])
             ->setDefaultOrder()
             ->getFirstItem()
             ->getCreatedAt();
 
         //for any valid date
         if ($lastUsed) {
-            return $date = $this->_helper->formatDate($lastUsed, 'short', true);
+            return $this->_helper->formatDate($lastUsed, 'short', true);
         }
 
         return '';
     }
 
-
     /**
-     * get most purchased category
+     * Get most purchased category.
      *
      * @return string
      */
@@ -710,11 +774,11 @@ class Customer
                 ->getName();
         }
 
-        return "";
+        return '';
     }
 
     /**
-     * get most purchased brand
+     * Get most purchased brand.
      *
      * @return string
      */
@@ -725,11 +789,11 @@ class Customer
             return $brand;
         }
 
-        return "";
+        return '';
     }
 
     /**
-     * get most frequent day of purchase
+     * Get most frequent day of purchase.
      *
      * @return string
      */
@@ -740,11 +804,11 @@ class Customer
             return $day;
         }
 
-        return "";
+        return '';
     }
 
     /**
-     * get most frequent month of purchase
+     * Get most frequent month of purchase.
      *
      * @return string
      */
@@ -755,11 +819,11 @@ class Customer
             return $month;
         }
 
-        return "";
+        return '';
     }
 
     /**
-     * get first purchased category
+     * Get first purchased category.
      *
      * @return string
      */
@@ -772,11 +836,11 @@ class Customer
                 ->getName();
         }
 
-        return "";
+        return '';
     }
 
     /**
-     * get last purchased category
+     * Get last purchased category.
      *
      * @return string
      */
@@ -791,11 +855,11 @@ class Customer
                 ->getName();
         }
 
-        return "";
+        return '';
     }
 
     /**
-     * get first purchased brand
+     * Get first purchased brand.
      *
      * @return string
      */
@@ -807,7 +871,7 @@ class Customer
     }
 
     /**
-     * get last purchased brand
+     * Get last purchased brand.
      *
      * @return string
      */
@@ -837,7 +901,7 @@ class Customer
             }
         }
 
-        return "";
+        return '';
     }
 
     /**
@@ -847,7 +911,7 @@ class Customer
      */
     public function getRewardPoints()
     {
-        if ( ! $this->reward) {
+        if (!$this->reward) {
             $this->_setReward();
         }
 
@@ -865,7 +929,7 @@ class Customer
      */
     public function getRewardAmount()
     {
-        if ( ! $this->reward) {
+        if (!$this->reward) {
             $this->_setReward();
         }
 
@@ -884,7 +948,7 @@ class Customer
     public function getExpirationDate()
     {
         //set reward for later use
-        if ( ! $this->reward) {
+        if (!$this->reward) {
             $this->_setReward();
         }
 
@@ -905,14 +969,17 @@ class Customer
         return '';
     }
 
+    /**
+     * Get the customer reward.
+     * 
+     */
     protected function _setReward()
     {
-
         if ($rewardModel = $this->_objectManager->create(
             'Magento\Reward\Model\Reward\History'
         )
         ) {
-            $enHelper   = $this->_objectManager->create(
+            $enHelper = $this->_objectManager->create(
                 'Magento\Reward\Helper\Reward'
             );
             $collection = $rewardModel->getCollection()
@@ -934,7 +1001,7 @@ class Customer
     }
 
     /**
-     * get last increment id
+     * Get last increment id.
      *
      * @return mixed
      */
@@ -944,7 +1011,7 @@ class Customer
     }
 
     /**
-     * get billing company name
+     * Get billing company name.
      *
      * @return mixed
      */
@@ -953,7 +1020,7 @@ class Customer
         return $this->customer->getBillingCompany();
     }
     /**
-     * get shipping company name
+     * Get shipping company name.
      *
      * @return mixed
      */

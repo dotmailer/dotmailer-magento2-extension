@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Mail;
 class Transport extends \Zend_Mail_Transport_Smtp
     implements \Magento\Framework\Mail\TransportInterface
 {
-
     /**
      * @var \Magento\Framework\Mail\MessageInterface
      */
@@ -26,20 +25,19 @@ class Transport extends \Zend_Mail_Transport_Smtp
         \Magento\Framework\Mail\MessageInterface $message,
         \Dotdigitalgroup\Email\Helper\Transactional $helper
     ) {
-        if ( ! $message instanceof \Zend_Mail) {
+        if (!$message instanceof \Zend_Mail) {
             throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
         }
         $this->_message = $message;
-        $this->_helper  = $helper;
+        $this->_helper = $helper;
 
         parent::__construct($this->_helper->getSmtpHost(),
             $this->_helper->getTransportConfig());
     }
 
     /**
-     * Send a mail using this transport
+     * Send a mail using this transport.
      *
-     * @return void
      * @throws \Magento\Framework\Exception\MailException
      */
     public function sendMessage()

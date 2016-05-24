@@ -3,58 +3,79 @@
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Magento\Framework\Exception\LocalizedException;
-use DotMailer\Api\Container;
 
 class Subscriber
 {
-
     const STATUS_SUBSCRIBED = 1;
     const STATUS_NOT_ACTIVE = 2;
     const STATUS_UNSUBSCRIBED = 3;
     const STATUS_UNCONFIRMED = 4;
 
+    /**
+     * @var
+     */
     protected $_start;
 
     /**
      * Global number of subscriber updated.
      *
-     * @var
+     * @var int
      */
     protected $_countSubscriber = 0;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\File
+     */
     protected $_file;
-    protected $_config;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
-    protected $_dateTime;
+
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $storeManager;
-    protected $_scopeConfig;
+    
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
     protected $_contactFactory;
+    /**
+     * @var \Magento\Newsletter\Model\SubscriberFactory
+     */
     protected $_subscriberFactory;
-    protected $_contactCollection;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     */
     protected $_importerFactory;
 
+    /**
+     * Subscriber constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Magento\Newsletter\Model\SubscriberFactory  $subscriberFactory
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory  $contactFactory
+     * @param \Dotdigitalgroup\Email\Helper\File           $file
+     * @param \Dotdigitalgroup\Email\Helper\Data           $helper
+     * @param \Magento\Store\Model\StoreManagerInterface   $storeManager
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollection,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\Config $config,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\Stdlib\DateTime\DateTimeFactory $dateFactory,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->_importerFactory = $importerFactory;
-        $this->_contactCollection = $contactCollection;
-        $this->_file              = $file;
-        $this->_helper            = $helper;
-        $this->_config            = $config;
+        $this->_file = $file;
+        $this->_helper = $helper;
         $this->_subscriberFactory = $subscriberFactory;
-        $this->_contactFactory    = $contactFactory;
-        $this->_dateTime          = $dateFactory;
-        $this->_scopeConfig       = $scopeConfig;
-        $this->storeManager       = $storeManager;
+        $this->_contactFactory = $contactFactory;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -64,10 +85,10 @@ class Subscriber
      */
     public function sync()
     {
-        $response     = array('success' => true, 'message' => '');
+        $response = ['success' => true, 'message' => ''];
         $this->_start = microtime(true);
-        $websites     = $this->_helper->getWebsites(true);
-        $started      = false;
+        $websites = $this->_helper->getWebsites(true);
+        $started = false;
 
         foreach ($websites as $website) {
             //if subscriber is enabled and mapped
@@ -81,27 +102,16 @@ class Subscriber
                 //ready to start sync
                 $numUpdated = $this->exportSubscribersPerWebsite($website);
 
-                if ($this->_countSubscriber && ! $started) {
+                if ($this->_countSubscriber && !$started) {
                     $this->_helper->log('---------------------- Start subscriber sync -------------------');
                     $started = true;
                 }
                 // show message for any number of customers
                 if ($numUpdated) {
-                    $response['message'] .= '</br>' . $website->getName()
-                        . ', updated subscribers = ' . $numUpdated;
+                    $response['message'] .= '</br>'.$website->getName()
+                        .', updated subscribers = '.$numUpdated;
                 }
             }
-        }
-
-        //global number of subscribers to set the message
-        if ($this->_countSubscriber) {
-            //reponse message
-            $message = 'Total time for sync : ' . gmdate("H:i:s",
-                    microtime(true) - $this->_start);
-
-            //put the message in front
-            $message .= $response['message'];
-            $result['message'] = $message;
         }
 
         return $response;
@@ -113,24 +123,25 @@ class Subscriber
      * @param $website
      *
      * @return int
+     *
      * @throws LocalizedException
      */
     public function exportSubscribersPerWebsite($website)
     {
         $updated = 0;
-        $limit   = $this->_helper->getSyncLimit($website->getId());
+        $limit = $this->_helper->getSyncLimit($website->getId());
         //subscriber collection to import
         $subscribers = $this->_contactFactory->create()
             ->getSubscribersToImport($website, $limit);
 
         if ($subscribers->getSize()) {
             $subscribersFilename = strtolower($website->getCode()
-                . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
+                .'_subscribers_'.date('d_m_Y_Hi').'.csv');
             //get mapped storename
             $subscriberStoreName = $this->_helper->getMappedStoreName($website);
             //file headers
             $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename),
-                array('Email', 'emailType', $subscriberStoreName));
+                ['Email', 'emailType', $subscriberStoreName]);
             //write subscriber data to csv file
             foreach ($subscribers as $subscriber) {
                 try {
@@ -145,13 +156,13 @@ class Subscriber
                         ->getName();
                     // save data for subscribers
                     $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename),
-                        array($email, 'Html', $storeName));
-                    $updated++;
+                        [$email, 'Html', $storeName]);
+                    ++$updated;
                 } catch (\Exception $e) {
                     throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
                 }
             }
-            $this->_helper->log('Subscriber filename: ' . $subscribersFilename);
+            $this->_helper->log('Subscriber filename: '.$subscribersFilename);
             //register in queue with importer
             $this->_importerFactory->create()
                 ->registerQueue(

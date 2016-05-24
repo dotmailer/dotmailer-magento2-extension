@@ -5,11 +5,19 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 class Datafields implements \Magento\Framework\Option\ArrayInterface
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
 
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $_registry;
+    
 
     /**
-     * Configuration structure
+     * Configuration structure.
      *
      * @var \Magento\Config\Model\Config\Structure
      */
@@ -27,8 +35,8 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_helper       = $data;
-        $this->_registry     = $registry;
+        $this->_helper = $data;
+        $this->_registry = $registry;
         $this->_storeManager = $storeManager;
     }
 
@@ -39,9 +47,9 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $fields = array();
+        $fields = [];
         //default data option
-        $fields[] = array('value' => '0', 'label' => '-- Please Select --');
+        $fields[] = ['value' => '0', 'label' => '-- Please Select --'];
 
         $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
         if ($apiEnabled) {
@@ -52,7 +60,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
                 $datafields = $savedDatafields;
             } else {
                 //grab the datafields request and save to register
-                $client     = $this->_helper->getWebsiteApiClient();
+                $client = $this->_helper->getWebsiteApiClient();
                 $datafields = $client->getDatafields();
                 $this->_registry->register('datafields', $datafields);
             }
@@ -60,18 +68,18 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
             //set the api error message for the first option
             if (isset($datafields->message)) {
                 //message
-                $fields[] = array(
+                $fields[] = [
                     'value' => 0,
                     'label' => $datafields->message
-                );
+                ];
             } else {
                 //loop for all datafields option
                 foreach ($datafields as $datafield) {
                     if (isset($datafield->name)) {
-                        $fields[] = array(
+                        $fields[] = [
                             'value' => $datafield->name,
                             'label' => $datafield->name
-                        );
+                        ];
                     }
                 }
             }
