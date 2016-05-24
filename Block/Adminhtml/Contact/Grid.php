@@ -105,8 +105,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'header'  => __('Is Guest'),
                 'type'    => 'options',
                 'index'   => 'is_guest',
-                'options' => ['1' => 'Guest', '' => 'Not Guest'],
-                'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Guest'
+                'options' => ['1' => 'Guest', 'null' => 'Not Guest'],
+                'filter_condition_callback' => [
+                    $this,
+                    '_filterCallbackContact',
+                ]
             ]
         )->addColumn(
             'is_subscriber',
