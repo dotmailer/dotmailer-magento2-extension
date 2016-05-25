@@ -1258,7 +1258,7 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
                 <field id="order" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Order And Quote</label>
+                    <label>Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
                 <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">

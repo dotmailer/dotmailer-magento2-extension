@@ -83,7 +83,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             )
         )->addColumn(
             'messages', array(
-                'header' => __('Messages'),
+                'header' => __('Message'),
                 'align'  => 'center',
                 'index'  => 'messages',
                 'type'   => 'text',

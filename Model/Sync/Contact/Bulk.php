@@ -7,16 +7,13 @@ class Bulk
 
     protected $_helper;
     protected $_client;
-    protected $_fileHelper;
     protected $_contactFactory;
 
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
         $this->_helper     = $helper;
-        $this->_fileHelper = $fileHelper;
         $this->_contactFactory = $contactFactory;
     }
 
@@ -39,7 +36,7 @@ class Bulk
                     $file, $addressBook
                 );
 
-                $this->_handleItemAfterSync($item, $result, $file);
+                $this->_handleItemAfterSync($item, $result);
             }
         }
     }
@@ -75,18 +72,13 @@ class Bulk
         return $addressBook;
     }
 
-    protected function _handleItemAfterSync($item, $result, $file = false)
+    protected function _handleItemAfterSync($item, $result)
     {
         if (isset($result->message) && !isset($result->id)) {
             $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
                 ->setMessage($result->message)
                 ->save();
         } elseif (isset($result->id) && !isset($result->message)) {
-            //if file
-            if ($file) {
-                $this->_fileHelper->archiveCSV($file);
-            }
-
             $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
                 ->setImportId($result->id)
                 ->setImportStarted(time())

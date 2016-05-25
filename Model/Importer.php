@@ -65,6 +65,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     protected $_contact;
     protected $_objectManager;
     protected $_directoryList;
+    protected $_fileHelper;
 
 
     /**
@@ -73,6 +74,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\Stdlib\DateTime                      $dateTime
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param array                                                   $data
      */
     public function __construct(
@@ -86,6 +88,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         array $data = []
     ) {
         $this->_file          = $file;
@@ -94,6 +97,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $this->_objectManager = $objectManager;
         $this->_contact       = $contact;
         $this->_dateTime      = $dateTime;
+        $this->_fileHelper = $fileHelper;
         parent::__construct(
             $context, $registry, $resource, $resourceCollection, $data
         );
@@ -386,6 +390,11 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                                 == self::IMPORT_TYPE_GUEST
 
                             ) {
+                                //if file
+                                if ($file = $item->getImportFile()) {
+                                    $this->_fileHelper->archiveCSV($file);
+                                }
+
                                 if ($item->getImportId()) {
                                     $this->_processContactImportReportFaults(
                                         $item->getImportId(), $websiteId
@@ -429,13 +438,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     protected function _processContactImportReportFaults($id, $websiteId)
     {
         $client   = $this->_helper->getWebsiteApiClient($websiteId);
-        $guId     = new Guid($id);
-        $response = $client->GetContactsImportReportFaults($guId);
+        $response = $client->getContactImportReportFaults($id);
 
         if ($response) {
-
             $data = $this->_removeUtf8Bom($response);
-
             $fileName = $this->_directoryList->getPath('var')
                 . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
             $this->_file->open();

@@ -320,11 +320,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Api client by website.
      *
-     * @param int $website
+     * @param int    $website
      * @param string $username
      * @param string $password
      *
-     * @return \DotMailer\Api\Resources\Resources
+     * @return bool|mixed
      */
     public function getWebsiteApiClient($website = 0, $username = '', $password = '')
     {

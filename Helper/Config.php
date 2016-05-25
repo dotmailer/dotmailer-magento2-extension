@@ -280,7 +280,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      * Trial Account
      */
     const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';
-    const API_CONNECTOR_TRIAL_FORM_SECRET = 'DmTrialFormSecret';
 
     protected $_storeManager;
 

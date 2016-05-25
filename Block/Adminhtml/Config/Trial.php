@@ -82,21 +82,19 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     protected function _getIframeFormUrl()
     {
         $formUrl = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_URL;
-        $ipAddress = '139.42.78.220';
+        $ipAddress = $this->_remoteAddress->getRemoteAddress();
         $timezone = $this->_getTimeZoneId();
         $culture = $this->_getCultureId();
         $company = $this->_helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
         $callback = $this->_storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
-        $secret = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_SECRET;
         //query params
         $params = array(
             'callback' => $callback,
             'company' => $company,
             'culture' => $culture,
             'timezone' => $timezone,
-            'ip' => $ipAddress,
-            'secret' => $secret
+            'ip' => $ipAddress
         );
         $url = $formUrl . '?' . http_build_query($params);
         return $url;
