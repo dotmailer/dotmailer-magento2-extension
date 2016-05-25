@@ -10,7 +10,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected $moduleManager;
     protected $_gridFactory;
-    protected $_objectManager;
     protected $_rulesFactory;
 
     /**
@@ -26,11 +25,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Helper\Data $backendHelper,
         \Dotdigitalgroup\Email\Model\Resource\Rules\CollectionFactory $gridFactory,
         \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
         $this->_rulesFactory  = $gridFactory;
-        $this->_objectManager = $objectManagerInterface;
         $this->moduleManager  = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }

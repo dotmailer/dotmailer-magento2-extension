@@ -10,7 +10,7 @@ class Review
     protected $_countReviews;
     protected $_helper;
     protected $_resource;
-    protected $_objectManager;
+    protected $_vote;
     protected $_reviewIds;
     protected $_reviewFactory;
     protected $_importerFactory;
@@ -33,7 +33,7 @@ class Review
      * @param \Dotdigitalgroup\Email\Helper\Data                             $data
      * @param \Magento\Framework\App\ResourceConnection                      $resource
      * @param \Magento\Framework\Stdlib\Datetime                             $datetime
-     * @param \Magento\Framework\ObjectManagerInterface                      $objectManagerInterface
+     * @param \Magento\Review\Model\Rating\Option\Vote $vote
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $reviewCollection,
@@ -46,7 +46,7 @@ class Review
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Framework\Stdlib\Datetime $datetime,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+        \Magento\Review\Model\Rating\Option\Vote $vote
     ) {
         $this->_reviewCollection       = $reviewCollection;
         $this->_ratingFactory          = $ratingFactory;
@@ -58,7 +58,7 @@ class Review
         $this->_helper                 = $data;
         $this->_resource               = $resource;
         $this->_dateTime               = $datetime;
-        $this->_objectManager          = $objectManagerInterface;
+        $this->_vote = $vote;
     }
 
     public function sync()
@@ -143,9 +143,7 @@ class Review
                         ->setReviewData($mageReview)
                         ->setProduct($product);
 
-                    $votesCollection = $this->_objectManager->create(
-                        'Magento\Review\Model\Rating\Option\Vote'
-                    )
+                    $votesCollection = $this->_vote
                         ->getResourceCollection()
                         ->setReviewFilter($mageReview->getReviewId());
                     $votesCollection->getSelect()->join(

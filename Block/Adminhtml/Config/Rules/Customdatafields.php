@@ -10,14 +10,17 @@ class Customdatafields extends
     protected $_getConditionsRenderer;
     protected $_getValueRenderer;
 
-    protected $_objectManager;
+    protected $_condition;
+    protected $_value;
 
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $value,
         $data = []
     ) {
-        $this->_objectManager = $objectManagerInterface;
+        $this->_condition = $condition;
+        $this->_value = $value;
         $this->_addAfter      = false;
 
         $this->_addButtonLabel = __('Add New Condition');
@@ -80,9 +83,7 @@ class Customdatafields extends
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
                 ->setOptions(
-                    $this->_objectManager->create(
-                        'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition'
-                    )->toOptionArray()
+                    $this->_condition->toOptionArray()
                 )
                 ->toHtml();
         } elseif ($columnName == "cvalue") {
@@ -91,9 +92,7 @@ class Customdatafields extends
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
                 ->setOptions(
-                    $this->_objectManager->create(
-                        'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value'
-                    )->toOptionArray()
+                    $this->_value->toOptionArray()
                 )
                 ->toHtml();
         }

@@ -45,7 +45,6 @@ class Quote
 
     protected $scopeConfig;
     protected $_storeManager;
-    protected $_objectManager;
     protected $_quoteCollection;
     protected $_campaignFactory;
     protected $_campaignCollection;
@@ -59,7 +58,6 @@ class Quote
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
     ) {
         $this->_rulesFactory       = $rulesFactory;
@@ -67,7 +65,6 @@ class Quote
         $this->_campaignCollection = $campaignCollection;
         $this->_campaignFactory    = $campaignFactory;
         $this->_storeManager       = $storeManager;
-        $this->_objectManager      = $objectManager;
         $this->_quoteCollection    = $collectionFactory;
         $this->scopeConfig         = $scopeConfig;
     }

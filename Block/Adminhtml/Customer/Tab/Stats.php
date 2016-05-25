@@ -8,16 +8,16 @@ class Stats extends \Magento\Framework\View\Element\Template
     protected $_stat = array();
 
     protected $_helper;
-    protected $_objectManager;
+    protected $_customer;
 
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
-        \Magento\Backend\Block\Template\Context $context
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Customer\Model\Customer $customer
     ) {
         $data                 = [];
         $this->_helper        = $helper;
-        $this->_objectManager = $objectManagerInterface;
+        $this->_customer = $customer;
         parent::__construct($context, $data);
     }
 
@@ -31,8 +31,7 @@ class Stats extends \Magento\Framework\View\Element\Template
     {
         $id      = $this->_request->getParam('id');
         $customer
-                 = $this->_objectManager->create('Magento\Customer\Model\Customer')
-            ->load($id);
+            = $this->_customer->load($id);
         $email   = $customer->getEmail();
         $website = $customer->getStore()->getWebsite();
 

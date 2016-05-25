@@ -23,7 +23,6 @@ class Order
 
 	protected $_reviewCollection = array();
 	protected $_helper;
-	protected $_objectManager;
 	protected $_resource;
 	protected $_scopeConfig;
 	protected $_storeManager;
@@ -43,8 +42,7 @@ class Order
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Stdlib\Datetime $datetime,
 		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManager
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
 	) {
 		$this->_quoteCollection    = $quoteCollection;
 		$this->_rulesFactory       = $rulesFactory;
@@ -56,7 +54,6 @@ class Order
 		$this->dateTime            = $datetime;
 		$this->_storeManager       = $storeManagerInterface;
 		$this->_scopeConfig        = $scopeConfig;
-		$this->_objectManager      = $objectManager;
 	}
 
 

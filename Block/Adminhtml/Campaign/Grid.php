@@ -12,7 +12,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected $moduleManager;
     protected $_gridFactory;
-    protected $_objectManager;
     protected $_campaignFactory;
 
     /**
@@ -22,7 +21,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param \Magento\Backend\Block\Template\Context                          $context
      * @param \Magento\Backend\Helper\Data                                     $backendHelper
      * @param \Magento\Framework\Module\Manager                                $moduleManager
-     * @param \Magento\Framework\ObjectManagerInterface                        $objectManagerInterface
      * @param array                                                            $data
      */
     public function __construct(
@@ -30,11 +28,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
         $this->_campaignFactory = $gridFactory;
-        $this->_objectManager   = $objectManagerInterface;
         $this->moduleManager    = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }

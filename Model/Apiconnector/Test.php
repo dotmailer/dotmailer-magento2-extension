@@ -6,13 +6,11 @@ class Test
 {
 
     protected $_helper;
-    protected $_objectManager;
 
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_objectManager = $objectManagerInterface;
         $this->_helper        = $data;
     }
 

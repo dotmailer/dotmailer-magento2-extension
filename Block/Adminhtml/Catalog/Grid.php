@@ -12,7 +12,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected $moduleManager;
     protected $_gridFactory;
-    protected $_objectManager;
+    protected $_imported;
+    protected $_modfied;
     protected $_collectionFactory;
 
     /**
@@ -22,7 +23,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param \Magento\Backend\Helper\Data                                    $backendHelper
      * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $gridFactory
      * @param \Magento\Framework\Module\Manager                               $moduleManager
-     * @param \Magento\Framework\ObjectManagerInterface                       $objectManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported $imported
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Modified $modified
      * @param array                                                           $data
      */
     public function __construct(
@@ -30,11 +32,13 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Helper\Data $backendHelper,
         \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $gridFactory,
         \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported $imported,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Modified $modified,
         array $data = []
     ) {
         $this->_collectionFactory = $gridFactory;
-        $this->_objectManager     = $objectManagerInterface;
+        $this->_imported = $imported;
+        $this->_modfied = $modified;
         $this->moduleManager      = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }
@@ -83,8 +87,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type'                      => 'options',
             'escape'                    => true,
             'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options'                   => $this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported')
-                ->getOptions(),
+            'options' => $this->_imported->getOptions(),
             'filter_condition_callback' => array($this, 'filterCallbackContact')
         ))->addColumn('modified', array(
             'header'                    => __('Modified'),
@@ -94,8 +97,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type'                      => 'options',
             'escape'                    => true,
             'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options'                   => $this->_objectManager->create('Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported')
-                ->getOptions(),
+            'options' => $this->_modfied->getOptions(),
             'filter_condition_callback' => array($this, 'filterCallbackContact')
         ))->addColumn('created_at', array(
             'header' => __('Created At'),

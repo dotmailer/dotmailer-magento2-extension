@@ -33,7 +33,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_context;
     protected $_helper;
     protected $_storeManager;
-    protected $_objectManager;
     protected $_backendConfig;
     protected $_adapter;
 
@@ -43,21 +42,18 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\ResourceConnection  $adapter
      * @param Data                                       $data
      * @param \Magento\Framework\App\Helper\Context      $context
-     * @param \Magento\Framework\ObjectManagerInterface  $objectManager
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\Framework\App\ResourceConnection $adapter,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->_adapter       = $adapter;
         $this->_helper        = $data;
         $this->_context       = $context;
         $this->_storeManager  = $storeManager;
-        $this->_objectManager = $objectManager;
 
         parent::__construct($context);
     }
