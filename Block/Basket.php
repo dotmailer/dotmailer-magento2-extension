@@ -5,10 +5,25 @@ namespace Dotdigitalgroup\Email\Block;
 class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var
+     */
     protected $_quote;
+    /**
+     * @var \Magento\Quote\Model\QuoteFactory
+     */
     protected $_quoteFactory;
+    /**
+     * @var \Magento\Store\Model\App\EmulationFactory
+     */
     protected $_emulationFactory;
 
     /**
@@ -29,16 +44,16 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []
     ) {
-        $this->_quoteFactory     = $quoteFactory;
-        $this->helper            = $helper;
-        $this->priceHelper       = $priceHelper;
+        $this->_quoteFactory = $quoteFactory;
+        $this->helper = $helper;
+        $this->priceHelper = $priceHelper;
         $this->_emulationFactory = $emulationFactory;
 
         parent::__construct($context, $data);
     }
 
     /**
-     * Basket itmes.
+     * Basket items.
      *
      * @return mixed
      */
@@ -46,22 +61,22 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         $params = $this->getRequest()->getParams();
 
-        if ( ! isset($params['quote_id']) || ! isset($params['code'])) {
+        if (!isset($params['quote_id']) || !isset($params['code'])) {
             $this->helper->log('Basket no quote id or code is set');
 
             return false;
         }
-        $quoteId    = $params['quote_id'];
+        $quoteId = $params['quote_id'];
         $quoteModel = $this->_quoteFactory->create()
             ->load($quoteId);
 
         //check for any quote for this email, don't want to render further
-        if ( ! $quoteModel->getId()) {
+        if (!$quoteModel->getId()) {
             $this->helper->log('no quote found for ' . $quoteId);
 
             return false;
         }
-        if ( ! $quoteModel->getIsActive()) {
+        if (!$quoteModel->getIsActive()) {
             $this->helper->log('Cart is not active : ' . $quoteId);
 
             return false;
@@ -70,14 +85,14 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->_quote = $quoteModel;
 
         //Start environment emulation of the specified store
-        $storeId      = $quoteModel->getStoreId();
+        $storeId = $quoteModel->getStoreId();
 
         $appEmulation = $this->_emulationFactory->create();
         $appEmulation->startEnvironmentEmulation($storeId);
 
         $quoteItems = $quoteModel->getAllItems();
 
-        $itemsData = array();
+        $itemsData = [];
 
         foreach ($quoteItems as $quoteItem) {
             //skip configurable products
@@ -90,23 +105,23 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
             $inStock = ($_product->isInStock())
                 ? 'In Stock'
                 : 'Out of stock';
-            $total   = $this->priceHelper->currency(
+            $total = $this->priceHelper->currency(
                 $quoteItem->getPrice()
             );
 
-            $productUrl  = $_product->getProductUrl();
-            $grandTotal  = $this->priceHelper->currency(
+            $productUrl = $_product->getProductUrl();
+            $grandTotal = $this->priceHelper->currency(
                 $this->getGrandTotal()
             );
-            $itemsData[] = array(
+            $itemsData[] = [
                 'grandTotal' => $grandTotal,
-                'total'      => $total,
-                'inStock'    => $inStock,
+                'total' => $total,
+                'inStock' => $inStock,
                 'productUrl' => $productUrl,
-                'product'    => $_product,
-                'qty'        => $quoteItem->getQty()
+                'product' => $_product,
+                'qty' => $quoteItem->getQty(),
 
-            );
+            ];
         }
 
         return $itemsData;
@@ -120,11 +135,10 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getGrandTotal()
     {
         return $this->_quote->getGrandTotal();
-
     }
 
     /**
-     * url for "take me to basket" link
+     * Url for "take me to basket" link.
      *
      * @return string
      */
@@ -132,12 +146,12 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         return $this->_quote->getStore()->getUrl(
             'connector/email/getbasket',
-            array('quote_id' => $this->_quote->getId())
+            ['quote_id' => $this->_quote->getId()]
         );
     }
 
     /**
-     * can show go to basket url
+     * Can show go to basket url.
      *
      * @return bool
      */
@@ -148,13 +162,15 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         );
     }
 
+    /**
+     * @return mixed
+     */
     public function takeMeToCartTextForUrl()
     {
         return $this->_quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_TEXT
         );
     }
-
 
     /**
      * Get dynamic style configuration.
@@ -163,10 +179,8 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getDynamicStyle()
     {
-
         $dynamicStyle = $this->helper->getDynamicStyles();
 
         return $dynamicStyle;
     }
-
 }

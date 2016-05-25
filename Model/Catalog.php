@@ -3,14 +3,10 @@
 namespace Dotdigitalgroup\Email\Model;
 
 /**
- * Class Catalog
- *
- * @package Dotdigitalgroup\Email\Model
+ * Class Catalog.
  */
 class Catalog extends \Magento\Framework\Model\AbstractModel
 {
-
-
     protected $_dateTime;
 
     /**
@@ -35,16 +31,15 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * constructor
+     * constructor.
      */
     public function _construct()
     {
         $this->_init('Dotdigitalgroup\Email\Model\Resource\Catalog');
     }
 
-
     /**
-     * Prepare data to be saved to database
+     * Prepare data to be saved to database.
      *
      * @return $this
      */
@@ -58,5 +53,4 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
 
         return $this;
     }
-
 }

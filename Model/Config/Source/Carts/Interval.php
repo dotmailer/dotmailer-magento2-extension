@@ -4,14 +4,13 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
 class Interval
 {
-
     /**
-     * available times
+     * Available times.
      *
      * @var array
      */
     protected $_times
-        = array(
+        = [
             1,
             2,
             3,
@@ -29,33 +28,31 @@ class Interval
             108,
             120,
             240
-        );
-
+        ];
 
     /**
-     * send to campain options hours
+     * Send to campain options hours.
      *
      * @return array
      */
     public function toOptionArray()
     {
-        $result = $row = array();
-        $i      = 0;
+        $result = $row = [];
+        $i = 0;
         foreach ($this->_times as $one) {
-
             if ($i == 0) {
-                $row = array(
+                $row = [
                     'value' => $one,
                     'label' => __($one . ' Hour')
-                );
+                ];
             } else {
-                $row = array(
+                $row = [
                     'value' => $one,
                     'label' => __($one . ' Hours')
-                );
+                ];
             }
             $result[] = $row;
-            $i++;
+            ++$i;
         }
 
         return $result;

@@ -5,7 +5,13 @@ namespace Dotdigitalgroup\Email\Block;
 class Roi extends \Magento\Framework\View\Element\Template
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $helper;
+    /**
+     * @var \Magento\Checkout\Model\Session
+     */
     protected $session;
 
     /**
@@ -22,16 +28,22 @@ class Roi extends \Magento\Framework\View\Element\Template
         \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
-        $this->helper  = $helper;
+        $this->helper = $helper;
         $this->session = $session;
         parent::__construct($context, $data);
     }
 
-    public function getRoiTrackingEnabled()
+    /**
+     * @return bool
+     */
+    public function isRoiTrackingEnabled()
     {
-        return $this->helper->getRoiTrackingEnabled();
+        return $this->helper->isRoiTrackingEnabled();
     }
 
+    /**
+     * @return \Magento\Sales\Model\Order
+     */
     public function getOrder()
     {
         return $this->session->getLastRealOrder();

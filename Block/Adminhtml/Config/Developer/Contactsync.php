@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Contactsync extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_buttonLabel = 'Run Now';
 
     /**
@@ -38,7 +37,5 @@ class Contactsync extends \Magento\Config\Block\System\Config\Form\Field
             ->setLabel(__($this->_buttonLabel))
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
-
     }
-
 }

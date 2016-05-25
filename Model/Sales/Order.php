@@ -4,64 +4,89 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 
 class Order
 {
-
 	/**
 	 * @var array
 	 */
-	protected $accounts = array();
+	protected $accounts = [];
 	/**
 	 * @var string
 	 */
 	public $dateTime;
 
 	/**
-	 * Global number of orders
+	 * Global number of orders.
 	 *
 	 * @var int
 	 */
 	protected $_countOrders = 0;
 
-	protected $_reviewCollection = array();
+	/**
+	 * @var array
+	 */
+	protected $_reviewCollection = [];
+	/**
+	 * @var \Dotdigitalgroup\Email\Helper\Data
+	 */
 	protected $_helper;
-	protected $_objectManager;
-	protected $_resource;
-	protected $_scopeConfig;
+	/**
+	 * @var \Magento\Store\Model\StoreManagerInterface
+	 */
 	protected $_storeManager;
+	/**
+	 * @var \Dotdigitalgroup\Email\Model\CampaignFactory
+	 */
 	protected $_campaignFactory;
+	/**
+	 * @var \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory
+	 */
 	protected $_campaignCollection;
+	/**
+	 * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+	 */
 	protected $_orderCollection;
+	/**
+	 * @var \Dotdigitalgroup\Email\Model\RulesFactory
+	 */
 	protected $_rulesFactory;
+	/**
+	 * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
+	 */
 	protected $_quoteCollection;
 
+	/**
+	 * Order constructor.
+	 *
+	 * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection
+	 * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
+	 * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+	 * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection
+	 * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
+	 * @param \Dotdigitalgroup\Email\Helper\Data $helper
+	 * @param \Magento\Framework\Stdlib\Datetime $datetime
+	 * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+	 */
 	public function __construct(
 		\Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
 		\Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
 		\Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
 		\Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
 		\Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
-		\Magento\Framework\App\ResourceConnection $resource,
 		\Dotdigitalgroup\Email\Helper\Data $helper,
 		\Magento\Framework\Stdlib\Datetime $datetime,
-		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\ObjectManagerInterface $objectManager
+		\Magento\Store\Model\StoreManagerInterface $storeManagerInterface
 	) {
-		$this->_quoteCollection    = $quoteCollection;
-		$this->_rulesFactory       = $rulesFactory;
-		$this->_orderCollection    = $orderCollection;
+		$this->_quoteCollection = $quoteCollection;
+		$this->_rulesFactory = $rulesFactory;
+		$this->_orderCollection = $orderCollection;
 		$this->_campaignCollection = $campaignCollection;
-		$this->_campaignFactory    = $campaignFactory;
-		$this->_helper             = $helper;
-		$this->_resource           = $resource;
-		$this->dateTime            = $datetime;
-		$this->_storeManager       = $storeManagerInterface;
-		$this->_scopeConfig        = $scopeConfig;
-		$this->_objectManager      = $objectManager;
+		$this->_campaignFactory = $campaignFactory;
+		$this->_helper = $helper;
+		$this->dateTime = $datetime;
+		$this->_storeManager = $storeManagerInterface;
 	}
 
-
 	/**
-	 * create review campaigns
+	 * Create review campaigns.
 	 *
 	 * @return bool
 	 */
@@ -75,11 +100,10 @@ class Order
 	}
 
 	/**
-	 * register review campaign
+	 * Register review campaign.
 	 *
 	 * @param $collection
 	 * @param $websiteId
-	 *
 	 */
 	protected function registerCampaign($collection, $websiteId)
 	{
@@ -109,21 +133,20 @@ class Order
 
 					$emailCampaign->save();
 				} catch (\Exception $e) {
-					$this->_helper->debug((string)$e, array());
+					$this->_helper->debug((string)$e, []);
 				}
 			}
 		}
 	}
 
 	/**
-	 * search for orders to review per website
+	 * Search for orders to review per website.
 	 */
 	protected function searchOrdersForReview()
 	{
 		$websites = $this->_helper->getwebsites(true);
 
 		foreach ($websites as $website) {
-
 			$apiEnabled = $this->_helper->isEnabled($website);
 			if ($apiEnabled
 				&& $this->_helper->getWebsiteConfig(
@@ -133,7 +156,6 @@ class Order
 				&& $this->_helper->getOrderStatus($website)
 				&& $this->_helper->getDelay($website)
 			) {
-
 				$storeIds = $website->getStoreIds();
 				if (empty($storeIds)) {
 					continue;
@@ -142,7 +164,7 @@ class Order
 				$orderStatusFromConfig = $this->_helper->getOrderStatus(
 					$website
 				);
-				$delayInDays           = $this->_helper->getDelay(
+				$delayInDays = $this->_helper->getDelay(
 					$website
 				);
 
@@ -154,15 +176,14 @@ class Order
 					'order_increment_id'
 				);
 
-
 				$fromTime = new \Zend_Date();
 				$fromTime->subDay($delayInDays);
 				$toTime = clone $fromTime;
-				$to     = $toTime->toString('YYYY-MM-dd HH:mm:ss');
-				$from   = $fromTime->subHour(2)
+				$to = $toTime->toString('YYYY-MM-dd HH:mm:ss');
+				$from = $fromTime->subHour(2)
 					->toString('YYYY-MM-dd HH:mm:ss');
 
-				$created = array('from' => $from, 'to' => $to, 'date' => true);
+				$created = ['from' => $from, 'to' => $to, 'date' => true];
 
 				$collection = $this->_orderCollection->create()
 					->addFieldToFilter(
@@ -170,13 +191,13 @@ class Order
 					)
 					->addFieldToFilter('main_table.created_at', $created)
 					->addFieldToFilter(
-						'main_table.store_id', array('in' => $storeIds)
+						'main_table.store_id', ['in' => $storeIds]
 					);
 
-				if ( ! empty($campaignOrderIds)) {
+				if (!empty($campaignOrderIds)) {
 					$collection->addFieldToFilter(
 						'main_table.increment_id',
-						array('nin' => $campaignOrderIds)
+						['nin' => $campaignOrderIds]
 					);
 				}
 
@@ -195,17 +216,20 @@ class Order
 	}
 
 	/**
-	 * get customer last order id
+	 * Get customer last order id.
 	 *
+	 * @param \Magento\Customer\Model\Customer $customer
+	 *
+	 * @return bool|mixed
 	 */
 	public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer
 	) {
-		$storeIds   = $this->_storeManager->getWebsite(
+		$storeIds = $this->_storeManager->getWebsite(
 			$customer->getWebsiteId()
 		)->getStoreIds();
 		$collection = $this->_orderCollection->create()
 			->addFieldToFilter('customer_id', $customer->getId())
-			->addFieldToFilter('store_id', array('in' => $storeIds))
+			->addFieldToFilter('store_id', ['in' => $storeIds])
 			->setPageSize(1)
 			->setOrder('entity_id');
 
@@ -217,17 +241,20 @@ class Order
 	}
 
 	/**
-	 * get customer last quote id
+	 * Get customer last quote id.
 	 *
+	 * @param \Magento\Customer\Model\Customer $customer
+	 *
+	 * @return bool|mixed
 	 */
 	public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer
 	) {
-		$storeIds   = $this->_storeManager->getWebsite(
+		$storeIds = $this->_storeManager->getWebsite(
 			$customer->getWebsiteId()
 		)->getStoreIds();
 		$collection = $this->_quoteCollection->create()
 			->addFieldToFilter('customer_id', $customer->getId())
-			->addFieldToFilter('store_id', array('in' => $storeIds))
+			->addFieldToFilter('store_id', ['in' => $storeIds])
 			->setPageSize(1)
 			->setOrder('entity_id');
 
@@ -237,5 +264,4 @@ class Order
 			return false;
 		}
 	}
-
 }

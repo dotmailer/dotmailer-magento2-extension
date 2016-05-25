@@ -4,13 +4,26 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
     public $recommnededHelper;
+    /**
+     * @var
+     */
     public $scopeManager;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
-
 
     /**
      * Push constructor.
@@ -32,26 +45,26 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper            = $helper;
-        $this->_productFactory   = $productFactory;
+        $this->helper = $helper;
+        $this->_productFactory = $productFactory;
         $this->recommnededHelper = $recommended;
-        $this->priceHelper       = $priceHelper;
-        //$this->scopeManager = $scopeConfig;
-        $this->storeManager      = $this->_storeManager;
+        $this->priceHelper = $priceHelper;
     }
 
     /**
-     * get the products to display for table
+     * Get the products to display for table.
+     *
+     * @return $this
      */
     public function getLoadedProductCollection()
     {
-        $mode       = $this->getRequest()->getActionName();
-        $limit      = $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $mode = $this->getRequest()->getActionName();
+        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $productIds = $this->recommnededHelper->getProductPushIds();
 
         $productCollection = $this->_productFactory->create()->getCollection()
             ->addAttributeToSelect('*')
-            ->addAttributeToFilter('entity_id', array('in' => $productIds));
+            ->addAttributeToFilter('entity_id', ['in' => $productIds]);
         $productCollection->getSelect()->limit($limit);
 
         //important check the salable product in template
@@ -66,9 +79,13 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getMode()
     {
         return $this->recommnededHelper->getDisplayType();
-
     }
 
+    /**
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

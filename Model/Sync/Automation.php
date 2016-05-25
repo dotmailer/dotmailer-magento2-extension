@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Automation
 {
-
     const AUTOMATION_TYPE_NEW_CUSTOMER = 'customer_automation';
     const AUTOMATION_TYPE_NEW_SUBSCRIBER = 'subscriber_automation';
     const AUTOMATION_TYPE_NEW_ORDER = 'order_automation';
@@ -12,25 +11,77 @@ class Automation
     const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
     const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
     const AUTOMATION_STATUS_PENDING = 'pending';
-    //automation enrolment limit
+
+    /**
+     * @var int
+     */
     public $limit = 100;
+    /**
+     * @var
+     */
     public $email;
+    /**
+     * @var
+     */
     public $typeId;
+    /**
+     * @var
+     */
     public $websiteId;
+    /**
+     * @var
+     */
     public $storeName;
+    /**
+     * @var
+     */
     public $programId;
+    /**
+     * @var string
+     */
     public $programStatus = 'Active';
+    /**
+     * @var
+     */
     public $programMessage;
+    /**
+     * @var
+     */
     public $automationType;
 
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var
+     */
     protected $_objectManager;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
     protected $_resource;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     */
     protected $_localeDate;
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $_scopeConfig;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory
+     */
     protected $_automationFactory;
+
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
+    protected $_orderFactory;
 
     /**
      * Automation constructor.
@@ -40,7 +91,6 @@ class Automation
      * @param \Dotdigitalgroup\Email\Helper\Data                                 $helper
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface               $localeDate
      * @param \Magento\Store\Model\StoreManagerInterface                         $storeManagerInterface
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface                 $scopeConfig
      * @param \Magento\Sales\Model\OrderFactory                                  $orderFactory
      */
     public function __construct(
@@ -49,18 +99,21 @@ class Automation
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Sales\Model\OrderFactory $orderFactory
     ) {
         $this->_automationFactory = $automationFactory;
-        $this->_helper            = $helper;
-        $this->_storeManager      = $storeManagerInterface;
-        $this->_resource          = $resource;
-        $this->_localeDate        = $localeDate;
-        $this->_scopeConfig       = $scopeConfig;
-        $this->_orderFactory      = $orderFactory;
+        $this->_helper = $helper;
+        $this->_storeManager = $storeManagerInterface;
+        $this->_resource = $resource;
+        $this->_localeDate = $localeDate;
+        $this->_orderFactory = $orderFactory;
     }
 
+    /**
+     * Sync.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function sync()
     {
         //automation statuses to filter
@@ -77,8 +130,7 @@ class Automation
 
         //send the campaign by each types
         foreach ($automationTypes as $type) {
-
-            $contacts = array();
+            $contacts = [];
             //reset the collection
             $automationCollection = $this->_automationFactory->create()
                 ->addFieldToFilter(
@@ -90,12 +142,12 @@ class Automation
             foreach ($automationCollection as $automation) {
                 $type = $automation->getAutomationType();
                 //customerid, subscriberid, wishlistid..
-                $email           = $automation->getEmail();
-                $this->typeId    = $automation->getTypeId();
+                $email = $automation->getEmail();
+                $this->typeId = $automation->getTypeId();
                 $this->websiteId = $automation->getWebsiteId();
                 $this->programId = $automation->getProgramId();
                 $this->storeName = $automation->getStoreName();
-                $contactId       = $this->_helper->getContactId(
+                $contactId = $this->_helper->getContactId(
                     $email, $this->websiteId
                 );
                 //contact id is valid, can update datafields
@@ -112,7 +164,7 @@ class Automation
                 }
             }
             //only for subscribed contacts
-            if ( ! empty($contacts) && $type != ''
+            if (!empty($contacts) && $type != ''
                 && $this->_checkCampignEnrolmentActive($this->programId)
             ) {
                 $result = $this->sendContactsToAutomation(
@@ -120,7 +172,7 @@ class Automation
                 );
                 //check for error message
                 if (isset($result->message)) {
-                    $this->programStatus  = 'Failed';
+                    $this->programStatus = 'Failed';
                     $this->programMessage = $result->message;
                 }
                 //program is not active
@@ -131,19 +183,18 @@ class Automation
             }
             //update contacts with the new status, and log the error message if failes
             $coreResource = $this->_resource;
-            $conn         = $coreResource->getConnection('core_write');
+            $conn = $coreResource->getConnection('core_write');
             try {
                 $contactIds = array_keys($contacts);
-                $bind       = array(
+                $bind = [
                     'enrolment_status' => $this->programStatus,
-                    'message'          => $this->programMessage,
-                    'updated_at'       => $this->_localeDate->date(
+                    'message' => $this->programMessage,
+                    'updated_at' => $this->_localeDate->date(
                         null, null, false
                     )->format('Y-m-d H:i:s')
-
-                );
-                $where      = array('id IN(?)' => $contactIds);
-                $num        = $conn->update(
+                ];
+                $where = ['id IN(?)' => $contactIds];
+                $num = $conn->update(
                     $coreResource->getTableName('email_automation'),
                     $bind,
                     $where
@@ -163,7 +214,7 @@ class Automation
     }
 
     /**
-     * update single contact datafields for this automation type.
+     * Update single contact datafields for this automation type.
      *
      * @param $type
      * @param $email
@@ -195,75 +246,82 @@ class Automation
         }
     }
 
+    /**
+     * Update config datafield.
+     *
+     * @param string $email
+     */
     protected function _updateDefaultDatafields($email)
     {
-
         $website = $this->_storeManager->getWebsite($this->websiteId);
         $this->_helper->updateDataFields($email, $website, $this->storeName);
     }
 
+    /**
+     * Update new order default datafields.
+     */
     protected function _updateNewOrderDatafields()
     {
-        $website    = $this->_storeManager->getWebsite($this->websiteId);
+        $website = $this->_storeManager->getWebsite($this->websiteId);
         $orderModel = $this->_orderFactory->create()
             ->load($this->typeId);
         //data fields
-        if ($last_order_id = $website->getConfig(
+        if ($lastOrderId = $website->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID
         )
         ) {
-            $data[] = array(
-                'Key'   => $last_order_id,
+            $data[] = [
+                'Key' => $lastOrderId,
                 'Value' => $orderModel->getId()
-            );
+            ];
         }
-        if ($order_increment_id = $website->getConfig(
+        if ($orderIncrementId = $website->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID
         )
         ) {
-            $data[] = array(
-                'Key'   => $order_increment_id,
+            $data[] = [
+                'Key' => $orderIncrementId,
                 'Value' => $orderModel->getIncrementId()
-            );
+            ];
         }
-        if ($store_name = $website->getConfig(
+        if ($storeName = $website->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME
         )
         ) {
-            $data[] = array(
-                'Key'   => $store_name,
+            $data[] = [
+                'Key' => $storeName,
                 'Value' => $this->storeName
-            );
+            ];
         }
-        if ($website_name = $website->getConfig(
+        if ($websiteName = $website->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME
         )
         ) {
-            $data[] = array(
-                'Key'   => $website_name,
+            $data[] = [
+                'Key' => $websiteName,
                 'Value' => $website->getName()
-            );
+            ];
         }
-        if ($last_order_date = $website->getConfig(
+        if ($lastOrderDate = $website->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_DATE
         )
         ) {
-            $data[] = array(
-                'Key'   => $last_order_date,
+            $data[] = [
+                'Key' => $lastOrderDate,
                 'Value' => $orderModel->getCreatedAt()
-            );
+            ];
         }
-        if (($customer_id = $website->getConfig(
+        if (($customerId = $website->getConfig(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_ID
             ))
             && $orderModel->getCustomerId()
         ) {
-            $data[] = array(
-                'Key'   => $customer_id,
+            $data[] = [
+                'Key' => $customerId,
                 'Value' => $orderModel->getCustomerId()
-            );
+            ];
         }
-        if ( ! empty($data)) {
+        if (!empty($data)) {
             //update data fields
             $client = $this->_helper->getWebsiteApiClient($website);
             $client->updateContactDatafieldsByEmail(
@@ -282,10 +340,10 @@ class Automation
     protected function _checkCampignEnrolmentActive($programId)
     {
         //program is not set
-        if ( ! $programId) {
+        if (!$programId) {
             return false;
         }
-        $client  = $this->_helper->getWebsiteApiClient($this->websiteId);
+        $client = $this->_helper->getWebsiteApiClient($this->websiteId);
         $program = $client->getProgramById($programId);
         //program status
         if (isset($program->status)) {
@@ -302,21 +360,18 @@ class Automation
      * Enrol contacts for a program.
      *
      * @param $contacts
-     *
-     * @return null
      */
     public function sendContactsToAutomation($contacts)
     {
         $client = $this->_helper->getWebsiteApiClient($this->websiteId);
-        $data   = array(
-            'Contacts'     => $contacts,
-            'ProgramId'    => $this->programId,
-            'AddressBooks' => array()
-        );
+        $data = [
+            'Contacts' => $contacts,
+            'ProgramId' => $this->programId,
+            'AddressBooks' => []
+        ];
         //api add contact to automation enrolment
         $result = $client->postProgramsEnrolments($data);
 
         return $result;
     }
-
 }

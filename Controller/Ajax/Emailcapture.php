@@ -2,11 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Controller\Ajax;
 
-
 class Emailcapture extends \Magento\Framework\App\Action\Action
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Checkout\Model\Session
+     */
     protected $_checkoutSession;
 
     /**
@@ -24,23 +28,23 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     ) {
         $this->_helper = $data;
         $this->_checkoutSession = $session;
-        parent::__construct( $context );
+        parent::__construct($context);
     }
 
-    /*
-     * easy email capture for Newsletter and Checkout
+    /**
+     * Easy email capture for Newsletter and Checkout.
      */
     public function execute()
     {
-        if($this->getRequest()->getParam('email') && $quote = $this->_checkoutSession->getQuote()){
+        if ($this->getRequest()->getParam('email') && $quote = $this->_checkoutSession->getQuote()) {
             $email = $this->getRequest()->getParam('email');
-            if($quote->hasItems()){
+            if ($quote->hasItems()) {
                 try {
                     $quote->setCustomerEmail($email)->save();
-                    $this->_helper->log('ajax emailCapture email: '. $email);
-                }catch(\Exception $e){
-                    $this->_helper->debug((string)$e, array());
-                    $this->_helper->log('ajax emailCapture fail for email: '. $email);
+                    $this->_helper->log('ajax emailCapture email: ' . $email);
+                } catch (\Exception $e) {
+                    $this->_helper->debug((string)$e, []);
+                    $this->_helper->log('ajax emailCapture fail for email: ' . $email);
                 }
             }
         }

@@ -2,18 +2,45 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
-
 class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
     public $recommendedHelper;
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
     protected $_orderFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
+     */
     protected $_clientFactory;
 
-
+    /**
+     * Product constructor.
+     *
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param array $data
+     */
     public function __construct(
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
@@ -26,35 +53,36 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     ) {
         parent::__construct($context, $data);
         $this->_orderFactory = $orderFactory;
-        $this->_clientFactory    = $clientFactory;
+        $this->_clientFactory = $clientFactory;
         $this->recommendedHelper = $recommended;
-        $this->_productFactory   = $productFactory;
-        $this->helper            = $helper;
-        $this->priceHelper       = $priceHelper;
-        $this->storeManager      = $this->_storeManager;
+        $this->_productFactory = $productFactory;
+        $this->helper = $helper;
+        $this->priceHelper = $priceHelper;
     }
 
     /**
-     * get the products to display for table
+     * Get the products to display for table.
+     *
+     * @return array
      */
     public function getLoadedProductCollection()
     {
         //products to be diplayd for recommended pages
-        $productsToDisplay = array();
-        $orderId           = $this->getRequest()->getParam('order_id');
+        $productsToDisplay = [];
+        $orderId = $this->getRequest()->getParam('order_id');
         //display mode based on the action name
-        $mode       = $this->getRequest()->getActionName();
+        $mode = $this->getRequest()->getActionName();
         $orderModel = $this->_orderFactory->create()
             ->load($orderId);
         //number of product items to be displayed
-        $limit      = $this->recommendedHelper
+        $limit = $this->recommendedHelper
             ->getDisplayLimitByMode($mode);
         $orderItems = $orderModel->getAllItems();
-        $numItems   = count($orderItems);
+        $numItems = count($orderItems);
 
         //no product found to display
-        if ($numItems == 0 || ! $limit) {
-            return array();
+        if ($numItems == 0 || !$limit) {
+            return [];
         } elseif (count($orderItems) > $limit) {
             $maxPerChild = 1;
         } else {
@@ -67,7 +95,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         );
 
         foreach ($orderItems as $item) {
-            $i         = 0;
+            $i = 0;
             $productId = $item->getProductId();
             //parent product
             $productModel = $this->_productFactory->create()
@@ -85,11 +113,11 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
                     if ($product->getId() && count($productsToDisplay) < $limit
                         && $i <= $maxPerChild
                         && $product->isSaleable()
-                        && ! $product->getParentId()
+                        && !$product->getParentId()
                     ) {
                         //we have a product to display
                         $productsToDisplay[$product->getId()] = $product;
-                        $i++;
+                        ++$i;
                     }
                 }
             }
@@ -135,7 +163,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     protected function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
-        $products = array();
+        $products = [];
         switch ($mode) {
             case 'related':
                 $products = $productModel->getRelatedProducts();
@@ -146,7 +174,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
             case 'crosssell':
                 $products = $productModel->getCrossSellProducts();
                 break;
-
         }
 
         return $products;
@@ -160,11 +187,10 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getMode()
     {
         return $this->recommendedHelper->getDisplayType();
-
     }
 
     /**
-     * Number of the colums.
+     * Number of the columns.
      *
      * @return int|mixed
      */
@@ -176,6 +202,11 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         );
     }
 
+    /**
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);
@@ -184,7 +215,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
     }
-
 
     /**
      * Price html block.
@@ -195,7 +225,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getPriceHtml($product)
     {
-
         $this->setTemplate('Magento_Catalog::product/price/amount/default.phtml');
 
         $this->setProduct($product);

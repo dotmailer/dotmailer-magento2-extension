@@ -5,17 +5,12 @@ namespace Dotdigitalgroup\Email\Model\Resource\Review;
 class Collection extends
     \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
-
     /**
-     * Initialize resource collection
-     *
-     * @return void
+     * Initialize resource collection.
      */
     public function _construct()
     {
         $this->_init('Dotdigitalgroup\Email\Model\Review',
             'Dotdigitalgroup\Email\Model\Resource\Review');
     }
-
-
 }

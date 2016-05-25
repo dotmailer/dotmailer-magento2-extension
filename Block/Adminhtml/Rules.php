@@ -2,9 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
+/**
+ * Class Rules.
+ */
 class Rules extends \Magento\Backend\Block\Widget\Grid\Container
 {
-
+    /**
+     * Constructor.
+     */
     public function _construct()
     {
         $this->_controller = 'adminhtml_rules';

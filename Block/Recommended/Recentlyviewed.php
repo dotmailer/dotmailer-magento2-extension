@@ -4,12 +4,26 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
+        /**
+         * @var \Dotdigitalgroup\Email\Helper\Data
+         */
     public $helper;
+        /**
+         * @var \Magento\Framework\Pricing\Helper\Data
+         */
     public $priceHelper;
-    public $objectManager;
+        protected $_viewed;
+        /**
+         * @var \Dotdigitalgroup\Email\Helper\Recommended
+         */
     public $recommnededHelper;
+        /**
+         * @var \Magento\Customer\Model\SessionFactory
+         */
     protected $_sessionFactory;
+        /**
+         * @var \Magento\Catalog\Model\ProductFactory
+         */
     protected $_productFactory;
 
     /**
@@ -21,7 +35,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param \Magento\Framework\Pricing\Helper\Data    $priceHelper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
      * @param \Magento\Catalog\Block\Product\Context    $context
-     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+     * @param \Magento\Reports\Block\Product\Viewed $viewed
      * @param array                                     $data
      */
     public function __construct(
@@ -31,17 +45,17 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+        \Magento\Reports\Block\Product\Viewed $viewed,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_sessionFactory   = $sessionFactory;
-        $this->helper            = $helper;
+            $this->_sessionFactory = $sessionFactory;
+            $this->helper = $helper;
         $this->recommnededHelper = $recommended;
-        $this->priceHelper       = $priceHelper;
-        $this->storeManager      = $this->_storeManager;
-        $this->_productFactory   = $productFactory;
-        $this->objectManager     = $objectManagerInterface;
+            $this->priceHelper = $priceHelper;
+            $this->storeManager = $this->_storeManager;
+            $this->_productFactory = $productFactory;
+        $this->_viewed = $viewed;
 
     }
 
@@ -52,18 +66,16 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
-        $productsToDisplay = array();
-        $mode              = $this->getRequest()->getActionName();
-        $customerId        = $this->getRequest()->getParam('customer_id');
-        $limit             = $this->recommnededHelper->getDisplayLimitByMode(
+            $productsToDisplay = [];
+            $mode = $this->getRequest()->getActionName();
+            $customerId = $this->getRequest()->getParam('customer_id');
+            $limit = $this->recommnededHelper->getDisplayLimitByMode(
             $mode
         );
         //login customer to receive the recent products
-        $session    = $this->_sessionFactory->create();
+            $session = $this->_sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
-        $collection = $this->objectManager->create(
-            'Magento\Reports\Block\Product\Viewed'
-        );
+        $collection = $this->_viewed;
         $items      = $collection->getItemsCollection()
             ->setPageSize($limit);
 
@@ -79,13 +91,11 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($product->isSalable()) {
                 $productsToDisplay[$product->getId()] = $product;
             }
-
         }
         $session->logout();
 
         return $productsToDisplay;
     }
-
 
     /**
      * Display mode type.
@@ -95,9 +105,13 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getMode()
     {
         return $this->recommnededHelper->getDisplayType();
-
     }
 
+        /**
+         * @param $store
+         *
+         * @return mixed
+         */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

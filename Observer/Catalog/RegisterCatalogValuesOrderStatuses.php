@@ -29,7 +29,6 @@ class RegisterCatalogValuesOrderStatuses
      * @param \Psr\Log\LoggerInterface                                        $loggerInterface
      * @param \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
      * @param \Magento\Store\Model\StoreManagerInterface                      $storeManagerInterface
-     * @param \Magento\Framework\ObjectManagerInterface                       $objectManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory,
@@ -40,8 +39,7 @@ class RegisterCatalogValuesOrderStatuses
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Psr\Log\LoggerInterface $loggerInterface,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->_connectorContactFactory = $connectorContactFactory;
         $this->_connectorCatalogFactory = $connectorCatalogFactory;

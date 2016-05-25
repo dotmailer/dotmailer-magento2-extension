@@ -5,11 +5,24 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 class Campaign
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var
+     */
     protected $_storeManger;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory
+     */
     protected $_campaignCollection;
     protected $_salesOrderFactory;
 
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
 
     /**
      * Campaign constructor.
@@ -25,10 +38,11 @@ class Campaign
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory
     ) {
-        $this->_helper             = $data;
+        $this->_helper = $data;
         $this->_campaignCollection = $campaignFactory;
-        $this->_storeManager       = $storeManagerInterface;
+        $this->_storeManager = $storeManagerInterface;
         $this->_salesOrderFactory = $salesOrderFactory;
+        $this->_storeManager = $storeManagerInterface;
     }
 
     /**
@@ -42,27 +56,26 @@ class Campaign
         $emailsToSend = $this->_getEmailCampaigns();
 
         foreach ($emailsToSend as $campaign) {
-
-            $email      = $campaign->getEmail();
-            $storeId    = $campaign->getStoreId();
+            $email = $campaign->getEmail();
+            $storeId = $campaign->getStoreId();
             $campaignId = $campaign->getCampaignId();
-            $store      = $this->_storeManager->getStore($storeId);
-            $websiteId  = $store->getWebsiteId();
+            $store = $this->_storeManager->getStore($storeId);
+            $websiteId = $store->getWebsiteId();
             try {
                 //campaigns id not found
-                if ( ! $campaignId) {
+                if (!$campaignId) {
                     $campaign->setMessage('Missing campaign id: ' . $campaignId)
                         ->setIsSent(1)
                         ->save();
                     continue;
                     //email not found
-                } elseif ( ! $email) {
+                } elseif (!$email) {
                     $campaign->setMessage('Missing email : ' . $email)
                         ->setIsSent(1)
                         ->save();
                     continue;
                 }
-                $client    = $this->_helper->getWebsiteApiClient($websiteId);
+                $client = $this->_helper->getWebsiteApiClient($websiteId);
                 $contactId = $this->_helper->getContactId(
                     $campaign->getEmail(), $websiteId
                 );
@@ -103,7 +116,7 @@ class Campaign
                     }
 
                     $response = $client->postCampaignsSend(
-                        $campaignId, array($contactId)
+                        $campaignId, [$contactId]
                     );
                     //campaign not send, save message
                     if (isset($response->message)) {
@@ -131,17 +144,16 @@ class Campaign
         }
     }
 
-
     /**
      * Get pending campaigns.
-     *
+     * 
      * @return mixed
      */
     protected function _getEmailCampaigns()
     {
         $emailCollection = $this->_campaignCollection->create()
-            ->addFieldToFilter('is_sent', array('null' => true))
-            ->addFieldToFilter('campaign_id', array('notnull' => true));
+            ->addFieldToFilter('is_sent', ['null' => true])
+            ->addFieldToFilter('campaign_id', ['notnull' => true]);
         $emailCollection->getSelect()->order('campaign_id');
 
         return $emailCollection;

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Resetcustomers extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_buttonLabel = 'Run Now';
 
     /**
@@ -20,7 +19,7 @@ class Resetcustomers extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Get the button and scripts contents
+     * Get the button and scripts contents.
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
@@ -38,7 +37,5 @@ class Resetcustomers extends \Magento\Config\Block\System\Config\Form\Field
             ->setLabel(__($this->_buttonLabel))
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
-
     }
-
 }

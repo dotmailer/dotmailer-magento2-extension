@@ -4,15 +4,15 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Customer extends \Magento\Customer\Model\Customer
 {
-
     /**
-     * Send email with new account related information
+     * Send email with new account related information.
      *
      * @param string $type
      * @param string $backUrl
      * @param string $storeId
      *
      * @return $this
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sendNewAccountEmail(

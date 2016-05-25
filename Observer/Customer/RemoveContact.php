@@ -57,7 +57,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         $email        = $customer->getEmail();
         $websiteId    = $customer->getWebsiteId();
         $apiEnabled   = $this->_helper->isEnabled($websiteId);
-        $customerSync = $this->_helper->getCustomerSyncEnabled($websiteId);
+        $customerSync = $this->_helper->isCustomerSyncEnabled($websiteId);
 
         /**
          * Remove contact.

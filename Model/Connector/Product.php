@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 class Product
 {
-
     /**
      * @var string
      */
@@ -38,7 +37,7 @@ class Product
     /**
      * @var float
      */
-    public $special_price = 0;
+    public $specialPrice = 0;
 
     /**
      * @var array
@@ -53,12 +52,12 @@ class Product
     /**
      * @var string
      */
-    public $image_path = '';
+    public $imagePath = '';
 
     /**
      * @var string
      */
-    public $short_description = '';
+    public $shortDescription = '';
 
     /**
      * @var float
@@ -70,12 +69,33 @@ class Product
      */
     public $websites = array();
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var
+     */
     protected $_scopeConfig;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory
+     */
     protected $_statusFactory;
+    /**
+     * @var \Magento\Catalog\Model\Product\VisibilityFactory
+     */
     protected $_visibilityFactory;
+    /**
+     * @var \Magento\Catalog\Model\Product\Media\ConfigFactory
+     */
     protected $_mediaConfigFactory;
+    /**
+     * @var \Magento\CatalogInventory\Model\Stock\ItemFactory
+     */
     protected $_itemFactory;
 
     /**
@@ -96,12 +116,12 @@ class Product
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
     ) {
-        $this->_itemFactory        = $itemFactory;
+        $this->_itemFactory = $itemFactory;
         $this->_mediaConfigFactory = $mediaConfigFactory;
-        $this->_visibilityFactory  = $visibilityFactory;
-        $this->_statusFactory      = $statusFactory;
-        $this->_helper             = $helper;
-        $this->_storeManager       = $storeManagerInterface;
+        $this->_visibilityFactory = $visibilityFactory;
+        $this->_statusFactory = $statusFactory;
+        $this->_helper = $helper;
+        $this->_storeManager = $storeManagerInterface;
     }
 
     /**
@@ -113,8 +133,8 @@ class Product
      */
     public function setProduct($product)
     {
-        $this->id   = $product->getId();
-        $this->sku  = $product->getSku();
+        $this->id = $product->getId();
+        $this->sku = $product->getSku();
         $this->name = $product->getName();
 
         $status = $this->_statusFactory->create()
@@ -122,18 +142,18 @@ class Product
 
         $this->status = $status->getText();
 
-        $options             = $this->_visibilityFactory->create()
+        $options = $this->_visibilityFactory->create()
             ->getOptionArray();
-        $this->visibility    = (string)$options[$product->getVisibility()];
-        $this->price         = (float)number_format(
+        $this->visibility = (string)$options[$product->getVisibility()];
+        $this->price = (float)number_format(
             $product->getPrice(), 2, '.', ''
         );
-        $this->special_price = (float)number_format(
+        $this->specialPrice = (float)number_format(
             $product->getSpecialPrice(), 2, '.', ''
         );
-        $this->url           = $product->getProductUrl();
+        $this->url = $product->getProductUrl();
 
-        $this->image_path = $this->_mediaConfigFactory->create()
+        $this->imagePath = $this->_mediaConfigFactory->create()
             ->getMediaUrl($product->getSmallImage());
 
         $stock = $this->_itemFactory->create()
@@ -141,65 +161,63 @@ class Product
 
         $this->stock = (float)number_format($stock->getQty(), 2, '.', '');
 
-        $short_description = $product->getShortDescription();
+        $shortDescription = $product->getShortDescription();
         //limit short description
-        if (strlen($short_description) > 250) {
-            $short_description = substr($short_description, 0, 250);
+        if (strlen($shortDescription) > 250) {
+            $shortDescription = substr($shortDescription, 0, 250);
         }
 
-        $this->short_description = $short_description;
+        $this->shortDescription = $shortDescription;
 
         //category data
-        $count              = 0;
+        $count = 0;
         $categoryCollection = $product->getCategoryCollection()
             ->addNameToResult();
         foreach ($categoryCollection as $cat) {
-            $this->categories[$count]['Id']   = $cat->getId();
+            $this->categories[$count]['Id'] = $cat->getId();
             $this->categories[$count]['Name'] = $cat->getName();
-            $count++;
+            ++$count;
         }
 
         //website data
-        $count      = 0;
+        $count = 0;
         $websiteIds = $product->getWebsiteIds();
         foreach ($websiteIds as $websiteId) {
-            $website                        = $this->_storeManager->getWebsite(
+            $website = $this->_storeManager->getWebsite(
                 $websiteId
             );
-            $this->websites[$count]['Id']   = $website->getId();
+            $this->websites[$count]['Id'] = $website->getId();
             $this->websites[$count]['Name'] = $website->getName();
-            $count++;
+            ++$count;
         }
 
         //bundle product options
         if ($product->getTypeId()
             == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
         ) {
-            $optionCollection    = $product->getTypeInstance()
+            $optionCollection = $product->getTypeInstance()
                 ->getOptionsCollection($product);
             $selectionCollection = $product->getTypeInstance()
                 ->getSelectionsCollection(
                     $product->getTypeInstance()->getOptionsIds($product),
                     $product
                 );
-            $options             = $optionCollection->appendSelections(
+            $options = $optionCollection->appendSelections(
                 $selectionCollection
             );
             foreach ($options as $option) {
-
-                $count      = 0;
-                $title      = str_replace(' ', '', $option->getDefaultTitle());
+                $count = 0;
+                $title = str_replace(' ', '', $option->getDefaultTitle());
                 $selections = $option->getSelections();
-                $sOptions   = array();
+                $sOptions = [];
                 foreach ($selections as $selection) {
-
-                    $sOptions[$count]['name']  = $selection->getName();
-                    $sOptions[$count]['sku']   = $selection->getSku();
-                    $sOptions[$count]['id']    = $selection->getProductId();
+                    $sOptions[$count]['name'] = $selection->getName();
+                    $sOptions[$count]['sku'] = $selection->getSku();
+                    $sOptions[$count]['id'] = $selection->getProductId();
                     $sOptions[$count]['price'] = (float)number_format(
                         $selection->getPrice(), 2, '.', ''
                     );
-                    $count++;
+                    ++$count;
                 }
                 $this->$title = $sOptions;
             }
@@ -211,11 +229,11 @@ class Product
                 ->getConfigurableAttributesAsArray($product);
 
             foreach ($productAttributeOptions as $productAttribute) {
-                $count   = 0;
-                $label   = strtolower(
+                $count = 0;
+                $label = strtolower(
                     str_replace(' ', '', $productAttribute['label'])
                 );
-                $options = array();
+                $options = [];
                 foreach ($productAttribute['values'] as $attribute) {
                     $options[$count]['option'] = $attribute['default_label'];
                     if (isset($attribute['pricing_value'])) {
@@ -223,19 +241,20 @@ class Product
                             $attribute['pricing_value'], 2, '.', ''
                         );
                     }
-                    $count++;
+                    ++$count;
                 }
                 $this->$label = $options;
             }
         }
 
-        unset($this->_itemFactory, $this->_mediaConfigFactory, $this->_visibilityFactory, $this->_statusFactory, $this->_helper, $this->_storeManager);
+        unset($this->_itemFactory, $this->_mediaConfigFactory, $this->_visibilityFactory,
+            $this->_statusFactory, $this->_helper, $this->_storeManager);
 
         return $this;
     }
 
     /**
-     * exposes the class as an array of objects.
+     * Exposes the class as an array of objects.
      *
      * @return array
      */
@@ -244,9 +263,8 @@ class Product
         return get_object_vars($this);
     }
 
-
     /**
-     * @return string[]
+     * @return string
      */
     public function __sleep()
     {
@@ -263,7 +281,7 @@ class Product
                 '_customerFactory',
                 '_productFactory',
                 '_attributeCollection',
-                '_setFactory'
+                '_setFactory',
             ]
         );
 
@@ -271,12 +289,9 @@ class Product
     }
 
     /**
-     * Init not serializable fields
-     *
-     * @return void
+     * Init not serializable fields.
      */
     public function __wakeup()
     {
-
     }
 }

@@ -7,42 +7,54 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends ImporterController
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     */
+    protected $_importerFactory;
 
-	protected $_importerFactory;
+    /**
+     * @var object
+     */
+    protected $messageManager;
 
-	public function __construct(
-		\Magento\Backend\App\Action\Context $context,
-		\Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-	)
-	{
-		$this->_importerFactory = $importerFactory;
-		parent::__construct($context);
-	}
+    /**
+     * MassDelete constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+    ) {
+        $this->_importerFactory = $importerFactory;
+        parent::__construct($context);
+    }
 
-	/**
-	 * @return \Magento\Backend\Model\View\Result\Redirect
-	 */
-	public function execute()
-	{
-		$searchIds = $this->getRequest()->getParam('id');
-		if (!is_array($searchIds)) {
-			$this->messageManager->addError(__('Please select importer.'));
-		} else {
-			try {
-				foreach ($searchIds as $searchId) {
-					$model = $this->_importerFactory->create()
-						->load($searchId);
-					$model->delete();
-				}
-				$this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
-			} catch (\Exception $e) {
-				$this->messageManager->addError($e->getMessage());
-			}
-		}
-		/** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-		$resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-		$resultRedirect->setPath('*/*/');
+    /**
+     * @return \Magento\Backend\Model\View\Result\Redirect
+     */
+    public function execute()
+    {
+        $searchIds = $this->getRequest()->getParam('id');
+        if (!is_array($searchIds)) {
+            $this->messageManager->addError(__('Please select importer.'));
+        } else {
+            try {
+                foreach ($searchIds as $searchId) {
+                    $model = $this->_importerFactory->create()
+                        ->load($searchId);
+                    $model->delete();
+                }
+                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
+            } catch (\Exception $e) {
+                $this->messageManager->addError($e->getMessage());
+            }
+        }
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $resultRedirect->setPath('*/*/');
 
-		return $resultRedirect;
-	}
+        return $resultRedirect;
+    }
 }

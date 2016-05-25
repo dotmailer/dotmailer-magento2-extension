@@ -2,62 +2,69 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules;
 
-class Customdatafields extends
-    \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
+class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
-
     protected $_getAttributeRenderer;
+
     protected $_getConditionsRenderer;
+
     protected $_getValueRenderer;
 
-    protected $_objectManager;
+    protected $_condition;
+    protected $_value;
 
+    /**
+     * Customdatafields constructor.
+     *
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition ,
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $value
+     * @param array $data
+     */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $value,
         $data = []
     ) {
-        $this->_objectManager = $objectManagerInterface;
+        $this->_condition = $condition;
+        $this->_value = $value;
         $this->_addAfter      = false;
 
         $this->_addButtonLabel = __('Add New Condition');
         parent::__construct($context, $data);
-
     }
 
-    /**
-     * prepare render
-     */
     protected function _prepareToRender()
     {
         $this->_getConditionsRenderer = null;
-        $this->_getAttributeRenderer  = null;
-        $this->_getValueRenderer      = null;
+        $this->_getAttributeRenderer = null;
+        $this->_getValueRenderer = null;
         $this->addColumn(
             'attribute',
-            array(
+            [
                 'label' => __('Attribute'),
                 'style' => 'width:120px',
-            )
+            ]
         );
         $this->addColumn(
             'conditions',
-            array(
+            [
                 'label' => __('Condition'),
                 'style' => 'width:120px',
-            )
+            ]
         );
         $this->addColumn(
             'cvalue',
-            array(
+            [
                 'label' => __('Value'),
                 'style' => 'width:120px',
-            )
+            ]
         );
     }
 
     /**
-     * render cell template
+     * render cell template.
      *
      * @param string $columnName
      *
@@ -65,7 +72,7 @@ class Customdatafields extends
      */
     public function renderCellTemplate($columnName)
     {
-        if ($columnName == "attribute") {
+        if ($columnName == 'attribute') {
             return $this->_getAttributeRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
@@ -74,26 +81,22 @@ class Customdatafields extends
                     $this->getElement()->getValues()
                 )
                 ->toHtml();
-        } elseif ($columnName == "conditions") {
+        } elseif ($columnName == 'conditions') {
             return $this->_getConditionsRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
                 ->setOptions(
-                    $this->_objectManager->create(
-                        'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition'
-                    )->toOptionArray()
+                    $this->_condition->toOptionArray()
                 )
                 ->toHtml();
-        } elseif ($columnName == "cvalue") {
+        } elseif ($columnName == 'cvalue') {
             return $this->_getValueRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
                 ->setOptions(
-                    $this->_objectManager->create(
-                        'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value'
-                    )->toOptionArray()
+                    $this->_value->toOptionArray()
                 )
                 ->toHtml();
         }
@@ -125,13 +128,13 @@ class Customdatafields extends
     }
 
     /**
-     * get rendered for attribute field
+     * Get rendered for attribute field.
      *
      * @return mixed
      */
     protected function _getAttributeRenderer()
     {
-        if ( ! $this->_getAttributeRenderer) {
+        if (!$this->_getAttributeRenderer) {
             $this->_getAttributeRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -144,13 +147,13 @@ class Customdatafields extends
     }
 
     /**
-     * get renderer for conditions field
+     * Get renderer for conditions field.
      *
      * @return mixed
      */
     protected function _getConditionsRenderer()
     {
-        if ( ! $this->_getConditionsRenderer) {
+        if (!$this->_getConditionsRenderer) {
             $this->_getConditionsRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -163,13 +166,13 @@ class Customdatafields extends
     }
 
     /**
-     * get renderer for value field
+     * Get renderer for value field.
      *
      * @return mixed
      */
     protected function _getValueRenderer()
     {
-        if ( ! $this->_getValueRenderer) {
+        if (!$this->_getValueRenderer) {
             $this->_getValueRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -181,6 +184,11 @@ class Customdatafields extends
         return $this->_getValueRenderer;
     }
 
+    /**
+     * @return string
+     *
+     * @throws \Exception
+     */
     public function _toHtml()
     {
         $script
@@ -311,7 +319,5 @@ class Customdatafields extends
 
         return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
         . '"/>' . parent::_toHtml() . $script;
-
     }
-
 }

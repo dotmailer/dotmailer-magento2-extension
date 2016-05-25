@@ -4,9 +4,8 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
 class Select extends \Magento\Framework\View\Element\Html\Select
 {
-
     /**
-     * Return output in one line
+     * Return output in one line.
      *
      * @return string
      */

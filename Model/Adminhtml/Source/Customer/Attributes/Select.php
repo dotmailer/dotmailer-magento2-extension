@@ -5,8 +5,16 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes;
 class Select
 {
 
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
+     */
     protected $_customerFactory;
 
+    /**
+     * Select constructor.
+     *
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     */
     public function __construct(
         \Magento\Customer\Model\CustomerFactory $customerFactory
     ) {
@@ -14,17 +22,15 @@ class Select
     }
 
     /**
-     * customer custom attributes.
+     * Customer custom attributes.
      *
      * @return array
      */
     public function toOptionArray()
     {
-
-        $options = array();
+        $options = [];
         //exclude attributes from mapping
-        $excluded
-                    = array(
+        $excluded = [
             'created_at',
             'created_in',
             'dob',
@@ -39,7 +45,7 @@ class Select
             'rp_token',
             'rp_token_create_at',
             'website_id'
-        );
+        ];
         $attributes = $this->_customerFactory->create()
             ->getAttributes();
 
@@ -48,11 +54,11 @@ class Select
                 $code = $attribute->getAttributeCode();
                 //escape the label in case of quotes
                 $label = addslashes($attribute->getFrontendLabel());
-                if ( ! in_array($code, $excluded)) {
-                    $options[] = array(
+                if (!in_array($code, $excluded)) {
+                    $options[] = [
                         'value' => $attribute->getAttributeCode(),
                         'label' => $label
-                    );
+                    ];
                 }
             }
         }

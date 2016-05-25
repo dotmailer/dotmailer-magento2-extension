@@ -4,13 +4,12 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Review
 {
-
     protected $_start;
     protected $_reviews;
     protected $_countReviews;
     protected $_helper;
     protected $_resource;
-    protected $_objectManager;
+    protected $_vote;
     protected $_reviewIds;
     protected $_reviewFactory;
     protected $_importerFactory;
@@ -19,7 +18,6 @@ class Review
     protected $_connectorReviewFactory;
     protected $_ratingFactory;
     protected $_reviewCollection;
-
 
     /**
      * Review constructor.
@@ -33,7 +31,7 @@ class Review
      * @param \Dotdigitalgroup\Email\Helper\Data                             $data
      * @param \Magento\Framework\App\ResourceConnection                      $resource
      * @param \Magento\Framework\Stdlib\Datetime                             $datetime
-     * @param \Magento\Framework\ObjectManagerInterface                      $objectManagerInterface
+     * @param \Magento\Review\Model\Rating\Option\Vote $vote
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $reviewCollection,
@@ -46,19 +44,19 @@ class Review
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Framework\Stdlib\Datetime $datetime,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+        \Magento\Review\Model\Rating\Option\Vote $vote
     ) {
-        $this->_reviewCollection       = $reviewCollection;
-        $this->_ratingFactory          = $ratingFactory;
+        $this->_reviewCollection = $reviewCollection;
+        $this->_ratingFactory = $ratingFactory;
         $this->_connectorReviewFactory = $connectorFactory;
-        $this->_customerFactory        = $customerFactory;
-        $this->_productFactory         = $productFactory;
-        $this->_reviewFactory          = $reviewFactory;
-        $this->_importerFactory      = $importerFactory;
-        $this->_helper                 = $data;
-        $this->_resource               = $resource;
-        $this->_dateTime               = $datetime;
-        $this->_objectManager          = $objectManagerInterface;
+        $this->_customerFactory = $customerFactory;
+        $this->_productFactory = $productFactory;
+        $this->_reviewFactory = $reviewFactory;
+        $this->_importerFactory = $importerFactory;
+        $this->_helper = $data;
+        $this->_resource = $resource;
+        $this->_dateTime = $datetime;
+        $this->_vote = $vote;
     }
 
     public function sync()
@@ -66,22 +64,21 @@ class Review
         $response = array('success' => true, 'message' => 'Done.');
 
         $this->_countReviews = 0;
-        $this->_reviews      = array();
-        $this->_start        = microtime(true);
+        $this->_reviews = array();
+        $this->_start = microtime(true);
         //resource allocation
         $this->_helper->allowResourceFullExecution();
         $websites = $this->_helper->getwebsites(true);
         foreach ($websites as $website) {
-
-            $apiEnabled    = $this->_helper->isEnabled($website);
+            $apiEnabled = $this->_helper->isEnabled($website);
             $reviewEnabled = $this->_helper->getWebsiteConfig(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED,
                 $website
             );
-            $storeIds      = $website->getStoreIds();
-            if ($apiEnabled && $reviewEnabled && ! empty($storeIds)) {
+            $storeIds = $website->getStoreIds();
+            if ($apiEnabled && $reviewEnabled && !empty($storeIds)) {
                 //start the sync
-                if ( ! $this->_countReviews) {
+                if (!$this->_countReviews) {
                     $this->_helper->log(
                         '---------- Start reviews sync ----------'
                     );
@@ -108,7 +105,7 @@ class Review
 
         if ($this->_countReviews) {
             $message = 'Total time for sync : ' . gmdate(
-                    "H:i:s", microtime(true) - $this->_start
+                    'H:i:s', microtime(true) - $this->_start
                 ) . ', Total synced = ' . $this->_countReviews;
             $this->_helper->log($message);
             $response['message'] = $message;
@@ -119,11 +116,11 @@ class Review
 
     protected function _exportReviewsForWebsite($website)
     {
-        $limit            = $this->_helper->getWebsiteConfig(
+        $limit = $this->_helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
             $website
         );
-        $reviews          = $this->_getReviewsToExport($website, $limit);
+        $reviews = $this->_getReviewsToExport($website, $limit);
         $this->_reviewIds = array();
 
         if ($reviews->getSize()) {
@@ -131,7 +128,7 @@ class Review
                 try {
                     $mageReview = $this->_reviewFactory->create()
                         ->load($review->getReviewId());
-                    $product    = $this->_productFactory->create()
+                    $product = $this->_productFactory->create()
                         ->setStoreId($mageReview->getStoreId())
                         ->load($mageReview->getEntityPkValue());
 
@@ -143,9 +140,7 @@ class Review
                         ->setReviewData($mageReview)
                         ->setProduct($product);
 
-                    $votesCollection = $this->_objectManager->create(
-                        'Magento\Review\Model\Rating\Option\Vote'
-                    )
+                    $votesCollection = $this->_vote
                         ->getResourceCollection()
                         ->setReviewFilter($mageReview->getReviewId());
                     $votesCollection->getSelect()->join(
@@ -182,7 +177,7 @@ class Review
     }
 
     /**
-     * set imported in bulk query
+     * set imported in bulk query.
      *
      * @param $ids
      */
@@ -190,11 +185,11 @@ class Review
     {
         try {
             $coreResource = $this->_resource;
-            $write        = $coreResource->getConnection('core_write');
-            $tableName    = $coreResource->getTableName('email_review');
-            $ids          = implode(', ', $ids);
-            $now          = new \Datetime();
-            $nowDate      = $this->_dateTime->formatDate($now->getTimestamp());
+            $write = $coreResource->getConnection('core_write');
+            $tableName = $coreResource->getTableName('email_review');
+            $ids = implode(', ', $ids);
+            $now = new \Datetime();
+            $nowDate = $this->_dateTime->formatDate($now->getTimestamp());
             $write->update(
                 $tableName,
                 array('review_imported' => 1, 'updated_at' => $nowDate),

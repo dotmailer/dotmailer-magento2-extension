@@ -2,20 +2,23 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Order;
 
-use Magento\Backend\Block\Widget\Grid as WidgetGrid;
-
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-
     /**
-     * @var \Magento\Framework\Module\Manager
+     * @var
      */
-    protected $moduleManager;
-
-
     protected $_gridFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory
+     */
     protected $_orderFactory;
+    /**
+     * @var \Magento\Sales\Model\Order\ConfigFactory
+     */
     protected $_configFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory
+     */
     protected $_importedFactory;
 
     /**
@@ -39,14 +42,13 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         array $data = []
     ) {
         $this->_importedFactory = $importedFactory;
-        $this->_configFactory   = $configFactory;
-        $this->_orderFactory    = $gridFactory;
-        $this->moduleManager    = $moduleManager;
+        $this->_configFactory = $configFactory;
+        $this->_orderFactory = $gridFactory;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
-     * @return void
+     * Constructor.
      */
     protected function _construct()
     {
@@ -72,85 +74,71 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected function _prepareColumns()
     {
         $this->addColumn(
-            'email_order_id', array(
+            'email_order_id', [
                 'header' => __('Order ID'),
-                'align'  => 'left',
-                'width'  => '50px',
-                'index'  => 'email_order_id',
-                'type'   => 'number',
-                'escape' => true
-            )
-        )->addColumn(
-            'store_id', array(
+            'align' => 'left',
+            'index' => 'email_order_id',
+            'type' => 'number',
+            'escape' => true,
+        ])->addColumn(
+            'store_id', [
                 'header' => __('Store ID'),
-                'width'  => '50px',
-                'index'  => 'store_id',
-                'type'   => 'number',
+            'index' => 'store_id',
+            'type' => 'number',
                 'escape' => true,
-            )
-        )->addColumn(
-            'order_status', array(
-                'header'  => __('Order Status'),
-                'align'   => 'right',
-                'width'   => '50px',
-                'index'   => 'order_status',
-                'type'    => 'options',
-                'escape'  => true,
+        ])->addColumn(
+            'order_status', [
+            'header' => __('Order Status'),
+            'align' => 'right',
+            'index' => 'order_status',
+            'type' => 'options',
+            'escape' => true,
                 'options' => $this->_configFactory->create()->getStatuses(),
-            )
-        )->addColumn(
-            'email_imported', array(
-                'header'                    => __('Imported'),
-                'align'                     => 'center',
-                'width'                     => '50px',
-                'index'                     => 'email_imported',
-                'type'                      => 'options',
-                'escape'                    => true,
-                'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-                'options'                   => $this->_importedFactory->create()
+        ])->addColumn(
+            'email_imported', [
+            'header' => __('Imported'),
+            'align' => 'center',
+            'index' => 'email_imported',
+            'type' => 'options',
+            'escape' => true,
+            'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+            'options' => $this->_importedFactory->create()
                     ->getOptions(),
-                'filter_condition_callback' => array(
+            'filter_condition_callback' => [
                     $this,
-                    'filterCallbackContact'
-                )
-            )
-        )->addColumn(
-            'modified', array(
-                'header'                    => __('Modified'),
-                'align'                     => 'center',
-                'width'                     => '50px',
-                'index'                     => 'modified',
-                'type'                      => 'options',
-                'escape'                    => true,
-                'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-                'options'                   => [
-                    1    => 'Modified',
+                'filterCallbackContact',
+            ],
+        ])->addColumn(
+            'modified', [
+            'header' => __('Modified'),
+            'align' => 'center',
+            'index' => 'modified',
+            'type' => 'options',
+            'escape' => true,
+            'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+            'options' => [
+                1 => 'Modified',
                     null => 'Not Modified',
                 ],
-                'filter_condition_callback' => array(
+            'filter_condition_callback' => [
                     $this,
-                    'filterCallbackContact'
-                )
-            )
-        )->addColumn(
-            'created_at', array(
+                'filterCallbackContact',
+            ],
+        ])->addColumn(
+            'created_at', [
                 'header' => __('Created At'),
-                'width'  => '50px',
-                'align'  => 'center',
-                'index'  => 'created_at',
-                'type'   => 'datetime',
+            'align' => 'center',
+            'index' => 'created_at',
+            'type' => 'datetime',
                 'escape' => true,
-            )
-        )->addColumn(
-            'updated_at', array(
+        ])->addColumn(
+            'updated_at', [
                 'header' => __('Updated At'),
-                'width'  => '50px',
-                'align'  => 'center',
-                'index'  => 'updated_at',
-                'type'   => 'datetime',
+            'align' => 'center',
+            'index' => 'updated_at',
+            'type' => 'datetime',
                 'escape' => true,
-            )
-        );
+        ]);
 
         return parent::_prepareColumns();
     }
@@ -167,9 +155,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             : $column->getIndex();
         $value = $column->getFilter()->getValue();
         if ($value == 'null') {
-            $collection->addFieldToFilter($field, array('null' => true));
+            $collection->addFieldToFilter($field, ['null' => true]);
         } else {
-            $collection->addFieldToFilter($field, array('notnull' => true));
+            $collection->addFieldToFilter($field, ['notnull' => true]);
         }
     }
 
@@ -184,13 +172,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->getMassactionBlock()->addItem(
             'delete',
             [
-                'label'   => __('Delete'),
-                'url'     => $this->getUrl('*/*/massDelete'),
-                'confirm' => __('Are you sure?')
+                'label' => __('Delete'),
+                'url' => $this->getUrl('*/*/massDelete'),
+                'confirm' => __('Are you sure?'),
             ]
         );
 
         return $this;
     }
-
 }

@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Campaign;
 class Grid extends Index
 {
     /**
-     * set page data
+     * Set page data.
      *
      * @return $this
      */

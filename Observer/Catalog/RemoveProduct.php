@@ -106,7 +106,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     {
         $apiEnabled
                         = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED);
-        $catalogEnabled = $this->_helper->getCatalogSyncEnabled();
+        $catalogEnabled = $this->_helper->isCatalogSyncEnabled();
         if ($apiEnabled && $catalogEnabled) {
             $scope
                 = $this->_scopeConfig->getValue(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES);
