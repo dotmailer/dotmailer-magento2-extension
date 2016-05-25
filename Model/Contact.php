@@ -4,11 +4,9 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Contact extends \Magento\Framework\Model\AbstractModel
 {
-
     const EMAIL_CONTACT_IMPORTED = 1;
     const EMAIL_CONTACT_NOT_IMPORTED = null;
     const EMAIL_SUBSCRIBER_NOT_IMPORTED = null;
-
 
     /**
      *
@@ -18,9 +16,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
         $this->_init('Dotdigitalgroup\Email\Model\Resource\Contact');
     }
 
-
     /**
-     * Load contact by customer id
+     * Load contact by customer id.
      *
      * @param $customerId
      *
@@ -53,7 +50,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             ->addFieldToFilter('website_id', $websiteId)
             ->addFieldToFilter('email_imported', array('null' => true))
             ->addFieldToFilter('customer_id', array('neq' => '0'));
-
 
         $collection->getSelect()->limit($pageSize);
 
@@ -106,7 +102,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Contact subscribers to import for website
+     * Contact subscribers to import for website.
      *
      * @param     $website
      * @param int $limit
@@ -115,7 +111,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      */
     public function getSubscribersToImport($website, $limit = 1000)
     {
-        $storeIds   = $website->getStoreIds();
+        $storeIds = $website->getStoreIds();
         $collection = $this->getCollection()
             ->addFieldToFilter('is_subscriber', array('notnull' => true))
             ->addFieldToFilter('subscriber_status', '1')
@@ -157,7 +153,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
         return $collection->getSize();
     }
 
-
     /**
      * Get the number of customers for a website.
      *
@@ -176,7 +171,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     *
      * Get number of suppressed contacts as customer.
      *
      * @param int $websiteId
@@ -210,7 +204,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             ->getSize();
 
         return $countContacts;
-
     }
 
     /**
@@ -258,6 +251,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      * Reset the imported contacts as guest.
      *
      * @return int
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function resetAllGuestContacts()
@@ -267,7 +261,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
         $conn = $coreResource->getConnection();
 
         try {
-            $where   = array();
+            $where = array();
             $where[] = $conn->quoteInto(
                 'email_imported is ?', new \Zend_Db_Expr('not null')
             );
@@ -288,6 +282,4 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 
         return $num;
     }
-
-
 }

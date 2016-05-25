@@ -4,11 +4,15 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
 class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
 {
-
+    /**
+     * Button label.
+     *
+     * @var string
+     */
     protected $_vatButtonLabel = 'Create New Addressbook';
 
     /**
-     * Set Validate VAT Button Label
+     * Set Validate VAT Button Label.
      *
      * @param string $vatButtonLabel
      *
@@ -22,14 +26,14 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Set template to itself
+     * Set template to itself.
      *
      * @return \Magento\Customer\Block\Adminhtml\System\Config\Validatevat
      */
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
-        if ( ! $this->getTemplate()) {
+        if (!$this->getTemplate()) {
             $this->setTemplate('system/config/createaddressbook.phtml');
         }
 
@@ -37,7 +41,7 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Unset some non-related element parameters
+     * Unset some non-related element parameters.
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
@@ -52,7 +56,7 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Get the button and scripts contents
+     * Get the button and scripts contents.
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
@@ -62,17 +66,17 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $originalData = $element->getOriginalData();
-        $buttonLabel  = ! empty($originalData['button_label'])
+        $buttonLabel = !empty($originalData['button_label'])
             ? $originalData['button_label'] : $this->_vatButtonLabel;
-        $url          = $this->_urlBuilder->getUrl(
+        $url = $this->_urlBuilder->getUrl(
             'dotdigitalgroup_email/addressbook/save'
         );
 
         $this->addData(
             [
                 'button_label' => __($buttonLabel),
-                'html_id'      => $element->getHtmlId(),
-                'ajax_url'     => $url,
+                'html_id' => $element->getHtmlId(),
+                'ajax_url' => $url,
             ]
         );
 

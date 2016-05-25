@@ -1,14 +1,26 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Block;
+
 class Coupon extends \Magento\Framework\View\Element\Template
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Salesrule\Model\RuleFactory
+     */
     protected $_ruleFactory;
+    /**
+     * @var \Magento\SalesRule\Model\Coupon\MassgeneratorFactory
+     */
     protected $_massGeneratorFactory;
+    /**
+     * @var \Magento\Salesrule\Model\CouponFactory
+     */
     protected $_couponFactory;
-
 
     /**
      * Coupon constructor.
@@ -29,11 +41,10 @@ class Coupon extends \Magento\Framework\View\Element\Template
         \Magento\Salesrule\Model\RuleFactory $ruleFactory,
         array $data = []
     ) {
-        $this->helper                = $helper;
-        $this->_ruleFactory          = $ruleFactory;
-        $this->_couponFactory        = $couponFactory;
+        $this->helper = $helper;
+        $this->_ruleFactory = $ruleFactory;
+        $this->_couponFactory = $couponFactory;
         $this->_massGeneratorFactory = $massgeneratorFactory;
-        $this->storeManager          = $this->_storeManager;
 
         parent::__construct($context, $data);
     }
@@ -47,7 +58,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
     {
         $params = $this->getRequest()->getParams();
         //check for param code and id
-        if ( ! isset($params['id']) || ! isset($params['code'])) {
+        if (!isset($params['id']) || !isset($params['code'])) {
             $this->helper->log('Coupon no id or code is set');
 
             return false;
@@ -56,8 +67,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
         $couponCodeId = $params['id'];
 
         if ($couponCodeId) {
-
-            $rule      = $this->_ruleFactory->create()
+            $rule = $this->_ruleFactory->create()
                 ->load($couponCodeId);
             $generator = $this->_massGeneratorFactory->create();
             $generator->setFormat(
@@ -75,7 +85,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
                 \Magento\SalesRule\Model\Rule::COUPON_TYPE_AUTO
             );
             //generate the coupon
-            $coupon     = $rule->acquireCoupon();
+            $coupon = $rule->acquireCoupon();
             $couponCode = $coupon->getCode();
             //save the type of coupon
 
@@ -92,7 +102,9 @@ class Coupon extends \Magento\Framework\View\Element\Template
         return false;
     }
 
-
+    /**
+     * @return array
+     */
     public function getStyle()
     {
         return explode(
@@ -102,6 +114,11 @@ class Coupon extends \Magento\Framework\View\Element\Template
         );
     }
 
+    /**
+     * Coupon color from config.
+     * 
+     * @return mixed
+     */
     public function getCouponColor()
     {
         return $this->helper->getWebsiteConfig(
@@ -109,6 +126,11 @@ class Coupon extends \Magento\Framework\View\Element\Template
         );
     }
 
+    /**
+     * Coupon font size from config.
+     * 
+     * @return mixed
+     */
     public function getFontSize()
     {
         return $this->helper->getWebsiteConfig(
@@ -116,6 +138,11 @@ class Coupon extends \Magento\Framework\View\Element\Template
         );
     }
 
+    /**
+     * Coupon Font from config.
+     * 
+     * @return mixed
+     */
     public function getFont()
     {
         return $this->helper->getWebsiteConfig(
@@ -123,6 +150,11 @@ class Coupon extends \Magento\Framework\View\Element\Template
         );
     }
 
+    /**
+     * Coupon background color from config.
+     * 
+     * @return mixed
+     */
     public function getBackgroundColor()
     {
         return $this->helper->getWebsiteConfig(

@@ -5,34 +5,57 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 class Bulk
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var
+     */
     protected $_client;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\File
+     */
     protected $_fileHelper;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
     protected $_contactFactory;
 
+    /**
+     * Bulk constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data          $helper
+     * @param \Dotdigitalgroup\Email\Helper\File          $fileHelper
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
-        $this->_helper     = $helper;
+        $this->_helper = $helper;
         $this->_fileHelper = $fileHelper;
         $this->_contactFactory = $contactFactory;
     }
 
+    /**
+     * Sync.
+     * 
+     * @param $collection
+     */
     public function sync($collection)
     {
         foreach ($collection as $item) {
-
-            $websiteId     = $item->getWebsiteId();
-            $file          = $item->getImportFile();
+            $websiteId = $item->getWebsiteId();
+            $file = $item->getImportFile();
             $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
 
             $addressBook = $this->_getAddressBook(
                 $item->getImportType(), $websiteId
             );
 
-            if ( ! empty($file) && ! empty($addressBook) && $this->_client) {
+            if (!empty($file) && !empty($addressBook) && $this->_client) {
 
                 //import contacts from csv file
                 $result = $this->_client->postAddressBookContactsImport(
@@ -75,6 +98,11 @@ class Bulk
         return $addressBook;
     }
 
+    /**
+     * @param      $item
+     * @param      $result
+     * @param bool $file
+     */
     protected function _handleItemAfterSync($item, $result, $file = false)
     {
         if (isset($result->message) && !isset($result->id)) {

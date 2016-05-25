@@ -5,9 +5,21 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 class Value
 {
 
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
     protected $_objectManager;
+    /**
+     * @var
+     */
     protected $_configFactory;
 
+    /**
+     * Value constructor.
+     *
+     * @param \Magento\Eav\Model\ConfigFactory          $configFactory
+     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+     */
     public function __construct(
         \Magento\Eav\Model\ConfigFactory $configFactory,
         \Magento\Framework\ObjectManagerInterface $objectManagerInterface
@@ -17,7 +29,7 @@ class Value
     }
 
     /**
-     * get element type
+     * Get element type.
      *
      * @param $attribute
      *
@@ -45,17 +57,17 @@ class Value
     }
 
     /**
-     * get options array
+     * Get options array.
      *
      * @param      $attribute
-     * @param bool $is_empty
+     * @param bool $isEmpty
      *
      * @return array
      */
-    public function getValueSelectOptions($attribute, $is_empty = false)
+    public function getValueSelectOptions($attribute, $isEmpty = false)
     {
-        $options = array();
-        if ($is_empty) {
+        $options = [];
+        if ($isEmpty) {
             $options
                 = $this->_objectManager->create('Magento\Config\Model\Config\Source\Yesno')
                 ->toOptionArray();
@@ -107,7 +119,7 @@ class Value
     }
 
     /**
-     * options array
+     * Options array.
      *
      * @return array
      */

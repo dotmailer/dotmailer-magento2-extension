@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Cron;
 
 class Grid extends Index
 {
-
     /**
      * @return $this
      */

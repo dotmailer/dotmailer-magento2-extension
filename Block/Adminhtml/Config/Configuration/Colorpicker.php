@@ -1,9 +1,17 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration;
 
 class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
 {
+    protected $_text;
 
+    /**
+     * Colorpicker constructor.
+     *
+     * @param \Magento\Backend\Block\Template\Context   $context
+     * @param \Magento\Framework\Data\Form\Element\Text $text
+     */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Data\Form\Element\Text $text
@@ -12,6 +20,11 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
         parent::__construct($context);
     }
 
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return mixed|string
+     */
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
@@ -36,11 +49,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * JS code to display color picker
-     *
-     * @see https://github.com/mrgrain/colpick
-     *
-     * @param string $htmlId
+     * @param $htmlId
      *
      * @return string
      */
@@ -48,7 +57,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
     {
         return '<script type="text/javascript">
 			require([\'jquery\', \'domReady!\'], function($){
-    			$(\'' . '#' . $htmlId . '\').colpick({
+    			$(\''.'#'.$htmlId.'\').colpick({
 		        onChange:function(hsb,hex,rgb,el)
 		        {
 		            $(el).val(\'#\'+hex);

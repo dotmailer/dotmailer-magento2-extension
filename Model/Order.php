@@ -4,18 +4,16 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Order extends \Magento\Framework\Model\AbstractModel
 {
-
     const EMAIL_ORDER_NOT_IMPORTED = null;
 
     /**
-     * constructor
+     * constructor.
      */
     public function _construct()
     {
         parent::_construct();
         $this->_init('Dotdigitalgroup\Email\Model\Resource\Order');
     }
-
 
     /**
      * Load the email order by quote id.
@@ -42,7 +40,6 @@ class Order extends \Magento\Framework\Model\AbstractModel
         return $this;
     }
 
-
     /**
      * @param $orderId
      * @param $quoteId
@@ -60,7 +57,6 @@ class Order extends \Magento\Framework\Model\AbstractModel
         if ($collection->count()) {
             return $collection->getFirstItem();
         } else {
-
             $this->setOrderId($orderId)
                 ->setQuoteId($quoteId)
                 ->setStoreId($storeId)
@@ -68,7 +64,6 @@ class Order extends \Magento\Framework\Model\AbstractModel
         }
 
         return $this;
-
     }
 
     /**
@@ -124,5 +119,4 @@ class Order extends \Magento\Framework\Model\AbstractModel
 
         return $collection->load();
     }
-
 }

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Cron
 {
-
     public $contactFactory;
     protected $_automationFactory;
     protected $_importerFactory;
@@ -21,24 +20,23 @@ class Cron
     protected $_fileHelper;
     protected $_importerResource;
 
-
     /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory $campaignFactory
-     * @param Sync\OrderFactory $syncOrderFactory
-     * @param Sales\QuoteFactory $quoteFactory
-     * @param Sync\ReviewFactory $reviewFactory
-     * @param Sales\OrderFactory $orderFactory
-     * @param Sync\WishlistFactory $wishlistFactory
-     * @param Customer\GuestFactory $guestFactory
-     * @param Newsletter\SubscriberFactory $subscriberFactory
-     * @param Sync\CatalogFactory $catalogFactorty
-     * @param Sync\AutomationFactory $automationFactory
-     * @param Apiconnector\ContactFactory $contact
+     * @param Sync\CampaignFactory               $campaignFactory
+     * @param Sync\OrderFactory                  $syncOrderFactory
+     * @param Sales\QuoteFactory                 $quoteFactory
+     * @param Sync\ReviewFactory                 $reviewFactory
+     * @param Sales\OrderFactory                 $orderFactory
+     * @param Sync\WishlistFactory               $wishlistFactory
+     * @param Customer\GuestFactory              $guestFactory
+     * @param Newsletter\SubscriberFactory       $subscriberFactory
+     * @param Sync\CatalogFactory                $catalogFactorty
+     * @param Sync\AutomationFactory             $automationFactory
+     * @param Apiconnector\ContactFactory        $contact
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param Resource\Importer $importerResource
+     * @param Resource\Importer                  $importerResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
@@ -66,17 +64,16 @@ class Cron
         $this->_guestFactory = $guestFactory;
         $this->_subscriberFactory = $subscriberFactory;
         $this->_catalogFactory = $catalogFactorty;
-        $this->_importerFactory    = $importerFactory;
+        $this->_importerFactory = $importerFactory;
         $this->_automationFactory = $automationFactory;
         $this->contactFactory = $contact;
         $this->_helper = $helper;
         $this->_fileHelper = $fileHelper;
         $this->_importerResource = $importerResource;
-
     }
 
     /**
-     * CRON FOR CONTACTS SYNC
+     * CRON FOR CONTACTS SYNC.
      *
      * @return mixed
      */
@@ -89,15 +86,15 @@ class Cron
         $subscriberResult = $this->subscribersAndGuestSync();
 
         if (isset($subscriberResult['message']) && isset($result['message'])) {
-            $result['message'] = $result['message'] . ' - '
-                . $subscriberResult['message'];
+            $result['message'] = $result['message'].' - '
+                .$subscriberResult['message'];
         }
 
         return $result;
     }
 
     /**
-     * CRON FOR SUBSCRIBERS AND GUEST CONTACTS
+     * CRON FOR SUBSCRIBERS AND GUEST CONTACTS.
      */
     public function subscribersAndGuestSync()
     {
@@ -112,7 +109,7 @@ class Cron
     }
 
     /**
-     * CRON FOR CATALOG SYNC
+     * CRON FOR CATALOG SYNC.
      */
     public function catalogSync()
     {
@@ -123,7 +120,7 @@ class Cron
     }
 
     /**
-     * CRON FOR EMAIL IMPORTER PROCESSOR
+     * CRON FOR EMAIL IMPORTER PROCESSOR.
      */
     public function emailImporter()
     {
@@ -131,7 +128,7 @@ class Cron
     }
 
     /**
-     * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS
+     * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS.
      */
     public function reviewsAndWishlist()
     {
@@ -142,7 +139,7 @@ class Cron
     }
 
     /**
-     * review sync
+     * review sync.
      */
     public function reviewSync()
     {
@@ -154,9 +151,8 @@ class Cron
         return $result;
     }
 
-
     /**
-     * CRON FOR ABANDONED CARTS
+     * CRON FOR ABANDONED CARTS.
      */
     public function abandonedCarts()
     {
@@ -164,12 +160,11 @@ class Cron
     }
 
     /**
-     * CRON FOR AUTOMATION
+     * CRON FOR AUTOMATION.
      */
     public function syncAutomation()
     {
         $this->_automationFactory->create()->sync();
-
     }
 
     /**
@@ -182,9 +177,8 @@ class Cron
         $this->_campaignFactory->create()->sendCampaigns();
     }
 
-
     /**
-     * CRON FOR ORDER TRANSACTIONAL DATA
+     * CRON FOR ORDER TRANSACTIONAL DATA.
      */
     public function orderSync()
     {
@@ -200,7 +194,7 @@ class Cron
         $tables = array(
             'automation' => 'email_automation',
             'importer' => 'email_importer',
-            'campaign' => 'email_campaign'
+            'campaign' => 'email_campaign',
         );
         $message = 'Cleaning cron job result :';
         foreach ($tables as $key => $table) {
@@ -208,8 +202,8 @@ class Cron
             $message .= " $result records removed from $key .";
         }
         $archivedFolder = $this->_fileHelper->getArchiveFolder();
-        $result         = $this->_fileHelper->deleteDir($archivedFolder);
-        $message .= ' Deleting archived folder result : ' . $result;
+        $result = $this->_fileHelper->deleteDir($archivedFolder);
+        $message .= ' Deleting archived folder result : '.$result;
         $this->_helper->log($message);
 
         return $message;

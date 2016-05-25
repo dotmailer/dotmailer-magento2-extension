@@ -4,10 +4,13 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Report;
 
 class Contact extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_buttonLabel = 'Contact Report';
 
-
+    /**
+     * @param $buttonLabel
+     *
+     * @return $this
+     */
     public function setButtonLabel($buttonLabel)
     {
         $this->_buttonLabel = $buttonLabel;
@@ -16,19 +19,21 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Set template to itself
-     *
+     * @return $this
      */
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
-        if ( ! $this->getTemplate()) {
+        if (!$this->getTemplate()) {
             $this->setTemplate('system/config/reportlink.phtml');
         }
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getLink()
     {
         return $this->getUrl(
@@ -37,7 +42,7 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Unset some non-related element parameters
+     * Unset some non-related element parameters.
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
@@ -52,7 +57,7 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Get the button and scripts contents
+     * Get the button and scripts contents.
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
@@ -62,20 +67,18 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $originalData = $element->getOriginalData();
-        $buttonLabel  = ! empty($originalData['button_label'])
+        $buttonLabel = !empty($originalData['button_label'])
             ? $originalData['button_label'] : $this->_buttonLabel;
         $url
                       = $this->_urlBuilder->getUrl('dotdigitalgroup_email/addressbook/save');
         $this->addData(
             [
                 'button_label' => __($buttonLabel),
-                'html_id'      => $element->getHtmlId(),
-                'ajax_url'     => $url,
+                'html_id' => $element->getHtmlId(),
+                'ajax_url' => $url,
             ]
         );
 
         return $this->_toHtml();
     }
-
-
 }

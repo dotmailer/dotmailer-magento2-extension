@@ -4,10 +4,10 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Connect extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_buttonLabel = 'Connect';
 
     protected $_auth;
+
     protected $_helper;
 
     /**
@@ -25,7 +25,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         $data = []
     ) {
         $this->_helper = $helper;
-        $this->_auth   = $auth;
+        $this->_auth = $auth;
 
         parent::__construct($context, $data);
     }
@@ -52,20 +52,18 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
-
-        $url      = $this->_helper->getAuthoriseUrl();
-        $ssl      = $this->_checkForSecureUrl();
+        $url = $this->_helper->getAuthoriseUrl();
+        $ssl = $this->_checkForSecureUrl();
         $disabled = false;
         //disable for ssl missing
-        if ( ! $ssl) {
+        if (!$ssl) {
             $disabled = true;
         }
 
-        $adminUser    = $this->_auth->getUser();
+        $adminUser = $this->_auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
 
         $title = ($refreshToken) ? __('Disconnect') : __('Connect');
-
 
         $url = ($refreshToken) ? $this->getUrl(
             'dotdigitalgroup_email/studio/disconnect'
@@ -77,7 +75,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
             ->setType('button')
             ->setLabel(__($title))
             ->setDisabled($disabled)
-            ->setOnClick("window.location.href='" . $url . "'")
+            ->setOnClick("window.location.href='".$url."'")
             ->toHtml();
     }
 
@@ -87,7 +85,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
             \Magento\Framework\UrlInterface::URL_TYPE_WEB, true
         );
 
-        if ( ! preg_match('/https/', $baseUrl)) {
+        if (!preg_match('/https/', $baseUrl)) {
             return false;
         }
 

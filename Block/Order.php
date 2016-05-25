@@ -5,24 +5,45 @@ namespace Dotdigitalgroup\Email\Block;
 class Order extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
+    /**
+     * @var
+     */
     protected $_quote;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
-    public $storeManager;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
     protected $_orderFactory;
+    /**
+     * @var \Magento\Review\Model\ReviewFactory
+     */
     protected $_reviewFactory;
+    /**
+     * @var
+     */
     protected $_reviewHelper;
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
     protected $_productCollection;
 
     /**
      * Order constructor.
      *
-     * @param \Magento\Review\Model\ReviewFactory    $reviewFactory
-     * @param \Magento\Sales\Model\OrderFactory      $orderFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data     $helper
-     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context $context
-     * @param array                                  $data
+     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection
+     * @param \Magento\Review\Model\ReviewFactory                     $reviewFactory
+     * @param \Magento\Sales\Model\OrderFactory                       $orderFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
+     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context                  $context
+     * @param array                                                   $data
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection,
@@ -33,34 +54,34 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
-         
         $this->_productCollection = $productCollection;
         $this->_reviewFactory = $reviewFactory;
-        $this->_orderFactory  = $orderFactory;
-        $this->helper         = $helper;
-        $this->storeManager   = $this->_storeManager;
-        $this->priceHelper    = $priceHelper;
+        $this->_orderFactory = $orderFactory;
+        $this->helper = $helper;
+        $this->priceHelper = $priceHelper;
 
         parent::__construct($context, $data);
     }
 
     /**
      * Current Order.
+     *
+     * @return $this|bool|mixed
      */
     public function getOrder()
     {
         $orderId = $this->_coreRegistry->registry('order_id');
-        $order   = $this->_coreRegistry->registry('current_order');
-        if ( ! $orderId) {
+        $order = $this->_coreRegistry->registry('current_order');
+        if (!$orderId) {
             $orderId = $this->getRequest()->getParam('order_id');
-            if ( ! $orderId) {
+            if (!$orderId) {
                 return false;
             }
             $this->_coreRegistry->unregister('order_id'); // additional measure
             $this->_coreRegistry->register('order_id', $orderId);
         }
-        if ( ! $order) {
-            if ( ! $orderId) {
+        if (!$order) {
+            if (!$orderId) {
                 return false;
             }
             $order = $this->_orderFactory->create()->load($orderId);
@@ -71,7 +92,11 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         return $order;
     }
 
-
+    /**
+     * @param string $mode
+     *
+     * @return mixed|string
+     */
     public function getMode($mode = 'list')
     {
         if ($this->getOrder()) {
@@ -79,8 +104,9 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
                 $this->getOrder()->getStoreId()
             )
                 ->getWebsite();
-            $mode    = $this->helper->getReviewDisplayType($website);
+            $mode = $this->helper->getReviewDisplayType($website);
         }
+
         return $mode;
     }
 
@@ -94,7 +120,7 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function filterItemsForReview($items, $websiteId)
     {
-        if ( ! count($items)) {
+        if (!count($items)) {
             return false;
         }
 
@@ -105,7 +131,7 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
             return $items;
         }
 
-        if ( ! $this->helper->isNewProductOnly($websiteId)) {
+        if (!$this->helper->isNewProductOnly($websiteId)) {
             return $items;
         }
 
@@ -128,26 +154,32 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         return $items;
     }
 
-
+    /**
+     * @return $this|\Magento\Framework\Data\Collection\AbstractDb
+     */
     public function getItems()
     {
         $order = $this->getOrder();
         $items = $order->getAllVisibleItems();
-        $productIds = array();
+        $productIds = [];
         //get the product ids for the collection
         foreach ($items as $item) {
             $productIds[] = $item->getProductId();
         }
         $items = $this->_productCollection
             ->addAttributeToSelect('*')
-            ->addFieldToFilter('entity_id', array('in' => $productIds));
+            ->addFieldToFilter('entity_id', ['in' => $productIds]);
 
         return $items;
     }
 
+    /**
+     * @param $productId
+     *
+     * @return string
+     */
     public function getReviewItemUrl($productId)
     {
-
-        return $this->_urlBuilder->getUrl('review/product/list', array('id' => $productId));
+        return $this->_urlBuilder->getUrl('review/product/list', ['id' => $productId]);
     }
 }

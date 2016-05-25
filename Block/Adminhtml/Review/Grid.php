@@ -2,26 +2,30 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Review;
 
-use Magento\Backend\Block\Widget\Grid as WidgetGrid;
-
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-
     /**
-     * @var \Magento\Framework\Module\Manager
+     * @var
      */
-    protected $moduleManager;
     protected $_gridFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory
+     */
     protected $_reviewFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory
+     */
     protected $_importedFactory;
 
     /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data            $backendHelper
-     * @param \Magento\Framework\Module\Manager       $moduleManager
-     * @param array                                   $data
+     * Grid constructor.
      *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory
+     * @param \Magento\Backend\Block\Template\Context                               $context
+     * @param \Magento\Backend\Helper\Data                                          $backendHelper
+     * @param \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory        $gridFactory
+     * @param \Magento\Framework\Module\Manager                                     $moduleManager
+     * @param array                                                                 $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
@@ -32,14 +36,13 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         array $data = []
     ) {
         $this->_importedFactory = $importedFactory;
-        $this->_reviewFactory   = $gridFactory;
-        $this->moduleManager    = $moduleManager;
+        $this->_reviewFactory = $gridFactory;
 
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
-     * @return void
+     * Constructor.
      */
     protected function _construct()
     {
@@ -61,56 +64,51 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
     /**
      * @return $this
+     *
      * @throws \Exception
      */
     protected function _prepareColumns()
     {
-        $this->addColumn('review_id', array(
+        $this->addColumn('review_id', [
             'header' => __('Review ID'),
-            'align'  => 'left',
-            'width'  => '50px',
-            'index'  => 'review_id',
-            'type'   => 'number',
-            'escape' => true
-        ))->addColumn('customer_id', array(
+            'align' => 'left',
+            'index' => 'review_id',
+            'type' => 'number',
+            'escape' => true,
+        ])->addColumn('customer_id', [
             'header' => __('Customer ID'),
-            'align'  => 'left',
-            'width'  => '50px',
-            'index'  => 'customer_id',
-            'type'   => 'number',
-            'escape' => true
-        ))->addColumn('store_id', array(
+            'align' => 'left',
+            'index' => 'customer_id',
+            'type' => 'number',
+            'escape' => true,
+        ])->addColumn('store_id', [
             'header' => __('Store ID'),
-            'width'  => '50px',
-            'index'  => 'store_id',
-            'type'   => 'number',
+            'index' => 'store_id',
+            'type' => 'number',
             'escape' => true,
-        ))->addColumn('review_imported', array(
-            'header'                    => __('Review Imported'),
-            'align'                     => 'center',
-            'width'                     => '50px',
-            'index'                     => 'review_imported',
-            'type'                      => 'options',
-            'escape'                    => true,
-            'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options'                   => $this->_importedFactory->create()
+        ])->addColumn('review_imported', [
+            'header' => __('Review Imported'),
+            'align' => 'center',
+            'index' => 'review_imported',
+            'type' => 'options',
+            'escape' => true,
+            'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+            'options' => $this->_importedFactory->create()
                 ->getOptions(),
-            'filter_condition_callback' => array($this, 'filterCallbackContact')
-        ))->addColumn('created_at', array(
+            'filter_condition_callback' => [$this, 'filterCallbackContact'],
+        ])->addColumn('created_at', [
             'header' => __('Created At'),
-            'width'  => '50px',
-            'align'  => 'center',
-            'index'  => 'created_at',
-            'type'   => 'datetime',
+            'align' => 'center',
+            'index' => 'created_at',
+            'type' => 'datetime',
             'escape' => true,
-        ))->addColumn('updated_at', array(
+        ])->addColumn('updated_at', [
             'header' => __('Updated At'),
-            'width'  => '50px',
-            'align'  => 'center',
-            'index'  => 'updated_at',
-            'type'   => 'datetime',
+            'align' => 'center',
+            'index' => 'updated_at',
+            'type' => 'datetime',
             'escape' => true,
-        ));
+        ]);
 
         return parent::_prepareColumns();
     }
@@ -127,9 +125,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             : $column->getIndex();
         $value = $column->getFilter()->getValue();
         if ($value == 'null') {
-            $collection->addFieldToFilter($field, array('null' => true));
+            $collection->addFieldToFilter($field, ['null' => true]);
         } else {
-            $collection->addFieldToFilter($field, array('notnull' => true));
+            $collection->addFieldToFilter($field, ['notnull' => true]);
         }
     }
 
@@ -144,17 +142,20 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->getMassactionBlock()->addItem(
             'delete',
             [
-                'label'   => __('Delete'),
-                'url'     => $this->getUrl('*/*/massDelete'),
-                'confirm' => __('Are you sure?')
+                'label' => __('Delete'),
+                'url' => $this->getUrl('*/*/massDelete'),
+                'confirm' => __('Are you sure?'),
             ]
         );
-
 
         return $this;
     }
 
-
+    /**
+     * @param \Magento\Catalog\Model\Product|\Magento\Framework\DataObject $row
+     *
+     * @return string
+     */
     public function getRowUrl($row)
     {
         return $this->getUrl(
@@ -162,5 +163,4 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             ['id' => $row->getId()]
         );
     }
-
 }

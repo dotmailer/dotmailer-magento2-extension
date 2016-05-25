@@ -4,13 +4,12 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Bestsellers extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
      * Bestsellers constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
+     * @param \Dotdigitalgroup\Email\Helper\Data      $dataHelper
      * @param \Magento\Backend\Block\Template\Context $context
      */
     public function __construct(
@@ -36,7 +35,7 @@ class Bestsellers extends \Magento\Config\Block\System\Config\Form\Field
         //config passcode
         $passcode = $this->_dataHelper->getPasscode();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
 

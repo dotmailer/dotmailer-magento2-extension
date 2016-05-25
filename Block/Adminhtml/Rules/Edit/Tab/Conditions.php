@@ -5,9 +5,20 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
     implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
+     */
     protected $options;
 
+    /**
+     * Conditions constructor.
+     *
+     * @param \Magento\Framework\Data\FormFactory                      $formFactory
+     * @param \Magento\Framework\Registry                              $registry
+     * @param \Magento\Backend\Block\Widget\Context                    $context
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $options
+     * @param array                                                    $data
+     */
     public function __construct(
         \Magento\Framework\Data\FormFactory $formFactory,
         \Magento\Framework\Registry $registry,
@@ -20,7 +31,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
-     * Prepare content for tab
+     * Prepare content for tab.
      *
      * @return string
      */
@@ -30,7 +41,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
-     * Prepare title for tab
+     * Prepare title for tab.
      *
      * @return string
      */
@@ -40,7 +51,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
-     * Returns status flag about this tab can be showen or not
+     * Returns status flag about this tab can be showen or not.
      *
      * @return true
      */
@@ -50,7 +61,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
-     * Returns status flag about this tab hidden or not
+     * Returns status flag about this tab hidden or not.
      *
      * @return true
      */
@@ -59,36 +70,41 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
         return false;
     }
 
+    /**
+     * @return $this
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function _prepareForm()
     {
         $model = $this->_coreRegistry->registry('current_ddg_rule');
-        $form  = $this->_formFactory->create();
+        $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
 
         $fieldset = $form->addFieldset('base_fieldset',
-            array('legend' => __('Exclusion Rule Conditions'))
+            ['legend' => __('Exclusion Rule Conditions')]
         );
 
-        $fieldset->addField('combination', 'select', array(
-            'label'              => __('Conditions Combination Match'),
-            'title'              => __('Conditions Combination Match'),
-            'name'               => 'combination',
-            'required'           => true,
-            'options'            => array(
+        $fieldset->addField('combination', 'select', [
+            'label' => __('Conditions Combination Match'),
+            'title' => __('Conditions Combination Match'),
+            'name' => 'combination',
+            'required' => true,
+            'options' => [
                 '1' => __('ALL'),
                 '2' => __('ANY'),
-            ),
+            ],
             'after_element_html' => '<small>Choose ANY if using multi line conditions for same attribute.
 If multi line conditions for same attribute is used and ALL is chosen then multiple lines for same attribute will be ignored.</small>',
-        ));
+        ]);
 
-        $field    = $fieldset->addField('condition', 'select', array(
-            'name'     => 'condition',
-            'label'    => __('Condition'),
-            'title'    => __('Condition'),
+        $field = $fieldset->addField('condition', 'select', [
+            'name' => 'condition',
+            'label' => __('Condition'),
+            'title' => __('Condition'),
             'required' => true,
-            'options'  => $this->options->toOptionArray(),
-        ));
+            'options' => $this->options->toOptionArray(),
+        ]);
         $renderer = $this->getLayout()
             ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules\Customdatafields');
         $field->setRenderer($renderer);

@@ -5,7 +5,13 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 class Type
 {
 
+    /**
+     * @var
+     */
     protected $_configFactory;
+    /**
+     * @var
+     */
     protected $_productFactory;
 
     /**
@@ -18,14 +24,14 @@ class Type
         \Magento\Eav\Model\ConfigFactory $configFactory,
         \Magento\SalesRule\Model\Rule\Condition\ProductFactory $productFactory
     ) {
-        $this->_configFactory  = $configFactory->create();
+        $this->_configFactory = $configFactory->create();
         $this->_productFactory = $productFactory->create();
     }
 
     /**
-     * get input type
+     * Get input type.
      *
-     * @param $attribute
+     * @param string $attribute
      *
      * @return string
      */
@@ -60,39 +66,39 @@ class Type
     }
 
     /**
-     * default options
+     * Default options.
      *
      * @return array
      */
     public function defaultOptions()
     {
-        return array(
-            'method'            => 'Payment Method',
-            'shipping_method'   => 'Shipping Method',
-            'country_id'        => 'Shipping Country',
-            'city'              => 'Shipping Town',
-            'region_id'         => 'Shipping State/Province',
+        return [
+            'method' => 'Payment Method',
+            'shipping_method' => 'Shipping Method',
+            'country_id' => 'Shipping Country',
+            'city' => 'Shipping Town',
+            'region_id' => 'Shipping State/Province',
             'customer_group_id' => 'Customer Group',
-            'coupon_code'       => 'Coupon',
-            'subtotal'          => 'Subtotal',
-            'grand_total'       => 'Grand Total',
-            'items_qty'         => 'Total Qty',
-            'customer_email'    => 'Email',
-        );
+            'coupon_code' => 'Coupon',
+            'subtotal' => 'Subtotal',
+            'grand_total' => 'Grand Total',
+            'items_qty' => 'Total Qty',
+            'customer_email' => 'Email',
+        ];
     }
 
     /**
-     * attribute options array
+     * Attribute options array.
      *
      * @return array
      */
     public function toOptionArray()
     {
-        $defaultOptions    = $this->defaultOptions();
-        $productCondition  = $this->_productFactory;
+        $defaultOptions = $this->defaultOptions();
+        $productCondition = $this->_productFactory;
         $productAttributes = $productCondition->loadAttributeOptions()
             ->getAttributeOption();
-        $pAttributes       = array();
+        $pAttributes = [];
         foreach ($productAttributes as $code => $label) {
             if (strpos($code, 'quote_item_') === false) {
                 $pAttributes[$code] = __($label);

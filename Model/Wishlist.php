@@ -4,8 +4,6 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Wishlist extends \Magento\Framework\Model\AbstractModel
 {
-
-
     protected $_dateTime;
 
     /**
@@ -31,14 +29,13 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * constructor
+     * constructor.
      */
     public function _construct()
     {
         parent::_construct();
         $this->_init('Dotdigitalgroup\Email\Model\Resource\Wishlist');
     }
-
 
     public function getWishlist($wishListId)
     {
@@ -54,7 +51,7 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Prepare data to be saved to database
+     * Prepare data to be saved to database.
      *
      * @return $this
      */
@@ -68,6 +65,4 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
 
         return $this;
     }
-
-
 }

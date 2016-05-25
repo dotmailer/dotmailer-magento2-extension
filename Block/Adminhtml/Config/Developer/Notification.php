@@ -6,7 +6,6 @@ use Magento\Framework\Stdlib\DateTime\DateTimeFormatterInterface;
 
 class Notification extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $dateTimeFormatter;
 
     /**
@@ -22,7 +21,6 @@ class Notification extends \Magento\Config\Block\System\Config\Form\Field
         parent::__construct($context, $data);
         $this->dateTimeFormatter = $dateTimeFormatter;
     }
-
 
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element

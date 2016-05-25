@@ -5,10 +5,25 @@ namespace Dotdigitalgroup\Email\Block;
 class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
+    /**
+     * @var
+     */
     protected $_website;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
+     */
     protected $_customerFactory;
+    /**
+     * @var \Magento\Wishlist\Model\WishlistFactory
+     */
     protected $_wishlistFactory;
 
     /**
@@ -32,10 +47,15 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         parent::__construct($context, $data);
         $this->_wishlistFactory = $wishlistFactory;
         $this->_customerFactory = $customerFactory;
-        $this->helper           = $helper;
-        $this->priceHelper      = $priceHelper;
+        $this->helper = $helper;
+        $this->priceHelper = $priceHelper;
     }
 
+    /**
+     * Get wishlist items.
+     *
+     * @return mixed
+     */
     public function getWishlistItems()
     {
         $wishlist = $this->_getWishlist();
@@ -46,16 +66,19 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         }
     }
 
+    /**
+     * @return bool|\Magento\Framework\DataObject
+     */
     protected function _getWishlist()
     {
         $customerId = $this->getRequest()->getParam('customer_id');
-        if ( ! $customerId) {
+        if (!$customerId) {
             return false;
         }
 
         $customer = $this->_customerFactory->create()
             ->load($customerId);
-        if ( ! $customer->getId()) {
+        if (!$customer->getId()) {
             return false;
         }
 
@@ -69,9 +92,13 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         } else {
             return false;
         }
-
     }
 
+    /**
+     * Wishlist display mode type.
+     *
+     * @return mixed
+     */
     public function getMode()
     {
         return $this->helper->getWebsiteConfig(
@@ -79,6 +106,13 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         );
     }
 
+    /**
+     * Product url.
+     *
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

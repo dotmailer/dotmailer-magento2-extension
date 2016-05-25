@@ -5,11 +5,8 @@ namespace Dotdigitalgroup\Email\Model\Resource\Importer;
 class Collection extends
     \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
-
     /**
-     * Initialize resource collection
-     *
-     * @return void
+     * Initialize resource collection.
      */
     public function _construct()
     {
@@ -24,5 +21,4 @@ class Collection extends
     {
         $this->_reset();
     }
-
 }

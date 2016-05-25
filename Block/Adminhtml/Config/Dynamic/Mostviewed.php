@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Mostviewed extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
@@ -31,10 +30,10 @@ class Mostviewed extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //base url for dynamic content
-        $baseUrl  = $this->_dataHelper->generateDynamicUrl();
+        $baseUrl = $this->_dataHelper->generateDynamicUrl();
         $passcode = $this->_dataHelper->getPasscode();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
 

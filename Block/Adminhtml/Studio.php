@@ -2,15 +2,37 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
+/**
+ * Class Studio.
+ */
 class Studio extends \Magento\Backend\Block\Widget\Form
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Config
+     */
     protected $_configFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Backend\Model\Auth
+     */
     protected $_auth;
+    /**
+     * @var
+     */
     protected $_messageManager;
 
-
+    /**
+     * Studio constructor.
+     *
+     * @param \Magento\Backend\Model\Auth                 $auth
+     * @param \Dotdigitalgroup\Email\Helper\Config        $configFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data          $dataHelper
+     * @param \Magento\Backend\Block\Template\Context     $context
+     * @param \Magento\Framework\Message\ManagerInterface $messageManager
+     */
     public function __construct(
         \Magento\Backend\Model\Auth $auth,
         \Dotdigitalgroup\Email\Helper\Config $configFactory,
@@ -18,18 +40,16 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Message\ManagerInterface $messageManager
     ) {
-        $this->_auth          = $auth;
-        $this->_helper        = $dataHelper;
+        $this->_auth = $auth;
+        $this->_helper = $dataHelper;
         $this->_configFactory = $configFactory;
-        $this->messageManager = $messageManager;
+        $this->_messageManager = $messageManager;
 
-        parent::__construct($context, array());
+        parent::__construct($context, []);
     }
 
     /**
      * Constructor. Initialization required variables for class instance.
-     *
-     * @return void
      */
     protected function _construct()
     {
@@ -39,7 +59,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     }
 
     /**
-     * Returns page header
+     * Returns page header.
      *
      * @return \Magento\Framework\Phrase
      * @codeCoverageIgnore
@@ -50,7 +70,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     }
 
     /**
-     * Returns URL for save action
+     * Returns URL for save action.
      *
      * @return string
      * @codeCoverageIgnore
@@ -61,7 +81,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     }
 
     /**
-     * Returns website id
+     * Returns website id.
      *
      * @return int
      * @codeCoverageIgnore
@@ -72,7 +92,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     }
 
     /**
-     * Returns store id
+     * Returns store id.
      *
      * @return int
      * @codeCoverageIgnore
@@ -82,9 +102,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         return $this->getRequest()->getParam('store');
     }
 
-
     /**
-     * Returns inheritance text
+     * Returns inheritance text.
      *
      * @return \Magento\Framework\Phrase
      * @codeCoverageIgnore
@@ -94,52 +113,51 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         return __('Use Standard');
     }
 
+    /**
+     * User login url.
+     * 
+     * @return string
+     */
     public function getLoginUserHtml()
     {
         // authorize or create token.
-        $token   = $this->generatetokenAction();
+        $token = $this->generatetokenAction();
         $baseUrl = $this->_configFactory
             ->getLogUserUrl();
 
-        $loginuserUrl = $baseUrl . $token . '&suppressfooter=true';
-
+        $loginuserUrl = $baseUrl.$token.'&suppressfooter=true';
 
         return $loginuserUrl;
     }
 
-
-    /** * Generate new token and connect from the admin.
-     *
-     *   POST httpsː//my.dotmailer.com/OAuth2/Tokens.ashx HTTP/1.1
-     *   Content-Type: application/x-www-form-urlencoded
-     *   client_id=QVNY867m2DQozogTJfUmqA%253D%253D&
-     *   redirect_uri=https%3a%2f%2flocalhost%3a10999%2fcallback.aspx
-     *   &client_secret=SndpTndiSlhRawAAAAAAAA%253D%253D
-     *   &grant_type=authorization_code
+    /**
+     * Generate new token and connect from the admin.
+     * 
+     * @return string
      */
     public function generatetokenAction()
     {
         //check for secure url
-        $adminUser    = $this->_auth->getUser();
+        $adminUser = $this->_auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
 
         if ($refreshToken) {
-            $code   = $this->_helper->getCode();
+            $code = $this->_helper->getCode();
             $params = 'client_id='
-                . $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
+                .$this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
                 .
                 '&client_secret='
-                . $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID)
+                .$this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID)
                 .
-                '&refresh_token=' . $refreshToken .
+                '&refresh_token='.$refreshToken.
                 '&grant_type=refresh_token';
 
             $url = $this->_configFactory->getTokenUrl();
 
-            $this->_helper->log('token code : ' . $code . ', params : '
-                . $params);
+            $this->_helper->log('token code : '.$code.', params : '
+                .$params);
 
-            /**
+            /*
              * Refresh Token request.
              */
             $ch = curl_init();
@@ -147,7 +165,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_POST, count($params));
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
             curl_setopt($ch, CURLOPT_HTTPHEADER,
@@ -156,8 +174,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
             $response = json_decode(curl_exec($ch));
 
             if (isset($response->error)) {
-                $this->_helper->log("Token Error Number:" . curl_errno($ch)
-                    . "Error String:" . curl_error($ch));
+                $this->_helper->log('Token Error Number:'.curl_errno($ch)
+                    .'Error String:'.curl_error($ch));
             }
             curl_close($ch);
             $token = '';
@@ -170,13 +188,10 @@ class Studio extends \Magento\Backend\Block\Widget\Form
             }
 
             return $token;
-
         } else {
-            $this->messageManager->addNotice('Please Connect To Access The Page.');
+            $this->_messageManager->addNotice('Please Connect To Access The Page.');
 
             return '';
         }
-
     }
-
 }
