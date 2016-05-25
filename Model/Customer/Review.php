@@ -48,7 +48,7 @@ class Review
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */

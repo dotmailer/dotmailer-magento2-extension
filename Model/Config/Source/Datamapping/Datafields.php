@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 
 class Datafields implements \Magento\Framework\Option\ArrayInterface
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -14,7 +13,6 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
      * @var \Magento\Framework\Registry
      */
     protected $_registry;
-    
 
     /**
      * Configuration structure.
@@ -70,7 +68,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
                 //message
                 $fields[] = [
                     'value' => 0,
-                    'label' => $datafields->message
+                    'label' => $datafields->message,
                 ];
             } else {
                 //loop for all datafields option
@@ -78,7 +76,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
                     if (isset($datafield->name)) {
                         $fields[] = [
                             'value' => $datafield->name,
-                            'label' => $datafield->name
+                            'label' => $datafield->name,
                         ];
                     }
                 }

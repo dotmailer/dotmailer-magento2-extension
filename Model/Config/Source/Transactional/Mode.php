@@ -12,7 +12,7 @@ class Mode
     public function toOptionArray()
     {
         return [
-            ['value' => 'smtp', 'label' => 'SMTP']
+            ['value' => 'smtp', 'label' => 'SMTP'],
         ];
     }
 }

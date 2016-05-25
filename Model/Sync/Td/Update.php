@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
 class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
-
     /**
      * Sync.
      * 

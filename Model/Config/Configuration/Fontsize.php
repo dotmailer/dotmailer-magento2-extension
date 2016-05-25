@@ -26,7 +26,7 @@ class Fontsize
             ['value' => '19px', 'label' => '19px'],
             ['value' => '20px', 'label' => '20px'],
             ['value' => '21px', 'label' => '21px'],
-            ['value' => '22px', 'label' => '22px']
+            ['value' => '22px', 'label' => '22px'],
         ];
     }
 }

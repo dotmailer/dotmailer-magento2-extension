@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 class Contact
 {
-
     /**
      * @var
      */
@@ -555,7 +554,7 @@ class Contact
             [
                 'last_logged_date' => new \Zend_Db_Expr(
                     "(SELECT last_login_at FROM  $customerLog WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)"
-                )
+                ),
             ]
         );
 
@@ -575,7 +574,7 @@ class Contact
                     'customer_id as s_customer_id',
                     'sum(grand_total) as total_spend',
                     'count(*) as number_of_orders',
-                    'avg(grand_total) as average_order_value'
+                    'avg(grand_total) as average_order_value',
                 ]
             )
             ->group('customer_id');

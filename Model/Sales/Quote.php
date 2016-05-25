@@ -354,7 +354,7 @@ class Quote
         $updated = [
             'from' => $from,
             'to' => $to,
-            'date' => true
+            'date' => true,
         ];
 
         $salesCollection = $this->_quoteCollection->create()
@@ -434,7 +434,7 @@ class Quote
         $updated = [
             'from' => $fromDate,
             'to' => $toDate,
-            'date' => true
+            'date' => true,
         ];
 
         //total campaigns sent for this interval of time

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Attributes
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -34,7 +33,7 @@ class Attributes
         foreach ($fields as $key => $field) {
             $customFields[] = [
                 'value' => $field['COLUMN_NAME'],
-                'label' => $field['COLUMN_NAME']
+                'label' => $field['COLUMN_NAME'],
             ];
         }
 

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
 class Bulk
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */

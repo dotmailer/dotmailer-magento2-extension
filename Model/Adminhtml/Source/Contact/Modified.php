@@ -13,7 +13,7 @@ class Modified
     {
         return [
             '1' => __('Modified'),
-            'null' => __('Not Modified')
+            'null' => __('Not Modified'),
         ];
     }
 }

@@ -32,6 +32,9 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     //error messages
     const SEND_EMAIL_CONTACT_ID_MISSING = 'Error : missing contact id - will try later to send ';
 
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime
+     */
     protected $_dateTime;
 
     /**
@@ -56,7 +59,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * constructor.
+     * Constructor.
      */
     public function _construct()
     {
@@ -65,8 +68,10 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $quoteId
-     * @param $storeId
+     * Get campaign by quote id.
+     * 
+     * @param int $quoteId
+     * @param int $storeId
      *
      * @return mixed
      */

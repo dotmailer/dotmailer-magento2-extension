@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes;
 
 class Select
 {
-
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
@@ -44,7 +43,7 @@ class Select
             'prefix',
             'rp_token',
             'rp_token_create_at',
-            'website_id'
+            'website_id',
         ];
         $attributes = $this->_customerFactory->create()
             ->getAttributes();
@@ -57,7 +56,7 @@ class Select
                 if (!in_array($code, $excluded)) {
                     $options[] = [
                         'value' => $attribute->getAttributeCode(),
-                        'label' => $label
+                        'label' => $label,
                     ];
                 }
             }

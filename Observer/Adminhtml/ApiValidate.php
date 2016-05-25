@@ -2,46 +2,52 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
-use Magento\Framework\Event\ObserverInterface;
-
-class ApiValidate implements ObserverInterface
+class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Backend\App\Action\Context
+     */
     protected $_context;
-    protected $_request;
-    protected $_storeManager;
+
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
     protected $messageManager;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
     protected $_objectManager;
+    /**
+     * @var \Magento\Framework\App\Config\Storage\Writer
+     */
     protected $_writer;
 
     /**
      * ApiValidate constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory  $contactFactory
      * @param \Dotdigitalgroup\Email\Helper\Data           $data
      * @param \Magento\Backend\App\Action\Context          $context
-     * @param \Magento\Store\Model\StoreManagerInterface   $storeManagerInterface
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\App\Config\Storage\Writer $writer
     ) {
-        $this->_helper         = $data;
-        $this->_context        = $context;
-        $this->_contactFactory = $contactFactory;
-        $this->_request        = $context->getRequest();
-        $this->_storeManager   = $storeManagerInterface;
-        $this->messageManager  = $context->getMessageManager();
-        $this->_objectManager  = $context->getObjectManager();
-        $this->_writer         = $writer;
+        $this->_helper = $data;
+        $this->_context = $context;
+        $this->messageManager = $context->getMessageManager();
+        $this->_objectManager = $context->getObjectManager();
+        $this->_writer = $writer;
     }
 
     /**
+     * Execute method.
+     * 
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
@@ -79,13 +85,8 @@ class ApiValidate implements ObserverInterface
                     }
                 }
 
-                /**
-                 * Send install info
-                 */
-                //$testModel->sendInstallConfirmation();
                 $this->messageManager->addSuccess(__('API Credentials Valid.'));
             } else {
-
                 $this->messageManager->addWarning(__('Authorization has been denied for this request.'));
             }
         }
@@ -93,6 +94,11 @@ class ApiValidate implements ObserverInterface
         return $this;
     }
 
+    /**
+     * Save api endpoint into config.
+     * 
+     * @param string $apiEndpoint
+     */
     protected function _saveApiEndpoint($apiEndpoint)
     {
         $this->_writer->save(

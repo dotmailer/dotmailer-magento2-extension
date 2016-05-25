@@ -37,7 +37,7 @@ class Subscriber
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */

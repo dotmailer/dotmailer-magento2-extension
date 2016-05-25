@@ -14,7 +14,7 @@ class Condition
         $options = [
             ['value' => 'eq', 'label' => __('is')],
             ['value' => 'neq', 'label' => __('is not')],
-            ['value' => 'null', 'label' => __('is empty')]
+            ['value' => 'null', 'label' => __('is empty')],
         ];
 
         return $options;
@@ -76,7 +76,7 @@ class Condition
         $options[] = ['value' => 'like', 'label' => __('contains')];
         $options[] = [
             'value' => 'nlike',
-            'label' => __('does not contains')
+            'label' => __('does not contains'),
         ];
 
         return $options;

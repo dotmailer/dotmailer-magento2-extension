@@ -197,7 +197,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param string|int $id
      *
-     * @return null
      * @throws \Exception
      */
     public function getContactById($id)
@@ -253,7 +252,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: multipart/form-data'
+                'Content-Type: multipart/form-data',
             ]
         );
         // send contacts to address book
@@ -368,7 +367,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Get all address books.
      *
-     * @return null
      * @throws \Exception
      */
     public function getAddressBooks()
@@ -392,7 +390,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param string|int $id
      *
-     * @return null
      * @throws \Exception
      */
     public function getAddressBookById($id)
@@ -418,14 +415,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $name
      * @param string $visibility
      *
-     * @return null
      * @throws \Exception
      */
     public function postAddressBooks($name, $visibility = 'Public')
     {
         $data = [
             'Name' => $name,
-            'Visibility' => $visibility
+            'Visibility' => $visibility,
         ];
         $url = $this->_apiEndpoint.self::REST_ADDRESS_BOOKS;
         $this->setUrl($url)
@@ -446,7 +442,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Get list of all campaigns.
      *
-     * @return null
      * @throws \Exception
      */
     public function getCampaigns()
@@ -565,7 +560,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param $contactId
      *
-     * @return null
      * @throws \Exception
      */
     public function deleteContact($contactId)
@@ -591,6 +585,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param $dataFields
      *
      * @return mixed|null
+     *
      * @throws \Exception
      */
     public function updateContactDatafieldsByEmail($email, $dataFields)
@@ -640,7 +635,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             'username' => $this->getApiUsername(),
             'password' => $this->getApiPassword(),
             'campaignId' => $campaignId,
-            'ContactIds' => $contacts
+            'ContactIds' => $contacts,
         ];
         $this->setUrl($this->_apiEndpoint.self::REST_CAMPAIGN_SEND)
             ->setVerb('POST')
@@ -661,7 +656,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param string $email
      *
-     * @return null
      * @throws \Exception
      */
     public function postContacts($email)
@@ -669,7 +663,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $url = $this->_apiEndpoint.self::REST_CONTACTS;
         $data = [
             'Email' => $email,
-            'EmailType' => 'Html'
+            'EmailType' => 'Html',
         ];
         $this->setUrl($url)
             ->setVerb('POST')
@@ -724,7 +718,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $transactionalData
      * @param string $collectionName
      *
-     * @return null
      * @throws \Exception
      */
     public function postContactsTransactionalDataImport(
@@ -763,7 +756,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $data
      * @param string $collectionName
      *
-     * @return null
      * @throws \Exception
      */
     public function postContactsTransactionalData(
@@ -807,7 +799,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param $name
      * @param $key
      *
-     * @return null
      * @throws \Exception
      */
     public function getContactsTransactionalDataByKey($name, $key)
@@ -826,7 +817,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $email
      * @param string $collectionName
      *
-     * @return null
      * @throws \Exception
      */
     public function deleteContactTransactionalData(
@@ -844,7 +834,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a summary of information about the current status of the account.
      *
-     * @return null
      * @throws \Exception
      */
     public function getAccountInfo()
@@ -920,7 +909,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets all custom from addresses which can be used in a campaign.
      * 
-     * @return null
      * @throws \Exception
      */
     public function getCustomFromAddresses()
@@ -945,7 +933,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * 
      * @param $data
      *
-     * @return null
      * @throws \Exception
      */
     public function postCampaign($data)
@@ -969,7 +956,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *  * Gets all programs.
      * https://apiconnector.com/v2/programs?select={select}&skip={skip}.
      * 
-     * @return null
      * @throws \Exception
      */
     public function getPrograms()
@@ -993,7 +979,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * 
      * @param $data
      *
-     * @return null
      * @throws \Exception
      */
     public function postProgramsEnrolments($data)
@@ -1019,7 +1004,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * 
      * @param $id
      *
-     * @return null
      * @throws \Exception
      */
     public function getProgramById($id)
@@ -1042,7 +1026,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * 
      * @param string $campaignId
      *
-     * @return null
      * @throws \Exception
      */
     public function getCampaignSummary($campaignId)
@@ -1069,7 +1052,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $key
      * @param string $collectionName
      *
-     * @return null
      * @throws \Exception
      */
     public function deleteContactsTransactionalData(
@@ -1097,7 +1079,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param $campaignId
      * @param $data
      *
-     * @return null
      * @throws \Exception
      */
     public function postCampaignAttachments($campaignId, $data)
@@ -1191,7 +1172,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $transactionalData
      * @param string $collectionName
      *
-     * @return null
      * @throws \Exception
      */
     public function postAccountTransactionalDataImport(
@@ -1224,13 +1204,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         return $response;
     }
-    
+
     /**
      * Gets the import status of a previously started contact import.
      * 
      * @param $importId
      *
-     * @return null
      * @throws \Exception
      */
     public function getContactsImportByImportId($importId)
@@ -1282,6 +1261,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param $id
      *
      * @return bool|null
+     *
      * @throws \Exception
      */
     public function getContactImportReportFaults($id)

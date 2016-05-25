@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
 class Campaigns implements \Magento\Framework\Option\ArrayInterface
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -60,7 +59,7 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
                     if (isset($campaign->name)) {
                         $fields[] = [
                             'value' => $campaign->id,
-                            'label' => addslashes($campaign->name)
+                            'label' => addslashes($campaign->name),
                         ];
                     }
                 }

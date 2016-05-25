@@ -1,7 +1,7 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Model\Config\Automation;
-           
+
 class Delay
 {
     /**
@@ -23,7 +23,7 @@ class Delay
             ['value' => 14, 'label' => '14'],
             ['value' => 30, 'label' => '30'],
             ['value' => 60, 'label' => '60'],
-            ['value' => 90, 'label' => '90']
+            ['value' => 90, 'label' => '90'],
         ];
     }
 }

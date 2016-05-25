@@ -18,7 +18,7 @@ class Intervalminute implements \Magento\Framework\Option\ArrayInterface
             ['value' => '30', 'label' => __('30 Minutes')],
             ['value' => '40', 'label' => __('40 Minutes')],
             ['value' => '50', 'label' => __('50 Minutes')],
-            ['value' => '60', 'label' => __('60 Minutes')]
+            ['value' => '60', 'label' => __('60 Minutes')],
         ];
     }
 }

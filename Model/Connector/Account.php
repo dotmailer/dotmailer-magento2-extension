@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 class Account
 {
-
     /**
      * @var
      */
@@ -167,7 +166,7 @@ class Account
     {
         $this->_customersFilename = $customersFilename;
     }
-    
+
     /**
      * @return mixed
      */

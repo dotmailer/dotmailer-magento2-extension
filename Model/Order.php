@@ -7,7 +7,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
     const EMAIL_ORDER_NOT_IMPORTED = null;
 
     /**
-     * constructor.
+     * Constructor.
      */
     public function _construct()
     {
@@ -18,8 +18,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Load the email order by quote id.
      *
-     * @param $orderId
-     * @param $quoteId
+     * @param int $orderId
+     * @param int $quoteId
      *
      * @return $this|\Magento\Framework\DataObject
      */
@@ -41,9 +41,11 @@ class Order extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $orderId
-     * @param $quoteId
-     * @param $storeId
+     * Get connector order.
+     *
+     * @param int $orderId
+     * @param int $quoteId
+     * @param int $storeId
      *
      * @return $this|\Magento\Framework\DataObject
      */
@@ -69,9 +71,9 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Get all orders with particular status within certain days.
      *
-     * @param            $storeIds
-     * @param            $limit
-     * @param            $orderStatuses
+     * @param array      $storeIds
+     * @param int        $limit
+     * @param array      $orderStatuses
      * @param bool|false $modified
      *
      * @return $this
@@ -83,8 +85,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
         $modified = false
     ) {
         $collection = $this->getCollection()
-            ->addFieldToFilter('store_id', array('in' => $storeIds))
-            ->addFieldToFilter('order_status', array('in' => $orderStatuses));
+            ->addFieldToFilter('store_id', ['in' => $storeIds])
+            ->addFieldToFilter('order_status', ['in' => $orderStatuses]);
 
         if ($modified) {
             $collection
@@ -92,7 +94,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
                 ->addFieldToFilter('modified', 1);
         } else {
             $collection->addFieldToFilter(
-                'email_imported', array('null' => true)
+                'email_imported', ['null' => true]
             );
         }
 
@@ -104,8 +106,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Get all sent orders older then certain days.
      *
-     * @param $storeIds
-     * @param $limit
+     * @param array $storeIds
+     * @param int   $limit
      *
      * @return $this
      */
@@ -113,7 +115,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('email_imported', 1)
-            ->addFieldToFilter('store_id', array('in' => $storeIds));
+            ->addFieldToFilter('store_id', ['in' => $storeIds]);
 
         $collection->getSelect()->limit($limit);
 

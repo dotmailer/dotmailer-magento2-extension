@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 class Customer
 {
-
     /**
      * @var
      */
@@ -77,7 +76,7 @@ class Customer
             \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
             \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
             \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-            \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed'
+            \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed',
         ];
 
     /**
@@ -131,6 +130,7 @@ class Customer
      * @param $customer
      *
      * @return $this
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setCustomerData($customer)
@@ -971,7 +971,6 @@ class Customer
 
     /**
      * Get the customer reward.
-     * 
      */
     protected function _setReward()
     {

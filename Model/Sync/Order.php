@@ -4,7 +4,10 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Order
 {
-    protected $accounts = array();
+    /**
+     * @var array
+     */
+    protected $accounts = [];
     /**
      * @var string
      */
@@ -21,23 +24,57 @@ class Order
      */
     protected $_countOrders = 0;
 
+    /**
+     * @var
+     */
     protected $_orderIds;
+    /**
+     * @var
+     */
     protected $_orderIdsForSingleSync;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
     protected $_resource;
-    protected $_scopeConfig;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
     protected $_contactFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\OrderFactory
+     */
     protected $_orderFactory;
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
     protected $_salesOrderFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Connector\OrderFactory
+     */
     protected $_connectorOrderFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Connector\AccountFactory
+     */
     protected $_accountFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     */
     protected $_importerFactory;
 
     /**
      * Order constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory          $importerFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
      * @param \Magento\Sales\Model\OrderFactory                     $salesOrderFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory   $connectorOrderFactory
@@ -46,7 +83,6 @@ class Order
      * @param \Magento\Framework\App\ResourceConnection             $resource
      * @param \Dotdigitalgroup\Email\Helper\Data                    $helper
      * @param \Magento\Store\Model\StoreManagerInterface            $storeManagerInterface
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -57,8 +93,7 @@ class Order
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->_importerFactory = $importerFactory;
         $this->_connectorOrderFactory = $connectorOrderFactory;
@@ -69,7 +104,6 @@ class Order
         $this->_helper = $helper;
         $this->_storeManager = $storeManagerInterface;
         $this->_resource = $resource;
-        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
@@ -81,7 +115,7 @@ class Order
      */
     public function sync()
     {
-        $response = array('success' => true, 'message' => 'Done.');
+        $response = ['success' => true, 'message' => 'Done.'];
 
         // Initialise a return hash containing results of our sync attempt
         $this->_searchAccounts();
@@ -114,7 +148,7 @@ class Order
                             $website[0]
                         );
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string) $e, array());
+                    $this->_helper->debug((string) $e, []);
                     throw new \Magento\Framework\Exception\LocalizedException(
                         __($e->getMessage())
                     );
@@ -162,10 +196,12 @@ class Order
 
     /**
      * Search the configuration data per website.
+     * 
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _searchAccounts()
     {
-        $this->_orderIds = array();
+        $this->_orderIds = [];
         $websites = $this->_helper->getWebsites(true);
         foreach ($websites as $website) {
             $apiEnabled = $this->_helper->isEnabled($website);
@@ -174,10 +210,7 @@ class Order
             if ($apiEnabled
                 && $this->_helper->getWebsiteConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-                    $website
-                )
-                &&
-                !empty($storeIds)
+                    $website) && !empty($storeIds)
             ) {
                 $this->_apiUsername = $this->_helper->getApiUsername($website);
                 $this->_apiPassword = $this->_helper->getApiPassword($website);
@@ -212,7 +245,7 @@ class Order
     }
 
     /**
-     * get all orders to import.
+     * Get all orders to import.
      *
      * @param            $website
      * @param int        $limit
@@ -227,11 +260,11 @@ class Order
         $limit = 100,
         $modified = false
     ) {
-        $orders = $customers = array();
+        $orders = [];
         $storeIds = $website->getStoreIds();
         $orderModel = $this->_orderFactory->create();
         if (empty($storeIds)) {
-            return array();
+            return [];
         }
 
         $orderStatuses = $this->_helper->getConfigSelectedStatus($website);
@@ -248,7 +281,7 @@ class Order
                 );
             }
         } else {
-            return array();
+            return [];
         }
 
         foreach ($orderCollection as $order) {
@@ -278,7 +311,7 @@ class Order
                     $this->_orderIds[] = $order->getOrderId();
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string) $e, array());
+                $this->_helper->debug((string) $e, []);
                 throw new \Magento\Framework\Exception\LocalizedException(
                     __($e->getMessage())
                 );
@@ -295,7 +328,7 @@ class Order
      * @param $websiteId
      * @param $storeId
      *
-     * @return bool|void
+     * @return bool
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -361,7 +394,7 @@ class Order
                 .' ,store : '.$storeId
             );
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, array());
+            $this->_helper->debug((string) $e, []);
             throw new \Magento\Framework\Exception\LocalizedException(
                 __($e->getMessage())
             );
@@ -371,7 +404,7 @@ class Order
     }
 
     /**
-     * set imported in bulk query.
+     * Set imported in bulk query.
      *
      * @param            $ids
      * @param bool|false $modified
@@ -388,24 +421,22 @@ class Order
 
             if ($modified) {
                 $write->update(
-                    $tableName, array(
+                    $tableName, [
                         'modified' => new \Zend_Db_Expr('null'),
                         'updated_at' => gmdate('Y-m-d H:i:s'),
                         "order_id IN ($ids)",
-                    )
+                    ]
                 );
             } else {
                 $write->update(
-                    $tableName, array(
+                    $tableName, [
                     'email_imported' => 1,
-                    'updated_at' => gmdate(
-                        'Y-m-d H:i:s'
-                    ),
-                ), "order_id IN ($ids)"
+                    'updated_at' => gmdate('Y-m-d H:i:s'),
+                ], "order_id IN ($ids)"
                 );
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, array());
+            $this->_helper->debug((string) $e, []);
         }
     }
 }

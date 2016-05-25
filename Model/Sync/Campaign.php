@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Campaign
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */

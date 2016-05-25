@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Catalogtype
 {
-
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Productattributes
 {
-
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection
      */
@@ -34,13 +33,13 @@ class Productattributes
         $attributeArray = [];
         $attributeArray[] = [
             'label' => __('---- Default Option ----'),
-            'value' => '0'
+            'value' => '0',
         ];
 
         foreach ($attributes as $attribute) {
             $attributeArray[] = [
                 'label' => $attribute->getFrontendLabel(),
-                'value' => $attribute->getAttributeCode()
+                'value' => $attribute->getAttributeCode(),
             ];
         }
 

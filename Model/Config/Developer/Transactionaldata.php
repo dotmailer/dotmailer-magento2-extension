@@ -17,7 +17,7 @@ class Transactionaldata
             ['value' => '200', 'label' => '200'],
             ['value' => '300', 'label' => '300'],
             ['value' => '400', 'label' => '400'],
-            ['value' => '500', 'label' => '500']
+            ['value' => '500', 'label' => '500'],
         ];
     }
 }

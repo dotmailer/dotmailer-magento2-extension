@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Automation;
 
 class Program
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -68,7 +67,7 @@ class Program
                     if ($one->status == 'Active') {
                         $fields[] = [
                             'value' => $one->id,
-                            'label' => __($one->name)
+                            'label' => __($one->name),
                         ];
                     }
                 }
