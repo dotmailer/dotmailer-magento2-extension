@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Controller\Customer;
 
 class Newsletter extends \Magento\Framework\App\Action\Action
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */

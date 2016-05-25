@@ -40,7 +40,7 @@ class Bulk
 
     /**
      * Sync.
-     * 
+     *
      * @param $collection
      */
     public function sync($collection)
@@ -61,7 +61,7 @@ class Bulk
                     $file, $addressBook
                 );
 
-                $this->_handleItemAfterSync($item, $result, $file);
+                $this->_handleItemAfterSync($item, $result);
             }
         }
     }
@@ -98,22 +98,19 @@ class Bulk
     }
 
     /**
+     * Proccess item after sync.
+     *
      * @param      $item
      * @param      $result
      * @param bool $file
      */
-    protected function _handleItemAfterSync($item, $result, $file = false)
+    protected function _handleItemAfterSync($item, $result)
     {
         if (isset($result->message) && !isset($result->id)) {
             $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
                 ->setMessage($result->message)
                 ->save();
         } elseif (isset($result->id) && !isset($result->message)) {
-            //if file
-            if ($file) {
-                $this->_fileHelper->archiveCSV($file);
-            }
-
             $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
                 ->setImportId($result->id)
                 ->setImportStarted(time())

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Controller\Feefo;
 
 class Reviews extends \Dotdigitalgroup\Email\Controller\Response
 {
-
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -18,7 +17,7 @@ class Reviews extends \Dotdigitalgroup\Email\Controller\Response
 
             return;
         }
-        
+
         $this->_view->loadLayout();
         $this->_view->renderLayout();
     }

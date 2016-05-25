@@ -23,7 +23,6 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $_helper;
-
     /**
      * Trial constructor.
      *
@@ -61,9 +60,9 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         {
-            $html = '<a class="various fancybox.iframe" data-fancybox-type="iframe" href='.
-                $this->_getIframeFormUrl().'><img style="margin-bottom:15px;" src='.
-                $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png').
+            $html = '<a class="various fancybox.iframe" data-fancybox-type="iframe" href=' .
+                $this->_getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
+                $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
             $script = "
             <script type='text/javascript'>
@@ -86,8 +85,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
             </script>
         ";
         }
-
-        return $html.$script;
+        return $html . $script;
     }
 
     /**
@@ -98,24 +96,21 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     protected function _getIframeFormUrl()
     {
         $formUrl = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_URL;
-        $ipAddress = '139.42.78.220';
+        $ipAddress = $this->_remoteAddress->getRemoteAddress();
         $timezone = $this->_getTimeZoneId();
         $culture = $this->_getCultureId();
         $company = $this->_helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
         $callback = $this->_storeManager->getStore()
-                ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true).'connector/email/accountcallback';
-        $secret = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_SECRET;
+                ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
         //query params
         $params = [
             'callback' => $callback,
             'company' => $company,
             'culture' => $culture,
             'timezone' => $timezone,
-            'ip' => $ipAddress,
-            'secret' => $secret,
+            'ip' => $ipAddress
         ];
-        $url = $formUrl.'?'.http_build_query($params);
-
+        $url = $formUrl . '?' . http_build_query($params);
         return $url;
     }
 

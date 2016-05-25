@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Controller\Report;
 
 class Recentlyviewed extends \Dotdigitalgroup\Email\Controller\Response
 {
-
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */

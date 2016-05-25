@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 
 class Accountcallback extends \Magento\Framework\App\Action\Action
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -21,85 +20,91 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
+    protected $_ipRange = array(
+        '104.40.179.234',
+        '104.40.159.161',
+        '191.233.82.46',
+        '104.46.48.100',
+        '104.40.187.26',
+    );
+    protected $_remoteAddress;
 
     /**
      * Accountcallback constructor.
      *
-     * @param \Magento\Framework\App\Action\Context            $context
-     * @param \Dotdigitalgroup\Email\Helper\Data               $helper
-     * @param \Magento\Framework\Json\Helper\Data              $jsonHelper
-     * @param \Magento\Store\Model\StoreManagerInterface       $storeManager
-     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
+     * @param \Magento\Framework\App\Action\Context                $context
+     * @param \Dotdigitalgroup\Email\Helper\Data                   $helper
+     * @param \Magento\Framework\Json\Helper\Data                  $jsonHelper
+     * @param \Magento\Store\Model\StoreManagerInterface           $storeManager
+     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield     $dataField
+     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
+        \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
+        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
     ) {
         $this->_helper = $helper;
         $this->_jsonHelper = $jsonHelper;
         $this->_dataField = $dataField;
         $this->_storeManager = $storeManager;
+        $this->_remoteAddress = $remoteAddress;
 
         parent::__construct($context);
     }
 
-    /**
-     * Execute method.
-     */
     public function execute()
     {
         $params = $this->getRequest()->getParams();
-        $error = false;
-        if (!empty($params['accountId']) && !empty($params['apiUser'])
-            && !empty($params['pass']) && !empty($params['secret'])) {
-            if ($params['secret'] == \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_SECRET) {
-                $apiConfigStatus = $this->_saveApiCreds($params['apiUser'], $params['pass']);
-                $dataFieldsStatus = $this->_setupDataFields($params['apiUser'], $params['pass']);
-                $addressBookStatus = $this->_createAddressBooks($params['apiUser'], $params['pass']);
-                $syncStatus = $this->_enableSyncForTrial();
-                if (isset($params['apiEndpoint'])) {
-                    $this->_saveApiEndPoint($params['apiEndpoint']);
-                }
-                if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
-                    $this->sendAjaxResponse(false, $this->_getSuccessHtml());
-                } else {
-                    $error = true;
-                }
-            } else {
-                $error = true;
-            }
-        } else {
-            $error = true;
+
+        //if ip is not in range or any of the required params not set send error response
+        if (!in_array($this->_remoteAddress->getRemoteAddress(), $this->_ipRange) or
+            !isset($params['accountId']) or !isset($params['apiUser']) or !isset($params['pass'])
+        ) {
+            $this->sendAjaxResponse(true, $this->_getErrorHtml());
         }
 
-        //If error true then send error html
-        if ($error) {
+        //if no value to any of the required params send error response
+        if (empty($params['accountId']) or empty($params['apiUser']) or empty($params['pass'])) {
+            $this->sendAjaxResponse(true, $this->_getErrorHtml());
+        }
+
+        $apiConfigStatus = $this->_saveApiCreds($params['apiUser'], $params['pass']);
+        $dataFieldsStatus = $this->_setupDataFields($params['apiUser'], $params['pass']);
+        $addressBookStatus = $this->_createAddressBooks($params['apiUser'], $params['pass']);
+        $syncStatus = $this->_enableSyncForTrial();
+        if (isset($params['apiEndpoint'])) {
+            $this->_saveApiEndPoint($params['apiEndpoint']);
+        }
+        if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
+            $this->sendAjaxResponse(false, $this->_getSuccessHtml());
+        } else {
             $this->sendAjaxResponse(true, $this->_getErrorHtml());
         }
     }
 
     /**
-     * Send ajax response.
+     * send ajax response.
      *
      * @param $error
      * @param $msg
      */
     public function sendAjaxResponse($error, $msg)
     {
-        $message = [
+        $message = array(
             'err' => $error,
             'message' => $msg,
-        ];
+        );
         $this->getResponse()->setBody(
             $this->getRequest()->getParam('callback').'('.$this->_jsonHelper->jsonEncode($message).')'
         )->sendResponse();
     }
 
     /**
-     * Get success html.
+     * get success html.
      *
      * @return string
      */
@@ -116,7 +121,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Get error html.
+     * get error html.
      *
      * @return string
      */
@@ -133,7 +138,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Save api credentioals.
+     * save api credentials.
      *
      * @param $apiUser
      * @param $apiPass
@@ -159,7 +164,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Setup data fields.
+     * setup data fields.
      *
      * @param $username
      * @param $password
@@ -196,7 +201,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Create certain address books.
+     * create certain address books.
      *
      * @param $username
      * @param $password
@@ -205,16 +210,16 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      */
     protected function _createAddressBooks($username, $password)
     {
-        $addressBooks = [
-            ['name' => 'Magento_Customers', 'visibility' => 'Private'],
-            ['name' => 'Magento_Subscribers', 'visibility' => 'Private'],
-            ['name' => 'Magento_Guests', 'visibility' => 'Private'],
-        ];
-        $addressBookMap = [
+        $addressBooks = array(
+            array('name' => 'Magento_Customers', 'visibility' => 'Private'),
+            array('name' => 'Magento_Subscribers', 'visibility' => 'Private'),
+            array('name' => 'Magento_Guests', 'visibility' => 'Private'),
+        );
+        $addressBookMap = array(
             'Magento_Customers' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
             'Magento_Subscribers' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
             'Magento_Guests' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
-        ];
+        );
         $error = false;
         $client = $this->_helper->getWebsiteApiClient(0, $username, $password);
         if (!$client) {
@@ -241,7 +246,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Enable certain syncs for newly created trial account.
+     * enable certain syncs for newly created trial account.
      *
      * @return bool
      */
@@ -264,7 +269,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Save api endpoint.
+     * save api endpoint.
      *
      * @param $value
      */
@@ -276,7 +281,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Check if both frotnend and backend secure(HTTPS).
+     * check if both frotnend and backend secure(HTTPS).
      *
      * @return bool
      */

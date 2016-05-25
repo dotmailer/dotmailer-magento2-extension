@@ -93,6 +93,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get transactional log enabled.
+     *
      * @return bool
      */
     public function isDebugEnabled()
@@ -114,7 +115,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
             'auth' => 'login',
             'username' => $this->getSmtpUsername(),
             'password' => $this->getSmtpPassword(),
-            'ssl' => 'tls'
+            'ssl' => 'tls',
         ];
 
         if ($this->isDebugEnabled()) {

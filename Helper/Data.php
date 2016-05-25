@@ -6,7 +6,6 @@ use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
     /**
      * @var object
      */
@@ -93,7 +92,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $website
         );
 
-        return (bool)$enabled;
+        return (bool) $enabled;
     }
 
     /**
@@ -347,7 +346,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED
         );
     }
-
 
     /**
      * Is the Roi page tracking enabled.
@@ -1092,8 +1090,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get the config id by the automation type.
      *
-     * @param string  $automationType
-     * @param int $websiteId
+     * @param string $automationType
+     * @param int    $websiteId
      *
      * @return mixed
      */

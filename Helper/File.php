@@ -144,10 +144,10 @@ class File
      */
     public function outputCSV($filepath, $csv)
     {
-        /**
+        /*
          * Open for writing only; place the file pointer at the end of the file.
          * If the file does not exist, attempt to create it.
-         */ 
+         */
         $handle = fopen($filepath, 'a');
 
         // for some reason passing the preset delimiter/enclosure variables results in error
@@ -171,7 +171,7 @@ class File
     {
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
-        } 
+        }
     }
 
     /**

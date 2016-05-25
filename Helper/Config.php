@@ -117,7 +117,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * CONFIGURATION SECTION.
      */
-    
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS = 'connector_configuration/data_fields/order_status';
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE = 'connector_configuration/data_fields/brand_attribute';
 
@@ -250,7 +249,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      * Trial Account.
      */
     const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';
-    const API_CONNECTOR_TRIAL_FORM_SECRET = 'DmTrialFormSecret';
 
     protected $_storeManager;
 

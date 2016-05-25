@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 
 class Getbasket extends \Magento\Framework\App\Action\Action
 {
-
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
