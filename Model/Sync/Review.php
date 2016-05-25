@@ -23,14 +23,14 @@ class Review
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $reviewCollection
-     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory     $ratingFactory
-     * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory            $connectorFactory
-     * @param \Magento\Customer\Model\CustomerFactory                        $customerFactory
-     * @param \Magento\Catalog\Model\ProductFactory                          $productFactory
-     * @param \Magento\Review\Model\ReviewFactory                            $reviewFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                             $data
-     * @param \Magento\Framework\App\ResourceConnection                      $resource
-     * @param \Magento\Framework\Stdlib\Datetime                             $datetime
+     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory
+     * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Review\Model\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Magento\Framework\Stdlib\Datetime $datetime
      * @param \Magento\Review\Model\Rating\Option\Vote $vote
      */
     public function __construct(
@@ -158,7 +158,7 @@ class Review
                     }
                     $this->_reviews[$website->getId()][] = $connectorReview;
                     $this->_reviewIds[]
-                                                         = $review->getReviewId();
+                        = $review->getReviewId();
                 } catch (\Exception $e) {
                     $this->_helper->debug((string)$e, array());
                 }

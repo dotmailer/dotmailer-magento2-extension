@@ -256,7 +256,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Config constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context      $context
+     * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -270,7 +270,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Authorization link for OAUTH.
-     * 
+     *
      * @param int $website
      *
      * @return string
@@ -293,7 +293,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Is authorization link for custom domain set.
-     * 
+     *
      * @param int $website
      *
      * @return bool
@@ -329,7 +329,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Token url for OAUTH.
-     * 
+     *
      * @param int $website
      *
      * @return string

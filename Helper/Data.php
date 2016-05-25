@@ -170,7 +170,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    protected function _getConfigValue($path, $contextScope = 'default',
+    protected function _getConfigValue(
+        $path,
+        $contextScope = 'default',
         $contextScopeId = null
     ) {
         $config = $this->scopeConfig->getValue(
@@ -412,7 +414,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Api client by website.
      *
-     * @param int    $website
+     * @param int $website
      * @param string $username
      * @param string $password
      *
@@ -1203,7 +1205,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Dynamic styles from config.
-     * 
+     *
      * @return array
      */
     public function getDynamicStyles()
@@ -1301,7 +1303,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get review setting delay time.
-     * 
+     *
      * @param $website
      *
      * @return int
@@ -1320,24 +1322,26 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isNewProductOnly($website)
     {
-        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_NEW_PRODUCT, $website);
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_NEW_PRODUCT,
+            $website);
     }
 
     /**
      * Get review campaign for automation review.
-     * 
+     *
      * @param $website
      *
      * @return int
      */
     public function getCampaign($website)
     {
-        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_CAMPAIGN, $website);
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_CAMPAIGN,
+            $website);
     }
 
     /**
      * Get review anchor value.
-     * 
+     *
      * @param $website
      *
      * @return string
@@ -1349,13 +1353,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get review display type.
-     * 
+     *
      * @param $website
      *
      * @return string
      */
     public function getDisplayType($website)
     {
-        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE, $website);
+        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE,
+            $website);
     }
 }

@@ -50,7 +50,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     protected $import_statuses
         = array(
-            'RejectedByWatchdog', 'InvalidFileFormat', 'Unknown',
+            'RejectedByWatchdog',
+            'InvalidFileFormat',
+            'Unknown',
             'Failed',
             'ExceedsAllowedContactLimit',
             'NotAvailableInThisVersion',
@@ -68,13 +70,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     protected $_fileHelper;
 
     /**
-     * @param \Magento\Framework\Model\Context                        $context
-     * @param \Magento\Framework\Registry                             $registry
-     * @param \Magento\Framework\Stdlib\DateTime                      $dateTime
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param array                                                   $data
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -132,8 +134,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return bool
      */
-    public function registerQueue($importType, $importData, $importMode,
-        $websiteId, $file = false
+    public function registerQueue(
+        $importType,
+        $importData,
+        $importMode,
+        $websiteId,
+        $file = false
     ) {
         try {
             if (!empty($importData)) {

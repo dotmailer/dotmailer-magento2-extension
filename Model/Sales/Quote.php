@@ -100,7 +100,7 @@ class Quote
 
     /**
      * Proccess abandoned carts.
-     * 
+     *
      * @param string $mode
      */
     public function proccessAbandonedCarts($mode = 'all')
@@ -341,14 +341,17 @@ class Quote
     }
 
     /**
-     * @param null       $from
-     * @param null       $to
+     * @param null $from
+     * @param null $to
      * @param bool|false $guest
-     * @param int        $storeId
+     * @param int $storeId
      *
      * @return $this
      */
-    protected function _getStoreQuotes($from = null, $to = null, $guest = false,
+    protected function _getStoreQuotes(
+        $from = null,
+        $to = null,
+        $guest = false,
         $storeId = 0
     ) {
         $updated = [

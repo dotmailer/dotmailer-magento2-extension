@@ -28,7 +28,7 @@ class Campaign
      * Campaign constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                               $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface ,
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
      */
@@ -146,7 +146,7 @@ class Campaign
 
     /**
      * Get pending campaigns.
-     * 
+     *
      * @return mixed
      */
     protected function _getEmailCampaigns()

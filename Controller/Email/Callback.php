@@ -84,7 +84,7 @@ class Callback extends \Magento\Framework\App\Action\Action
             $data = 'client_id=' . $clientId .
                 '&client_secret=' . $clientSecret .
                 '&redirect_uri=' . $redirectUri .
-                '&grant_type=authorization_code'.
+                '&grant_type=authorization_code' .
                 '&code=' . $code;
 
             //callback url

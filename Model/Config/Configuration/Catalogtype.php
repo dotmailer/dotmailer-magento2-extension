@@ -7,7 +7,7 @@ class Catalogtype
 
     /**
      * @var \Magento\Catalog\Model\Product\Type
-     */        
+     */
     protected $_productType;
 
     /**

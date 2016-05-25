@@ -14,10 +14,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * Grid constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $gridFactory
-     * @param \Magento\Backend\Block\Template\Context                          $context
-     * @param \Magento\Backend\Helper\Data                                     $backendHelper
-     * @param \Magento\Framework\Module\Manager                                $moduleManager
-     * @param array                                                            $data
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data $backendHelper
+     * @param \Magento\Framework\Module\Manager $moduleManager
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $gridFactory,

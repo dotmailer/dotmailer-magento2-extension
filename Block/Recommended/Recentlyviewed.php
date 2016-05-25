@@ -4,39 +4,39 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-        /**
-         * @var \Dotdigitalgroup\Email\Helper\Data
-         */
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
-        /**
-         * @var \Magento\Framework\Pricing\Helper\Data
-         */
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
-        protected $_viewed;
-        /**
-         * @var \Dotdigitalgroup\Email\Helper\Recommended
-         */
+    protected $_viewed;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
     public $recommnededHelper;
-        /**
-         * @var \Magento\Customer\Model\SessionFactory
-         */
+    /**
+     * @var \Magento\Customer\Model\SessionFactory
+     */
     protected $_sessionFactory;
-        /**
-         * @var \Magento\Catalog\Model\ProductFactory
-         */
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
 
     /**
      * Recentlyviewed constructor.
      *
-     * @param \Magento\Catalog\Model\ProductFactory     $productFactory
-     * @param \Magento\Customer\Model\SessionFactory    $sessionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data        $helper
-     * @param \Magento\Framework\Pricing\Helper\Data    $priceHelper
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Customer\Model\SessionFactory $sessionFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Magento\Catalog\Block\Product\Context    $context
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Reports\Block\Product\Viewed $viewed
-     * @param array                                     $data
+     * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Model\ProductFactory $productFactory,
@@ -49,12 +49,12 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-            $this->_sessionFactory = $sessionFactory;
-            $this->helper = $helper;
+        $this->_sessionFactory = $sessionFactory;
+        $this->helper = $helper;
         $this->recommnededHelper = $recommended;
-            $this->priceHelper = $priceHelper;
-            $this->storeManager = $this->_storeManager;
-            $this->_productFactory = $productFactory;
+        $this->priceHelper = $priceHelper;
+        $this->storeManager = $this->_storeManager;
+        $this->_productFactory = $productFactory;
         $this->_viewed = $viewed;
 
     }
@@ -66,17 +66,17 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
-            $productsToDisplay = [];
-            $mode = $this->getRequest()->getActionName();
-            $customerId = $this->getRequest()->getParam('customer_id');
-            $limit = $this->recommnededHelper->getDisplayLimitByMode(
+        $productsToDisplay = [];
+        $mode = $this->getRequest()->getActionName();
+        $customerId = $this->getRequest()->getParam('customer_id');
+        $limit = $this->recommnededHelper->getDisplayLimitByMode(
             $mode
         );
         //login customer to receive the recent products
-            $session = $this->_sessionFactory->create();
+        $session = $this->_sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
         $collection = $this->_viewed;
-        $items      = $collection->getItemsCollection()
+        $items = $collection->getItemsCollection()
             ->setPageSize($limit);
 
         $this->helper->log(
@@ -107,11 +107,11 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         return $this->recommnededHelper->getDisplayType();
     }
 
-        /**
-         * @param $store
-         *
-         * @return mixed
-         */
+    /**
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);
