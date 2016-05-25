@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer;
 
 class Status
 {
-
     /**
      * Contact imported options.
      *
@@ -12,11 +11,11 @@ class Status
      */
     public function getOptions()
     {
-        return array(
+        return [
             \Dotdigitalgroup\Email\Model\Importer::NOT_IMPORTED => __('Not Imported'),
-            \Dotdigitalgroup\Email\Model\Importer::IMPORTING    => __('Importing'),
-            \Dotdigitalgroup\Email\Model\Importer::IMPORTED     => __('Imported'),
-            \Dotdigitalgroup\Email\Model\Importer::FAILED       => __('Failed'),
-        );
+            \Dotdigitalgroup\Email\Model\Importer::IMPORTING => __('Importing'),
+            \Dotdigitalgroup\Email\Model\Importer::IMPORTED => __('Imported'),
+            \Dotdigitalgroup\Email\Model\Importer::FAILED => __('Failed'),
+        ];
     }
 }

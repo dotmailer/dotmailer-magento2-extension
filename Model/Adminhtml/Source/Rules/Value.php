@@ -5,14 +5,43 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 class Value
 {
 
+    /**
+     * @var
+     */
     protected $_configFactory;
     protected $_yesno;
+    /**
+     * @var \Magento\Directory\Model\Config\Source\Country
+     */
     protected $_country;
+    /**
+     * @var \Magento\Directory\Model\Config\Source\Allregion
+     */
     protected $_allregion;
+    /**
+     * @var \Magento\Shipping\Model\Config\Source\Allmethods
+     */
     protected $_allShippingMethods;
+    /**
+     * @var \Magento\Payment\Model\Config\Source\Allmethods
+     */
     protected $_allPaymentMethods;
+    /**
+     * @var \Magento\Customer\Model\Config\Source\Group
+     */
     protected $_group;
 
+    /**
+     * Value constructor.
+     * 
+     * @param \Magento\Eav\Model\ConfigFactory $configFactory
+     * @param \Magento\Config\Model\Config\Source\Yesno $yesno
+     * @param \Magento\Directory\Model\Config\Source\Country $country
+     * @param \Magento\Directory\Model\Config\Source\Allregion $allregion
+     * @param \Magento\Shipping\Model\Config\Source\Allmethods $allShippingMethods
+     * @param \Magento\Payment\Model\Config\Source\Allmethods $allPaymentMethods
+     * @param \Magento\Customer\Model\Config\Source\Group $group
+     */
     public function __construct(
         \Magento\Eav\Model\ConfigFactory $configFactory,
         \Magento\Config\Model\Config\Source\Yesno $yesno,
@@ -32,7 +61,7 @@ class Value
     }
 
     /**
-     * get element type
+     * Get element type.
      *
      * @param $attribute
      *
@@ -60,17 +89,17 @@ class Value
     }
 
     /**
-     * get options array
+     * Get options array.
      *
      * @param      $attribute
-     * @param bool $is_empty
+     * @param bool $isEmpty
      *
      * @return array
      */
-    public function getValueSelectOptions($attribute, $is_empty = false)
+    public function getValueSelectOptions($attribute, $isEmpty = false)
     {
-        $options = array();
-        if ($is_empty) {
+        $options = [];
+        if ($isEmpty) {
             $options
                 = $this->_yesno->toOptionArray();
 
@@ -111,7 +140,7 @@ class Value
     }
 
     /**
-     * options array
+     * Options array.
      *
      * @return array
      */

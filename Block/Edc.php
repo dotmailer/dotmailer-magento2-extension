@@ -5,7 +5,11 @@ namespace Dotdigitalgroup\Email\Block;
 class Edc extends \Magento\Framework\View\Element\Template
 {
 
-
+    /**
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

@@ -4,13 +4,12 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
      * Crosssell constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
+     * @param \Dotdigitalgroup\Email\Helper\Data      $dataHelper
      * @param \Magento\Backend\Block\Template\Context $context
      */
     public function __construct(
@@ -22,6 +21,11 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
         parent::__construct($context);
     }
 
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return string
+     */
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
@@ -32,11 +36,11 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
         //last order id for dynamic page
         $lastOrderId = $this->_dataHelper->getLastOrderId();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         //alert message for last order id is not mapped
-        if ( ! $lastOrderId) {
+        if (!$lastOrderId) {
             $lastOrderId = '[PLEASE MAP THE LAST ORDER ID]';
         }
 

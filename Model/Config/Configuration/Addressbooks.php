@@ -5,8 +5,17 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 class Addressbooks
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
 
     /**
@@ -22,20 +31,17 @@ class Addressbooks
         \Magento\Framework\Registry $registry
     ) {
         $this->_storeManager = $storeManagerInterface;
-        $this->_helper       = $data;
-        $this->_registry     = $registry;
-
+        $this->_helper = $data;
+        $this->_registry = $registry;
     }
 
     /**
-     * get address books
-     *
-     * @return null
+     * Get address books.
      */
     protected function getAddressBooks()
     {
         $website = $this->_helper->getWebsite();
-        $client  = $this->_helper->getWebsiteApiClient($website);
+        $client = $this->_helper->getWebsiteApiClient($website);
 
         $savedAddressBooks = $this->_registry->registry('addressbooks');
         //get saved address books from registry
@@ -50,10 +56,15 @@ class Addressbooks
         return $addressBooks;
     }
 
+    /**
+     * Get options.
+     * 
+     * @return array
+     */
     public function toOptionArray()
     {
-        $fields     = array();
-        $website    = $this->_helper->getWebsite();
+        $fields = [];
+        $website = $this->_helper->getWebsite();
         $apiEnabled = $this->_helper->isEnabled($website);
 
         //get address books options
@@ -61,10 +72,10 @@ class Addressbooks
             $addressBooks = $this->getAddressBooks();
             //set the error message to the select option
             if (isset($addressBooks->message)) {
-                $fields[] = array(
+                $fields[] = [
                     'value' => 0,
-                    'label' => __($addressBooks->message)
-                );
+                    'label' => __($addressBooks->message),
+                ];
             }
 
             $subscriberAddressBook
@@ -75,10 +86,10 @@ class Addressbooks
                 if (isset($book->id) && $book->visibility == 'Public'
                     && $book->id != $subscriberAddressBook
                 ) {
-                    $fields[] = array(
+                    $fields[] = [
                         'value' => $book->id,
                         'label' => $book->name
-                    );
+                    ];
                 }
             }
         }

@@ -5,21 +5,33 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 class Customdatafields extends
     \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
-
     /**
      * Customer attributes.
      *
+     * @var object
      */
     protected $_attributeRenderer;
 
     /**
      * Customer datafields.
+     *
+     * @var object
      */
     protected $_datafieldRenderer;
 
-
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields
+     */
     protected $datafieldsFactory;
+
+    /**
+     * @var \Magento\Framework\Data\Form\Element\Factory
+     */
     protected $_elementFactory;
+
+    protected $_getDatafieldRenderer;
+
+    protected $_getAttributeRenderer;
 
     /**
      * Customdatafields constructor.
@@ -33,15 +45,14 @@ class Customdatafields extends
         \Magento\Framework\Data\Form\Element\Factory $elementFactory,
         \Dotdigitalgroup\Email\Model\Config\Source\Datamapping\DatafieldsFactory $datafields,
         \Magento\Backend\Block\Template\Context $context,
-        $data = []
+        array $data = []
     ) {
-        $this->_elementFactory   = $elementFactory;
+        $this->_elementFactory = $elementFactory;
         $this->datafieldsFactory = $datafields->create();
-        $this->_addAfter         = false;
+        $this->_addAfter = false;
 
         $this->_addButtonLabel = __('Add New Attribute');
         parent::__construct($context, $data);
-
     }
 
     protected function _prepareToRender()
@@ -50,23 +61,22 @@ class Customdatafields extends
         $this->_getAttributeRenderer = null;
         $this->addColumn(
             'attribute',
-            array(
+            [
                 'label' => __('Attribute'),
                 'style' => 'width:120px',
-            )
+            ]
         );
         $this->addColumn(
-            'datafield', array(
+            'datafield', [
                 'label' => __('DataField'),
                 'style' => 'width:120px',
-            )
+            ]
         );
     }
 
     public function renderCellTemplate($columnName)
     {
         if ($columnName == 'attribute' && isset($this->_columns[$columnName])) {
-
             $options = $this->getElement()->getValues();
             $element = $this->_elementFactory->create('select');
             $element->setForm(
@@ -83,7 +93,6 @@ class Customdatafields extends
         }
 
         if ($columnName == 'datafield' && isset($this->_columns[$columnName])) {
-
             $options = $this->datafieldsFactory->toOptionArray();
             $element = $this->_elementFactory->create('select');
             $element->setForm(
@@ -109,11 +118,11 @@ class Customdatafields extends
     {
         $options = [];
 
-        $options['option_' . $this->_getAttributeRenderer()->calcOptionHash(
+        $options['option_'.$this->_getAttributeRenderer()->calcOptionHash(
             $row->getData('attribute')
         )]
             = 'selected="selected"';
-        $options['option_' . $this->_getDatafieldRenderer()->calcOptionHash(
+        $options['option_'.$this->_getDatafieldRenderer()->calcOptionHash(
             $row->getData('datafield')
         )]
             = 'selected="selected"';
@@ -121,9 +130,13 @@ class Customdatafields extends
         $row->setData('option_extra_attrs', $options);
     }
 
+    /**
+     * @return \Magento\Framework\View\Element\BlockInterface|object
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function _getAttributeRenderer()
     {
-
         $this->_attributeRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
             '',
@@ -133,6 +146,11 @@ class Customdatafields extends
         return $this->_attributeRenderer;
     }
 
+    /**
+     * @return \Magento\Framework\View\Element\BlockInterface|object
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function _getDatafieldRenderer()
     {
         $this->_datafieldRenderer = $this->getLayout()->createBlock(
@@ -144,11 +162,14 @@ class Customdatafields extends
         return $this->_datafieldRenderer;
     }
 
+    /**
+     * @return string
+     *
+     * @throws \Exception
+     */
     public function _toHtml()
     {
-        return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
-        . '"/>' . parent::_toHtml();
-
+        return '<input type="hidden" id="'.$this->getElement()->getHtmlId()
+        .'"/>'.parent::_toHtml();
     }
-
 }

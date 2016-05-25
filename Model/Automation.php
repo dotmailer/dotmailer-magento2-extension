@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Automation extends \Magento\Framework\Model\AbstractModel
 {
-
     protected $_dateTime;
 
     /**
@@ -30,7 +29,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * constructor
+     * constructor.
      */
     public function _construct()
     {
@@ -39,7 +38,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Prepare data to be saved to database
+     * Prepare data to be saved to database.
      *
      * @return $this
      */
@@ -53,5 +52,4 @@ class Automation extends \Magento\Framework\Model\AbstractModel
 
         return $this;
     }
-
 }

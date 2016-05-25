@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
@@ -31,24 +30,24 @@ class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //base url for dynamic content
-        $baseUrl  = $this->_dataHelper->generateDynamicUrl();
+        $baseUrl = $this->_dataHelper->generateDynamicUrl();
         $passcode = $this->_dataHelper->getPasscode();
 
         //last quote id for dynamic page
         $lastQuoteId = $this->_dataHelper->getLastQuoteId();
 
         //config passcode
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         //alert message for last order id is not mapped
-        if ( ! $lastQuoteId) {
+        if (!$lastQuoteId) {
             $lastQuoteId = '[PLEASE MAP THE LAST QUOTE ID]';
         }
 
         // full url
         $text = sprintf(
-            "%sconnector/email/basket/code/%s/quote_id/@%s@", $baseUrl,
+            '%sconnector/email/basket/code/%s/quote_id/@%s@', $baseUrl,
             $passcode, $lastQuoteId
         );
 
@@ -56,5 +55,4 @@ class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
 
         return parent::_getElementHtml($element);
     }
-
 }

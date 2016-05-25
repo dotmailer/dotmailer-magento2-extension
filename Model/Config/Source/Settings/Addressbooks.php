@@ -2,28 +2,34 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Settings;
 
-
 class Addressbooks implements \Magento\Framework\Option\ArrayInterface
 {
 
     /**
-     * options
-     *
-     * @var array
+     * @var null
      */
     protected $_options = null;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
 
     /**
-     * Configuration structure
+     * Configuration structure.
      *
      * @var \Magento\Config\Model\Config\Structure
      */
     protected $_configStructure;
 
-
     /**
+     * Addressbooks constructor.
+     *
+     * @param \Magento\Framework\Registry            $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data     $data
      * @param \Magento\Config\Model\Config\Structure $configStructure
      */
     public function __construct(
@@ -32,25 +38,24 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
         \Magento\Config\Model\Config\Structure $configStructure
 
     ) {
-        $this->_registry        = $registry;
-        $this->_helper          = $data;
+        $this->_registry = $registry;
+        $this->_helper = $data;
         $this->_configStructure = $configStructure;
     }
 
     /**
-     * Retrieve list of options
+     * Retrieve list of options.
      *
      * @return array
      */
     public function toOptionArray()
     {
-        $fields = array();
+        $fields = [];
         // Add a "Do Not Map" Option
-        $fields[] = array('value' => 0, 'label' => '-- Please Select --');
+        $fields[] = ['value' => 0, 'label' => '-- Please Select --'];
 
         $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
         if ($apiEnabled) {
-
             $savedAddressbooks = $this->_registry->registry('addressbooks');
 
             if ($savedAddressbooks) {
@@ -67,10 +72,10 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
             //set up fields with book id and label
             foreach ($addressBooks as $book) {
                 if (isset($book->id)) {
-                    $fields[] = array(
-                        'value' => (string)$book->id,
-                        'label' => (string)$book->name
-                    );
+                    $fields[] = [
+                        'value' => (string) $book->id,
+                        'label' => (string) $book->name
+                    ];
                 }
             }
         }

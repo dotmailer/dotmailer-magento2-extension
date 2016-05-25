@@ -4,8 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
 {
-
-
     protected $_buttonLabel = 'Run Now';
 
     /**
@@ -21,7 +19,7 @@ class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Get the button and scripts contents
+     * Get the button and scripts contents.
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
@@ -30,7 +28,6 @@ class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
-
         $url = $this->_urlBuilder->getUrl(
             'dotdigitalgroup_email/run/deletecontactids'
         );
@@ -40,9 +37,7 @@ class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
         )
             ->setType('button')
             ->setLabel(__($this->_buttonLabel))
-            ->setOnClick("window.location.href='" . $url . "'")
+            ->setOnClick("window.location.href='".$url."'")
             ->toHtml();
-
     }
-
 }

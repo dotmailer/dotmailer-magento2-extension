@@ -1,6 +1,6 @@
 <?php $helper = $this->helper('Dotdigitalgroup\Email\Helper\Data'); ?>
 
-<?php if ($helper->getEasyEmailCaptureForNewsletter()) : ?>
+<?php if ($helper->isEasyEmailCaptureForNewsletterEnabled()) : ?>
 
     <script type="text/javascript">
         require(['jquery','domReady!'],function($){

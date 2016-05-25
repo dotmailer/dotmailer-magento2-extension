@@ -22,9 +22,9 @@ class MassDelete extends \Magento\Backend\App\Action
         \Magento\Cms\Model\ResourceModel\Page\CollectionFactory $collectionFactory,
         \Magento\Cron\Model\ScheduleFactory $scheduleFactory
     ) {
-        $this->filter            = $filter;
+        $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->schelduleFactory  = $scheduleFactory;
+        $this->schelduleFactory = $scheduleFactory;
 
         parent::__construct($context);
     }
@@ -36,7 +36,7 @@ class MassDelete extends \Magento\Backend\App\Action
     {
         $searchIds = $this->getRequest()->getParam('id');
 
-        if ( ! is_array($searchIds)) {
+        if (!is_array($searchIds)) {
             $this->messageManager->addError(__('Please select task(s).'));
         } else {
             try {

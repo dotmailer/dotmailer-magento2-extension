@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Helper;
 
 class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
     const MODULE_NAME = 'Dotdigitalgroup_Email';
 
     /**
@@ -13,25 +12,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_API_ENABLED = 'connector_api_credentials/api/enabled';
     const XML_PATH_CONNECTOR_API_USERNAME = 'connector_api_credentials/api/username';
     const XML_PATH_CONNECTOR_API_PASSWORD = 'connector_api_credentials/api/password';
-
-    /**
-     * SMS SECTION.
-     */
-    //enabled
-    const XML_PATH_CONNECTOR_SMS_ENABLED_1 = 'connector_automation/sms/sms_one_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_2 = 'connector_automation/sms/sms_two_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_3 = 'connector_automation/sms/sms_three_enabled';
-    const XML_PATH_CONNECTOR_SMS_ENABLED_4 = 'connector_automation/sms/sms_four_enabled';
-    //status
-    const XML_PATH_CONNECTOR_SMS_STATUS_1 = 'connector_automation/sms/sms_one_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_2 = 'connector_automation/sms/sms_two_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_3 = 'connector_automation/sms/sms_three_status';
-    const XML_PATH_CONNECTOR_SMS_STATUS_4 = 'connector_automation/sms/sms_four_status';
-    //message
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_1 = 'connector_automation/sms/sms_one_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_2 = 'connector_automation/sms/sms_two_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_3 = 'connector_automation/sms/sms_three_message';
-    const XML_PATH_CONNECTOR_SMS_MESSAGE_4 = 'connector_automation/sms/sms_four_message';
 
     /**
      * SYNC SECTION.
@@ -127,19 +107,17 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_ENTERPIRSE_LAST_USED_DATE = 'connector_data_mapping/enterprise_data/last_used_date';
     const XML_PATH_CONNECTOR_ENTERPRISE_CUSTOMER_SEGMENTS = 'connector_data_mapping/enterprise_data/customer_segment';
 
-
     /**
-     * Dynamic Content
+     * Dynamic Content.
      */
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_NOSTO = 'connector_dynamic_content/nosto_recommendation/api';
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WIHSLIST_DISPLAY = 'connector_dynamic_content/products/wishlist_display_type';
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_REVIEW_DISPLAY_TYPE = 'connector_dynamic_content/products/review_display_type';
 
     /**
      * CONFIGURATION SECTION.
      */
-    //Data Fields
+    
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS = 'connector_configuration/data_fields/order_status';
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE = 'connector_configuration/data_fields/brand_attribute';
 
@@ -213,7 +191,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST = 'connector_automation/visitor_automation/wishlist_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS = 'connector_automation/order_status_automation/program';
 
-
     /**
      * ROI SECTION.
      */
@@ -221,7 +198,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED = 'connector_configuration/tracking/page_enabled';
 
     /**
-     * OAUTH
+     * OAUTH.
      */
     const API_CONNECTOR_OAUTH_URL = 'https://my.dotmailer.com/';
     const API_CONNECTOR_OAUTH_URL_AUTHORISE = 'OAuth2/authorise.aspx?';
@@ -231,7 +208,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const CONNECTOR_FEED_LAST_CHECK_TIME = 'connector_feed_last_check_time';
 
     /**
-     * Reviews SECTION
+     * Reviews SECTION.
      */
     const XML_PATH_REVIEWS_ENABLED = 'connector_automation/review_settings/enabled';
     //PRODUCT REVIEW REMINDER.
@@ -242,7 +219,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_REVIEWS_FEEFO_LOGON = 'connector_automation/feefo_feedback_engine/logon';
     const XML_PATH_REVIEWS_FEEFO_REVIEWS = 'connector_automation/feefo_feedback_engine/reviews_per_product';
     const XML_PATH_REVIEWS_FEEFO_TEMPLATE = 'connector_automation/feefo_feedback_engine/template';
-
 
     /**
      * Developer SECTION.
@@ -266,18 +242,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES = 'connector_developer_settings/ip_restriction/ip_addresses';
 
     /**
-     * Nosto
-     */
-    const API_ENDPOINT = 'https://api.nosto.com';
-    const API_ENDPOINT_TEST = 'https://test.api.nosto.com';
-
-    /**
-     * API endpoint
+     * API endpoint.
      */
     const PATH_FOR_API_ENDPOINT = 'connector/api/endpoint';
 
     /**
-     * Trial Account
+     * Trial Account.
      */
     const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';
 
@@ -299,6 +269,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Authorization link for OAUTH.
+     * 
      * @param int $website
      *
      * @return string
@@ -306,32 +278,34 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public function getAuthorizeLink($website = 0)
     {
         //base url, check for custom oauth domain
-        if ($this->getAuthorizeLinkFlag($website)) {
+        if ($this->isAuthorizeCustomDomain($website)) {
             $website = $this->_storeManager->getWebsite($website);
             $baseUrl = $website->getConfig(
                     self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
-                ) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
+                ).self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         } else {
             $baseUrl = self::API_CONNECTOR_OAUTH_URL
-                . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
+                .self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         }
 
         return $baseUrl;
     }
 
     /**
+     * Is authorization link for custom domain set.
+     * 
      * @param int $website
      *
      * @return bool
      */
-    public function getAuthorizeLinkFlag($website = 0)
+    public function isAuthorizeCustomDomain($website = 0)
     {
-        $website      = $this->_storeManager->getWebsite($website);
+        $website = $this->_storeManager->getWebsite($website);
         $customDomain = $website->getConfig(
             self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
         );
 
-        return (bool)$customDomain;
+        return (bool) $customDomain;
     }
 
     /**
@@ -348,54 +322,54 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             return $callback;
         }
 
-        return $redirectUri = $this->_storeManager->getStore()->getBaseUrl(
+        return $this->_storeManager->getStore()->getBaseUrl(
             \Magento\Framework\UrlInterface::URL_TYPE_WEB, true
         );
     }
 
     /**
+     * Token url for OAUTH.
+     * 
      * @param int $website
      *
      * @return string
      */
     public function getTokenUrl($website = 0)
     {
-        if ($this->getAuthorizeLinkFlag($website)) {
+        if ($this->isAuthorizeCustomDomain($website)) {
             $website = $this->_storeManager->getWebsite($website);
 
             $tokenUrl = $website->getConfig(
                     self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
-                ) . self::API_CONNECTOR_OAUTH_URL_TOKEN;
+                ).self::API_CONNECTOR_OAUTH_URL_TOKEN;
         } else {
-
             $tokenUrl = self::API_CONNECTOR_OAUTH_URL
-                . self::API_CONNECTOR_OAUTH_URL_TOKEN;
+                .self::API_CONNECTOR_OAUTH_URL_TOKEN;
         }
 
         return $tokenUrl;
     }
 
-
     /**
+     * Get login user url with for OAUTH.
+     *
      * @param int $website
      *
      * @return string
      */
     public function getLogUserUrl($website = 0)
     {
-        if ($this->getAuthorizeLinkFlag($website)) {
+        if ($this->isAuthorizeCustomDomain($website)) {
             $website = $this->_storeManager->getWebsite($website);
 
             $logUserUrl = $website->getConfig(
                     self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
-                ) . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
+                ).self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         } else {
-
             $logUserUrl = self::API_CONNECTOR_OAUTH_URL
-                . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
+                .self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         }
 
         return $logUserUrl;
     }
-
 }

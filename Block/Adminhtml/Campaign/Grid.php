@@ -2,16 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Campaign;
 
-use Magento\Backend\Block\Widget\Grid as WidgetGrid;
-
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-
-    /**
-     * @var \Magento\Framework\Module\Manager
-     */
     protected $moduleManager;
+
     protected $_gridFactory;
+    
     protected $_campaignFactory;
 
     /**
@@ -31,12 +27,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         array $data = []
     ) {
         $this->_campaignFactory = $gridFactory;
-        $this->moduleManager    = $moduleManager;
+        $this->moduleManager = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
-     * @return void
+     * Constructor.
      */
     protected function _construct()
     {
@@ -59,83 +55,83 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
     protected function _prepareColumns()
     {
-        $this->addColumn('id', array(
-            'header'   => __('Campaign ID'),
-            'width'    => '20px',
-            'index'    => 'campaign_id',
-            'type'     => 'number',
+        $this->addColumn('id', [
+            'header' => __('Campaign ID'),
+            'width' => '20px',
+            'index' => 'campaign_id',
+            'type' => 'number',
             'truncate' => 50,
-            'escape'   => true
-        ))->addColumn('customer_id', array(
+            'escape' => true,
+        ])->addColumn('customer_id', [
             'header' => __('Customer ID'),
-            'align'  => 'left',
-            'width'  => '50px',
-            'index'  => 'customer_id',
-            'type'   => 'number',
-            'escape' => true
-        ))->addColumn('email', array(
+            'align' => 'left',
+            'width' => '50px',
+            'index' => 'customer_id',
+            'type' => 'number',
+            'escape' => true,
+        ])->addColumn('email', [
             'header' => __('Email'),
-            'align'  => 'left',
-            'width'  => '50px',
-            'index'  => 'email',
-            'type'   => 'text',
-            'escape' => true
-        ))->addColumn('is_sent', array(
-            'header'                    => __('Is Sent'),
-            'align'                     => 'center',
-            'width'                     => '20px',
-            'index'                     => 'is_sent',
-            'escape'                    => true,
-            'type'                      => 'options',
-            'renderer'                  => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options'                   => [
-                '1'    => 'Is Send',
-                'null' => 'Not Send'
+            'align' => 'left',
+            'width' => '50px',
+            'index' => 'email',
+            'type' => 'text',
+            'escape' => true,
+        ])->addColumn('is_sent', [
+            'header' => __('Is Sent'),
+            'align' => 'center',
+            'width' => '20px',
+            'index' => 'is_sent',
+            'escape' => true,
+            'type' => 'options',
+            'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+            'options' => [
+                '1' => 'Is Send',
+                'null' => 'Not Send',
             ],
-            'filter_condition_callback' => array($this, 'filterCallbackContact')
-        ))->addColumn('message', array(
+            'filter_condition_callback' => [$this, 'filterCallbackContact'],
+        ])->addColumn('message', [
             'header' => __('Send Message'),
-            'align'  => 'left',
-            'width'  => '300px',
-            'index'  => 'message',
-            'type'   => 'text',
-            'escape' => true
-        ))->addColumn('event_name', array(
+            'align' => 'left',
+            'width' => '300px',
+            'index' => 'message',
+            'type' => 'text',
+            'escape' => true,
+        ])->addColumn('event_name', [
             'header' => __('Event Name'),
-            'align'  => 'left',
-            'index'  => 'event_name',
-            'width'  => '100px',
-            'type'   => 'string',
-            'escape' => true
-        ))->addColumn('quote_id', array(
+            'align' => 'left',
+            'index' => 'event_name',
+            'width' => '100px',
+            'type' => 'string',
+            'escape' => true,
+        ])->addColumn('quote_id', [
             'header' => __('Quote ID'),
-            'align'  => 'left',
-            'width'  => '50px',
-            'index'  => 'quote_id',
-            'type'   => 'number',
-            'escape' => true
-        ))->addColumn('sent_at', array(
+            'align' => 'left',
+            'width' => '50px',
+            'index' => 'quote_id',
+            'type' => 'number',
+            'escape' => true,
+        ])->addColumn('sent_at', [
             'header' => __('Sent At'),
-            'align'  => 'center',
-            'width'  => '100px',
-            'index'  => 'sent_at',
-            'type'   => 'datetime',
-            'escape' => true
-        ))->addColumn('created_at', array(
+            'align' => 'center',
+            'width' => '100px',
+            'index' => 'sent_at',
+            'type' => 'datetime',
+            'escape' => true,
+        ])->addColumn('created_at', [
             'header' => __('Created At'),
-            'align'  => 'center',
-            'width'  => '100px',
-            'index'  => 'created_at',
-            'type'   => 'datetime',
-            'escape' => true
-        ))->addColumn('updated_at', array(
+            'align' => 'center',
+            'width' => '100px',
+            'index' => 'created_at',
+            'type' => 'datetime',
+            'escape' => true,
+        ])->addColumn('updated_at', [
             'header' => __('Updated At'),
-            'align'  => 'center',
-            'width'  => '100px',
-            'index'  => 'updated_at',
-            'type'   => 'datetime',
-            'escape' => true
-        ));
+            'align' => 'center',
+            'width' => '100px',
+            'index' => 'updated_at',
+            'type' => 'datetime',
+            'escape' => true,
+        ]);
 
         return parent::_prepareColumns();
     }
@@ -152,25 +148,26 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             : $column->getIndex();
         $value = $column->getFilter()->getValue();
         if ($value == 'null') {
-            $collection->addFieldToFilter($field, array('null' => true));
+            $collection->addFieldToFilter($field, ['null' => true]);
         } else {
-            $collection->addFieldToFilter($field, array('notnull' => true));
+            $collection->addFieldToFilter($field, ['notnull' => true]);
         }
     }
 
+    /**
+     * @return $this
+     */
     protected function _prepareMassaction()
     {
-
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');
-        $this->getMassactionBlock()->addItem('delete', array(
-                'label'   => __('Delete'),
-                'url'     => $this->getUrl('*/*/massDelete'),
-                'confirm' => __('Are you sure?')
-            )
+        $this->getMassactionBlock()->addItem('delete', [
+                'label' => __('Delete'),
+                'url' => $this->getUrl('*/*/massDelete'),
+                'confirm' => __('Are you sure?'),
+            ]
         );
 
         return $this;
     }
-
 }

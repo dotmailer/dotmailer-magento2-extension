@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Review
 {
-
     protected $_start;
     protected $_reviews;
     protected $_countReviews;
@@ -19,7 +18,6 @@ class Review
     protected $_connectorReviewFactory;
     protected $_ratingFactory;
     protected $_reviewCollection;
-
 
     /**
      * Review constructor.
@@ -48,16 +46,16 @@ class Review
         \Magento\Framework\Stdlib\Datetime $datetime,
         \Magento\Review\Model\Rating\Option\Vote $vote
     ) {
-        $this->_reviewCollection       = $reviewCollection;
-        $this->_ratingFactory          = $ratingFactory;
+        $this->_reviewCollection = $reviewCollection;
+        $this->_ratingFactory = $ratingFactory;
         $this->_connectorReviewFactory = $connectorFactory;
-        $this->_customerFactory        = $customerFactory;
-        $this->_productFactory         = $productFactory;
-        $this->_reviewFactory          = $reviewFactory;
-        $this->_importerFactory      = $importerFactory;
-        $this->_helper                 = $data;
-        $this->_resource               = $resource;
-        $this->_dateTime               = $datetime;
+        $this->_customerFactory = $customerFactory;
+        $this->_productFactory = $productFactory;
+        $this->_reviewFactory = $reviewFactory;
+        $this->_importerFactory = $importerFactory;
+        $this->_helper = $data;
+        $this->_resource = $resource;
+        $this->_dateTime = $datetime;
         $this->_vote = $vote;
     }
 
@@ -66,22 +64,21 @@ class Review
         $response = array('success' => true, 'message' => 'Done.');
 
         $this->_countReviews = 0;
-        $this->_reviews      = array();
-        $this->_start        = microtime(true);
+        $this->_reviews = array();
+        $this->_start = microtime(true);
         //resource allocation
         $this->_helper->allowResourceFullExecution();
         $websites = $this->_helper->getwebsites(true);
         foreach ($websites as $website) {
-
-            $apiEnabled    = $this->_helper->isEnabled($website);
+            $apiEnabled = $this->_helper->isEnabled($website);
             $reviewEnabled = $this->_helper->getWebsiteConfig(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED,
                 $website
             );
-            $storeIds      = $website->getStoreIds();
-            if ($apiEnabled && $reviewEnabled && ! empty($storeIds)) {
+            $storeIds = $website->getStoreIds();
+            if ($apiEnabled && $reviewEnabled && !empty($storeIds)) {
                 //start the sync
-                if ( ! $this->_countReviews) {
+                if (!$this->_countReviews) {
                     $this->_helper->log(
                         '---------- Start reviews sync ----------'
                     );
@@ -107,9 +104,9 @@ class Review
         }
 
         if ($this->_countReviews) {
-            $message = 'Total time for sync : ' . gmdate(
-                    "H:i:s", microtime(true) - $this->_start
-                ) . ', Total synced = ' . $this->_countReviews;
+            $message = 'Total time for sync : '.gmdate(
+                    'H:i:s', microtime(true) - $this->_start
+                ).', Total synced = '.$this->_countReviews;
             $this->_helper->log($message);
             $response['message'] = $message;
         }
@@ -119,11 +116,11 @@ class Review
 
     protected function _exportReviewsForWebsite($website)
     {
-        $limit            = $this->_helper->getWebsiteConfig(
+        $limit = $this->_helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
             $website
         );
-        $reviews          = $this->_getReviewsToExport($website, $limit);
+        $reviews = $this->_getReviewsToExport($website, $limit);
         $this->_reviewIds = array();
 
         if ($reviews->getSize()) {
@@ -131,7 +128,7 @@ class Review
                 try {
                     $mageReview = $this->_reviewFactory->create()
                         ->load($review->getReviewId());
-                    $product    = $this->_productFactory->create()
+                    $product = $this->_productFactory->create()
                         ->setStoreId($mageReview->getStoreId())
                         ->load($mageReview->getEntityPkValue());
 
@@ -163,7 +160,7 @@ class Review
                     $this->_reviewIds[]
                                                          = $review->getReviewId();
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string)$e, array());
+                    $this->_helper->debug((string) $e, array());
                 }
             }
         }
@@ -180,7 +177,7 @@ class Review
     }
 
     /**
-     * set imported in bulk query
+     * set imported in bulk query.
      *
      * @param $ids
      */
@@ -188,18 +185,18 @@ class Review
     {
         try {
             $coreResource = $this->_resource;
-            $write        = $coreResource->getConnection('core_write');
-            $tableName    = $coreResource->getTableName('email_review');
-            $ids          = implode(', ', $ids);
-            $now          = new \Datetime();
-            $nowDate      = $this->_dateTime->formatDate($now->getTimestamp());
+            $write = $coreResource->getConnection('core_write');
+            $tableName = $coreResource->getTableName('email_review');
+            $ids = implode(', ', $ids);
+            $now = new \Datetime();
+            $nowDate = $this->_dateTime->formatDate($now->getTimestamp());
             $write->update(
                 $tableName,
                 array('review_imported' => 1, 'updated_at' => $nowDate),
                 "review_id IN ($ids)"
             );
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string) $e, array());
         }
     }
 }

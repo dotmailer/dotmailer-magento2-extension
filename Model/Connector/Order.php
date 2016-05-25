@@ -4,15 +4,14 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 class Order
 {
-
     /**
-     * Order Increment ID
+     * Order Increment ID.
      *
      * @var string
      */
     public $id;
     /**
-     * Email
+     * Email.
      *
      * @var string
      */
@@ -20,41 +19,41 @@ class Order
     /**
      * @var int
      */
-    public $quote_id;
+    public $quoteId;
     /**
      * @var string
      */
-    public $store_name;
+    public $storeName;
     /**
      * @var string
      */
-    public $purchase_date;
+    public $purchaseDate;
     /**
      * @var string
      */
-    public $delivery_address;
+    public $deliveryAddress;
     /**
      * @var string
      */
-    public $billing_address;
+    public $billingAddress;
     /**
      * @var array
      */
-    public $products = array();
+    public $products = [];
     /**
      * @var float
      */
-    public $order_subtotal;
+    public $orderSubtotal;
     /**
      * @var float
      */
-    public $discount_ammount;
+    public $discountAmmount;
     /**
      * @var float
      */
-    public $order_total;
+    public $orderTotal;
     /**
-     * Payment name
+     * Payment name.
      *
      * @var string
      */
@@ -62,33 +61,53 @@ class Order
     /**
      * @var string
      */
-    public $delivery_method;
+    public $deliveryMethod;
     /**
      * @var float
      */
-    public $delivery_total;
+    public $deliveryTotal;
     /**
      * @var string
      */
     public $currency;
 
-
+    /**
+     * @var
+     */
     public $couponCode;
 
     /**
      * @var array
      */
-    public $custom = array();
+    public $custom = [];
 
     /**
      * @var string
      */
-    public $order_status;
+    public $orderStatus;
+    /**
+     * @var \Magento\Framework\Stdlib\Datetime
+     */
     protected $_datetime;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
+     */
     protected $_customerFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory
+     */
     protected $_attributeCollection;
+    /**
+     * @var \Magento\Eav\Model\Entity\Attribute\SetFactory
+     */
     protected $_setFactory;
 
     /**
@@ -111,18 +130,17 @@ class Order
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Stdlib\Datetime $datetime
     ) {
-        $this->_setFactory          = $setFactory;
+        $this->_setFactory = $setFactory;
         $this->_attributeCollection = $attributeCollection;
-        $this->_productFactory      = $productFactory;
-        $this->_customerFactory     = $customerFactory;
-        $this->_helper              = $helperData;
-        $this->_datetime            = $datetime;
-        $this->_storeManager        = $storeManagerInterface;
+        $this->_productFactory = $productFactory;
+        $this->_customerFactory = $customerFactory;
+        $this->_helper = $helperData;
+        $this->_datetime = $datetime;
+        $this->_storeManager = $storeManagerInterface;
     }
 
-
     /**
-     * set the order data information
+     * Set the order data information.
      *
      * @param $orderData
      *
@@ -130,30 +148,30 @@ class Order
      */
     public function setOrder($orderData)
     {
-        $this->id         = $orderData->getIncrementId();
-        $this->quote_id   = $orderData->getQuoteId();
-        $this->email      = $orderData->getCustomerEmail();
-        $this->store_name = $orderData->getStoreName();
+        $this->id = $orderData->getIncrementId();
+        $this->quoteId = $orderData->getQuoteId();
+        $this->email = $orderData->getCustomerEmail();
+        $this->storeName = $orderData->getStoreName();
 
-        $created_at          = new \DateTime($orderData->getCreatedAt());
-        $this->purchase_date = $this->_datetime->formatDate($created_at);
+        $createdAt = new \DateTime($orderData->getCreatedAt());
+        $this->purchaseDate = $this->_datetime->formatDate($createdAt);
 
-        $this->delivery_method = $orderData->getShippingDescription();
-        $this->delivery_total  = $orderData->getShippingAmount();
-        $this->currency        = $orderData->getStoreCurrencyCode();
+        $this->deliveryMethod = $orderData->getShippingDescription();
+        $this->deliveryTotal = $orderData->getShippingAmount();
+        $this->currency = $orderData->getStoreCurrencyCode();
 
         if ($payment = $orderData->getPayment()) {
             $this->payment = $payment->getMethodInstance()->getTitle();
         }
         $this->couponCode = $orderData->getCouponCode();
 
-        /**
+        /*
          * custom order attributes
          */
         $website = $this->_storeManager->getStore(
             $orderData->getStore()
-        )
-            ->getWebsite();
+        )->getWebsite();
+        
         $customAttributes
                  = $this->_helper->getConfigSelectedCustomOrderAttributes(
             $website
@@ -174,42 +192,42 @@ class Order
             }
         }
 
-        /**
+        /*
          * Billing address.
          */
         if ($orderData->getBillingAddress()) {
-            $billingData           = $orderData->getBillingAddress()->getData();
-            $this->billing_address = array(
+            $billingData = $orderData->getBillingAddress()->getData();
+            $this->billingAddress = [
                 'billing_address_1' => $this->_getStreet(
                     $billingData['street'], 1
                 ),
                 'billing_address_2' => $this->_getStreet(
                     $billingData['street'], 2
                 ),
-                'billing_city'      => $billingData['city'],
-                'billing_region'    => $billingData['region'],
-                'billing_country'   => $billingData['country_id'],
-                'billing_postcode'  => $billingData['postcode'],
-            );
+                'billing_city' => $billingData['city'],
+                'billing_region' => $billingData['region'],
+                'billing_country' => $billingData['country_id'],
+                'billing_postcode' => $billingData['postcode']
+            ];
         }
-        /**
+        /*
          * Shipping address.
          */
         if ($orderData->getShippingAddress()) {
             $shippingData = $orderData->getShippingAddress()->getData();
 
-            $this->delivery_address = array(
+            $this->deliveryAddress = [
                 'delivery_address_1' => $this->_getStreet(
                     $shippingData['street'], 1
                 ),
                 'delivery_address_2' => $this->_getStreet(
                     $shippingData['street'], 2
                 ),
-                'delivery_city'      => $shippingData['city'],
-                'delivery_region'    => $shippingData['region'],
-                'delivery_country'   => $shippingData['country_id'],
-                'delivery_postcode'  => $shippingData['postcode']
-            );
+                'delivery_city' => $shippingData['city'],
+                'delivery_region' => $shippingData['region'],
+                'delivery_country' => $shippingData['country_id'],
+                'delivery_postcode' => $shippingData['postcode']
+            ];
         }
 
         $syncCustomOption = $this->_helper->getWebsiteConfig(
@@ -217,12 +235,12 @@ class Order
             $website
         );
 
-        /**
+        /*
          * Order items.
          */
         foreach ($orderData->getAllItems() as $productItem) {
             //product custom options
-            $customOptions = array();
+            $customOptions = [];
             if ($syncCustomOption) {
                 $customOptions = $this->_getOrderItemOptions($productItem);
             }
@@ -235,16 +253,16 @@ class Order
                 // category names
                 $categoryCollection = $productModel->getCategoryCollection()
                     ->addAttributeToSelect('name');
-                $productCat         = array();
+                $productCat = [];
                 foreach ($categoryCollection as $cat) {
-                    $categories           = array();
-                    $categories[]         = $cat->getName();
+                    $categories = [];
+                    $categories[] = $cat->getName();
                     $productCat[]['Name'] = substr(
                         implode(', ', $categories), 0, 244
                     );
                 }
 
-                $attributes = array();
+                $attributes = [];
                 //selected attributes from config
                 $configAttributes = $this->_helper->getWebsiteConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES,
@@ -258,14 +276,14 @@ class Order
                         $productModel->getAttributeSetId()
                     );
 
-                    foreach ($configAttributes as $attribute_code) {
+                    foreach ($configAttributes as $attributeCode) {
                         //if config attribute is in attribute set
                         if (in_array(
-                            $attribute_code, $attributesFromAttributeSet
+                            $attributeCode, $attributesFromAttributeSet
                         )) {
                             //attribute input type
                             $inputType = $productModel->getResource()
-                                ->getAttribute($attribute_code)
+                                ->getAttribute($attributeCode)
                                 ->getFrontend()
                                 ->getInputType();
 
@@ -275,23 +293,24 @@ class Order
                                 case 'select':
                                 case 'dropdown':
                                     $value = $productModel->getAttributeText(
-                                        $attribute_code
+                                        $attributeCode
                                     );
                                     break;
                                 default:
                                     $value = $productModel->getData(
-                                        $attribute_code
+                                        $attributeCode
                                     );
                                     break;
                             }
 
                             if ($value
-                                && ! is_array(
+                                && !is_array(
                                     $value
                                 )
-                            ) // check limit on text and assign value to array
-                            {
-                                $attributes[][$attribute_code]
+                            ) {
+                                // check limit on text and assign value to array
+
+                                $attributes[][$attributeCode]
                                     = $this->_limitLength($value);
                             }
                         }
@@ -301,50 +320,50 @@ class Order
                 $attributeSetName = $this->_setFactory->create()
                     ->load($productModel->getAttributeSetId())
                     ->getAttributeSetName();
-                $this->products[] = array(
-                    'name'           => $productItem->getName(),
-                    'sku'            => $productItem->getSku(),
-                    'qty'            => (int)number_format(
+                $this->products[] = [
+                    'name' => $productItem->getName(),
+                    'sku' => $productItem->getSku(),
+                    'qty' => (int) number_format(
                         $productItem->getData('qty_ordered'), 2
                     ),
-                    'price'          => (float)number_format(
+                    'price' => (float) number_format(
                         $productItem->getPrice(), 2, '.', ''
                     ),
-                    'attribute-set'  => $attributeSetName,
-                    'categories'     => $productCat,
-                    'attributes'     => $attributes,
+                    'attribute-set' => $attributeSetName,
+                    'categories' => $productCat,
+                    'attributes' => $attributes,
                     'custom-options' => $customOptions
-                );
+                ];
             } else {
                 // when no product information is available limit to this data
-                $this->products[] = array(
-                    'name'           => $productItem->getName(),
-                    'sku'            => $productItem->getSku(),
-                    'qty'            => (int)number_format(
+                $this->products[] = [
+                    'name' => $productItem->getName(),
+                    'sku' => $productItem->getSku(),
+                    'qty' => (int) number_format(
                         $productItem->getData('qty_ordered'), 2
                     ),
-                    'price'          => (float)number_format(
+                    'price' => (float) number_format(
                         $productItem->getPrice(), 2, '.', ''
                     ),
-                    'attribute-set'  => '',
-                    'categories'     => array(),
-                    'attributes'     => array(),
+                    'attribute-set' => '',
+                    'categories' => [],
+                    'attributes' => [],
                     'custom-options' => $customOptions
-                );
+                ];
             }
         }
 
-        $this->order_subtotal   = (float)number_format(
+        $this->orderSubtotal = (float) number_format(
             $orderData->getData('subtotal'), 2, '.', ''
         );
-        $this->discount_ammount = (float)number_format(
+        $this->discountAmmount = (float) number_format(
             $orderData->getData('discount_amount'), 2, '.', ''
         );
-        $orderTotal             = abs(
+        $orderTotal = abs(
             $orderData->getData('grand_total') - $orderData->getTotalRefunded()
         );
-        $this->order_total      = (float)number_format($orderTotal, 2, '.', '');
-        $this->order_status     = $orderData->getStatus();
+        $this->orderTotal = (float) number_format($orderTotal, 2, '.', '');
+        $this->orderStatus = $orderData->getStatus();
 
         unset($this->_storeManager);
 
@@ -352,7 +371,7 @@ class Order
     }
 
     /**
-     * get the street name by line number
+     * Get the street name by line number.
      *
      * @param $street
      * @param $line
@@ -366,25 +385,30 @@ class Order
             return $street[0];
         }
         if (isset($street[$line - 1])) {
-
             return $street[$line - 1];
         } else {
-
             return '';
         }
     }
 
     /**
-     * exposes the class as an array of objects.
+     * Exposes the class as an array of objects.
      *
      * @return array
      */
     public function expose()
     {
         return get_object_vars($this);
-
     }
 
+    /**
+     * Get attrubute value for the field.
+     * 
+     * @param $field
+     * @param $orderData
+     *
+     * @return float|int|null|string
+     */
     protected function _getCustomAttributeValue($field, $orderData)
     {
         $type = $field['DATA_TYPE'];
@@ -400,11 +424,11 @@ class Order
             switch ($type) {
                 case 'int':
                 case 'smallint':
-                    $value = (int)$orderData->$function();
+                    $value = (int) $orderData->$function();
                     break;
 
                 case 'decimal':
-                    $value = (float)number_format(
+                    $value = (float) number_format(
                         $orderData->$function(), 2, '.', ''
                     );
                     break;
@@ -412,7 +436,7 @@ class Order
                 case 'timestamp':
                 case 'datetime':
                 case 'date':
-                    $date  = new \Zend_Date(
+                    $date = new \Zend_Date(
                         $orderData->$function(), \Zend_Date::ISO_8601
                     );
                     $value = $date->toString(\Zend_Date::ISO_8601);
@@ -422,14 +446,14 @@ class Order
                     $value = $orderData->$function();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string) $e, []);
         }
 
         return $value;
     }
 
     /**
-     * create property on runtime
+     * Create property on runtime.
      *
      * @param $field
      * @param $value
@@ -440,7 +464,7 @@ class Order
     }
 
     /**
-     * get attributes from attribute set
+     * Get attributes from attribute set.
      *
      * @param $attributeSetId
      *
@@ -448,7 +472,7 @@ class Order
      */
     protected function _getAttributesArray($attributeSetId)
     {
-        $result     = array();
+        $result = [];
         $attributes = $this->_attributeCollection->create()
             ->setAttributeSetFilter($attributeSetId)
             ->getItems();
@@ -461,7 +485,7 @@ class Order
     }
 
     /**
-     *  check string length and limit to 250
+     *  Check string length and limit to 250.
      *
      * @param $value
      *
@@ -477,6 +501,8 @@ class Order
     }
 
     /**
+     * Get options for the item.
+     * 
      * @return array
      */
     protected function _getOrderItemOptions($orderItem)
@@ -484,18 +510,18 @@ class Order
         $orderItemOptions = $orderItem->getProductOptions();
 
         //if product doesn't have options
-        if ( ! array_key_exists('options', $orderItemOptions)) {
-            return array();
+        if (!array_key_exists('options', $orderItemOptions)) {
+            return [];
         }
 
         $orderItemOptions = $orderItemOptions['options'];
 
         //if product options isn't array
-        if ( ! is_array($orderItemOptions)) {
-            return array();
+        if (!is_array($orderItemOptions)) {
+            return [];
         }
 
-        $options = array();
+        $options = [];
 
         foreach ($orderItemOptions as $orderItemOption) {
             if (array_key_exists('value', $orderItemOption)
@@ -503,7 +529,7 @@ class Order
                     'label', $orderItemOption
                 )
             ) {
-                $label             = str_replace(
+                $label = str_replace(
                     ' ', '-', $orderItemOption['label']
                 );
                 $options[][$label] = $orderItemOption['value'];
@@ -513,9 +539,8 @@ class Order
         return $options;
     }
 
-
     /**
-     * @return string[]
+     * @return string
      */
     public function __sleep()
     {
@@ -529,7 +554,7 @@ class Order
                 '_customerFactory',
                 '_productFactory',
                 '_attributeCollection',
-                '_setFactory'
+                '_setFactory',
             ]
         );
 
@@ -537,12 +562,9 @@ class Order
     }
 
     /**
-     * Init not serializable fields
-     *
-     * @return void
+     * Init not serializable fields.
      */
     public function __wakeup()
     {
-
     }
 }

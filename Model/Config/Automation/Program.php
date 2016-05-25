@@ -5,11 +5,22 @@ namespace Dotdigitalgroup\Email\Model\Config\Automation;
 class Program implements \Magento\Framework\Option\ArrayInterface
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
     protected $_request;
-
 
     /**
      * Program constructor.
@@ -25,19 +36,24 @@ class Program implements \Magento\Framework\Option\ArrayInterface
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Registry $registry
     ) {
-        $this->_helper       = $data;
-        $this->_request      = $requestInterface;
+        $this->_helper = $data;
+        $this->_request = $requestInterface;
         $this->_storeManager = $storeManagerInterface;
-        $this->_registry     = $registry;
+        $this->_registry = $registry;
     }
 
+    /**
+     * Get options.
+     * 
+     * @return array
+     */
     public function toOptionArray()
     {
-        $fields   = array();
-        $fields[] = array('value' => '0', 'label' => '-- Disabled --');
+        $fields = [];
+        $fields[] = ['value' => '0', 'label' => '-- Disabled --'];
 
         $websiteName = $this->_request->getParam('website', false);
-        $website     = ($websiteName)
+        $website = ($websiteName)
             ? $this->_storeManager->getWebsite($websiteName) : 0;
 
         if ($this->_helper->isEnabled($website)) {
@@ -48,7 +64,7 @@ class Program implements \Magento\Framework\Option\ArrayInterface
                 $programs = $savedPrograms;
             } else {
                 //grab the datafields request and save to register
-                $client   = $this->_helper->getWebsiteApiClient($website);
+                $client = $this->_helper->getWebsiteApiClient($website);
                 $programs = $client->getPrograms();
                 $this->_registry->unregister('programs');
                 $this->_registry->register('programs', $programs);
@@ -57,15 +73,15 @@ class Program implements \Magento\Framework\Option\ArrayInterface
             //set the api error message for the first option
             if (isset($programs->message)) {
                 //message
-                $fields[] = array('value' => 0, 'label' => $programs->message);
+                $fields[] = ['value' => 0, 'label' => $programs->message];
             } elseif (!empty($programs)) {
                 //loop for all programs option
                 foreach ($programs as $program) {
                     if (isset($program->id) && $program->status == 'Active') {
-                        $fields[] = array(
+                        $fields[] = [
                             'value' => $program->id,
-                            'label' => addslashes($program->name)
-                        );
+                            'label' => addslashes($program->name),
+                        ];
                     }
                 }
             }
@@ -73,5 +89,4 @@ class Program implements \Magento\Framework\Option\ArrayInterface
 
         return $fields;
     }
-
 }

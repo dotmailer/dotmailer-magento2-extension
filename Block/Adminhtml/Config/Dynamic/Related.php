@@ -4,13 +4,12 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Related extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
      * Related constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
+     * @param \Dotdigitalgroup\Email\Helper\Data      $dataHelper
      * @param \Magento\Backend\Block\Template\Context $context
      */
     public function __construct(
@@ -22,6 +21,11 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
         parent::__construct($context);
     }
 
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return string
+     */
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
@@ -30,10 +34,10 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
         //last order id witch information will be generated
         $lastOrderId = $this->_dataHelper->getLastOrderId();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
-        if ( ! $lastOrderId) {
+        if (!$lastOrderId) {
             $lastOrderId = '[PLEASE MAP THE LAST ORDER ID]';
         }
 

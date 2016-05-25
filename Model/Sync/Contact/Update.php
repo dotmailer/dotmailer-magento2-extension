@@ -5,17 +5,21 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
 
+    /**
+     * Sync.
+     * 
+     * @param $collection
+     */
     public function sync($collection)
     {
-        foreach($collection as $item)
-        {
+        foreach ($collection as $item) {
             $websiteId = $item->getWebsiteId();
             $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
             $importData = unserialize($item->getImportData());
             $result = true;
 
             if ($this->_client) {
-                if ($item->getImportMode() == \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_EMAIL_UPDATE){
+                if ($item->getImportMode() == \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_EMAIL_UPDATE) {
                     $emailBefore = $importData['emailBefore'];
                     $email = $importData['email'];
                     $isSubscribed = $importData['isSubscribed'];
@@ -29,10 +33,10 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                     //check for matching email
                     if (isset($result->id)) {
                         if ($email != $result->email) {
-                            $data = array(
+                            $data = [
                                 'Email' => $email,
                                 'EmailType' => 'Html'
-                            );
+                            ];
                             //update the contact with same id - different email
                             $this->_client->updateContact($result->id, $data);
                         }
@@ -50,16 +54,15 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                     if (isset($apiContact->message) &&
                         $apiContact->message
                         == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED
-                    )
-                    {
+                    ) {
                         $apiContact = $this->_client->getContactByEmail($email);
                         $result = $this->_client->postContactsResubscribe($apiContact);
                     }
-                }elseif ($item->getImportMode() == \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE){
+                } elseif ($item->getImportMode() == \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE) {
                     $email = $importData['email'];
                     $id = $importData['id'];
                     $result = $this->_client->postContacts($email);
-                    if (isset($result->id)){
+                    if (isset($result->id)) {
                         $contactId = $result->id;
                         $this->_client->deleteAddressBookContact(
                             $this->_helper->getSubscriberAddressBook($websiteId), $contactId

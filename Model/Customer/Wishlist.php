@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Customer;
 
 class Wishlist
 {
-
     /**
      * @var int
      */
@@ -12,7 +11,7 @@ class Wishlist
     /**
      * @var int
      */
-    public $customer_id;
+    public $customerId;
     /**
      * @var string
      */
@@ -28,14 +27,18 @@ class Wishlist
     /**
      * @var float
      */
-    protected $total_wishlist_value;
+    protected $totalWishlistValue;
 
     /**
      * @var string
      */
-    public $updated_at;
+    public $updatedAt;
 
-
+    /**
+     * @param $customer
+     *
+     * @return $this
+     */
     public function setCustomer($customer)
     {
         $this->setCustomerId($customer->getId());
@@ -45,11 +48,11 @@ class Wishlist
     }
 
     /**
-     * @param mixed $customer_id
+     * @param mixed $customerId
      */
-    public function setCustomerId($customer_id)
+    public function setCustomerId($customerId)
     {
-        $this->customer_id = (int)$customer_id;
+        $this->customerId = (int) $customerId;
     }
 
     /**
@@ -57,7 +60,7 @@ class Wishlist
      */
     public function getCustomerId()
     {
-        return (int)$this->customer_id;
+        return (int) $this->customerId;
     }
 
     /**
@@ -67,7 +70,7 @@ class Wishlist
      */
     public function setId($id)
     {
-        $this->id = (int)$id;
+        $this->id = (int) $id;
 
         return $this;
     }
@@ -77,11 +80,11 @@ class Wishlist
      */
     public function getId()
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     /**
-     * set wishlist item.
+     * Set wishlist item.
      *
      * @param $item
      */
@@ -89,7 +92,7 @@ class Wishlist
     {
         $this->items[] = $item->expose();
 
-        $this->total_wishlist_value += $item->getTotalValueOfProduct();
+        $this->totalWishlistValue += $item->getTotalValueOfProduct();
     }
 
     /**
@@ -101,7 +104,7 @@ class Wishlist
     }
 
     /**
-     * set wishlist date.
+     * Set wishlist date.
      *
      * @param $date
      *
@@ -111,7 +114,7 @@ class Wishlist
     {
         $date = new \Zend_Date($date, \Zend_Date::ISO_8601);
 
-        $this->updated_at = $date->toString(\Zend_Date::ISO_8601);
+        $this->updatedAt = $date->toString(\Zend_Date::ISO_8601);
 
         return $this;
     }
@@ -121,6 +124,6 @@ class Wishlist
      */
     public function getUpdatedAt()
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 }

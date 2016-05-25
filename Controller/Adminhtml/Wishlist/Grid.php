@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 class Grid extends Index
 {
     /**
-     * set page data
+     * Set page data.
      *
      * @return $this
      */
@@ -13,9 +13,4 @@ class Grid extends Index
     {
         return $this;
     }
-
-	public function execute()
-	{
-
-	}
 }

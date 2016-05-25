@@ -1,17 +1,14 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
-use Magento\Backend\App\Action;
-
-abstract class Catalog extends Action
+abstract class Catalog extends \Magento\Backend\App\Action
 {
-
-
-	/**
-	 * @return bool
-	 */
-	protected function _isAllowed()
-	{
-		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::catalog');
-	}
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::catalog');
+    }
 }

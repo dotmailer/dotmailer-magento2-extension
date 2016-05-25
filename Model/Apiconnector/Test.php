@@ -5,20 +5,27 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Test
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
 
+    /**
+     * Test constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data        $data
+     */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_helper        = $data;
+        $this->_helper = $data;
     }
 
     /**
      * Validate apiuser on save.
      *
-     * @param $apiUsername
-     * @param $apiPassword
+     * @param string $apiUsername
+     * @param string $apiPassword
      *
      * @return bool|mixed
      */
@@ -32,43 +39,12 @@ class Test
             $accountInfo = $client->getAccountInfo();
             if (isset($accountInfo->message)) {
                 $this->_helper->log('VALIDATION ERROR :  '
-                    . $accountInfo->message);
+                    .$accountInfo->message);
 
                 return false;
             }
 
             return $accountInfo;
-        }
-
-        return false;
-    }
-
-    /**
-     * Ajax validate api user.
-     *
-     * @param $apiUsername
-     * @param $apiPassword
-     *
-     * @return bool|string
-     */
-    public function ajaxvalidate($apiUsername, $apiPassword)
-    {
-        //api username and apipass must be checked
-        if ($apiUsername && $apiPassword) {
-            $client = $this->_helper->getWebsiteApiClient();
-            //default result
-            $message = 'Credentials Valid.';
-            //set the api credentials to the rest client
-            $client->setApiUsername($apiUsername)
-                ->setApiPassword($apiPassword);
-            //account info api request
-            $response = $client->getAccountInfo();
-            //get the repsonse error message and invalidate the request
-            if (isset($response->message)) {
-                $message = 'API Username And Password Do Not Match!';
-            }
-
-            return $message;
         }
 
         return false;
