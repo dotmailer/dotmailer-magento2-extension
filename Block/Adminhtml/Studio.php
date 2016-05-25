@@ -27,10 +27,10 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     /**
      * Studio constructor.
      *
-     * @param \Magento\Backend\Model\Auth                 $auth
-     * @param \Dotdigitalgroup\Email\Helper\Config        $configFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data          $dataHelper
-     * @param \Magento\Backend\Block\Template\Context     $context
+     * @param \Magento\Backend\Model\Auth $auth
+     * @param \Dotdigitalgroup\Email\Helper\Config $configFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
+     * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
      */
     public function __construct(
@@ -115,7 +115,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
     /**
      * User login url.
-     * 
+     *
      * @return string
      */
     public function getLoginUserHtml()
@@ -125,14 +125,14 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         $baseUrl = $this->_configFactory
             ->getLogUserUrl();
 
-        $loginuserUrl = $baseUrl.$token.'&suppressfooter=true';
+        $loginuserUrl = $baseUrl . $token . '&suppressfooter=true';
 
         return $loginuserUrl;
     }
 
     /**
      * Generate new token and connect from the admin.
-     * 
+     *
      * @return string
      */
     public function generatetokenAction()
@@ -144,18 +144,18 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         if ($refreshToken) {
             $code = $this->_helper->getCode();
             $params = 'client_id='
-                .$this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
+                . $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
                 .
                 '&client_secret='
-                .$this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID)
+                . $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID)
                 .
-                '&refresh_token='.$refreshToken.
+                '&refresh_token=' . $refreshToken .
                 '&grant_type=refresh_token';
 
             $url = $this->_configFactory->getTokenUrl();
 
-            $this->_helper->log('token code : '.$code.', params : '
-                .$params);
+            $this->_helper->log('token code : ' . $code . ', params : '
+                . $params);
 
             /*
              * Refresh Token request.
@@ -174,8 +174,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
             $response = json_decode(curl_exec($ch));
 
             if (isset($response->error)) {
-                $this->_helper->log('Token Error Number:'.curl_errno($ch)
-                    .'Error String:'.curl_error($ch));
+                $this->_helper->log('Token Error Number:' . curl_errno($ch)
+                    . 'Error String:' . curl_error($ch));
             }
             curl_close($ch);
             $token = '';

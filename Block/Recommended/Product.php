@@ -32,14 +32,14 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product constructor.
      *
-     * @param \Magento\Sales\Model\OrderFactory                       $orderFactory
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
-     * @param \Magento\Catalog\Model\ProductFactory                   $productFactory
-     * @param \Dotdigitalgroup\Email\Helper\Recommended               $recommended
-     * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
-     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context                  $context
-     * @param array                                                   $data
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param array $data
      */
     public function __construct(
         \Magento\Sales\Model\OrderFactory $orderFactory,
@@ -62,7 +62,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Get the products to display for table.
-     * 
+     *
      * @return array
      */
     public function getLoadedProductCollection()
@@ -90,8 +90,8 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $this->helper->log(
-            'DYNAMIC PRODUCTS : limit '.$limit.' products : '
-            .$numItems.', max per child : '.$maxPerChild
+            'DYNAMIC PRODUCTS : limit ' . $limit . ' products : '
+            . $numItems . ', max per child : ' . $maxPerChild
         );
 
         foreach ($orderItems as $item) {
@@ -146,7 +146,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
         $this->helper->log(
             'loaded product to display '
-            .count($productsToDisplay)
+            . count($productsToDisplay)
         );
 
         return $productsToDisplay;

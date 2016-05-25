@@ -51,7 +51,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     protected $import_statuses
         = array(
             'RejectedByWatchdog', 'InvalidFileFormat', 'Unknown',
-            'Failed', 'ExceedsAllowedContactLimit', 'NotAvailableInThisVersion',
+            'Failed',
+            'ExceedsAllowedContactLimit',
+            'NotAvailableInThisVersion',
         );
 
     protected $_bulkPriority;
@@ -150,7 +152,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
             return true;
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, array());
+            $this->_helper->debug((string)$e, array());
         }
 
         return false;
@@ -401,7 +403,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             $item->setImportStatus(self::FAILED)
                                 ->setMessage(
                                     'Import failed with status '
-                                    .$response->status
+                                    . $response->status
                                 )
                                 ->save();
                         } else {
@@ -437,7 +439,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         if ($response) {
             $data = $this->_removeUtf8Bom($response);
             $fileName = $this->_directoryList->getPath('var')
-                .DIRECTORY_SEPARATOR.'DmTempCsvFromApi.csv';
+                . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
             $this->_file->open();
             $check = $this->_file->write($fileName, $data);
 
@@ -498,7 +500,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             $condition = array();
             foreach ($importType as $type) {
                 if ($type == 'Catalog') {
-                    $condition[] = array('like' => $type.'%');
+                    $condition[] = array('like' => $type . '%');
                 } else {
                     $condition[] = array('eq' => $type);
                 }

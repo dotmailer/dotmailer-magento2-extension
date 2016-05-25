@@ -30,11 +30,11 @@ class Edit extends \Magento\Backend\App\Action
     /**
      * Edit constructor.
      *
-     * @param \Magento\Backend\Model\SessionFactory       $sessionFactory
+     * @param \Magento\Backend\Model\SessionFactory $sessionFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param Action\Context                              $context
-     * @param \Magento\Framework\View\Result\PageFactory  $resultPageFactory
-     * @param \Magento\Framework\Registry                 $registry
+     * @param Action\Context $context
+     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Magento\Backend\Model\SessionFactory $sessionFactory,
@@ -110,7 +110,7 @@ class Edit extends \Magento\Backend\App\Action
         );
         $resultPage->getConfig()->getTitle()->prepend(__('Contacts'));
         $resultPage->getConfig()->getTitle()
-                   ->prepend($model->getId() ? $model->getTitle() : __('New Contacts'));
+            ->prepend($model->getId() ? $model->getTitle() : __('New Contacts'));
 
         return $resultPage;
     }

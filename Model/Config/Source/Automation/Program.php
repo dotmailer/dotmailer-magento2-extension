@@ -28,9 +28,9 @@ class Program
     /**
      * Program constructor.
      *
-     * @param \Magento\Framework\App\RequestInterface    $requestInterface
-     * @param \Magento\Framework\Registry                $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data         $data
+     * @param \Magento\Framework\App\RequestInterface $requestInterface
+     * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -47,7 +47,7 @@ class Program
 
     /**
      * Get options.
-     * 
+     *
      * @return array
      */
     public function toOptionArray()

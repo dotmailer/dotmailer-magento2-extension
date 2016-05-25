@@ -12,7 +12,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
     /**
      * Selected constructor.
      *
-     * @param \Magento\Backend\App\Action\Context  $context
+     * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\App\Response\Http $http
      */
     public function __construct(
@@ -37,7 +37,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
-     * 
+     *
      * @return $this
      */
     public function execute()
@@ -73,8 +73,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
             )->getInputTypeOptions($type);
 
             $response['condition'] = str_replace(
-                'value="'.$selectedConditions.'"',
-                'value="'.$selectedConditions.'"'.'selected="selected"',
+                'value="' . $selectedConditions . '"',
+                'value="' . $selectedConditions . '"' . 'selected="selected"',
                 $this->_getOptionHtml(
                     'conditions', $conditionName, $conditionOptions
                 )
@@ -96,8 +96,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 )->getValueSelectOptions($attribute, $isEmpty);
 
                 $response['cvalue'] = str_replace(
-                    'value="'.$selectedValues.'"',
-                    'value="'.$selectedValues.'"'.'selected="selected"',
+                    'value="' . $selectedValues . '"',
+                    'value="' . $selectedValues . '"' . 'selected="selected"',
                     $this->_getOptionHtml('cvalue', $valueName, $valueOptions)
                 );
             } elseif ($elmType == 'text') {

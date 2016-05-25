@@ -117,7 +117,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * CONFIGURATION SECTION.
      */
-    
+
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS = 'connector_configuration/data_fields/order_status';
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE = 'connector_configuration/data_fields/brand_attribute';
 
@@ -282,10 +282,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             $website = $this->_storeManager->getWebsite($website);
             $baseUrl = $website->getConfig(
                     self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
-                ).self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
+                ) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         } else {
             $baseUrl = self::API_CONNECTOR_OAUTH_URL
-                .self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
+                . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         }
 
         return $baseUrl;
@@ -305,7 +305,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
         );
 
-        return (bool) $customDomain;
+        return (bool)$customDomain;
     }
 
     /**
@@ -341,10 +341,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
             $tokenUrl = $website->getConfig(
                     self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
-                ).self::API_CONNECTOR_OAUTH_URL_TOKEN;
+                ) . self::API_CONNECTOR_OAUTH_URL_TOKEN;
         } else {
             $tokenUrl = self::API_CONNECTOR_OAUTH_URL
-                .self::API_CONNECTOR_OAUTH_URL_TOKEN;
+                . self::API_CONNECTOR_OAUTH_URL_TOKEN;
         }
 
         return $tokenUrl;
@@ -364,10 +364,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
             $logUserUrl = $website->getConfig(
                     self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
-                ).self::API_CONNECTOR_OAUTH_URL_LOG_USER;
+                ) . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         } else {
             $logUserUrl = self::API_CONNECTOR_OAUTH_URL
-                .self::API_CONNECTOR_OAUTH_URL_LOG_USER;
+                . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         }
 
         return $logUserUrl;

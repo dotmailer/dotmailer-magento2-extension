@@ -47,14 +47,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Data constructor.
      *
-     * @param \Magento\Backend\Model\Auth\Session         $sessionModel
-     * @param \Magento\Framework\App\ProductMetadata      $productMetadata
+     * @param \Magento\Backend\Model\Auth\Session $sessionModel
+     * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Magento\Config\Model\ResourceModel\Config  $resourceConfig
-     * @param \Magento\Framework\App\ResourceConnection   $adapter
-     * @param \Magento\Framework\App\Helper\Context       $context
-     * @param \Magento\Framework\ObjectManagerInterface   $objectManager
-     * @param \Magento\Store\Model\StoreManagerInterface  $storeManager
+     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
+     * @param \Magento\Framework\App\ResourceConnection $adapter
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\Backend\Model\Auth\Session $sessionModel,
@@ -166,7 +166,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param        $path
      * @param string $contextScope
-     * @param null   $contextScopeId
+     * @param null $contextScopeId
      *
      * @return mixed
      */
@@ -356,7 +356,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isRoiTrackingEnabled()
     {
-        return (bool) $this->scopeConfig->isSetFlag(
+        return (bool)$this->scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED
         );
     }
@@ -637,8 +637,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $authorizeBaseUrl = $this->_objectManager->create(
             'Dotdigitalgroup\Email\Helper\Config'
         )->getAuthorizeLink();
-        $url = $authorizeBaseUrl.http_build_query($params)
-            .'&client_id='.$clientId;
+        $url = $authorizeBaseUrl . http_build_query($params)
+            . '&client_id=' . $clientId;
 
         return $url;
     }
@@ -1092,7 +1092,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get the config id by the automation type.
      *
-     * @param string  $automationType
+     * @param string $automationType
      * @param int $websiteId
      *
      * @return mixed
@@ -1100,7 +1100,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getAutomationIdByType($automationType, $websiteId = 0)
     {
         $path = constant(
-            EmailConfig::class.'::'.$automationType
+            EmailConfig::class . '::' . $automationType
         );
         $automationCampaignId = $this->getWebsiteConfig($path, $websiteId);
 
@@ -1263,7 +1263,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get display type for review product.
-     * 
+     *
      * @param mixed $website
      *
      * @return mixed

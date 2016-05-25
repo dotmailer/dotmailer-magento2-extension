@@ -75,7 +75,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
             ->setType('button')
             ->setLabel(__($title))
             ->setDisabled($disabled)
-            ->setOnClick("window.location.href='".$url."'")
+            ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
     }
 

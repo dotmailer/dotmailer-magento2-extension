@@ -23,20 +23,20 @@ class Cron
     /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory               $campaignFactory
-     * @param Sync\OrderFactory                  $syncOrderFactory
-     * @param Sales\QuoteFactory                 $quoteFactory
-     * @param Sync\ReviewFactory                 $reviewFactory
-     * @param Sales\OrderFactory                 $orderFactory
-     * @param Sync\WishlistFactory               $wishlistFactory
-     * @param Customer\GuestFactory              $guestFactory
-     * @param Newsletter\SubscriberFactory       $subscriberFactory
-     * @param Sync\CatalogFactory                $catalogFactorty
-     * @param Sync\AutomationFactory             $automationFactory
-     * @param Apiconnector\ContactFactory        $contact
+     * @param Sync\CampaignFactory $campaignFactory
+     * @param Sync\OrderFactory $syncOrderFactory
+     * @param Sales\QuoteFactory $quoteFactory
+     * @param Sync\ReviewFactory $reviewFactory
+     * @param Sales\OrderFactory $orderFactory
+     * @param Sync\WishlistFactory $wishlistFactory
+     * @param Customer\GuestFactory $guestFactory
+     * @param Newsletter\SubscriberFactory $subscriberFactory
+     * @param Sync\CatalogFactory $catalogFactorty
+     * @param Sync\AutomationFactory $automationFactory
+     * @param Apiconnector\ContactFactory $contact
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param Resource\Importer                  $importerResource
+     * @param Resource\Importer $importerResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
@@ -86,8 +86,8 @@ class Cron
         $subscriberResult = $this->subscribersAndGuestSync();
 
         if (isset($subscriberResult['message']) && isset($result['message'])) {
-            $result['message'] = $result['message'].' - '
-                .$subscriberResult['message'];
+            $result['message'] = $result['message'] . ' - '
+                . $subscriberResult['message'];
         }
 
         return $result;
@@ -203,7 +203,7 @@ class Cron
         }
         $archivedFolder = $this->_fileHelper->getArchiveFolder();
         $result = $this->_fileHelper->deleteDir($archivedFolder);
-        $message .= ' Deleting archived folder result : '.$result;
+        $message .= ' Deleting archived folder result : ' . $result;
         $this->_helper->log($message);
 
         return $message;

@@ -7,7 +7,7 @@ class Frequency
 
     /**
      * Get options.
-     * 
+     *
      * @return array
      */
     public function toOptionArray()

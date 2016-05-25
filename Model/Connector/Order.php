@@ -323,10 +323,10 @@ class Order
                 $this->products[] = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
-                    'qty' => (int) number_format(
+                    'qty' => (int)number_format(
                         $productItem->getData('qty_ordered'), 2
                     ),
-                    'price' => (float) number_format(
+                    'price' => (float)number_format(
                         $productItem->getPrice(), 2, '.', ''
                     ),
                     'attribute-set' => $attributeSetName,
@@ -339,10 +339,10 @@ class Order
                 $this->products[] = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
-                    'qty' => (int) number_format(
+                    'qty' => (int)number_format(
                         $productItem->getData('qty_ordered'), 2
                     ),
-                    'price' => (float) number_format(
+                    'price' => (float)number_format(
                         $productItem->getPrice(), 2, '.', ''
                     ),
                     'attribute-set' => '',
@@ -353,16 +353,16 @@ class Order
             }
         }
 
-        $this->orderSubtotal = (float) number_format(
+        $this->orderSubtotal = (float)number_format(
             $orderData->getData('subtotal'), 2, '.', ''
         );
-        $this->discountAmmount = (float) number_format(
+        $this->discountAmmount = (float)number_format(
             $orderData->getData('discount_amount'), 2, '.', ''
         );
         $orderTotal = abs(
             $orderData->getData('grand_total') - $orderData->getTotalRefunded()
         );
-        $this->orderTotal = (float) number_format($orderTotal, 2, '.', '');
+        $this->orderTotal = (float)number_format($orderTotal, 2, '.', '');
         $this->orderStatus = $orderData->getStatus();
 
         unset($this->_storeManager);
@@ -403,7 +403,7 @@ class Order
 
     /**
      * Get attrubute value for the field.
-     * 
+     *
      * @param $field
      * @param $orderData
      *
@@ -424,11 +424,11 @@ class Order
             switch ($type) {
                 case 'int':
                 case 'smallint':
-                    $value = (int) $orderData->$function();
+                    $value = (int)$orderData->$function();
                     break;
 
                 case 'decimal':
-                    $value = (float) number_format(
+                    $value = (float)number_format(
                         $orderData->$function(), 2, '.', ''
                     );
                     break;
@@ -446,7 +446,7 @@ class Order
                     $value = $orderData->$function();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
 
         return $value;

@@ -53,7 +53,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Get the products to display for table.
-     * 
+     *
      * @return $this
      */
     public function getLoadedProductCollection()

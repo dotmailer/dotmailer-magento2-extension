@@ -28,7 +28,7 @@ class Rating
      */
     public function setRatingScore($score)
     {
-        $this->ratingScore = (int) $score;
+        $this->ratingScore = (int)$score;
 
         return $this;
     }

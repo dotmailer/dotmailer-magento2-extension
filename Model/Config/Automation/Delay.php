@@ -1,7 +1,7 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Model\Config\Automation;
-           
+
 class Delay
 {
     /**

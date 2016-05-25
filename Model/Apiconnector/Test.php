@@ -13,7 +13,7 @@ class Test
     /**
      * Test constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data        $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data
@@ -39,7 +39,7 @@ class Test
             $accountInfo = $client->getAccountInfo();
             if (isset($accountInfo->message)) {
                 $this->_helper->log('VALIDATION ERROR :  '
-                    .$accountInfo->message);
+                    . $accountInfo->message);
 
                 return false;
             }

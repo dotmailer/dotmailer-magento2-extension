@@ -17,7 +17,7 @@ class Subscribersync extends \Magento\Backend\App\AbstractAction
      * Subscribersync constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\CronFactory $cronFactory
-     * @param \Magento\Backend\App\Action\Context      $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\CronFactory $cronFactory,

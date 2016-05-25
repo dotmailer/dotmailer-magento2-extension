@@ -9,14 +9,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected $moduleManager;
 
-    /**
-     * @var
-     */
+        /**
+         * @var
+         */
     protected $_gridFactory;
 
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory
-     */
+        /**
+         * @var \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory
+         */
     protected $_automationFactory;
     protected $_storeOptions;
 
@@ -40,7 +40,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     ) {
         $this->_automationFactory = $gridFactory;
         $this->_storeOptions = $storeOptions;
-        $this->moduleManager = $moduleManager;
+            $this->moduleManager = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }
 
@@ -68,35 +68,35 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         return parent::_prepareCollection();
     }
 
-    /**
-     * @return $this
-     *
-     * @throws \Exception
-     */
+        /**
+         * @return $this
+         *
+         * @throws \Exception
+         */
     protected function _prepareColumns()
     {
-        $this->addColumn('id', [
+            $this->addColumn('id', [
             'header' => __('ID'),
-            'index' => 'id',
-            'type' => 'number',
+                'index' => 'id',
+                'type' => 'number',
             'escape' => true,
-        ])->addColumn('program_id', [
+            ])->addColumn('program_id', [
             'header' => __('Program ID'),
-            'align' => 'center',
-            'index' => 'program_id',
-            'type' => 'number',
+                'align' => 'center',
+                'index' => 'program_id',
+                'type' => 'number',
             'escape' => true,
-        ])->addColumn('automation_type', [
+            ])->addColumn('automation_type', [
             'header' => __('Automation Type'),
-            'align' => 'right',
-            'index' => 'automation_type',
-            'type' => 'text',
-            'escape' => true,
-        ])->addColumn('enrolment_status', [
-            'header' => __('Enrollment Status'),
-            'align' => 'left',
-            'index' => 'enrolment_status',
-            'type' => 'options',
+                'align' => 'right',
+                'index' => 'automation_type',
+                'type' => 'text',
+                'escape' => true,
+            ])->addColumn('enrolment_status', [
+                'header' => __('Enrollment Status'),
+                'align' => 'left',
+                'index' => 'enrolment_status',
+                'type' => 'options',
             'options' => [
                 'pending' => 'Pending',
                 'Active' => 'Active',
@@ -106,43 +106,43 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'NotAvailableInThisVersion' => 'NotAvailableInThisVersion',
                 'Failed' => 'Failed',
             ],
-            'escape' => true,
-        ])->addColumn('email', [
+                'escape' => true,
+            ])->addColumn('email', [
             'header' => __('Email'),
-            'align' => 'right',
-            'index' => 'email',
-            'type' => 'text',
+                'align' => 'right',
+                'index' => 'email',
+                'type' => 'text',
             'escape' => true,
-        ])->addColumn('type_id', [
+            ])->addColumn('type_id', [
             'header' => __('Type ID'),
-            'align' => 'center',
-            'index' => 'type_id',
-            'type' => 'number',
+                'align' => 'center',
+                'index' => 'type_id',
+                'type' => 'number',
             'escape' => true,
-        ])->addColumn('message', [
+            ])->addColumn('message', [
             'header' => __('Message'),
-            'align' => 'right',
-            'index' => 'message',
-            'type' => 'text',
-            'escape' => true,
-        ])->addColumn('created_at', [
+                'align' => 'right',
+                'index' => 'message',
+                'type' => 'text',
+                'escape' => true,
+            ])->addColumn('created_at', [
             'header' => __('Created At'),
-            'align' => 'center',
-            'index' => 'created_at',
+                'align' => 'center',
+                'index' => 'created_at',
             'escape' => true,
-            'type' => 'datetime',
-        ])->addColumn('updated_at', [
+                'type' => 'datetime',
+            ])->addColumn('updated_at', [
             'header' => __('Updated At'),
-            'align' => 'center',
-            'index' => 'updated_at',
+                'align' => 'center',
+                'index' => 'updated_at',
             'escape' => true,
-            'type' => 'datetime',
-        ])->addColumn('website_id', [
-            'header' => __('Website'),
-            'align' => 'center',
-            'type' => 'options',
+                'type' => 'datetime',
+            ])->addColumn('website_id', [
+                'header' => __('Website'),
+                'align' => 'center',
+                'type' => 'options',
             'options' => $this->_storeOptions->getWebsiteOptionHash(true),
-        ]);
+            ]);
 
         return parent::_prepareColumns();
     }
@@ -155,11 +155,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');
 
-        $this->getMassactionBlock()->addItem('delete', [
-            'label' => __('Delete'),
-            'url' => $this->getUrl('*/*/massDelete'),
-            'confirm' => __('Are you sure?'),
-        ]);
+            $this->getMassactionBlock()->addItem('delete', [
+                'label' => __('Delete'),
+                'url' => $this->getUrl('*/*/massDelete'),
+                'confirm' => __('Are you sure?'),
+            ]);
 
         return $this;
     }

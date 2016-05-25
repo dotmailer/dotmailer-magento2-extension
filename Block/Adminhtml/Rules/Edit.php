@@ -17,7 +17,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
      * Add standard buttons
      * Add "Save and Continue" button.
      *
-     * @param \Magento\Framework\Registry           $registry
+     * @param \Magento\Framework\Registry $registry
      * @param \Magento\Backend\Block\Widget\Context $context
      */
     public function __construct(
@@ -48,7 +48,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
         $rule = $this->_registry->registry('current_ddg_rule');
 
         if ($rule->getId()) {
-            return __('Edit Rule '.$this->escapeHtml($rule->getName()));
+            return __('Edit Rule ' . $this->escapeHtml($rule->getName()));
         } else {
             return __('New Rule');
         }

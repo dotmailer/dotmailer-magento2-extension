@@ -66,8 +66,8 @@ class Contact
     /**
      * Contact constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                     $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory        $customerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory
      * @param \Magento\Framework\Registry                                      $registry
      * @param \Magento\Framework\App\ResourceConnection                        $resource
      * @param \Dotdigitalgroup\Email\Helper\File                               $file
@@ -155,16 +155,16 @@ class Contact
                 }
                 // show message for any number of customers
                 if ($contactsUpdated) {
-                    $result['message'] .= '</br>'.$website->getName()
-                        .', exported contacts : '.$contactsUpdated;
+                    $result['message'] .= '</br>' . $website->getName()
+                        . ', exported contacts : ' . $contactsUpdated;
                 }
             }
         }
         //sync proccessed
         if ($this->_countCustomers) {
-            $message = 'Total time for sync : '.gmdate(
+            $message = 'Total time for sync : ' . gmdate(
                     'H:i:s', microtime(true) - $this->_start
-                ).', Total contacts : '.$this->_countCustomers;
+                ) . ', Total contacts : ' . $this->_countCustomers;
             $this->_helper->log($message);
             $message .= $result['message'];
             $result['message'] = $message;
@@ -208,9 +208,9 @@ class Contact
         }
         //customer filename
         $customersFile = strtolower(
-            $website->getCode().'_customers_'.date('d_m_Y_Hi').'.csv'
+            $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
         );
-        $this->_helper->log('Customers file : '.$customersFile);
+        $this->_helper->log('Customers file : ' . $customersFile);
         //get customers ids
         $customerIds = $contacts->getColumnValues('customer_id');
         /*
@@ -276,10 +276,10 @@ class Contact
 
         $customerNum = count($customerIds);
         $this->_helper->log(
-            'Website : '.$website->getName().', customers = '.$customerNum
+            'Website : ' . $website->getName() . ', customers = ' . $customerNum
         );
         $this->_helper->log(
-            '---------------------------- execution time :'.gmdate(
+            '---------------------------- execution time :' . gmdate(
                 'H:i:s', microtime(true) - $this->_start
             )
         );
@@ -351,9 +351,9 @@ class Contact
 
         //create customer filename
         $customersFile = strtolower(
-            $website->getCode().'_customers_'.date('d_m_Y_Hi').'.csv'
+            $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
         );
-        $this->_helper->log('Customers file : '.$customersFile);
+        $this->_helper->log('Customers file : ' . $customersFile);
 
         /*
          * HEADERS.

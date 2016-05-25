@@ -25,7 +25,7 @@ class Bulk
     /**
      * Bulk constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data          $helper
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      */
     public function __construct(
@@ -38,7 +38,7 @@ class Bulk
 
     /**
      * Sync.
-     * 
+     *
      * @param $collection
      */
     public function sync($collection)

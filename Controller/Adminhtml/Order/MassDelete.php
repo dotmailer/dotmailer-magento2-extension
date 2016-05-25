@@ -8,6 +8,7 @@ use Magento\Framework\Controller\ResultFactory;
 class MassDelete extends OrderController
 {
     protected $messageManager;
+
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */

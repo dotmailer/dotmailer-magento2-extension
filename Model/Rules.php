@@ -262,7 +262,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 }
             } else {
                 if ($cond == 'like' or $cond == 'nlike') {
-                    $value = '%'.$value.'%';
+                    $value = '%' . $value . '%';
                 }
                 $collection->addFieldToFilter(
                     $attribute, array($this->_conditionMap[$cond] => $value)
@@ -327,7 +327,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 }
             } else {
                 if ($cond == 'like' or $cond == 'nlike') {
-                    $value = '%'.$value.'%';
+                    $value = '%' . $value . '%';
                 }
                 if (isset($fieldsConditions[$attribute])) {
                     $multiFieldsConditions[$attribute]

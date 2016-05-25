@@ -18,7 +18,7 @@ class Reviews extends \Dotdigitalgroup\Email\Controller\Response
 
             return;
         }
-        
+
         $this->_view->loadLayout();
         $this->_view->renderLayout();
     }

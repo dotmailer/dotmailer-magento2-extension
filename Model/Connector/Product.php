@@ -144,11 +144,11 @@ class Product
 
         $options = $this->_visibilityFactory->create()
             ->getOptionArray();
-        $this->visibility = (string) $options[$product->getVisibility()];
-        $this->price = (float) number_format(
+        $this->visibility = (string)$options[$product->getVisibility()];
+        $this->price = (float)number_format(
             $product->getPrice(), 2, '.', ''
         );
-        $this->specialPrice = (float) number_format(
+        $this->specialPrice = (float)number_format(
             $product->getSpecialPrice(), 2, '.', ''
         );
         $this->url = $product->getProductUrl();
@@ -159,7 +159,7 @@ class Product
         $stock = $this->_itemFactory->create()
             ->setProduct($product);
 
-        $this->stock = (float) number_format($stock->getQty(), 2, '.', '');
+        $this->stock = (float)number_format($stock->getQty(), 2, '.', '');
 
         $shortDescription = $product->getShortDescription();
         //limit short description
@@ -214,7 +214,7 @@ class Product
                     $sOptions[$count]['name'] = $selection->getName();
                     $sOptions[$count]['sku'] = $selection->getSku();
                     $sOptions[$count]['id'] = $selection->getProductId();
-                    $sOptions[$count]['price'] = (float) number_format(
+                    $sOptions[$count]['price'] = (float)number_format(
                         $selection->getPrice(), 2, '.', ''
                     );
                     ++$count;
@@ -237,7 +237,7 @@ class Product
                 foreach ($productAttribute['values'] as $attribute) {
                     $options[$count]['option'] = $attribute['default_label'];
                     if (isset($attribute['pricing_value'])) {
-                        $options[$count]['price'] = (float) number_format(
+                        $options[$count]['price'] = (float)number_format(
                             $attribute['pricing_value'], 2, '.', ''
                         );
                     }

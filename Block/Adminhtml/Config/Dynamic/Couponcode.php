@@ -9,7 +9,7 @@ class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Couponcode constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data      $dataHelper
+     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
      * @param \Magento\Backend\Block\Template\Context $context
      */
     public function __construct(
@@ -39,8 +39,8 @@ class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
         }
 
         //full url
-        $text = $baseUrl.'connector/email/coupon/id/[INSERT ID HERE]/code/'
-            .$passcode.'/@EMAIL@';
+        $text = $baseUrl . 'connector/email/coupon/id/[INSERT ID HERE]/code/'
+            . $passcode . '/@EMAIL@';
         $element->setData('value', $text);
         $element->setData('disabled', 'disabled');
 

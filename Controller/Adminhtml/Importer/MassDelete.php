@@ -20,7 +20,7 @@ class MassDelete extends ImporterController
     /**
      * MassDelete constructor.
      *
-     * @param \Magento\Backend\App\Action\Context          $context
+     * @param \Magento\Backend\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      */
     public function __construct(

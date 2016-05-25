@@ -18,7 +18,7 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
      * Wishlistsreset constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Resource\WishlistFactory $wishlistFactory
-     * @param \Magento\Backend\App\Action\Context                   $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\WishlistFactory $wishlistFactory,

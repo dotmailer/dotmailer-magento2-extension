@@ -52,7 +52,7 @@ class Wishlist
      */
     public function setCustomerId($customerId)
     {
-        $this->customerId = (int) $customerId;
+        $this->customerId = (int)$customerId;
     }
 
     /**
@@ -60,7 +60,7 @@ class Wishlist
      */
     public function getCustomerId()
     {
-        return (int) $this->customerId;
+        return (int)$this->customerId;
     }
 
     /**
@@ -70,7 +70,7 @@ class Wishlist
      */
     public function setId($id)
     {
-        $this->id = (int) $id;
+        $this->id = (int)$id;
 
         return $this;
     }
@@ -80,7 +80,7 @@ class Wishlist
      */
     public function getId()
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     /**

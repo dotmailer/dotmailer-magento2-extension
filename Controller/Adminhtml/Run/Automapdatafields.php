@@ -16,7 +16,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     /**
      * Automapdatafields constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data  $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
@@ -49,9 +49,10 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
 
                 //ignore existing datafields message
                 if (isset($response->message) && $response->message !=
-                    \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_DATAFIELD_EXISTS) {
+                    \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_DATAFIELD_EXISTS
+                ) {
                     $result['errors'] = true;
-                    $result['message'] .=  ' Datafield '.$datafield['name'].' - '.$response->message.'</br>';
+                    $result['message'] .= ' Datafield ' . $datafield['name'] . ' - ' . $response->message . '</br>';
                 } else {
                     if ($website) {
                         $scope = 'websites';
@@ -64,9 +65,9 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
                      * map the succesful created datafield
                      */
                     $this->_data->saveConfigData(
-                        'connector_data_mapping/customer_data/'.$key, strtoupper($datafield['name']), $scope, $scopeId
+                        'connector_data_mapping/customer_data/' . $key, strtoupper($datafield['name']), $scope, $scopeId
                     );
-                    $this->_data->log('successfully connected : '.$datafield['name']);
+                    $this->_data->log('successfully connected : ' . $datafield['name']);
                 }
             }
             if ($result['errors']) {

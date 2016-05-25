@@ -48,7 +48,7 @@ class Review
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -57,7 +57,7 @@ class Review
     /**
      * Review constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data         $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
@@ -88,7 +88,7 @@ class Review
      */
     public function setCustomerId($customerId)
     {
-        $this->customerId = (int) $customerId;
+        $this->customerId = (int)$customerId;
 
         return $this;
     }
@@ -98,7 +98,7 @@ class Review
      */
     public function getCustomerId()
     {
-        return (int) $this->customerId;
+        return (int)$this->customerId;
     }
 
     /**
@@ -108,7 +108,7 @@ class Review
      */
     public function setId($id)
     {
-        $this->id = (int) $id;
+        $this->id = (int)$id;
 
         return $this;
     }
@@ -118,12 +118,12 @@ class Review
      */
     public function getId()
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     /**
      * Create rating on runtime.
-     * 
+     *
      * @param $ratingName
      * @param $rating
      */

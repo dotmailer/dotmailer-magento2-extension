@@ -33,10 +33,10 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     /**
      * Accountcallback constructor.
      *
-     * @param \Magento\Framework\App\Action\Context            $context
-     * @param \Dotdigitalgroup\Email\Helper\Data               $helper
-     * @param \Magento\Framework\Json\Helper\Data              $jsonHelper
-     * @param \Magento\Store\Model\StoreManagerInterface       $storeManager
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
      */
@@ -103,7 +103,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             'message' => $msg,
         ];
         $this->getResponse()->setBody(
-            $this->getRequest()->getParam('callback').'('.$this->_jsonHelper->jsonEncode($message).')'
+            $this->getRequest()->getParam('callback') . '(' . $this->_jsonHelper->jsonEncode($message) . ')'
         )->sendResponse();
     }
 
@@ -194,9 +194,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
                 } else {
                     //map the successfully created data field
                     $this->_helper->saveConfigData(
-                        'connector_data_mapping/customer_data/'.$key,
+                        'connector_data_mapping/customer_data/' . $key,
                         strtoupper($dataField['name']), 'default', 0);
-                    $this->_helper->log('successfully connected : '.$dataField['name']);
+                    $this->_helper->log('successfully connected : ' . $dataField['name']);
                 }
             }
         }
@@ -240,7 +240,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
                     } else {
                         //map the successfully created address book
                         $this->_helper->saveConfigData($addressBookMap[$addressBookName], $response->id, 'default', 0);
-                        $this->_helper->log('successfully connected address book : '.$addressBookName);
+                        $this->_helper->log('successfully connected address book : ' . $addressBookName);
                     }
                 }
             }

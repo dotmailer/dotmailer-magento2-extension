@@ -72,13 +72,13 @@ class Quote
     /**
      * Quote constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory                        $rulesFactory
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection
-     * @param \Dotdigitalgroup\Email\Model\CampaignFactory                     $campaignFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
-     * @param \Magento\Store\Model\StoreManagerInterface                       $storeManager
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface               $scopeConfig
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory       $collectionFactory
+     * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
@@ -124,13 +124,13 @@ class Quote
                                 $num, $storeId
                             );
                             $interval = new \DateInterval(
-                                'PT'.$minutes.'M'
+                                'PT' . $minutes . 'M'
                             );
                         } else {
-                            $hours = (int) $this->_getLostBasketCustomerInterval(
+                            $hours = (int)$this->_getLostBasketCustomerInterval(
                                 $num, $storeId
                             );
-                            $interval = new \DateInterval('PT'.$hours.'H');
+                            $interval = new \DateInterval('PT' . $hours . 'H');
                         }
 
                         $fromTime = new \DateTime(
@@ -151,8 +151,8 @@ class Quote
                         //found abandoned carts
                         if ($quoteCollection->getSize()) {
                             $this->_helper->log(
-                                'Customer cart : '.$num.', from : '
-                                .$fromDate.' ,to '.$toDate
+                                'Customer cart : ' . $num . ', from : '
+                                . $fromDate . ' ,to ' . $toDate
                             );
                         }
 
@@ -200,7 +200,7 @@ class Quote
                                     ->setCustomerId($quote->getCustomerId())
                                     ->setEventName('Lost Basket')
                                     ->setQuoteId($quoteId)
-                                    ->setMessage('Abandoned Cart '.$num)
+                                    ->setMessage('Abandoned Cart ' . $num)
                                     ->setCampaignId($campaignId)
                                     ->setStoreId($storeId)
                                     ->setWebsiteId($websiteId)
@@ -222,13 +222,13 @@ class Quote
                                 $num, $storeId
                             );
                             $interval = new \DateInterval(
-                                'PT'.$minutes.'M'
+                                'PT' . $minutes . 'M'
                             );
                         } else {
                             $hours = $this->_getLostBasketGuestIterval(
                                 $num, $storeId
                             );
-                            $interval = new \DateInterval('PT'.$hours.'H');
+                            $interval = new \DateInterval('PT' . $hours . 'H');
                         }
 
                         $fromTime = new \DateTime(
@@ -249,8 +249,8 @@ class Quote
                         //log the time for carts found
                         if ($quoteCollection->getSize()) {
                             $this->_helper->log(
-                                'Guest cart : '.$num.', from : '.$fromDate
-                                .' ,to : '.$toDate
+                                'Guest cart : ' . $num . ', from : ' . $fromDate
+                                . ' ,to : ' . $toDate
                             );
                         }
                         $guestCampaignId = $this->_getLostBasketGuestCampaignId(
@@ -297,7 +297,7 @@ class Quote
                                     ->setEventName('Lost Basket')
                                     ->setQuoteId($quoteId)
                                     ->setCheckoutMethod('Guest')
-                                    ->setMessage('Guest Abandoned Cart '.$num)
+                                    ->setMessage('Guest Abandoned Cart ' . $num)
                                     ->setCampaignId($guestCampaignId)
                                     ->setStoreId($storeId)
                                     ->setWebsiteId($websiteId)
@@ -319,7 +319,7 @@ class Quote
     protected function _isLostBasketCustomerEnabled($num, $storeId)
     {
         return $this->scopeConfig->isSetFlag(
-            constant('self::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_'.$num),
+            constant('self::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_' . $num),
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
@@ -334,7 +334,7 @@ class Quote
     protected function _getLostBasketCustomerInterval($num, $storeId)
     {
         return $this->scopeConfig->getValue(
-            constant('self::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_'.$num),
+            constant('self::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_' . $num),
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
@@ -396,7 +396,7 @@ class Quote
     protected function _getLostBasketCustomerCampaignId($num, $storeId)
     {
         return $this->scopeConfig->getValue(
-            constant('self::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_'.$num),
+            constant('self::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_' . $num),
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
@@ -426,7 +426,7 @@ class Quote
 
         $fromTime = new \DateTime('now', new \DateTimeZone('UTC'));
         $toTime = clone $fromTime;
-        $interval = new \DateInterval('PT'.$cartLimit.'H');
+        $interval = new \DateInterval('PT' . $cartLimit . 'H');
         $fromTime->sub($interval);
 
         $fromDate = $fromTime->getTimestamp();
@@ -462,7 +462,7 @@ class Quote
     protected function _isLostBasketGuestEnabled($num, $storeId)
     {
         return $this->scopeConfig->isSetFlag(
-            constant('self::XML_PATH_LOSTBASKET_GUEST_ENABLED_'.$num),
+            constant('self::XML_PATH_LOSTBASKET_GUEST_ENABLED_' . $num),
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
@@ -477,7 +477,7 @@ class Quote
     protected function _getLostBasketGuestIterval($num, $storeId)
     {
         return $this->scopeConfig->getValue(
-            constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_'.$num),
+            constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_' . $num),
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
@@ -492,7 +492,7 @@ class Quote
     protected function _getLostBasketGuestCampaignId($num, $storeId)
     {
         return $this->scopeConfig->getValue(
-            constant('self::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_'.$num),
+            constant('self::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_' . $num),
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );

@@ -21,9 +21,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     /**
      * Newsletter constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data             $helper
-     * @param \Magento\Customer\Model\Session                $session
-     * @param \Magento\Framework\App\Action\Context          $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Customer\Model\Session $session
+     * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
      */
     public function __construct(
@@ -56,8 +56,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         $paramDataFields = $this->getRequest()->getParam(
             'data_fields'
         );
-        $customerId = $this->_customerSession->getConnectorContactId(
-        );
+        $customerId = $this->_customerSession->getConnectorContactId();
         $customerEmail = $this->_customerSession->getCustomer()
             ->getEmail();
 
@@ -129,10 +128,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
             foreach ($paramDataFields as $key => $value) {
                 if (isset($processedFields[$key]) && $value) {
                     if ($processedFields[$key] == 'Numeric') {
-                        $paramDataFields[$key] = (int) $value;
+                        $paramDataFields[$key] = (int)$value;
                     }
                     if ($processedFields[$key] == 'String') {
-                        $paramDataFields[$key] = (string) $value;
+                        $paramDataFields[$key] = (string)$value;
                     }
                     if ($processedFields[$key] == 'Date') {
                         $date = new \Zend_Date($value, 'Y/M/d');

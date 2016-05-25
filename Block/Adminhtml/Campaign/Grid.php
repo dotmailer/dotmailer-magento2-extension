@@ -7,7 +7,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected $moduleManager;
 
     protected $_gridFactory;
-    
+
     protected $_campaignFactory;
 
     /**

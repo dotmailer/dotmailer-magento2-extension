@@ -6,7 +6,7 @@ class Catalogtype
 {
 
     /**
-    * @var \Magento\Catalog\Model\Product\Type
+     * @var \Magento\Catalog\Model\Product\Type
      */        
     protected $_productType;
 
@@ -23,7 +23,7 @@ class Catalogtype
 
     /**
      * Return options.
-     * 
+     *
      * @return mixed
      */
     public function toOptionArray()

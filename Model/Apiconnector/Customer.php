@@ -127,7 +127,7 @@ class Customer
 
     /**
      * Set customer data.
-     * 
+     *
      * @param $customer
      *
      * @return $this
@@ -180,7 +180,7 @@ class Customer
 
     /**
      * Customer reviews.
-     * 
+     *
      * @return $this
      */
     public function setReviewCollection()
@@ -196,7 +196,7 @@ class Customer
 
     /**
      * Number of reviews.
-     * 
+     *
      * @return int
      */
     public function getReviewCount()
@@ -206,7 +206,7 @@ class Customer
 
     /**
      * Last review date.
-     * 
+     *
      * @return string
      */
     public function getLastReviewDate()
@@ -692,7 +692,7 @@ class Customer
     {
         $cleanedString = preg_replace('/[^0-9]/', '', $string);
         if ($cleanedString != '') {
-            return (int) number_format($cleanedString, 0, '.', '');
+            return (int)number_format($cleanedString, 0, '.', '');
         }
 
         return 0;
@@ -971,7 +971,7 @@ class Customer
 
     /**
      * Get the customer reward.
-     * 
+     *
      */
     protected function _setReward()
     {

@@ -14,7 +14,7 @@ class Index extends \Magento\Backend\App\Action
     protected $resultPageFactory;
 
     /**
-     * @param Context     $context
+     * @param Context $context
      * @param PageFactory $resultPageFactory
      */
     public function __construct(
@@ -24,6 +24,7 @@ class Index extends \Magento\Backend\App\Action
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
     }
+
     /**
      * Check the permission to run it.
      *

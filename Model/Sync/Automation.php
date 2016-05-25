@@ -111,7 +111,7 @@ class Automation
 
     /**
      * Sync.
-     * 
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sync()
@@ -202,7 +202,7 @@ class Automation
                 //number of updated records
                 if ($num) {
                     $this->_helper->log(
-                        'Automation type : '.$type.', updated : '.$num
+                        'Automation type : ' . $type . ', updated : ' . $num
                     );
                 }
             } catch (\Exception $e) {
@@ -248,7 +248,7 @@ class Automation
 
     /**
      * Update config datafield.
-     * 
+     *
      * @param string $email
      */
     protected function _updateDefaultDatafields($email)

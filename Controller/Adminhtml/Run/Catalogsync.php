@@ -17,7 +17,7 @@ class Catalogsync extends \Magento\Backend\App\AbstractAction
      * Catalogsync constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactory
-     * @param \Magento\Backend\App\Action\Context              $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactory,

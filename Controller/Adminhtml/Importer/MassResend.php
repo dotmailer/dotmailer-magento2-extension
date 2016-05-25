@@ -19,7 +19,7 @@ class MassResend extends ImporterController
     /**
      * MassResend constructor.
      *
-     * @param \Magento\Backend\App\Action\Context            $context
+     * @param \Magento\Backend\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Model\Resource\Importer $importer
      */
     public function __construct(

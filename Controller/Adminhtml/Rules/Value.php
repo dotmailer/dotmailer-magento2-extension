@@ -12,7 +12,7 @@ class Value extends \Magento\Backend\App\AbstractAction
     /**
      * Value constructor.
      *
-     * @param \Magento\Backend\App\Action\Context  $context
+     * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\App\Response\Http $http
      */
     public function __construct(

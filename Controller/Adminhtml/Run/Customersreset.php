@@ -17,7 +17,7 @@ class Customersreset extends \Magento\Backend\App\AbstractAction
      * Customersreset constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactFactory
-     * @param \Magento\Backend\App\Action\Context                  $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactFactory,

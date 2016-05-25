@@ -99,7 +99,7 @@ class Wishlist
                     $this->_setImported($this->_wishlistIds);
                 }
                 if (count($this->_wishlists)) {
-                    $message = 'Total time for wishlist bulk sync : '.gmdate(
+                    $message = 'Total time for wishlist bulk sync : ' . gmdate(
                             'H:i:s', microtime(true) - $this->_start
                         );
                     $this->_helper->log($message);
@@ -109,7 +109,7 @@ class Wishlist
                 $this->_exportWishlistForWebsiteInSingle($website);
             }
         }
-        $response['message'] = 'wishlists updated: '.$this->_count;
+        $response['message'] = 'wishlists updated: ' . $this->_count;
 
         return $response;
     }
@@ -227,7 +227,7 @@ class Wishlist
 
                 $this->_wishlistIds[] = $emailWishlist->getWishlistId();
                 $message = 'Total time for wishlist single sync : '
-                    .gmdate('H:i:s', microtime(true) - $this->_start);
+                    . gmdate('H:i:s', microtime(true) - $this->_start);
                 $this->_helper->log($message);
             } else {
                 //register in queue with importer
@@ -241,7 +241,7 @@ class Wishlist
 
                 $this->_wishlistIds[] = $emailWishlist->getWishlistId();
 
-                $message = 'Total time for wishlist single sync : '.gmdate(
+                $message = 'Total time for wishlist single sync : ' . gmdate(
                         'H:i:s', microtime(true) - $this->_start
                     );
                 $this->_helper->log($message);
@@ -300,7 +300,7 @@ class Wishlist
                 );
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, array());
+            $this->_helper->debug((string)$e, array());
         }
     }
 }

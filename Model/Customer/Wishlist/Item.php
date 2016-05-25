@@ -66,7 +66,7 @@ class Item
      */
     public function setQty($qty)
     {
-        $this->qty = (int) $qty;
+        $this->qty = (int)$qty;
 
         return $this;
     }

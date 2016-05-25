@@ -17,8 +17,8 @@ class Edit extends \Magento\Backend\App\AbstractAction
      * Edit constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Model\Rules  $rules
-     * @param \Magento\Framework\Registry         $registry
+     * @param \Dotdigitalgroup\Email\Model\Rules $rules
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,

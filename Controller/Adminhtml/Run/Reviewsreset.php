@@ -17,7 +17,7 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
      * Reviewsreset constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Resource\ReviewFactory $reviewFactory
-     * @param \Magento\Backend\App\Action\Context                 $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Resource\ReviewFactory $reviewFactory,

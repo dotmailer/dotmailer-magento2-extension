@@ -16,8 +16,8 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * Save constructor.
      *
-     * @param \Magento\Backend\App\Action\Context        $context
-     * @param \Dotdigitalgroup\Email\Model\Rules         $rules
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Model\Rules $rules
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
@@ -65,15 +65,17 @@ class Save extends \Magento\Backend\App\AbstractAction
                             $this->messageManager->addError(
                                 __(
                                     'Rule already exist for website '
-                                    .$websiteName
-                                    .'. You can only have one rule per website.'
+                                    . $websiteName
+                                    . '. You can only have one rule per website.'
                                 )
                             );
                             $this->_redirect(
                                 '*/*/edit',
-                                ['id' => $this->getRequest()->getParam(
-                                    'id'
-                                )]
+                                [
+                                    'id' => $this->getRequest()->getParam(
+                                        'id'
+                                    )
+                                ]
                             );
 
                             return;

@@ -33,7 +33,7 @@ class Value
 
     /**
      * Value constructor.
-     * 
+     *
      * @param \Magento\Eav\Model\ConfigFactory $configFactory
      * @param \Magento\Config\Model\Config\Source\Yesno $yesno
      * @param \Magento\Directory\Model\Config\Source\Country $country

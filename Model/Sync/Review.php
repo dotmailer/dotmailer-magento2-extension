@@ -104,9 +104,9 @@ class Review
         }
 
         if ($this->_countReviews) {
-            $message = 'Total time for sync : '.gmdate(
+            $message = 'Total time for sync : ' . gmdate(
                     'H:i:s', microtime(true) - $this->_start
-                ).', Total synced = '.$this->_countReviews;
+                ) . ', Total synced = ' . $this->_countReviews;
             $this->_helper->log($message);
             $response['message'] = $message;
         }
@@ -160,7 +160,7 @@ class Review
                     $this->_reviewIds[]
                                                          = $review->getReviewId();
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string) $e, array());
+                    $this->_helper->debug((string)$e, array());
                 }
             }
         }
@@ -196,7 +196,7 @@ class Review
                 "review_id IN ($ids)"
             );
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, array());
+            $this->_helper->debug((string)$e, array());
         }
     }
 }

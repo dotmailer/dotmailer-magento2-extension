@@ -9,7 +9,7 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Related constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data      $dataHelper
+     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
      * @param \Magento\Backend\Block\Template\Context $context
      */
     public function __construct(

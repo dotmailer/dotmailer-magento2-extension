@@ -13,11 +13,11 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
     /**
      * Conditions constructor.
      *
-     * @param \Magento\Framework\Data\FormFactory                      $formFactory
-     * @param \Magento\Framework\Registry                              $registry
-     * @param \Magento\Backend\Block\Widget\Context                    $context
+     * @param \Magento\Framework\Data\FormFactory $formFactory
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Backend\Block\Widget\Context $context
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $options
-     * @param array                                                    $data
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\Data\FormFactory $formFactory,

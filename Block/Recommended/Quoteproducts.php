@@ -55,7 +55,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Get the products to display for table.
-     * 
+     *
      * @return array
      */
     public function getLoadedProductCollection()
@@ -82,8 +82,8 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $this->helper->log(
-            'DYNAMIC QUOTE PRODUCTS : limit '.$limit.' products : '
-            .$numItems.', max per child : '.$maxPerChild
+            'DYNAMIC QUOTE PRODUCTS : limit ' . $limit . ' products : '
+            . $numItems . ', max per child : ' . $maxPerChild
         );
 
         foreach ($quoteItems as $item) {
@@ -138,7 +138,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $this->helper->log(
-            'quote - loaded product to display '.count($productsToDisplay)
+            'quote - loaded product to display ' . count($productsToDisplay)
         );
 
         return $productsToDisplay;

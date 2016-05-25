@@ -55,7 +55,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * Recommended constructor.
      *
      * @param \Magento\Framework\App\ResourceConnection  $adapter
-     * @param \Dotdigitalgroup\Email\Helper\Data         $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Helper\Context      $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
@@ -309,7 +309,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get product push product ids.
-     * 
+     *
      * @return array
      */
     public function getProductPushIds()

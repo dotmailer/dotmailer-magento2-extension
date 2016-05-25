@@ -16,10 +16,10 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * Customdatafields constructor.
      *
-     * @param \Magento\Backend\Block\Template\Context   $context
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition,
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition ,
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $value
-     * @param array                                     $data
+     * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
@@ -111,15 +111,15 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     {
         $options = [];
 
-        $options['option_'.$this->_getAttributeRenderer()->calcOptionHash(
+        $options['option_' . $this->_getAttributeRenderer()->calcOptionHash(
             $row->getData('attribute')
         )]
             = 'selected="selected"';
-        $options['option_'.$this->_getConditionsRenderer()->calcOptionHash(
+        $options['option_' . $this->_getConditionsRenderer()->calcOptionHash(
             $row->getData('conditions')
         )]
             = 'selected="selected"';
-        $options['option_'.$this->_getValueRenderer()->calcOptionHash(
+        $options['option_' . $this->_getValueRenderer()->calcOptionHash(
             $row->getData('cvalue')
         )]
             = 'selected="selected"';
@@ -225,9 +225,9 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                     });
 
                     function doUpdate(item){
-                        var url = '".$this->getUrl(
+                        var url = '" . $this->getUrl(
                 'dotdigitalgroup_email/rules/ajax'
-            )."';
+            ) . "';
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
                         var value = item.up(1).down().next(1);
@@ -257,9 +257,9 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                     }
 
                     function doUpdateWithValues(item){
-                        var url = '".$this->getUrl(
+                        var url = '" . $this->getUrl(
                 'dotdigitalgroup_email/rules/selected'
-            )."';
+            ) . "';
                         var arrayKey = item.up(1).readAttribute('id');
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
@@ -293,9 +293,9 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                     }
 
                     function doUpdateForCondition(item){
-                        var url = '".$this->getUrl(
+                        var url = '" . $this->getUrl(
                 'dotdigitalgroup_email/rules/value'
-            )."';
+            ) . "';
                         var attribute = item.up(1).down();
                         var attributeValue = attribute.down().value;
                         var value = item.up().next();
@@ -317,7 +317,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                 });
             </script>";
 
-        return '<input type="hidden" id="'.$this->getElement()->getHtmlId()
-        .'"/>'.parent::_toHtml().$script;
+        return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
+        . '"/>' . parent::_toHtml() . $script;
     }
 }

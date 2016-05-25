@@ -12,7 +12,7 @@ class Cron extends \Magento\Backend\App\Action
     /**
      * Cron constructor.
      *
-     * @param \Magento\Backend\App\Action\Context        $context
+     * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      */
     public function __construct(

@@ -38,12 +38,12 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
      * Order constructor.
      *
      * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection
-     * @param \Magento\Review\Model\ReviewFactory                     $reviewFactory
-     * @param \Magento\Sales\Model\OrderFactory                       $orderFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
-     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context                  $context
-     * @param array                                                   $data
+     * @param \Magento\Review\Model\ReviewFactory $reviewFactory
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection,

@@ -68,7 +68,7 @@ class Account
 
     /**
      * Set api password.
-     * 
+     *
      * @param $apiPassword
      *
      * @return $this
@@ -92,7 +92,7 @@ class Account
 
     /**
      * Set api username.
-     * 
+     *
      * @param $apiUsername
      *
      * @return $this
@@ -160,14 +160,14 @@ class Account
 
     /**
      * Set customers filename.
-     * 
+     *
      * @param $customersFilename
      */
     public function setCustomersFilename($customersFilename)
     {
         $this->_customersFilename = $customersFilename;
     }
-    
+
     /**
      * @return mixed
      */

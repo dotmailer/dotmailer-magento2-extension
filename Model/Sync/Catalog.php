@@ -132,8 +132,8 @@ class Catalog
                             //register in queue with importer
                             $this->_importerFactory->create()
                                 ->registerQueue(
-                                    'Catalog_'.$websiteCode.'_'
-                                    .$storeCode,
+                                    'Catalog_' . $websiteCode . '_'
+                                    . $storeCode,
                                     $products,
                                     \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                                     $store->getWebsite()->getId()
@@ -147,20 +147,20 @@ class Catalog
                         //using single api
                         $this->_exportInSingle(
                             $store,
-                            'Catalog_'.$websiteCode.'_'.$storeCode,
+                            'Catalog_' . $websiteCode . '_' . $storeCode,
                             $store->getWebsite()->getId()
                         );
                     }
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string) $e, array());
+                $this->_helper->debug((string)$e, array());
             }
         }
 
         if ($this->_countProducts) {
-            $message = 'Total time for sync : '.gmdate(
+            $message = 'Total time for sync : ' . gmdate(
                     'H:i:s', microtime(true) - $this->_start
-                ).', Total synced = '.$this->_countProducts;
+                ) . ', Total synced = ' . $this->_countProducts;
             $this->_helper->log($message);
             $response['message'] = $message;
         }
@@ -192,7 +192,7 @@ class Catalog
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, array());
+            $this->_helper->debug((string)$e, array());
         }
 
         return $connectorProducts;
@@ -335,7 +335,7 @@ class Catalog
                 );
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, array());
+            $this->_helper->debug((string)$e, array());
         }
     }
 }

@@ -7,7 +7,7 @@ class Catalogvalues
 
     /**
      * Get options.
-     * 
+     *
      * @return array
      */
     public function toOptionArray()

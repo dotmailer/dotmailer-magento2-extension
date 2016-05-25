@@ -14,7 +14,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
     /**
      * Ajax constructor.
      *
-     * @param Context                              $context
+     * @param Context $context
      * @param \Magento\Framework\App\Response\Http $http
      */
     public function __construct(
@@ -82,7 +82,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
 
     /**
      * Get select options.
-     * 
+     *
      * @param $title
      * @param $name
      * @param $options

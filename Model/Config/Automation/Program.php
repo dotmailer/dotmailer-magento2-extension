@@ -44,7 +44,7 @@ class Program implements \Magento\Framework\Option\ArrayInterface
 
     /**
      * Get options.
-     * 
+     *
      * @return array
      */
     public function toOptionArray()
