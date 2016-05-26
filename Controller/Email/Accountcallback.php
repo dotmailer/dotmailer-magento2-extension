@@ -279,22 +279,4 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT, $value, 'default', 0
         );
     }
-
-    /**
-     * check if both frotnend and backend secure(HTTPS).
-     *
-     * @return bool
-     */
-    protected function _isFrontendAdminSecure()
-    {
-        $frontend = $this->_storeManager->getStore()->isFrontUrlSecure();
-        $admin = $this->_helper->getWebsiteConfig(\Magento\Store\Model\Store::XML_PATH_SECURE_IN_ADMINHTML);
-        $current = $this->_storeManager->getStore()->isCurrentlySecure();
-
-        if ($frontend && $admin && $current) {
-            return true;
-        }
-
-        return false;
-    }
 }
