@@ -59,7 +59,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        if ($this->_helper->isFrontEndAdminSecure()) {
+        if (! $this->_helper->isFrontEndAdminSecure()) {
             $html = '<a class="various" href='.
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/trialerror.png').
                 '><img style="margin-bottom:15px;" src='.
