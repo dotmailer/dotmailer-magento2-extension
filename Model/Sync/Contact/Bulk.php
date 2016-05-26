@@ -129,4 +129,24 @@ class Bulk
             $item->save();
         }
     }
+
+
+    /**
+     * @param $item
+     *
+     * @return bool
+     */
+    protected function _checkCurlError($item)
+    {
+        //if curl error 28
+        $curlError = $this->_client->getCurlError();
+        if ($curlError) {
+            $item->setMessage($curlError)
+                ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                ->save();
+
+            return true;
+        }
+        return false;
+    }
 }
