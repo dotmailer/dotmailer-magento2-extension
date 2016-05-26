@@ -40,9 +40,8 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
     {
         $curlError = $this->_checkCurlError($item);
 
-        if (! $curlError) {
-
-            if (isset($result->message) or ! $result) {
+        if (!$curlError) {
+            if (isset($result->message) or !$result) {
                 $message = (isset($result->message)) ? $result->message : 'Error unknown';
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
                     ->setMessage($message)

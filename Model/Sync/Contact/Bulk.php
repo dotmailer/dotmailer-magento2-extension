@@ -106,30 +106,34 @@ class Bulk
      */
     protected function _handleItemAfterSync($item, $result)
     {
-        if (isset($result->message) && !isset($result->id)) {
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                ->setMessage($result->message)
-                ->save();
-        } elseif (isset($result->id) && !isset($result->message)) {
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
-                ->setImportId($result->id)
-                ->setImportStarted(time())
-                ->setMessage('')
-                ->save();
-        } else {
-            $message = (isset($result->message)) ? $result->message : 'Error unknown';
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                ->setMessage($message);
+        $curlError = $this->_checkCurlError($item);
 
-            //If result id
-            if (isset($result->id)) {
-                $item->setImportId($result->id);
+        if (!$curlError) {
+            if (isset($result->message) && !isset($result->id)) {
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                    ->setImportId($result->message);
+
+                $item->save();
+            } elseif (isset($result->id) && !isset($result->message)) {
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
+                    ->setImportId($result->id)
+                    ->setImportStarted(time())
+                    ->setMessage('')
+                    ->save();
+            } else {
+                $message = (isset($result->message)) ? $result->message : 'Error unknown';
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                    ->setMessage($message);
+
+                //If result id
+                if (isset($result->id)) {
+                    $item->setImportId($result->id);
+                }
+
+                $item->save();
             }
-
-            $item->save();
         }
     }
-
 
     /**
      * @param $item
@@ -147,6 +151,7 @@ class Bulk
 
             return true;
         }
+
         return false;
     }
 }
