@@ -44,6 +44,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_adapter;
 
     /**
+     * @var \Magento\Store\Model\Store
+     */
+    protected $_store;
+
+    /**
      * Data constructor.
      *
      * @param \Magento\Backend\Model\Auth\Session         $sessionModel
@@ -63,7 +68,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Store\Model\Store $store
     ) {
         $this->_adapter = $adapter;
         $this->_sessionModel = $sessionModel;
@@ -72,6 +78,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_resourceConfig = $resourceConfig;
         $this->_storeManager = $storeManager;
         $this->_objectManager = $objectManager;
+        $this->_store = $store;
 
         parent::__construct($context);
     }
@@ -1355,5 +1362,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getDisplayType($website)
     {
         return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE, $website);
+    }
+
+    /**
+     * check if both frotnend and backend secure(HTTPS)
+     *
+     * @return bool
+     */
+    public function isFrontendAdminSecure()
+    {
+        $frontend = $this->_store->isFrontUrlSecure();
+        $admin = $this->getWebsiteConfig(\Magento\Store\Model\Store::XML_PATH_SECURE_IN_ADMINHTML);
+        $current = $this->_store->isCurrentlySecure();
+
+        if ($frontend && $admin && $current) {
+            return true;
+        }
+
+        return false;
     }
 }

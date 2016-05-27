@@ -109,7 +109,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $write->update(
                 $this->getTable('newsletter_subscriber'),
                 ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
-                "subscriber_email IN ($emails)"
+                "subscriber_email IN ($data)"
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

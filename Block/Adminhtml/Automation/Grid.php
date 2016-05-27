@@ -103,6 +103,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type' => 'options',
             'options' => [
                 'pending' => 'Pending',
+                'suppressed' => 'Suppressed',
                 'Active' => 'Active',
                 'Draft' => 'Draft',
                 'Deactivated' => 'Deactivated',
