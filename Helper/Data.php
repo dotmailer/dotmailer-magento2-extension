@@ -1365,7 +1365,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * check if both frotnend and backend secure(HTTPS)
+     * check if both frotnend and backend secure(HTTPS).
      *
      * @return bool
      */
