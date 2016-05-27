@@ -64,7 +64,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     public function _construct()
     {
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Campaign');
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Campaign');
     }
 
     /**

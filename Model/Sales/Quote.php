@@ -61,7 +61,7 @@ class Quote
      */
     protected $_campaignFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     protected $_campaignCollection;
     /**
@@ -73,7 +73,7 @@ class Quote
      * Quote constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\RulesFactory                        $rulesFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory                     $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
      * @param \Magento\Store\Model\StoreManagerInterface                       $storeManager
@@ -82,7 +82,7 @@ class Quote
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,

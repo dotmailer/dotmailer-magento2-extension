@@ -57,14 +57,14 @@ class Review
      */
     protected $_ratingFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
     protected $_reviewCollection;
 
     /**
      * Review constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $reviewCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
      * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory     $ratingFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory            $connectorFactory
      * @param \Magento\Customer\Model\CustomerFactory                        $customerFactory
@@ -77,7 +77,7 @@ class Review
      * @param \Magento\Framework\ObjectManagerInterface                      $objectManagerInterface
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $reviewCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
         \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory,
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,

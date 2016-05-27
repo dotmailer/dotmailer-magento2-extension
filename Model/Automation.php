@@ -39,7 +39,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     public function _construct()
     {
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Automation');
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Automation');
     }
 
     /**

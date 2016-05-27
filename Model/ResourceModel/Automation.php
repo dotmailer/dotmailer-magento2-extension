@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Resource;
+namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {

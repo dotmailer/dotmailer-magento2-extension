@@ -1,33 +1,35 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Resource;
+namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
-class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * Initialize resource.
      */
     public function _construct()
     {
-        $this->_init('email_catalog', 'id');
+        $this->_init('email_order', 'email_order_id');
     }
 
     /**
-     * Reset for re-import.
+     * Reset the email order for reimport.
      *
      * @return int
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function resetCatalog()
+    public function resetOrders()
     {
         $conn = $this->getConnection();
         try {
-            $num = $conn->update($conn->getTableName('email_catalog'),
+            $num = $conn->update($conn->getTableName('email_order'),
                 [
-                    'imported' => new \Zend_Db_Expr('null'),
+                    'email_imported' => new \Zend_Db_Expr('null'),
                     'modified' => new \Zend_Db_Expr('null'),
-                ]
+                ],
+                $conn->quoteInto('email_imported is ?',
+                    new \Zend_Db_Expr('not null'))
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

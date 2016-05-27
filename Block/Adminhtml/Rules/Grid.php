@@ -13,7 +13,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected $_objectManager;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Rules\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory
      */
     protected $_rulesFactory;
 
@@ -22,14 +22,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @param \Magento\Backend\Block\Template\Context                       $context
      * @param \Magento\Backend\Helper\Data                                  $backendHelper
-     * @param \Dotdigitalgroup\Email\Model\Resource\Rules\CollectionFactory $gridFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $gridFactory
      * @param \Magento\Framework\ObjectManagerInterface                     $objectManagerInterface
      * @param array                                                         $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
-        \Dotdigitalgroup\Email\Model\Resource\Rules\CollectionFactory $gridFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $gridFactory,
         \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {

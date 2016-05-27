@@ -13,7 +13,7 @@ class Campaign
      */
     protected $_storeManger;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     protected $_campaignCollection;
 
@@ -30,13 +30,13 @@ class Campaign
     /**
      * Campaign constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                               $data
      * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
      * @param \Magento\Sales\Model\OrderFactory                                $salesOrderFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory

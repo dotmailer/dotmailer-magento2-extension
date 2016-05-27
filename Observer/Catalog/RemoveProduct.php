@@ -25,7 +25,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      */
     protected $_catalogFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
     protected $_catalogCollection;
     /**
@@ -38,7 +38,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory                    $importerFactory
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory                     $catalogFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                              $data
      * @param \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
      * @param \Magento\Store\Model\StoreManagerInterface                      $storeManagerInterface
@@ -46,7 +46,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface

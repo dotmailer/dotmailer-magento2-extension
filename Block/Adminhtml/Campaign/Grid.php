@@ -15,7 +15,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Grid constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $gridFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $gridFactory
      * @param \Magento\Backend\Block\Template\Context                          $context
      * @param \Magento\Backend\Helper\Data                                     $backendHelper
      * @param \Magento\Framework\Module\Manager                                $moduleManager
@@ -23,7 +23,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param array                                                            $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $gridFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $gridFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Magento\Framework\Module\Manager $moduleManager,
