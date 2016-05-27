@@ -39,7 +39,7 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
     public function _construct()
     {
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Wishlist');
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Wishlist');
     }
 
     /**

@@ -53,7 +53,7 @@ class Wishlist
      */
     protected $_itemFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Wishlist\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
      */
     protected $_wishlistCollection;
     /**
@@ -65,7 +65,7 @@ class Wishlist
      * Wishlist constructor.
      *
      * @param \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory     $itemCollection
-     * @param \Dotdigitalgroup\Email\Model\Resource\Wishlist\CollectionFactory $wishlistCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection
      * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory       $itemFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\WishlistFactory            $wishlistFactory
      * @param \Magento\Wishlist\Model\WishlistFactory                          $wishlist
@@ -77,7 +77,7 @@ class Wishlist
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
-        \Dotdigitalgroup\Email\Model\Resource\Wishlist\CollectionFactory $wishlistCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection,
         \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory,
         \Dotdigitalgroup\Email\Model\Customer\WishlistFactory $wishlistFactory,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,

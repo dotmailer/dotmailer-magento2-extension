@@ -9,7 +9,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected $_gridFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Wishlist\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
      */
     protected $_wishlistFactory;
     /**
@@ -23,14 +23,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory
      * @param \Magento\Backend\Block\Template\Context                               $context
      * @param \Magento\Backend\Helper\Data                                          $backendHelper
-     * @param \Dotdigitalgroup\Email\Model\Resource\Wishlist\CollectionFactory      $gridFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory      $gridFactory
      * @param array                                                                 $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
-        \Dotdigitalgroup\Email\Model\Resource\Wishlist\CollectionFactory $gridFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $gridFactory,
         array $data = []
     ) {
         $this->_importedFactory = $importedFactory;

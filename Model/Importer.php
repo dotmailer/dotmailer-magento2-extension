@@ -87,7 +87,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     protected $_file;
     /**
-     * @var Resource\Contact
+     * @var ResourceModel\Contact
      */
     protected $_contact;
     /**
@@ -107,7 +107,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * Importer constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data                           $helper
-     * @param Resource\Contact                                             $contact
+     * @param ResourceModel\Contact                                             $contact
      * @param \Magento\Framework\Model\Context                             $context
      * @param \Magento\Framework\Registry                                  $registry
      * @param \Magento\Framework\App\Filesystem\DirectoryList              $directoryList
@@ -121,7 +121,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\Resource\Contact $contact,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
@@ -150,7 +150,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Importer');
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Importer');
     }
 
     /**

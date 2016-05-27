@@ -38,7 +38,7 @@ class Catalog
      */
     protected $_connectorProductFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
     protected $_catalogCollectionFactory;
     /**
@@ -50,7 +50,7 @@ class Catalog
      * Catalog constructor.
      *
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory  $productCollection
-     * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollection
      * @param \Dotdigitalgroup\Email\Model\Connector\ProductFactory           $connectorProductFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory                    $importerFactory
      * @param \Magento\Framework\App\ResourceConnection                       $resource
@@ -59,7 +59,7 @@ class Catalog
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection,
-        \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollection,
         \Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Framework\App\ResourceConnection $resource,

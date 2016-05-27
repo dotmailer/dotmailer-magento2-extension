@@ -17,7 +17,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @param \Magento\Backend\Block\Template\Context                         $context
      * @param \Magento\Backend\Helper\Data                                    $backendHelper
-     * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $gridFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $gridFactory
      * @param \Magento\Framework\Module\Manager                               $moduleManager
      * @param \Magento\Framework\ObjectManagerInterface                       $objectManagerInterface
      * @param array                                                           $data
@@ -25,7 +25,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
-        \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $gridFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $gridFactory,
         \Magento\Framework\Module\Manager $moduleManager,
         \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []

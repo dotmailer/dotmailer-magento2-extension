@@ -10,7 +10,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected $_gridFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory
      */
     protected $_importerFactory;
     /**
@@ -27,7 +27,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\ModeFactory   $modeFactory
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\StatusFactory $statusFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory     $gridFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory     $gridFactory
      * @param \Magento\Backend\Block\Template\Context                              $context
      * @param \Magento\Backend\Helper\Data                                         $backendHelper
      * @param array                                                                $data
@@ -35,7 +35,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\ModeFactory $modeFactory,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\StatusFactory $statusFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Importer\CollectionFactory $gridFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory $gridFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         array $data = []

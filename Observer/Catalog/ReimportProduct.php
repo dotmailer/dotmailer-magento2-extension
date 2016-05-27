@@ -13,7 +13,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
      */
     protected $_catalogFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
     protected $_catalogCollection;
 
@@ -21,12 +21,12 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
      * ReimportProduct constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory                     $catalogFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                              $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->_helper = $data;

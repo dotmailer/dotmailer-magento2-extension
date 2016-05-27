@@ -78,7 +78,7 @@ class Contact
      * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Model\ContactFactory                      $contactFactory
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory  $contactCollectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory  $contactCollectionFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -94,7 +94,7 @@ class Contact
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollectionFactory
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
     ) {
         $this->_importerFactory = $importerFactory;
         $this->_file = $file;

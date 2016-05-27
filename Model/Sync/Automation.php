@@ -74,7 +74,7 @@ class Automation
      */
     protected $_scopeConfig;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
      */
     protected $_automationFactory;
 
@@ -86,7 +86,7 @@ class Automation
     /**
      * Automation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $automationFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory
      * @param \Magento\Framework\App\ResourceConnection                          $resource
      * @param \Dotdigitalgroup\Email\Helper\Data                                 $helper
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface               $localeDate
@@ -94,7 +94,7 @@ class Automation
      * @param \Magento\Sales\Model\OrderFactory                                  $orderFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $automationFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory,
         \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,

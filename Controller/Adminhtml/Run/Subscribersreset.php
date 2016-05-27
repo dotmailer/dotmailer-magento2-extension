@@ -9,18 +9,18 @@ class Subscribersreset extends \Magento\Backend\App\AbstractAction
      */
     protected $messageManager;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
     protected $_contactFactory;
 
     /**
      * Subscribersreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
      * @param \Magento\Backend\App\Action\Context                  $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->_contactFactory = $contactFactory;

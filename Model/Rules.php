@@ -85,7 +85,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             'customer_email' => 'main_table.customer_email',
         ];
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Rules');
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Rules');
     }
 
     /**

@@ -13,25 +13,25 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
      */
     protected $_registry;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
     protected $_connectorCatalogFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
     protected $_connectorContactFactory;
 
     /**
      * ResetCatalogContactImport constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $connectorCatalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $connectorContactFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $connectorCatalogFactory
      * @param \Magento\Framework\Registry                          $registry
      * @param \Dotdigitalgroup\Email\Helper\Data                   $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory,
-        \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $connectorCatalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $connectorContactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $connectorCatalogFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {

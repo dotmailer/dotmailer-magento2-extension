@@ -61,7 +61,7 @@ class Cron
      */
     protected $_fileHelper;
     /**
-     * @var Resource\Importer
+     * @var ResourceModel\Importer
      */
     protected $_importerResource;
 
@@ -82,7 +82,7 @@ class Cron
      * @param Apiconnector\ContactFactory        $contact
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param Resource\Importer                  $importerResource
+     * @param ResourceModel\Importer                  $importerResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
@@ -99,7 +99,7 @@ class Cron
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\Resource\Importer $importerResource
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
     ) {
         $this->_campaignFactory = $campaignFactory;
         $this->_syncOrderFactory = $syncOrderFactory;

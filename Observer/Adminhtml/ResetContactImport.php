@@ -21,21 +21,21 @@ class ResetContactImport implements \Magento\Framework\Event\ObserverInterface
      */
     protected $_contactFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
     protected $_contactResourceFactory;
 
     /**
      * ResetContactImport constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactResourceFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory          $contactFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                   $data
      * @param \Magento\Backend\App\Action\Context                  $context
      * @param \Magento\Store\Model\StoreManagerInterface           $storeManagerInterface
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\ContactFactory $contactResourceFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\App\Action\Context $context
