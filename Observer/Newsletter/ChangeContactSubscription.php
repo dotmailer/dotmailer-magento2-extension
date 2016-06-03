@@ -12,7 +12,6 @@ class ChangeContactSubscription
     protected $_registry;
     protected $_storeManager;
     protected $_contactFactory;
-    protected $_subscriberFactory;
     protected $_automationFactory;
     protected $_importerFactory;
 
@@ -20,7 +19,6 @@ class ChangeContactSubscription
      * ChangeContactSubscription constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Magento\Newsletter\Model\SubscriberFactory    $subscriberFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory    $contactFactory
      * @param \Magento\Framework\Registry                    $registry
      * @param \Dotdigitalgroup\Email\Helper\Data             $data
@@ -28,7 +26,6 @@ class ChangeContactSubscription
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
@@ -36,12 +33,11 @@ class ChangeContactSubscription
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
         $this->_automationFactory = $automationFactory;
-        $this->_subscriberFactory = $subscriberFactory->create();
         $this->_contactFactory    = $contactFactory;
         $this->_helper            = $data;
         $this->_storeManager      = $storeManagerInterface;
         $this->_registry          = $registry;
-        $this->_importerFactory   = $importerFactory->create();
+        $this->_importerFactory = $importerFactory;
     }
 
 
