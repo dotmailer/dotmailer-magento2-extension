@@ -24,8 +24,8 @@ class Bulk
     /**
      * Bulk constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data          $helper
-     * @param \Dotdigitalgroup\Email\Helper\File          $fileHelper
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      */
     public function __construct(

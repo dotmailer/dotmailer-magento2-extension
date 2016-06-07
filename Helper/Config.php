@@ -259,8 +259,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Config constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context      $context
-     * @param \Dotdigitalgroup\Email\Helper\Data         $data
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -286,9 +286,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         if ($this->isAuthorizeCustomDomain($website)) {
             $website = $this->_storeManager->getWebsite($website);
             $baseUrl = $this->_helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
-                .self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
+                . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         } else {
-            $baseUrl = $this->getRegionAuthorize($website).self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
+            $baseUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         }
 
         return $baseUrl;
@@ -308,7 +308,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
         );
 
-        return (bool) $customDomain;
+        return (bool)$customDomain;
     }
 
     /**
@@ -322,7 +322,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $website = $this->_storeManager->getWebsite($website);
 
-        $apiEndpoint = $this->_helper->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website).DIRECTORY_SEPARATOR;
+        $apiEndpoint = $this->_helper->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website) . DIRECTORY_SEPARATOR;
         //replace the api with the app prefix from the domain name
         $regionBaseUrl = str_replace('api', 'app', $apiEndpoint);
 
@@ -338,7 +338,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         if ($callback = $this->scopeConfig->getValue(
             self::XML_PATH_CONNECTOR_CUSTOM_AUTHORIZATION
-        )) {
+        )
+        ) {
             return $callback;
         }
 
@@ -359,10 +360,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         if ($this->isAuthorizeCustomDomain($website)) {
             $website = $this->_storeManager->getWebsite($website);
 
-            $tokenUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN).
+            $tokenUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) .
                 self::API_CONNECTOR_OAUTH_URL_TOKEN;
         } else {
-            $tokenUrl = $this->getRegionAuthorize($website).self::API_CONNECTOR_OAUTH_URL_TOKEN;
+            $tokenUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_TOKEN;
         }
 
         return $tokenUrl;
@@ -379,9 +380,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         if ($this->isAuthorizeCustomDomain($website)) {
             $logUserUrl = $this->_helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
-                .self::API_CONNECTOR_OAUTH_URL_LOG_USER;
+                . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         } else {
-            $logUserUrl = $this->getRegionAuthorize($website).self::API_CONNECTOR_OAUTH_URL_LOG_USER;
+            $logUserUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         }
 
         return $logUserUrl;

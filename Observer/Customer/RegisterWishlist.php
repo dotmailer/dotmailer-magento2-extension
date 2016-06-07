@@ -32,12 +32,12 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     /**
      * RegisterWishlist constructor.
      *
-     * @param \Magento\Wishlist\Model\WishlistFactory        $wishlist
+     * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Magento\Customer\Model\CustomerFactory        $customerFactory
-     * @param \Dotdigitalgroup\Email\Model\WishlistFactory   $wishlistFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data             $data
-     * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
@@ -133,7 +133,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->error((string) $e, []);
+            $this->_helper->error((string)$e, []);
         }
     }
 }

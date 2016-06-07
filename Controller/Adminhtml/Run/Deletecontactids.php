@@ -17,7 +17,7 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
      * Deletecontactids constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
-     * @param \Magento\Backend\App\Action\Context                  $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,
@@ -38,7 +38,7 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
         $result = $this->_contactFactory->create()
             ->deleteContactIds();
 
-        $this->messageManager->addSuccess('Number Of Contacts Id Removed: '.$result);
+        $this->messageManager->addSuccess('Number Of Contacts Id Removed: ' . $result);
 
         $this->_redirect($redirectUrl);
     }

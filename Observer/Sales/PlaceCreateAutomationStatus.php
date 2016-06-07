@@ -21,8 +21,8 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
      * PlaceCreateAutomationStatus constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data             $data
-     * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -82,7 +82,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
                 ->setProgramId($programId)
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;

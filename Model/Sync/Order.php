@@ -74,7 +74,7 @@ class Order
     /**
      * Order constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory          $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
      * @param \Magento\Sales\Model\OrderFactory                     $salesOrderFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory   $connectorOrderFactory
@@ -134,7 +134,7 @@ class Order
             if ($numOrders) {
                 $this->_helper->log(
                     '--------- register Order sync with importer ---------- : '
-                    .count($orders)
+                    . count($orders)
                 );
                 //register in queue with importer
                 //$this->_helper->debug('orders', $orders);
@@ -148,7 +148,7 @@ class Order
                             $website[0]
                         );
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string) $e, []);
+                    $this->_helper->debug((string)$e, []);
                     throw new \Magento\Framework\Exception\LocalizedException(
                         __($e->getMessage())
                     );
@@ -164,7 +164,7 @@ class Order
                 foreach ($ordersForSingleSync as $order) {
                     $this->_helper->log(
                         '--------- register Order sync in single with importer ---------- : '
-                        .$order->id
+                        . $order->id
                     );
                     //register in queue with importer
                     $this->_importerFactory->create()
@@ -188,7 +188,7 @@ class Order
 
         if ($this->_countOrders) {
             $response['message'] = 'Number of updated orders : '
-                .$this->_countOrders;
+                . $this->_countOrders;
         }
 
         return $response;
@@ -196,7 +196,7 @@ class Order
 
     /**
      * Search the configuration data per website.
-     * 
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _searchAccounts()
@@ -311,7 +311,7 @@ class Order
                     $this->_orderIds[] = $order->getOrderId();
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string) $e, []);
+                $this->_helper->debug((string)$e, []);
                 throw new \Magento\Framework\Exception\LocalizedException(
                     __($e->getMessage())
                 );
@@ -390,11 +390,11 @@ class Order
             $contactModel->save();
 
             $this->_helper->log(
-                '-- guest found : '.$email.' website : '.$websiteId
-                .' ,store : '.$storeId
+                '-- guest found : ' . $email . ' website : ' . $websiteId
+                . ' ,store : ' . $storeId
             );
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
             throw new \Magento\Framework\Exception\LocalizedException(
                 __($e->getMessage())
             );
@@ -436,7 +436,7 @@ class Order
                 );
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
     }
 }

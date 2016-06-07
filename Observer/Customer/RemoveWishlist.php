@@ -28,11 +28,11 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
     /**
      * RemoveWishlist constructor.
      *
-     * @param \Magento\Customer\Model\CustomerFactory      $customerFactory
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data           $data
-     * @param \Magento\Store\Model\StoreManagerInterface   $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -84,7 +84,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
                     $item->delete();
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string) $e, []);
+                $this->_helper->debug((string)$e, []);
             }
         }
     }

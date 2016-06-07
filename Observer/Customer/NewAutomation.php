@@ -75,7 +75,7 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
                 $automation->save();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;

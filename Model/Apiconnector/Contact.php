@@ -78,7 +78,7 @@ class Contact
      * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Model\ContactFactory                      $contactFactory
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory  $contactCollectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,

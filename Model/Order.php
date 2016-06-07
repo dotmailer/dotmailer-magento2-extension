@@ -71,9 +71,9 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Get all orders with particular status within certain days.
      *
-     * @param array      $storeIds
-     * @param int        $limit
-     * @param array      $orderStatuses
+     * @param array $storeIds
+     * @param int $limit
+     * @param array $orderStatuses
      * @param bool|false $modified
      *
      * @return $this
@@ -107,7 +107,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
      * Get all sent orders older then certain days.
      *
      * @param array $storeIds
-     * @param int   $limit
+     * @param int $limit
      *
      * @return $this
      */

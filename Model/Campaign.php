@@ -69,7 +69,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Get campaign by quote id.
-     * 
+     *
      * @param int $quoteId
      * @param int $storeId
      *

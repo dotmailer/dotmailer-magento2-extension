@@ -16,7 +16,8 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * {@inheritdoc}
      */
-    public function install(SchemaSetupInterface $setup,
+    public function install(
+        SchemaSetupInterface $setup,
         ModuleContextInterface $context
     ) {
         $installer = $setup;
@@ -40,8 +41,12 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'email_contact_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'is_guest', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
@@ -159,8 +164,12 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'email_order_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'order_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
@@ -253,8 +262,12 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'campaign_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
@@ -362,49 +375,70 @@ class InstallSchema implements InstallSchemaInterface
         $select = $installer->getConnection()->select()
             ->from(
                 array('customer' => $installer->getTable('customer_entity')),
-                array('customer_id' => 'entity_id', 'email', 'website_id',
-                      'store_id')
+                array(
+                    'customer_id' => 'entity_id',
+                    'email',
+                    'website_id',
+                    'store_id'
+                )
             );
 
         $insertArray = array('customer_id', 'email', 'website_id', 'store_id');
-        $sqlQuery    = $select->insertFromSelect(
+        $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_contact'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
 
         // subscribers that are not customers
-        $select      = $installer->getConnection()->select()
+        $select = $installer->getConnection()->select()
             ->from(
-                array('subscriber' => $installer->getTable(
-                    'newsletter_subscriber'
-                )),
+                array(
+                    'subscriber' => $installer->getTable(
+                        'newsletter_subscriber'
+                    )
+                ),
                 array(
                     'email' => 'subscriber_email',
-                    'col2'  => new \Zend_Db_Expr('1'),
-                    'col3'  => new \Zend_Db_Expr('1'),
+                    'col2' => new \Zend_Db_Expr('1'),
+                    'col3' => new \Zend_Db_Expr('1'),
                     'store_id',
                 )
             )
             ->where('customer_id =?', 0)
             ->where('subscriber_status =?', 1);
-        $insertArray = array('email', 'is_subscriber', 'subscriber_status',
-                             'store_id');
-        $sqlQuery    = $select->insertFromSelect(
+        $insertArray = array(
+            'email',
+            'is_subscriber',
+            'subscriber_status',
+            'store_id'
+        );
+        $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_contact'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
 
         //Insert and populate email order the table
-        $select      = $installer->getConnection()->select()
+        $select = $installer->getConnection()->select()
             ->from(
                 $installer->getTable('sales_order'),
-                array('order_id'                                 => 'entity_id',
-                      'quote_id', 'store_id', 'created_at', 'updated_at',
-                      'order_status'                             => 'status')
+                array(
+                    'order_id' => 'entity_id',
+                    'quote_id',
+                    'store_id',
+                    'created_at',
+                    'updated_at',
+                    'order_status' => 'status'
+                )
             );
-        $insertArray = array('order_id', 'quote_id', 'store_id', 'created_at',
-                             'updated_at', 'order_status');
-        $sqlQuery    = $select->insertFromSelect(
+        $insertArray = array(
+            'order_id',
+            'quote_id',
+            'store_id',
+            'created_at',
+            'updated_at',
+            'order_status'
+        );
+        $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_order'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
@@ -421,7 +455,7 @@ class InstallSchema implements InstallSchemaInterface
             $options[] = $status['value'];
         }
         $statusString = implode(',', $options);
-        $configModel  = ObjectManager::getInstance()->get(
+        $configModel = ObjectManager::getInstance()->get(
             'Magento\Config\Model\ResourceModel\Config'
         );
         $configModel->saveConfig(
@@ -432,12 +466,12 @@ class InstallSchema implements InstallSchemaInterface
         //OAUTH refresh token
         $installer->getConnection()->addColumn(
             $installer->getTable('admin_user'), 'refresh_token', [
-            'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-            'length'   => 256,
-            'nullable' => true,
-            'default'  => null,
-            'comment'  => 'Email connector refresh token',
-        ]
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'length' => 256,
+                'nullable' => true,
+                'default' => null,
+                'comment' => 'Email connector refresh token',
+            ]
         );
 
         $select = $installer->getConnection()->select();
@@ -467,8 +501,12 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'review_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
@@ -520,25 +558,33 @@ class InstallSchema implements InstallSchemaInterface
         $installer->getConnection()->createTable($reviewTable);
 
         //populate review table.
-        $inCond      = $installer->getConnection()->prepareSqlCondition(
+        $inCond = $installer->getConnection()->prepareSqlCondition(
             'review_detail.customer_id', array('notnull' => true)
         );
-        $select      = $installer->getConnection()->select()
+        $select = $installer->getConnection()->select()
             ->from(
                 array('review' => $installer->getTable('review')),
-                array('review_id'  => 'review.review_id',
-                      'created_at' => 'review.created_at')
+                array(
+                    'review_id' => 'review.review_id',
+                    'created_at' => 'review.created_at'
+                )
             )
             ->joinLeft(
                 array('review_detail' => $installer->getTable('review_detail')),
                 'review_detail.review_id = review.review_id',
-                array('store_id'    => 'review_detail.store_id',
-                      'customer_id' => 'review_detail.customer_id')
+                array(
+                    'store_id' => 'review_detail.store_id',
+                    'customer_id' => 'review_detail.customer_id'
+                )
             )
             ->where($inCond);
-        $insertArray = array('review_id', 'created_at', 'store_id',
-                             'customer_id');
-        $sqlQuery    = $select->insertFromSelect(
+        $insertArray = array(
+            'review_id',
+            'created_at',
+            'store_id',
+            'customer_id'
+        );
+        $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_review'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
@@ -559,8 +605,12 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'wishlist_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
@@ -631,8 +681,11 @@ class InstallSchema implements InstallSchemaInterface
         $select = $installer->getConnection()->select()
             ->from(
                 array('wishlist' => $installer->getTable('wishlist')),
-                array('wishlist_id', 'customer_id',
-                      'created_at' => 'updated_at')
+                array(
+                    'wishlist_id',
+                    'customer_id',
+                    'created_at' => 'updated_at'
+                )
             )->joinLeft(
                 array('ce' => $installer->getTable('customer_entity')),
                 'wishlist.customer_id = ce.entity_id',
@@ -643,9 +696,14 @@ class InstallSchema implements InstallSchemaInterface
                 array('item_count' => 'count(wi.wishlist_id)')
             )->group('wi.wishlist_id');
 
-        $insertArray = ['wishlist_id', 'customer_id', 'created_at', 'store_id',
-                        'item_count'];
-        $sqlQuery    = $select->insertFromSelect(
+        $insertArray = [
+            'wishlist_id',
+            'customer_id',
+            'created_at',
+            'store_id',
+            'item_count'
+        ];
+        $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_wishlist'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
@@ -666,8 +724,12 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'quote_id', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 10,
@@ -727,18 +789,26 @@ class InstallSchema implements InstallSchemaInterface
         $installer->getConnection()->createTable($quoteTable);
 
         //populate quote table
-        $select      = $installer->getConnection()->select()
+        $select = $installer->getConnection()->select()
             ->from(
                 $installer->getTable('quote'),
-                array('quote_id' => 'entity_id', 'store_id', 'customer_id',
-                      'created_at')
+                array(
+                    'quote_id' => 'entity_id',
+                    'store_id',
+                    'customer_id',
+                    'created_at'
+                )
             )
             ->where('customer_id !=?', null)
             ->where('is_active =?', 1)
             ->where('items_count >?', 0);
-        $insertArray = array('quote_id', 'store_id', 'customer_id',
-                             'created_at');
-        $sqlQuery    = $select->insertFromSelect(
+        $insertArray = array(
+            'quote_id',
+            'store_id',
+            'customer_id',
+            'created_at'
+        );
+        $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_quote'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
@@ -759,8 +829,12 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'product_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, 10,
@@ -804,16 +878,20 @@ class InstallSchema implements InstallSchemaInterface
         $installer->getConnection()->createTable($catalogTable);
 
         //Populate catalog table
-        $select      = $installer->getConnection()->select()
+        $select = $installer->getConnection()->select()
             ->from(
-                array('catalog' => $installer->getTable(
-                    'catalog_product_entity'
-                )),
-                array('product_id' => 'catalog.entity_id',
-                      'created_at' => 'catalog.created_at')
+                array(
+                    'catalog' => $installer->getTable(
+                        'catalog_product_entity'
+                    )
+                ),
+                array(
+                    'product_id' => 'catalog.entity_id',
+                    'created_at' => 'catalog.created_at'
+                )
             );
         $insertArray = array('product_id', 'created_at');
-        $sqlQuery    = $select->insertFromSelect(
+        $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_catalog'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
@@ -834,8 +912,12 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'name', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 255,
@@ -874,7 +956,7 @@ class InstallSchema implements InstallSchemaInterface
         $installer->getConnection()->createTable($ruleTable);
 
         //Save all product types as string to extension's config value
-        $types   = ObjectManager::getInstance()->create(
+        $types = ObjectManager::getInstance()->create(
             'Magento\Catalog\Model\Product\Type'
         )->toOptionArray();
         $options = array();
@@ -886,7 +968,7 @@ class InstallSchema implements InstallSchemaInterface
         $visibilities = ObjectManager::getInstance()->create(
             'Magento\Catalog\Model\Product\Visibility'
         )->toOptionArray();
-        $options      = array();
+        $options = array();
         foreach ($visibilities as $visibility) {
             $options[] = $visibility['value'];
         }
@@ -917,8 +999,12 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'import_type', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 255,
@@ -1010,8 +1096,12 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                ['primary'  => true, 'identity' => true, 'unsigned' => true,
-                 'nullable' => false], 'Primary Key'
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ], 'Primary Key'
             )
             ->addColumn(
                 'automation_type', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,

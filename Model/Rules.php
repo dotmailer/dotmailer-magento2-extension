@@ -512,7 +512,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Evaluate two values against condition.
-     * 
+     *
      * @param $varOne
      * @param $op
      * @param $varTwo

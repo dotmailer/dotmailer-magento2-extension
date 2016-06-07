@@ -32,11 +32,11 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     /**
      * CreateUpdateContact constructor.
      *
-     * @param \Magento\Wishlist\Model\WishlistFactory      $wishlist
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory  $contactFactory
-     * @param \Magento\Customer\Model\CustomerFactory      $customerFactory
-     * @param \Magento\Framework\Registry                  $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data           $data
+     * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      */
     public function __construct(
@@ -73,20 +73,20 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 
         try {
             // fix for a multiple hit of the observer
-            $emailReg = $this->_registry->registry($email.'_customer_save');
+            $emailReg = $this->_registry->registry($email . '_customer_save');
             if ($emailReg) {
                 return $this;
             }
-            $this->_registry->register($email.'_customer_save', $email);
+            $this->_registry->register($email . '_customer_save', $email);
             $emailBefore = $this->_customerFactory->create()
                 ->load($customer->getId())->getEmail();
             $contactModel = $this->_contactFactory->create()
                 ->loadByCustomerEmail($emailBefore, $websiteId);
             //email change detection
             if ($email != $emailBefore) {
-                $this->_helper->log('email change detected : '.$email
-                    .', after : '.$emailBefore.', website id : '
-                    .$websiteId);
+                $this->_helper->log('email change detected : ' . $email
+                    . ', after : ' . $emailBefore . ', website id : '
+                    . $websiteId);
 
                 $data = [
                     'emailBefore' => $emailBefore,
@@ -107,7 +107,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 ->setCustomerId($customerId)
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;

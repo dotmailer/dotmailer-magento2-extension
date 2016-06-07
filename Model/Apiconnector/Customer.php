@@ -692,7 +692,7 @@ class Customer
     {
         $cleanedString = preg_replace('/[^0-9]/', '', $string);
         if ($cleanedString != '') {
-            return (int) number_format($cleanedString, 0, '.', '');
+            return (int)number_format($cleanedString, 0, '.', '');
         }
 
         return 0;

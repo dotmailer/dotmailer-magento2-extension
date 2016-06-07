@@ -13,12 +13,12 @@ class Review extends \Magento\Framework\Model\AbstractModel
     /**
      * Review constructor.
      *
-     * @param \Magento\Framework\Model\Context                             $context
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Framework\Stdlib\DateTime                           $dateTime
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
-     * @param array                                                        $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,

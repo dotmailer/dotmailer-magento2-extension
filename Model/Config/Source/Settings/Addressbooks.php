@@ -27,8 +27,8 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
     /**
      * Addressbooks constructor.
      *
-     * @param \Magento\Framework\Registry            $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data     $data
+     * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Config\Model\Config\Structure $configStructure
      */
     public function __construct(
@@ -72,8 +72,8 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
             foreach ($addressBooks as $book) {
                 if (isset($book->id)) {
                     $fields[] = [
-                        'value' => (string) $book->id,
-                        'label' => (string) $book->name,
+                        'value' => (string)$book->id,
+                        'label' => (string)$book->name,
                     ];
                 }
             }

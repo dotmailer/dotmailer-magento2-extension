@@ -17,7 +17,7 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
      * SaveRegisterOrderStatusBefore constructor.
      *
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \Magento\Framework\Registry       $registry
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Magento\Sales\Model\OrderFactory $orderFactory,

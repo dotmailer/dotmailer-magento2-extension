@@ -20,9 +20,9 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
     /**
      * RegisterWishlistItem constructor.
      *
-     * @param \Magento\Wishlist\Model\WishlistFactory      $wishlist
+     * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data           $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
@@ -70,7 +70,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;

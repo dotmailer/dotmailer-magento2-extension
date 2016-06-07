@@ -46,12 +46,12 @@ class Cartlimit
             } elseif ($i == 1) {
                 $row = [
                     'value' => $one,
-                    'label' => $one.' Hour',
+                    'label' => $one . ' Hour',
                 ];
             } else {
                 $row = [
                     'value' => $one,
-                    'label' => $one.' Hours',
+                    'label' => $one . ' Hours',
                 ];
             }
             $result[] = $row;

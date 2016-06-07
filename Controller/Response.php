@@ -12,7 +12,7 @@ class Response extends \Magento\Framework\App\Action\Action
     /**
      * Response constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data    $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
@@ -66,7 +66,7 @@ class Response extends \Magento\Framework\App\Action\Action
                 ->setHeader('Content-type', 'text/html; charset=UTF-8', true);
             $this->getResponse()->sendHeaders();
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
     }
 
@@ -85,7 +85,7 @@ class Response extends \Magento\Framework\App\Action\Action
                 $this->sendResponse();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
     }
 }
