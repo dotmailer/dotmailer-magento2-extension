@@ -12,19 +12,19 @@ class MassResend extends ImporterController
      */
     protected $_importerFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Importer
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
     protected $_importerResource;
 
     /**
      * MassResend constructor.
      *
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Model\Resource\Importer $importer
+     * @param \Magento\Backend\App\Action\Context            $context
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importer
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Model\Resource\Importer $importer
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importer
     ) {
         $this->_importerResource = $importer;
         parent::__construct($context);

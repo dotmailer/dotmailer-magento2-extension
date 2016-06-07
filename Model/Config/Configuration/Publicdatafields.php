@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Publicdatafields
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -55,7 +54,7 @@ class Publicdatafields
                 //message
                 $fields[] = [
                     'value' => 0,
-                    'label' => __($datafields->message)
+                    'label' => __($datafields->message),
                 ];
             } else {
                 //loop for all datafields option
@@ -65,7 +64,7 @@ class Publicdatafields
                     ) {
                         $fields[] = [
                             'value' => $datafield->name,
-                            'label' => __($datafield->name)
+                            'label' => __($datafield->name),
                         ];
                     }
                 }

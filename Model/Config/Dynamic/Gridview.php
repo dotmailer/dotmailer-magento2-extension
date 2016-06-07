@@ -21,7 +21,7 @@ class Gridview
             ['value' => '20', 'label' => '20'],
             ['value' => '24', 'label' => '24'],
             ['value' => '28', 'label' => '28'],
-            ['value' => '32', 'label' => '32']
+            ['value' => '32', 'label' => '32'],
         ];
     }
 }

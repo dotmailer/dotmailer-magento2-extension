@@ -14,7 +14,7 @@ class Styling
         return [
             ['value' => 'bold', 'label' => 'Bold'],
             ['value' => 'italic', 'label' => 'Italic'],
-            ['value' => 'underline', 'label' => 'Underline']
+            ['value' => 'underline', 'label' => 'Underline'],
         ];
     }
 }

@@ -37,7 +37,7 @@ class Order
      */
     protected $_campaignFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     protected $_campaignCollection;
     /**
@@ -56,20 +56,20 @@ class Order
     /**
      * Order constructor.
      *
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
-     * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection
-     * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\Stdlib\Datetime $datetime
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory       $quoteCollection
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory                        $rulesFactory
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory       $orderCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
+     * @param \Dotdigitalgroup\Email\Model\CampaignFactory                     $campaignFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
+     * @param \Magento\Framework\Stdlib\Datetime                               $datetime
+     * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
-        \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\Datetime $datetime,
@@ -113,8 +113,8 @@ class Order
         if ($campaignId) {
             foreach ($collection as $order) {
                 $this->_helper->log(
-                    '-- Order Review: ' . $order->getIncrementId()
-                    . ' Campaign Id: ' . $campaignId
+                    '-- Order Review: '.$order->getIncrementId()
+                    .' Campaign Id: '.$campaignId
                 );
 
                 try {
@@ -133,7 +133,7 @@ class Order
 
                     $emailCampaign->save();
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string)$e, []);
+                    $this->_helper->debug((string) $e, []);
                 }
             }
         }
@@ -217,7 +217,7 @@ class Order
 
     /**
      * Get customer last order id.
-     *
+     * 
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return bool|mixed
@@ -242,7 +242,7 @@ class Order
 
     /**
      * Get customer last quote id.
-     *
+     * 
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return bool|mixed

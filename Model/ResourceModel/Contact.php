@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Resource;
+namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -100,7 +100,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $this->getMainTable(),
                 [
                     'is_subscriber' => new \Zend_Db_Expr('null'),
-                    'suppressed' => '1'
+                    'suppressed' => '1',
                 ],
                 "email IN ($emails)"
             );
@@ -109,7 +109,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $write->update(
                 $this->getTable('newsletter_subscriber'),
                 ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
-                "subscriber_email IN ($emails)"
+                "subscriber_email IN ($data)"
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

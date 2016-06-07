@@ -20,14 +20,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected $_importerFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
      */
     protected $_collectionFactory;
 
     /**
      * Grid constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory       $collectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory       $collectionFactory
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importerFactory
      * @param \Magento\Backend\Block\Template\Context                               $context
      * @param \Magento\Backend\Helper\Data                                          $backendHelper
@@ -36,7 +36,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param array                                                                 $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $collectionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $collectionFactory,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importerFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Automation;
 
 class Program implements \Magento\Framework\Option\ArrayInterface
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */

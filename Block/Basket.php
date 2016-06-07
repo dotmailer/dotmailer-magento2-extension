@@ -68,7 +68,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         }
         $quoteId = $params['quote_id'];
         $quoteModel = $this->_quoteFactory->create()
-            ->load($quoteId);
+            ->loadByIdWithoutStore($quoteId);
 
         //check for any quote for this email, don't want to render further
         if (!$quoteModel->getId()) {

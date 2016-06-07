@@ -1,60 +1,55 @@
 <?php
 
-
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
-
-class PlaceCreateAutomationStatus
-    implements \Magento\Framework\Event\ObserverInterface
+class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
-    protected $_registry;
-    protected $_logger;
-    protected $_scopeConfig;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
-    protected $_orderFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     */
     protected $_automationFactory;
 
     /**
      * PlaceCreateAutomationStatus constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory     $automationFactory
-     * @param \Magento\Sales\Model\OrderFactory                  $orderFactory
-     * @param \Magento\Framework\Registry                        $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data                 $data
-     * @param \Psr\Log\LoggerInterface                           $loggerInterface
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface         $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data             $data
+     * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Psr\Log\LoggerInterface $loggerInterface,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->_automationFactory = $automationFactory;
-        $this->_helper            = $data;
-        $this->_orderFactory      = $orderFactory;
-        $this->_scopeConfig       = $scopeConfig;
-        $this->_logger            = $loggerInterface;
-        $this->_storeManager      = $storeManagerInterface;
-        $this->_registry          = $registry;
+        $this->_helper = $data;
+        $this->_storeManager = $storeManagerInterface;
     }
 
-
+    /**
+     * Execute method.
+     *
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return $this
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $order     = $observer->getEvent()->getOrder();
-        $email     = $order->getCustomerEmail();
-        $website   = $this->_storeManager->getWebsite($order->getWebsiteId());
+        $order = $observer->getEvent()->getOrder();
+        $email = $order->getCustomerEmail();
+        $website = $this->_storeManager->getWebsite($order->getWebsiteId());
         $storeName = $this->_storeManager->getStore($order->getStoreId())
             ->getName();
         //if api is not enabled
-        if ( ! $this->_helper->isEnabled($website)) {
+        if (!$this->_helper->isEnabled($website)) {
             return $this;
         }
         //automation enrolment for order
@@ -73,11 +68,11 @@ class PlaceCreateAutomationStatus
             $order->getWebsiteId());
 
         //the program is not mapped
-        if ( ! $programId) {
+        if (!$programId) {
             return $this;
         }
         try {
-            $automation = $this->_automationFactory->create()
+            $this->_automationFactory->create()
                 ->setEmail($email)
                 ->setAutomationType($automationType)
                 ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
@@ -87,7 +82,7 @@ class PlaceCreateAutomationStatus
                 ->setProgramId($programId)
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string) $e, []);
         }
 
         return $this;

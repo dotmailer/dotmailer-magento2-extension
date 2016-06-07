@@ -15,31 +15,35 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected $_gridFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    protected $_objectManager;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
      */
     protected $_automationFactory;
-    protected $_storeOptions;
 
     /**
      * Grid constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $gridFactory
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
-     * @param \Magento\Framework\Module\Manager $moduleManager
-     * @param \Magento\Store\Model\System\Store $storeOptions
-     * @param array $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $gridFactory
+     * @param \Magento\Backend\Block\Template\Context                            $context
+     * @param \Magento\Backend\Helper\Data                                       $backendHelper
+     * @param \Magento\Framework\Module\Manager                                  $moduleManager
+     * @param \Magento\Framework\ObjectManagerInterface                          $objectManagerInterface
+     * @param array                                                              $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $gridFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $gridFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Store\Model\System\Store $storeOptions,
+        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
         $this->_automationFactory = $gridFactory;
-        $this->_storeOptions = $storeOptions;
+        $this->_objectManager = $objectManagerInterface;
         $this->moduleManager = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }
@@ -99,6 +103,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type' => 'options',
             'options' => [
                 'pending' => 'Pending',
+                'suppressed' => 'Suppressed',
                 'Active' => 'Active',
                 'Draft' => 'Draft',
                 'Deactivated' => 'Deactivated',
@@ -141,7 +146,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'header' => __('Website'),
             'align' => 'center',
             'type' => 'options',
-            'options' => $this->_storeOptions->getWebsiteOptionHash(true),
+            'options' => $this->_objectManager->get('Magento\Store\Model\System\Store')
+                ->getWebsiteOptionHash(true),
+            'index' => 'website_id',
         ]);
 
         return parent::_prepareColumns();

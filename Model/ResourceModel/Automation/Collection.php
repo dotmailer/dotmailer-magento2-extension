@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Resource\Automation;
+namespace Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 
 class Collection extends
     \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
@@ -11,6 +11,6 @@ class Collection extends
     public function _construct()
     {
         $this->_init('Dotdigitalgroup\Email\Model\Automation',
-            'Dotdigitalgroup\Email\Model\Resource\Automation');
+            'Dotdigitalgroup\Email\Model\ResourceModel\Automation');
     }
 }

@@ -9,17 +9,17 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     const EMAIL_SUBSCRIBER_NOT_IMPORTED = null;
 
     /**
-     *
+     * Constructor.
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Contact');
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Contact');
     }
 
     /**
      * Load contact by customer id.
      *
-     * @param $customerId
+     * @param int $customerId
      *
      * @return mixed
      */
@@ -37,9 +37,9 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     *     * get all customer contacts not imported for a website.
+     * Get all customer contacts not imported for a website.
      *
-     * @param     $websiteId
+     * @param int $websiteId
      * @param int $pageSize
      *
      * @return $this
@@ -48,8 +48,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('website_id', $websiteId)
-            ->addFieldToFilter('email_imported', array('null' => true))
-            ->addFieldToFilter('customer_id', array('neq' => '0'));
+            ->addFieldToFilter('email_imported', ['null' => true])
+            ->addFieldToFilter('customer_id', ['neq' => '0']);
 
         $collection->getSelect()->limit($pageSize);
 
@@ -59,7 +59,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Get missing contacts.
      *
-     * @param     $websiteId
+     * @param int $websiteId
      * @param int $pageSize
      *
      * @return mixed
@@ -67,8 +67,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     public function getMissingContacts($websiteId, $pageSize = 100)
     {
         $collection = $this->getCollection()
-            ->addFieldToFilter('contact_id', array('null' => true))
-            ->addFieldToFilter('suppressed', array('null' => true))
+            ->addFieldToFilter('contact_id', ['null' => true])
+            ->addFieldToFilter('suppressed', ['null' => true])
             ->addFieldToFilter('website_id', $websiteId);
 
         $collection->getSelect()->limit($pageSize);
@@ -79,8 +79,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Load Contact by Email.
      *
-     * @param $email
-     * @param $websiteId
+     * @param string $email
+     * @param int    $websiteId
      *
      * @return $this
      */
@@ -104,19 +104,19 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Contact subscribers to import for website.
      *
-     * @param     $website
-     * @param int $limit
+     * @param \Magento\Store\Model\Website $website
+     * @param int                          $limit
      *
      * @return $this
      */
-    public function getSubscribersToImport($website, $limit = 1000)
+    public function getSubscribersToImport(\Magento\Store\Model\Website $website, $limit = 1000)
     {
         $storeIds = $website->getStoreIds();
         $collection = $this->getCollection()
-            ->addFieldToFilter('is_subscriber', array('notnull' => true))
+            ->addFieldToFilter('is_subscriber', ['notnull' => true])
             ->addFieldToFilter('subscriber_status', '1')
-            ->addFieldToFilter('subscriber_imported', array('null' => true))
-            ->addFieldToFilter('store_id', array('in' => $storeIds));
+            ->addFieldToFilter('subscriber_imported', ['null' => true])
+            ->addFieldToFilter('store_id', ['in' => $storeIds]);
 
         $collection->getSelect()->limit($limit);
 
@@ -124,17 +124,17 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     *  get all not imported guests for a website.
+     * Get all not imported guests for a website.
      *
-     * @param $website
+     * @param \Magento\Store\Model\Website $website
      *
      * @return $this
      */
-    public function getGuests($website)
+    public function getGuests(\Magento\Store\Model\Website $website)
     {
         $guestCollection = $this->getCollection()
-            ->addFieldToFilter('is_guest', array('notnull' => true))
-            ->addFieldToFilter('email_imported', array('null' => true))
+            ->addFieldToFilter('is_guest', ['notnull' => true])
+            ->addFieldToFilter('email_imported', ['null' => true])
             ->addFieldToFilter('website_id', $website->getId());
 
         return $guestCollection->load();
@@ -143,12 +143,12 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Number contacts marked as imported.
      *
-     * @return mixed
+     * @return int
      */
     public function getNumberOfImportedContacs()
     {
         $collection = $this->getCollection()
-            ->addFieldToFilter('email_imported', array('notnull' => true));
+            ->addFieldToFilter('email_imported', ['notnull' => true]);
 
         return $collection->getSize();
     }
@@ -163,7 +163,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     public function getNumberCustomerContacts($websiteId = 0)
     {
         $countContacts = $this->getCollection()
-            ->addFieldToFilter('customer_id', array('gt' => '0'))
+            ->addFieldToFilter('customer_id', ['gt' => '0'])
             ->addFieldToFilter('website_id', $websiteId)
             ->getSize();
 
@@ -180,7 +180,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     public function getNumberCustomerSuppressed($websiteId = 0)
     {
         $countContacts = $this->getCollection()
-            ->addFieldToFilter('customer_id', array('gt' => 0))
+            ->addFieldToFilter('customer_id', ['gt' => 0])
             ->addFieldToFilter('website_id', $websiteId)
             ->addFieldToFilter('suppressed', '1')
             ->getSize();
@@ -198,7 +198,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     public function getNumberCustomerSynced($websiteId = 0)
     {
         $countContacts = $this->getCollection()
-            ->addFieldToFilter('customer_id', array('gt' => 0))
+            ->addFieldToFilter('customer_id', ['gt' => 0])
             ->addFieldToFilter('website_id', $websiteId)
             ->addFieldToFilter('email_imported', '1')
             ->getSize();
@@ -261,7 +261,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
         $conn = $coreResource->getConnection();
 
         try {
-            $where = array();
+            $where = [];
             $where[] = $conn->quoteInto(
                 'email_imported is ?', new \Zend_Db_Expr('not null')
             );
@@ -271,7 +271,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 
             $num = $conn->update(
                 $coreResource->getTableName('email_contact'),
-                array('email_imported' => new \Zend_Db_Expr('null')),
+                ['email_imported' => new \Zend_Db_Expr('null')],
                 $where
             );
         } catch (\Exception $e) {

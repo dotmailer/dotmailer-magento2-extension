@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
 class Type
 {
-
     /**
      * @var
      */

@@ -74,7 +74,7 @@ class Automation
      */
     protected $_scopeConfig;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
      */
     protected $_automationFactory;
 
@@ -86,7 +86,7 @@ class Automation
     /**
      * Automation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $automationFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory
      * @param \Magento\Framework\App\ResourceConnection                          $resource
      * @param \Dotdigitalgroup\Email\Helper\Data                                 $helper
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface               $localeDate
@@ -94,7 +94,7 @@ class Automation
      * @param \Magento\Sales\Model\OrderFactory                                  $orderFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Automation\CollectionFactory $automationFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory,
         \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
@@ -191,7 +191,7 @@ class Automation
                     'message' => $this->programMessage,
                     'updated_at' => $this->_localeDate->date(
                         null, null, false
-                    )->format('Y-m-d H:i:s')
+                    )->format('Y-m-d H:i:s'),
                 ];
                 $where = ['id IN(?)' => $contactIds];
                 $num = $conn->update(
@@ -272,7 +272,7 @@ class Automation
         ) {
             $data[] = [
                 'Key' => $lastOrderId,
-                'Value' => $orderModel->getId()
+                'Value' => $orderModel->getId(),
             ];
         }
         if ($orderIncrementId = $website->getConfig(
@@ -281,7 +281,7 @@ class Automation
         ) {
             $data[] = [
                 'Key' => $orderIncrementId,
-                'Value' => $orderModel->getIncrementId()
+                'Value' => $orderModel->getIncrementId(),
             ];
         }
         if ($storeName = $website->getConfig(
@@ -290,7 +290,7 @@ class Automation
         ) {
             $data[] = [
                 'Key' => $storeName,
-                'Value' => $this->storeName
+                'Value' => $this->storeName,
             ];
         }
         if ($websiteName = $website->getConfig(
@@ -299,7 +299,7 @@ class Automation
         ) {
             $data[] = [
                 'Key' => $websiteName,
-                'Value' => $website->getName()
+                'Value' => $website->getName(),
             ];
         }
         if ($lastOrderDate = $website->getConfig(
@@ -308,7 +308,7 @@ class Automation
         ) {
             $data[] = [
                 'Key' => $lastOrderDate,
-                'Value' => $orderModel->getCreatedAt()
+                'Value' => $orderModel->getCreatedAt(),
             ];
         }
         if (($customerId = $website->getConfig(
@@ -318,7 +318,7 @@ class Automation
         ) {
             $data[] = [
                 'Key' => $customerId,
-                'Value' => $orderModel->getCustomerId()
+                'Value' => $orderModel->getCustomerId(),
             ];
         }
         if (!empty($data)) {
@@ -367,7 +367,7 @@ class Automation
         $data = [
             'Contacts' => $contacts,
             'ProgramId' => $this->programId,
-            'AddressBooks' => []
+            'AddressBooks' => [],
         ];
         //api add contact to automation enrolment
         $result = $client->postProgramsEnrolments($data);

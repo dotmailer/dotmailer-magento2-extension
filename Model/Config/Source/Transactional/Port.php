@@ -14,7 +14,7 @@ class Port
         return [
             ['value' => '25', 'label' => '25'],
             ['value' => '2525', 'label' => '2525'],
-            ['value' => '587', 'label' => '587']
+            ['value' => '587', 'label' => '587'],
         ];
     }
 }

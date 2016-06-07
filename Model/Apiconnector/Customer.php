@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 class Customer
 {
-
     /**
      * @var
      */
@@ -77,7 +76,7 @@ class Customer
             \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
             \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
             \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-            \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed'
+            \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed',
         ];
 
     /**
@@ -127,10 +126,11 @@ class Customer
 
     /**
      * Set customer data.
-     *
+     * 
      * @param $customer
      *
      * @return $this
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setCustomerData($customer)
@@ -180,7 +180,7 @@ class Customer
 
     /**
      * Customer reviews.
-     *
+     * 
      * @return $this
      */
     public function setReviewCollection()
@@ -196,7 +196,7 @@ class Customer
 
     /**
      * Number of reviews.
-     *
+     * 
      * @return int
      */
     public function getReviewCount()
@@ -206,7 +206,7 @@ class Customer
 
     /**
      * Last review date.
-     *
+     * 
      * @return string
      */
     public function getLastReviewDate()
@@ -692,7 +692,7 @@ class Customer
     {
         $cleanedString = preg_replace('/[^0-9]/', '', $string);
         if ($cleanedString != '') {
-            return (int)number_format($cleanedString, 0, '.', '');
+            return (int) number_format($cleanedString, 0, '.', '');
         }
 
         return 0;
@@ -971,7 +971,6 @@ class Customer
 
     /**
      * Get the customer reward.
-     *
      */
     protected function _setReward()
     {

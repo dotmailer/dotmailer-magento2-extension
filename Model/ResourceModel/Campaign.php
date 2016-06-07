@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Resource;
+namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {

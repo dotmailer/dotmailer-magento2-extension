@@ -27,7 +27,7 @@ class Interval
             96,
             108,
             120,
-            240
+            240,
         ];
 
     /**
@@ -43,12 +43,12 @@ class Interval
             if ($i == 0) {
                 $row = [
                     'value' => $one,
-                    'label' => __($one . ' Hour')
+                    'label' => __($one.' Hour'),
                 ];
             } else {
                 $row = [
                     'value' => $one,
-                    'label' => __($one . ' Hours')
+                    'label' => __($one.' Hours'),
                 ];
             }
             $result[] = $row;

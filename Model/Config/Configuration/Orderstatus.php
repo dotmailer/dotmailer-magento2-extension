@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Orderstatus
 {
-
     /**
      * @var \Magento\Sales\Model\Config\Source\Order\Status
      */

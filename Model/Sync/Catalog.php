@@ -4,39 +4,67 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Catalog
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
     protected $_resource;
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $_scopeConfig;
-    protected $_productFactory;
 
+    /**
+     * @var
+     */
     protected $_start;
+    /**
+     * @var int
+     */
     protected $_countProducts = 0;
-    protected $_productIds = array();
+    /**
+     * @var array
+     */
+    protected $_productIds = [];
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     */
     protected $_importerFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Connector\ProductFactory
+     */
     protected $_connectorProductFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
+     */
     protected $_catalogCollectionFactory;
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     */
     protected $_productCollection;
 
     /**
      * Catalog constructor.
      *
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory  $productCollection
-     * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollection
      * @param \Dotdigitalgroup\Email\Model\Connector\ProductFactory           $connectorProductFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                    $importerFactory
      * @param \Magento\Framework\App\ResourceConnection                       $resource
      * @param \Dotdigitalgroup\Email\Helper\Data                              $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
-     * @param \Magento\Catalog\Model\ProductFactory                           $productFactory
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection,
-        \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollection,
         \Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Catalog\Model\ProductFactory $productFactory
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
         $this->_productCollection = $productCollection;
         $this->_catalogCollectionFactory = $catalogCollection;
@@ -45,17 +73,16 @@ class Catalog
         $this->_helper = $helper;
         $this->_resource = $resource;
         $this->_scopeConfig = $scopeConfig;
-        $this->_productFactory = $productFactory;
     }
 
     /**
-     * catalog sync.
+     * Catalog sync.
      *
      * @return array
      */
     public function sync()
     {
-        $response = array('success' => true, 'message' => 'Done.');
+        $response = ['success' => true, 'message' => 'Done.'];
         $this->_start = microtime(true);
 
         //resource allocation
@@ -73,15 +100,15 @@ class Catalog
                 $select = $write->select();
                 $select->reset()
                     ->from(
-                        array('c' => $catalogTable),
-                        array('c.product_id')
+                        ['c' => $catalogTable],
+                        ['c.product_id']
                     )
                     ->joinLeft(
-                        array(
+                        [
                             'e' => $this->_resource->getTableName(
                                 'catalog_product_entity'
                             ),
-                        ),
+                        ],
                         'c.product_id = e.entity_id'
                     )
                     ->where('e.entity_id is NULL');
@@ -132,8 +159,8 @@ class Catalog
                             //register in queue with importer
                             $this->_importerFactory->create()
                                 ->registerQueue(
-                                    'Catalog_' . $websiteCode . '_'
-                                    . $storeCode,
+                                    'Catalog_'.$websiteCode.'_'
+                                    .$storeCode,
                                     $products,
                                     \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                                     $store->getWebsite()->getId()
@@ -147,20 +174,20 @@ class Catalog
                         //using single api
                         $this->_exportInSingle(
                             $store,
-                            'Catalog_' . $websiteCode . '_' . $storeCode,
+                            'Catalog_'.$websiteCode.'_'.$storeCode,
                             $store->getWebsite()->getId()
                         );
                     }
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, array());
+                $this->_helper->debug((string) $e, []);
             }
         }
 
         if ($this->_countProducts) {
-            $message = 'Total time for sync : ' . gmdate(
+            $message = 'Total time for sync : '.gmdate(
                     'H:i:s', microtime(true) - $this->_start
-                ) . ', Total synced = ' . $this->_countProducts;
+                ).', Total synced = '.$this->_countProducts;
             $this->_helper->log($message);
             $response['message'] = $message;
         }
@@ -169,7 +196,7 @@ class Catalog
     }
 
     /**
-     * export catalog.
+     * Export catalog.
      *
      * @param $store
      *
@@ -177,7 +204,7 @@ class Catalog
      */
     protected function _exportCatalog($store)
     {
-        $connectorProducts = array();
+        $connectorProducts = [];
         //all products for export
         $products = $this->_getProductsToExport($store);
         //get products id's
@@ -192,14 +219,14 @@ class Catalog
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string) $e, []);
         }
 
         return $connectorProducts;
     }
 
     /**
-     * export in single.
+     * Export in single.
      *
      * @param $store
      * @param $collectionName
@@ -207,7 +234,7 @@ class Catalog
      */
     protected function _exportInSingle($store, $collectionName, $websiteId)
     {
-        $this->_productIds = array();
+        $this->_productIds = [];
         $products = $this->_getProductsToExport($store, true);
         if ($products) {
             foreach ($products as $product) {
@@ -236,10 +263,12 @@ class Catalog
     }
 
     /**
-     * @param            $store
-     * @param bool|false $modified
+     * Get product collection to export.
      *
-     * @return array
+     * @param      $store
+     * @param bool $modified
+     *
+     * @return bool
      */
     protected function _getProductsToExport($store, $modified = false)
     {
@@ -251,25 +280,25 @@ class Catalog
         //for modified catalog
         if ($modified) {
             $connectorCollection->addFieldToFilter(
-                'modified', array('eq' => '1')
+                'modified', ['eq' => '1']
             );
         } else {
             $connectorCollection->addFieldToFilter(
-                'imported', array('null' => 'true')
+                'imported', ['null' => 'true']
             );
         }
         //set limit for collection
         $connectorCollection->setPageSize($limit);
         //check number of products
         if ($connectorCollection->getSize()) {
-            $product_ids = $connectorCollection->getColumnValues(
+            $productIds = $connectorCollection->getColumnValues(
                 'product_id'
             );
             $productCollection = $this->_productCollection->create()
                 ->addAttributeToSelect('*')
                 ->addStoreFilter($store)
                 ->addAttributeToFilter(
-                    'entity_id', array('in' => $product_ids)
+                    'entity_id', ['in' => $productIds]
                 );
 
             //visibility filter
@@ -279,7 +308,7 @@ class Catalog
             ) {
                 $visibility = explode(',', $visibility);
                 $productCollection->addAttributeToFilter(
-                    'visibility', array('in' => $visibility)
+                    'visibility', ['in' => $visibility]
                 );
             }
             //type filter
@@ -289,7 +318,7 @@ class Catalog
             ) {
                 $type = explode(',', $type);
                 $productCollection->addAttributeToFilter(
-                    'type_id', array('in' => $type)
+                    'type_id', ['in' => $type]
                 );
             }
 
@@ -303,11 +332,11 @@ class Catalog
         return false;
     }
 
-    /**`
-     * set imported in bulk query. if modified true then set modified to null in bulk query.
-     *
-     * @param $ids
-     * @param $modified
+    /**
+     * Set imported in bulk query. If modified true then set modified to null in bulk query.
+     * 
+     * @param      $ids
+     * @param bool $modified
      */
     protected function _setImported($ids, $modified = false)
     {
@@ -319,23 +348,23 @@ class Catalog
 
             if ($modified) {
                 $write->update(
-                    $tableName, array(
+                    $tableName, [
                     'modified' => new \Zend_Db_Expr('null'),
                     'updated_at' => gmdate('Y-m-d H:i:s'),
-                ), "product_id IN ($ids)"
+                ], "product_id IN ($ids)"
                 );
             } else {
                 $write->update(
-                    $tableName, array(
+                    $tableName, [
                     'imported' => '1',
                     'updated_at' => gmdate(
                         'Y-m-d H:i:s'
                     ),
-                ), "product_id IN ($ids)"
+                ], "product_id IN ($ids)"
                 );
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string) $e, []);
         }
     }
 }

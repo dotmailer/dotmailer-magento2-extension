@@ -16,7 +16,7 @@ class Datafieldtype implements \Magento\Framework\Option\ArrayInterface
             ['value' => 'String', 'label' => __('String')],
             ['value' => 'Numeric', 'label' => __('Numeric')],
             ['value' => 'Date', 'label' => __('Date')],
-            ['value' => 'Boolean', 'label' => __('Yes/No')]
+            ['value' => 'Boolean', 'label' => __('Yes/No')],
         ];
 
         return $dataType;

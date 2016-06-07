@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 abstract class Rest
 {
-
     /**
      * @var null
      */
@@ -67,10 +66,10 @@ abstract class Rest
         $this->_helper = $data;
         $this->url = null;
         $this->verb = 'GET';
-        $this->requestBody = null; 
+        $this->requestBody = null;
         $this->requestLength = 0;
-        $this->_apiUsername = (string)$this->_helper->getApiUsername($website);
-        $this->_apiPassword = (string)$this->_helper->getApiPassword($website);
+        $this->_apiUsername = (string) $this->_helper->getApiUsername($website);
+        $this->_apiPassword = (string) $this->_helper->getApiPassword($website);
         $this->acceptType = 'application/json';
         $this->responseBody = null;
         $this->responseInfo = null;
@@ -135,9 +134,9 @@ abstract class Rest
                 }
             }
             if ($newLIneLevel !== null) {
-                $result .= "\n" . str_repeat("\t", $newLIneLevel);
+                $result .= "\n".str_repeat("\t", $newLIneLevel);
             }
-            $result .= $char . $post;
+            $result .= $char.$post;
             $prevChar = $char;
         }
 
@@ -189,8 +188,6 @@ abstract class Rest
     }
 
     /**
-     * 
-     * @return null
      * @throws \Exception
      */
     public function execute()
@@ -213,8 +210,8 @@ abstract class Rest
                     break;
                 default:
                     throw new \InvalidArgumentException(
-                        'Current verb (' . $this->verb
-                        . ') is an invalid REST verb.'
+                        'Current verb ('.$this->verb
+                        .') is an invalid REST verb.'
                     );
             }
         } catch (\InvalidArgumentException $e) {
@@ -237,7 +234,7 @@ abstract class Rest
                 $totalTime = sprintf(' time : %g sec', $time);
                 $check = $this->_helper->getApiResponseTimeLimit();
                 $limit = ($check) ? $check : '2';
-                $message = $this->verb . ', ' . $url . $totalTime;
+                $message = $this->verb.', '.$url.$totalTime;
                 //check for slow queries
                 if ($time > $limit) {
                     //log the slow queries
@@ -298,7 +295,7 @@ abstract class Rest
     protected function buildPostBodyFromFile($filename)
     {
         $this->requestBody = [
-            'file' => '@' . $filename,
+            'file' => '@'.$filename,
         ];
     }
 
@@ -380,8 +377,8 @@ abstract class Rest
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt(
             $ch, CURLOPT_HTTPHEADER, [
-                'Accept: ' . $this->acceptType,
-                'Content-Type: application/json'
+                'Accept: '.$this->acceptType,
+                'Content-Type: application/json',
             ]
         );
     }
@@ -397,7 +394,7 @@ abstract class Rest
             curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
             curl_setopt(
                 $ch, CURLOPT_USERPWD,
-                $this->_apiUsername . ':' . $this->_apiPassword
+                $this->_apiUsername.':'.$this->_apiPassword
             );
         }
     }
@@ -544,7 +541,7 @@ abstract class Rest
         //if curl error
         if (!empty($this->curlError)) {
             //log curl error
-            $message = 'CURL ERROR ' . $this->curlError;
+            $message = 'CURL ERROR '.$this->curlError;
             $this->_helper->log($message);
 
             return $this->curlError;

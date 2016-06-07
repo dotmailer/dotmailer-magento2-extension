@@ -2,57 +2,39 @@
 
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
-
 class RegisterCatalogValuesOrderStatuses
     implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
-    protected $_logger;
-    protected $_scopeConfig;
-    protected $_storeManager;
-    protected $_catalogFactory;
-    protected $_catalogCollection;
-    protected $_connectorCatalogFactory;
-    protected $_connectorContactFactory;
 
     /**
      * RegisterCatalogValuesOrderStatuses constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $connectorCatalogFactory
-     * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory
-     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Registry        $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Psr\Log\LoggerInterface $loggerInterface
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory,
-        \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $connectorCatalogFactory,
-        \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory,
         \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Psr\Log\LoggerInterface $loggerInterface,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_connectorContactFactory = $connectorContactFactory;
-        $this->_connectorCatalogFactory = $connectorCatalogFactory;
         $this->_helper = $data;
         $this->_registry = $registry;
-        $this->_logger = $loggerInterface;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_catalogFactory = $catalogFactory;
-        $this->_catalogCollection = $catalogCollectionFactory;
-        $this->_storeManager = $storeManagerInterface;
     }
 
-
+    /**
+     * Execute method.
+     * 
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return $this
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         //register catalog values

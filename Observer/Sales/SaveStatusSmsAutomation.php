@@ -2,31 +2,39 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
-
-class SaveStatusSmsAutomation
-    implements \Magento\Framework\Event\ObserverInterface
+class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterface
 {
-
-    protected $_helper;
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
-    protected $_logger;
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $_scopeConfig;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var \Magento\Store\Model\App\EmulationFactory
+     */
     protected $_emulationFactory;
-    protected $_orderFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\OrderFactory
+     */
     protected $_emailOrderFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     */
     protected $_automationFactory;
-
 
     /**
      * SaveStatusSmsAutomation constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory     $automationFactory
      * @param \Dotdigitalgroup\Email\Model\OrderFactory          $emailOrderFactory
-     * @param \Magento\Sales\Model\OrderFactory                  $orderFactory
      * @param \Magento\Framework\Registry                        $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data                 $data
-     * @param \Psr\Log\LoggerInterface                           $loggerInterface
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Store\Model\StoreManagerInterface         $storeManagerInterface
      * @param \Magento\Store\Model\App\EmulationFactory          $emulationFactory
@@ -34,47 +42,43 @@ class SaveStatusSmsAutomation
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Psr\Log\LoggerInterface $loggerInterface,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory
     ) {
         $this->_automationFactory = $automationFactory;
         $this->_emailOrderFactory = $emailOrderFactory;
-        $this->_helper            = $data;
-        $this->_orderFactory      = $orderFactory;
-        $this->_scopeConfig       = $scopeConfig;
-        $this->_logger            = $loggerInterface;
-        $this->_storeManager      = $storeManagerInterface;
-        $this->_registry          = $registry;
-        $this->_emulationFactory  = $emulationFactory;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_storeManager = $storeManagerInterface;
+        $this->_registry = $registry;
+        $this->_emulationFactory = $emulationFactory;
     }
 
-
     /**
+     * Execute method.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         try {
-            $order         = $observer->getEvent()->getOrder();
-            $status        = $order->getStatus();
-            $storeId       = $order->getStoreId();
-            $store         = $this->_storeManager->getStore($storeId);
-            $storeName     = $store->getName();
-            $websiteId     = $store->getWebsiteId();
+            $order = $observer->getEvent()->getOrder();
+            $status = $order->getStatus();
+            $storeId = $order->getStoreId();
+            $store = $this->_storeManager->getStore($storeId);
+            $storeName = $store->getName();
+            $websiteId = $store->getWebsiteId();
             $customerEmail = $order->getCustomerEmail();
             // start app emulation
             $appEmulation = $this->_emulationFactory->create();
             $initialEnvironmentInfo
                           = $appEmulation->startEnvironmentEmulation($storeId);
-            $emailOrder   = $this->_emailOrderFactory->create()
+            $emailOrder = $this->_emailOrderFactory->create()
                 ->loadByOrderId($order->getEntityId(), $order->getQuoteId());
             //reimport email order
             $emailOrder->setUpdatedAt($order->getUpdatedAt())
@@ -88,7 +92,7 @@ class SaveStatusSmsAutomation
             }
 
             //if api is not enabled
-            if ( ! $store->getWebsite()
+            if (!$store->getWebsite()
                 ->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED)
             ) {
                 return $this;
@@ -115,16 +119,17 @@ class SaveStatusSmsAutomation
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                     $order->getStore()));
-            if ( ! empty($configStatusAutomationMap)) {
+            if (!empty($configStatusAutomationMap)) {
                 foreach ($configStatusAutomationMap as $configMap) {
                     if ($configMap['status'] == $status) {
                         try {
-                            $programId  = $configMap['automation'];
+                            $programId = $configMap['automation'];
                             $automation = $this->_automationFactory->create();
                             $automation->setEmail($customerEmail)
                                 ->setAutomationType('order_automation_'
-                                    . $status)
-                                ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                                    .$status)
+                                ->setEnrolmentStatus(
+                                    \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
                                 ->setTypeId($order->getId())
                                 ->setWebsiteId($websiteId)
                                 ->setStoreName($storeName)

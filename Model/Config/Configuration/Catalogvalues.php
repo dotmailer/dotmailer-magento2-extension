@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Catalogvalues
 {
-
     /**
      * Get options.
      *
@@ -15,12 +14,12 @@ class Catalogvalues
         return [
             [
                 'value' => '1',
-                'label' => 'Default Level'
+                'label' => 'Default Level',
             ],
             [
                 'value' => '2',
-                'label' => 'Store Level'
-            ]
+                'label' => 'Store Level',
+            ],
         ];
     }
 }

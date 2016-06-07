@@ -9,18 +9,18 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
      */
     protected $messageManager;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
     protected $_catalogFactory;
 
     /**
      * Catalogreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $catalogFactory
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
+     * @param \Magento\Backend\App\Action\Context                  $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->_catalogFactory = $catalogFactory;
