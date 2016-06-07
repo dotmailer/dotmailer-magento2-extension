@@ -39,7 +39,7 @@
             <class>separator-top</class>
             <label>Data Mapping</label>
             <tab>ddg_automation</tab>
-            <resource>Dotdigitalgroup_Email::congi</resource>
+            <resource>Dotdigitalgroup_Email::config</resource>
             <group id="customer_data" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Data Fields Mapping</label>
                 <attribute type="expanded">1</attribute>
