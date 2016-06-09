@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Resource\Review;
+namespace Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 
 class Collection extends
     \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
@@ -10,7 +10,7 @@ class Collection extends
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\Review',
-            'Dotdigitalgroup\Email\Model\Resource\Review');
+        $this->_init('Dotdigitalgroup\Email\Model\Catalog',
+            'Dotdigitalgroup\Email\Model\ResourceModel\Catalog');
     }
 }

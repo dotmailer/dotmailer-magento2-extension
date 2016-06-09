@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
 class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
-
     /**
      * Sync.
      *
@@ -39,17 +38,21 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
      */
     protected function _handleSingleItemAfterSync($item, $result)
     {
-        if (isset($result->message) or !$result) {
-            $message = (isset($result->message)) ? $result->message : 'Error unknown';
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                ->setMessage($message)
-                ->save();
-        } else {
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTED)
-                ->setImportFinished(time())
-                ->setImportStarted(time())
-                ->setMessage('')
-                ->save();
+        $curlError = $this->_checkCurlError($item);
+
+        if (!$curlError) {
+            if (isset($result->message) or !$result) {
+                $message = (isset($result->message)) ? $result->message : 'Error unknown';
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                    ->setMessage($message)
+                    ->save();
+            } else {
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTED)
+                    ->setImportFinished(time())
+                    ->setImportStarted(time())
+                    ->setMessage('')
+                    ->save();
+            }
         }
     }
 }

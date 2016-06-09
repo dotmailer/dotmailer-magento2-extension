@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Controller;
 
 class Response extends \Magento\Framework\App\Action\Action
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -42,17 +41,17 @@ class Response extends \Magento\Framework\App\Action\Action
         $auth = $this->_helper->auth($this->getRequest()->getParam('code'));
         if (!$auth) {
             $this->sendResponse();
+
             return;
         }
     }
 
     public function execute()
     {
-
     }
 
     /**
-     * Send empty response.
+     * Send empty response. 
      */
     protected function sendResponse()
     {
@@ -72,7 +71,8 @@ class Response extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Check for non empty content
+     * Check for non empty content.
+     *
      * @param      $output
      * @param bool $flag
      */

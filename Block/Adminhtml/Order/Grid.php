@@ -9,7 +9,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected $_gridFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
     protected $_orderFactory;
     /**
@@ -28,7 +28,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param \Magento\Sales\Model\Order\ConfigFactory                              $configFactory
      * @param \Magento\Backend\Block\Template\Context                               $context
      * @param \Magento\Backend\Helper\Data                                          $backendHelper
-     * @param \Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory         $gridFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $gridFactory
      * @param \Magento\Framework\Module\Manager                                     $moduleManager
      * @param array                                                                 $data
      */
@@ -37,7 +37,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Sales\Model\Order\ConfigFactory $configFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
-        \Dotdigitalgroup\Email\Model\Resource\Order\CollectionFactory $gridFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $gridFactory,
         \Magento\Framework\Module\Manager $moduleManager,
         array $data = []
     ) {

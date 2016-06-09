@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 
 class Visibility
 {
-
     /**
      * Get options.
      *
@@ -14,7 +13,7 @@ class Visibility
     {
         $dataType = [
             ['value' => 'Private', 'label' => __('Private')],
-            ['value' => 'Public', 'label' => __('Public')]
+            ['value' => 'Public', 'label' => __('Public')],
         ];
 
         return $dataType;

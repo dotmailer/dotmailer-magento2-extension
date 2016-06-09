@@ -29,7 +29,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     ) {
         $this->_condition = $condition;
         $this->_value = $value;
-        $this->_addAfter      = false;
+        $this->_addAfter = false;
 
         $this->_addButtonLabel = __('Add New Condition');
         parent::__construct($context, $data);

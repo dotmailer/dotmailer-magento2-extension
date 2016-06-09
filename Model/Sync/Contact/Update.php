@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
 class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
-
     /**
      * Sync.
      *
@@ -35,7 +34,7 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                         if ($email != $result->email) {
                             $data = [
                                 'Email' => $email,
-                                'EmailType' => 'Html'
+                                'EmailType' => 'Html',
                             ];
                             //update the contact with same id - different email
                             $this->_client->updateContact($result->id, $data);

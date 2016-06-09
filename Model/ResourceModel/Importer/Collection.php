@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Resource\Rules;
+namespace Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 
 class Collection extends
     \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
@@ -10,8 +10,8 @@ class Collection extends
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\Rules',
-            'Dotdigitalgroup\Email\Model\Resource\Rules');
+        $this->_init('Dotdigitalgroup\Email\Model\Importer',
+            'Dotdigitalgroup\Email\Model\ResourceModel\Importer');
     }
 
     /**

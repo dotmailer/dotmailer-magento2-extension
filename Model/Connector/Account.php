@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 class Account
 {
-
     /**
      * @var
      */

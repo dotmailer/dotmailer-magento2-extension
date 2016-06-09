@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
 class Bulk
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -26,13 +25,16 @@ class Bulk
      * Bulk constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
         $this->_helper = $helper;
+        $this->_fileHelper = $fileHelper;
         $this->_contactFactory = $contactFactory;
     }
 
@@ -96,32 +98,60 @@ class Bulk
     }
 
     /**
+     * Proccess item after sync.
+     *
      * @param      $item
      * @param      $result
+     * @param bool $file
      */
     protected function _handleItemAfterSync($item, $result)
     {
-        if (isset($result->message) && !isset($result->id)) {
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                ->setMessage($result->message)
-                ->save();
-        } elseif (isset($result->id) && !isset($result->message)) {
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
-                ->setImportId($result->id)
-                ->setImportStarted(time())
-                ->setMessage('')
-                ->save();
-        } else {
-            $message = (isset($result->message)) ? $result->message : 'Error unknown';
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                ->setMessage($message);
+        $curlError = $this->_checkCurlError($item);
 
-            //If result id
-            if (isset($result->id)) {
-                $item->setImportId($result->id);
+        if (!$curlError) {
+            if (isset($result->message) && !isset($result->id)) {
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                    ->setImportId($result->message);
+
+                $item->save();
+            } elseif (isset($result->id) && !isset($result->message)) {
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
+                    ->setImportId($result->id)
+                    ->setImportStarted(time())
+                    ->setMessage('')
+                    ->save();
+            } else {
+                $message = (isset($result->message)) ? $result->message : 'Error unknown';
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                    ->setMessage($message);
+
+                //If result id
+                if (isset($result->id)) {
+                    $item->setImportId($result->id);
+                }
+
+                $item->save();
             }
-
-            $item->save();
         }
+    }
+
+    /**
+     * @param $item
+     *
+     * @return bool
+     */
+    protected function _checkCurlError($item)
+    {
+        //if curl error 28
+        $curlError = $this->_client->getCurlError();
+        if ($curlError) {
+            $item->setMessage($curlError)
+                ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                ->save();
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -8,19 +8,21 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
     protected $_remoteAddress;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime\Timezone
      */
     protected $_localeDate;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $_helper;
-
     /**
      * Trial constructor.
      *
@@ -57,30 +59,41 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        {
+        if (!$this->_helper->isFrontEndAdminSecure()) {
+            $html = '<a class="various" href=' .
+                $this->getViewFileUrl('Dotdigitalgroup_Email::images/trialerror.png') .
+                '><img style="margin-bottom:15px;" src=' .
+                $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
+                ' alt="Open Trial Account"></a>';
+            $script = "
+            <script>
+            require(['jquery', 'domReady'], function($){
+                  $('.various').fancybox();
+                });
+            </script>";
+        } else {
             $html = '<a class="various fancybox.iframe" data-fancybox-type="iframe" href=' .
                 $this->_getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
-            $script = "
-            <script type='text/javascript'>
-                require(['jquery', 'domReady'], function($){
-                    $('.various').fancybox({
-                        width	: 508,
-                        height	: 612,
-                        scrolling   : 'no',
-                        fitToView	: false,
-                        autoSize	: false,
-                        closeClick	: false,
-                        openEffect	: 'none',
-                        closeEffect	: 'none'
-                    });
-                    
-                    $(document).on('click', 'a.fancybox-close', function(){
-                        location.reload();
-                    });
-                }); 
-            </script>
+            $script = "<script type='text/javascript'>
+            require(['jquery', 'domReady'], function($){
+                $('.various').fancybox({
+                    width	: 508,
+                    height	: 612,
+                    scrolling   : 'no',
+                    fitToView	: false,
+                    autoSize	: false,
+                    closeClick	: false,
+                    openEffect	: 'none',
+                    closeEffect	: 'none'
+                });
+                
+                $(document).on('click', 'a.fancybox-close', function(){
+                    location.reload();
+                });
+            }); 
+        </script>
         ";
         }
 
@@ -101,7 +114,6 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
         $company = $this->_helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
         $callback = $this->_storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
-        $secret = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_SECRET;
         //query params
         $params = [
             'callback' => $callback,
@@ -109,7 +121,6 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
             'culture' => $culture,
             'timezone' => $timezone,
             'ip' => $ipAddress,
-            'secret' => $secret,
         ];
         $url = $formUrl . '?' . http_build_query($params);
 

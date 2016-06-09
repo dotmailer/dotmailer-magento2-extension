@@ -51,7 +51,7 @@ class Fontpicker
             [
                 'value' => 'Verdana, Geneva, sans-serif',
                 'label' => 'Verdana, Geneva',
-            ]
+            ],
         ];
     }
 }

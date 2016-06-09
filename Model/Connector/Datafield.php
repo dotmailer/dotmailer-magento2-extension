@@ -312,7 +312,7 @@ class Datafield
             'name' => $name,
             'value' => $value,
             'type' => $type,
-            'visibility' => $visibility
+            'visibility' => $visibility,
         ];
 
         return $this->datafields;

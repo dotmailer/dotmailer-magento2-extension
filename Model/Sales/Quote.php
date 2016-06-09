@@ -61,7 +61,7 @@ class Quote
      */
     protected $_campaignFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     protected $_campaignCollection;
     /**
@@ -73,7 +73,7 @@ class Quote
      * Quote constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -82,7 +82,7 @@ class Quote
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -341,20 +341,23 @@ class Quote
     }
 
     /**
-     * @param null       $from
-     * @param null       $to
+     * @param null $from
+     * @param null $to
      * @param bool|false $guest
-     * @param int        $storeId
+     * @param int $storeId
      *
      * @return $this
      */
-    protected function _getStoreQuotes($from = null, $to = null, $guest = false,
+    protected function _getStoreQuotes(
+        $from = null,
+        $to = null,
+        $guest = false,
         $storeId = 0
     ) {
         $updated = [
             'from' => $from,
             'to' => $to,
-            'date' => true
+            'date' => true,
         ];
 
         $salesCollection = $this->_quoteCollection->create()
@@ -434,7 +437,7 @@ class Quote
         $updated = [
             'from' => $fromDate,
             'to' => $toDate,
-            'date' => true
+            'date' => true,
         ];
 
         //total campaigns sent for this interval of time

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 abstract class Rest
 {
-
     /**
      * @var null
      */
@@ -67,7 +66,7 @@ abstract class Rest
         $this->_helper = $data;
         $this->url = null;
         $this->verb = 'GET';
-        $this->requestBody = null; 
+        $this->requestBody = null;
         $this->requestLength = 0;
         $this->_apiUsername = (string)$this->_helper->getApiUsername($website);
         $this->_apiPassword = (string)$this->_helper->getApiPassword($website);
@@ -189,8 +188,6 @@ abstract class Rest
     }
 
     /**
-     * 
-     * @return null
      * @throws \Exception
      */
     public function execute()
@@ -381,7 +378,7 @@ abstract class Rest
         curl_setopt(
             $ch, CURLOPT_HTTPHEADER, [
                 'Accept: ' . $this->acceptType,
-                'Content-Type: application/json'
+                'Content-Type: application/json',
             ]
         );
     }

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Settings;
 
 class Addressbooks implements \Magento\Framework\Option\ArrayInterface
 {
-
     /**
      * @var null
      */
@@ -74,7 +73,7 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
                 if (isset($book->id)) {
                     $fields[] = [
                         'value' => (string)$book->id,
-                        'label' => (string)$book->name
+                        'label' => (string)$book->name,
                     ];
                 }
             }

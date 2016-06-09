@@ -4,37 +4,80 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Review
 {
+    /**
+     * @var
+     */
     protected $_start;
+    /**
+     * @var
+     */
     protected $_reviews;
+    /**
+     * @var
+     */
     protected $_countReviews;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
     protected $_resource;
-    protected $_vote;
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    protected $_objectManager;
+    /**
+     * @var
+     */
     protected $_reviewIds;
+    /**
+     * @var \Magento\Review\Model\ReviewFactory
+     */
     protected $_reviewFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     */
     protected $_importerFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
+     */
     protected $_customerFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Customer\ReviewFactory
+     */
     protected $_connectorReviewFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory
+     */
     protected $_ratingFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
+     */
     protected $_reviewCollection;
 
     /**
      * Review constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $reviewCollection
-     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory     $ratingFactory
-     * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory            $connectorFactory
-     * @param \Magento\Customer\Model\CustomerFactory                        $customerFactory
-     * @param \Magento\Catalog\Model\ProductFactory                          $productFactory
-     * @param \Magento\Review\Model\ReviewFactory                            $reviewFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                             $data
-     * @param \Magento\Framework\App\ResourceConnection                      $resource
-     * @param \Magento\Framework\Stdlib\Datetime                             $datetime
-     * @param \Magento\Review\Model\Rating\Option\Vote $vote
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
+     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory
+     * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Magento\Review\Model\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Magento\Framework\Stdlib\Datetime $datetime
+     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Review\CollectionFactory $reviewCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
         \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory,
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -44,7 +87,7 @@ class Review
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Framework\Stdlib\Datetime $datetime,
-        \Magento\Review\Model\Rating\Option\Vote $vote
+        \Magento\Framework\ObjectManagerInterface $objectManagerInterface
     ) {
         $this->_reviewCollection = $reviewCollection;
         $this->_ratingFactory = $ratingFactory;
@@ -56,15 +99,20 @@ class Review
         $this->_helper = $data;
         $this->_resource = $resource;
         $this->_dateTime = $datetime;
-        $this->_vote = $vote;
+        $this->_objectManager = $objectManagerInterface;
     }
 
+    /**
+     * Sync reviews.
+     *
+     * @return array
+     */
     public function sync()
     {
-        $response = array('success' => true, 'message' => 'Done.');
+        $response = ['success' => true, 'message' => 'Done.'];
 
         $this->_countReviews = 0;
-        $this->_reviews = array();
+        $this->_reviews = [];
         $this->_start = microtime(true);
         //resource allocation
         $this->_helper->allowResourceFullExecution();
@@ -114,14 +162,19 @@ class Review
         return $response;
     }
 
-    protected function _exportReviewsForWebsite($website)
+    /**
+     * Export reviews for website.
+     *
+     * @param \Magento\Store\Model\Website $website
+     */
+    protected function _exportReviewsForWebsite(\Magento\Store\Model\Website $website)
     {
         $limit = $this->_helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
             $website
         );
         $reviews = $this->_getReviewsToExport($website, $limit);
-        $this->_reviewIds = array();
+        $this->_reviewIds = [];
 
         if ($reviews->getSize()) {
             foreach ($reviews as $review) {
@@ -140,13 +193,15 @@ class Review
                         ->setReviewData($mageReview)
                         ->setProduct($product);
 
-                    $votesCollection = $this->_vote
+                    $votesCollection = $this->_objectManager->create(
+                        'Magento\Review\Model\Rating\Option\Vote'
+                    )
                         ->getResourceCollection()
                         ->setReviewFilter($mageReview->getReviewId());
                     $votesCollection->getSelect()->join(
-                        array('rating' => 'rating'),
+                        ['rating' => 'rating'],
                         'rating.rating_id = main_table.rating_id',
-                        array('rating_code' => 'rating.rating_code')
+                        ['rating_code' => 'rating.rating_code']
                     );
 
                     foreach ($votesCollection as $ratingItem) {
@@ -158,26 +213,34 @@ class Review
                     }
                     $this->_reviews[$website->getId()][] = $connectorReview;
                     $this->_reviewIds[]
-                                                         = $review->getReviewId();
+                        = $review->getReviewId();
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string)$e, array());
+                    $this->_helper->debug((string)$e, []);
                 }
             }
         }
     }
 
-    protected function _getReviewsToExport($website, $limit = 100)
+    /**
+     * Get reviews for export.
+     *
+     * @param \Magento\Store\Model\Website $website
+     * @param int $limit
+     *
+     * @return mixed
+     */
+    protected function _getReviewsToExport(\Magento\Store\Model\Website $website, $limit = 100)
     {
         return $this->_reviewCollection->create()
-            ->addFieldToFilter('review_imported', array('null' => 'true'))
+            ->addFieldToFilter('review_imported', ['null' => 'true'])
             ->addFieldToFilter(
-                'store_id', array('in' => $website->getStoreIds())
+                'store_id', ['in' => $website->getStoreIds()]
             )
             ->setPageSize($limit);
     }
 
     /**
-     * set imported in bulk query.
+     * Set imported in bulk query.
      *
      * @param $ids
      */
@@ -192,11 +255,11 @@ class Review
             $nowDate = $this->_dateTime->formatDate($now->getTimestamp());
             $write->update(
                 $tableName,
-                array('review_imported' => 1, 'updated_at' => $nowDate),
+                ['review_imported' => 1, 'updated_at' => $nowDate],
                 "review_id IN ($ids)"
             );
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string)$e, []);
         }
     }
 }

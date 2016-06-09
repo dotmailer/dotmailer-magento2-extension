@@ -8,9 +8,13 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @var
      */
     protected $_gridFactory;
-        /**
-         * @var \Dotdigitalgroup\Email\Model\Resource\Rules\CollectionFactory
-         */
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    protected $_objectManager;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory
+     */
     protected $_rulesFactory;
 
     /**
@@ -18,17 +22,19 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Backend\Helper\Data $backendHelper
-     * @param \Dotdigitalgroup\Email\Model\Resource\Rules\CollectionFactory $gridFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $gridFactory
+     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
      * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
-        \Dotdigitalgroup\Email\Model\Resource\Rules\CollectionFactory $gridFactory,
-        \Magento\Framework\Module\Manager $moduleManager,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $gridFactory,
+        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
-        $this->_rulesFactory  = $gridFactory;
+        $this->_rulesFactory = $gridFactory;
+        $this->_objectManager = $objectManagerInterface;
         parent::__construct($context, $backendHelper, $data);
     }
 
@@ -65,7 +71,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     {
         $this->addColumn(
             'rule_id', [
-                'header' => __('ID'),
+            'header' => __('ID'),
             'align' => 'right',
             'width' => '50px',
             'index' => 'id',
@@ -73,7 +79,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
         $this->addColumn(
             'name', [
-                'header' => __('Rule Name'),
+            'header' => __('Rule Name'),
             'align' => 'left',
             'width' => '150px',
             'index' => 'name',
@@ -87,8 +93,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'index' => 'type',
             'type' => 'options',
             'options' => [
-                    1 => 'Abandoned Cart Exclusion Rule',
-                    2 => 'Review Email Exclusion Rule',
+                1 => 'Abandoned Cart Exclusion Rule',
+                2 => 'Review Email Exclusion Rule',
             ],
         ]);
         $this->addColumn(
@@ -99,14 +105,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'index' => 'status',
             'type' => 'options',
             'options' => [
-                    1 => 'Active',
-                    0 => 'Inactive',
+                1 => 'Active',
+                0 => 'Inactive',
             ],
         ]);
 
         $this->addColumn(
             'created_at', [
-                'header' => __('Created At'),
+            'header' => __('Created At'),
             'align' => 'left',
             'width' => '120px',
             'type' => 'datetime',
@@ -115,7 +121,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
         $this->addColumn(
             'updated_at', [
-                'header' => __('Updated At'),
+            'header' => __('Updated At'),
             'align' => 'left',
             'width' => '120px',
             'type' => 'datetime',
@@ -145,11 +151,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         return $this;
     }
 
-        /**
-         * @param \Magento\Catalog\Model\Product|\Magento\Framework\DataObject $row
-         *
-         * @return string
-         */
+    /**
+     * @param \Magento\Catalog\Model\Product|\Magento\Framework\DataObject $row
+     *
+     * @return string
+     */
     public function getRowUrl($row)
     {
         return $this->getUrl(

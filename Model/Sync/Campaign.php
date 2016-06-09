@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 class Campaign
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -14,10 +13,9 @@ class Campaign
      */
     protected $_storeManger;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     protected $_campaignCollection;
-    protected $_salesOrderFactory;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
@@ -25,15 +23,20 @@ class Campaign
     protected $_storeManager;
 
     /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
+    protected $_salesOrderFactory;
+
+    /**
      * Campaign constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                               $data
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface ,
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\Campaign\CollectionFactory $campaignFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory
@@ -42,7 +45,6 @@ class Campaign
         $this->_campaignCollection = $campaignFactory;
         $this->_storeManager = $storeManagerInterface;
         $this->_salesOrderFactory = $salesOrderFactory;
-        $this->_storeManager = $storeManagerInterface;
     }
 
     /**
@@ -91,20 +93,20 @@ class Campaign
                             $websiteId
                         )
                         ) {
-                            $data[] = array(
+                            $data[] = [
                                 'Key' => $lastOrderId,
-                                'Value' => $order->getId()
-                            );
+                                'Value' => $order->getId(),
+                            ];
                         }
                         if ($orderIncrementId = $this->_helper->getWebsiteConfig(
                             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
                             $websiteId
                         )
                         ) {
-                            $data[] = array(
+                            $data[] = [
                                 'Key' => $orderIncrementId,
-                                'Value' => $order->getIncrementId()
-                            );
+                                'Value' => $order->getIncrementId(),
+                            ];
                         }
 
                         if (!empty($data)) {
@@ -146,7 +148,7 @@ class Campaign
 
     /**
      * Get pending campaigns.
-     * 
+     *
      * @return mixed
      */
     protected function _getEmailCampaigns()

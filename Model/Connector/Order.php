@@ -171,7 +171,7 @@ class Order
         $website = $this->_storeManager->getStore(
             $orderData->getStore()
         )->getWebsite();
-        
+
         $customAttributes
                  = $this->_helper->getConfigSelectedCustomOrderAttributes(
             $website
@@ -207,7 +207,7 @@ class Order
                 'billing_city' => $billingData['city'],
                 'billing_region' => $billingData['region'],
                 'billing_country' => $billingData['country_id'],
-                'billing_postcode' => $billingData['postcode']
+                'billing_postcode' => $billingData['postcode'],
             ];
         }
         /*
@@ -226,7 +226,7 @@ class Order
                 'delivery_city' => $shippingData['city'],
                 'delivery_region' => $shippingData['region'],
                 'delivery_country' => $shippingData['country_id'],
-                'delivery_postcode' => $shippingData['postcode']
+                'delivery_postcode' => $shippingData['postcode'],
             ];
         }
 
@@ -332,7 +332,7 @@ class Order
                     'attribute-set' => $attributeSetName,
                     'categories' => $productCat,
                     'attributes' => $attributes,
-                    'custom-options' => $customOptions
+                    'custom-options' => $customOptions,
                 ];
             } else {
                 // when no product information is available limit to this data
@@ -348,7 +348,7 @@ class Order
                     'attribute-set' => '',
                     'categories' => [],
                     'attributes' => [],
-                    'custom-options' => $customOptions
+                    'custom-options' => $customOptions,
                 ];
             }
         }

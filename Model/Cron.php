@@ -4,20 +4,65 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Cron
 {
+    /**
+     * @var Apiconnector\ContactFactory
+     */
     public $contactFactory;
+    /**
+     * @var Sync\AutomationFactory
+     */
     protected $_automationFactory;
+    /**
+     * @var ImporterFactory
+     */
     protected $_importerFactory;
+    /**
+     * @var Sync\CatalogFactory
+     */
     protected $_catalogFactory;
+    /**
+     * @var Newsletter\SubscriberFactory
+     */
     protected $_subscriberFactory;
+    /**
+     * @var Customer\GuestFactory
+     */
     protected $_guestFactory;
+    /**
+     * @var Sync\WishlistFactory
+     */
     protected $_wishlistFactory;
+    /**
+     * @var Sales\OrderFactory
+     */
     protected $_orderFactory;
+    /**
+     * @var Sync\ReviewFactory
+     */
     protected $_reviewFactory;
+    /**
+     * @var Sales\QuoteFactory
+     */
     protected $_quoteFactory;
+    /**
+     * @var Sync\OrderFactory
+     */
     protected $_syncOrderFactory;
+    /**
+     * @var Sync\CampaignFactory
+     */
     protected $_campaignFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\File
+     */
     protected $_fileHelper;
+    /**
+     * @var ResourceModel\Importer
+     */
     protected $_importerResource;
 
     /**
@@ -32,11 +77,12 @@ class Cron
      * @param Customer\GuestFactory $guestFactory
      * @param Newsletter\SubscriberFactory $subscriberFactory
      * @param Sync\CatalogFactory $catalogFactorty
+     * @param ImporterFactory $importerFactory
      * @param Sync\AutomationFactory $automationFactory
      * @param Apiconnector\ContactFactory $contact
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param Resource\Importer $importerResource
+     * @param ResourceModel\Importer $importerResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
@@ -53,7 +99,7 @@ class Cron
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\Resource\Importer $importerResource
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
     ) {
         $this->_campaignFactory = $campaignFactory;
         $this->_syncOrderFactory = $syncOrderFactory;
@@ -75,7 +121,7 @@ class Cron
     /**
      * CRON FOR CONTACTS SYNC.
      *
-     * @return mixed
+     * @return array
      */
     public function contactSync()
     {
@@ -95,6 +141,8 @@ class Cron
 
     /**
      * CRON FOR SUBSCRIBERS AND GUEST CONTACTS.
+     *
+     * @return mixed
      */
     public function subscribersAndGuestSync()
     {
@@ -110,6 +158,8 @@ class Cron
 
     /**
      * CRON FOR CATALOG SYNC.
+     *
+     * @return mixed
      */
     public function catalogSync()
     {
@@ -121,6 +171,8 @@ class Cron
 
     /**
      * CRON FOR EMAIL IMPORTER PROCESSOR.
+     *
+     * @return mixed
      */
     public function emailImporter()
     {
@@ -139,7 +191,9 @@ class Cron
     }
 
     /**
-     * review sync.
+     * Review sync.
+     *
+     * @return mixed
      */
     public function reviewSync()
     {
@@ -188,14 +242,19 @@ class Cron
         return $orderResult;
     }
 
+    /**
+     * Cleaning for csv files and connector tables.
+     *
+     * @return string
+     */
     public function cleaning()
     {
         //Clean tables
-        $tables = array(
+        $tables = [
             'automation' => 'email_automation',
             'importer' => 'email_importer',
             'campaign' => 'email_campaign',
-        );
+        ];
         $message = 'Cleaning cron job result :';
         foreach ($tables as $key => $table) {
             $result = $this->_importerResource->cleanup($table);

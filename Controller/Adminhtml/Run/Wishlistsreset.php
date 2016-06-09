@@ -10,18 +10,18 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
     protected $messageManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\WishlistFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
     protected $_wishlistFactory;
 
     /**
      * Wishlistsreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->_wishlistFactory = $wishlistFactory;

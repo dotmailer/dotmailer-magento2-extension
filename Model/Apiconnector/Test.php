@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 class Test
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */

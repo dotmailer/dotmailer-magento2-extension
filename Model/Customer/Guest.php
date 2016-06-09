@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Customer;
 
 class Guest
 {
-
     /**
      * @var int
      */

@@ -1,62 +1,57 @@
 <?php
 
-
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
-class ResetCatalogContactImport
-    implements \Magento\Framework\Event\ObserverInterface
+class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
-    protected $_logger;
-    protected $_scopeConfig;
-    protected $_storeManager;
-    protected $_catalogFactory;
-    protected $_catalogCollection;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     */
     protected $_connectorCatalogFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
+     */
     protected $_connectorContactFactory;
 
     /**
      * ResetCatalogContactImport constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\ContactFactory            $connectorContactFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\CatalogFactory            $connectorCatalogFactory
-     * @param \Dotdigitalgroup\Email\Model\CatalogFactory                     $catalogFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory
-     * @param \Magento\Framework\Registry                                     $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data                              $data
-     * @param \Psr\Log\LoggerInterface                                        $loggerInterface
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface                      $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $connectorContactFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $connectorCatalogFactory
+     * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\ContactFactory $connectorContactFactory,
-        \Dotdigitalgroup\Email\Model\Resource\CatalogFactory $connectorCatalogFactory,
-        \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Catalog\CollectionFactory $catalogCollectionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $connectorContactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $connectorCatalogFactory,
         \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Psr\Log\LoggerInterface $loggerInterface,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->_connectorContactFactory = $connectorContactFactory;
         $this->_connectorCatalogFactory = $connectorCatalogFactory;
-        $this->_helper                  = $data;
-        $this->_registry                = $registry;
-        $this->_logger                  = $loggerInterface;
-        $this->_scopeConfig             = $scopeConfig;
-        $this->_catalogFactory          = $catalogFactory;
-        $this->_catalogCollection       = $catalogCollectionFactory;
-        $this->_storeManager            = $storeManagerInterface;
+        $this->_helper = $data;
+        $this->_registry = $registry;
     }
 
-
+    /**
+     * Execute method.
+     *
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return $this
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         try {
-            if ( ! $this->_registry->registry('core_config_data_save_after_done')) {
+            if (!$this->_registry->registry('core_config_data_save_after_done')) {
                 if ($groups = $observer->getEvent()->getConfigData()
                     ->getGroups()
                 ) {
@@ -76,7 +71,7 @@ class ResetCatalogContactImport
                 }
             }
 
-            if ( ! $this->_registry->registry('core_config_data_save_after_done_status')) {
+            if (!$this->_registry->registry('core_config_data_save_after_done_status')) {
                 if ($groups = $observer->getEvent()->getConfigData()
                     ->getGroups()
                 ) {
@@ -96,7 +91,7 @@ class ResetCatalogContactImport
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;

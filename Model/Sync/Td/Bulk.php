@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
 class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
-
     /**
      * Sync.
      *

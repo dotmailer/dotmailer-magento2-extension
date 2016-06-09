@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 class Contact
 {
-
     /**
      * @var
      */
@@ -79,7 +78,7 @@ class Contact
      * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Model\ContactFactory                      $contactFactory
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory  $contactCollectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -95,7 +94,7 @@ class Contact
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
-        \Dotdigitalgroup\Email\Model\Resource\Contact\CollectionFactory $contactCollectionFactory
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
     ) {
         $this->_importerFactory = $importerFactory;
         $this->_file = $file;
@@ -109,13 +108,11 @@ class Contact
         //email contact
         $this->_emailCustomer = $customerFactory;
         $this->_contactFactory = $contactFactory;
-        $this->_customerCollection = $customerCollectionFactory->create();
-        $this->_customerCollection->addAttributeToSelect('*');
+        $this->_customerCollection = $customerCollectionFactory;
         //email contact collection
-        $this->_contactCollection = $contactCollectionFactory->create();
-        $this->_contactCollection->addFieldToSelect('*');
+        $this->_contactCollection = $contactCollectionFactory;
         //newsletter subscriber
-        $this->_subscriberFactory = $subscriberFactory->create();
+        $this->_subscriberFactory = $subscriberFactory;
     }
 
     /**
@@ -196,7 +193,8 @@ class Contact
         $connection = $this->_resource->getConnection();
 
         //contacts ready for website
-        $contacts = $this->_contactCollection
+        $contacts = $this->_contactCollection->create()
+            ->addFieldToSelect('*')
             ->addFieldToFilter('email_imported', ['null' => true])
             ->addFieldToFilter('customer_id', ['neq' => '0'])
             ->addFieldToFilter('website_id', $website->getId())
@@ -417,7 +415,7 @@ class Contact
             $contactModel->setEmailImported(
                 \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED
             );
-            $subscriber = $this->_subscriberFactory->loadByEmail(
+            $subscriber = $this->_subscriberFactory->create()->loadByEmail(
                 $customer->getEmail()
             );
             if ($subscriber->isSubscribed()) {
@@ -463,7 +461,9 @@ class Contact
      */
     protected function _getCustomerCollection($customerIds, $websiteId = 0)
     {
-        $customerCollection = $this->_customerCollection->addNameToSelect()
+        $customerCollection = $this->_customerCollection->create()
+            ->addAttributeToSelect('*')
+            ->addNameToSelect()
             ->joinAttribute(
                 'billing_street', 'customer_address/street', 'default_billing',
                 null, 'left'
@@ -555,7 +555,7 @@ class Contact
             [
                 'last_logged_date' => new \Zend_Db_Expr(
                     "(SELECT last_login_at FROM  $customerLog WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)"
-                )
+                ),
             ]
         );
 
@@ -575,7 +575,7 @@ class Contact
                     'customer_id as s_customer_id',
                     'sum(grand_total) as total_spend',
                     'count(*) as number_of_orders',
-                    'avg(grand_total) as average_order_value'
+                    'avg(grand_total) as average_order_value',
                 ]
             )
             ->group('customer_id');

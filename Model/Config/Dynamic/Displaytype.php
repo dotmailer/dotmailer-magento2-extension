@@ -13,7 +13,7 @@ class Displaytype
     {
         return [
             ['value' => 'grid', 'label' => 'Grid'],
-            ['value' => 'list', 'label' => 'List']
+            ['value' => 'list', 'label' => 'List'],
         ];
     }
 }

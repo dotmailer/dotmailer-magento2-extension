@@ -9,18 +9,18 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
      */
     protected $messageManager;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\ReviewFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
      */
     protected $_reviewFactory;
 
     /**
      * Reviewsreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\ReviewFactory $reviewFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->_reviewFactory = $reviewFactory;

@@ -9,18 +9,18 @@ class Ordersreset extends \Magento\Backend\App\AbstractAction
      */
     protected $messageManager;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Resource\OrderFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory
      */
     protected $_orderFactory;
 
     /**
      * Ordersreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Resource\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderFactory
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Resource\OrderFactory $orderFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->_orderFactory = $orderFactory;

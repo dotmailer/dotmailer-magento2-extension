@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Addressbooks
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -88,7 +87,7 @@ class Addressbooks
                 ) {
                     $fields[] = [
                         'value' => $book->id,
-                        'label' => $book->name
+                        'label' => $book->name,
                     ];
                 }
             }

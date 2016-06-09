@@ -1,10 +1,9 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Resource;
+namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */

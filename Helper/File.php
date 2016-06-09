@@ -144,7 +144,7 @@ class File
      */
     public function outputCSV($filepath, $csv)
     {
-        /**
+        /*
          * Open for writing only; place the file pointer at the end of the file.
          * If the file does not exist, attempt to create it.
          */
