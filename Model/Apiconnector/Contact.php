@@ -108,13 +108,11 @@ class Contact
         //email contact
         $this->_emailCustomer = $customerFactory;
         $this->_contactFactory = $contactFactory;
-        $this->_customerCollection = $customerCollectionFactory->create();
-        $this->_customerCollection->addAttributeToSelect('*');
+        $this->_customerCollection = $customerCollectionFactory;
         //email contact collection
-        $this->_contactCollection = $contactCollectionFactory->create();
-        $this->_contactCollection->addFieldToSelect('*');
+        $this->_contactCollection = $contactCollectionFactory;
         //newsletter subscriber
-        $this->_subscriberFactory = $subscriberFactory->create();
+        $this->_subscriberFactory = $subscriberFactory;
     }
 
     /**
@@ -195,7 +193,8 @@ class Contact
         $connection = $this->_resource->getConnection();
 
         //contacts ready for website
-        $contacts = $this->_contactCollection
+        $contacts = $this->_contactCollection->create()
+            ->addFieldToSelect('*')
             ->addFieldToFilter('email_imported', ['null' => true])
             ->addFieldToFilter('customer_id', ['neq' => '0'])
             ->addFieldToFilter('website_id', $website->getId())
@@ -416,7 +415,7 @@ class Contact
             $contactModel->setEmailImported(
                 \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED
             );
-            $subscriber = $this->_subscriberFactory->loadByEmail(
+            $subscriber = $this->_subscriberFactory->create()->loadByEmail(
                 $customer->getEmail()
             );
             if ($subscriber->isSubscribed()) {
@@ -462,7 +461,9 @@ class Contact
      */
     protected function _getCustomerCollection($customerIds, $websiteId = 0)
     {
-        $customerCollection = $this->_customerCollection->addNameToSelect()
+        $customerCollection = $this->_customerCollection->create()
+            ->addAttributeToSelect('*')
+            ->addNameToSelect()
             ->joinAttribute(
                 'billing_street', 'customer_address/street', 'default_billing',
                 null, 'left'
