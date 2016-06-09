@@ -57,7 +57,7 @@ class Addressbooks
 
     /**
      * Get options.
-     * 
+     *
      * @return array
      */
     public function toOptionArray()

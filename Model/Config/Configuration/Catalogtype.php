@@ -5,31 +5,30 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 class Catalogtype
 {
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var \Magento\Catalog\Model\Product\Type
      */
-    protected $_objectManager;
+    protected $_productType;
 
     /**
      * Catalogtype constructor.
      *
-     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+     * @param \Magento\Catalog\Model\Product\Type $productType
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+        \Magento\Catalog\Model\Product\Type $productType
     ) {
-        $this->_objectManager = $objectManagerInterface;
+        $this->_productType = $productType;
     }
 
     /**
      * Return options.
-     * 
+     *
      * @return mixed
      */
     public function toOptionArray()
     {
         $options
-            = $this->_objectManager->create('Magento\Catalog\Model\Product\Type')
-            ->getAllOptions();
+            = $this->_productType->getAllOptions();
         array_shift($options);
 
         return $options;

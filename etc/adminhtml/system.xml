@@ -4,7 +4,8 @@
         <tab id="ddg_automation" translate="label" sortOrder="500">
             <label>DOTMAILER</label>
         </tab>
-        <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+        <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
+                 showInStore="0">
             <class>separator-top</class>
             <label>API Credentials</label>
             <tab>ddg_automation</tab>
@@ -35,336 +36,418 @@
                 </field>
             </group>
         </section>
-        <section id="connector_data_mapping" translate="label" sortOrder="140" showInDefault="1" showInStore="1" showInWebsite="1">
+        <section id="connector_data_mapping" translate="label" sortOrder="140" showInDefault="1" showInStore="0"
+                 showInWebsite="1">
             <class>separator-top</class>
             <label>Data Mapping</label>
             <tab>ddg_automation</tab>
-            <resource>Dotdigitalgroup_Email::congi</resource>
-            <group id="customer_data" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="customer_data" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Data Fields Mapping</label>
                 <attribute type="expanded">1</attribute>
-                <field id="customer_title" translate="label" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="customer_title" translate="label" sortOrder="10" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Customer Information</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="title" type="select" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="title" type="select" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label>Title</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="customer_id" type="select" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="customer_id" type="select" translate="label" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Customer Id</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="firstname" type="select" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="firstname" type="select" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label>Firstname</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="lastname" type="select" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="lastname" type="select" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label>Lastname</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="dob" type="select" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="dob" type="select" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label>D.O.B</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="gender" type="select" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="gender" type="select" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label>Gender</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
 
-                <field id="created_at" type="select" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="created_at" type="select" translate="label" sortOrder="100" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Created At</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_logged_date" type="select" translate="label" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_logged_date" type="select" translate="label" sortOrder="110" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Last Logged In Date</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="customer_group" type="select" translate="label" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="customer_group" type="select" translate="label" sortOrder="120" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Customer Group</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="review_count" type="select" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="review_count" type="select" translate="label" sortOrder="130" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Review Count</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_review_date" type="select" translate="label" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_review_date" type="select" translate="label" sortOrder="140" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Last Review Date</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="subscriber_status" type="select" translate="label" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="subscriber_status" type="select" translate="label" sortOrder="150" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Subscriber Status</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="address_title" translate="label" sortOrder="160" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="address_title" translate="label" sortOrder="160" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Address</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="billing_address_1" type="select" translate="label" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="billing_address_1" type="select" translate="label" sortOrder="170" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Billing Address Line 1</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="billing_address_2" type="select" translate="label" sortOrder="180" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="billing_address_2" type="select" translate="label" sortOrder="180" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Billing Address Line 2</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="billing_state" type="select" translate="label" sortOrder="190" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="billing_state" type="select" translate="label" sortOrder="190" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Billing State</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="billing_country" type="select" translate="label" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="billing_country" type="select" translate="label" sortOrder="200" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Billing Country</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="billing_postcode" type="select" translate="label" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="billing_postcode" type="select" translate="label" sortOrder="210" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Billing Postcode</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="billing_telephone" type="select" translate="label" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="billing_telephone" type="select" translate="label" sortOrder="220" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Billing Telephone</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="billing_company" type="select" translate="label" sortOrder="225" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="billing_company" type="select" translate="label" sortOrder="225" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Billing Company</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="delivery_address_1" type="select" translate="label" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_address_1" type="select" translate="label" sortOrder="230" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Delivery Address 1</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="delivery_address_2" type="select" translate="label" sortOrder="240" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_address_2" type="select" translate="label" sortOrder="240" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Delivery Address 2</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="delivery_city" type="select" translate="label" sortOrder="250" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_city" type="select" translate="label" sortOrder="250" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Delivery City</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="delivery_state" type="select" translate="label" sortOrder="260" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_state" type="select" translate="label" sortOrder="260" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Delivery State</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="delivery_country" type="select" translate="label" sortOrder="270" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_country" type="select" translate="label" sortOrder="270" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Delivery Country</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="delivery_postcode" type="select" translate="label" sortOrder="280" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_postcode" type="select" translate="label" sortOrder="280" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Delivery Postcode</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="delivery_telephone" type="select" translate="label" sortOrder="290" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_telephone" type="select" translate="label" sortOrder="290" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Delivery Telephone</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="delivery_company" type="select" translate="label" sortOrder="295" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_company" type="select" translate="label" sortOrder="295" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Delivery Company</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="sales" translate="label" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="sales" translate="label" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Sales</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="number_of_orders" type="select" translate="label" sortOrder="310" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="number_of_orders" type="select" translate="label" sortOrder="310" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Total Number of Orders</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="average_order_value" type="select" translate="label" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="average_order_value" type="select" translate="label" sortOrder="320" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Average Order Value</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="total_spend" type="select" translate="label" sortOrder="330" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="total_spend" type="select" translate="label" sortOrder="330" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Total Spend</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_order_date" type="select" translate="label" sortOrder="340" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_order_date" type="select" translate="label" sortOrder="340" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Last Purchase Date</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_increment_id" type="select" translate="label" sortOrder="350" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_increment_id" type="select" translate="label" sortOrder="350" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Last Increment ID</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
 
-                <field id="total_refund" type="select" translate="label" sortOrder="380" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="total_refund" type="select" translate="label" sortOrder="380" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Total Refund</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="most_pur_category" type="select" translate="label" sortOrder="390" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="most_pur_category" type="select" translate="label" sortOrder="390" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Most Purchased Category</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="most_pur_brand" type="select" translate="label" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="most_pur_brand" type="select" translate="label" sortOrder="400" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Most Purchased Brand</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="most_freq_pur_day" type="select" translate="label" sortOrder="410" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="most_freq_pur_day" type="select" translate="label" sortOrder="410" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Most Frequent Day Of Purchase</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="most_freq_pur_mon" type="select" translate="label" sortOrder="420" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="most_freq_pur_mon" type="select" translate="label" sortOrder="420" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Most Frequent Month Of Purchase</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="first_category_pur" type="select" translate="label" sortOrder="430" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="first_category_pur" type="select" translate="label" sortOrder="430" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>First Category Purchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_category_pur" type="select" translate="label" sortOrder="440" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_category_pur" type="select" translate="label" sortOrder="440" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Last Category Purchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="first_brand_pur" type="select" translate="label" sortOrder="450" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="first_brand_pur" type="select" translate="label" sortOrder="450" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>First Brand Purchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_brand_pur" type="select" translate="label" sortOrder="460" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_brand_pur" type="select" translate="label" sortOrder="460" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Last Brand PUrchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="system_values" translate="label" sortOrder="470" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="system_values" translate="label" sortOrder="470" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>System Values</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="website_name" type="select" translate="label" sortOrder="480" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="website_name" type="select" translate="label" sortOrder="480" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Website Name</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="store_name" type="select" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="store_name" type="select" translate="label" sortOrder="490" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Store Name</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_order_id" type="select" translate="label" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_order_id" type="select" translate="label" sortOrder="500" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Last Order ID</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_quote_id" type="select" translate="label" sortOrder="510" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="last_quote_id" type="select" translate="label" sortOrder="510" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Last Quote ID</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="abandoned_prod_name" type="select" translate="label" sortOrder="530" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="abandoned_prod_name" type="select" translate="label" sortOrder="530" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Abandoned Product Name</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="custom_title" translate="label" sortOrder="540" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="custom_title" translate="label" sortOrder="540" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Custom Attributes</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="custom_attributes" translate="label" sortOrder="550" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="custom_attributes" translate="label" sortOrder="550" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label></label>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
                 </field>
             </group>
-            <group id="dynamic_datafield" translate="comment label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="dynamic_datafield" translate="comment label" sortOrder="30" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Create Datafield</label>
-                <field id="datafield_name" type="text" translate="label" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="datafield_name" type="text" translate="label" sortOrder="10" showInDefault="1"
+                       showInStore="0" showInWebsite="1">
                     <label>Datafield Name</label>
                     <comment><![CDATA[(Maximum of 20 characters)]]></comment>
                 </field>
-                <field id="datafield_type" translate="label" sortOrder="20" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="datafield_type" translate="label" sortOrder="20" type="select" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Datafield Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafieldtype</source_model>
                 </field>
-                <field id="datafield_default" translate="comment label" type="text" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="datafield_default" translate="comment label" type="text" sortOrder="30" showInDefault="1"
+                       showInStore="0" showInWebsite="1">
                     <label>Default Value</label>
                     <comment><![CDATA[When sending a campaign that uses template personalisation, a default value ensures that a value is alwasy displayed even if a data field is blank.]]></comment>
                 </field>
-                <field id="datafield_access" translate="comment label" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="datafield_access" translate="comment label" sortOrder="40" type="select" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Visibility</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Visibility</source_model>
                     <comment><![CDATA[Make the field public if you want to allow your contacts to view and amend the data you hold on them in this field.]]></comment>
                 </field>
-                <field id="datafield_button" translate="button_label" sortOrder="50" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="datafield_button" translate="button_label" sortOrder="50" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <button_label>Create New Datafield</button_label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Createdatafield</frontend_model>
                 </field>
             </group>
         </section>
-        <section id="sync_settings" translate="label" type="text" sortOrder="150" showInWebsite="1" showInStore="1" showInDefault="1">
+        <section id="sync_settings" translate="label" type="text" sortOrder="150" showInWebsite="1" showInStore="0"
+                 showInDefault="1">
             <class>separator-top</class>
             <label>Sync Settings</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="addressbook" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="addressbook" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Address Book Mapping</label>
                 <attribute type="expanded">1</attribute>
-                <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Add Customers To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
                 </field>
-                <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Add Subscribers To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
                 </field>
-                <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Add Guests To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
                 </field>
             </group>
-            <group id="sync" translate="label" type="text" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
+            <group id="sync" translate="label" type="text" sortOrder="30" showInDefault="1" showInStore="0"
+                   showInWebsite="1">
                 <label>Sync</label>
                 <attribute type="expanded">1</attribute>
-                <field id="customer_enabled" type="select" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="customer_enabled" type="select" sortOrder="10" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Customer Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="contact_report" type="button" sortOrder="20" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="contact_report" type="button" sortOrder="20" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Contact</frontend_model>
                 </field>
-                <field id="guest_enabled" type="select" sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="guest_enabled" type="select" sortOrder="30" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Guest Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="guest_report" type="button" sortOrder="40" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="guest_report" type="button" sortOrder="40" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Contact</frontend_model>
                 </field>
-                <field id="subscriber_enabled" type="select" sortOrder="50" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="subscriber_enabled" type="select" sortOrder="50" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Subscriber Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="subscriber_report" type="button" sortOrder="60" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="subscriber_report" type="button" sortOrder="60" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Contact</frontend_model>
                 </field>
-                <field id="order_enabled" type="select" sortOrder="70" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="order_enabled" type="select" sortOrder="70" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Order Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="order_report" type="button" sortOrder="80" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="order_report" type="button" sortOrder="80" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Order</frontend_model>
                 </field>
-                <field id="wishlist_enabled" type="select" sortOrder="110" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="wishlist_enabled" type="select" sortOrder="110" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Wishlist Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="wishlist_report" type="button" sortOrder="120" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="wishlist_report" type="button" sortOrder="120" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Wishlist</frontend_model>
                 </field>
-                <field id="review_enabled" type="select" sortOrder="130" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="review_enabled" type="select" sortOrder="130" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Review Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="review_report" type="button" sortOrder="140" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="review_report" type="button" sortOrder="140" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Review</frontend_model>
                 </field>
-                <field id="catalog_enabled" type="select" sortOrder="150" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="catalog_enabled" type="select" sortOrder="150" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Catalog Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="catalog_report" type="button" sortOrder="160" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="catalog_report" type="button" sortOrder="160" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Catalog</frontend_model>
                 </field>
             </group>
-            <group id="dynamic_addressbook" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="dynamic_addressbook" translate="label" type="text" sortOrder="40" showInDefault="1"
+                   showInWebsite="1" showInStore="0">
                 <label>Create Address Book</label>
-                <field id="addressbook_name" type="text" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="addressbook_name" type="text" sortOrder="10" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <label>Addressbook Name</label>
                 </field>
-                <field id="visibility" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="visibility" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Visibility</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Visibility</source_model>
                 </field>
-                <field id="addressbook_button" translate="button_label"  sortOrder="30" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="addressbook_button" translate="button_label" sortOrder="30" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
                     <button_label>Create New Addressbook</button_label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Createaddressbook</frontend_model>
                 </field>
@@ -427,730 +510,901 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
             </group>
-            <group id="guests" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="guests" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Guests</label>
                 <attribute type="expanded">1</attribute>
-                <field id="heading_1" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="heading_1" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Abandoned Cart 1</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="enabled_1" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="enabled_1" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label>Enabled\Disabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="send_after_1" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="send_after_1" translate="label" sortOrder="30" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Send After (min)</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Intervalminute</source_model>
                 </field>
-                <field id="campaign_1" translate="label" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="campaign_1" translate="label" sortOrder="40" type="select" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Campaign to Send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="heading_2" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="heading_2" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Abandoned Cart 2</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="enabled_2" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="enabled_2" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label>Enabled\Disabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="send_after_2" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="send_after_2" translate="label" sortOrder="70" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Send After (min)</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
-                <field id="campaign_2" translate="label" sortOrder="80" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="campaign_2" translate="label" sortOrder="80" type="select" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Campaign to Send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="heading_3" translate="label" sortOrder="90" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="heading_3" translate="label" sortOrder="90" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Abandoned Cart 3</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="enabled_3" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="enabled_3" translate="label" type="select" sortOrder="100" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Enabled\Disabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="send_after_3" translate="label" sortOrder="110" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="send_after_3" translate="label" sortOrder="110" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Send After (min)</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
-                <field id="campaign_3" translate="label" sortOrder="120" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="campaign_3" translate="label" sortOrder="120" type="select" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Campaign to Send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
             </group>
         </section>
-        <section id="connector_automation" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
+        <section id="connector_automation" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
+                 showInDefault="1">
             <class>separator-top</class>
             <label>Automation</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="visitor_automation" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="visitor_automation" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
             <label>Visitor action automation enrolment</label>
-                <field id="customer_automation" translate="label" type="select" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="customer_automation" translate="label" type="select" sortOrder="10" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>New Customer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="subscriber_automation" translate="label" type="select" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="subscriber_automation" translate="label" type="select" sortOrder="20" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>New Subscriber</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>New Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>New Guest Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Approved Review</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="wishlist_automation" translate="label" type="select" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_automation" translate="label" type="select" sortOrder="60" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>New Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
             </group>
-            <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Order Status Automation Enrolment</label>
-                <field id="program" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="program" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
                     <label>Customer</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Customdatafields</frontend_model>
                 </field>
             </group>
-            <group id="review_settings" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="review_settings" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Review Settings</label>
-                <field id="enabled" translate="label" type="select" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="status" translate="label" type="select" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="status" translate="label" type="select" sortOrder="20" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Order Status</label>
                     <source_model>Magento\Sales\Model\Config\Source\Order\Status</source_model>
                 </field>
-                <field id="delay" translate="comment label" type="select" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="delay" translate="comment label" type="select" sortOrder="30" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Delay Period (Days)</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Delay</source_model>
                     <comment><![CDATA[The system will send the reminder after the above mentioned amount of days upon order status selected above.]]></comment>
                 </field>
-                <field id="campaign" translate="label" type="select" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="campaign" translate="label" type="select" sortOrder="50" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Campaign to send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="anchor" translate="comment label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="anchor" translate="comment label" sortOrder="60" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reviews Anchor</label>
                     <comment><![CDATA[Please provide the anchor used on product pages for reviews e.g. #reviews]]></comment>
                 </field>
             </group>
-            <group id="feefo_feedback_engine" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="feefo_feedback_engine" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Feefo Feedback Engine</label>
-                <field id="logon" translate="commment label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="logon" translate="commment label" sortOrder="10" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Feefo Logon</label>
                     <comment><![CDATA[This is what you provided Feefo during account setup and is usually your website domain name.]]></comment>
                 </field>
-                <field id="reviews_per_product" translate="comment label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reviews_per_product" translate="comment label" sortOrder="20" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Reviews Per Product</label>
                     <comment><![CDATA[Number of reviews to display per product.]]></comment>
                 </field>
-                <field id="template" translate="comment label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="template" translate="comment label" sortOrder="30" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Logo Template (Optional)</label>
                     <comment>Enter name of logo template.</comment>
                 </field>
-                <field id="service_score_url" translate="label" type="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="service_score_url" translate="label" type="label" sortOrder="40" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Service Score URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo\Score</frontend_model>
                     <comment><![CDATA[Enter Feefo logon above before using this URL.]]></comment>
                 </field>
-                <field id="product_reviews_url" translate="comment label" type="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_reviews_url" translate="comment label" type="label" sortOrder="50" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Product Reviews URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo\Reviews</frontend_model>
                     <comment><![CDATA[Enter Feefo logon above before using this URL.]]></comment>
                 </field>
             </group>
         </section>
-        <section id="connector_dynamic_content" translate="label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
+        <section id="connector_dynamic_content" translate="label" sortOrder="180" showInStore="0" showInWebsite="1"
+                 showInDefault="1">
             <class>separator-top</class>
             <label>Dynamic Content</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="external_dynamic_content_urls" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="external_dynamic_content_urls" translate="label" sortOrder="10" showInDefault="1"
+                   showInWebsite="1" showInStore="0">
                 <label>External Dynamic Url</label>
-                <field id="passcode_title" translate="label" sortOrder="05" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="passcode_title" translate="label" sortOrder="05" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Secure code for dynamic URLs</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="passcode" translate="label comment" type="text" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="passcode" translate="label comment" type="text" sortOrder="10" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Passcode</label>
                     <comment><![CDATA[Recommended: Set a passcode so that basket contents and coupon codes can only be viewed if the following passcode is sent with the request.]]></comment>
                 </field>
-                <field id="abandoned_cart_title" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="abandoned_cart_title" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Abandoned Carts</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="abandoned_cart_url" translate="label" sortOrder="30" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="abandoned_cart_url" translate="label" sortOrder="30" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Cart Content URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Abandoned</frontend_model>
                 </field>
-                <field id="review_title" translate="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="review_title" translate="label" sortOrder="40" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reviews</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="review_url" translate="label" sortOrder="50" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="review_url" translate="label" sortOrder="50" type="label" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Review Contents URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Review</frontend_model>
                 </field>
-                <field id="coupon_code_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_code_title" translate="label" sortOrder="60" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Coupon Codes</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="coupon_code_url" translate="label" sortOrder="70" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_code_url" translate="label" sortOrder="70" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Coupon Codes URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Couponcode</frontend_model>
                 </field>
-                <field id="order_dynamic_content_url" translate="label" sortOrder="80" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order_dynamic_content_url" translate="label" sortOrder="80" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Order Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="related_products_url" translate="label" sortOrder="90" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="related_products_url" translate="label" sortOrder="90" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Related Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Related</frontend_model>
                 </field>
-                <field id="upsell_products_url" translate="label" sortOrder="100" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="upsell_products_url" translate="label" sortOrder="100" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Upsell</frontend_model>
                 </field>
-                <field id="crosssell_products_url" translate="label" sortOrder="110" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="crosssell_products_url" translate="label" sortOrder="110" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Crosssell</frontend_model>
                 </field>
-                <field id="cart_recommendation_title" translate="label" sortOrder="120" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_recommendation_title" translate="label" sortOrder="120" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Cart Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="cart_related_products_url" translate="label" sortOrder="130" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_related_products_url" translate="label" sortOrder="130" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Related Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Related</frontend_model>
                 </field>
-                <field id="cart_upsell_products_url" translate="label" sortOrder="140" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_upsell_products_url" translate="label" sortOrder="140" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Upsell</frontend_model>
                 </field>
-                <field id="cart_crosssell" translate="label" sortOrder="150" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_crosssell" translate="label" sortOrder="150" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Crosssell</frontend_model>
                 </field>
-                <field id="product_recommendation_title" translate="label" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_recommendation_title" translate="label" sortOrder="160" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Product Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <!--<field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="1" showInWebsite="1" showInDefault="1">-->
+                <!--<field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="0" showInWebsite="1" showInDefault="1">-->
                     <!--<label>Best Sellers URL</label>-->
                     <!--<frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>-->
                 <!--</field>-->
-                <field id="most_viewed_url" translate="comment label" sortOrder="180" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="most_viewed_url" translate="comment label" sortOrder="180" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Most Viewed URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Mostviewed</frontend_model>
                     <comment><![CDATA[add category_id/@CATEGORY_ID@ at the end of url to filter most viewed by category]]></comment>
                 </field>
-                <field id="product_push_url" translate="label" sortOrder="190" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_push_url" translate="label" sortOrder="190" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Product Push URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Productpush</frontend_model>
                 </field>
-                <field id="product_recently_viewed_url" translate="label" type="label" sortOrder="195" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_recently_viewed_url" translate="label" type="label" sortOrder="195" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Recently Viewed</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Recentlyviewed</frontend_model>
                 </field>
-                <field id="wishlist_title" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_title" translate="label" sortOrder="200" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Wishlist</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="wishlist_product_url" translate="label" sortOrder="210" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_product_url" translate="label" sortOrder="210" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Wishlist Content</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Content</frontend_model>
                 </field>
-                <field id="wishlist_related" translate="label" sortOrder="220" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_related" translate="label" sortOrder="220" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Wishlist Related URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Related</frontend_model>
                 </field>
-                <field id="wishlist_upsell_url" translate="label" sortOrder="230" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_upsell_url" translate="label" sortOrder="230" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Wishlist Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Upsell</frontend_model>
                 </field>
-                <field id="wishlist_crosssell_url" translate="label" sortOrder="240" type="label" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_crosssell_url" translate="label" sortOrder="240" type="label" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Wishlist Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Crosssell</frontend_model>
                 </field>
             </group>
-            <group id="products" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="products" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Dynamic Products</label>
-                <field id="wishlist" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Wishlist</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="wishlist_display_type" translate="label" type="select" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_display_type" translate="label" type="select" sortOrder="20" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="review" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="review" translate="label" sortOrder="30" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Reviews</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="review_display_type" translate="label" type="select" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="review_display_type" translate="label" type="select" sortOrder="40" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="related" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="related" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Related Products</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="related_display_type" translate="label" sortOrder="60" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="related_display_type" translate="label" sortOrder="60" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="related_items_to_display" translate="label" type="select" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Items To Display</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
-                </field>
-                <field id="upsell" translate="label" sortOrder="80" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Upsell Products</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                </field>
-                <field id="upsell_display_type" translate="label" type="select" sortOrder="90" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Display Type</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
-                </field>
-                <field id="upsell_items_to_display" translate="label" type="select" sortOrder="100" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Items To Display</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
-                </field>
-                <field id="crosssell" translate="label" sortOrder="110" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Crosssell Products</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                </field>
-                <field id="crosssell_display_type" translate="label" type="select" sortOrder="120" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Display Type</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
-                </field>
-                <field id="crosssell_items_to_display" translate="label" type="select" sortOrder="130" showInStore="1"
+                <field id="related_items_to_display" translate="label" type="select" sortOrder="70" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>
-                <field id="most_viewed" translate="label" sortOrder="180" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Most Viewed</label>
+                <field id="upsell" translate="label" sortOrder="80" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Upsell Products</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="most_viewed_display_type" translate="label" type="select" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="upsell_display_type" translate="label" type="select" sortOrder="90" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="most_viewed_items_to_display" translate="label" type="select" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="upsell_items_to_display" translate="label" type="select" sortOrder="100" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>
-                <field id="most_viewed_time_period" translate="label" type="select" sortOrder="210" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Time Period</label>
-                    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
-                </field>
-                <field id="recently_viewed" translate="label" sortOrder="220" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Recently Viewed</label>
+                <field id="crosssell" translate="label" sortOrder="110" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Crosssell Products</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="recently_viewed_display_type" translate="label" type="select" sortOrder="230" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="crosssell_display_type" translate="label" type="select" sortOrder="120" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="recenlty_viewed_items_to_display" translate="label" type="select" sortOrder="240" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="crosssell_items_to_display" translate="label" type="select" sortOrder="130" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
+                    <label>Items To Display</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
+                </field>
+                <field id="most_viewed" translate="label" sortOrder="180" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Most Viewed</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="most_viewed_display_type" translate="label" type="select" sortOrder="190" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
+                    <label>Display Type</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
+                </field>
+                <field id="most_viewed_items_to_display" translate="label" type="select" sortOrder="200" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
+                    <label>Items To Display</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
+                </field>
+                <field id="most_viewed_time_period" translate="label" type="select" sortOrder="210" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
+                    <label>Time Period</label>
+                    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
+                </field>
+                <field id="recently_viewed" translate="label" sortOrder="220" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Recently Viewed</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="recently_viewed_display_type" translate="label" type="select" sortOrder="230" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
+                    <label>Display Type</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
+                </field>
+                <field id="recenlty_viewed_items_to_display" translate="label" type="select" sortOrder="240"
+                       showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>
             </group>
-            <group id="manual_product_push" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="manual_product_push" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Manual Product Push</label>
-                <field id="settings_title" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="settings_title" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Settings</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="display_type" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="display_type" translate="label" sortOrder="20" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="items_to_display" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="items_to_display" translate="label" sortOrder="30" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
                 </field>
-                <field id="product_push_title" translate="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_push_title" translate="label" sortOrder="40" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Products</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="products_push_items" translate="label" type="text" sortOrder="55" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="products_push_items" translate="label" type="text" sortOrder="55" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Products</label>
                     <comment><![CDATA[Comma Separated Product Id's]]></comment>
                 </field>
             </group>
-            <group id="fallback_products" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="fallback_products" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Fallback Products</label>
-                <field id="product_ids" translate="comment label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_ids" translate="comment label" sortOrder="20" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Products</label>
                     <comment><![CDATA[Comma Separated Product Id's]]></comment>
                 </field>
             </group>
         </section>
-        <section id="transactional_emails" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
+        <section id="transactional_emails" translate="label" sortOrder="190" showInStore="0" showInWebsite="1"
+                 showInDefault="1">
             <class>separator-top</class>
             <label>Transactional Emails</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="ddg_transactional" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="ddg_transactional" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>DDG Transactional</label>
-                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="send_mode" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="send_mode" translate="label" sortOrder="20" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Send Mode</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Mode</source_model>
                 </field>
-                <field id="host" translate="label" sortOrder="30" type="text" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="host" translate="label" sortOrder="30" type="text" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Host</label>
                 </field>
-                <field id="username" translate="label" sortOrder="40" type="text" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="username" translate="label" sortOrder="40" type="text" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Username</label>
                 </field>
-                <field id="password" translate="label" sortOrder="50" type="password" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="password" translate="label" sortOrder="50" type="password" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Password</label>
                 </field>
-                <field id="port" translate="label" sortOrder="60" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="port" translate="label" sortOrder="60" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Port</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Port</source_model>
                 </field>
-                <field id="debug" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="debug" translate="label" sortOrder="70" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Debug</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
-        <section id="connector_configuration" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
+        <section id="connector_configuration" translate="label" sortOrder="200" showInStore="0" showInWebsite="1"
+                 showInDefault="1">
             <class>separator-top</class>
             <label>Configuration</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="data_fields" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="data_fields" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Data Fields</label>
-                <field id="order_status" translate="comment label" sortOrder="10" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order_status" translate="comment label" sortOrder="10" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Data fields calculation with status</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
                     <comment><![CDATA[Select multiple statuses by pressing Ctrl button while selecting]]></comment>
                 </field>
-                <field id="brand_attribute" translate="comment label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="brand_attribute" translate="comment label" sortOrder="20" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Brand Attribute</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
                     <comment><![CDATA[Select your brand attribute. If default attribute 'manufacturer' exist than will be selected automatically.]]></comment>
                 </field>
             </group>
-            <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Tracking</label>
-                <field id="roi_enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="roi_enabled" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>ROI Tracking</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="page_enabled" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="page_enabled" translate="label" sortOrder="20" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Page Tracking</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
             </group>
-            <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Transactional Data</label>
-                <field id="order_statuses" translate="label" sortOrder="10" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order_statuses" translate="label" sortOrder="10" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Import Order With Status</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
                     <comment><![CDATA[Select multiple statuses by pressing Ctrl button while selecting]]></comment>
                 </field>
-                <field id="order_custom_attributes" translate="comment label" type="multiselect" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order_custom_attributes" translate="comment label" type="multiselect" sortOrder="20"
+                       showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Order Custom Attributes</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Attributes</source_model>
                     <comment><![CDATA[Select custom order attributes that you want to import with your order data. Select multiple by pressing Ctrl button while selecting.]]></comment>
                 </field>
-                <field id="order_product_attributes" translate="comment label" type="multiselect" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order_product_attributes" translate="comment label" type="multiselect" sortOrder="40"
+                       showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Include Products Attributes In Order Sync</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
                     <comment><![CDATA[Selected product attribute(s) will be exported]]></comment>
                 </field>
-                <field id="order_product_custom_options" translate="label" type="select" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order_product_custom_options" translate="label" type="select" sortOrder="50" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Include Product Custom Options In Order Sync</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="abandoned_carts" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="abandoned_carts" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Abandoned Carts</label>
-                <field id="email_capture" translate="comment label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="email_capture" translate="comment label" sortOrder="10" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Easy Email Capture (Checkout)</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enable this if you have a checkout process that allows the visitor to
                             enter their email address during the checkout, but it does not update quote table instantly.]]></comment>
                 </field>
-                <field id="easy_capture_newsletter" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="easy_capture_newsletter" translate="label" sortOrder="20" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Easy Email Capture (Newsletter)</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enable this if you would like to update update quote table with email entered in Newsletter Email Field.]]></comment>
                 </field>
-                <field id="cart_limit" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_limit" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Abandoned Cart Limit</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Cartlimit</source_model>
                     <comment><![CDATA[Do not send an abandoned cart email to a contact if they have received a previous abandoned cart email in previous x hours.]]></comment>
                 </field>
-                <field id="link_back_to_cart" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="link_back_to_cart" translate="label" sortOrder="40" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Link To Cart Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="link_text" translate="comment label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="link_text" translate="comment label" sortOrder="50" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Link Text</label>
                     <comment><![CDATA[Please provide the link text. If no text provided then default text "Take Me To My Basket" will be used.]]></comment>
                 </field>
-                <field id="cart_url" translate="comment label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="cart_url" translate="comment label" sortOrder="60" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Cart URL</label>
                     <comment><![CDATA[Please provide the cart url. If no url provided then default cart url checkout/cart will be used. Only enter the url after base url. For example for http://www.localhost.com/checkout/cart only enter checkout/cart]]></comment>
                 </field>
-                <field id="login_url" translate="comment label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="login_url" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Customer Login URL</label>
                     <comment><![CDATA[Please provide the customer login url. If no url provided then default login url customer/account/login will be used. Only enter the url after base url. For example for http://www.localhost.com/customer/account/login only enter customer/account/login]]></comment>
                 </field>
             </group>
-            <group id="dynamic_content_style" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="dynamic_content_style" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Dynamic Content Styling</label>
-                <field id="dynamic_styling" translate="comment label" sortOrder="10" type="textarea" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="dynamic_styling" translate="comment label" sortOrder="10" type="textarea" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Dynamic Styling</label>
                     <comment><![CDATA[Styling entered here will apply to all dynamic content areas pulled from Magento. Classes References Used : 'product-table', 'product-name', 'product-price', 'product-url', 'other-text']]></comment>
                 </field>
-                <field id="product_name_title" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_name_title" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Product Name</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="font_color" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="font_color" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Font Color</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
                 </field>
-                <field id="font_size" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="font_size" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Font Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
                 </field>
-                <field id="font_style" translate="label" sortOrder="50" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="font_style" translate="label" sortOrder="50" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Style</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
-                <field id="price_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="price_title" translate="label" sortOrder="60" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Product Price</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="price_color" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="price_color" translate="label" sortOrder="70" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Price Color</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
                 </field>
-                <field id="price_font_size" translate="label" sortOrder="80" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="price_font_size" translate="label" sortOrder="80" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
                 </field>
-                <field id="price_font_style" translate="label" sortOrder="90" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="price_font_style" translate="label" sortOrder="90" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Style</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
-                <field id="product_link_title" translate="label" sortOrder="100" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_link_title" translate="label" sortOrder="100" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Product Link</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="product_link_color" translate="label" sortOrder="110" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_link_color" translate="label" sortOrder="110" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Color</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
                 </field>
-                <field id="product_link_font_size" translate="label" sortOrder="120" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_link_font_size" translate="label" sortOrder="120" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
                 </field>
-                <field id="product_link_style" translate="label" sortOrder="130" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="product_link_style" translate="label" sortOrder="130" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
-                <field id="body_title" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="body_title" translate="label" sortOrder="140" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Applies To Whole Document</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="font" translate="label" sortOrder="150" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="font" translate="label" sortOrder="150" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Font</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontpicker</source_model>
                 </field>
-                <field id="color" translate="label" sortOrder="160" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="color" translate="label" sortOrder="160" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Backgroung Color</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
                 </field>
-                <field id="other_title" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="other_title" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Other Text (Will Apply To Other Remaning Text)</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="other_color" translate="label" sortOrder="180" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="other_color" translate="label" sortOrder="180" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Color</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
                 </field>
-                <field id="other_font_size" translate="label" sortOrder="190" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="other_font_size" translate="label" sortOrder="190" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
                 </field>
-                <field id="other_font_style" translate="label" sortOrder="200" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="other_font_style" translate="label" sortOrder="200" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Style</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
-                <field id="coupon_code_title" translate="label" sortOrder="210" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_code_title" translate="label" sortOrder="210" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Coupon Code</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="coupon_font_color" translate="label" sortOrder="220" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_font_color" translate="label" sortOrder="220" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Color</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
                 </field>
-                <field id="coupon_font_size" translate="label" sortOrder="230" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_font_size" translate="label" sortOrder="230" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontsize</source_model>
                 </field>
-                <field id="coupon_font_style" translate="label" sortOrder="240" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_font_style" translate="label" sortOrder="240" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font Style</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
-                <field id="coupon_font_picker" translate="label" sortOrder="250" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_font_picker" translate="label" sortOrder="250" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Font</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Fontpicker</source_model>
                 </field>
-                <field id="coupon_background_color" translate="label" sortOrder="260" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="coupon_background_color" translate="label" sortOrder="260" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Background Color</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
                 </field>
             </group>
-            <group id="dynamic_content" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="dynamic_content" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Dynamic Content</label>
-                <field id="link_text" translate="comment label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="link_text" translate="comment label" sortOrder="10" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Product Link Text</label>
                     <comment><![CDATA[Please provide the link text. If no text provided then default text will be used.]]></comment>
                 </field>
             </group>
-            <group id="admin" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="admin" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Admin</label>
-                <field id="disable_newsletter_success" translate="label" type="select" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="disable_newsletter_success" translate="label" type="select" sortOrder="10" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Disable Newsletter Success</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="disable_customer_success" translate="label" type="select" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="disable_customer_success" translate="label" type="select" sortOrder="20" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Disable Customer Success</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="catalog_sync" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="catalog_sync" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Catalog Sync Settings</label>
-                <field id="catalog_values" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="catalog_values" translate="label" sortOrder="10" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Catalog Values</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogvalues</source_model>
                 </field>
-                <field id="catalog_visibility" translate="label" sortOrder="20" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="catalog_visibility" translate="label" sortOrder="20" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Catalog Visibility</label>
                     <source_model>Magento\Catalog\Model\Product\Visibility</source_model>
                     <comment>Selected visibility type products will be exported.</comment>
                 </field>
-                <field id="catalog_type" translate="label" sortOrder="30" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="catalog_type" translate="label" sortOrder="30" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Catalog Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogtype</source_model>
                     <comment>Selected product type(s) will be exported.</comment>
                 </field>
             </group>
-            <group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Customer Addressbook Preference</label>
-                <field id="can_change" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="can_change" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Show Addressbooks to Customer</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="show_books" translate="comment label" sortOrder="20" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="show_books" translate="comment label" sortOrder="20" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Addressbooks to Show</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Addressbooks</source_model>
                     <comment><![CDATA[ Choose additional address books to show in addition to the Magento General Subscription list.]]></comment>
                     <depends><field id="show_addressbooks">1</field></depends>
                 </field>
-                <field id="can_show_fields" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="can_show_fields" translate="label" sortOrder="30" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Show Datafields To Customer?</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="fields_to_show" translate="comment label" sortOrder="40" type="multiselect" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="fields_to_show" translate="comment label" sortOrder="40" type="multiselect" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Datafields To Show</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Publicdatafields</source_model>
                     <comment><![CDATA[Only data fields with visibility public can be shown to customers. You can create more data fields within the Data Mapping section.]]></comment>
                     <depends><field id="show_datafields">1</field></depends>
                 </field>
             </group>
-            <group id="mailcheck" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="mailcheck" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>MailCheck Settings</label>
-                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
-        <section id="connector_developer_settings" translate="label" sortOrder="500" showInStore="1" showInWebsite="1" showInDefault="1">
+        <section id="connector_developer_settings" translate="label" sortOrder="500" showInStore="0" showInWebsite="1"
+                 showInDefault="1">
             <class>separator-top</class>
             <label>Developer</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="import_settings" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="import_settings" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Import Settings</label>
-                <field id="memory_limit" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="memory_limit" translate="label" sortOrder="10" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Sync Memory Limit</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="batch_size" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="batch_size" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Contact Sync Size</label>
                 </field>
-                <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>
             </group>
-            <group id="sync_settings" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="sync_settings" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Sync Settings</label>
-                <field id="admin_title" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="admin_title" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Admin Task</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="setup_data_fields" translate="comment label" type="button" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="setup_data_fields" translate="comment label" type="button" sortOrder="20" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Automap Datafields</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Automapdatafields</frontend_model>
                     <comment><![CDATA[Create Datafields In Connector And Map Them. Including Customer, Address And Sales Information.]]></comment>
                 </field>
-                <field id="delete_contact" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="delete_contact" translate="label" sortOrder="30" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Delete All Contact Ids</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Deletecontactids</frontend_model>
                 </field>
-                <field id="manual_sync_title" translate="label" sortOrder="60" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="manual_sync_title" translate="label" sortOrder="60" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Manually Run Sync</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="contact_sync" translate="label" sortOrder="70" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="contact_sync" translate="label" sortOrder="70" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Contact Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Contactsync</frontend_model>
                 </field>
-                <field id="subscriber_sync" translate="label" sortOrder="80" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="subscriber_sync" translate="label" sortOrder="80" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Subscriber Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Subscribersync</frontend_model>
                 </field>
-                <field id="oerder_sync" translate="label" sortOrder="90" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="oerder_sync" translate="label" sortOrder="90" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Order Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Ordersync</frontend_model>
                 </field>
-                <field id="wishlist_sync" translate="label" sortOrder="100" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_sync" translate="label" sortOrder="100" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Wishlist Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Wishlistsync</frontend_model>
                 </field>
-                <field id="review_sync" translate="label" sortOrder="110" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="review_sync" translate="label" sortOrder="110" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Review Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Reviewsync</frontend_model>
                 </field>
-                <field id="catalog_sync" translate="label" sortOrder="130" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="catalog_sync" translate="label" sortOrder="130" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Catalog Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Catalogsync</frontend_model>
                 </field>
@@ -1158,114 +1412,142 @@
                     <label>Importer Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Importersync</frontend_model>
                 </field>
-                <field id="reset_sync_title" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reset_sync_title" translate="label" sortOrder="140" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reset Sync Options</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="reset_customers" translate="label" sortOrder="150" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reset_customers" translate="label" sortOrder="150" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reset Customers</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetcustomers</frontend_model>
                 </field>
-                <field id="reset_subscribers" translate="label" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reset_subscribers" translate="label" sortOrder="160" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reset Subscribers</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetsubscribers</frontend_model>
                 </field>
-                <field id="reset_orders" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reset_orders" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reset Order Data</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetorders</frontend_model>
                 </field>
-                <field id="reset_reviews" translate="label" sortOrder="190" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reset_reviews" translate="label" sortOrder="190" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reset Review Data</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetreviews</frontend_model>
                 </field>
-                <field id="reset_wishlists" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reset_wishlists" translate="label" sortOrder="200" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reset Wishlist Data</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetwishlists</frontend_model>
                 </field>
-                <field id="reset_catalog" translate="label" sortOrder="210" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reset_catalog" translate="label" sortOrder="210" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Reset Catalog Data</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetcatalog</frontend_model>
                 </field>
             </group>
-            <group id="debug" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="debug" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Debug</label>
-                <field id="debug_enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="debug_enabled" translate="label" sortOrder="10" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Debug Mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="api_log_time" translate="comment label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="api_log_time" translate="comment label" sortOrder="20" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Debug Api Calls Time</label>
                     <comment>Set the number in seconds that api calls greater will be logged.</comment>
                 </field>
             </group>
-            <group id="feed_configuration" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="feed_configuration" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Feed Configuration</label>
-                <field id="feed_enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="feed_enabled" translate="label" sortOrder="10" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="feed_url" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="feed_url" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Feed URL</label>
                 </field>
-                <field id="feed_secure_url" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="feed_secure_url" translate="label" sortOrder="30" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Use HTTPS to get the feed. </label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="frequency" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="frequency" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Update Frequency</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Frequency</source_model>
                 </field>
-                <field id="feed_last_update" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="feed_last_update" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Last Update</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Notification</frontend_model>
                 </field>
             </group>
-            <group id="oauth" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="oauth" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>OAUTH Credentials</label>
-                <field id="client_id" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="client_id" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Client Id</label>
                 </field>
-                <field id="client_key" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="client_key" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Client Secret Key</label>
                 </field>
-                <field id="oauth_connect" translate="label" sortOrder="30" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="oauth_connect" translate="label" sortOrder="30" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Connection</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Connect</frontend_model>
                 </field>
-                <field id="custom_domain" translate="comment label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="custom_domain" translate="comment label" sortOrder="40" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Custom OAUTH domain.</label>
                     <comment><![CDATA[Enter the custom domain for authorization. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
                 </field>
-                <field id="custom_authorization" translate="label" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="custom_authorization" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Custom Authorization URI</label>
                     <comment><![CDATA[Enter the custom authorization url. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
                 </field>
             </group>
-            <group id="ip_restriction" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="ip_restriction" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Dynamic Pages IP Restriction</label>
-                <field id="ip_addresses" translate="label" type="textarea" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="ip_addresses" translate="label" type="textarea" sortOrder="10" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Dynamic Pages IP Restriction</label>
                 </field>
             </group>
-            <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1"
+                   showInStore="0">
                 <label>Manage Cron Timings</label>
-                <field id="importer" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="importer" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Importer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsone</source_model>
                 </field>
-                <field id="contact" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="contact" translate="label" sortOrder="20" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Contact</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
-                <field id="order" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="order" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
-                <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
                     <label>catalog</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
-                <field id="review_wishlist" translate="label" sortOrder="50" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="review_wishlist" translate="label" sortOrder="50" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
                     <label>Review And Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>

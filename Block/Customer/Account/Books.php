@@ -28,10 +28,10 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Books constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data               $helper
-     * @param \Magento\Customer\Model\Session                  $customerSession
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Customer\Model\Session $customerSession
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param array                                            $data
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -77,7 +77,7 @@ class Books extends \Magento\Framework\View\Element\Template
 
     /**
      * * Get api client.
-     * 
+     *
      * @return bool|mixed|object
      */
     protected function _getApiClient()

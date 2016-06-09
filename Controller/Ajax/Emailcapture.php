@@ -16,8 +16,8 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     /**
      * Emailcapture constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data    $data
-     * @param \Magento\Checkout\Model\Session       $session
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Checkout\Model\Session $session
      * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
@@ -41,10 +41,10 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
             if ($quote->hasItems()) {
                 try {
                     $quote->setCustomerEmail($email)->save();
-                    $this->_helper->log('ajax emailCapture email: '.$email);
+                    $this->_helper->log('ajax emailCapture email: ' . $email);
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string) $e, []);
-                    $this->_helper->log('ajax emailCapture fail for email: '.$email);
+                    $this->_helper->debug((string)$e, []);
+                    $this->_helper->log('ajax emailCapture fail for email: ' . $email);
                 }
             }
         }

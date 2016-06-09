@@ -96,7 +96,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * Save api endpoint into config.
-     * 
+     *
      * @param string $apiEndpoint
      */
     protected function _saveApiEndpoint($apiEndpoint)

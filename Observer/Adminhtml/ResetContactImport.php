@@ -62,8 +62,8 @@ class ResetContactImport implements \Magento\Framework\Event\ObserverInterface
 
         $updated = $contactModel->resetAllContacts();
 
-        $this->_helper->log('-- Imported contacts: '.$numImported
-            .' reseted :  '.$updated.' --');
+        $this->_helper->log('-- Imported contacts: ' . $numImported
+            . ' reseted :  ' . $updated . ' --');
 
         return $this;
     }

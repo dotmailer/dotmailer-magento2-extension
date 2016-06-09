@@ -103,10 +103,10 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
         $optionExtraAttr = [];
-        $optionExtraAttr['option_'.$this->_getStatusRenderer()
+        $optionExtraAttr['option_' . $this->_getStatusRenderer()
             ->calcOptionHash($row->getData('status'))]
                          = 'selected="selected"';
-        $optionExtraAttr['option_'.$this->_getAutomationRenderer()
+        $optionExtraAttr['option_' . $this->_getAutomationRenderer()
             ->calcOptionHash($row->getData('automation'))]
                          = 'selected="selected"';
         $row->setData(
@@ -154,7 +154,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      */
     public function _toHtml()
     {
-        return '<input type="hidden" id="'.$this->getElement()->getHtmlId()
-        .'"/>'.parent::_toHtml();
+        return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
+        . '"/>' . parent::_toHtml();
     }
 }

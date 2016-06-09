@@ -128,8 +128,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $this->helper->log(
-            'DYNAMIC WISHLIST PRODUCTS : limit '.$limit.' products : '
-            .$numItems.', max per child : '.$maxPerChild
+            'DYNAMIC WISHLIST PRODUCTS : limit ' . $limit . ' products : '
+            . $numItems . ', max per child : ' . $maxPerChild
         );
 
         foreach ($items as $item) {
@@ -182,7 +182,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $this->helper->log(
-            'wishlist - loaded product to display '.count($productsToDisplay)
+            'wishlist - loaded product to display ' . count($productsToDisplay)
         );
 
         return $productsToDisplay;

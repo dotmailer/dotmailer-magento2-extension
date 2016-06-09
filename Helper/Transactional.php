@@ -19,7 +19,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Transactional constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context      $context
+     * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -105,7 +105,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get config values for transport.
-     * 
+     *
      * @return array
      */
     public function getTransportConfig()
@@ -119,7 +119,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
         ];
 
         if ($this->isDebugEnabled()) {
-            $this->_logger->debug('Mail transport config : '.implode(',', $config));
+            $this->_logger->debug('Mail transport config : ' . implode(',', $config));
         }
 
         return $config;

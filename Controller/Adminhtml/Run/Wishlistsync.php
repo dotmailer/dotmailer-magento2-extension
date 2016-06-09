@@ -17,7 +17,7 @@ class Wishlistsync extends \Magento\Backend\App\AbstractAction
      * Wishlistsync constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Sync\WishlistFactory $wishlistFactory
-     * @param \Magento\Backend\App\Action\Context               $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\WishlistFactory $wishlistFactory,

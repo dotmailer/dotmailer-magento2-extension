@@ -9,7 +9,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Colorpicker constructor.
      *
-     * @param \Magento\Backend\Block\Template\Context   $context
+     * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Data\Form\Element\Text $text
      */
     public function __construct(
@@ -57,7 +57,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
     {
         return '<script type="text/javascript">
 			require([\'jquery\', \'domReady!\'], function($){
-    			$(\''.'#'.$htmlId.'\').colpick({
+    			$(\'' . '#' . $htmlId . '\').colpick({
 		        onChange:function(hsb,hex,rgb,el)
 		        {
 		            $(el).val(\'#\'+hex);

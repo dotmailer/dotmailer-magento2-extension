@@ -72,12 +72,12 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 
         //check for any quote for this email, don't want to render further
         if (!$quoteModel->getId()) {
-            $this->helper->log('no quote found for '.$quoteId);
+            $this->helper->log('no quote found for ' . $quoteId);
 
             return false;
         }
         if (!$quoteModel->getIsActive()) {
-            $this->helper->log('Cart is not active : '.$quoteId);
+            $this->helper->log('Cart is not active : ' . $quoteId);
 
             return false;
         }
@@ -157,7 +157,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function canShowUrl()
     {
-        return (boolean) $this->_quote->getStore()->getWebsite()->getConfig(
+        return (boolean)$this->_quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED
         );
     }

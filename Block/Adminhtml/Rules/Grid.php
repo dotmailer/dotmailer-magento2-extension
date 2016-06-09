@@ -20,11 +20,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Grid constructor.
      *
-     * @param \Magento\Backend\Block\Template\Context                       $context
-     * @param \Magento\Backend\Helper\Data                                  $backendHelper
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $gridFactory
-     * @param \Magento\Framework\ObjectManagerInterface                     $objectManagerInterface
-     * @param array                                                         $data
+     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+     * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
@@ -71,61 +71,61 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     {
         $this->addColumn(
             'rule_id', [
-                'header' => __('ID'),
-                'align' => 'right',
-                'width' => '50px',
-                'index' => 'id',
+            'header' => __('ID'),
+            'align' => 'right',
+            'width' => '50px',
+            'index' => 'id',
         ]);
 
         $this->addColumn(
             'name', [
-                'header' => __('Rule Name'),
-                'align' => 'left',
-                'width' => '150px',
-                'index' => 'name',
+            'header' => __('Rule Name'),
+            'align' => 'left',
+            'width' => '150px',
+            'index' => 'name',
         ]);
 
         $this->addColumn(
             'type', [
-                'header' => __('Rule Type'),
-                'align' => 'left',
-                'width' => '150px',
-                'index' => 'type',
-                'type' => 'options',
-                'options' => [
-                    1 => 'Abandoned Cart Exclusion Rule',
-                    2 => 'Review Email Exclusion Rule',
-                ],
+            'header' => __('Rule Type'),
+            'align' => 'left',
+            'width' => '150px',
+            'index' => 'type',
+            'type' => 'options',
+            'options' => [
+                1 => 'Abandoned Cart Exclusion Rule',
+                2 => 'Review Email Exclusion Rule',
+            ],
         ]);
         $this->addColumn(
             'status', [
-                'header' => __('Status'),
-                'align' => 'left',
-                'width' => '80px',
-                'index' => 'status',
-                'type' => 'options',
-                'options' => [
-                    1 => 'Active',
-                    0 => 'Inactive',
-                ],
+            'header' => __('Status'),
+            'align' => 'left',
+            'width' => '80px',
+            'index' => 'status',
+            'type' => 'options',
+            'options' => [
+                1 => 'Active',
+                0 => 'Inactive',
+            ],
         ]);
 
         $this->addColumn(
             'created_at', [
-                'header' => __('Created At'),
-                'align' => 'left',
-                'width' => '120px',
-                'type' => 'datetime',
-                'index' => 'created_at',
+            'header' => __('Created At'),
+            'align' => 'left',
+            'width' => '120px',
+            'type' => 'datetime',
+            'index' => 'created_at',
         ]);
 
         $this->addColumn(
             'updated_at', [
-                'header' => __('Updated At'),
-                'align' => 'left',
-                'width' => '120px',
-                'type' => 'datetime',
-                'index' => 'updated_at',
+            'header' => __('Updated At'),
+            'align' => 'left',
+            'width' => '120px',
+            'type' => 'datetime',
+            'index' => 'updated_at',
         ]);
 
         return parent::_prepareColumns();

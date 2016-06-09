@@ -84,7 +84,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Unsubscribe a contact.
-     * 
+     *
      * @param $data
      *
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -92,7 +92,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function unsubscribe($data)
     {
         $write = $this->getConnection();
-        $emails = '"'.implode('","', $data).'"';
+        $emails = '"' . implode('","', $data) . '"';
 
         try {
             //un-subscribe from the email contact table.

@@ -25,9 +25,9 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * Getbasket constructor.
      *
      * @param \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory
-     * @param \Magento\Quote\Model\QuoteFactory      $quoteFactory
+     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\Customer\Model\SessionFactory $sessionFactory
-     * @param \Magento\Framework\App\Action\Context  $context
+     * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
         \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,

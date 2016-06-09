@@ -32,13 +32,13 @@ class Callback extends \Magento\Framework\App\Action\Action
     /**
      * Callback constructor.
      *
-     * @param \Magento\Backend\Helper\Data                       $backendData
-     * @param \Dotdigitalgroup\Email\Helper\Config               $config
+     * @param \Magento\Backend\Helper\Data $backendData
+     * @param \Dotdigitalgroup\Email\Helper\Config $config
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-     * @param \Magento\Store\Model\StoreManager                  $storeManager
-     * @param \Magento\User\Model\UserFactory                    $adminUser
-     * @param \Magento\Framework\App\Action\Context              $context
-     * @param \Dotdigitalgroup\Email\Helper\Data                 $helper
+     * @param \Magento\Store\Model\StoreManager $storeManager
+     * @param \Magento\User\Model\UserFactory $adminUser
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      */
     public function __construct(
         \Magento\Backend\Helper\Data $backendData,
@@ -80,11 +80,11 @@ class Callback extends \Magento\Framework\App\Action\Action
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true);
             $redirectUri .= 'connector/email/callback';
 
-            $data = 'client_id='.$clientId.
-                '&client_secret='.$clientSecret.
-                '&redirect_uri='.$redirectUri.
-                '&grant_type=authorization_code'.
-                '&code='.$code;
+            $data = 'client_id=' . $clientId .
+                '&client_secret=' . $clientSecret .
+                '&redirect_uri=' . $redirectUri .
+                '&grant_type=authorization_code' .
+                '&code=' . $code;
 
             //callback url
             $url = $this->_config->getTokenUrl();
@@ -103,10 +103,10 @@ class Callback extends \Magento\Framework\App\Action\Action
             $response = json_decode(curl_exec($ch));
 
             if ($response === false) {
-                $this->_helper->error('Error Number: '.curl_errno($ch), []);
+                $this->_helper->error('Error Number: ' . curl_errno($ch), []);
             }
             if (isset($response->error)) {
-                $this->_helper->error('OAUTH failed '.$response->error, []);
+                $this->_helper->error('OAUTH failed ' . $response->error, []);
             } elseif (isset($response->refresh_token)) {
                 //save the refresh token to the admin user
                 $adminUser->setRefreshToken($response->refresh_token)

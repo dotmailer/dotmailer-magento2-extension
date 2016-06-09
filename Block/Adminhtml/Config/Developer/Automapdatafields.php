@@ -31,13 +31,13 @@ class Automapdatafields extends \Magento\Config\Block\System\Config\Form\Field
         $website = $this->getRequest()->getParam('website', 0);
         $url
                  = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/automapdatafields/website'
-            .$website);
+            . $website);
 
         return $this->getLayout()
             ->createBlock('Magento\Backend\Block\Widget\Button')
             ->setType('button')
             ->setLabel(__($this->_buttonLabel))
-            ->setOnClick("window.location.href='".$url."'")
+            ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
     }
 }

@@ -36,7 +36,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * Execute method.
-     * 
+     *
      * @param \Magento\Framework\Event\Observer $observer
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -52,7 +52,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
     }
 

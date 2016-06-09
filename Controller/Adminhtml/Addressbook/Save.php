@@ -16,7 +16,7 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * Save constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data  $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
@@ -43,7 +43,7 @@ class Save extends \Magento\Backend\App\AbstractAction
             if (isset($response->message)) {
                 $this->messageManager->addError($response->message);
             } else {
-                $this->messageManager->addSuccess('Address book : '.$addressBookName.' created.');
+                $this->messageManager->addSuccess('Address book : ' . $addressBookName . ' created.');
             }
         }
     }

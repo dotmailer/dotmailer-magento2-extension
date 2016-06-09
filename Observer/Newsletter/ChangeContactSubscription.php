@@ -38,7 +38,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      * @param \Magento\Framework\Registry                    $registry
      * @param \Dotdigitalgroup\Email\Helper\Data             $data
      * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory   $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -119,11 +119,11 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             }
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
-            $emailReg = $this->_registry->registry($email.'_subscriber_save');
+            $emailReg = $this->_registry->registry($email . '_subscriber_save');
             if ($emailReg) {
                 return $this;
             }
-            $this->_registry->register($email.'_subscriber_save', $email);
+            $this->_registry->register($email . '_subscriber_save', $email);
             //add subscriber to automation
             $this->_addSubscriberToAutomation($email, $subscriber, $websiteId);
 
@@ -133,7 +133,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             //update contact
             $contactEmail->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;
@@ -141,7 +141,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 
     /**
      * Register subscriber to automation.
-     * 
+     *
      * @param $email
      * @param $subscriber
      * @param $websiteId

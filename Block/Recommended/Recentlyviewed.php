@@ -12,10 +12,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    public $objectManager;
+    protected $_viewed;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
@@ -32,14 +29,14 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Recentlyviewed constructor.
      *
-     * @param \Magento\Catalog\Model\ProductFactory     $productFactory
-     * @param \Magento\Customer\Model\SessionFactory    $sessionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data        $helper
-     * @param \Magento\Framework\Pricing\Helper\Data    $priceHelper
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Customer\Model\SessionFactory $sessionFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Magento\Catalog\Block\Product\Context    $context
-     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
-     * @param array                                     $data
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Magento\Reports\Block\Product\Viewed $viewed
+     * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Model\ProductFactory $productFactory,
@@ -48,7 +45,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+        \Magento\Reports\Block\Product\Viewed $viewed,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -56,8 +53,10 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->helper = $helper;
         $this->recommnededHelper = $recommended;
         $this->priceHelper = $priceHelper;
+        $this->storeManager = $this->_storeManager;
         $this->_productFactory = $productFactory;
-        $this->objectManager = $objectManagerInterface;
+        $this->_viewed = $viewed;
+
     }
 
     /**
@@ -76,17 +75,15 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         //login customer to receive the recent products
         $session = $this->_sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
-        $collection = $this->objectManager->create(
-            'Magento\Reports\Block\Product\Viewed'
-        );
+        $collection = $this->_viewed;
         $items = $collection->getItemsCollection()
             ->setPageSize($limit);
 
         $this->helper->log(
-            'Recentlyviewed customer  : '.$customerId.', mode '.$mode
-            .', limit : '.$limit.
-            ', items found : '.count($items).', is customer logged in : '
-            .$isLoggedIn.', products :'.count($productsToDisplay)
+            'Recentlyviewed customer  : ' . $customerId . ', mode ' . $mode
+            . ', limit : ' . $limit .
+            ', items found : ' . count($items) . ', is customer logged in : '
+            . $isLoggedIn . ', products :' . count($productsToDisplay)
         );
         foreach ($items as $product) {
             $product = $this->_productFactory->create()

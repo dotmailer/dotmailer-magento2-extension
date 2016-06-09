@@ -56,14 +56,14 @@ class Order
     /**
      * Order constructor.
      *
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory       $quoteCollection
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory                        $rulesFactory
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory       $orderCollection
+     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
-     * @param \Dotdigitalgroup\Email\Model\CampaignFactory                     $campaignFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
-     * @param \Magento\Framework\Stdlib\Datetime                               $datetime
-     * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Stdlib\Datetime $datetime
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
@@ -113,8 +113,8 @@ class Order
         if ($campaignId) {
             foreach ($collection as $order) {
                 $this->_helper->log(
-                    '-- Order Review: '.$order->getIncrementId()
-                    .' Campaign Id: '.$campaignId
+                    '-- Order Review: ' . $order->getIncrementId()
+                    . ' Campaign Id: ' . $campaignId
                 );
 
                 try {
@@ -133,7 +133,7 @@ class Order
 
                     $emailCampaign->save();
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string) $e, []);
+                    $this->_helper->debug((string)$e, []);
                 }
             }
         }

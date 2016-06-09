@@ -36,7 +36,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * RemoveProduct constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                    $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory                     $catalogFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                              $data
@@ -61,7 +61,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * Execute method.
-     * 
+     *
      * @param \Magento\Framework\Event\Observer $observer
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -78,7 +78,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                 $item->delete();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
     }
 
@@ -138,7 +138,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                     //register in queue with importer
                     $this->_importerFactory->create()
                         ->registerQueue(
-                            'Catalog_'.$websiteCode.'_'.$storeCode,
+                            'Catalog_' . $websiteCode . '_' . $storeCode,
                             [$key],
                             \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                             $store->getWebsite()->getId()

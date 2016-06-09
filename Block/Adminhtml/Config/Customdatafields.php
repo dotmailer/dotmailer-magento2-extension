@@ -118,11 +118,11 @@ class Customdatafields extends
     {
         $options = [];
 
-        $options['option_'.$this->_getAttributeRenderer()->calcOptionHash(
+        $options['option_' . $this->_getAttributeRenderer()->calcOptionHash(
             $row->getData('attribute')
         )]
             = 'selected="selected"';
-        $options['option_'.$this->_getDatafieldRenderer()->calcOptionHash(
+        $options['option_' . $this->_getDatafieldRenderer()->calcOptionHash(
             $row->getData('datafield')
         )]
             = 'selected="selected"';
@@ -169,7 +169,7 @@ class Customdatafields extends
      */
     public function _toHtml()
     {
-        return '<input type="hidden" id="'.$this->getElement()->getHtmlId()
-        .'"/>'.parent::_toHtml();
+        return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
+        . '"/>' . parent::_toHtml();
     }
 }

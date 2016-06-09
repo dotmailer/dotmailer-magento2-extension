@@ -58,8 +58,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     protected $importStatuses
         = [
-            'RejectedByWatchdog', 'InvalidFileFormat', 'Unknown',
-            'Failed', 'ExceedsAllowedContactLimit', 'NotAvailableInThisVersion',
+            'RejectedByWatchdog',
+            'InvalidFileFormat',
+            'Unknown',
+            'Failed',
+            'ExceedsAllowedContactLimit',
+            'NotAvailableInThisVersion',
         ];
 
     /**
@@ -106,18 +110,18 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Importer constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data                           $helper
-     * @param ResourceModel\Contact                                             $contact
-     * @param \Magento\Framework\Model\Context                             $context
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Framework\App\Filesystem\DirectoryList              $directoryList
-     * @param \Magento\Framework\ObjectManagerInterface                    $objectManager
-     * @param \Magento\Framework\Filesystem\Io\File                        $file
-     * @param \Magento\Framework\Stdlib\DateTime                           $dateTime
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param ResourceModel\Contact $contact
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Framework\Filesystem\Io\File $file
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
-     * @param \Dotdigitalgroup\Email\Helper\File                           $fileHelper
-     * @param array                                                        $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -173,13 +177,17 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param string $importType
      * @param        $importData
      * @param string $importMode
-     * @param int    $websiteId
-     * @param bool   $file
+     * @param int $websiteId
+     * @param bool $file
      *
      * @return bool
      */
-    public function registerQueue($importType, $importData, $importMode,
-        $websiteId, $file = false
+    public function registerQueue(
+        $importType,
+        $importData,
+        $importMode,
+        $websiteId,
+        $file = false
     ) {
         try {
             if (!empty($importData)) {
@@ -198,7 +206,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
             return true;
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
 
         return false;
@@ -456,7 +464,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             $item->setImportStatus(self::FAILED)
                                 ->setMessage(
                                     'Import failed with status '
-                                    .$response->status
+                                    . $response->status
                                 )
                                 ->save();
                         } else {
@@ -507,7 +515,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         if ($response) {
             $data = $this->_removeUtf8Bom($response);
             $fileName = $this->_directoryList->getPath('var')
-                .DIRECTORY_SEPARATOR.'DmTempCsvFromApi.csv';
+                . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
             $this->_file->open();
             $check = $this->_file->write($fileName, $data);
 
@@ -579,7 +587,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @param string $importType
      * @param string $importMode
-     * @param int    $limit
+     * @param int $limit
      *
      * @return \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
      */
@@ -591,7 +599,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             $condition = [];
             foreach ($importType as $type) {
                 if ($type == 'Catalog') {
-                    $condition[] = ['like' => $type.'%'];
+                    $condition[] = ['like' => $type . '%'];
                 } else {
                     $condition[] = ['eq' => $type];
                 }

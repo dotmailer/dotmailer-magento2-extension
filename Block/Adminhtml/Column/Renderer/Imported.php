@@ -11,10 +11,10 @@ class Imported extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\Abstra
      */
     public function render(\Magento\Framework\DataObject $row)
     {
-        return '<div '.(($this->_getValue($row) == '1'
+        return '<div ' . (($this->_getValue($row) == '1'
             || $this->_getValue($row) == true)
             ? 'class="dotmailer-success"  '
             :
-            'class="dotmailer-error"  ').'>  </div>';
+            'class="dotmailer-error"  ') . '>  </div>';
     }
 }

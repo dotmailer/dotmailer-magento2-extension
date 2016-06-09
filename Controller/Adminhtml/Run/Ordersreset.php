@@ -17,7 +17,7 @@ class Ordersreset extends \Magento\Backend\App\AbstractAction
      * Ordersreset constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderFactory
-     * @param \Magento\Backend\App\Action\Context                $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderFactory,

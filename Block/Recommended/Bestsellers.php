@@ -103,8 +103,8 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
                     ->where('ccpi.category_id =?', $cat_id);
             } else {
                 $this->helper->log(
-                    'Best seller. Category id '.$cat_id
-                    .' is invalid. It does not exist.'
+                    'Best seller. Category id ' . $cat_id
+                    . ' is invalid. It does not exist.'
                 );
             }
         }
@@ -123,8 +123,8 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
                     ->where('ccpi.category_id =?', $category->getId());
             } else {
                 $this->helper->log(
-                    'Best seller. Category name '.$cat_name
-                    .' is invalid. It does not exist.'
+                    'Best seller. Category name ' . $cat_name
+                    . ' is invalid. It does not exist.'
                 );
             }
         }

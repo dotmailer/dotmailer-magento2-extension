@@ -57,63 +57,63 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     {
         $this->addColumn(
             'schedule_id', [
-                'header' => __('ID'),
-                'width' => '20px',
-                'index' => 'schedule_id',
-                'type' => 'number',
+            'header' => __('ID'),
+            'width' => '20px',
+            'index' => 'schedule_id',
+            'type' => 'number',
                 'truncate' => 50,
-                'escape' => true,
+            'escape' => true,
         ])->addColumn(
             'job_code', [
                 'header' => __('Job Code'),
-                'align' => 'left',
-                'width' => '50px',
-                'index' => 'job_code',
-                'type' => 'string',
-                'escape' => true,
+            'align' => 'left',
+            'width' => '50px',
+            'index' => 'job_code',
+            'type' => 'string',
+            'escape' => true,
         ])->addColumn(
             'status', [
                 'header' => __('Status'),
-                'align' => 'left',
-                'width' => '50px',
-                'index' => 'status',
-                'type' => 'string',
-                'escape' => true,
+            'align' => 'left',
+            'width' => '50px',
+            'index' => 'status',
+            'type' => 'string',
+            'escape' => true,
         ])->addColumn(
             'messages', [
                 'header' => __('Message'),
-                'align' => 'center',
-                'index' => 'messages',
-                'type' => 'text',
-                'escape' => true,
+            'align' => 'center',
+            'index' => 'messages',
+            'type' => 'text',
+            'escape' => true,
         ])->addColumn(
             'created_at', [
                 'header' => __('Created At'),
-                'align' => 'left',
-                'index' => 'created_at',
-                'type' => 'datetime',
-                'escape' => true,
+            'align' => 'left',
+            'index' => 'created_at',
+            'type' => 'datetime',
+            'escape' => true,
         ])->addColumn(
             'scheduled_at', [
                 'header' => __('Scheduled At'),
-                'align' => 'left',
-                'index' => 'scheduled_at',
-                'type' => 'datetime',
-                'escape' => true,
+            'align' => 'left',
+            'index' => 'scheduled_at',
+            'type' => 'datetime',
+            'escape' => true,
         ])->addColumn(
             'executed_at', [
                 'header' => __('Executed At'),
-                'align' => 'left',
-                'index' => 'executed_at',
-                'type' => 'datetime',
-                'escape' => true,
+            'align' => 'left',
+            'index' => 'executed_at',
+            'type' => 'datetime',
+            'escape' => true,
         ])->addColumn(
             'finished_at', [
                 'header' => __('Finished At'),
-                'align' => 'left',
-                'index' => 'finished_at',
-                'type' => 'datetime',
-                'escape' => true,
+            'align' => 'left',
+            'index' => 'finished_at',
+            'type' => 'datetime',
+            'escape' => true,
         ]);
 
         return parent::_prepareColumns();

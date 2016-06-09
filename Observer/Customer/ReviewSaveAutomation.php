@@ -111,7 +111,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
                 ->setStoreId($review->getStoreId())
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
     }
 }

@@ -22,7 +22,7 @@ class Productattributes
 
     /**
      * Get options.
-     * 
+     *
      * @return array
      */
     public function toOptionArray()

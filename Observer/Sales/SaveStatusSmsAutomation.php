@@ -127,7 +127,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                             $automation = $this->_automationFactory->create();
                             $automation->setEmail($customerEmail)
                                 ->setAutomationType('order_automation_'
-                                    .$status)
+                                    . $status)
                                 ->setEnrolmentStatus(
                                     \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
                                 ->setTypeId($order->getId())

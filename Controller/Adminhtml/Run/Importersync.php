@@ -17,7 +17,7 @@ class Importersync extends \Magento\Backend\App\AbstractAction
      * Importersync constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Backend\App\Action\Context          $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,

@@ -56,11 +56,11 @@ class Subscriber
      * Subscriber constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Newsletter\Model\SubscriberFactory  $subscriberFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory  $contactFactory
-     * @param \Dotdigitalgroup\Email\Helper\File           $file
-     * @param \Dotdigitalgroup\Email\Helper\Data           $helper
-     * @param \Magento\Store\Model\StoreManagerInterface   $storeManager
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -94,7 +94,7 @@ class Subscriber
             //if subscriber is enabled and mapped
             $apiEnabled = $this->_helper->isEnabled($website->getid());
             $subscriberEnaled
-                        = $this->_helper->isSubscriberSyncEnabled($website->getid());
+                = $this->_helper->isSubscriberSyncEnabled($website->getid());
             $addressBook
                         = $this->_helper->getSubscriberAddressBook($website->getId());
             //enabled and mapped
@@ -108,8 +108,8 @@ class Subscriber
                 }
                 // show message for any number of customers
                 if ($numUpdated) {
-                    $response['message'] .= '</br>'.$website->getName()
-                        .', updated subscribers = '.$numUpdated;
+                    $response['message'] .= '</br>' . $website->getName()
+                        . ', updated subscribers = ' . $numUpdated;
                 }
             }
         }
@@ -136,7 +136,7 @@ class Subscriber
 
         if ($subscribers->getSize()) {
             $subscribersFilename = strtolower($website->getCode()
-                .'_subscribers_'.date('d_m_Y_Hi').'.csv');
+                . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
             //get mapped storename
             $subscriberStoreName = $this->_helper->getMappedStoreName($website);
             //file headers
@@ -162,7 +162,7 @@ class Subscriber
                     throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
                 }
             }
-            $this->_helper->log('Subscriber filename: '.$subscribersFilename);
+            $this->_helper->log('Subscriber filename: ' . $subscribersFilename);
             //register in queue with importer
             $this->_importerFactory->create()
                 ->registerQueue(

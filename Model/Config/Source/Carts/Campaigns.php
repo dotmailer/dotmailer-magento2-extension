@@ -16,7 +16,7 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
     /**
      * Campaigns constructor.
      *
-     * @param \Magento\Framework\Registry        $registry
+     * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(

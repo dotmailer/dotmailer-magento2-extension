@@ -8,22 +8,15 @@ class Test
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $_helper;
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $_objectManager;
 
     /**
      * Test constructor.
      *
-     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
-     * @param \Dotdigitalgroup\Email\Helper\Data        $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_objectManager = $objectManagerInterface;
         $this->_helper = $data;
     }
 
@@ -45,7 +38,7 @@ class Test
             $accountInfo = $client->getAccountInfo();
             if (isset($accountInfo->message)) {
                 $this->_helper->log('VALIDATION ERROR :  '
-                    .$accountInfo->message);
+                    . $accountInfo->message);
 
                 return false;
             }

@@ -33,9 +33,9 @@ class Guest
      * Guest constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory  $contactFactory
-     * @param \Dotdigitalgroup\Email\Helper\File           $file
-     * @param \Dotdigitalgroup\Email\Helper\Data           $helper
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -77,13 +77,13 @@ class Guest
         }
         if ($this->_countGuests) {
             $this->_helper->log('---- End Guest total time for guest sync : '
-                .gmdate('H:i:s', microtime(true) - $this->_start));
+                . gmdate('H:i:s', microtime(true) - $this->_start));
         }
     }
 
     /**
      * Export guests for a website.
-     * 
+     *
      * @param $website
      *
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -94,9 +94,9 @@ class Guest
             ->getGuests($website);
         //found some guests
         if ($guests->getSize()) {
-            $guestFilename = strtolower($website->getCode().'_guest_'
-                .date('d_m_Y_Hi').'.csv');
-            $this->_helper->log('Guest file: '.$guestFilename);
+            $guestFilename = strtolower($website->getCode() . '_guest_'
+                . date('d_m_Y_Hi') . '.csv');
+            $this->_helper->log('Guest file: ' . $guestFilename);
             $storeName = $this->_helper->getMappedStoreName($website);
             $this->_file->outputCSV($this->_file->getFilePath($guestFilename),
                 ['Email', 'emailType', $storeName]);

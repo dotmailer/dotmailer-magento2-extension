@@ -27,7 +27,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Grid constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory       $collectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $collectionFactory
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importerFactory
      * @param \Magento\Backend\Block\Template\Context                               $context
      * @param \Magento\Backend\Helper\Data                                          $backendHelper

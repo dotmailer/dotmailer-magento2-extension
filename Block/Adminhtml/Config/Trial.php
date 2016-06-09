@@ -26,14 +26,14 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     /**
      * Trial constructor.
      *
-     * @param \Magento\Backend\Block\Context                       $context
-     * @param \Magento\Backend\Model\Auth\Session                  $authSession
-     * @param \Magento\Framework\View\Helper\Js                    $jsHelper
+     * @param \Magento\Backend\Block\Context $context
+     * @param \Magento\Backend\Model\Auth\Session $authSession
+     * @param \Magento\Framework\View\Helper\Js $jsHelper
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
-     * @param \Magento\Store\Model\StoreManagerInterface           $storeManager
-     * @param \Magento\Framework\Stdlib\DateTime\Timezone          $localeDate
-     * @param \Dotdigitalgroup\Email\Helper\Data                   $helper
-     * @param array                                                $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\Stdlib\DateTime\Timezone $localeDate
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Context $context,
@@ -59,11 +59,11 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        if (! $this->_helper->isFrontEndAdminSecure()) {
-            $html = '<a class="various" href='.
-                $this->getViewFileUrl('Dotdigitalgroup_Email::images/trialerror.png').
-                '><img style="margin-bottom:15px;" src='.
-                $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png').
+        if (!$this->_helper->isFrontEndAdminSecure()) {
+            $html = '<a class="various" href=' .
+                $this->getViewFileUrl('Dotdigitalgroup_Email::images/trialerror.png') .
+                '><img style="margin-bottom:15px;" src=' .
+                $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
             $script = "
             <script>
@@ -72,9 +72,9 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
                 });
             </script>";
         } else {
-            $html = '<a class="various fancybox.iframe" data-fancybox-type="iframe" href='.
-                $this->_getIframeFormUrl().'><img style="margin-bottom:15px;" src='.
-                $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png').
+            $html = '<a class="various fancybox.iframe" data-fancybox-type="iframe" href=' .
+                $this->_getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
+                $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
             $script = "<script type='text/javascript'>
             require(['jquery', 'domReady'], function($){
@@ -97,7 +97,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
         ";
         }
 
-        return $html.$script;
+        return $html . $script;
     }
 
     /**
@@ -113,7 +113,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
         $culture = $this->_getCultureId();
         $company = $this->_helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
         $callback = $this->_storeManager->getStore()
-                ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true).'connector/email/accountcallback';
+                ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
         //query params
         $params = [
             'callback' => $callback,
@@ -122,7 +122,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
             'timezone' => $timezone,
             'ip' => $ipAddress,
         ];
-        $url = $formUrl.'?'.http_build_query($params);
+        $url = $formUrl . '?' . http_build_query($params);
 
         return $url;
     }

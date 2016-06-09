@@ -17,7 +17,7 @@ class Subscribersreset extends \Magento\Backend\App\AbstractAction
      * Subscribersreset constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
-     * @param \Magento\Backend\App\Action\Context                  $context
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,

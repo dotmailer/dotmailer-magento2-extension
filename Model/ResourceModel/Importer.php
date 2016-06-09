@@ -12,7 +12,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Importer constructor.
      *
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context    $context
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(

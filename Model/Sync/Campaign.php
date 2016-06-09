@@ -31,9 +31,9 @@ class Campaign
      * Campaign constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                               $data
-     * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
-     * @param \Magento\Sales\Model\OrderFactory                                $salesOrderFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory,
@@ -66,13 +66,13 @@ class Campaign
             try {
                 //campaigns id not found
                 if (!$campaignId) {
-                    $campaign->setMessage('Missing campaign id: '.$campaignId)
+                    $campaign->setMessage('Missing campaign id: ' . $campaignId)
                         ->setIsSent(1)
                         ->save();
                     continue;
                     //email not found
                 } elseif (!$email) {
-                    $campaign->setMessage('Missing email : '.$email)
+                    $campaign->setMessage('Missing email : ' . $email)
                         ->setIsSent(1)
                         ->save();
                     continue;

@@ -65,8 +65,8 @@ class Contact
     /**
      * Contact constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                     $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory        $customerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory
      * @param \Magento\Framework\Registry                                      $registry
      * @param \Magento\Framework\App\ResourceConnection                        $resource
      * @param \Dotdigitalgroup\Email\Helper\File                               $file
@@ -78,7 +78,7 @@ class Contact
      * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Model\ContactFactory                      $contactFactory
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory  $contactCollectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -108,13 +108,11 @@ class Contact
         //email contact
         $this->_emailCustomer = $customerFactory;
         $this->_contactFactory = $contactFactory;
-        $this->_customerCollection = $customerCollectionFactory->create();
-        $this->_customerCollection->addAttributeToSelect('*');
+        $this->_customerCollection = $customerCollectionFactory;
         //email contact collection
-        $this->_contactCollection = $contactCollectionFactory->create();
-        $this->_contactCollection->addFieldToSelect('*');
+        $this->_contactCollection = $contactCollectionFactory;
         //newsletter subscriber
-        $this->_subscriberFactory = $subscriberFactory->create();
+        $this->_subscriberFactory = $subscriberFactory;
     }
 
     /**
@@ -154,16 +152,16 @@ class Contact
                 }
                 // show message for any number of customers
                 if ($contactsUpdated) {
-                    $result['message'] .= '</br>'.$website->getName()
-                        .', exported contacts : '.$contactsUpdated;
+                    $result['message'] .= '</br>' . $website->getName()
+                        . ', exported contacts : ' . $contactsUpdated;
                 }
             }
         }
         //sync proccessed
         if ($this->_countCustomers) {
-            $message = 'Total time for sync : '.gmdate(
+            $message = 'Total time for sync : ' . gmdate(
                     'H:i:s', microtime(true) - $this->_start
-                ).', Total contacts : '.$this->_countCustomers;
+                ) . ', Total contacts : ' . $this->_countCustomers;
             $this->_helper->log($message);
             $message .= $result['message'];
             $result['message'] = $message;
@@ -195,7 +193,8 @@ class Contact
         $connection = $this->_resource->getConnection();
 
         //contacts ready for website
-        $contacts = $this->_contactCollection
+        $contacts = $this->_contactCollection->create()
+            ->addFieldToSelect('*')
             ->addFieldToFilter('email_imported', ['null' => true])
             ->addFieldToFilter('customer_id', ['neq' => '0'])
             ->addFieldToFilter('website_id', $website->getId())
@@ -207,9 +206,9 @@ class Contact
         }
         //customer filename
         $customersFile = strtolower(
-            $website->getCode().'_customers_'.date('d_m_Y_Hi').'.csv'
+            $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
         );
-        $this->_helper->log('Customers file : '.$customersFile);
+        $this->_helper->log('Customers file : ' . $customersFile);
         //get customers ids
         $customerIds = $contacts->getColumnValues('customer_id');
         /*
@@ -275,10 +274,10 @@ class Contact
 
         $customerNum = count($customerIds);
         $this->_helper->log(
-            'Website : '.$website->getName().', customers = '.$customerNum
+            'Website : ' . $website->getName() . ', customers = ' . $customerNum
         );
         $this->_helper->log(
-            '---------------------------- execution time :'.gmdate(
+            '---------------------------- execution time :' . gmdate(
                 'H:i:s', microtime(true) - $this->_start
             )
         );
@@ -350,9 +349,9 @@ class Contact
 
         //create customer filename
         $customersFile = strtolower(
-            $website->getCode().'_customers_'.date('d_m_Y_Hi').'.csv'
+            $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
         );
-        $this->_helper->log('Customers file : '.$customersFile);
+        $this->_helper->log('Customers file : ' . $customersFile);
 
         /*
          * HEADERS.
@@ -416,7 +415,7 @@ class Contact
             $contactModel->setEmailImported(
                 \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED
             );
-            $subscriber = $this->_subscriberFactory->loadByEmail(
+            $subscriber = $this->_subscriberFactory->create()->loadByEmail(
                 $customer->getEmail()
             );
             if ($subscriber->isSubscribed()) {
@@ -462,7 +461,9 @@ class Contact
      */
     protected function _getCustomerCollection($customerIds, $websiteId = 0)
     {
-        $customerCollection = $this->_customerCollection->addNameToSelect()
+        $customerCollection = $this->_customerCollection->create()
+            ->addAttributeToSelect('*')
+            ->addNameToSelect()
             ->joinAttribute(
                 'billing_street', 'customer_address/street', 'default_billing',
                 null, 'left'

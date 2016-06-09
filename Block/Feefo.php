@@ -68,11 +68,11 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $logon = $this->helper->getFeefoLogon();
         $template = '';
         if ($this->helper->getFeefoLogoTemplate()) {
-            $template = '&template='.$this->helper->getFeefoLogoTemplate();
+            $template = '&template=' . $this->helper->getFeefoLogoTemplate();
         }
-        $fullUrl = $url.$logon.$template;
+        $fullUrl = $url . $logon . $template;
         $vendorUrl = 'http://www.feefo.com/feefo/viewvendor.jsp?logon='
-            .$logon;
+            . $logon;
 
         return
             "<a href=\"$vendorUrl\" target='_blank'>
@@ -123,27 +123,27 @@ class Feefo extends \Magento\Framework\View\Element\Template
     {
         $check = true;
         $reviews = [];
-        $feefoDir = BP.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR
-            .'code'.DIRECTORY_SEPARATOR.'Dotdigitalgroup'
-            .DIRECTORY_SEPARATOR.
-            'Email'.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR
-            .'frontend'.DIRECTORY_SEPARATOR.'templates'
-            .DIRECTORY_SEPARATOR.'feefo';
+        $feefoDir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
+            . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup'
+            . DIRECTORY_SEPARATOR .
+            'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR
+            . 'frontend' . DIRECTORY_SEPARATOR . 'templates'
+            . DIRECTORY_SEPARATOR . 'feefo';
         $logon = $this->helper->getFeefoLogon();
         $limit = $this->helper->getFeefoReviewsPerProduct();
         $products = $this->getQuoteProducts();
 
         foreach ($products as $sku => $name) {
-            $url = 'http://www.feefo.com/feefo/xmlfeed.jsp?logon='.$logon
-                .'&limit='.$limit.'&vendorref='.$sku
-                .'&mode=productonly';
+            $url = 'http://www.feefo.com/feefo/xmlfeed.jsp?logon=' . $logon
+                . '&limit=' . $limit . '&vendorref=' . $sku
+                . '&mode=productonly';
             $doc = new \DOMDocument();
             $xsl = new \XSLTProcessor();
             if ($check) {
-                $doc->load($feefoDir.DIRECTORY_SEPARATOR.'feedback.xsl');
+                $doc->load($feefoDir . DIRECTORY_SEPARATOR . 'feedback.xsl');
             } else {
                 $doc->load(
-                    $feefoDir.DIRECTORY_SEPARATOR.'feedback-no-th.xsl'
+                    $feefoDir . DIRECTORY_SEPARATOR . 'feedback-no-th.xsl'
                 );
             }
             $xsl->importStyleSheet($doc);

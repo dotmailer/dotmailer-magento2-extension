@@ -26,8 +26,8 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $connectorContactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $connectorCatalogFactory
-     * @param \Magento\Framework\Registry                          $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data                   $data
+     * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $connectorContactFactory,
@@ -43,7 +43,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
 
     /**
      * Execute method.
-     * 
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
@@ -91,7 +91,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string) $e, []);
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;

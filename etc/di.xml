@@ -6,7 +6,9 @@
 
     <virtualType name="ContactGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
         <arguments>
-            <argument name="collection" xsi:type="object" shared="false">Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection</argument>
+            <argument name="collection" xsi:type="object"
+                      shared="false">Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
+            </argument>
             <argument name="filterPool" xsi:type="object" shared="false">ContactGirdFilterPool</argument>
         </arguments>
     </virtualType>

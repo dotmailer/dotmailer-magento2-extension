@@ -12,7 +12,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
     /**
      * Ajaxvalidation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data  $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
@@ -22,6 +22,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
         $this->data = $data;
         parent::__construct($context);
     }
+
     /**
      * Validate api user.
      */

@@ -17,7 +17,7 @@ class RegisterCatalogValuesOrderStatuses
     /**
      * RegisterCatalogValuesOrderStatuses constructor.
      *
-     * @param \Magento\Framework\Registry        $registry
+     * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
@@ -30,7 +30,7 @@ class RegisterCatalogValuesOrderStatuses
 
     /**
      * Execute method.
-     * 
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this

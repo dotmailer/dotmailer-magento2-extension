@@ -80,7 +80,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      * Load Contact by Email.
      *
      * @param string $email
-     * @param int    $websiteId
+     * @param int $websiteId
      *
      * @return $this
      */
@@ -105,7 +105,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      * Contact subscribers to import for website.
      *
      * @param \Magento\Store\Model\Website $website
-     * @param int                          $limit
+     * @param int $limit
      *
      * @return $this
      */
