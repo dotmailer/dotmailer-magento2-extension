@@ -5,19 +5,19 @@ namespace Dotdigitalgroup\Email\Plugin;
 class CustomerManagement
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Automation
+     * @var \Dotdigitalgroup\Email\Model\Automation
      */
-    protected $_helper;
+    protected $_automation;
 
     /**
      * NewAutomation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Automation $automation
+     * @param \Dotdigitalgroup\Email\Model\Automation $automation
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Automation $automation
+        \Dotdigitalgroup\Email\Model\Automation $automation
     ) {
-        $this->_helper = $automation;
+        $this->_automation = $automation;
     }
 
     /**
@@ -30,7 +30,7 @@ class CustomerManagement
     public function afterCreate(\Magento\Sales\Model\Order\CustomerManagement $subject, $customer)
     {
         //New Automation enrolment to queue
-        $this->_helper->newCustomerAutomation($customer);
+        $this->_automation->newCustomerAutomation($customer);
         return $customer;
     }
 }

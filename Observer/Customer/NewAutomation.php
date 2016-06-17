@@ -5,19 +5,19 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Automation
+     * @var \Dotdigitalgroup\Email\Model\Automation
      */
-    protected $_helper;
+    protected $_automation;
 
     /**
      * NewAutomation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Automation $automation
+     * @param \Dotdigitalgroup\Email\Model\Automation $automation
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Automation $automation
+        \Dotdigitalgroup\Email\Model\Automation $automation
     ) {
-        $this->_helper = $automation;
+        $this->_automation = $automation;
     }
 
     /**
@@ -31,7 +31,7 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
     {
         $customer = $observer->getEvent()->getCustomer();
         //New Automation enrolment to queue
-        $this->_helper->newCustomerAutomation($customer);
+        $this->_automation->newCustomerAutomation($customer);
         return $this;
     }
 }
