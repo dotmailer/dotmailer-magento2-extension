@@ -157,7 +157,7 @@ class Order
         $this->purchaseDate = $this->_datetime->formatDate($createdAt);
 
         $this->deliveryMethod = $orderData->getShippingDescription();
-        $this->deliveryTotal = $orderData->getShippingAmount();
+        $this->deliveryTotal = (float)$orderData->getShippingAmount();
         $this->currency = $orderData->getStoreCurrencyCode();
 
         if ($payment = $orderData->getPayment()) {
