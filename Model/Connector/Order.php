@@ -47,7 +47,7 @@ class Order
     /**
      * @var float
      */
-    public $discountAmmount;
+    public $discountAmount;
     /**
      * @var float
      */
@@ -356,7 +356,7 @@ class Order
         $this->orderSubtotal = (float)number_format(
             $orderData->getData('subtotal'), 2, '.', ''
         );
-        $this->discountAmmount = (float)number_format(
+        $this->discountAmount = (float)number_format(
             $orderData->getData('discount_amount'), 2, '.', ''
         );
         $orderTotal = abs(
