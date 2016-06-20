@@ -153,8 +153,10 @@ class Order
         $this->email = $orderData->getCustomerEmail();
         $this->storeName = $orderData->getStoreName();
 
-        $createdAt = new \DateTime($orderData->getCreatedAt());
-        $this->purchaseDate = $this->_datetime->formatDate($createdAt);
+        $createdAt = new \Zend_Date(
+            $orderData->getCreatedAt(), \Zend_Date::ISO_8601
+        );
+        $this->purchaseDate = $createdAt->toString(\Zend_Date::ISO_8601);
 
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float)$orderData->getShippingAmount();
