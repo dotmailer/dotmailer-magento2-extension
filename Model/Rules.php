@@ -369,7 +369,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             $column = [];
             $cond = [];
             foreach ($fieldsConditions as $key => $fieldsCondition) {
-                $column[] = $key;
+                $exp = new \Zend_Db_Expr($key);
+                $column[] = $exp->__toString();
                 $cond[] = $fieldsCondition;
             }
             if (!empty($multiFieldsConditions)) {
@@ -377,7 +378,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                     $multiFieldsConditions as $key => $multiFieldsCondition
                 ) {
                     if (in_array($key, $column)) {
-                        $column[] = $key;
+                        $exp = new \Zend_Db_Expr($key);
+                        $column[] = $exp->__toString();
                         $cond[] = $multiFieldsCondition;
                         continue;
                     }
