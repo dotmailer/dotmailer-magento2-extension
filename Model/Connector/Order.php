@@ -79,7 +79,7 @@ class Order
     /**
      * @var array
      */
-    public $custom = [];
+    public $custom;
 
     /**
      * @var string
@@ -181,6 +181,7 @@ class Order
 
         if ($customAttributes) {
             $fields = $this->_helper->getOrderTableDescription();
+            $this->custom = [];
             foreach ($customAttributes as $customAttribute) {
                 if (isset($fields[$customAttribute])) {
                     $field = $fields[$customAttribute];
