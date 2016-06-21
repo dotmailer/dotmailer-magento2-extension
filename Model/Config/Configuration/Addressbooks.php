@@ -62,7 +62,10 @@ class Addressbooks
      */
     public function toOptionArray()
     {
-        $fields = [];
+        $fields[] = [
+            'label' => __('---- Default Option ----'),
+            'value' => '0',
+        ];
         $website = $this->_helper->getWebsite();
         $apiEnabled = $this->_helper->isEnabled($website);
 

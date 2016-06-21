@@ -12,6 +12,7 @@ class Styling
     public function toOptionArray()
     {
         return [
+            ['value' => '0', 'label' => '---- Default Option ----'],
             ['value' => 'bold', 'label' => 'Bold'],
             ['value' => 'italic', 'label' => 'Italic'],
             ['value' => 'underline', 'label' => 'Underline'],

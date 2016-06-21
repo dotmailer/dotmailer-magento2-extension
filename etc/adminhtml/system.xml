@@ -1283,7 +1283,7 @@
                 <field id="catalog_visibility" translate="label" sortOrder="20" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Catalog Visibility</label>
-                    <source_model>Magento\Catalog\Model\Product\Visibility</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogvisibility</source_model>
                     <comment>Selected visibility type products will be exported.</comment>
                 </field>
                 <field id="catalog_type" translate="label" sortOrder="30" type="multiselect" showInStore="0"
