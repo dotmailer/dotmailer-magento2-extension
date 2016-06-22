@@ -29,8 +29,11 @@ class Attributes
     {
         $fields = $this->_dataHelper->getOrderTableDescription();
 
-        $customFields = [];
-        foreach ($fields as $key => $field) {
+        $customFields[] = [
+            'label' => __('---- Default Option ----'),
+            'value' => '0',
+        ];
+        foreach ($fields as $field) {
             $customFields[] = [
                 'value' => $field['COLUMN_NAME'],
                 'label' => $field['COLUMN_NAME'],

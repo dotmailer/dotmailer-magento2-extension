@@ -1,8 +1,8 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Observer\Customer;
+namespace Dotdigitalgroup\Email\Plugin;
 
-class NewAutomation implements \Magento\Framework\Event\ObserverInterface
+class CustomerManagement
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\Automation
@@ -21,17 +21,16 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * If it's configured to capture on shipment - do this.
+     * Plugin for create function
      *
-     * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return $this
+     * @param \Magento\Sales\Model\Order\CustomerManagement $subject
+     * @param $customer
+     * @return mixed
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function afterCreate(\Magento\Sales\Model\Order\CustomerManagement $subject, $customer)
     {
-        $customer = $observer->getEvent()->getCustomer();
         //New Automation enrolment to queue
         $this->_automation->newCustomerAutomation($customer);
-        return $this;
+        return $customer;
     }
 }

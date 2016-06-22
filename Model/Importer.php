@@ -110,22 +110,23 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Importer constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param ResourceModel\Contact $contact
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param \Magento\Framework\Filesystem\Io\File $file
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param \Dotdigitalgroup\Email\Helper\Data                           $helper
+     * @param ResourceModel\Contact                                        $contact
+     * @param \Dotdigitalgroup\Email\Helper\File                           $fileHelper
+     * @param \Magento\Framework\Model\Context                             $context
+     * @param \Magento\Framework\Registry                                  $registry
+     * @param \Magento\Framework\App\Filesystem\DirectoryList              $directoryList
+     * @param \Magento\Framework\ObjectManagerInterface                    $objectManager
+     * @param \Magento\Framework\Filesystem\Io\File                        $file
+     * @param \Magento\Framework\Stdlib\DateTime                           $dateTime
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param array $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
+     * @param array                                                        $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
@@ -134,7 +135,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         array $data = []
     ) {
         $this->_file = $file;
@@ -144,9 +144,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $this->_contact = $contact;
         $this->_dateTime = $dateTime;
         $this->_fileHelper = $fileHelper;
-        parent::__construct(
-            $context, $registry, $resource, $resourceCollection, $data
-        );
+
+        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     /**
