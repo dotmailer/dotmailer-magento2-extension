@@ -34,7 +34,10 @@ class Orderstatus
             array_shift($statuses);
         }
 
-        $options = [];
+        $options[] = [
+            'label' => __('---- Default Option ----'),
+            'value' => '0',
+        ];
 
         foreach ($statuses as $status) {
             $options[] = [

@@ -29,7 +29,9 @@ class Catalogtype
     {
         $options
             = $this->_productType->getAllOptions();
-        array_shift($options);
+        //Add default option to first key of array. First key has empty value and empty label.
+        $options[0]['value'] = '0';
+        $options[0]['label'] = '---- Default Option ----';
 
         return $options;
     }

@@ -47,7 +47,7 @@ class Order
     /**
      * @var float
      */
-    public $discountAmmount;
+    public $discountAmount;
     /**
      * @var float
      */
@@ -79,7 +79,7 @@ class Order
     /**
      * @var array
      */
-    public $custom = [];
+    public $custom;
 
     /**
      * @var string
@@ -153,11 +153,13 @@ class Order
         $this->email = $orderData->getCustomerEmail();
         $this->storeName = $orderData->getStoreName();
 
-        $createdAt = new \DateTime($orderData->getCreatedAt());
-        $this->purchaseDate = $this->_datetime->formatDate($createdAt);
+        $createdAt = new \Zend_Date(
+            $orderData->getCreatedAt(), \Zend_Date::ISO_8601
+        );
+        $this->purchaseDate = $createdAt->toString(\Zend_Date::ISO_8601);
 
         $this->deliveryMethod = $orderData->getShippingDescription();
-        $this->deliveryTotal = $orderData->getShippingAmount();
+        $this->deliveryTotal = (float)$orderData->getShippingAmount();
         $this->currency = $orderData->getStoreCurrencyCode();
 
         if ($payment = $orderData->getPayment()) {
@@ -179,6 +181,7 @@ class Order
 
         if ($customAttributes) {
             $fields = $this->_helper->getOrderTableDescription();
+            $this->custom = [];
             foreach ($customAttributes as $customAttribute) {
                 if (isset($fields[$customAttribute])) {
                     $field = $fields[$customAttribute];
@@ -296,6 +299,12 @@ class Order
                                         $attributeCode
                                     );
                                     break;
+                                case 'date':
+                                    $date = new \Zend_Date(
+                                        $productModel->getData($attributeCode), \Zend_Date::ISO_8601
+                                    );
+                                    $value = $date->toString(\Zend_Date::ISO_8601);
+                                    break;
                                 default:
                                     $value = $productModel->getData(
                                         $attributeCode
@@ -356,7 +365,7 @@ class Order
         $this->orderSubtotal = (float)number_format(
             $orderData->getData('subtotal'), 2, '.', ''
         );
-        $this->discountAmmount = (float)number_format(
+        $this->discountAmount = (float)number_format(
             $orderData->getData('discount_amount'), 2, '.', ''
         );
         $orderTotal = abs(

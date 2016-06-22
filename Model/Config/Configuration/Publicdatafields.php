@@ -43,7 +43,10 @@ class Publicdatafields
      */
     public function toOptionArray()
     {
-        $fields = [];
+        $fields[] = [
+            'label' => __('---- Default Option ----'),
+            'value' => '0',
+        ];
         $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
         //get datafields options
         if ($apiEnabled) {
