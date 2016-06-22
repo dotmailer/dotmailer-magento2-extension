@@ -299,6 +299,12 @@ class Order
                                         $attributeCode
                                     );
                                     break;
+                                case 'date':
+                                    $date = new \Zend_Date(
+                                        $productModel->getData($attributeCode), \Zend_Date::ISO_8601
+                                    );
+                                    $value = $date->toString(\Zend_Date::ISO_8601);
+                                    break;
                                 default:
                                     $value = $productModel->getData(
                                         $attributeCode
