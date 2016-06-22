@@ -29,11 +29,8 @@ class Catalogtype
     {
         $options
             = $this->_productType->getAllOptions();
-
-        if (is_array($options)) {
             $options[0]['value'] = '0';
             $options[0]['label'] = '---- Default Option ----';
-        }
         
         return $options;
     }
