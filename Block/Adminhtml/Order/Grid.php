@@ -28,8 +28,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param \Magento\Sales\Model\Order\ConfigFactory                              $configFactory
      * @param \Magento\Backend\Block\Template\Context                               $context
      * @param \Magento\Backend\Helper\Data                                          $backendHelper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $gridFactory
-     * @param \Magento\Framework\Module\Manager                                     $moduleManager
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory    $gridFactory
      * @param array                                                                 $data
      */
     public function __construct(
@@ -38,7 +37,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $gridFactory,
-        \Magento\Framework\Module\Manager $moduleManager,
         array $data = []
     ) {
         $this->_importedFactory = $importedFactory;
@@ -71,6 +69,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function _prepareColumns()
     {
         $this->addColumn(

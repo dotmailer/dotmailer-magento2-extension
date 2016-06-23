@@ -107,7 +107,7 @@ class Order
     }
 
     /**
-     * initial sync the transactional data.
+     * Initial sync the transactional data.
      *
      * @return array
      *
@@ -125,19 +125,19 @@ class Order
             $orderIds = $account->getOrderIds();
             $ordersForSingleSync = $account->getOrdersForSingleSync();
             $orderIdsForSingleSync = $account->getOrderIdsForSingleSync();
+            //@codingStandardsIgnoreStart
             $numOrdersForSingleSync = count($ordersForSingleSync);
             $website = $account->getWebsites();
             $numOrders = count($orders);
+            //@codingStandardsIgnoreEnd
             $this->_countOrders += $numOrders;
             $this->_countOrders += $numOrdersForSingleSync;
             //send transactional for any number of orders set
             if ($numOrders) {
                 $this->_helper->log(
-                    '--------- register Order sync with importer ---------- : '
-                    . count($orders)
+                    '--------- Order sync ---------- : ' . $numOrders
                 );
-                //register in queue with importer
-                //$this->_helper->debug('orders', $orders);
+                //queue order into importer
                 $this->_helper->error('orders', $orders);
                 try {
                     $this->_importerFactory->create()
@@ -284,38 +284,39 @@ class Order
             return [];
         }
 
-        foreach ($orderCollection as $order) {
-            try {
-                $salesOrder = $this->_salesOrderFactory->create()->load(
-                    $order->getOrderId()
-                );
-                $storeId = $order->getStoreId();
-                $websiteId = $this->_storeManager->getStore($storeId)
-                    ->getWebsiteId();
-                /*
+
+        //email_order order ids
+        $orderIds = $orderCollection->getColumnValues('order_id');
+        //get the order collection
+        $salesOrderCollection = $this->_orderFactory->create()
+            ->getCollection()
+            ->addFieldToFilter('entity_id', ['in' => $orderIds]);
+        try {
+            foreach ($salesOrderCollection as $order) {
+
+                $storeId   = $order->getStoreId();
+                $websiteId = $this->_storeManager->getStore($storeId)->getWebsiteId();
+                /**
                  * Add guest to contacts table.
                  */
-                if ($salesOrder->getCustomerIsGuest()) {
+                if ($order->getCustomerIsGuest()) {
                     $this->_createGuestContact(
-                        $salesOrder->getCustomerEmail(), $websiteId, $storeId
+                        $order->getCustomerEmail(), $websiteId, $storeId
                     );
                 }
-                if ($salesOrder->getId()) {
-                    $connectorOrder = $this->_connectorOrderFactory->create()
-                        ->setOrder($salesOrder);
+                if ($order->getId()) {
+                    $connectorOrder = $this->_connectorOrderFactory->create();
+                    $connectorOrder->setOrderData($order);
                     $orders[] = $connectorOrder;
                 }
                 if ($modified) {
-                    $this->_orderIdsForSingleSync[] = $order->getOrderId();
+                    $this->_orderIdsForSingleSync[] = $order->getId();
                 } else {
-                    $this->_orderIds[] = $order->getOrderId();
+                    $this->_orderIds[] = $order->getId();
                 }
-            } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, []);
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    __($e->getMessage())
-                );
             }
+        } catch (\Exception $e) {
+            $this->_helper->debug((string)$e, []);
         }
 
         return $orders;

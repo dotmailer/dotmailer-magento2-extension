@@ -15,6 +15,7 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * {@inheritdoc}
+     * @codingStandardsIgnoreStart
      */
     public function install(
         SchemaSetupInterface $setup,
@@ -1160,5 +1161,6 @@ class InstallSchema implements InstallSchemaInterface
         $installer->getConnection()->createTable($automationTable);
 
         $installer->endSetup();
+        // @codingStandardsIgnoreEnd
     }
 }

@@ -122,7 +122,9 @@ class Automation
             ->addFieldToFilter(
                 'enrolment_status', self::AUTOMATION_STATUS_PENDING
             );
+        //@codingStandardsIgnoreStart
         $automationCollection->getSelect()->group('automation_type');
+        //@codingStandardsIgnoreEnd
         //active types
         $automationTypes = $automationCollection->getColumnValues(
             'automation_type'
@@ -159,8 +161,10 @@ class Automation
                     $contacts[$automation->getId()] = $contactId;
                 } else {
                     // the contact is suppressed or the request failed
+                    //@codingStandardsIgnoreStart
                     $automation->setEnrolmentStatus('Suppressed')
                         ->save();
+                    //@codingStandardsIgnoreEnd
                 }
             }
             //only for subscribed contacts

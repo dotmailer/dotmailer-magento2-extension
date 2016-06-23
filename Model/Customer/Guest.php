@@ -104,8 +104,10 @@ class Guest
             foreach ($guests as $guest) {
                 $email = $guest->getEmail();
                 try {
+                    //@codingStandardsIgnoreStart
                     $guest->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED)
                         ->save();
+                    //@codingStandardsIgnoreEnd
                     $storeName = $website->getName();
                     // save data for guests
                     $this->_file->outputCSV($this->_file->getFilePath($guestFilename),

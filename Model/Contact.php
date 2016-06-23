@@ -30,7 +30,9 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             ->setPageSize(1);
 
         if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         }
 
         return $this;
@@ -92,7 +94,9 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             ->setPageSize(1);
 
         if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         } else {
             $this->setEmail($email)
                 ->setWebsiteId($websiteId);

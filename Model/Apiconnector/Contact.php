@@ -282,7 +282,9 @@ class Contact
             )
         );
         //file was created - continue for queue the export
+        //@codingStandardsIgnoreStart
         if (is_file($this->_file->getFilePath($customersFile))) {
+            //@codingStandardsIgnoreEnd
             if ($customerNum > 0) {
                 //register in queue with importer
                 $this->_importerFactory->create()
@@ -422,12 +424,13 @@ class Contact
                 $contactModel->setIsSubscriber('1')
                     ->setSubscriberStatus($subscriber->getSubscriberStatus());
             }
-
+            //@codingStandardsIgnoreStart
             $contactModel->save();
             ++$updated;
         }
 
         if (is_file($this->_file->getFilePath($customersFile))) {
+            //@codingStandardsIgnoreEnd
             //import contacts
             if ($updated > 0) {
                 //register in queue with importer
@@ -569,6 +572,7 @@ class Contact
 
         $orderTable = $this->_resource->getTableName('sales_order');
         $connection = $this->_resource->getConnection();
+        //@codingStandardsIgnoreStart
         $subselect = $connection->select()
             ->from(
                 $orderTable, [
@@ -692,6 +696,7 @@ class Contact
                 [$alias => $subselect],
                 "{$alias}.s_customer_id = e.entity_id"
             );
+        //@codingStandardsIgnoreEnd
 
         return $customerCollection;
     }

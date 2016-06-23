@@ -148,7 +148,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function _addSubscriberToAutomation($email, $subscriber, $websiteId)
+    protected function _addSubscriberToAutomation($email, $subscriber, $websiteId)
     {
         $storeId = $subscriber->getStoreId();
         $store = $this->_storeManager->getStore($storeId);
@@ -161,8 +161,9 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             return;
         }
         try {
+            //@codingStandardsIgnoreStart
             //check the subscriber alredy exists
-            $enrolment = $this->_automationFactory->create()
+            $enrolmentCollection = $this->_automationFactory->create()
                 ->getCollection()
                 ->addFieldToFilter('email', $email)
                 ->addFieldToFilter(
@@ -170,8 +171,9 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                     \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
                 )
                 ->addFieldToFilter('website_id', $websiteId)
-                ->getFirstItem();
-
+                ->setPageSize(1);
+            $enrolment = $enrolmentCollection->getFirstItem();
+            //@codingStandardsIgnoreEnd
             //add new subscriber to automation
             if (!$enrolment->getId()) {
                 //save subscriber to the queue

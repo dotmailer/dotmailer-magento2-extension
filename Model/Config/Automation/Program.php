@@ -77,10 +77,12 @@ class Program implements \Magento\Framework\Option\ArrayInterface
                 //loop for all programs option
                 foreach ($programs as $program) {
                     if (isset($program->id) && $program->status == 'Active') {
+                        //@codingStandardsIgnoreStart
                         $fields[] = [
                             'value' => $program->id,
                             'label' => addslashes($program->name),
                         ];
+                        //@codingStandardsIgnoreEnd
                     }
                 }
             }

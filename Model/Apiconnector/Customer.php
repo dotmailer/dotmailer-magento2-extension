@@ -69,9 +69,14 @@ class Customer
     protected $orderCollection;
 
     /**
+     * @var
+     */
+    protected $contactFactory;
+
+    /**
      * @var array
      */
-    protected $subscriber_status
+    protected $subscriberStatus
         = [
             \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
             \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
@@ -82,6 +87,7 @@ class Customer
     /**
      * Customer constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory                $contactFactory
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
      * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
      * @param \Magento\Review\Model\ResourceModel\Review\Collection      $reviewCollection
@@ -93,6 +99,7 @@ class Customer
      * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Review\Model\ResourceModel\Review\Collection $reviewCollection,
@@ -106,6 +113,7 @@ class Customer
         $this->_helper = $helper;
         $this->_store = $storeManager;
         $this->_objectManager = $objectManager;
+        $this->_contactFactory = $contactFactory;
         $this->reviewCollection = $reviewCollection;
         $this->orderCollection = $collectionFactory;
         $this->_groupFactory = $groupFactory;
@@ -148,9 +156,11 @@ class Customer
                 $function .= ucfirst($one);
             }
             try {
+                //@codingStandardsIgnoreStart
                 $value = call_user_func(
                     ['self', $function]
                 );
+                //@codingStandardsIgnoreEnd
                 $this->customerData[$key] = $value;
             } catch (\Exception $e) {
                 throw new \Magento\Framework\Exception\LocalizedException(
@@ -212,7 +222,9 @@ class Customer
     public function getLastReviewDate()
     {
         if (count($this->reviewCollection)) {
+            //@codingStandardsIgnoreStart
             return $this->reviewCollection->getFirstItem()->getCreatedAt();
+            //@codingStandardsIgnoreEnd
         }
 
         return '';
@@ -709,7 +721,7 @@ class Customer
             ->loadByCustomerId($this->customer->getId());
 
         if ($subscriberModel->getCustomerId()) {
-            return $this->subscriber_status[$subscriberModel->getSubscriberStatus()];
+            return $this->subscriberStatus[$subscriberModel->getSubscriberStatus()];
         }
     }
 
@@ -720,12 +732,14 @@ class Customer
      */
     public function getCustomerSegments()
     {
-        $contactModel = $this->_objectManager->create(
-            'Dotdigitalgroup\Email\Model\Contact'
-        )->getCollection()
+        //@codingStandardsIgnoreStart
+        $contactModel = $this->_contactFactory->create()
+            ->getCollection()
             ->addFieldToFilter('customer_id', $this->getCustomerId())
             ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
+            ->setPageSize(1)
             ->getFirstItem();
+        //@codingStandardsIgnoreEnd
         if ($contactModel) {
             return $contactModel->getSegmentIds();
         }
@@ -742,6 +756,7 @@ class Customer
     {
         //last used from the reward history based on the points delta used
         //enterprise module
+        //@codingStandardsIgnoreStart
         $lastUsed = $this->_objectManager->create(
             'Magento\Reward\Model\Reward\History'
         )
@@ -749,9 +764,10 @@ class Customer
             ->addWebsiteFilter($this->customer->getWebsiteId())
             ->addFieldToFilter('points_delta', ['lt' => 0])
             ->setDefaultOrder()
+            ->setPageSize(1)
             ->getFirstItem()
             ->getCreatedAt();
-
+        //@codingStandardsIgnoreEnd
         //for any valid date
         if ($lastUsed) {
             return $this->_helper->formatDate($lastUsed, 'short', true);
@@ -975,9 +991,8 @@ class Customer
     protected function _setReward()
     {
         if ($rewardModel = $this->_objectManager->create(
-            'Magento\Reward\Model\Reward\History'
-        )
-        ) {
+            'Magento\Reward\Model\Reward\History'))
+        {
             $enHelper = $this->_objectManager->create(
                 'Magento\Reward\Helper\Reward'
             );
@@ -989,9 +1004,11 @@ class Customer
                 ->skipExpiredDuplicates()
                 ->setDefaultOrder();
 
+            //@codingStandardsIgnoreStart
             $item = $collection->setPageSize(1)
                 ->setCurPage(1)
                 ->getFirstItem();
+            //@codingStandardsIgnoreEnd
 
             $this->reward = $item;
         } else {

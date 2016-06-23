@@ -131,7 +131,9 @@ class Order
                         $emailCampaign->setCustomerId($order->getCustomerId());
                     }
 
+                    //@codingStandardsIgnoreStart
                     $emailCampaign->save();
+                    //@codingStandardsIgnoreEnd
                 } catch (\Exception $e) {
                     $this->_helper->debug((string)$e, []);
                 }
@@ -169,8 +171,7 @@ class Order
                 );
 
                 $campaignCollection = $this->_campaignCollection->create()
-                    ->addFieldToFilter('event_name', 'Order Review')
-                    ->load();
+                    ->addFieldToFilter('event_name', 'Order Review');
 
                 $campaignOrderIds = $campaignCollection->getColumnValues(
                     'order_increment_id'
@@ -233,8 +234,10 @@ class Order
             ->setPageSize(1)
             ->setOrder('entity_id');
 
-        if ($collection->count()) {
+        if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         } else {
             return false;
         }
@@ -258,8 +261,10 @@ class Order
             ->setPageSize(1)
             ->setOrder('entity_id');
 
-        if ($collection->count()) {
+        if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         } else {
             return false;
         }

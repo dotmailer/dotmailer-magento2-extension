@@ -88,7 +88,9 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
             ->setPageSize(1);
 
         if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         } else {
             return false;
         }

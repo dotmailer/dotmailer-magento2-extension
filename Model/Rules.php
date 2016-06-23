@@ -33,21 +33,38 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     protected $_used = array();
 
     /**
-     * @var
+     * @var Adminhtml\Source\Rules\Type
      */
-    protected $_objectManager;
+    protected $rulesType;
 
     /**
-     * Constructor.
+     * @var \Magento\Eav\Model\Config
      */
-    public function _construct()
-    {
-        $this->_objectManager
-                               = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->_defaultOptions = $this->_objectManager->create(
-            'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type'
-        )->defaultOptions();
+    protected $config;
 
+    /**
+     * Review constructor.
+     *
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $rulesType,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Eav\Model\Config $config,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
+    ) {
+        $this->config = $config;
+        $this->rulesType = $rulesType;
+        parent::__construct($context, $registry, $resource, $resourceCollection,
+            $data);
+        $this->_defaultOptions = $this->rulesType->defaultOptions();
         $this->_conditionMap = [
             'eq' => 'neq',
             'neq' => 'eq',
@@ -84,16 +101,19 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             'items_qty' => 'items_qty',
             'customer_email' => 'main_table.customer_email',
         ];
-        parent::_construct();
         $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Rules');
+
     }
 
     /**
      * @return $this
+     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
+
         parent::beforeSave();
+        //@codingStandardsIgnoreEnd
         if ($this->isObjectNew()) {
             $this->setCreatedAt(time());
         } else {
@@ -162,7 +182,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             ->addFieldToFilter('website_ids', ['finset' => $websiteId])
             ->setPageSize(1);
         if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         }
 
         return [];
@@ -408,22 +430,14 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             return $collection;
         }
 
-        $productModel = $this->_objectManager->create(
-            'Magento\Catalog\Model\Product'
-        );
         foreach ($collection as $collectionItem) {
             $items = $collectionItem->getAllItems();
             foreach ($items as $item) {
-                $productId = $item->getProductId();
                 //loaded product
-                $product = $productModel
-                    ->setStoreId($item->getStoreId())
-                    ->load($productId);
+                $product = $item->getProduct();
 
                 //attributes array from loaded product
-                $attributes = $this->_objectManager->create(
-                    'Magento\Eav\Model\Config'
-                )->getEntityAttributeCodes(
+                $attributes = $this->config->getEntityAttributeCodes(
                     \Magento\Catalog\Model\Product::ENTITY,
                     $product
                 );
@@ -444,10 +458,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
                     //if attribute is in product's attributes array
                     if (in_array($attribute, $attributes)) {
-                        $attr = $this->_objectManager->get(
-                            'Magento\Eav\Model\Config'
-                        )
-                            ->getAttribute('catalog_product', $attribute);
+                        $attr = $this->config->getAttribute('catalog_product', $attribute);
                         //frontend type
                         $frontType = $attr->getFrontend()->getInputType();
                         //if type is select
@@ -473,9 +484,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                             foreach ($exploded as $one) {
                                 $getter .= ucfirst($one);
                             }
+                            //@codingStandardsIgnoreStart
                             $attributeValue = call_user_func(
                                 [$product, $getter]
                             );
+                            //@codingStandardsIgnoreEnd
                             //if retrieved value is an array then loop through all array values.
                             // example can be categories
                             if (is_array($attributeValue)) {

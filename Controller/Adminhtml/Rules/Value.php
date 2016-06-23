@@ -10,15 +10,28 @@ class Value extends \Magento\Backend\App\AbstractAction
     protected $_http;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
+     */
+    protected $ruleValue;
+    /**
+     * @var \Magento\Framework\Json\Encoder
+     */
+    protected $jsonEncoder;
+
+    /**
      * Value constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\App\Response\Http $http
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
+        \Magento\Framework\Json\Encoder $jsonEncoder,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Response\Http $http
     ) {
+        $this->jsonEncoder = $jsonEncoder;
+        $this->ruleValue = $ruleValue;
         parent::__construct($context);
         $this->_http = $http;
     }
@@ -44,18 +57,12 @@ class Value extends \Magento\Backend\App\AbstractAction
 
         if ($valueName && $attributeValue && $conditionValue) {
             if ($conditionValue == 'null') {
-                $valueOptions = $this->_objectManager->create(
-                    'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value'
-                )->getValueSelectOptions($attributeValue, true);
+                $valueOptions = $this->ruleValue->getValueSelectOptions($attributeValue, true);
                 $response['cvalue'] = $this->_getOptionHtml('cvalue', $valueName, $valueOptions);
             } else {
-                $elmType = $this->_objectManager->create(
-                    'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value'
-                )->getValueElementType($attributeValue);
+                $elmType = $this->ruleValue->getValueElementType($attributeValue);
                 if ($elmType == 'select') {
-                    $valueOptions = $this->_objectManager->create(
-                        'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value'
-                    )->getValueSelectOptions($attributeValue);
+                    $valueOptions = $this->ruleValue->getValueSelectOptions($attributeValue);
                     $response['cvalue'] = $this->_getOptionHtml('cvalue', $valueName, $valueOptions);
                 } elseif ($elmType == 'text') {
                     $html = "<input style='width:160px' title='cvalue' class='' id='' name=$valueName />";
@@ -64,7 +71,7 @@ class Value extends \Magento\Backend\App\AbstractAction
             }
             $this->_http->getHeaders()->clearHeaders();
             $this->_http->setHeader('Content-Type', 'application/json')->setBody(
-                $this->_objectManager->create('Magento\Framework\Json\Encoder')->encode($response)
+                $this->jsonEncoder->encode($response)
             );
         }
     }

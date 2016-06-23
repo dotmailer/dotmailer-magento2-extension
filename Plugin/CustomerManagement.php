@@ -21,11 +21,13 @@ class CustomerManagement
     }
 
     /**
-     * Plugin for create function
+     * Plugin for create function.
      *
      * @param \Magento\Sales\Model\Order\CustomerManagement $subject
      * @param $customer
      * @return mixed
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @codingStandardsIgnoreStart
      */
     public function afterCreate(\Magento\Sales\Model\Order\CustomerManagement $subject, $customer)
     {
@@ -33,4 +35,5 @@ class CustomerManagement
         $this->_automation->newCustomerAutomation($customer);
         return $customer;
     }
+    //codingStandardsIgnoreEnd
 }

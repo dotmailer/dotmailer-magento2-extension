@@ -18,10 +18,11 @@ class MassDelete extends Action
         } else {
             try {
                 foreach ($searchIds as $searchId) {
-                    $model = $this->_objectManager->create(
-                        'Dotdigitalgroup\Email\Model\Review'
-                    )->load($searchId);
+                    //@codingStandardsIgnoreStart
+                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Review')
+                        ->setId($searchId);
                     $model->delete();
+                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccess(
                     __('Total of %1 record(s) were deleted.', count($searchIds))

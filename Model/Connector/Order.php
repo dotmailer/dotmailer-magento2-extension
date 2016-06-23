@@ -109,6 +109,10 @@ class Order
      * @var \Magento\Eav\Model\Entity\Attribute\SetFactory
      */
     protected $_setFactory;
+    /**
+     * @var
+     */
+    protected $_attributeSet;
 
     /**
      * Order constructor.
@@ -128,7 +132,8 @@ class Order
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Stdlib\Datetime $datetime
+        \Magento\Framework\Stdlib\Datetime $datetime,
+        \Magento\Eav\Model\Entity\AttributeSetFactory $attributeSet
     ) {
         $this->_setFactory = $setFactory;
         $this->_attributeCollection = $attributeCollection;
@@ -137,6 +142,7 @@ class Order
         $this->_helper = $helperData;
         $this->_datetime = $datetime;
         $this->_storeManager = $storeManagerInterface;
+        $this->_attributeSet = $attributeSet;
     }
 
     /**
@@ -249,8 +255,7 @@ class Order
             }
 
             //load product by product id, for compatibility
-            $productModel = $this->_productFactory->create()
-                ->load($productItem->getProductId());
+            $productModel = $productItem->getProduct();
 
             if ($productModel) {
                 // category names
@@ -312,11 +317,8 @@ class Order
                                     break;
                             }
 
-                            if ($value
-                                && !is_array(
-                                    $value
-                                )
-                            ) {
+                            if ($value && !is_array($value))
+                            {
                                 // check limit on text and assign value to array
 
                                 $attributes[][$attributeCode]
@@ -326,9 +328,8 @@ class Order
                     }
                 }
 
-                $attributeSetName = $this->_setFactory->create()
-                    ->load($productModel->getAttributeSetId())
-                    ->getAttributeSetName();
+                $attributeSetName = $this->_getAttributeSetName($productModel);
+
                 $this->products[] = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
@@ -546,6 +547,54 @@ class Order
         }
 
         return $options;
+    }
+
+
+    /**
+     * Get attribute set name.
+     *
+     * @param $product
+     *
+     * @return string
+     */
+    protected function _getAttributeSetName( $product)
+    {
+        //check if empty. on true load model and cache result
+        if (empty($this->_attributeSet)) {
+            $this->_loadAttributeModel($product);
+            if (empty($this->_attributeSet)) {
+                return '';
+            } else {
+                return $this->_attributeSet->getAttributeSetName();
+            }
+        }
+
+        //if cached attribute set id equals product's attribute set id
+        if ($this->_attributeSet->getId() == $product->getAttributeSetId()) {
+            return $this->_attributeSet->getAttributeSetName();
+        }
+
+        //if both above false. load model and cache result
+        $this->_loadAttributeModel($product);
+        if (empty($this->_attributeSet)) {
+            return '';
+        } else {
+            return $this->_attributeSet->getAttributeSetName();
+        }
+    }
+
+    /**
+     * Load attribute model.
+     *
+     * @param $product
+     */
+    protected function _loadAttributeModel( $product)
+    {
+        $attributeSetModel = $this->_attributeSet->create();
+        $attributeSetModel->load($product->getAttributeSetId());
+        if ($attributeSetModel->getId()) {
+            $this->_attributeSet = $attributeSetModel;
+        }
     }
 
     /**

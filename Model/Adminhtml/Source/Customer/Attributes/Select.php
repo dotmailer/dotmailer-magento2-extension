@@ -52,7 +52,9 @@ class Select
             if ($attribute->getFrontendLabel()) {
                 $code = $attribute->getAttributeCode();
                 //escape the label in case of quotes
+                //@codingStandardsIgnoreStart
                 $label = addslashes($attribute->getFrontendLabel());
+                //@codingStandardsIgnoreEnd
                 if (!in_array($code, $excluded)) {
                     $options[] = [
                         'value' => $attribute->getAttributeCode(),

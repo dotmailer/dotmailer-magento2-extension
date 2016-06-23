@@ -192,6 +192,7 @@ abstract class Rest
      */
     public function execute()
     {
+        //@codingStandardsIgnoreStart
         $ch = curl_init();
         $this->setAuth($ch);
         try {
@@ -220,6 +221,7 @@ abstract class Rest
         } catch (\Exception $e) {
             curl_close($ch);
             throw $e;
+            //@codingStandardsIgnoreEnd
         }
 
         /*
@@ -281,8 +283,10 @@ abstract class Rest
             $this->buildPostBody();
         }
 
+        //@codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->requestBody);
         curl_setopt($ch, CURLOPT_POST, true);
+        //@codingStandardsIgnoreEnd
 
         $this->doExecute($ch);
     }
@@ -311,7 +315,7 @@ abstract class Rest
         }
 
         $this->requestLength = strlen($this->requestBody);
-
+        //@codingStandardsIgnoreStart
         $fh = fopen('php://memory', 'rw');
         fwrite($fh, $this->requestBody);
         rewind($fh);
@@ -323,6 +327,7 @@ abstract class Rest
         $this->doExecute($ch);
 
         fclose($fh);
+        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -332,8 +337,9 @@ abstract class Rest
      */
     protected function executeDelete($ch)
     {
+        //@codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-
+        //@codingStandardsIgnoreEnd
         $this->doExecute($ch);
     }
 
@@ -344,6 +350,7 @@ abstract class Rest
      */
     protected function doExecute(&$ch)
     {
+        //@codingStandardsIgnoreStart
         $this->setCurlOpts($ch);
 
         if ($this->isNotJson) {
@@ -361,6 +368,7 @@ abstract class Rest
         }
 
         curl_close($ch);
+        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -370,6 +378,7 @@ abstract class Rest
      */
     protected function setCurlOpts(&$ch)
     {
+        //@codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -381,15 +390,17 @@ abstract class Rest
                 'Content-Type: application/json',
             ]
         );
+        //@codingStandardsIgnoreEnd
     }
 
     /**
-     * basic auth.
+     * Basic auth.
      *
      * @param $ch
      */
     protected function setAuth(&$ch)
     {
+        //@codingStandardsIgnoreStart
         if ($this->_apiUsername !== null && $this->_apiPassword !== null) {
             curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
             curl_setopt(
@@ -397,6 +408,7 @@ abstract class Rest
                 $this->_apiUsername . ':' . $this->_apiPassword
             );
         }
+        //@codingStandardsIgnoreEnd
     }
 
     /**

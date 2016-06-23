@@ -30,8 +30,11 @@ class Order extends \Magento\Framework\Model\AbstractModel
             ->addFieldToFilter('quote_id', $quoteId)
             ->setPageSize(1);
 
-        if ($collection->count()) {
+        if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
+
         } else {
             $this->setOrderId($orderId)
                 ->setQuoteId($quoteId);
@@ -56,8 +59,10 @@ class Order extends \Magento\Framework\Model\AbstractModel
             ->addFieldToFilter('quote_id', $quoteId)
             ->addFieldToFilter('store_id', $storeId);
 
-        if ($collection->count()) {
+        if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         } else {
             $this->setOrderId($orderId)
                 ->setQuoteId($quoteId)
