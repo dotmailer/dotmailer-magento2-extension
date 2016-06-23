@@ -11,6 +11,20 @@ class Automation
     const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
     const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
     const AUTOMATION_STATUS_PENDING = 'pending';
+    public $automationTypes = array(
+        self::AUTOMATION_TYPE_NEW_CUSTOMER =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER,
+        self::AUTOMATION_TYPE_NEW_SUBSCRIBER =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER,
+        self::AUTOMATION_TYPE_NEW_ORDER =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER,
+        self::AUTOMATION_TYPE_NEW_GUEST_ORDER =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER,
+        self::AUTOMATION_TYPE_NEW_REVIEW =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW,
+        self::AUTOMATION_TYPE_NEW_WISHLIST =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST
+    );
 
     /**
      * @var int
@@ -116,22 +130,14 @@ class Automation
      */
     public function sync()
     {
-        //automation statuses to filter
-        $automationCollection = $this->_automationFactory->create()
-            ->addFieldToSelect('automation_type')
-            ->addFieldToFilter(
-                'enrolment_status', self::AUTOMATION_STATUS_PENDING
-            );
-        $automationCollection->getSelect()->group('automation_type');
-        //active types
-        $automationTypes = $automationCollection->getColumnValues(
-            'automation_type'
-        );
-
         //send the campaign by each types
-        foreach ($automationTypes as $type) {
+        foreach ($this->automationTypes as $type => $config) {
             $contacts = [];
-            //reset the collection
+            $websites = $this->_helper->getWebsites(true);
+            foreach ($websites as $website) {
+                $contacts[$website->getId()]['programId'] = $this->_helper->getWebsiteConfig($config, $website);
+            }
+            //get collection from type
             $automationCollection = $this->_automationFactory->create()
                 ->addFieldToFilter(
                     'enrolment_status', self::AUTOMATION_STATUS_PENDING
@@ -145,7 +151,6 @@ class Automation
                 $email = $automation->getEmail();
                 $this->typeId = $automation->getTypeId();
                 $this->websiteId = $automation->getWebsiteId();
-                $this->programId = $automation->getProgramId();
                 $this->storeName = $automation->getStoreName();
                 $contactId = $this->_helper->getContactId(
                     $email, $this->websiteId
@@ -156,59 +161,66 @@ class Automation
                     $this->updateDatafieldsByType(
                         $this->automationType, $email
                     );
-                    $contacts[$automation->getId()] = $contactId;
+                    $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contactId;
                 } else {
                     // the contact is suppressed or the request failed
                     $automation->setEnrolmentStatus('Suppressed')
                         ->save();
                 }
             }
-            //only for subscribed contacts
-            if (!empty($contacts) && $type != ''
-                && $this->_checkCampignEnrolmentActive($this->programId)
-            ) {
-                $result = $this->sendContactsToAutomation(
-                    array_values($contacts)
-                );
-                //check for error message
-                if (isset($result->message)) {
-                    $this->programStatus = 'Failed';
-                    $this->programMessage = $result->message;
+            foreach ($contacts as $websiteId => $websiteContacts) {
+                if (isset($websiteContacts['contacts'])) {
+                    $this->programId = $websiteContacts['programId'];
+                    $contactsArray = $websiteContacts['contacts'];
+                    //only for subscribed contacts
+                    if (!empty($contactsArray) &&
+                        $this->_checkCampignEnrolmentActive($this->programId)
+                    ) {
+                        $result = $this->sendContactsToAutomation(
+                            array_values($contactsArray),
+                            $websiteId
+                        );
+                        //check for error message
+                        if (isset($result->message)) {
+                            $this->programStatus = 'Failed';
+                            $this->programMessage = $result->message;
+                        }
+                        //program is not active
+                    } elseif ($this->programMessage
+                        == 'Error: ERROR_PROGRAM_NOT_ACTIVE '
+                    ) {
+                        $this->programStatus = 'Deactivated';
+                    }
+                    //update contacts with the new status, and log the error message if failes
+                    $coreResource = $this->_resource;
+                    $conn = $coreResource->getConnection('core_write');
+                    try {
+                        $contactIds = array_keys($contactsArray);
+                        $bind = [
+                            'enrolment_status' => $this->programStatus,
+                            'message' => $this->programMessage,
+                            'updated_at' => $this->_localeDate->date(
+                                null, null, false
+                            )->format('Y-m-d H:i:s'),
+                        ];
+                        $where = ['id IN(?)' => $contactIds];
+                        $num = $conn->update(
+                            $coreResource->getTableName('email_automation'),
+                            $bind,
+                            $where
+                        );
+                        //number of updated records
+                        if ($num) {
+                            $this->_helper->log(
+                                'Automation type : ' . $type . ', updated : ' . $num
+                            );
+                        }
+                    } catch (\Exception $e) {
+                        throw new \Magento\Framework\Exception\LocalizedException(
+                            __($e->getMessage())
+                        );
+                    }
                 }
-                //program is not active
-            } elseif ($this->programMessage
-                == 'Error: ERROR_PROGRAM_NOT_ACTIVE '
-            ) {
-                $this->programStatus = 'Deactivated';
-            }
-            //update contacts with the new status, and log the error message if failes
-            $coreResource = $this->_resource;
-            $conn = $coreResource->getConnection('core_write');
-            try {
-                $contactIds = array_keys($contacts);
-                $bind = [
-                    'enrolment_status' => $this->programStatus,
-                    'message' => $this->programMessage,
-                    'updated_at' => $this->_localeDate->date(
-                        null, null, false
-                    )->format('Y-m-d H:i:s'),
-                ];
-                $where = ['id IN(?)' => $contactIds];
-                $num = $conn->update(
-                    $coreResource->getTableName('email_automation'),
-                    $bind,
-                    $where
-                );
-                //number of updated records
-                if ($num) {
-                    $this->_helper->log(
-                        'Automation type : ' . $type . ', updated : ' . $num
-                    );
-                }
-            } catch (\Exception $e) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    __($e->getMessage())
-                );
             }
         }
     }
@@ -360,10 +372,11 @@ class Automation
      * Enrol contacts for a program.
      *
      * @param $contacts
+     * @param $websiteId
      */
-    public function sendContactsToAutomation($contacts)
+    public function sendContactsToAutomation($contacts, $websiteId)
     {
-        $client = $this->_helper->getWebsiteApiClient($this->websiteId);
+        $client = $this->_helper->getWebsiteApiClient($websiteId);
         $data = [
             'Contacts' => $contacts,
             'ProgramId' => $this->programId,
