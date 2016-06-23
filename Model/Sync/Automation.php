@@ -27,7 +27,9 @@ class Automation
         self::AUTOMATION_TYPE_NEW_REVIEW =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW,
         self::AUTOMATION_TYPE_NEW_WISHLIST =>
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
+        'order_automation_' =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS
     );
 
     /**
@@ -145,8 +147,17 @@ class Automation
             $automationCollection = $this->_automationFactory->create()
                 ->addFieldToFilter(
                     'enrolment_status', self::AUTOMATION_STATUS_PENDING
-                )
-                ->addFieldToFilter('automation_type', $type);
+                );
+            if ($type == 'order_automation_') {
+                $automationCollection->addFieldToFilter(
+                    'automation_type',
+                    array('like' => '%' . $type . '%')
+                );
+            } else {
+                $automationCollection->addFieldToFilter(
+                    'automation_type', $type
+                );
+            }
             //limit because of the each contact request to get the id
             $automationCollection->getSelect()->limit($this->limit);
             foreach ($automationCollection as $automation) {
