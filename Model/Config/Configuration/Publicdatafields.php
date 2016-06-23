@@ -4,10 +4,16 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Publicdatafields
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
 
-
+    /**
+     * Publicdatafields constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
@@ -15,14 +21,14 @@ class Publicdatafields
     }
 
     /**
-     * get data fields
+     * Get data fields.
      *
      * @return mixed
      */
     protected function getDataFields()
     {
         $website = $this->_helper->getWebsite();
-        $client  = $this->_helper->getWebsiteApiClient($website);
+        $client = $this->_helper->getWebsiteApiClient($website);
 
         //grab the datafields request and save to register
         $datafields = $client->getDataFields();
@@ -37,7 +43,10 @@ class Publicdatafields
      */
     public function toOptionArray()
     {
-        $fields = array();
+        $fields[] = [
+            'label' => __('---- Default Option ----'),
+            'value' => '0',
+        ];
         $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
         //get datafields options
         if ($apiEnabled) {
@@ -46,20 +55,20 @@ class Publicdatafields
             //set the api error message for the first option
             if (isset($datafields->message)) {
                 //message
-                $fields[] = array(
+                $fields[] = [
                     'value' => 0,
-                    'label' => __($datafields->message)
-                );
+                    'label' => __($datafields->message),
+                ];
             } else {
                 //loop for all datafields option
                 foreach ($datafields as $datafield) {
                     if (isset($datafield->name)
                         && $datafield->visibility == 'Public'
                     ) {
-                        $fields[] = array(
+                        $fields[] = [
                             'value' => $datafield->name,
-                            'label' => __($datafield->name)
-                        );
+                            'label' => __($datafield->name),
+                        ];
                     }
                 }
             }

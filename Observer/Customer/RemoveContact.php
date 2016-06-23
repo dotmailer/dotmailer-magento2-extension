@@ -4,48 +4,42 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 
 class RemoveContact implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
-    protected $_registry;
-    protected $_logger;
+    /**
+     * @var
+     */
     protected $_storeManager;
-    protected $_wishlistFactory;
-    protected $_customerFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
     protected $_contactFactory;
-    protected $_automationFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     */
     protected $_importerFactory;
-    protected $_reviewFactory;
-    protected $_wishlist;
 
-
+    /**
+     * RemoveContact constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
-        \Magento\Wishlist\Model\WishlistFactory $wishlist,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Magento\Customer\Model\CustomerFactory $customerFactory,
-        \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
-        \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Psr\Log\LoggerInterface $loggerInterface,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_reviewFactory     = $reviewFactory;
-        $this->_wishlist          = $wishlist;
-        $this->_contactFactory    = $contactFactory;
+        $this->_contactFactory = $contactFactory;
         $this->_importerFactory = $importerFactory;
-        $this->_automationFactory = $automationFactory;
-        $this->_customerFactory   = $customerFactory;
-        $this->_wishlistFactory   = $wishlistFactory;
-        $this->_helper            = $data;
-        $this->_logger            = $loggerInterface;
-        $this->_storeManager      = $storeManagerInterface;
-        $this->_registry          = $registry;
+        $this->_helper = $data;
     }
 
     /**
-     * If it's configured to capture on shipment - do this
+     * If it's configured to capture on shipment - do this.
      *
      * @param \Magento\Framework\Event\Observer $observer
      *
@@ -53,13 +47,13 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $customer     = $observer->getEvent()->getCustomer();
-        $email        = $customer->getEmail();
-        $websiteId    = $customer->getWebsiteId();
-        $apiEnabled   = $this->_helper->isEnabled($websiteId);
-        $customerSync = $this->_helper->getCustomerSyncEnabled($websiteId);
+        $customer = $observer->getEvent()->getCustomer();
+        $email = $customer->getEmail();
+        $websiteId = $customer->getWebsiteId();
+        $apiEnabled = $this->_helper->isEnabled($websiteId);
+        $customerSync = $this->_helper->isCustomerSyncEnabled($websiteId);
 
-        /**
+        /*
          * Remove contact.
          */
         if ($apiEnabled && $customerSync) {
@@ -78,7 +72,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
                     $contactModel->delete();
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, array());
+                $this->_helper->debug((string)$e, []);
             }
         }
 

@@ -4,18 +4,22 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Catalogvalues
 {
-
+    /**
+     * Get options.
+     *
+     * @return array
+     */
     public function toOptionArray()
     {
-        return array(
-            array(
+        return [
+            [
                 'value' => '1',
-                'label' => 'Default Level'
-            ),
-            array(
+                'label' => 'Default Level',
+            ],
+            [
                 'value' => '2',
-                'label' => 'Store Level'
-            )
-        );
+                'label' => 'Store Level',
+            ],
+        ];
     }
 }

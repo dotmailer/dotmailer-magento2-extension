@@ -5,9 +5,19 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 class Connect extends \Magento\Config\Block\System\Config\Form\Field
 {
 
+    /**
+     * @var string
+     */
     protected $_buttonLabel = 'Connect';
 
+    /**
+     * @var \Magento\Backend\Model\Auth
+     */
     protected $_auth;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
 
     /**
@@ -25,7 +35,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         $data = []
     ) {
         $this->_helper = $helper;
-        $this->_auth   = $auth;
+        $this->_auth = $auth;
 
         parent::__construct($context, $data);
     }
@@ -48,24 +58,23 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
+     * @codingStandardsIgnoreStart
      */
-    protected function _getElementHtml(
-        \Magento\Framework\Data\Form\Element\AbstractElement $element
-    ) {
-
-        $url      = $this->_helper->getAuthoriseUrl();
-        $ssl      = $this->_checkForSecureUrl();
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
+        //@codingStandardsIgnoreEnd
+        $url = $this->_helper->getAuthoriseUrl();
+        $ssl = $this->_checkForSecureUrl();
         $disabled = false;
         //disable for ssl missing
-        if ( ! $ssl) {
+        if (!$ssl) {
             $disabled = true;
         }
 
-        $adminUser    = $this->_auth->getUser();
+        $adminUser = $this->_auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
 
         $title = ($refreshToken) ? __('Disconnect') : __('Connect');
-
 
         $url = ($refreshToken) ? $this->getUrl(
             'dotdigitalgroup_email/studio/disconnect'
@@ -81,13 +90,17 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
             ->toHtml();
     }
 
+    /**
+     * Check the base url is using ssl.
+     * @return $this|bool
+     */
     protected function _checkForSecureUrl()
     {
         $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
             \Magento\Framework\UrlInterface::URL_TYPE_WEB, true
         );
 
-        if ( ! preg_match('/https/', $baseUrl)) {
+        if (!preg_match('/https/', $baseUrl)) {
             return false;
         }
 

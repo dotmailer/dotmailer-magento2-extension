@@ -1,53 +1,55 @@
 <?php
 
-
 namespace Dotdigitalgroup\Email\Observer\Customer;
-
 
 class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
-    protected $_registry;
-    protected $_logger;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\WishlistFactory
+     */
     protected $_wishlistFactory;
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
+     */
     protected $_customerFactory;
-    protected $_contactFactory;
-    protected $_automationFactory;
+    /**
+     * @var
+     */
     protected $_importerFactory;
-    protected $_reviewFactory;
-    protected $_wishlist;
 
-
+    /**
+     * RemoveWishlist constructor.
+     *
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
-        \Magento\Wishlist\Model\WishlistFactory $wishlist,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
-        \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Psr\Log\LoggerInterface $loggerInterface,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_reviewFactory     = $reviewFactory;
-        $this->_wishlist          = $wishlist;
-        $this->_contactFactory    = $contactFactory;
         $this->_importerFactory = $importerFactory;
-        $this->_automationFactory = $automationFactory;
-        $this->_customerFactory   = $customerFactory;
-        $this->_wishlistFactory   = $wishlistFactory;
-        $this->_helper            = $data;
-        $this->_logger            = $loggerInterface;
-        $this->_storeManager      = $storeManagerInterface;
-        $this->_registry          = $registry;
+        $this->_customerFactory = $customerFactory;
+        $this->_wishlistFactory = $wishlistFactory;
+        $this->_helper = $data;
+        $this->_storeManager = $storeManagerInterface;
     }
 
     /**
-     * If it's configured to capture on shipment - do this
+     * If it's configured to capture on shipment - do this.
      *
      * @param \Magento\Framework\Event\Observer $observer
      *
@@ -55,10 +57,10 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $object   = $observer->getEvent()->getDataObject();
+        $object = $observer->getEvent()->getDataObject();
         $customer = $this->_customerFactory->create()
             ->load($object->getCustomerId());
-        $website  = $this->_storeManager->getStore($customer->getStoreId())
+        $website = $this->_storeManager->getStore($customer->getStoreId())
             ->getWebsite();
 
         //sync enabled
@@ -75,16 +77,15 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
                     //register in queue with importer
                     $this->_importerFactory->create()->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
-                        array($item->getId()),
+                        [$item->getId()],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                         $website->getId()
                     );
                     $item->delete();
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, array());
+                $this->_helper->debug((string)$e, []);
             }
         }
     }
-
 }

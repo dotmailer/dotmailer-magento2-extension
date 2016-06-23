@@ -4,16 +4,17 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 
 class Visibility
 {
-
     /**
+     * Get options.
+     *
      * @return array
      */
     public function toOptionArray()
     {
-        $dataType = array(
-            array('value' => 'Private', 'label' => __('Private')),
-            array('value' => 'Public', 'label' => __('Public')),
-        );
+        $dataType = [
+            ['value' => 'Private', 'label' => __('Private')],
+            ['value' => 'Public', 'label' => __('Public')],
+        ];
 
         return $dataType;
     }

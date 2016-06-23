@@ -5,7 +5,9 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 class Main extends \Magento\Backend\Block\Widget\Form\Generic
     implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
-
+    /**
+     * @var \Magento\Store\Model\System\Store
+     */
     protected $_systemStore;
 
     /**
@@ -29,7 +31,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
-     * Prepare content for tab
+     * Prepare content for tab.
      *
      * @return string
      */
@@ -39,7 +41,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
-     * Prepare title for tab
+     * Prepare title for tab.
      *
      * @return string
      */
@@ -49,7 +51,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
-     * Returns status flag about this tab can be showed or not
+     * Returns status flag about this tab can be showed or not.
      *
      * @return true
      */
@@ -59,7 +61,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
-     * Returns status flag about this tab hidden or not
+     * Returns status flag about this tab hidden or not.
      *
      * @return true
      */
@@ -68,6 +70,11 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
         return false;
     }
 
+    /**
+     * @return $this
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function _prepareForm()
     {
         $model = $this->_coreRegistry->registry('current_ddg_rule');
@@ -76,45 +83,45 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
         $form->setHtmlIdPrefix('rule_');
 
         $fieldset = $form->addFieldset('base_fieldset',
-            array('legend' => __('Rule Information'))
+            ['legend' => __('Rule Information')]
         );
 
         if ($model->getId()) {
-            $fieldset->addField('id', 'hidden', array(
+            $fieldset->addField('id', 'hidden', [
                 'name' => 'id',
-            ));
+            ]);
         }
 
-        $fieldset->addField('name', 'text', array(
-            'name'     => 'name',
-            'label'    => __('Rule Name'),
-            'title'    => __('Rule Name'),
+        $fieldset->addField('name', 'text', [
+            'name' => 'name',
+            'label' => __('Rule Name'),
+            'title' => __('Rule Name'),
             'required' => true,
-        ));
+        ]);
 
-        $fieldset->addField('type', 'select', array(
-            'label'    => __('Rule Type'),
-            'title'    => __('Rule Type'),
-            'name'     => 'type',
+        $fieldset->addField('type', 'select', [
+            'label' => __('Rule Type'),
+            'title' => __('Rule Type'),
+            'name' => 'type',
             'required' => true,
-            'options'  => array(
+            'options' => [
                 \Dotdigitalgroup\Email\Model\Rules::ABANDONED => 'Abandoned Cart Exclusion Rule',
-                \Dotdigitalgroup\Email\Model\Rules::REVIEW    => 'Review Email Exclusion Rule',
-            ),
-        ));
+                \Dotdigitalgroup\Email\Model\Rules::REVIEW => 'Review Email Exclusion Rule',
+            ],
+        ]);
 
-        $fieldset->addField('status', 'select', array(
-            'label'    => __('Status'),
-            'title'    => __('Status'),
-            'name'     => 'status',
+        $fieldset->addField('status', 'select', [
+            'label' => __('Status'),
+            'title' => __('Status'),
+            'name' => 'status',
             'required' => true,
-            'options'  => array(
+            'options' => [
                 '1' => __('Active'),
                 '0' => __('Inactive'),
-            ),
-        ));
+            ],
+        ]);
 
-        if ( ! $model->getId()) {
+        if (!$model->getId()) {
             $model->setData('status', '0');
         }
 
@@ -124,15 +131,15 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
                 ['name' => 'website_ids[]', 'value' => $websiteId]);
             $model->setWebsiteIds($websiteId);
         } else {
-            $field    = $fieldset->addField(
+            $field = $fieldset->addField(
                 'website_ids',
                 'multiselect',
                 [
-                    'name'     => 'website_ids[]',
-                    'label'    => __('Websites'),
-                    'title'    => __('Websites'),
+                    'name' => 'website_ids[]',
+                    'label' => __('Websites'),
+                    'title' => __('Websites'),
                     'required' => true,
-                    'values'   => $this->_systemStore->getWebsiteValuesForForm()
+                    'values' => $this->_systemStore->getWebsiteValuesForForm(),
                 ]
             );
             $renderer = $this->getLayout()->createBlock(

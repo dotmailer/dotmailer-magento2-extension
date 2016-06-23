@@ -4,17 +4,21 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Review extends \Magento\Framework\Model\AbstractModel
 {
-
     const EMAIL_REVIEW_IMPORTED = 1;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime
+     */
     protected $_dateTime;
 
     /**
-     * @param \Magento\Framework\Model\Context                        $context
-     * @param \Magento\Framework\Registry                             $registry
-     * @param \Magento\Framework\Stdlib\DateTime                      $dateTime
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
-     * @param array                                                   $data
+     * Review constructor.
+     *
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -30,22 +34,23 @@ class Review extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * constructor
+     * Constructor.
      */
     public function _construct()
     {
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Review');
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Review');
     }
 
-
     /**
-     * Prepare data to be saved to database
+     * Prepare data to be saved to database.
      *
      * @return $this
+     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
+        //@codingStandardsIgnoreEnd
         parent::beforeSave();
         if ($this->isObjectNew()) {
             $this->setCreatedAt($this->_dateTime->formatDate(true));
@@ -54,6 +59,4 @@ class Review extends \Magento\Framework\Model\AbstractModel
 
         return $this;
     }
-
-
 }

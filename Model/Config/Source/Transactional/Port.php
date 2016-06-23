@@ -4,18 +4,17 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional;
 
 class Port
 {
-
     /**
-     * Options getter
+     * Options getter.
      *
      * @return array
      */
     public function toOptionArray()
     {
-        return array(
-            array('value' => '25', 'label' => '25'),
-            array('value' => '2525', 'label' => '2525'),
-            array('value' => '587', 'label' => '587'),
-        );
+        return [
+            ['value' => '25', 'label' => '25'],
+            ['value' => '2525', 'label' => '2525'],
+            ['value' => '587', 'label' => '587'],
+        ];
     }
 }

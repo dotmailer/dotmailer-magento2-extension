@@ -2,24 +2,22 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
-/**
- * Class Catalog
- *
- * @package Dotdigitalgroup\Email\Model
- */
 class Catalog extends \Magento\Framework\Model\AbstractModel
 {
-
-
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime
+     */
     protected $_dateTime;
 
     /**
-     * @param \Magento\Framework\Model\Context                        $context
-     * @param \Magento\Framework\Registry                             $registry
-     * @param \Magento\Framework\Stdlib\DateTime                      $dateTime
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
-     * @param array                                                   $data
+     * Catalog constructor.
+     *
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -35,21 +33,22 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * constructor
+     * Constructor.
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Catalog');
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Catalog');
     }
 
-
     /**
-     * Prepare data to be saved to database
+     * Prepare data to be saved to database.
      *
      * @return $this
+     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
+        //@codingStandardsIgnoreEnd
         parent::beforeSave();
         if ($this->isObjectNew()) {
             $this->setCreatedAt($this->_dateTime->formatDate(true));
@@ -58,5 +57,4 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
 
         return $this;
     }
-
 }

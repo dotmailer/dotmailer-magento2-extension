@@ -2,62 +2,56 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
-
 class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
-    protected $_registry;
-    protected $_logger;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
-    protected $_wishlistFactory;
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
+     */
     protected $_customerFactory;
-    protected $_contactFactory;
-    protected $_automationFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ReviewFactory
+     */
     protected $_reviewFactory;
-    protected $_wishlist;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     */
+    protected $_automationFactory;
 
     /**
      * ReviewSaveAutomation constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ReviewFactory     $reviewFactory
-     * @param \Magento\Wishlist\Model\WishlistFactory        $wishlist
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory    $contactFactory
      * @param \Magento\Customer\Model\CustomerFactory        $customerFactory
-     * @param \Dotdigitalgroup\Email\Model\WishlistFactory   $wishlistFactory
-     * @param \Magento\Framework\Registry                    $registry
      * @param \Dotdigitalgroup\Email\Helper\Data             $data
-     * @param \Psr\Log\LoggerInterface                       $loggerInterface
      * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
-        \Magento\Wishlist\Model\WishlistFactory $wishlist,
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+
         \Magento\Customer\Model\CustomerFactory $customerFactory,
-        \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
-        \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Psr\Log\LoggerInterface $loggerInterface,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_reviewFactory     = $reviewFactory;
-        $this->_wishlist          = $wishlist;
-        $this->_contactFactory    = $contactFactory;
+        $this->_reviewFactory = $reviewFactory;
         $this->_automationFactory = $automationFactory;
-        $this->_customerFactory   = $customerFactory;
-        $this->_wishlistFactory   = $wishlistFactory;
-        $this->_helper            = $data;
-        $this->_logger            = $loggerInterface;
-        $this->_storeManager      = $storeManagerInterface;
-        $this->_registry          = $registry;
+        $this->_customerFactory = $customerFactory;
+        $this->_helper = $data;
+        $this->_storeManager = $storeManagerInterface;
     }
 
     /**
-     * If it's configured to capture on shipment - do this
+     * If it's configured to capture on shipment - do this.
      *
      * @param \Magento\Framework\Event\Observer $observer
      *
@@ -75,13 +69,13 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             $this->_helper->setConnectorContactToReImport($customerId);
             //save review info in the table
             $this->_registerReview($dataObject);
-            $store     = $this->_storeManager->getStore($dataObject->getStoreId());
+            $store = $this->_storeManager->getStore($dataObject->getStoreId());
             $storeName = $store->getName();
-            $website   = $this->_storeManager->getStore($store)->getWebsite();
-            $customer  = $this->_customerFactory->create()
+            $website = $this->_storeManager->getStore($store)->getWebsite();
+            $customer = $this->_customerFactory->create()
                 ->load($customerId);
             //if api is not enabled
-            if ( ! $this->_helper->isEnabled($website)) {
+            if (!$this->_helper->isEnabled($website)) {
                 return $this;
             }
 
@@ -104,11 +98,11 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * register review.
+     * Register review.
      *
      * @param $review
      */
-    private function _registerReview($review)
+    protected function _registerReview($review)
     {
         try {
             $this->_reviewFactory->create()
@@ -117,7 +111,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
                 ->setStoreId($review->getStoreId())
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string)$e, []);
         }
     }
 }

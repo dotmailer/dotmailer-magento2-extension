@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact;
 
 class Imported
 {
-
     /**
      * Contact imported options.
      *
@@ -12,9 +11,9 @@ class Imported
      */
     public function getOptions()
     {
-        return array(
-            '1'    => __('Imported'),
+        return [
+            '1' => __('Imported'),
             'null' => __('Not Imported'),
-        );
+        ];
     }
 }

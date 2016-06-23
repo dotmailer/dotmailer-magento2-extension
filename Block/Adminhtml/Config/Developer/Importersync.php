@@ -5,6 +5,9 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 class Importersync extends \Magento\Config\Block\System\Config\Form\Field
 {
 
+    /**
+     * @var string
+     */
     protected $_buttonLabel = 'Run Now';
 
     /**
@@ -20,17 +23,17 @@ class Importersync extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Get the button and scripts contents
+     * Get the button and scripts contents.
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
+     * @codingStandardsIgnoreStart
      */
-    protected function _getElementHtml(
-        \Magento\Framework\Data\Form\Element\AbstractElement $element
-    ) {
-        $url
-            = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/importersync');
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
+        //@codingStandardsIgnoreEnd
+        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/importersync');
 
         return $this->getLayout()
             ->createBlock('Magento\Backend\Block\Widget\Button')

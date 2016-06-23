@@ -2,19 +2,44 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
-
 class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
     public $recommnededHelper;
 
+    /**
+     * @var
+     */
     protected $_localeDate;
+    /**
+     * @var
+     */
     protected $_productCollection;
+    /**
+     * @var \Magento\Catalog\Model\CategoryFactory
+     */
     protected $_categoryFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory|\Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     */
     protected $_productFactory;
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     */
     protected $_productCollectionFactory;
+    /**
+     * @var \Magento\Reports\Model\ResourceModel\Product\CollectionFactory
+     */
     protected $_reportProductCollection;
 
     /**
@@ -23,11 +48,11 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param \Dotdigitalgroup\Email\Helper\Data                             $helper
      * @param \Magento\Catalog\Block\Product\Context                         $context
      * @param \Magento\Framework\Pricing\Helper\Data                         $priceHelper
-     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productFactory
+     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
      * @param \Magento\Catalog\Model\ProductFactory                          $productFactory
      * @param \Dotdigitalgroup\Email\Helper\Recommended                      $recommended
      * @param \Magento\Catalog\Model\CategoryFactory                         $categtoryFactory
-     * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $productCollection
+     * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection
      * @param array                                                          $data
      */
     public function __construct(
@@ -42,13 +67,12 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         $this->_productCollectionFactory = $productCollectionFactory;
-        $this->_productFactory    = $productFactory;
-        $this->_categoryFactory   = $categtoryFactory;
+        $this->_productFactory = $productFactory;
+        $this->_categoryFactory = $categtoryFactory;
         $this->_reportProductCollection = $reportProductCollection;
-        $this->helper             = $helper;
-        $this->recommnededHelper  = $recommended;
-        $this->priceHelper        = $priceHelper;
-        $this->storeManager       = $this->_storeManager;
+        $this->helper = $helper;
+        $this->recommnededHelper = $recommended;
+        $this->priceHelper = $priceHelper;
 
         parent::__construct($context, $data);
     }
@@ -61,11 +85,11 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getLoadedProductCollection()
     {
         $productsToDisplay = array();
-        $mode              = $this->getRequest()->getActionName();
+        $mode = $this->getRequest()->getActionName();
         $limit
                            = $this->recommnededHelper->getDisplayLimitByMode($mode);
-        $from              = $this->recommnededHelper->getTimeFromConfig($mode);
-        $to                = new \Zend_Date($this->_localeDate->date()
+        $from = $this->recommnededHelper->getTimeFromConfig($mode);
+        $to = new \Zend_Date($this->_localeDate->date()
             ->getTimestamp());
 
         $reportProductCollection = $this->_reportProductCollection->create()
@@ -73,36 +97,36 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             ->setPageSize($limit);
 
         //filter collection by category by category_id
-        if ($cat_id = $this->getRequest()->getParam('category_id')) {
-            $category = $this->_categoryFactory->create()->load($cat_id);
+        if ($catId = $this->getRequest()->getParam('category_id')) {
+            $category = $this->_categoryFactory->create()->load($catId);
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        array("ccpi" => 'catalog_category_product_index'),
-                        "e.entity_id = ccpi.product_id",
-                        array("category_id")
+                        ['ccpi' => 'catalog_category_product_index'],
+                        'e.entity_id = ccpi.product_id',
+                        ['category_id']
                     )
-                    ->where('ccpi.category_id =?', $cat_id);
+                    ->where('ccpi.category_id =?', $catId);
             } else {
-                $this->helper->log('Most viewed. Category id ' . $cat_id
+                $this->helper->log('Most viewed. Category id ' . $catId
                     . ' is invalid. It does not exist.');
             }
         }
 
         //filter collection by category by category_name
-        if ($cat_name = $this->getRequest()->getParam('category_name')) {
+        if ($catName = $this->getRequest()->getParam('category_name')) {
             $category = $this->_categoryFactory->create()
-                ->loadByAttribute('name', $cat_name);
+                ->loadByAttribute('name', $catName);
             if ($category) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        array("ccpi" => 'catalog_category_product_index'),
-                        "e.entity_id  = ccpi.product_id",
-                        array("category_id")
+                        ['ccpi' => 'catalog_category_product_index'],
+                        'e.entity_id  = ccpi.product_id',
+                        ['category_id']
                     )
                     ->where('ccpi.category_id =?', $category->getId());
             } else {
-                $this->helper->log('Most viewed. Category name ' . $cat_name
+                $this->helper->log('Most viewed. Category name ' . $catName
                     . ' is invalid. It does not exist.');
             }
         }
@@ -113,7 +137,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $productCollectionFactory = $this->_productCollectionFactory->create();
         $productCollectionFactory->addIdFilter($productIds)
             ->addAttributeToSelect(
-                array('product_url', 'name', 'store_id', 'small_image', 'price')
+                ['product_url', 'name', 'store_id', 'small_image', 'price']
             );
 
         //product collection
@@ -127,7 +151,6 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         return $productsToDisplay;
     }
 
-
     /**
      * Display mode type.
      *
@@ -138,7 +161,11 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         return $this->recommnededHelper->getDisplayType();
     }
 
-
+    /**
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

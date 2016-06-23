@@ -4,14 +4,13 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Cartlimit
 {
-
     /**
-     * available times
+     * Available times.
      *
      * @var array
      */
     protected $_times
-        = array(
+        = [
             0,
             1,
             2,
@@ -29,37 +28,34 @@ class Cartlimit
             96,
             108,
             120,
-            240
-        );
-
+            240,
+        ];
 
     /**
-     * send to campain options hours
+     * Send to campain options hours.
      *
      * @return array
      */
     public function toOptionArray()
     {
-        $result = $row = array();
-        $i      = 0;
+        $result = $row = [];
+        $i = 0;
         foreach ($this->_times as $one) {
-
-
             if ($i == 0) {
-                $row = array('value' => $one, 'label' => 'No Limit');
+                $row = ['value' => $one, 'label' => 'No Limit'];
             } elseif ($i == 1) {
-                $row = array(
+                $row = [
                     'value' => $one,
-                    'label' => $one . ' Hour'
-                );
+                    'label' => $one . ' Hour',
+                ];
             } else {
-                $row = array(
+                $row = [
                     'value' => $one,
-                    'label' => $one . ' Hours'
-                );
+                    'label' => $one . ' Hours',
+                ];
             }
             $result[] = $row;
-            $i++;
+            ++$i;
         }
 
         return $result;

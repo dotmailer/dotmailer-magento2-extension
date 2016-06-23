@@ -4,14 +4,14 @@ namespace Dotdigitalgroup\Email\Controller\Report;
 
 class Recentlyviewed extends \Dotdigitalgroup\Email\Controller\Response
 {
-
-	public function execute()
-	{
-		//authenticate
-		$this->authenticate();
-		$this->_view->loadLayout();
-		$this->_view->renderLayout();
-		//$this->checkContentNotEmpty( $this->_view->getLayout()->getOutput() );
-	}
-
+    /**
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function execute()
+    {
+        //authenticate
+        $this->authenticate();
+        $this->_view->loadLayout();
+        $this->_view->renderLayout();
+    }
 }

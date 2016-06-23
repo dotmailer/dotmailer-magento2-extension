@@ -2,33 +2,36 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 
-use Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist as WishlistController;
 use Magento\Framework\Controller\ResultFactory;
 
-class MassDelete extends WishlistController
+class MassDelete extends \Magento\Backend\App\Action
 {
-	/**
-	 * @return \Magento\Backend\Model\View\Result\Redirect
-	 */
-	public function execute()
-	{
-		$searchIds = $this->getRequest()->getParam('id');
-		if (!is_array($searchIds)) {
-			$this->messageManager->addError(__('Please select wishlists.'));
-		} else {
-			try {
-				foreach ($searchIds as $searchId) {
-					$model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->load($searchId);
-					$model->delete();
-				}
-				$this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
-			} catch (\Exception $e) {
-				$this->messageManager->addError($e->getMessage());
-			}
-		}
-		/** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-		$resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-		$resultRedirect->setPath('*/*/');
-		return $resultRedirect;
-	}
+    /**
+     * @return \Magento\Backend\Model\View\Result\Redirect
+     */
+    public function execute()
+    {
+        $ids = $this->getRequest()->getParam('id');
+
+        if (!is_array($ids)) {
+            $this->messageManager->addError(__('Please select wishlist.'));
+        } else {
+            try {
+                foreach ($ids as $id) {
+                    //@codingStandardsIgnoreStart
+                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->setId($id);
+                    $model->delete();
+                    //@codingStandardsIgnoreEnd
+                }
+                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
+            } catch (\Exception $e) {
+                $this->messageManager->addError($e->getMessage());
+            }
+        }
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $resultRedirect->setPath('*/*/');
+
+        return $resultRedirect;
+    }
 }

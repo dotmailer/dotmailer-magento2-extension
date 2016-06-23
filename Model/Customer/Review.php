@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Customer;
 
 class Review
 {
-
     /**
      * @var int
      */
@@ -13,7 +12,7 @@ class Review
     /**
      * @var int
      */
-    public $customer_id;
+    public $customerId;
 
     /**
      * @var string
@@ -23,40 +22,57 @@ class Review
     /**
      * @var string
      */
-    public $product_name;
+    public $productName;
 
     /**
      * @var string
      */
-    public $product_sku;
+    public $productSku;
 
     /**
      * @var string
      */
-    public $review_date;
+    public $reviewDate;
 
     /**
      * @var string
      */
-    public $website_name;
+    public $websiteName;
 
     /**
      * @var string
      */
-    public $store_name;
+    public $storeName;
 
-
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
 
+    /**
+     * Review constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_helper       = $data;
+        $this->_helper = $data;
         $this->_storeManager = $storeManagerInterface;
     }
 
+    /**
+     * @param $customer
+     *
+     * @return $this
+     */
     public function setCustomer($customer)
     {
         $this->setCustomerId($customer->getId());
@@ -66,13 +82,13 @@ class Review
     }
 
     /**
-     * @param $customer_id
+     * @param $customerId
      *
      * @return $this
      */
-    public function setCustomerId($customer_id)
+    public function setCustomerId($customerId)
     {
-        $this->customer_id = (int)$customer_id;
+        $this->customerId = (int)$customerId;
 
         return $this;
     }
@@ -82,7 +98,7 @@ class Review
      */
     public function getCustomerId()
     {
-        return (int)$this->customer_id;
+        return (int)$this->customerId;
     }
 
     /**
@@ -106,18 +122,18 @@ class Review
     }
 
     /**
-     * create rating on runtime
+     * Create rating on runtime.
      *
-     * @param $rating_name
+     * @param $ratingName
      * @param $rating
      */
-    public function createRating($rating_name, $rating)
+    public function createRating($ratingName, $rating)
     {
-        $this->$rating_name = $rating->expose();
+        $this->$ratingName = $rating->expose();
     }
 
     /**
-     * set review date.
+     * Set review date.
      *
      * @param $date
      *
@@ -125,9 +141,9 @@ class Review
      */
     public function setReviewDate($date)
     {
-        $created_at = new \Zend_Date($date, \Zend_Date::ISO_8601);
+        $createdAt = new \Zend_Date($date, \Zend_Date::ISO_8601);
 
-        $this->review_date = $created_at->toString(\Zend_Date::ISO_8601);;
+        $this->reviewDate = $createdAt->toString(\Zend_Date::ISO_8601);
 
         return $this;
     }
@@ -137,11 +153,11 @@ class Review
      */
     public function getReviewDate()
     {
-        return $this->review_date;
+        return $this->reviewDate;
     }
 
     /**
-     * set product
+     * Set product.
      *
      * @return $this
      */
@@ -154,15 +170,15 @@ class Review
     }
 
     /**
-     * set review data
+     * Set review data.
      *
      * @return $this
      */
     public function setReviewData(\Magento\Review\Model\Review $review)
     {
-        $store       = $this->_storeManager->getStore($review->getStoreId());
+        $store = $this->_storeManager->getStore($review->getStoreId());
         $websiteName = $store->getWebsite()->getName();
-        $storeName   = $store->getName();
+        $storeName = $store->getName();
         $this->setId($review->getReviewId())
             ->setWebsiteName($websiteName)
             ->setStoreName($storeName)
@@ -172,13 +188,13 @@ class Review
     }
 
     /**
-     * set product name
+     * Set product name.
      *
      * @param $name
      */
     public function setProductName($name)
     {
-        $this->product_name = $name;
+        $this->productName = $name;
     }
 
     /**
@@ -186,17 +202,17 @@ class Review
      */
     public function getProductName()
     {
-        return $this->product_name;
+        return $this->productName;
     }
 
     /**
-     * set product sku
+     * Set product sku.
      *
      * @param $sku
      */
     public function setProductSku($sku)
     {
-        $this->product_sku = $sku;
+        $this->productSku = $sku;
     }
 
     /**
@@ -204,11 +220,11 @@ class Review
      */
     public function getProductSku()
     {
-        return $this->product_sku;
+        return $this->productSku;
     }
 
     /**
-     * set website name
+     * Set website name.
      *
      * @param $name
      *
@@ -216,7 +232,7 @@ class Review
      */
     public function setWebsiteName($name)
     {
-        $this->website_name = $name;
+        $this->websiteName = $name;
 
         return $this;
     }
@@ -226,11 +242,11 @@ class Review
      */
     public function getStoreName()
     {
-        return $this->store_name;
+        return $this->storeName;
     }
 
     /**
-     * set store name
+     * Set store name.
      *
      * @param $name
      *
@@ -238,7 +254,7 @@ class Review
      */
     public function setStoreName($name)
     {
-        $this->store_name = $name;
+        $this->storeName = $name;
 
         return $this;
     }
@@ -248,7 +264,7 @@ class Review
      */
     public function getWebsiteName()
     {
-        return $this->website_name;
+        return $this->websiteName;
     }
 
     /**
@@ -271,12 +287,9 @@ class Review
     }
 
     /**
-     * Init not serializable fields
-     *
-     * @return void
+     * Init not serializable fields.
      */
     public function __wakeup()
     {
-
     }
 }

@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
 class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
-
+    /**
+     * Sync.
+     *
+     * @param $collection
+     */
     public function sync($collection)
     {
         foreach ($collection as $item) {

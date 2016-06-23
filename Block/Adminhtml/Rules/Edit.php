@@ -1,40 +1,45 @@
 <?php
 
-/**
- * Shopping cart rule edit form block
- */
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
 
+/**
+ * Shopping cart rule edit form block.
+ */
 class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
-
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
 
     /**
      * Initialize form
      * Add standard buttons
-     * Add "Save and Continue" button
+     * Add "Save and Continue" button.
+     *
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Backend\Block\Widget\Context $context
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
         \Magento\Backend\Block\Widget\Context $context
     ) {
-        $this->_registry   = $registry;
-        $this->_objectId   = 'id';
+        $this->_registry = $registry;
+        $this->_objectId = 'id';
         $this->_blockGroup = 'Dotdigitalgroup_Email';
         $this->_controller = 'adminhtml_rules';
-        $data              = [];
+        $data = [];
         parent::__construct($context, $data);
 
-        $this->addButton('save_and_continue_edit', array(
-            'class'   => 'save',
-            'label'   => __('Save and Continue Edit'),
+        $this->addButton('save_and_continue_edit', [
+            'class' => 'save',
+            'label' => __('Save and Continue Edit'),
             'onclick' => 'editForm.submit($(\'edit_form\').action + \'back/edit/\')',
-        ), 10);
+        ], 10);
     }
 
     /**
-     * Getter for form header text
+     * Getter for form header text.
      *
      * @return string
      */
@@ -43,10 +48,9 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
         $rule = $this->_registry->registry('current_ddg_rule');
 
         if ($rule->getId()) {
-            return __("Edit Rule " . $this->escapeHtml($rule->getName()));
+            return __('Edit Rule ' . $this->escapeHtml($rule->getName()));
         } else {
             return __('New Rule');
         }
     }
-
 }

@@ -4,27 +4,26 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
 class Condition
 {
-
     /**
-     * options array
+     * Options array.
      *
      * @return array
      */
     public function toOptionArray()
     {
-        $options = array(
-            array('value' => 'eq', 'label' => __('is')),
-            array('value' => 'neq', 'label' => __('is not')),
-            array('value' => 'null', 'label' => __('is empty')),
-        );
+        $options = [
+            ['value' => 'eq', 'label' => __('is')],
+            ['value' => 'neq', 'label' => __('is not')],
+            ['value' => 'null', 'label' => __('is empty')],
+        ];
 
         return $options;
     }
 
     /**
-     * get condition options according to type
+     * Get condition options according to type.
      *
-     * @param $type
+     * @param string $type
      *
      * @return array
      */
@@ -45,40 +44,40 @@ class Condition
     }
 
     /**
-     * condition options for numeric type
+     * Condition options for numeric type.
      *
      * @return array
      */
     public function optionsForNumericType()
     {
-        $options   = $this->toOptionArray();
-        $options[] = array(
+        $options = $this->toOptionArray();
+        $options[] = [
             'value' => 'gteq',
-            'label' => __('equals or greater than')
-        );
-        $options[] = array(
+            'label' => __('equals or greater than'),
+        ];
+        $options[] = [
             'value' => 'lteq',
-            'label' => __('equals or less then')
-        );
-        $options[] = array('value' => 'gt', 'label' => __('greater than'));
-        $options[] = array('value' => 'lt', 'label' => __('less than'));
+            'label' => __('equals or less then'),
+        ];
+        $options[] = ['value' => 'gt', 'label' => __('greater than')];
+        $options[] = ['value' => 'lt', 'label' => __('less than')];
 
         return $options;
     }
 
     /**
-     * condition options for string type
+     * Condition options for string type.
      *
      * @return array
      */
     public function optionsForStringType()
     {
-        $options   = $this->toOptionArray();
-        $options[] = array('value' => 'like', 'label' => __('contains'));
-        $options[] = array(
+        $options = $this->toOptionArray();
+        $options[] = ['value' => 'like', 'label' => __('contains')];
+        $options[] = [
             'value' => 'nlike',
-            'label' => __('does not contains')
-        );
+            'label' => __('does not contains'),
+        ];
 
         return $options;
     }

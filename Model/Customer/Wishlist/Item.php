@@ -4,14 +4,32 @@ namespace Dotdigitalgroup\Email\Model\Customer\Wishlist;
 
 class Item
 {
-
+    /**
+     * @var
+     */
     protected $sku;
+    /**
+     * @var
+     */
     protected $qty;
+    /**
+     * @var
+     */
     protected $name;
+    /**
+     * @var
+     */
     protected $price;
-    protected $total_value_of_product;
+    /**
+     * @var
+     */
+    protected $totalValueOfProduct;
 
-
+    /**
+     * @param $product
+     *
+     * @return $this
+     */
     public function setProduct($product)
     {
         $this->setSku($product->getSku());
@@ -65,7 +83,7 @@ class Item
      */
     public function getTotalValueOfProduct()
     {
-        return $this->total_value_of_product;
+        return $this->totalValueOfProduct;
     }
 
     /**
@@ -76,9 +94,9 @@ class Item
     public function setPrice($product)
     {
         $this->price = $product->getFinalPrice();
-        $total       = $this->price * $this->qty;
+        $total = $this->price * $this->qty;
 
-        $this->total_value_of_product = number_format($total, 2, '.', ',');
+        $this->totalValueOfProduct = number_format($total, 2, '.', ',');
 
         return $this;
     }

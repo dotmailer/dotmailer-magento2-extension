@@ -4,14 +4,30 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
     public $recommnededHelper;
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
+     */
     protected $_customerFactory;
+    /**
+     * @var \Magento\Wishlist\Model\WishlistFactory
+     */
     protected $_wishlistFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
-
 
     /**
      * Wishlistproducts constructor.
@@ -36,37 +52,45 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper            = $helper;
-        $this->_customerFactory  = $customerFactory;
+        $this->helper = $helper;
+        $this->_customerFactory = $customerFactory;
         $this->recommnededHelper = $recommended;
-        $this->priceHelper       = $priceHelper;
-        $this->storeManager      = $this->_storeManager;
-        $this->_wishlistFactory  = $wishlistFactory;
-        $this->_productFactory   = $productFactory;
+        $this->priceHelper = $priceHelper;
+        $this->_wishlistFactory = $wishlistFactory;
+        $this->_productFactory = $productFactory;
     }
 
-
+    /**
+     * Get wishlist items.
+     *
+     * @return array
+     */
     protected function _getWishlistItems()
     {
         $wishlist = $this->_getWishlist();
         if ($wishlist && count($wishlist->getItemCollection())) {
             return $wishlist->getItemCollection();
         } else {
-            return array();
+            return [];
         }
     }
 
+    /**
+     * Get wishlist for customer.
+     *
+     * @return array|\Magento\Framework\DataObject
+     */
     protected function _getWishlist()
     {
         $customerId = $this->getRequest()->getParam('customer_id');
-        if ( ! $customerId) {
-            return array();
+        if (!$customerId) {
+            return [];
         }
 
         $customer = $this->_customerFactory->create()
             ->load($customerId);
-        if ( ! $customer->getId()) {
-            return array();
+        if (!$customer->getId()) {
+            return [];
         }
 
         $collection = $this->_wishlistFactory->create()
@@ -76,30 +100,34 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $collection->getSelect()->limit(1);
 
         if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         } else {
-            return array();
+            return [];
         }
-
     }
 
     /**
-     * get the products to display for table
+     * Get the products to display for table.
+     *
+     * @return array
      */
     public function getLoadedProductCollection()
     {
         //products to be display for recommended pages
-        $productsToDisplay = array();
+        $productsToDisplay = [];
+        $productsToDisplayCounter = 0;
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
         //number of product items to be displayed
-        $limit    = $this->recommnededHelper->getDisplayLimitByMode($mode);
-        $items    = $this->_getWishlistItems();
+        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $items = $this->_getWishlistItems();
         $numItems = count($items);
 
         //no product found to display
-        if ($numItems == 0 || ! $limit) {
-            return array();
+        if ($numItems == 0 || !$limit) {
+            return [];
         } elseif (count($items) > $limit) {
             $maxPerChild = 1;
         } else {
@@ -122,41 +150,48 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
                     $product, $mode
                 );
                 foreach ($recommendedProducts as $product) {
-                    //load child product
-                    $product = $this->_productFactory->create()
-                        ->load($product->getId());
                     //check if still exists
-                    if ($product->getId() && count($productsToDisplay) < $limit
+                    if ($product->getId() && $productsToDisplayCounter < $limit
                         && $i <= $maxPerChild
                         && $product->isSaleable()
-                        && ! $product->getParentId()
+                        && !$product->getParentId()
                     ) {
                         //we have a product to display
                         $productsToDisplay[$product->getId()] = $product;
                         $i++;
+                        $productsToDisplayCounter++;
+
                     }
                 }
             }
             //have reached the limit don't loop for more
-            if (count($productsToDisplay) == $limit) {
+            if ($productsToDisplayCounter == $limit) {
                 break;
             }
         }
 
         //check for more space to fill up the table with fallback products
-        if (count($productsToDisplay) < $limit) {
+        if ($productsToDisplayCounter < $limit) {
             $fallbackIds = $this->recommnededHelper->getFallbackIds();
 
-            foreach ($fallbackIds as $productId) {
-                $product = $this->_productFactory->create()
-                    ->load($productId);
+            $productCollection = $this->_productFactory->create()
+                ->getCollection()
+                ->addIdFilter($fallbackIds)
+                ->addAttributeToSelect(
+                    ['product_url', 'name', 'store_id', 'small_image', 'price']
+                );
+
+            foreach ($productCollection as $product) {
                 if ($product->isSaleable()) {
                     $productsToDisplay[$product->getId()] = $product;
                 }
+
                 //stop the limit was reached
+                //@codingStandardsIgnoreStart
                 if (count($productsToDisplay) == $limit) {
                     break;
                 }
+                //@codingStandardsIgnoreEnd
             }
         }
 
@@ -178,7 +213,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     protected function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
-        $products = array();
+        $products = [];
         switch ($mode) {
             case 'related':
                 $products = $productModel->getRelatedProducts();
@@ -203,7 +238,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getMode()
     {
         return $this->recommnededHelper->getDisplayType();
-
     }
 
     /**
@@ -218,6 +252,12 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         );
     }
 
+    /**
+     * AC link to dynamic content.
+     * @param $store
+     *
+     * @return mixed
+     */
     public function getTextForUrl($store)
     {
         $store = $this->_storeManager->getStore($store);

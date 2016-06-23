@@ -4,73 +4,116 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Rules extends \Magento\Framework\Model\AbstractModel
 {
-
     const ABANDONED = 1;
     const REVIEW = 2;
 
+    /**
+     * @var
+     */
     protected $_conditionMap;
+    /**
+     * @var
+     */
     protected $_defaultOptions;
+    /**
+     * @var
+     */
     protected $_attributeMapForQuote;
+    /**
+     * @var
+     */
     protected $_attributeMapForOrder;
+    /**
+     * @var
+     */
     protected $_productAttribute;
+    /**
+     * @var array
+     */
     protected $_used = array();
 
-    protected $_objectManager;
+    /**
+     * @var Adminhtml\Source\Rules\Type
+     */
+    protected $rulesType;
 
     /**
-     * constructor
+     * @var \Magento\Eav\Model\Config
      */
-    public function _construct()
-    {
-        $this->_objectManager
-                               = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->_defaultOptions = $this->_objectManager->create(
-            'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type'
-        )->defaultOptions();
+    protected $config;
 
-        $this->_conditionMap         = array(
-            'eq'    => 'neq',
-            'neq'   => 'eq',
-            'gteq'  => 'lteq',
-            'lteq'  => 'gteq',
-            'gt'    => 'lt',
-            'lt'    => 'gt',
-            'like'  => 'nlike',
-            'nlike' => 'like'
-        );
-        $this->_attributeMapForQuote = array(
-            'method'            => 'method',
-            'shipping_method'   => 'shipping_method',
-            'country_id'        => 'country_id',
-            'city'              => 'city',
-            'region_id'         => 'region_id',
+    /**
+     * Review constructor.
+     *
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $rulesType,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Eav\Model\Config $config,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
+    ) {
+        $this->config = $config;
+        $this->rulesType = $rulesType;
+        parent::__construct($context, $registry, $resource, $resourceCollection,
+            $data);
+        $this->_defaultOptions = $this->rulesType->defaultOptions();
+        $this->_conditionMap = [
+            'eq' => 'neq',
+            'neq' => 'eq',
+            'gteq' => 'lteq',
+            'lteq' => 'gteq',
+            'gt' => 'lt',
+            'lt' => 'gt',
+            'like' => 'nlike',
+            'nlike' => 'like',
+        ];
+        $this->_attributeMapForQuote = [
+            'method' => 'method',
+            'shipping_method' => 'shipping_method',
+            'country_id' => 'country_id',
+            'city' => 'city',
+            'region_id' => 'region_id',
             'customer_group_id' => 'main_table.customer_group_id',
-            'coupon_code'       => 'main_table.coupon_code',
-            'subtotal'          => 'main_table.subtotal',
-            'grand_total'       => 'main_table.grand_total',
-            'items_qty'         => 'main_table.items_qty',
-            'customer_email'    => 'main_table.customer_email',
-        );
-        $this->_attributeMapForOrder = array(
-            'method'            => 'method',
-            'shipping_method'   => 'main_table.shipping_method',
-            'country_id'        => 'country_id',
-            'city'              => 'city',
-            'region_id'         => 'region_id',
+            'coupon_code' => 'main_table.coupon_code',
+            'subtotal' => 'main_table.subtotal',
+            'grand_total' => 'main_table.grand_total',
+            'items_qty' => 'main_table.items_qty',
+            'customer_email' => 'main_table.customer_email',
+        ];
+        $this->_attributeMapForOrder = [
+            'method' => 'method',
+            'shipping_method' => 'main_table.shipping_method',
+            'country_id' => 'country_id',
+            'city' => 'city',
+            'region_id' => 'region_id',
             'customer_group_id' => 'main_table.customer_group_id',
-            'coupon_code'       => 'main_table.coupon_code',
-            'subtotal'          => 'main_table.subtotal',
-            'grand_total'       => 'main_table.grand_total',
-            'items_qty'         => 'items_qty',
-            'customer_email'    => 'main_table.customer_email',
-        );
-        parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\Resource\Rules');
+            'coupon_code' => 'main_table.coupon_code',
+            'subtotal' => 'main_table.subtotal',
+            'grand_total' => 'main_table.grand_total',
+            'items_qty' => 'items_qty',
+            'customer_email' => 'main_table.customer_email',
+        ];
+        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Rules');
+
     }
 
+    /**
+     * @return $this
+     * @codingStandardsIgnoreStart
+     */
     public function beforeSave()
     {
+
         parent::beforeSave();
+        //@codingStandardsIgnoreEnd
         if ($this->isObjectNew()) {
             $this->setCreatedAt(time());
         } else {
@@ -83,7 +126,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * after load
+     * After load.
      *
      * @return $this
      */
@@ -96,7 +139,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * check if rule already exist for website
+     * Check if rule already exist for website.
      *
      * @param      $websiteId
      * @param      $type
@@ -108,10 +151,10 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     {
         $collection = $this->getCollection();
         $collection
-            ->addFieldToFilter('type', array('eq' => $type))
-            ->addFieldToFilter('website_ids', array('finset' => $websiteId));
+            ->addFieldToFilter('type', ['eq' => $type])
+            ->addFieldToFilter('website_ids', ['finset' => $websiteId]);
         if ($ruleId) {
-            $collection->addFieldToFilter('id', array('neq' => $ruleId));
+            $collection->addFieldToFilter('id', ['neq' => $ruleId]);
         }
         $collection->setPageSize(1);
 
@@ -123,6 +166,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Get rule for website.
+     *
      * @param $type
      * @param $websiteId
      *
@@ -132,19 +177,21 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     {
         $collection = $this->getCollection();
         $collection
-            ->addFieldToFilter('type', array('eq' => $type))
-            ->addFieldToFilter('status', array('eq' => 1))
-            ->addFieldToFilter('website_ids', array('finset' => $websiteId))
+            ->addFieldToFilter('type', ['eq' => $type])
+            ->addFieldToFilter('status', ['eq' => 1])
+            ->addFieldToFilter('website_ids', ['finset' => $websiteId])
             ->setPageSize(1);
         if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         }
 
-        return array();
+        return [];
     }
 
     /**
-     * process rule on collection
+     * Process rule on collection.
      *
      * @param $collection
      * @param $type
@@ -170,28 +217,28 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         if ($type == self::ABANDONED) {
             $collection->getSelect()
                 ->joinLeft(
-                    array('quote_address' => 'quote_address'),
-                    "main_table.entity_id = quote_address.quote_id",
-                    array('shipping_method', 'country_id', 'city', 'region_id')
+                    ['quote_address' => 'quote_address'],
+                    'main_table.entity_id = quote_address.quote_id',
+                    ['shipping_method', 'country_id', 'city', 'region_id']
                 )->joinLeft(
-                    array('quote_payment' => 'quote_payment'),
-                    "main_table.entity_id = quote_payment.quote_id",
-                    array('method')
+                    ['quote_payment' => 'quote_payment'],
+                    'main_table.entity_id = quote_payment.quote_id',
+                    ['method']
                 )->where('address_type = ?', 'shipping');
         } elseif ($type == self::REVIEW) {
             $collection->getSelect()
                 ->join(
-                    array('order_address' => 'sales_order_address'),
-                    "main_table.entity_id = order_address.parent_id",
-                    array('country_id', 'city', 'region_id')
+                    ['order_address' => 'sales_order_address'],
+                    'main_table.entity_id = order_address.parent_id',
+                    ['country_id', 'city', 'region_id']
                 )->join(
-                    array('order_payment' => 'sales_order_payment'),
-                    "main_table.entity_id = order_payment.parent_id",
-                    array('method')
+                    ['order_payment' => 'sales_order_payment'],
+                    'main_table.entity_id = order_payment.parent_id',
+                    ['method']
                 )->join(
-                    array('quote' => 'quote'),
-                    "main_table.quote_id = quote.entity_id",
-                    array('items_qty')
+                    ['quote' => 'quote'],
+                    'main_table.quote_id = quote.entity_id',
+                    ['items_qty']
                 )->where('order_address.address_type = ?', 'shipping');
         }
 
@@ -208,11 +255,10 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         if ($combination == 2) {
             return $this->_processOrCombination($collection, $condition, $type);
         }
-
     }
 
     /**
-     * process And combination on collection
+     * process And combination on collection.
      *
      * @param $collection
      * @param $conditions
@@ -224,8 +270,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     {
         foreach ($conditions as $condition) {
             $attribute = $condition['attribute'];
-            $cond      = $condition['conditions'];
-            $value     = $condition['cvalue'];
+            $cond = $condition['conditions'];
+            $value = $condition['cvalue'];
 
             //ignore condition if value is null or empty
             if ($value == '' or $value == null) {
@@ -255,11 +301,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             if ($cond == 'null') {
                 if ($value == '1') {
                     $collection->addFieldToFilter(
-                        $attribute, array('notnull' => true)
+                        $attribute, ['notnull' => true]
                     );
                 } elseif ($value == '0') {
                     $collection->addFieldToFilter(
-                        $attribute, array($cond => true)
+                        $attribute, [$cond => true]
                     );
                 }
             } else {
@@ -267,7 +313,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                     $value = '%' . $value . '%';
                 }
                 $collection->addFieldToFilter(
-                    $attribute, array($this->_conditionMap[$cond] => $value)
+                    $attribute, [$this->_conditionMap[$cond] => $value]
                 );
             }
         }
@@ -276,7 +322,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * process Or combination on collection
+     * process Or combination on collection.
      *
      * @param $collection
      * @param $conditions
@@ -286,12 +332,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     protected function _processOrCombination($collection, $conditions, $type)
     {
-        $fieldsConditions      = array();
-        $multiFieldsConditions = array();
+        $fieldsConditions = [];
+        $multiFieldsConditions = [];
         foreach ($conditions as $condition) {
             $attribute = $condition['attribute'];
-            $cond      = $condition['conditions'];
-            $value     = $condition['cvalue'];
+            $cond = $condition['conditions'];
+            $value = $condition['cvalue'];
 
             //ignore condition if value is null or empty
             if ($value == '' or $value == null) {
@@ -315,17 +361,17 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 if ($value == '1') {
                     if (isset($fieldsConditions[$attribute])) {
                         $multiFieldsConditions[$attribute]
-                            = array('notnull' => true);
+                            = ['notnull' => true];
                         continue;
                     }
-                    $fieldsConditions[$attribute] = array('notnull' => true);
+                    $fieldsConditions[$attribute] = ['notnull' => true];
                 } elseif ($value == '0') {
                     if (isset($fieldsConditions[$attribute])) {
                         $multiFieldsConditions[$attribute]
-                            = array($cond => true);;
+                            = [$cond => true];
                         continue;
                     }
-                    $fieldsConditions[$attribute] = array($cond => true);
+                    $fieldsConditions[$attribute] = [$cond => true];
                 }
             } else {
                 if ($cond == 'like' or $cond == 'nlike') {
@@ -333,28 +379,30 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 }
                 if (isset($fieldsConditions[$attribute])) {
                     $multiFieldsConditions[$attribute]
-                        = array($this->_conditionMap[$cond] => $value);
+                        = [$this->_conditionMap[$cond] => $value];
                     continue;
                 }
                 $fieldsConditions[$attribute]
-                    = array($this->_conditionMap[$cond] => $value);
+                    = [$this->_conditionMap[$cond] => $value];
             }
         }
         //all rules condition will be with or combination
-        if ( ! empty($fieldsConditions)) {
-            $column = array();
-            $cond   = array();
+        if (!empty($fieldsConditions)) {
+            $column = [];
+            $cond = [];
             foreach ($fieldsConditions as $key => $fieldsCondition) {
-                $column[] = $key;
-                $cond[]   = $fieldsCondition;
+                $exp = new \Zend_Db_Expr($key);
+                $column[] = $exp->__toString();
+                $cond[] = $fieldsCondition;
             }
-            if ( ! empty($multiFieldsConditions)) {
+            if (!empty($multiFieldsConditions)) {
                 foreach (
                     $multiFieldsConditions as $key => $multiFieldsCondition
                 ) {
                     if (in_array($key, $column)) {
-                        $column[] = $key;
-                        $cond[]   = $multiFieldsCondition;
+                        $exp = new \Zend_Db_Expr($key);
+                        $column[] = $exp->__toString();
+                        $cond[] = $multiFieldsCondition;
                         continue;
                     }
                 }
@@ -369,7 +417,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * process product attributes on collection
+     * Process product attributes on collection.
      *
      * @param $collection
      *
@@ -378,34 +426,26 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     protected function _processProductAttributes($collection)
     {
         //if no product attribute or collection empty return collection
-        if (empty($this->_productAttribute) or ! $collection->getSize()) {
+        if (empty($this->_productAttribute) or !$collection->getSize()) {
             return $collection;
         }
 
-        $productModel = $this->_objectManager->create(
-            'Magento\Catalog\Model\Product'
-        );
         foreach ($collection as $collectionItem) {
             $items = $collectionItem->getAllItems();
             foreach ($items as $item) {
-                $productId = $item->getProductId();
                 //loaded product
-                $product = $productModel
-                    ->setStoreId($item->getStoreId())
-                    ->load($productId);
+                $product = $item->getProduct();
 
                 //attributes array from loaded product
-                $attributes = $this->_objectManager->create(
-                    'Magento\Eav\Model\Config'
-                )->getEntityAttributeCodes(
+                $attributes = $this->config->getEntityAttributeCodes(
                     \Magento\Catalog\Model\Product::ENTITY,
                     $product
                 );
 
                 foreach ($this->_productAttribute as $productAttribute) {
                     $attribute = $productAttribute['attribute'];
-                    $cond      = $productAttribute['conditions'];
-                    $value     = $productAttribute['cvalue'];
+                    $cond = $productAttribute['conditions'];
+                    $value = $productAttribute['cvalue'];
 
                     if ($cond == 'null') {
                         if ($value == '0') {
@@ -418,10 +458,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
                     //if attribute is in product's attributes array
                     if (in_array($attribute, $attributes)) {
-                        $attr = $this->_objectManager->get(
-                            'Magento\Eav\Model\Config'
-                        )
-                            ->getAttribute('catalog_product', $attribute);
+                        $attr = $this->config->getAttribute('catalog_product', $attribute);
                         //frontend type
                         $frontType = $attr->getFrontend()->getInputType();
                         //if type is select
@@ -442,15 +479,18 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                                 continue 3;
                             }
                         } else {
-                            $getter   = 'get';
+                            $getter = 'get';
                             $exploded = explode('_', $attribute);
                             foreach ($exploded as $one) {
                                 $getter .= ucfirst($one);
                             }
+                            //@codingStandardsIgnoreStart
                             $attributeValue = call_user_func(
-                                array($product, $getter)
+                                [$product, $getter]
                             );
-                            //if retrieved value is an array then loop through all array values. example can be categories
+                            //@codingStandardsIgnoreEnd
+                            //if retrieved value is an array then loop through all array values.
+                            // example can be categories
                             if (is_array($attributeValue)) {
                                 foreach ($attributeValue as $attrValue) {
                                     //evaluate conditions on values. if true then unset item from collection
@@ -486,29 +526,29 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * evaluate two values against condition
+     * Evaluate two values against condition.
      *
-     * @param $var1
+     * @param $varOne
      * @param $op
-     * @param $var2
+     * @param $varTwo
      *
      * @return bool
      */
-    protected function _evaluate($var1, $op, $var2)
+    protected function _evaluate($varOne, $op, $varTwo)
     {
         switch ($op) {
-            case "eq":
-                return $var1 == $var2;
-            case "neq":
-                return $var1 != $var2;
-            case "gteq":
-                return $var1 >= $var2;
-            case "lteq":
-                return $var1 <= $var2;
-            case "gt":
-                return $var1 > $var2;
-            case "lt":
-                return $var1 < $var2;
+            case 'eq':
+                return $varOne == $varTwo;
+            case 'neq':
+                return $varOne != $varTwo;
+            case 'gteq':
+                return $varOne >= $varTwo;
+            case 'lteq':
+                return $varOne <= $varTwo;
+            case 'gt':
+                return $varOne > $varTwo;
+            case 'lt':
+                return $varOne < $varTwo;
         }
     }
 }

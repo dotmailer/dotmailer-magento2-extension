@@ -4,11 +4,14 @@ namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
 class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
-    
+    /**
+     * Sync.
+     *
+     * @param $collection
+     */
     public function sync($collection)
     {
-        foreach($collection as $item)
-        {
+        foreach ($collection as $item) {
             $websiteId = $item->getWebsiteId();
             $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
             $importData = unserialize($item->getImportData());

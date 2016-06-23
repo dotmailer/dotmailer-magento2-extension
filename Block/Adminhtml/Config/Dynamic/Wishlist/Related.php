@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist;
 
 class Related extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
@@ -22,7 +21,11 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
         parent::__construct($context);
     }
 
-
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return string
+     */
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
@@ -31,10 +34,10 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
         //last order id witch information will be generated
         $customerId = $this->_dataHelper->getMappedCustomerId();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
-        if ( ! $customerId) {
+        if (!$customerId) {
             $customerId = '[PLEASE MAP THE CUSTOMER ID]';
         }
 

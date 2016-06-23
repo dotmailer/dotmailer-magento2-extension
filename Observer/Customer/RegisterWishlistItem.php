@@ -1,64 +1,41 @@
 <?php
 
-
 namespace Dotdigitalgroup\Email\Observer\Customer;
-
 
 class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
-    protected $_registry;
-    protected $_logger;
-    protected $_storeManager;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\WishlistFactory
+     */
     protected $_wishlistFactory;
-    protected $_customerFactory;
-    protected $_contactFactory;
-    protected $_automationFactory;
-    protected $_reviewFactory;
+    /**
+     * @var \Magento\Wishlist\Model\WishlistFactory
+     */
     protected $_wishlist;
-
 
     /**
      * RegisterWishlistItem constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ReviewFactory     $reviewFactory
-     * @param \Magento\Wishlist\Model\WishlistFactory        $wishlist
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory    $contactFactory
-     * @param \Magento\Customer\Model\CustomerFactory        $customerFactory
-     * @param \Dotdigitalgroup\Email\Model\WishlistFactory   $wishlistFactory
-     * @param \Magento\Framework\Registry                    $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data             $data
-     * @param \Psr\Log\LoggerInterface                       $loggerInterface
-     * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
+     * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
+     * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
-        \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
-        \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Psr\Log\LoggerInterface $loggerInterface,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_reviewFactory     = $reviewFactory;
-        $this->_wishlist          = $wishlist;
-        $this->_contactFactory    = $contactFactory;
-        $this->_automationFactory = $automationFactory;
-        $this->_customerFactory   = $customerFactory;
-        $this->_wishlistFactory   = $wishlistFactory;
-        $this->_helper            = $data;
-        $this->_logger            = $loggerInterface;
-        $this->_storeManager      = $storeManagerInterface;
-        $this->_registry          = $registry;
+        $this->_wishlist = $wishlist;
+        $this->_wishlistFactory = $wishlistFactory;
+        $this->_helper = $data;
     }
 
     /**
-     * If it's configured to capture on shipment - do this
+     * If it's configured to capture on shipment - do this.
      *
      * @param \Magento\Framework\Event\Observer $observer
      *
@@ -66,13 +43,12 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $object        = $observer->getEvent()->getDataObject();
-        $wishlist      = $this->_wishlist->create()
+        $object = $observer->getEvent()->getDataObject();
+        $wishlist = $this->_wishlist->create()
             ->load($object->getWishlistId());
         $emailWishlist = $this->_wishlistFactory->create();
         try {
             if ($object->getWishlistId()) {
-
                 $itemCount = count($wishlist->getItemCollection());
                 $item
                            = $emailWishlist->getWishlist($object->getWishlistId());
@@ -94,10 +70,9 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;
     }
-
 }

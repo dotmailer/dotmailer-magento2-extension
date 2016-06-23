@@ -2,13 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation;
 
-class Customdatafields extends
-    \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
+class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
-
     protected $_statusRenderer;
+
     protected $_automationRenderer;
+
     protected $_programFactory;
+
     protected $_elementFactory;
 
     /**
@@ -23,7 +24,7 @@ class Customdatafields extends
         \Magento\Framework\Data\Form\Element\Factory $elementFactory,
         \Dotdigitalgroup\Email\Model\Config\Source\Automation\ProgramFactory $programFactory,
         \Magento\Backend\Block\Template\Context $context,
-        $data = []
+        array $data = []
     ) {
         $this->_elementFactory = $elementFactory;
         $this->_programFactory = $programFactory->create();
@@ -32,14 +33,14 @@ class Customdatafields extends
 
     protected function _prepareToRender()
     {
-        $this->_getStatusRenderer     = null;
+        $this->_getStatusRenderer = null;
         $this->_getAutomationRenderer = null;
         $this->addColumn(
             'status',
-            array(
+            [
                 'label' => __('Order Status'),
                 'style' => 'width:120px',
-            )
+            ]
         );
         $this->addColumn(
             'automation', array(
@@ -47,15 +48,20 @@ class Customdatafields extends
                 'style' => 'width:120px',
             )
         );
-        $this->_addAfter       = false;
+        $this->_addAfter = false;
         $this->_addButtonLabel = __('Add New Enrolment');
-
     }
 
+    /**
+     * @param string $columnName
+     *
+     * @return mixed|string
+     *
+     * @throws \Exception
+     */
     public function renderCellTemplate($columnName)
     {
         if ($columnName == 'status' && isset($this->_columns[$columnName])) {
-
             $options = $this->getElement()->getValues();
             $element = $this->_elementFactory->create('select');
             $element->setForm(
@@ -73,7 +79,6 @@ class Customdatafields extends
         if ($columnName == 'automation'
             && isset($this->_columns[$columnName])
         ) {
-
             $options = $this->_programFactory->toOptionArray();
             $element = $this->_elementFactory->create('select');
             $element->setForm(
@@ -110,6 +115,11 @@ class Customdatafields extends
         );
     }
 
+    /**
+     * @return \Magento\Framework\View\Element\BlockInterface
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function _getStatusRenderer()
     {
         $this->_statusRenderer = $this->getLayout()->createBlock(
@@ -121,6 +131,11 @@ class Customdatafields extends
         return $this->_statusRenderer;
     }
 
+    /**
+     * @return \Magento\Framework\View\Element\BlockInterface
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function _getAutomationRenderer()
     {
         $this->_automationRenderer = $this->getLayout()->createBlock(
@@ -132,10 +147,14 @@ class Customdatafields extends
         return $this->_automationRenderer;
     }
 
+    /**
+     * @return string
+     *
+     * @throws \Exception
+     */
     public function _toHtml()
     {
         return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
         . '"/>' . parent::_toHtml();
-
     }
 }

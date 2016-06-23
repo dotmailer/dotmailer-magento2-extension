@@ -4,20 +4,63 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
 class Value
 {
-
-    protected $_objectManager;
+    /**
+     * @var
+     */
     protected $_configFactory;
+    protected $_yesno;
+    /**
+     * @var \Magento\Directory\Model\Config\Source\Country
+     */
+    protected $_country;
+    /**
+     * @var \Magento\Directory\Model\Config\Source\Allregion
+     */
+    protected $_allregion;
+    /**
+     * @var \Magento\Shipping\Model\Config\Source\Allmethods
+     */
+    protected $_allShippingMethods;
+    /**
+     * @var \Magento\Payment\Model\Config\Source\Allmethods
+     */
+    protected $_allPaymentMethods;
+    /**
+     * @var \Magento\Customer\Model\Config\Source\Group
+     */
+    protected $_group;
 
+    /**
+     * Value constructor.
+     *
+     * @param \Magento\Eav\Model\ConfigFactory $configFactory
+     * @param \Magento\Config\Model\Config\Source\Yesno $yesno
+     * @param \Magento\Directory\Model\Config\Source\Country $country
+     * @param \Magento\Directory\Model\Config\Source\Allregion $allregion
+     * @param \Magento\Shipping\Model\Config\Source\Allmethods $allShippingMethods
+     * @param \Magento\Payment\Model\Config\Source\Allmethods $allPaymentMethods
+     * @param \Magento\Customer\Model\Config\Source\Group $group
+     */
     public function __construct(
         \Magento\Eav\Model\ConfigFactory $configFactory,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+        \Magento\Config\Model\Config\Source\Yesno $yesno,
+        \Magento\Directory\Model\Config\Source\Country $country,
+        \Magento\Directory\Model\Config\Source\Allregion $allregion,
+        \Magento\Shipping\Model\Config\Source\Allmethods $allShippingMethods,
+        \Magento\Payment\Model\Config\Source\Allmethods $allPaymentMethods,
+        \Magento\Customer\Model\Config\Source\Group $group
     ) {
         $this->_configFactory = $configFactory->create();
-        $this->_objectManager = $objectManagerInterface;
+        $this->_yesno = $yesno;
+        $this->_country = $country;
+        $this->_allregion = $allregion;
+        $this->_allShippingMethods = $allShippingMethods;
+        $this->_allPaymentMethods = $allPaymentMethods;
+        $this->_group = $group;
     }
 
     /**
-     * get element type
+     * Get element type.
      *
      * @param $attribute
      *
@@ -45,53 +88,42 @@ class Value
     }
 
     /**
-     * get options array
+     * Get options array.
      *
      * @param      $attribute
-     * @param bool $is_empty
+     * @param bool $isEmpty
      *
      * @return array
      */
-    public function getValueSelectOptions($attribute, $is_empty = false)
+    public function getValueSelectOptions($attribute, $isEmpty = false)
     {
-        $options = array();
-        if ($is_empty) {
+        $options = [];
+        if ($isEmpty) {
             $options
-                = $this->_objectManager->create('Magento\Config\Model\Config\Source\Yesno')
-                ->toOptionArray();
+                = $this->_yesno->toOptionArray();
 
             return $options;
         }
 
         switch ($attribute) {
             case 'country_id':
-                $options
-                    = $this->_objectManager->create('Magento\Directory\Model\Config\Source\Country')
-                    ->toOptionArray();
+                $options = $this->_country->toOptionArray();
                 break;
 
             case 'region_id':
-                $options
-                    = $this->_objectManager->create('Magento\Directory\Model\Config\Source\Allregion')
-                    ->toOptionArray();
+                $options = $this->_allregion->toOptionArray();
                 break;
 
             case 'shipping_method':
-                $options
-                    = $this->_objectManager->create('Magento\Shipping\Model\Config\Source\Allmethods')
-                    ->toOptionArray();
+                $options = $this->_allShippingMethods->toOptionArray();
                 break;
 
             case 'method':
-                $options
-                    = $this->_objectManager->create('Magento\Payment\Model\Config\Source\Allmethods')
-                    ->toOptionArray();
+                $options = $this->_allPaymentMethods->toOptionArray();
                 break;
 
             case 'customer_group_id':
-                $options
-                    = $this->_objectManager->create('Magento\Customer\Model\Config\Source\Group')
-                    ->toOptionArray();
+                $options = $this->_group->toOptionArray();
                 break;
 
             default:
@@ -107,16 +139,12 @@ class Value
     }
 
     /**
-     * options array
+     * Options array.
      *
      * @return array
      */
     public function toOptionArray()
     {
-        $options
-            = $this->_objectManager->create('Magento\Payment\Model\Config\Source\Allmethods')
-            ->toOptionArray();
-
-        return $options;
+        return $this->_allPaymentMethods->toOptionArray();
     }
 }

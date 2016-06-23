@@ -4,33 +4,42 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
 class Reviewsreset extends \Magento\Backend\App\AbstractAction
 {
-	protected $messageManager;
-	protected $_reviewFactory;
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
+    protected $messageManager;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
+     */
+    protected $_reviewFactory;
 
-	public function __construct(
-		\Dotdigitalgroup\Email\Model\Resource\ReviewFactory $reviewFactory,
-		\Magento\Backend\App\Action\Context $context
-	)
-	{
-		$this->_reviewFactory = $reviewFactory;
-		$this->messageManager = $context->getMessageManager();
-		parent::__construct($context);
+    /**
+     * Reviewsreset constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory
+     * @param \Magento\Backend\App\Action\Context $context
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
+        \Magento\Backend\App\Action\Context $context
+    ) {
+        $this->_reviewFactory = $reviewFactory;
+        $this->messageManager = $context->getMessageManager();
+        parent::__construct($context);
+    }
 
-	}
+    /**
+     * Refresh suppressed contacts.
+     */
+    public function execute()
+    {
+        $this->_reviewFactory->create()
+            ->resetReviews();
 
-	/**
-	 * Refresh suppressed contacts.
-	 */
-	public function execute()
-	{
+        $this->messageManager->addSuccess(__('Done.'));
 
-		$this->_reviewFactory->create()
-			->resetReviews();
+        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 
-		$this->messageManager->addSuccess(__('Done.'));
-
-		$redirectUrl = $this->getUrl('adminhtml/system_config/edit', array('section' => 'connector_developer_settings'));
-
-		$this->_redirect($redirectUrl);
-	}
+        $this->_redirect($redirectUrl);
+    }
 }

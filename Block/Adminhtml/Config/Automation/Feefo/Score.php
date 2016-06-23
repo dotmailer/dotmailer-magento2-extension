@@ -4,7 +4,9 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo;
 
 class Score extends \Magento\Config\Block\System\Config\Form\Field
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
 
     /**
@@ -22,13 +24,17 @@ class Score extends \Magento\Config\Block\System\Config\Form\Field
         return parent::__construct($context);
     }
 
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return string
+     */
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
-
         $passcode = $this->_helper->getPasscode();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
 

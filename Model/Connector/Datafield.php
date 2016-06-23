@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 class Datafield
 {
-
     /**
      * @var string
      */
@@ -26,7 +25,7 @@ class Datafield
      *
      * @var array
      */
-    public $datafields = array();
+    public $datafields = [];
 
     /**
      * Contact default datafields.
@@ -34,246 +33,248 @@ class Datafield
      * @var array
      */
     protected $_contactDatafields
-        = array(
-            'customer_id'         => array(
-                'name'       => 'CUSTOMER_ID',
-                'type'       => 'numeric',
+        = [
+            'customer_id' => [
+                'name' => 'CUSTOMER_ID',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'firstname'           => array(
-                'name'       => 'FIRSTNAME',
-                'type'       => 'string',
+            ],
+            'firstname' => [
+                'name' => 'FIRSTNAME',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'lastname'            => array(
-                'name'       => 'LASTNAME',
-                'type'       => 'string',
+            ],
+            'lastname' => [
+                'name' => 'LASTNAME',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'gender'              => array(
-                'name'       => 'GENDER',
-                'type'       => 'string',
+            ],
+            'gender' => [
+                'name' => 'GENDER',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'dob'                 => array(
-                'name'       => 'DOB',
-                'type'       => 'date',
+            ],
+            'dob' => [
+                'name' => 'DOB',
+                'type' => 'date',
                 'visibility' => 'private',
-            ),
-            'title'               => array(
-                'name'       => 'TITLE',
-                'type'       => 'string',
+            ],
+            'title' => [
+                'name' => 'TITLE',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'website_name'        => array(
-                'name'       => 'WEBSITE_NAME',
-                'type'       => 'string',
+            ],
+            'website_name' => [
+                'name' => 'WEBSITE_NAME',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'store_name'          => array(
-                'name'       => 'STORE_NAME',
-                'type'       => 'string',
+            ],
+            'store_name' => [
+                'name' => 'STORE_NAME',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'created_at'          => array(
-                'name'       => 'ACCOUNT_CREATED_DATE',
-                'type'       => 'date',
+            ],
+            'created_at' => [
+                'name' => 'ACCOUNT_CREATED_DATE',
+                'type' => 'date',
                 'visibility' => 'private',
-            ),
-            'last_logged_date'    => array(
-                'name'       => 'LAST_LOGGEDIN_DATE',
-                'type'       => 'date',
+            ],
+            'last_logged_date' => [
+                'name' => 'LAST_LOGGEDIN_DATE',
+                'type' => 'date',
                 'visibility' => 'private',
-            ),
-            'customer_group'      => array(
-                'name'       => 'CUSTOMER_GROUP',
-                'type'       => 'string',
+            ],
+            'customer_group' => [
+                'name' => 'CUSTOMER_GROUP',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'billing_address_1'   => array(
-                'name'         => 'BILLING_ADDRESS_1',
-                'type'         => 'string',
-                'visibility'   => 'private',
-                'defaultValue' => ''
-            ),
-            'billing_address_2'   => array(
-                'name'       => 'BILLING_ADDRESS_2',
-                'type'       => 'string',
+            ],
+            'billing_address_1' => [
+                'name' => 'BILLING_ADDRESS_1',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'billing_state'       => array(
-                'name'       => 'BILLING_STATE',
-                'type'       => 'string',
+                'defaultValue' => '',
+            ],
+            'billing_address_2' => [
+                'name' => 'BILLING_ADDRESS_2',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'billing_city'        => array(
-                'name'       => 'BILLING_CITY',
-                'type'       => 'string',
+            ],
+            'billing_state' => [
+                'name' => 'BILLING_STATE',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'billing_country'     => array(
-                'name'       => 'BILLING_COUNTRY',
-                'type'       => 'string',
+            ],
+            'billing_city' => [
+                'name' => 'BILLING_CITY',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'billing_postcode'    => array(
-                'name'       => 'BILLING_POSTCODE',
-                'type'       => 'string',
+            ],
+            'billing_country' => [
+                'name' => 'BILLING_COUNTRY',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'billing_telephone'   => array(
-                'name'       => 'BILLING_TELEPHONE',
-                'type'       => 'string',
+            ],
+            'billing_postcode' => [
+                'name' => 'BILLING_POSTCODE',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'delivery_address_1'  => array(
-                'name'       => 'DELIVERY_ADDRESS_1',
-                'type'       => 'string',
+            ],
+            'billing_telephone' => [
+                'name' => 'BILLING_TELEPHONE',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'delivery_address_2'  => array(
-                'name'       => 'DELIVERY_ADDRESS_2',
-                'type'       => 'string',
+            ],
+            'delivery_address_1' => [
+                'name' => 'DELIVERY_ADDRESS_1',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'delivery_state'      => array(
-                'name'       => 'DELIVERY_STATE',
-                'type'       => 'string',
+            ],
+            'delivery_address_2' => [
+                'name' => 'DELIVERY_ADDRESS_2',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'delivery_city'       => array(
-                'name'       => 'DELIVERY_CITY',
-                'type'       => 'string',
+            ],
+            'delivery_state' => [
+                'name' => 'DELIVERY_STATE',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'delivery_country'    => array(
-                'name'       => 'DELIVERY_COUNTRY',
-                'type'       => 'string',
+            ],
+            'delivery_city' => [
+                'name' => 'DELIVERY_CITY',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'delivery_postcode'   => array(
-                'name'       => 'DELIVERY_POSTCODE',
-                'type'       => 'string',
+            ],
+            'delivery_country' => [
+                'name' => 'DELIVERY_COUNTRY',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'delivery_telephone'  => array(
-                'name'       => 'DELIVERY_TELEPHONE',
-                'type'       => 'string',
+            ],
+            'delivery_postcode' => [
+                'name' => 'DELIVERY_POSTCODE',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'number_of_orders'    => array(
-                'name'       => 'NUMBER_OF_ORDERS',
-                'type'       => 'numeric',
+            ],
+            'delivery_telephone' => [
+                'name' => 'DELIVERY_TELEPHONE',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'total_spend'         => array(
-                'name'       => 'TOTAL_SPEND',
-                'type'       => 'numeric',
+            ],
+            'number_of_orders' => [
+                'name' => 'NUMBER_OF_ORDERS',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'average_order_value' => array(
-                'name'       => 'AVERAGE_ORDER_VALUE',
-                'type'       => 'numeric',
+            ],
+            'total_spend' => [
+                'name' => 'TOTAL_SPEND',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'last_order_date'     => array(
-                'name'       => 'LAST_ORDER_DATE',
-                'type'       => 'date',
+            ],
+            'average_order_value' => [
+                'name' => 'AVERAGE_ORDER_VALUE',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'last_order_id'       => array(
-                'name'       => 'LAST_ORDER_ID',
-                'type'       => 'numeric',
+            ],
+            'last_order_date' => [
+                'name' => 'LAST_ORDER_DATE',
+                'type' => 'date',
                 'visibility' => 'private',
-            ),
-            'last_increment_id'   => array(
-                'name'       => 'LAST_INCREMENT_ID',
-                'type'       => 'numeric',
+            ],
+            'last_order_id' => [
+                'name' => 'LAST_ORDER_ID',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'last_quote_id'       => array(
-                'name'       => 'LAST_QUOTE_ID',
-                'type'       => 'numeric',
+            ],
+            'last_increment_id' => [
+                'name' => 'LAST_INCREMENT_ID',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'total_refund'        => array(
-                'name'       => 'TOTAL_REFUND',
-                'type'       => 'numeric',
+            ],
+            'last_quote_id' => [
+                'name' => 'LAST_QUOTE_ID',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'review_count'        => array(
-                'name'       => 'REVIEW_COUNT',
-                'type'       => 'numeric',
+            ],
+            'total_refund' => [
+                'name' => 'TOTAL_REFUND',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'last_review_date'    => array(
-                'name'       => 'LAST_REVIEW_DATE',
-                'type'       => 'date',
+            ],
+            'review_count' => [
+                'name' => 'REVIEW_COUNT',
+                'type' => 'numeric',
                 'visibility' => 'private',
-            ),
-            'subscriber_status'   => array(
-                'name'       => 'SUBSCRIBER_STATUS',
-                'type'       => 'string',
+            ],
+            'last_review_date' => [
+                'name' => 'LAST_REVIEW_DATE',
+                'type' => 'date',
                 'visibility' => 'private',
-            ),
-            'most_pur_category'   => array(
-                'name'       => 'MOST_PUR_CATEGORY',
-                'type'       => 'string',
+            ],
+            'subscriber_status' => [
+                'name' => 'SUBSCRIBER_STATUS',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'most_pur_brand'      => array(
-                'name'       => 'MOST_PUR_BRAND',
-                'type'       => 'string',
+            ],
+            'most_pur_category' => [
+                'name' => 'MOST_PUR_CATEGORY',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'most_freq_pur_day'   => array(
-                'name'       => 'MOST_FREQ_PUR_DAY',
-                'type'       => 'string',
+            ],
+            'most_pur_brand' => [
+                'name' => 'MOST_PUR_BRAND',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'most_freq_pur_mon'   => array(
-                'name'       => 'MOST_FREQ_PUR_MON',
-                'type'       => 'string',
+            ],
+            'most_freq_pur_day' => [
+                'name' => 'MOST_FREQ_PUR_DAY',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'first_category_pur'  => array(
-                'name'       => 'FIRST_CATEGORY_PUR',
-                'type'       => 'string',
+            ],
+            'most_freq_pur_mon' => [
+                'name' => 'MOST_FREQ_PUR_MON',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'last_category_pur'   => array(
-                'name'       => 'LAST_CATEGORY_PUR',
-                'type'       => 'string',
+            ],
+            'first_category_pur' => [
+                'name' => 'FIRST_CATEGORY_PUR',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'first_brand_pur'     => array(
-                'name'       => 'FIRST_BRAND_PUR',
-                'type'       => 'string',
+            ],
+            'last_category_pur' => [
+                'name' => 'LAST_CATEGORY_PUR',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'last_brand_pur'      => array(
-                'name'       => 'LAST_BRAND_PUR',
-                'type'       => 'string',
+            ],
+            'first_brand_pur' => [
+                'name' => 'FIRST_BRAND_PUR',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'abandoned_prod_name' => array(
-                'name'       => 'ABANDONED_PROD_NAME',
-                'type'       => 'string',
+            ],
+            'last_brand_pur' => [
+                'name' => 'LAST_BRAND_PUR',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'billing_company'     => array(
-                'name'       => 'BILLING_COMPANY',
-                'type'       => 'string',
+            ],
+            'abandoned_prod_name' => [
+                'name' => 'ABANDONED_PROD_NAME',
+                'type' => 'string',
                 'visibility' => 'private',
-            ),
-            'delivery_company'    => array(
-                'name'       => 'DELIVERY_COMPANY',
-                'type'       => 'string',
+            ],
+            'billing_company' => [
+                'name' => 'BILLING_COMPANY',
+                'type' => 'string',
                 'visibility' => 'private',
-            )
-        );
+            ],
+            'delivery_company' => [
+                'name' => 'DELIVERY_COMPANY',
+                'type' => 'string',
+                'visibility' => 'private',
+            ],
+        ];
 
     /**
+     * Set contact datafields.
+     * 
      * @param array $contactDatafields
      */
     public function setContactDatafields($contactDatafields)
@@ -282,6 +283,8 @@ class Datafield
     }
 
     /**
+     * Get contact datafields.
+     * 
      * @return array
      */
     public function getContactDatafields()
@@ -290,7 +293,7 @@ class Datafield
     }
 
     /**
-     * set a single datafield.
+     * Set a single datafield.
      *
      * @param        $name
      * @param        $value
@@ -305,14 +308,13 @@ class Datafield
         $type = 'string',
         $visibility = 'private'
     ) {
-        $this->datafields[] = array(
-            'name'       => $name,
-            'value'      => $value,
-            'type'       => $type,
-            'visibility' => $visibility
-        );
+        $this->datafields[] = [
+            'name' => $name,
+            'value' => $value,
+            'type' => $type,
+            'visibility' => $visibility,
+        ];
 
         return $this->datafields;
     }
-
 }

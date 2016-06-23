@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart;
 
 class Upsell extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
@@ -22,6 +21,11 @@ class Upsell extends \Magento\Config\Block\System\Config\Form\Field
         parent::__construct($context);
     }
 
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return string
+     */
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
@@ -30,11 +34,11 @@ class Upsell extends \Magento\Config\Block\System\Config\Form\Field
         //last quote id for dynamic page
         $lastQuoteId = $this->_dataHelper->getLastQuoteId();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         //alert message for last order id is not mapped
-        if ( ! $lastQuoteId) {
+        if (!$lastQuoteId) {
             $lastQuoteId = '[PLEASE MAP THE LAST QUOTE ID]';
         }
         //generate the base url and display for default store id

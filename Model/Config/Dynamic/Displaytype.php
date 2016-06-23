@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Dynamic;
 
 class Displaytype
 {
-
     /**
      * Display type mode.
      *
@@ -12,10 +11,9 @@ class Displaytype
      */
     public function toOptionArray()
     {
-        return array(
-            array('value' => 'grid', 'label' => 'Grid'),
-            array('value' => 'list', 'label' => 'List')
-        );
-
+        return [
+            ['value' => 'grid', 'label' => 'Grid'],
+            ['value' => 'list', 'label' => 'List'],
+        ];
     }
 }

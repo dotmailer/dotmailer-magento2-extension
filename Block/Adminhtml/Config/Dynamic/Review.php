@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Review extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
@@ -22,7 +21,6 @@ class Review extends \Magento\Config\Block\System\Config\Form\Field
         parent::__construct($context);
     }
 
-
     /**
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
@@ -36,10 +34,10 @@ class Review extends \Magento\Config\Block\System\Config\Form\Field
         //last order id witch information will be generated
         $lastOrderId = $this->_dataHelper->getLastOrderId();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
-        if ( ! $lastOrderId) {
+        if (!$lastOrderId) {
             $lastOrderId = '[PLEASE MAP THE LAST ORDER ID]';
         }
 
@@ -55,5 +53,4 @@ class Review extends \Magento\Config\Block\System\Config\Form\Field
 
         return parent::_getElementHtml($element);
     }
-
 }

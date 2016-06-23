@@ -4,16 +4,17 @@ namespace Dotdigitalgroup\Email\Model\Config\Developer;
 
 class Cronexpressionstwo
 {
-
     /**
+     * Get options.
+     * 
      * @return array
      */
     public function toOptionArray()
     {
-        return array(
-            array('value' => '*/15 * * * *', 'label' => 'Every 15 Minutes'),
-            array('value' => '*/30 * * * *', 'label' => 'Every 30 Minutes'),
-            array('value' => '00 * * * *', 'label' => 'Every 60 Minutes')
-        );
+        return [
+            ['value' => '*/15 * * * *', 'label' => 'Every 15 Minutes'],
+            ['value' => '*/30 * * * *', 'label' => 'Every 30 Minutes'],
+            ['value' => '00 * * * *', 'label' => 'Every 60 Minutes'],
+        ];
     }
 }

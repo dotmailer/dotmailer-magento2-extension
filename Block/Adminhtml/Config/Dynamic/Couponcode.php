@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     protected $_dataHelper;
 
     /**
@@ -35,7 +34,7 @@ class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
         //config code
         $passcode = $this->_dataHelper->getPasscode();
 
-        if ( ! strlen($passcode)) {
+        if (!strlen($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
 
@@ -47,5 +46,4 @@ class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
 
         return parent::_getElementHtml($element);
     }
-
 }

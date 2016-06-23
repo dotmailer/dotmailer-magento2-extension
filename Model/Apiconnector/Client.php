@@ -1,10 +1,9 @@
 <?php
-namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 {
-
     const APICONNECTOR_VERSION = 'V2';
 
     const REST_WAIT_UPLOAD_TIME = 5;
@@ -19,7 +18,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_CAMPAIGN_SEND = '/v2/campaigns/send';
     const REST_CONTACTS_SUPPRESSED_SINCE = '/v2/contacts/suppressed-since/';
     const REST_DATA_FIELDS_CAMPAIGNS = '/v2/campaigns';
-    const REST_SMS_MESSAGE_SEND_TO = '/v2/sms-messages/send-to/';
     const REST_CONTACTS_RESUBSCRIBE = '/v2/contacts/resubscribe';
     const REST_CAMPAIGN_FROM_ADDRESS_LIST = '/v2/custom-from-addresses';
     const REST_CREATE_CAMPAIGN = '/v2/campaigns';
@@ -43,38 +41,52 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const API_ERROR_AUTHORIZATION_DENIED = 'Authorization has been denied for this request.';
     const API_ERROR_ADDRESSBOOK_NOT_FOUND = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
 
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\File
+     */
     protected $_fileHelper;
+    /**
+     * @var
+     */
     protected $_filename;
-    protected $_api_helper;
-    protected $_limit = 10;
-    protected $_address_book_id;
-    protected $_customers_filename;
-    protected $_subscribers_filename;
-    protected $_customers_address_book_id;
-    protected $_subscribers_address_book_id;
-    protected $_customers_file_slug = 'customer_sync';
-    protected $_subscribers_file_slug = 'subscriber_sync';
-    public $result = array('error' => false, 'message' => '');
-
-    protected $_helper;
-    public $client;
-    protected $_apiEndpoint;
-    protected $_writer;
-
 
     /**
+     * @var int
+     */
+    protected $_limit = 10;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    protected $_helper;
+    /**
+     * @var
+     */
+    public $client;
+    /**
+     * @var
+     */
+    protected $_apiEndpoint;
+    /**
+     * @var \Magento\Framework\App\Config\Storage\Writer
+     */
+    protected $_writer;
+
+    /**
+     * Client constructor.
+     *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
+     * @param \Magento\Framework\App\Config\Storage\Writer $writer
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Magento\Framework\App\Config\Storage\Writer $writer
     ) {
-        $this->_helper     = $data;
+        $this->_helper = $data;
         $this->_fileHelper = $fileHelper;
-        $this->_writer     = $writer;
+        $this->_writer = $writer;
         $this->_checkApiEndPoint();
 
         parent::__construct(0, $this->_helper);
@@ -86,7 +98,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @var array
      */
     public $exludeMessages
-        = array(
+        = [
             self::API_ERROR_FEATURENOTACTIVE,
             self::API_ERROR_PROGRAM_NOT_ACTIVE,
             self::API_ERROR_CONTACT_SUPPRESSED,
@@ -95,11 +107,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             self::API_ERROR_ENROLMENT_EXCEEDED,
             self::API_ERROR_SEND_NOT_PERMITTED,
             self::API_ERROR_TRANS_NOT_EXISTS,
-            self::API_ERROR_ADDRESSBOOK_NOT_FOUND
-        );
+            self::API_ERROR_ADDRESSBOOK_NOT_FOUND,
+        ];
 
     /**
-     * Check if api end point exist in DB
+     * Check if api end point exist in DB.
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -108,14 +120,14 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $apiEndpoint
             = $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT);
 
-        if ( ! $apiEndpoint) {
-            if ( ! $this->getApiUsername() && ! $this->getApiPassword()) {
+        if (!$apiEndpoint) {
+            if (!$this->getApiUsername() && !$this->getApiPassword()) {
                 $this->setApiUsername($this->_helper->getApiUsername())
                     ->setApiPassword($this->_helper->getApiPassword());
             }
 
             $accountInfo = $this->getAccountInfo();
-            if (is_object($accountInfo) && ! isset($accountInfo->message)) {
+            if (is_object($accountInfo) && !isset($accountInfo->message)) {
                 //save endpoint for account
                 foreach ($accountInfo->properties as $property) {
                     if ($property->name == 'ApiEndpoint'
@@ -129,7 +141,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             }
 
             //check api endpoint again
-            if ( ! $apiEndpoint) {
+            if (!$apiEndpoint) {
                 throw new \Magento\Framework\Exception\LocalizedException(
                     __('API endpoint cannot be empty. Re-save api credentials to retrieve API endpoint.')
                 );
@@ -139,6 +151,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $this->_apiEndpoint = $apiEndpoint;
     }
 
+    /**
+     * Save into config api endpoint.
+     *
+     * @param $apiEndpoint
+     */
     protected function _saveApiEndpoint($apiEndpoint)
     {
         $this->_writer->save(
@@ -148,8 +165,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * @param $apiUsername
-     * @param $apiPassword
+     * Api validation.
+     *
+     * @param string $apiUsername
+     * @param string $apiPassword
      *
      * @return bool|mixed
      */
@@ -176,9 +195,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a contact by ID. Unsubscribed or suppressed contacts will not be retrieved.
      *
-     * @param $id
+     * @param string|int $id
      *
-     * @return null
+     * @throws \Exception
      */
     public function getContactById($id)
     {
@@ -202,46 +221,45 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Must include one column called "Email". Any other columns will attempt to map to your custom data fields.
      * The ID of returned object can be used to query import progress.
      *
-     * @param $filename
-     * @param $addressBookId
+     * @param string|int $filename
+     * @param string|int $addressBookId
      *
      * @return mixed
      */
-
     public function postAddressBookContactsImport($filename, $addressBookId)
     {
         $url = $this->_apiEndpoint
             . "/v2/address-books/{$addressBookId}/contacts/import";
 
+        //@codingStandardsIgnoreStart
         $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_USERPWD,
             $this->getApiUsername() . ':' . $this->getApiPassword());
 
         //case the deprication of @filename for uploading
         if (function_exists('curl_file_create')) {
-
             $args['file']
                 = curl_file_create($this->_fileHelper->getFilePath($filename),
                 'text/csv');
             curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
-
         } else {
             //standart use of curl file
-            curl_setopt($ch, CURLOPT_POSTFIELDS, array(
-                'file' => '@' . $this->_fileHelper->getFilePath($filename)
-            ));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                'file' => '@' . $this->_fileHelper->getFilePath($filename),
+            ]);
         }
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: multipart/form-data'
-            )
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: multipart/form-data',
+            ]
         );
         // send contacts to address book
         $result = curl_exec($ch);
         $result = json_decode($result);
+        //@codingStandardsIgnoreEnd
 
         if (isset($result->message)) {
             $message = 'POST ADDRESS BOOK ' . $addressBookId
@@ -257,8 +275,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Adds a contact to a given address book.
      *
-     * @param $addressBookId
-     * @param $apiContact
+     * @param string|int $addressBookId
+     * @param string|int $apiContact
      *
      * @return mixed|null
      */
@@ -267,7 +285,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $url = $this->_apiEndpoint . self::REST_ADDRESS_BOOKS . $addressBookId
             . '/contacts';
         $this->setUrl($url)
-            ->setVerb("POST")
+            ->setVerb('POST')
             ->buildPostBody($apiContact);
 
         $response = $this->execute();
@@ -284,8 +302,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Deletes all contacts from a given address book.
      *
-     * @param $addressBookId
-     * @param $contactId
+     * @param string|int $addressBookId
+     * @param string|int $contactId
      */
     public function deleteAddressBookContact($addressBookId, $contactId)
     {
@@ -301,14 +319,14 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a report with statistics about what was successfully imported, and what was unable to be imported.
      *
-     * @param $importId
+     * @param string|int $importId
      *
      * @return mixed
      */
     public function getContactsImportReport($importId)
     {
         $url = $this->_apiEndpoint . self::REST_CONTACTS_IMPORT . $importId
-            . "/report";
+            . '/report';
         $this->setUrl($url)
             ->setVerb('GET');
 
@@ -326,7 +344,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a contact by email address.
      *
-     * @param $email
+     * @param string $email
      *
      * @return mixed
      */
@@ -351,13 +369,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Get all address books.
      *
-     * @return null
+     * @throws \Exception
      */
     public function getAddressBooks()
     {
         $url = $this->_apiEndpoint . self::REST_ADDRESS_BOOKS;
         $this->setUrl($url)
-            ->setVerb("GET");
+            ->setVerb('GET');
 
         $response = $this->execute();
         if (isset($response->message)) {
@@ -372,9 +390,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets an address book by ID.
      *
-     * @param $id
+     * @param string|int $id
      *
-     * @return null
+     * @throws \Exception
      */
     public function getAddressBookById($id)
     {
@@ -394,19 +412,20 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     *  Creates an address book.
+     * Creates an address book.
      *
-     * @param $name
+     * @param        $name
+     * @param string $visibility
      *
-     * @return null
+     * @throws \Exception
      */
     public function postAddressBooks($name, $visibility = 'Public')
     {
-        $data = array(
-            'Name'       => $name,
-            'Visibility' => $visibility
-        );
-        $url  = $this->_apiEndpoint . self::REST_ADDRESS_BOOKS;
+        $data = [
+            'Name' => $name,
+            'Visibility' => $visibility,
+        ];
+        $url = $this->_apiEndpoint . self::REST_ADDRESS_BOOKS;
         $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($data);
@@ -425,7 +444,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Get list of all campaigns.
      *
-     * @return mixed
+     * @throws \Exception
      */
     public function getCampaigns()
     {
@@ -447,8 +466,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Creates a data field within the account.
      *
-     * @param        $data       string/array
-     * @param string $type       string, numeric, date, boolean
+     * @param        $data         string/array
+     * @param string $type string, numeric, date, boolean
      * @param string $visibility public, private
      * @param bool   $defaultValue
      *
@@ -462,16 +481,16 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ) {
         $url = $this->_apiEndpoint . self::REST_DATA_FILEDS;
         //set default value for the numeric datatype
-        if ($type == 'numeric' && ! $defaultValue) {
+        if ($type == 'numeric' && !$defaultValue) {
             $defaultValue = 0;
         }
         //set data for the string datatype
         if (is_string($data)) {
-            $data = array(
-                'Name'       => $data,
-                'Type'       => $type,
-                'Visibility' => $visibility
-            );
+            $data = [
+                'Name' => $data,
+                'Type' => $type,
+                'Visibility' => $visibility,
+            ];
             //default value
             if ($defaultValue) {
                 $data['DefaultValue'] = $defaultValue;
@@ -515,14 +534,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Updates a contact.
      *
-     * @param $contactId
+     * @param string|int $contactId
      * @param $data
      *
      * @return object
      */
     public function updateContact($contactId, $data)
     {
-
         $url = $this->_apiEndpoint . self::REST_CONTACTS . $contactId;
         $this->setUrl($url)
             ->setVerb('PUT')
@@ -545,6 +563,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param $contactId
      *
      * @return null
+     * @throws \Exception
      */
     public function deleteContact($contactId)
     {
@@ -555,7 +574,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'DELETE CONTACT : ' . $url . ', ' . $response->message;
+            $message = 'deleteContact : ' . $url . ', ' . $response->message;
             $this->_helper->log($message);
         }
 
@@ -565,27 +584,29 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Update contact datafields by email.
      *
-     * @param $email
+     * @param string $email
      * @param $dataFields
      *
-     * @return null
+     * @return mixed|null
+     *
+     * @throws \Exception
      */
     public function updateContactDatafieldsByEmail($email, $dataFields)
     {
         $apiContact = $this->postContacts($email);
         //do not create for non contact id set
-        if ( ! isset($apiContact->id)) {
+        if (!isset($apiContact->id)) {
             return $apiContact;
         } else {
             //get the contact id for this email
             $contactId = $apiContact->id;
         }
-        $data               = array(
-            'Email'     => $email,
-            'EmailType' => 'Html'
-        );
+        $data = [
+            'Email' => $email,
+            'EmailType' => 'Html',
+        ];
         $data['DataFields'] = $dataFields;
-        $url                = $this->_apiEndpoint . self::REST_CONTACTS
+        $url = $this->_apiEndpoint . self::REST_CONTACTS
             . $contactId;
         $this->setUrl($url)
             ->setVerb('PUT')
@@ -613,13 +634,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function postCampaignsSend($campaignId, $contacts)
     {
-
-        $data = array(
-            'username'   => $this->getApiUsername(),
-            'password'   => $this->getApiPassword(),
-            "campaignId" => $campaignId,
-            "ContactIds" => $contacts
-        );
+        $data = [
+            'username' => $this->getApiUsername(),
+            'password' => $this->getApiPassword(),
+            'campaignId' => $campaignId,
+            'ContactIds' => $contacts,
+        ];
         $this->setUrl($this->_apiEndpoint . self::REST_CAMPAIGN_SEND)
             ->setVerb('POST')
             ->buildPostBody($data);
@@ -639,15 +659,16 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param $email
      *
-     * @return mixed
+     * @return null
+     * @throws \Exception
      */
     public function postContacts($email)
     {
-        $url  = $this->_apiEndpoint . self::REST_CONTACTS;
-        $data = array(
-            'Email'     => $email,
+        $url = $this->_apiEndpoint . self::REST_CONTACTS;
+        $data = [
+            'Email' => $email,
             'EmailType' => 'Html',
-        );
+        ];
         $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($data);
@@ -655,7 +676,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'CREATE A NEW CONTACT : ' . $email . ' , url ' . $url
+            $message = 'postContacts : ' . $email . ' , url ' . $url
                 . ', ' . $response->message;
             $this->_helper->log($message);
         }
@@ -680,7 +701,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $url = $this->_apiEndpoint . self::REST_CONTACTS_SUPPRESSED_SINCE
             . $dateString . '?select=' . $select . '&skip=' . $skip;
         $this->setUrl($url)
-            ->setVerb("GET");
+            ->setVerb('GET');
 
         $response = $this->execute();
 
@@ -695,25 +716,26 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Adds multiple pieces of transactional data to contacts asynchronously, returning an identifier that can be used to check for import progress.
+     * * Adds multiple pieces of transactional data to contacts asynchronously,
+     * returning an identifier that can be used to check for import progress.
      *
-     * @param $collectionName
-     * @param $transactionalData
+     * @param        $transactionalData
+     * @param string $collectionName
      *
-     * @return object
+     * @throws \Exception
      */
     public function postContactsTransactionalDataImport(
         $transactionalData,
         $collectionName = 'Orders'
     ) {
-        $orders = array();
+        $orders = [];
         foreach ($transactionalData as $one) {
             if (isset($one->email)) {
-                $orders[] = array(
-                    'Key'               => $one->id,
+                $orders[] = [
+                    'Key' => $one->id,
                     'ContactIdentifier' => $one->email,
-                    'Json'              => json_encode($one)
-                );
+                    'Json' => json_encode($one),
+                ];
             }
         }
         $url = $this->_apiEndpoint . self::REST_TRANSACTIONAL_DATA_IMPORT
@@ -733,12 +755,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     *  Adds a single piece of transactional data to a contact.
+     * Adds a single piece of transactional data to a contact.
      *
      * @param        $data
      * @param string $collectionName
      *
-     * @return null
+     * @throws \Exception
      */
     public function postContactsTransactionalData(
         $data,
@@ -755,10 +777,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $url = $this->_apiEndpoint . self::REST_TRANSACTIONAL_DATA
                 . $collectionName . '/' . $order->key;
         }
-        $apiData = array(
-            'Key'  => $data->id,
-            'Json' => json_encode($data->expose())
-        );
+        $apiData = [
+            'Key' => $data->id,
+            'Json' => json_encode($data->expose()),
+        ];
 
         $this->setUrl($url)
             ->setVerb('POST')
@@ -781,7 +803,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param $name
      * @param $key
      *
-     * @return null
+     * @throws \Exception
      */
     public function getContactsTransactionalDataByKey($name, $key)
     {
@@ -799,7 +821,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $email
      * @param string $collectionName
      *
-     * @return object
+     * @throws \Exception
      */
     public function deleteContactTransactionalData(
         $email,
@@ -816,11 +838,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a summary of information about the current status of the account.
      *
-     * @return mixed
+     * @throws \Exception
      */
     public function getAccountInfo()
     {
-
         $url = self::REST_ACCOUNT_INFO;
         $this->setUrl($url)
             ->setVerb('GET');
@@ -836,46 +857,18 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Send a single SMS message.
-     *
-     * @param $telephoneNumber
-     * @param $message
-     *
-     * @return object
-     */
-    public function postSmsMessagesSendTo($telephoneNumber, $message)
-    {
-        $data = array('Message' => $message);
-        $url  = $this->_apiEndpoint . self::REST_SMS_MESSAGE_SEND_TO
-            . $telephoneNumber;
-        $this->setUrl($url)
-            ->setVerb('POST')
-            ->buildPostBody($data);
-
-        $response = $this->execute();
-        if (isset($response->message)) {
-            $message = 'POST SMS MESSAGE SEND to ' . $telephoneNumber
-                . ' message: ' . $message . ' error: ' . $response->message;
-            $this->_helper->log($message);
-        }
-
-        return $response;
-    }
-
-
-    /**
      * Deletes multiple contacts from an address book.
      *
-     * @param $addressBookId
+     * @param string $addressBookId
      * @param $contactIds
      *
      * @return object
      */
     public function deleteAddressBookContactsInbulk($addressBookId, $contactIds)
     {
-        $url  = $this->_apiEndpoint . '/v2/address-books/' . $addressBookId
+        $url = $this->_apiEndpoint . '/v2/address-books/' . $addressBookId
             . '/contacts/inbulk';
-        $data = array('ContactIds' => array($contactIds[0]));
+        $data = ['ContactIds' => [$contactIds[0]]];
         $this->setUrl($url)
             ->setVerb('DELETE')
             ->buildPostBody($data);
@@ -883,7 +876,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'DELETE BULK ADDRESS BOOK CONTACTS ' . $response->message
+            $message = 'deleteAddressBookContactsInbulk ' . $response->message
                 . ' address book ' . $addressBookId;
             $this->_helper->log($message);
         }
@@ -895,15 +888,17 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Resubscribes a previously unsubscribed contact.
      *
      * @param $apiContact
+     *
+     * @throws \Exception
      */
     public function postContactsResubscribe($apiContact)
     {
-        $url  = $this->_apiEndpoint . self::REST_CONTACTS_RESUBSCRIBE;
-        $data = array(
-            'UnsubscribedContact' => $apiContact
-        );
+        $url = $this->_apiEndpoint . self::REST_CONTACTS_RESUBSCRIBE;
+        $data = [
+            'UnsubscribedContact' => $apiContact,
+        ];
         $this->setUrl($url)
-            ->setVerb("POST")
+            ->setVerb('POST')
             ->buildPostBody($data);
 
         $response = $this->execute();
@@ -917,10 +912,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Gets all custom from addresses which can be used in a campaign.
-     *
-     * @return null
+     * 
+     * @throws \Exception
      */
-
     public function getCustomFromAddresses()
     {
         $url = $this->_apiEndpoint . self::REST_CAMPAIGN_FROM_ADDRESS_LIST;
@@ -940,10 +934,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Creates a campaign.
-     *
+     * 
      * @param $data
      *
-     * @return null
+     * @throws \Exception
      */
     public function postCampaign($data)
     {
@@ -955,7 +949,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = ' CREATE CAMPAIGN ' . $response->message;
+            $message = 'postCampaign : ' . $response->message;
             $this->_helper->log($message);
         }
 
@@ -963,8 +957,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Gets all programs.
-     * https://apiconnector.com/v2/programs?select={select}&skip={skip}
+     *  * Gets all programs.
+     * https://apiconnector.com/v2/programs?select={select}&skip={skip}.
+     * 
+     * @throws \Exception
      */
     public function getPrograms()
     {
@@ -984,10 +980,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Creates an enrolment.
-     *
+     * 
      * @param $data
      *
-     * @return null
+     * @throws \Exception
      */
     public function postProgramsEnrolments($data)
     {
@@ -1009,10 +1005,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Gets a program by id.
-     *
+     * 
      * @param $id
      *
-     * @return null
+     * @throws \Exception
      */
     public function getProgramById($id)
     {
@@ -1031,10 +1027,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Gets a summary of reporting information for a specified campaign.
+     * 
+     * @param string $campaignId
      *
-     * @param $campaignId
-     *
-     * @return null
+     * @throws \Exception
      */
     public function getCampaignSummary($campaignId)
     {
@@ -1056,11 +1052,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Deletes a piece of transactional data by key.
-     *
+     * 
      * @param        $key
      * @param string $collectionName
      *
-     * @return object
+     * @throws \Exception
      */
     public function deleteContactsTransactionalData(
         $key,
@@ -1083,11 +1079,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Adds a document to a campaign as an attachment.
-     *
+     * 
      * @param $campaignId
      * @param $data
      *
-     * @return object
+     * @throws \Exception
      */
     public function postCampaignAttachments($campaignId, $data)
     {
@@ -1107,7 +1103,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * get contact address books
+     * Get contact address books.
      *
      * @param $contactId
      *
@@ -1154,7 +1150,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a template by ID.
      *
-     * @param $templateId
+     * @param string $templateId
      *
      * @return object
      */
@@ -1176,24 +1172,24 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Adds multiple pieces of transactional data to account asynchronously, returning an identifier that can be used to check for import progress.
+     * 
+     * @param        $transactionalData
+     * @param string $collectionName
      *
-     * @param $collectionName
-     * @param $transactionalData
-     *
-     * @return object
+     * @throws \Exception
      */
     public function postAccountTransactionalDataImport(
         $transactionalData,
         $collectionName = 'Catalog_Default'
     ) {
-        $orders = array();
+        $orders = [];
         foreach ($transactionalData as $one) {
             if (isset($one->id)) {
-                $orders[] = array(
-                    'Key'               => $one->id,
+                $orders[] = [
+                    'Key' => $one->id,
                     'ContactIdentifier' => 'account',
-                    'Json'              => json_encode($one->expose())
-                );
+                    'Json' => json_encode($one->expose()),
+                ];
             }
         }
         $url = $this->_apiEndpoint . self::REST_TRANSACTIONAL_DATA_IMPORT
@@ -1213,50 +1209,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         return $response;
     }
 
-    public function getCampaignsWithActivitySinceDate($dateTime)
-    {
-        $url = $this->_apiEndpoint . self::REST_DATA_FIELDS_CAMPAIGNS
-            . '/with-activity-since/' . $dateTime;
-
-        $this->setUrl($url)
-            ->setVerb('GET');
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = 'GET CAMPAIGNS WITH ACTIVITY SINCE DATE '
-                . $response->message;
-            $this->_helper->log($message);
-        }
-
-        return $response;
-    }
-
-    public function getCampaignActivityByContactId($campaignId, $contactId)
-    {
-        $url = $this->_apiEndpoint . self::REST_DATA_FIELDS_CAMPAIGNS . '/'
-            . $campaignId . '/activities/' . $contactId;
-
-        $this->setUrl($url)
-            ->setVerb('GET');
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = 'GET CAMPAIGN ACTIVITY BY CONTACT ID '
-                . $response->message;
-            $this->_helper->log($message);
-        }
-
-        return $response;
-    }
-
     /**
      * Gets the import status of a previously started contact import.
-     *
+     * 
      * @param $importId
      *
-     * @return object
+     * @throws \Exception
      */
     public function getContactsImportByImportId($importId)
     {
@@ -1278,7 +1236,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets the import status of a previously started transactional import.
      *
-     * @param $importId
+     * @param string $importId
      *
      * @return object
      */
@@ -1302,12 +1260,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * get contact import report faults
-     *
+     * Get contact import report faults.
+     * 
      * @param $id
      *
      * @return bool|null
-     * @throws Exception
+     *
+     * @throws \Exception
      */
     public function getContactImportReportFaults($id)
     {

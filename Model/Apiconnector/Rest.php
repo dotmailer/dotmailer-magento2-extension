@@ -4,18 +4,53 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 abstract class Rest
 {
-
+    /**
+     * @var null
+     */
     protected $url;
+    /**
+     * @var string
+     */
     protected $verb;
+    /**
+     * @var null
+     */
     protected $requestBody;
+    /**
+     * @var int
+     */
     protected $requestLength;
+    /**
+     * @var string
+     */
     protected $_apiUsername;
+    /**
+     * @var string
+     */
     protected $_apiPassword;
+    /**
+     * @var string
+     */
     protected $acceptType;
+    /**
+     * @var null
+     */
     protected $responseBody;
+    /**
+     * @var null
+     */
     protected $responseInfo;
+    /**
+     * @var
+     */
     protected $curlError;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var bool
+     */
     protected $isNotJson = false;
 
     /**
@@ -27,85 +62,89 @@ abstract class Rest
     public function __construct(
         $website = 0,
         \Dotdigitalgroup\Email\Helper\Data $data
-    )
-    {
-        $this->_helper       = $data;
-        $this->url           = null; //$url;
-        $this->verb          = 'GET'; //$verb;
-        $this->requestBody   = null; //$requestBody;
+    ) {
+        $this->_helper = $data;
+        $this->url = null;
+        $this->verb = 'GET';
+        $this->requestBody = null;
         $this->requestLength = 0;
-        $this->_apiUsername  = (string)$this->_helper->getApiUsername($website);
-        $this->_apiPassword  = (string)$this->_helper->getApiPassword($website);
-        $this->acceptType    = 'application/json';
-        $this->responseBody  = null;
-        $this->responseInfo  = null;
+        $this->_apiUsername = (string)$this->_helper->getApiUsername($website);
+        $this->_apiPassword = (string)$this->_helper->getApiPassword($website);
+        $this->acceptType = 'application/json';
+        $this->responseBody = null;
+        $this->responseInfo = null;
 
         if ($this->requestBody !== null) {
             $this->buildPostBody();
         }
     }
 
+    /**
+     * @param $json
+     *
+     * @return string
+     */
     protected function prettyPrint($json)
     {
-        $result          = '';
-        $level           = 0;
-        $prev_char       = '';
-        $in_quotes       = false;
-        $ends_line_level = null;
-        $json_length     = strlen($json);
+        $result = '';
+        $level = 0;
+        $prevChar = '';
+        $inQuotes = false;
+        $endsLineLevel = null;
+        $jsonLength = strlen($json);
 
-        for ($i = 0; $i < $json_length; $i++) {
-            $char           = $json[$i];
-            $new_line_level = null;
-            $post           = "";
-            if ($ends_line_level !== null) {
-                $new_line_level  = $ends_line_level;
-                $ends_line_level = null;
+        for ($i = 0; $i < $jsonLength; ++$i) {
+            $char = $json[$i];
+            $newLIneLevel = null;
+            $post = '';
+            if ($endsLineLevel !== null) {
+                $newLIneLevel = $endsLineLevel;
+                $endsLineLevel = null;
             }
-            if ($char === '"' && $prev_char != '\\') {
-                $in_quotes = ! $in_quotes;
-            } elseif ( ! $in_quotes) {
+            if ($char === '"' && $prevChar != '\\') {
+                $inQuotes = !$inQuotes;
+            } elseif (!$inQuotes) {
                 switch ($char) {
                     case '}':
                     case ']':
                         $level--;
-                        $ends_line_level = null;
-                        $new_line_level  = $level;
+                        $endsLineLevel = null;
+                        $newLIneLevel = $level;
                         break;
 
                     case '{':
                     case '[':
                         $level++;
                     case ',':
-                        $ends_line_level = $level;
+                        $endsLineLevel = $level;
                         break;
 
                     case ':':
-                        $post = " ";
+                        $post = ' ';
                         break;
 
-                    case " ":
+                    case ' ':
                     case "\t":
                     case "\n":
                     case "\r":
-                        $char            = "";
-                        $ends_line_level = $new_line_level;
-                        $new_line_level  = null;
+                        $char = '';
+                        $endsLineLevel = $newLIneLevel;
+                        $newLIneLevel = null;
                         break;
                 }
             }
-            if ($new_line_level !== null) {
-                $result .= "\n" . str_repeat("\t", $new_line_level);
+            if ($newLIneLevel !== null) {
+                $result .= "\n" . str_repeat("\t", $newLIneLevel);
             }
             $result .= $char . $post;
-            $prev_char = $char;
+            $prevChar = $char;
         }
 
         return $result;
     }
 
     /**
-     * returns the object as JSON.
+     * Returns the object as JSON.
      *
      * @param bool $pretty
      *
@@ -113,8 +152,7 @@ abstract class Rest
      */
     public function toJSON($pretty = false)
     {
-
-        if ( ! $pretty) {
+        if (!$pretty) {
             return json_encode($this->expose());
         } else {
             return $this->prettyPrint(json_encode($this->expose()));
@@ -122,17 +160,14 @@ abstract class Rest
     }
 
     /**
-     * exposes the class as an array of objects
+     * Exposes the class as an array of objects.
      *
      * @return array
      */
     public function expose()
     {
-
         return get_object_vars($this);
-
     }
-
 
     /**
      * Reset the client.
@@ -141,23 +176,23 @@ abstract class Rest
      */
     public function flush()
     {
-        $this->_apiUsername  = '';
-        $this->_apiPassword  = '';
-        $this->requestBody   = null;
+        $this->_apiUsername = '';
+        $this->_apiPassword = '';
+        $this->requestBody = null;
         $this->requestLength = 0;
-        $this->verb          = 'GET';
-        $this->responseBody  = null;
-        $this->responseInfo  = null;
+        $this->verb = 'GET';
+        $this->responseBody = null;
+        $this->responseInfo = null;
 
         return $this;
     }
 
     /**
-     * @return null
      * @throws \Exception
      */
     public function execute()
     {
+        //@codingStandardsIgnoreStart
         $ch = curl_init();
         $this->setAuth($ch);
         try {
@@ -186,21 +221,22 @@ abstract class Rest
         } catch (\Exception $e) {
             curl_close($ch);
             throw $e;
+            //@codingStandardsIgnoreEnd
         }
 
-        /**
+        /*
          * check and debug api request total time
          */
-        if ($this->_helper->getDebugEnabled()) {
+        if ($this->_helper->isDebugEnabled()) {
             $info = $this->getResponseInfo();
             //the response info data is set
             if (isset($info['url']) && isset($info['total_time'])) {
-                $url       = $info['url'];
-                $time      = $info['total_time'];
+                $url = $info['url'];
+                $time = $info['total_time'];
                 $totalTime = sprintf(' time : %g sec', $time);
-                $check     = $this->_helper->getApiResponseTimeLimit();
-                $limit     = ($check) ? $check : '2';
-                $message   = $this->verb . ', ' . $url . $totalTime;
+                $check = $this->_helper->getApiResponseTimeLimit();
+                $limit = ($check) ? $check : '2';
+                $message = $this->verb . ', ' . $url . $totalTime;
                 //check for slow queries
                 if ($time > $limit) {
                     //log the slow queries
@@ -228,7 +264,7 @@ abstract class Rest
 
     /**
      * Execute curl get request.
-     *
+     * 
      * @param $ch
      */
     protected function executeGet($ch)
@@ -243,12 +279,14 @@ abstract class Rest
      */
     protected function executePost($ch)
     {
-        if ( ! is_string($this->requestBody)) {
+        if (!is_string($this->requestBody)) {
             $this->buildPostBody();
         }
 
+        //@codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->requestBody);
         curl_setopt($ch, CURLOPT_POST, true);
+        //@codingStandardsIgnoreEnd
 
         $this->doExecute($ch);
     }
@@ -260,9 +298,9 @@ abstract class Rest
      */
     protected function buildPostBodyFromFile($filename)
     {
-        $this->requestBody = array(
-            'file' => '@' . $filename
-        );
+        $this->requestBody = [
+            'file' => '@' . $filename,
+        ];
     }
 
     /**
@@ -272,12 +310,12 @@ abstract class Rest
      */
     protected function executePut($ch)
     {
-        if ( ! is_string($this->requestBody)) {
+        if (!is_string($this->requestBody)) {
             $this->buildPostBody();
         }
 
         $this->requestLength = strlen($this->requestBody);
-
+        //@codingStandardsIgnoreStart
         $fh = fopen('php://memory', 'rw');
         fwrite($fh, $this->requestBody);
         rewind($fh);
@@ -289,6 +327,7 @@ abstract class Rest
         $this->doExecute($ch);
 
         fclose($fh);
+        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -298,8 +337,9 @@ abstract class Rest
      */
     protected function executeDelete($ch)
     {
+        //@codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-
+        //@codingStandardsIgnoreEnd
         $this->doExecute($ch);
     }
 
@@ -310,6 +350,7 @@ abstract class Rest
      */
     protected function doExecute(&$ch)
     {
+        //@codingStandardsIgnoreStart
         $this->setCurlOpts($ch);
 
         if ($this->isNotJson) {
@@ -327,35 +368,39 @@ abstract class Rest
         }
 
         curl_close($ch);
+        //@codingStandardsIgnoreEnd
     }
 
     /**
-     * curl options.
+     * Curl options.
      *
      * @param $ch
      */
     protected function setCurlOpts(&$ch)
     {
+        //@codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt(
-            $ch, CURLOPT_HTTPHEADER, array(
+            $ch, CURLOPT_HTTPHEADER, [
                 'Accept: ' . $this->acceptType,
-                'Content-Type: application/json'
-            )
+                'Content-Type: application/json',
+            ]
         );
+        //@codingStandardsIgnoreEnd
     }
 
     /**
-     * basic auth.
+     * Basic auth.
      *
      * @param $ch
      */
     protected function setAuth(&$ch)
     {
+        //@codingStandardsIgnoreStart
         if ($this->_apiUsername !== null && $this->_apiPassword !== null) {
             curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
             curl_setopt(
@@ -363,6 +408,7 @@ abstract class Rest
                 $this->_apiUsername . ':' . $this->_apiPassword
             );
         }
+        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -376,7 +422,7 @@ abstract class Rest
     }
 
     /**
-     * set accept type.
+     * Set accept type.
      *
      * @param $acceptType
      */
@@ -385,9 +431,8 @@ abstract class Rest
         $this->acceptType = $acceptType;
     }
 
-
     /**
-     * get api username.
+     * Get api username.
      *
      * @return string
      */
@@ -397,7 +442,7 @@ abstract class Rest
     }
 
     /**
-     * set api username.
+     * Set api username.
      *
      * @param $apiUsername
      *
@@ -421,7 +466,7 @@ abstract class Rest
     }
 
     /**
-     * set api password.
+     * Set api password.
      *
      * @param $apiPassword
      *
@@ -435,7 +480,7 @@ abstract class Rest
     }
 
     /**
-     * get response body.
+     * Get response body.
      *
      * @return string/object
      */
@@ -445,9 +490,7 @@ abstract class Rest
     }
 
     /**
-     * get response info.
-     *
-     * @return null
+     * Get response info.
      */
     public function getResponseInfo()
     {
@@ -455,7 +498,7 @@ abstract class Rest
     }
 
     /**
-     * get url.
+     * Get url.
      *
      * @return string
      */
@@ -465,7 +508,7 @@ abstract class Rest
     }
 
     /**
-     * set url.
+     * Set url.
      *
      * @param $url
      *
@@ -489,7 +532,7 @@ abstract class Rest
     }
 
     /**
-     * set the verb.
+     * Set the verb.
      *
      * @param $verb
      *
@@ -502,10 +545,13 @@ abstract class Rest
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function getCurlError()
     {
         //if curl error
-        if ( ! empty($this->curlError)) {
+        if (!empty($this->curlError)) {
             //log curl error
             $message = 'CURL ERROR ' . $this->curlError;
             $this->_helper->log($message);
@@ -516,6 +562,9 @@ abstract class Rest
         return false;
     }
 
+    /**
+     * @return $this
+     */
     public function setIsNotJsonTrue()
     {
         $this->isNotJson = true;

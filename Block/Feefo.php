@@ -7,12 +7,26 @@ const FEEFO_URL = 'http://www.feefo.com/feefo/xmlfeed.jsp?';
 class Feefo extends \Magento\Framework\View\Element\Template
 {
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     public $priceHelper;
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
     protected $_orderFactory;
+    /**
+     * @var \Magento\Quote\Model\QuoteFactory
+     */
     protected $_quoteFactory;
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
     protected $_productFactory;
-
 
     /**
      * Feefo constructor.
@@ -35,30 +49,28 @@ class Feefo extends \Magento\Framework\View\Element\Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper          = $helper;
-        $this->priceHelper     = $priceHelper;
-        $this->_orderFactory   = $orderFactory;
-        $this->storeManager    = $this->_storeManager;
+        $this->helper = $helper;
+        $this->priceHelper = $priceHelper;
+        $this->_orderFactory = $orderFactory;
         $this->_productFactory = $productFactory;
-        $this->_quoteFactory   = $quoteFactory;
-        $this->_orderFactory   = $orderFactory;
-
+        $this->_quoteFactory = $quoteFactory;
+        $this->_orderFactory = $orderFactory;
     }
 
     /**
-     * get customer's service score logo and output it
+     * Get customer's service score logo and output it.
      *
      * @return string
      */
     public function getServiceScoreLogo()
     {
-        $url      = 'http://www.feefo.com/feefo/feefologo.jsp?logon=';
-        $logon    = $this->helper->getFeefoLogon();
+        $url = 'http://www.feefo.com/feefo/feefologo.jsp?logon=';
+        $logon = $this->helper->getFeefoLogon();
         $template = '';
         if ($this->helper->getFeefoLogoTemplate()) {
             $template = '&template=' . $this->helper->getFeefoLogoTemplate();
         }
-        $fullUrl   = $url . $logon . $template;
+        $fullUrl = $url . $logon . $template;
         $vendorUrl = 'http://www.feefo.com/feefo/viewvendor.jsp?logon='
             . $logon;
 
@@ -69,31 +81,30 @@ class Feefo extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get quote products to show feefo reviews
+     * Get quote products to show feefo reviews.
      *
      * @return array
      */
     public function getQuoteProducts()
     {
-        $products   = array();
-        $quoteId    = $this->_request->getParam('quote_id');
+        $products = [];
+        $quoteId = $this->_request->getParam('quote_id');
         $quoteModel = $this->_quoteFactory->create()
             ->load($quoteId);
 
-        if ( ! $quoteModel->getId()) {
+        if (!$quoteModel->getId()) {
             return [];
         }
 
         $quoteItems = $quoteModel->getAllItems();
 
         if (count($quoteItems) == 0) {
-            return array();
+            return [];
         }
 
         foreach ($quoteItems as $item) {
-            $productId    = $item->getProductId();
-            $productModel = $this->_productFactory->create()
-                ->load($productId);
+            $productModel = $item->getProduct();
+            
             if ($productModel->getId()) {
                 $products[$productModel->getSku()] = $productModel->getName();
             }
@@ -103,39 +114,41 @@ class Feefo extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get product reviews from feefo
-     *
+     * Get product reviews from feefo.
+     * 
      * @return array
      */
     public function getProductsReview()
     {
-        $check     = true;
-        $reviews   = array();
+        $check = true;
+        $reviews = [];
         $feefoDir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
             . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup'
             . DIRECTORY_SEPARATOR .
             'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR
             . 'frontend' . DIRECTORY_SEPARATOR . 'templates'
             . DIRECTORY_SEPARATOR . 'feefo';
-        $logon     = $this->helper->getFeefoLogon();
-        $limit     = $this->helper->getFeefoReviewsPerProduct();
-        $products  = $this->getQuoteProducts();
+        $logon = $this->helper->getFeefoLogon();
+        $limit = $this->helper->getFeefoReviewsPerProduct();
+        $products = $this->getQuoteProducts();
 
         foreach ($products as $sku => $name) {
-            $url = "http://www.feefo.com/feefo/xmlfeed.jsp?logon=" . $logon
-                . "&limit=" . $limit . "&vendorref=" . $sku
-                . "&mode=productonly";
+            $url = 'http://www.feefo.com/feefo/xmlfeed.jsp?logon=' . $logon
+                . '&limit=' . $limit . '&vendorref=' . $sku
+                . '&mode=productonly';
             $doc = new \DOMDocument();
             $xsl = new \XSLTProcessor();
+            //@codingStandardsIgnoreStart
             if ($check) {
-                $doc->load($feefoDir . DIRECTORY_SEPARATOR . "feedback.xsl");
+                $doc->load($feefoDir . DIRECTORY_SEPARATOR . 'feedback.xsl');
             } else {
                 $doc->load(
-                    $feefoDir . DIRECTORY_SEPARATOR . "feedback-no-th.xsl"
+                    $feefoDir . DIRECTORY_SEPARATOR . 'feedback-no-th.xsl'
                 );
             }
             $xsl->importStyleSheet($doc);
             $doc->loadXML(file_get_contents($url));
+            //@codingStandardsIgnoreEnd
             $productReview = $xsl->transformToXML($doc);
             if (strpos($productReview, '<td') !== false) {
                 $reviews[$name] = $xsl->transformToXML($doc);

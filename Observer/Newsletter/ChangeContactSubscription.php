@@ -1,34 +1,47 @@
 <?php
 
-
 namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
-
-class ChangeContactSubscription
-    implements \Magento\Framework\Event\ObserverInterface
+class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInterface
 {
-
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
+    /**
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
     protected $_contactFactory;
-    protected $_subscriberFactory;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     */
     protected $_automationFactory;
+    /**
+     * @var
+     */
     protected $_importerFactory;
 
     /**
      * ChangeContactSubscription constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Magento\Newsletter\Model\SubscriberFactory    $subscriberFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory    $contactFactory
      * @param \Magento\Framework\Registry                    $registry
      * @param \Dotdigitalgroup\Email\Helper\Data             $data
      * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
@@ -36,14 +49,12 @@ class ChangeContactSubscription
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
         $this->_automationFactory = $automationFactory;
-        $this->_subscriberFactory = $subscriberFactory->create();
-        $this->_contactFactory    = $contactFactory;
-        $this->_helper            = $data;
-        $this->_storeManager      = $storeManagerInterface;
-        $this->_registry          = $registry;
-        $this->_importerFactory   = $importerFactory->create();
+        $this->_contactFactory = $contactFactory;
+        $this->_helper = $data;
+        $this->_storeManager = $storeManagerInterface;
+        $this->_registry = $registry;
+        $this->_importerFactory = $importerFactory->create();
     }
-
 
     /**
      * Change contact subscription status.
@@ -54,17 +65,14 @@ class ChangeContactSubscription
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $subscriber       = $observer->getEvent()->getSubscriber();
-        $email            = $subscriber->getEmail();
-        $storeId          = $subscriber->getStoreId();
+        $subscriber = $observer->getEvent()->getSubscriber();
+        $email = $subscriber->getEmail();
+        $storeId = $subscriber->getStoreId();
         $subscriberStatus = $subscriber->getSubscriberStatus();
-        $websiteId
-                          = $this->_storeManager->getStore(
-            $subscriber->getStoreId()
-        )
+        $websiteId = $this->_storeManager->getStore($subscriber->getStoreId())
             ->getWebsiteId();
         //check if enabled
-        if ( ! $this->_helper->isEnabled($websiteId)) {
+        if (!$this->_helper->isEnabled($websiteId)) {
             return $this;
         }
 
@@ -81,7 +89,7 @@ class ChangeContactSubscription
                 if ($contactEmail->getSuppressed()) {
                     $this->_importerFactory->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
-                        array('email' => $email),
+                        ['email' => $email],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
                         $websiteId
                     );
@@ -101,7 +109,7 @@ class ChangeContactSubscription
                 if (!$contactId) {
                     $this->_importerFactory->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
-                        array('email' => $email, 'id' => $contactEmail->getId()),
+                        ['email' => $email, 'id' => $contactEmail->getId()],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
                         $websiteId
                     );
@@ -124,32 +132,38 @@ class ChangeContactSubscription
 
             //update contact
             $contactEmail->save();
-
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, array());
+            $this->_helper->debug((string)$e, []);
         }
 
         return $this;
     }
 
-
-    private function _addSubscriberToAutomation($email, $subscriber, $websiteId)
+    /**
+     * Register subscriber to automation.
+     *
+     * @param $email
+     * @param $subscriber
+     * @param $websiteId
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    protected function _addSubscriberToAutomation($email, $subscriber, $websiteId)
     {
-
         $storeId = $subscriber->getStoreId();
-        $store   = $this->_storeManager->getStore($storeId);
-        $programId
-                 = $this->_helper->getWebsiteConfig(
+        $store = $this->_storeManager->getStore($storeId);
+        $programId = $this->_helper->getWebsiteConfig(
             'connector_automation/visitor_automation/subscriber_automation',
             $websiteId
         );
         //not mapped ignore
-        if ( ! $programId) {
+        if (!$programId) {
             return;
         }
         try {
+            //@codingStandardsIgnoreStart
             //check the subscriber alredy exists
-            $enrolment = $this->_automationFactory->create()
+            $enrolmentCollection = $this->_automationFactory->create()
                 ->getCollection()
                 ->addFieldToFilter('email', $email)
                 ->addFieldToFilter(
@@ -157,10 +171,11 @@ class ChangeContactSubscription
                     \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
                 )
                 ->addFieldToFilter('website_id', $websiteId)
-                ->getFirstItem();
-
+                ->setPageSize(1);
+            $enrolment = $enrolmentCollection->getFirstItem();
+            //@codingStandardsIgnoreEnd
             //add new subscriber to automation
-            if ( ! $enrolment->getId()) {
+            if (!$enrolment->getId()) {
                 //save subscriber to the queue
                 $automation = $this->_automationFactory->create()
                     ->setEmail($email)

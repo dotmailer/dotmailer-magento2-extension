@@ -4,7 +4,16 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
 class Attributes
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    protected $_dataHelper;
 
+    /**
+     * Attributes constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $dataHelper
     ) {
@@ -12,7 +21,7 @@ class Attributes
     }
 
     /**
-     * Returns custom order attributes
+     * Returns custom order attributes.
      *
      * @return array
      */
@@ -20,12 +29,15 @@ class Attributes
     {
         $fields = $this->_dataHelper->getOrderTableDescription();
 
-        $customFields = array();
-        foreach ($fields as $key => $field) {
-            $customFields[] = array(
+        $customFields[] = [
+            'label' => __('---- Default Option ----'),
+            'value' => '0',
+        ];
+        foreach ($fields as $field) {
+            $customFields[] = [
                 'value' => $field['COLUMN_NAME'],
-                'label' => $field['COLUMN_NAME']
-            );
+                'label' => $field['COLUMN_NAME'],
+            ];
         }
 
         return $customFields;

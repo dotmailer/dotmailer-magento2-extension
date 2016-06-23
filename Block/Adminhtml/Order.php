@@ -2,13 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
+/**
+ * Class Order.
+ */
 class Order extends \Magento\Backend\Block\Widget\Grid\Container
 {
-
     /**
-     * Block constructor
-     *
-     * @return void
+     * Block constructor.
      */
     protected function _construct()
     {
@@ -19,4 +19,3 @@ class Order extends \Magento\Backend\Block\Widget\Grid\Container
         $this->buttonList->remove('add');
     }
 }
-

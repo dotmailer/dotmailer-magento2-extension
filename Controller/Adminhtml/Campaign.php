@@ -1,16 +1,14 @@
 <?php
+
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
-use Magento\Backend\App\Action;
-
-abstract class Campaign extends Action
+abstract class Campaign extends \Magento\Backend\App\Action
 {
-
-	/**
-	 * @return bool
-	 */
-	protected function _isAllowed()
-	{
-		return $this->_authorization->isAllowed('Dotdigitalgroup_Email::campaign');
-	}
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::campaign');
+    }
 }
