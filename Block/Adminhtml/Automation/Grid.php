@@ -5,11 +5,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Automation;
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
     /**
-     * @var \Magento\Framework\Module\Manager
-     */
-    protected $moduleManager;
-
-    /**
      * @var
      */
     protected $_gridFactory;
@@ -28,23 +23,21 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * Grid constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $gridFactory
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
-     * @param \Magento\Framework\Module\Manager $moduleManager
-     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
-     * @param array $data
+     * @param \Magento\Backend\Block\Template\Context                                 $context
+     * @param \Magento\Backend\Helper\Data                                            $backendHelper
+     * @param \Magento\Store\Model\System\Store                                       $store
+     * @param array                                                                   $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $gridFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
-        \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
+        \Magento\Store\Model\System\Store $store,
         array $data = []
     ) {
         $this->_automationFactory = $gridFactory;
-        $this->_objectManager = $objectManagerInterface;
-        $this->moduleManager = $moduleManager;
+        $this->store = $store;
+
         parent::__construct($context, $backendHelper, $data);
     }
 
@@ -146,8 +139,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'header' => __('Website'),
             'align' => 'center',
             'type' => 'options',
-            'options' => $this->_objectManager->get('Magento\Store\Model\System\Store')
-                ->getWebsiteOptionHash(true),
+            'options' => $this->store->getWebsiteOptionHash(true),
             'index' => 'website_id',
         ]);
 
@@ -161,7 +153,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');
-
         $this->getMassactionBlock()->addItem('delete', [
             'label' => __('Delete'),
             'url' => $this->getUrl('*/*/massDelete'),

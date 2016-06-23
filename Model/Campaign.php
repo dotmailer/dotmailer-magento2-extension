@@ -79,10 +79,14 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('quote_id', $quoteId)
-            ->addFieldToFilter('store_id', $storeId);
+            ->addFieldToFilter('store_id', $storeId)
+            ->setPageSize(1)
+        ;
 
         if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         } else {
             $this->setQuoteId($quoteId)
                 ->setStoreId($storeId);
@@ -95,9 +99,11 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
      * Prepare data to be saved to database.
      *
      * @return $this
+     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
+        //@codingStandardsIgnoreEnd
         parent::beforeSave();
         if ($this->isObjectNew()) {
             $this->setCreatedAt($this->_dateTime->formatDate(true));

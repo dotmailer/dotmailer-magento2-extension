@@ -12,6 +12,10 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $_data;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
+     */
+    protected $datafield;
 
     /**
      * Automapdatafields constructor.
@@ -21,9 +25,11 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Model\Connector\Datafield $datafield,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->_data = $data;
+        $this->datafield = $datafield;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -42,8 +48,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
             $this->messageManager->addNotice('Please enable api first.');
         } else {
             // get all possible datatifileds
-            $datafields = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Connector\Datafield')
-                ->getContactDatafields();
+            $datafields = $this->datafield->getContactDatafields();
             foreach ($datafields as $key => $datafield) {
                 $response = $client->postDataFields($datafield);
 

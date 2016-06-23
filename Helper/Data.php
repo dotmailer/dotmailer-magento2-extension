@@ -48,6 +48,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_store;
 
+
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
+     */
+    protected $customerFactory;
+
     /**
      * Data constructor.
      *
@@ -61,6 +67,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
+
         \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Framework\App\ProductMetadata $productMetadata,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
@@ -69,6 +76,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Store\Model\Store $store
     ) {
         $this->_adapter = $adapter;
@@ -78,6 +86,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_resourceConfig = $resourceConfig;
         $this->_storeManager = $storeManager;
         $this->_objectManager = $objectManager;
+        $this->customerFactory = $customerFactory;
         $this->_store = $store;
 
         parent::__construct($context);
@@ -548,10 +557,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
             /* it may be needed to set maximum execution time of the script to longer,
              * like 60 minutes than usual */
+            //@codingStandardsIgnoreStart
             set_time_limit(7200);
 
             /* and memory to 512 megabytes */
             ini_set('memory_limit', '512M');
+            //@codingStandardsIgnoreEnd
         }
 
         return $this;
@@ -641,9 +652,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'response_type' => 'code',
         ];
 
-        $authorizeBaseUrl = $this->_objectManager->create(
-            'Dotdigitalgroup\Email\Helper\Config'
-        )->getAuthorizeLink();
+        //Circular dependency when using di
+        $authorizeBaseUrl = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Config')
+            ->getAuthorizeLink();
         $url = $authorizeBaseUrl . http_build_query($params)
             . '&client_id=' . $clientId;
 
@@ -657,9 +668,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getRedirectUri()
     {
-        $callback = $this->_objectManager->create(
-            'Dotdigitalgroup\Email\Helper\Config'
-        )->getCallbackUrl();
+        //Circular dependency when using di
+        $callback = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Config')
+            ->getCallbackUrl();
 
         return $callback;
     }
@@ -730,11 +741,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function setConnectorContactToReImport($customerId)
     {
-        $contactModel = $this->_objectManager->create(
-            'Dotdigitalgroup\Email\Model\Contact'
-        );
-        $contactModel
-            ->loadByCustomerId($customerId)
+        $contactModel = $this->_contactFactory->create();
+        $contactModel->loadByCustomerId($customerId)
             ->setEmailImported(
                 \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED
             )
@@ -770,16 +778,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getCustomersWithDuplicateEmails()
     {
-        $customers = $this->_objectManager->create(
-            'Magento\Customer\Model\Customer'
-        )->getCollection();
+        $customers = $this->customerFactory->create()
+            ->getCollection();
 
         //duplicate emails
+        //@codingStandardsIgnoreStart
         $customers->getSelect()
             ->columns(['emails' => 'COUNT(e.entity_id)'])
             ->group('email')
             ->having('emails > ?', 1);
-
+        //@codingStandardsIgnoreEnd
         return $customers;
     }
 

@@ -19,8 +19,10 @@ class MassDelete extends CampaignController
         } else {
             try {
                 foreach ($searchIds as $searchId) {
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')->load($searchId);
+                    //@codingStandardsIgnoreStart
+                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')->setId($searchId);
                     $model->delete();
+                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
             } catch (\Exception $e) {

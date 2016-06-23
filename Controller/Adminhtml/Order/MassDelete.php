@@ -7,6 +7,10 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends OrderController
 {
+
+    /**
+     * @var
+     */
     protected $messageManager;
 
     /**
@@ -20,8 +24,10 @@ class MassDelete extends OrderController
         } else {
             try {
                 foreach ($ids as $id) {
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Order')->load($id);
+                    //@codingStandardsIgnoreStart
+                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Order')->setEmailOrderId($id);
                     $model->delete();
+                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {

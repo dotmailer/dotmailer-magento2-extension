@@ -9,7 +9,7 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @var string
      */
-    protected $_vatButtonLabel = 'Create New Addressbook';
+    protected $_vatButtonLabel = 'New Addressbook';
 
     /**
      * Set Validate VAT Button Label.

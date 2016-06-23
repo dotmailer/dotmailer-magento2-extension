@@ -103,9 +103,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
         }
 
         foreach ($quoteItems as $item) {
-            $productId = $item->getProductId();
-            $productModel = $this->_productFactory->create()
-                ->load($productId);
+            $productModel = $item->getProduct();
+            
             if ($productModel->getId()) {
                 $products[$productModel->getSku()] = $productModel->getName();
             }
@@ -139,6 +138,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
                 . '&mode=productonly';
             $doc = new \DOMDocument();
             $xsl = new \XSLTProcessor();
+            //@codingStandardsIgnoreStart
             if ($check) {
                 $doc->load($feefoDir . DIRECTORY_SEPARATOR . 'feedback.xsl');
             } else {
@@ -148,6 +148,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
             }
             $xsl->importStyleSheet($doc);
             $doc->loadXML(file_get_contents($url));
+            //@codingStandardsIgnoreEnd
             $productReview = $xsl->transformToXML($doc);
             if (strpos($productReview, '<td') !== false) {
                 $reviews[$name] = $xsl->transformToXML($doc);

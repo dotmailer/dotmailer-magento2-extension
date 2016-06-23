@@ -21,18 +21,16 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * Grid constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $gridFactory
-     * @param \Magento\Framework\Module\Manager $moduleManager
-     * @param array $data
+     * @param \Magento\Backend\Block\Template\Context                               $context
+     * @param \Magento\Backend\Helper\Data                                          $backendHelper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory   $gridFactory
+     * @param array                                                                 $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $gridFactory,
-        \Magento\Framework\Module\Manager $moduleManager,
         array $data = []
     ) {
         $this->_importedFactory = $importedFactory;

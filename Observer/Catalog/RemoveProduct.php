@@ -89,14 +89,16 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @return bool
      */
-    private function _loadProduct($productId)
+    protected function _loadProduct($productId)
     {
         $collection = $this->_catalogCollection->create()
             ->addFieldToFilter('product_id', $productId)
             ->setPageSize(1);
 
+        //@codingStandardsIgnoreStart
         if ($collection->getSize()) {
             return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
         } else {
             $this->_catalogFactory->create()
                 ->setProductId($productId)
@@ -111,7 +113,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @param int $key
      */
-    private function _deleteFromAccount($key)
+    protected function _deleteFromAccount($key)
     {
         $apiEnabled = $this->_scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED);

@@ -17,8 +17,10 @@ class MassDelete extends \Magento\Backend\App\Action
         } else {
             try {
                 foreach ($searchIds as $searchId) {
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Catalog')->load($searchId);
+                    //@codingStandardsIgnoreStart
+                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Catalog')->setId($searchId);
                     $model->delete();
+                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
             } catch (\Exception $e) {

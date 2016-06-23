@@ -67,12 +67,14 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                             $this->_helper->getSubscriberAddressBook($websiteId), $contactId
                         );
                     } else {
+                        //@codingStandardsIgnoreStart
                         $contactEmail = $this->_contactFactory->create()
                             ->load($id);
                         if ($contactEmail->getId()) {
                             $contactEmail->setSuppressed('1')
                                 ->save();
                         }
+                        //@codingStandardsIgnoreEnd
                     }
                 }
 

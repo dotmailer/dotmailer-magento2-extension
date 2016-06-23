@@ -57,10 +57,12 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
                 //loop for all campaing options
                 foreach ($campaigns as $campaign) {
                     if (isset($campaign->name)) {
+                        //@codingStandardsIgnoreStart
                         $fields[] = [
                             'value' => $campaign->id,
                             'label' => addslashes($campaign->name),
                         ];
+                        //@codingStandardsIgnoreEnd
                     }
                 }
             }
