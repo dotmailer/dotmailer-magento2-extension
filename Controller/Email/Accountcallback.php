@@ -21,24 +21,35 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
-    protected $_ipRange = array(
+    /**
+     * @var array
+     */
+    protected $_ipRange = [
         '104.40.179.234',
         '104.40.159.161',
         '191.233.82.46',
         '104.46.48.100',
         '104.40.187.26'
-    );
+    ];
+    /**
+     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
+     */
     protected $_remoteAddress;
+    /**
+     * @var \Magento\Framework\App\Config\ReinitableConfigInterface
+     */
+    protected $config;
 
     /**
      * Accountcallback constructor.
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
-     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
+     * @param \Magento\Framework\App\Action\Context                   $context
+     * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
+     * @param \Magento\Framework\Json\Helper\Data                     $jsonHelper
+     * @param \Magento\Store\Model\StoreManagerInterface              $storeManager
+     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield        $dataField
+     * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
+     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress    $remoteAddress
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -46,6 +57,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
+        \Magento\Framework\App\Config\ReinitableConfigInterface $config,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
     ) {
         $this->_helper = $helper;
@@ -53,6 +65,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         $this->_dataField = $dataField;
         $this->_storeManager = $storeManager;
         $this->_remoteAddress = $remoteAddress;
+        $this->config = $config;
 
         parent::__construct($context);
     }
@@ -117,7 +130,8 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         return
             "<div class='modal-page'>
                 <div class='success'></div>
-                <h2 class='center'>Congratulations your dotmailer account is now ready, time to make your marketing awesome</h2>
+                <h2 class='center'>Congratulations your dotmailer account is now ready,
+                 time to make your marketing awesome</h2>
                 <div class='center'>
                     <input type='submit' class='center' value='Start making money' />
                 </div>
@@ -136,7 +150,8 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
                 <div class='fail'></div>
                 <h2 class='center'>Sorry, something went wrong whilst trying to create your new dotmailer account</h2>
                 <div class='center'>
-                    <a class='submit secondary center' href='mailto:support@dotmailer.com'>Contact support@dotmailer.com</a>
+                    <a class='submit secondary center' href='mailto:support@dotmailer.com'>
+                    Contact support@dotmailer.com</a>
                 </div>
             </div>";
     }
@@ -162,7 +177,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         );
 
         //Clear config cache
-        $this->_objectManager->get('Magento\Framework\App\Config\ReinitableConfigInterface')->reinit();
+        $this->config->reinit();
 
         return true;
     }
@@ -221,7 +236,8 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         ];
         $addressBookMap = [
             'Magento_Customers' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
-            'Magento_Subscribers' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
+            'Magento_Subscribers' => 
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
             'Magento_Guests' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
         ];
         $error = false;

@@ -10,15 +10,52 @@ class Selected extends \Magento\Backend\App\AbstractAction
     protected $_http;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\RulesFactory
+     */
+    protected $rulesFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
+     */
+    protected $ruleType;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
+     */
+    protected $ruleCondition;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
+     */
+    protected $ruleValue;
+    /**
+     * @var
+     */
+    protected $jsonEncoder;
+
+    /**
      * Selected constructor.
      *
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\App\Response\Http $http
+     * @param \Magento\Backend\App\Action\Context                           $context
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory                     $rulesFactory
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type      $ruleType
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
+     * @param \Magento\Framework\Json\Encoder                               $jsonEncoder
+     * @param \Magento\Framework\App\Response\Http                          $http
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
+        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
+        \Magento\Framework\Json\Encoder $jsonEncoder,
         \Magento\Framework\App\Response\Http $http
     ) {
+        $this->rulesFactory = $rulesFactory;
+        $this->ruleType = $ruleType;
+        $this->ruleCondition = $ruleCondition;
+        $this->ruleValue = $ruleValue;
+        $this->jsonEncoder = $jsonEncoder;
+        
         parent::__construct($context);
         $this->_http = $http;
     }
@@ -49,9 +86,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
         $valueName = $this->getRequest()->getParam('value');
 
         if ($arrayKey && $id && $attribute && $conditionName && $valueName) {
-            $rule = $this->_objectManager->create(
-                '\Dotdigitalgroup\Email\Model\Rules'
-            )->load($id);
+            $rule = $this->rulesFactory->create()
+                ->load($id);
             //rule not found
             if (!$rule->getId()) {
                 $this->_http->getHeaders()->clearHeaders();
@@ -64,13 +100,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
             $condition = $conditions[$arrayKey];
             $selectedConditions = $condition['conditions'];
             $selectedValues = $condition['cvalue'];
-            $type = $this->_objectManager->create(
-                '\Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type'
-            )
-                ->getInputType($attribute);
-            $conditionOptions = $this->_objectManager->create(
-                'Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition'
-            )->getInputTypeOptions($type);
+            $type = $this->ruleType->getInputType($attribute);
+            $conditionOptions = $this->ruleCondition->getInputTypeOptions($type);
 
             $response['condition'] = str_replace(
                 'value="' . $selectedConditions . '"',
@@ -80,9 +111,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 )
             );
 
-            $elmType = $this->_objectManager->create(
-                '\Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value'
-            )->getValueElementType($attribute);
+            $elmType = $this->ruleValue->getValueElementType($attribute);
 
             if ($elmType == 'select' or $selectedConditions == 'null') {
                 $isEmpty = false;
@@ -91,9 +120,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
                     $isEmpty = true;
                 }
 
-                $valueOptions = $this->_objectManager->create(
-                    '\Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value'
-                )->getValueSelectOptions($attribute, $isEmpty);
+                $valueOptions = $this->ruleValue->getValueSelectOptions($attribute, $isEmpty);
 
                 $response['cvalue'] = str_replace(
                     'value="' . $selectedValues . '"',
@@ -107,9 +134,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
             $this->_http->getHeaders()->clearHeaders();
             $this->_http->setHeader('Content-Type', 'application/json')
                 ->setBody(
-                    $this->_objectManager->create(
-                        'Magento\Framework\Json\Encoder'
-                    )->encode($response)
+                    $this->jsonEncoder->encode($response)
                 );
         }
     }

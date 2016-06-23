@@ -69,29 +69,33 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $productsToDisplay = [];
         $mode = $this->getRequest()->getActionName();
         $customerId = $this->getRequest()->getParam('customer_id');
-        $limit = $this->recommnededHelper->getDisplayLimitByMode(
-            $mode
-        );
+        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         //login customer to receive the recent products
         $session = $this->_sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
         $collection = $this->_viewed;
-        $items = $collection->getItemsCollection()
+        $productItems = $collection->getItemsCollection()
             ->setPageSize($limit);
 
-        $this->helper->log(
-            'Recentlyviewed customer  : ' . $customerId . ', mode ' . $mode
-            . ', limit : ' . $limit .
-            ', items found : ' . count($items) . ', is customer logged in : '
-            . $isLoggedIn . ', products :' . count($productsToDisplay)
-        );
-        foreach ($items as $product) {
-            $product = $this->_productFactory->create()
-                ->load($product->getId());
+        //get the product ids from items collection
+        $productIds = $productItems->getColumnValues('product_id');
+        //get product collection to check for salable
+        $productCollection = $this->_productFactory->create()->getCollection()
+            ->addAttributeToSelect('*')
+            ->addFieldToFilter('entity_id', ['in' => $productIds]);
+        //show products only if is salable
+        foreach ($productCollection as $product) {
             if ($product->isSalable()) {
                 $productsToDisplay[$product->getId()] = $product;
             }
         }
+        $this->helper->log(
+            'Recentlyviewed customer  : ' . $customerId . ', mode ' . $mode
+            . ', limit : ' . $limit .
+            ', items found : ' . count($productItems) . ', is customer logged in : '
+            . $isLoggedIn . ', products :' . count($productsToDisplay)
+        );
+
         $session->logout();
 
         return $productsToDisplay;

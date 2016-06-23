@@ -195,6 +195,7 @@ class Quote
                             //no campign found for interval pass
                             if (!$intervalLimit) {
                                 //save lost basket for sending
+                                //@codingStandardsIgnoreStart
                                 $this->_campaignFactory->create()
                                     ->setEmail($email)
                                     ->setCustomerId($quote->getCustomerId())
@@ -204,7 +205,9 @@ class Quote
                                     ->setCampaignId($campaignId)
                                     ->setStoreId($storeId)
                                     ->setWebsiteId($websiteId)
-                                    ->setIsSent(null)->save();
+                                    ->setIsSent(null)
+                                    ->save();
+                                //@codingStandardsIgnoreEnd
                             }
                         }
                     }
@@ -292,6 +295,7 @@ class Quote
                             //no campign found for interval pass
                             if (!$campignFound) {
                                 //save lost basket for sending
+                                //@codingStandardsIgnoreStart
                                 $this->_campaignFactory->create()
                                     ->setEmail($email)
                                     ->setEventName('Lost Basket')
@@ -301,7 +305,9 @@ class Quote
                                     ->setCampaignId($guestCampaignId)
                                     ->setStoreId($storeId)
                                     ->setWebsiteId($websiteId)
-                                    ->setIsSent(null)->save();
+                                    ->setIsSent(null)
+                                    ->save();
+                                //@codingStandardsIgnoreEnd
                             }
                         }
                     }

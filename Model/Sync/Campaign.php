@@ -64,6 +64,7 @@ class Campaign
             $store = $this->_storeManager->getStore($storeId);
             $websiteId = $store->getWebsiteId();
             try {
+                //@codingStandardsIgnoreStart
                 //campaigns id not found
                 if (!$campaignId) {
                     $campaign->setMessage('Missing campaign id: ' . $campaignId)
@@ -77,6 +78,7 @@ class Campaign
                         ->save();
                     continue;
                 }
+                //@codingStandardsIgnoreEnd
                 $client = $this->_helper->getWebsiteApiClient($websiteId);
                 $contactId = $this->_helper->getContactId(
                     $campaign->getEmail(), $websiteId
@@ -122,6 +124,7 @@ class Campaign
                     );
                     //campaign not send, save message
                     if (isset($response->message)) {
+                        //@codingStandardsIgnoreStart
                         //update  the failed to send email message
                         $campaign->setMessage($response->message)
                             ->setIsSent(1)
@@ -137,6 +140,7 @@ class Campaign
                     $campaign->setContactMessage($contactId)
                         ->setIsSent(1)
                         ->save();
+                    //@codingStandardsIgnoreEnd
                 }
             } catch (\Exception $e) {
                 throw new \Magento\Framework\Exception\LocalizedException(

@@ -15,7 +15,7 @@ class Books extends \Magento\Framework\View\Element\Template
      *
      * @var string
      */
-    protected $contact_id;
+    protected $contactId;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -122,10 +122,10 @@ class Books extends \Magento\Framework\View\Element\Template
         if (strlen($additionalFromConfig)) {
             $additionalFromConfig = explode(',', $additionalFromConfig);
             $this->getConnectorContact();
-            if ($this->contact_id) {
+            if ($this->contactId) {
                 $addressBooks = $this->_getApiClient()
                     ->getContactAddressBooks(
-                        $this->contact_id
+                        $this->contactId
                     );
                 $processedAddressBooks = [];
                 if (is_array($addressBooks)) {
@@ -170,7 +170,7 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Getter for data fields to show. Fully processed.
+     * Getter for datafields to show. Fully processed.
      *
      * @return array
      */
@@ -184,7 +184,7 @@ class Books extends \Magento\Framework\View\Element\Template
         if (strlen($dataFieldsFromConfig)) {
             $dataFieldsFromConfig = explode(',', $dataFieldsFromConfig);
             $contact = $this->getConnectorContact();
-            if ($this->contact_id) {
+            if ($this->contactId) {
                 $contactDataFields = $contact->dataFields;
                 $processedContactDataFields = [];
                 foreach ($contactDataFields as $contactDataField) {
@@ -202,19 +202,22 @@ class Books extends \Magento\Framework\View\Element\Template
                 foreach ($dataFieldsFromConfig as $dataFieldFromConfig) {
                     if (isset($processedConnectorDataFields[$dataFieldFromConfig])) {
                         $value = '';
-                        if (isset($processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name])) {
+                        if (isset($processedContactDataFields[$processedConnectorDataFields[
+                                                              $dataFieldFromConfig]->name])) {
                             if ($processedConnectorDataFields[$dataFieldFromConfig]->type
                                 == 'Date'
                             ) {
                                 $value
-                                       = $processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name];
+                                       = $processedContactDataFields[$processedConnectorDataFields[
+                                                                     $dataFieldFromConfig]->name];
                                 $value = new \Zend_Date(
                                     $value, \Zend_Date::ISO_8601
                                 );
                                 $value = $value->toString('M/d/Y');
                             } else {
                                 $value
-                                    = $processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name];
+                                    = $processedContactDataFields[$processedConnectorDataFields[
+                                                                  $dataFieldFromConfig]->name];
                             }
                         }
 
@@ -262,14 +265,14 @@ class Books extends \Magento\Framework\View\Element\Template
         );
         if ($contact->id) {
             $this->customerSession->setConnectorContactId($contact->id);
-            $this->contact_id = $contact->id;
+            $this->contactId = $contact->id;
         } else {
             $contact = $this->_getApiClient()->postContacts(
                 $this->getCustomer()->getEmail()
             );
             if ($contact->id) {
                 $this->customerSession->setConnectorContactId($contact->id);
-                $this->contact_id = $contact->id;
+                $this->contactId = $contact->id;
             }
         }
 
@@ -283,6 +286,6 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function getConnectorContactId()
     {
-        return $this->contact_id;
+        return $this->contactId;
     }
 }

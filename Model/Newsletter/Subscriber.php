@@ -146,8 +146,10 @@ class Subscriber
             foreach ($subscribers as $subscriber) {
                 try {
                     $email = $subscriber->getEmail();
+                    //@codingStandardsIgnoreStart
                     $subscriber->setSubscriberImported(1)
                         ->save();
+                    //@codingStandardsIgnoreEnd
                     $subscriberFactory = $this->_subscriberFactory->create()
                         ->loadByEmail($email);
 

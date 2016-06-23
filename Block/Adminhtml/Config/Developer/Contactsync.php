@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Contactsync extends \Magento\Config\Block\System\Config\Form\Field
 {
+
+    /**
+     * @var string
+     */
     protected $_buttonLabel = 'Run Now';
 
     /**
@@ -24,12 +28,12 @@ class Contactsync extends \Magento\Config\Block\System\Config\Form\Field
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
+     * @codingStandardsIgnoreStart
      */
-    protected function _getElementHtml(
-        \Magento\Framework\Data\Form\Element\AbstractElement $element
-    ) {
-        $url
-            = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/contactsync');
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
+        //@codingStandardsIgnoreEnd
+        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/contactsync');
 
         return $this->getLayout()
             ->createBlock('Magento\Backend\Block\Widget\Button')

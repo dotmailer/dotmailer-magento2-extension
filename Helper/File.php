@@ -111,7 +111,9 @@ class File
         $destFilepath = $destFolder . DIRECTORY_SEPARATOR . $filename;
 
         // rename the file
+        //@codingStandardsIgnoreStart
         rename($sourceFilepath, $destFilepath);
+        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -124,8 +126,10 @@ class File
      */
     public function outputForceQuotesCSV($filepath, $csv)
     {
+        //@codingStandardsIgnoreStart
         $fqCsv = $this->arrayToCsv($csv, chr(9), '"', true, false);
-        // Open for writing only; place the file pointer at the end of the file. If the file does not exist, attempt to create it.
+        // Open for writing only; place the file pointer at the end of the file.
+        // If the file does not exist, attempt to create it.
         $fp = fopen($filepath, 'a');
 
         // for some reason passing the preset delimiter/enclosure variables results in error
@@ -133,6 +137,7 @@ class File
         if (fwrite($fp, $fqCsv) == 0) {
             throw new \Exception('Problem writing CSV file');
         }
+        //@codingStandardsIgnoreEnd
         fclose($fp);
     }
 
@@ -148,7 +153,9 @@ class File
          * Open for writing only; place the file pointer at the end of the file.
          * If the file does not exist, attempt to create it.
          */
+        //@codingStandardsIgnoreStart
         $handle = fopen($filepath, 'a');
+        //@codingStandardsIgnoreEnd
 
         // for some reason passing the preset delimiter/enclosure variables results in error
         //$this->delimiter $this->enclosure
@@ -169,9 +176,11 @@ class File
      */
     public function pathExists($path)
     {
+        //@codingStandardsIgnoreStart
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }
+        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -228,12 +237,13 @@ class File
      */
     public function deleteDir($path)
     {
-        $classFunc = array(__CLASS__, __FUNCTION__);
-
+        $classFunc = [__CLASS__, __FUNCTION__];
+        //@codingStandardsIgnoreStart
         return is_file($path)
             ?
             @unlink($path)
             :
             array_map($classFunc, glob($path . '/*')) == @rmdir($path);
+        //@codingStandardsIgnoreEnd
     }
 }

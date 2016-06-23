@@ -4,10 +4,20 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Connect extends \Magento\Config\Block\System\Config\Form\Field
 {
+
+    /**
+     * @var string
+     */
     protected $_buttonLabel = 'Connect';
 
+    /**
+     * @var \Magento\Backend\Model\Auth
+     */
     protected $_auth;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $_helper;
 
     /**
@@ -48,10 +58,11 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
+     * @codingStandardsIgnoreStart
      */
-    protected function _getElementHtml(
-        \Magento\Framework\Data\Form\Element\AbstractElement $element
-    ) {
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
+        //@codingStandardsIgnoreEnd
         $url = $this->_helper->getAuthoriseUrl();
         $ssl = $this->_checkForSecureUrl();
         $disabled = false;
@@ -79,6 +90,10 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
             ->toHtml();
     }
 
+    /**
+     * Check the base url is using ssl.
+     * @return $this|bool
+     */
     protected function _checkForSecureUrl()
     {
         $baseUrl = $this->_storeManager->getStore()->getBaseUrl(

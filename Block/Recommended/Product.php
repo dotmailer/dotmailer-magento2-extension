@@ -61,14 +61,15 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * Get the products to display for table.
+     * Get the products to display for recommendation.
      *
      * @return array
      */
     public function getLoadedProductCollection()
     {
-        //products to be diplayd for recommended pages
+        //products to be displayed for recommended pages
         $productsToDisplay = [];
+        $productsToDisplayCounter = 0;
         $orderId = $this->getRequest()->getParam('order_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
@@ -96,58 +97,60 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
         foreach ($orderItems as $item) {
             $i = 0;
-            $productId = $item->getProductId();
             //parent product
-            $productModel = $this->_productFactory->create()
-                ->load($productId);
+            $productModel = $item->getProduct();
             //check for product exists
             if ($productModel->getId()) {
                 //get single product for current mode
                 $recommendedProducts
                     = $this->_getRecommendedProduct($productModel, $mode);
                 foreach ($recommendedProducts as $product) {
-                    //load child product
-                    $product = $this->_productFactory->create()
-                        ->load($product->getId());
+
                     //check if still exists
-                    if ($product->getId() && count($productsToDisplay) < $limit
+                    if ($product->getId() && $productsToDisplayCounter < $limit
                         && $i <= $maxPerChild
                         && $product->isSaleable()
                         && !$product->getParentId()
                     ) {
                         //we have a product to display
                         $productsToDisplay[$product->getId()] = $product;
-                        ++$i;
+                        $i++;
+                        $productsToDisplayCounter++;
                     }
                 }
             }
             //have reached the limit don't loop for more
-            if (count($productsToDisplay) == $limit) {
+            if ($productsToDisplayCounter == $limit) {
                 break;
             }
         }
 
         //check for more space to fill up the table with fallback products
-        if (count($productsToDisplay) < $limit) {
+        if ($productsToDisplayCounter < $limit) {
             $fallbackIds = $this->recommendedHelper->getFallbackIds();
 
-            foreach ($fallbackIds as $productId) {
-                $product = $this->_productFactory->create()
-                    ->load($productId);
+
+            $productCollection = $this->_productFactory->create()
+                ->getCollection()
+                ->addIdFilter($fallbackIds)
+                ->addAttributeToSelect(
+                    ['product_url', 'name', 'store_id', 'small_image', 'price']);
+
+            foreach ($productCollection as $product) {
                 if ($product->isSaleable()) {
                     $productsToDisplay[$product->getId()] = $product;
                 }
+
                 //stop the limit was reached
+                //@codingStandardsIgnoreStart
                 if (count($productsToDisplay) == $limit) {
                     break;
                 }
+                //@codingStandardsIgnoreEnd
             }
         }
 
-        $this->helper->log(
-            'loaded product to display '
-            . count($productsToDisplay)
-        );
+        $this->helper->log('loaded product to display ' . count($productsToDisplay));
 
         return $productsToDisplay;
     }

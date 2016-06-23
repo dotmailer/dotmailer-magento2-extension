@@ -11,6 +11,10 @@ class Automation
     const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
     const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
     const AUTOMATION_STATUS_PENDING = 'pending';
+
+    /**
+     * @var array
+     */
     public $automationTypes = array(
         self::AUTOMATION_TYPE_NEW_CUSTOMER =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER,
@@ -175,8 +179,10 @@ class Automation
                     $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contactId;
                 } else {
                     // the contact is suppressed or the request failed
+                    //@codingStandardsIgnoreStart
                     $automation->setEnrolmentStatus('Suppressed')
                         ->save();
+                    //@codingStandardsIgnoreEnd
                 }
             }
             foreach ($contacts as $websiteId => $websiteContacts) {

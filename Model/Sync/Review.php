@@ -24,10 +24,7 @@ class Review
      * @var \Magento\Framework\App\ResourceConnection
      */
     protected $_resource;
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $_objectManager;
+
     /**
      * @var
      */
@@ -62,19 +59,24 @@ class Review
     protected $_reviewCollection;
 
     /**
+     * @var \Magento\Review\Model\Rating\Option\Vote
+     */
+    protected $vote;
+
+    /**
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
-     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory
-     * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory
-     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Review\Model\ReviewFactory $reviewFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Framework\App\ResourceConnection $resource
-     * @param \Magento\Framework\Stdlib\Datetime $datetime
-     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory          $ratingFactory
+     * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory                 $connectorFactory
+     * @param \Magento\Customer\Model\CustomerFactory                             $customerFactory
+     * @param \Magento\Catalog\Model\ProductFactory                               $productFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                        $importerFactory
+     * @param \Magento\Review\Model\ReviewFactory                                 $reviewFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                                  $data
+     * @param \Magento\Framework\App\ResourceConnection                           $resource
+     * @param \Magento\Framework\Stdlib\Datetime                                  $datetime
+     * @param \Magento\Review\Model\Rating\Option\Vote                            $vote
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
@@ -87,7 +89,7 @@ class Review
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Framework\Stdlib\Datetime $datetime,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+        \Magento\Review\Model\Rating\Option\Vote $vote
     ) {
         $this->_reviewCollection = $reviewCollection;
         $this->_ratingFactory = $ratingFactory;
@@ -99,7 +101,7 @@ class Review
         $this->_helper = $data;
         $this->_resource = $resource;
         $this->_dateTime = $datetime;
-        $this->_objectManager = $objectManagerInterface;
+        $this->vote = $vote;
     }
 
     /**
@@ -147,7 +149,9 @@ class Review
                     );
                 //if no error then set imported
                 $this->_setImported($this->_reviewIds);
+                //@codingStandardsIgnoreStart
                 $this->_countReviews += count($reviews);
+                //@codingStandardsIgnoreStop
             }
         }
 
@@ -177,25 +181,23 @@ class Review
         $this->_reviewIds = [];
 
         if ($reviews->getSize()) {
-            foreach ($reviews as $review) {
+            foreach ($reviews as $mageReview) {
                 try {
-                    $mageReview = $this->_reviewFactory->create()
-                        ->load($review->getReviewId());
                     $product = $this->_productFactory->create()
+                        ->getCollection()
+                        ->addIdFilter($mageReview->getEntityPkValue())
                         ->setStoreId($mageReview->getStoreId())
-                        ->load($mageReview->getEntityPkValue());
-
-                    $customer = $this->_customerFactory->create()
-                        ->load($mageReview->getCustomerId());
+                        ->addAttributeToSelect(
+                            ['product_url', 'name', 'store_id', 'small_image']
+                        )
+                        ->setPage(1, 1)
+                        ->getFirstItem();
 
                     $connectorReview = $this->_connectorReviewFactory->create()
-                        ->setCustomer($customer)
                         ->setReviewData($mageReview)
                         ->setProduct($product);
 
-                    $votesCollection = $this->_objectManager->create(
-                        'Magento\Review\Model\Rating\Option\Vote'
-                    )
+                    $votesCollection = $this->vote
                         ->getResourceCollection()
                         ->setReviewFilter($mageReview->getReviewId());
                     $votesCollection->getSelect()->join(
@@ -206,14 +208,14 @@ class Review
 
                     foreach ($votesCollection as $ratingItem) {
                         $rating = $this->_ratingFactory->create()
-                            ->setRating($ratingItem);
+                            ->setRating($ratingItem)
+                        ;
                         $connectorReview->createRating(
                             $ratingItem->getRatingCode(), $rating
                         );
                     }
                     $this->_reviews[$website->getId()][] = $connectorReview;
-                    $this->_reviewIds[]
-                        = $review->getReviewId();
+                    $this->_reviewIds[] = $mageReview->getReviewId();
                 } catch (\Exception $e) {
                     $this->_helper->debug((string)$e, []);
                 }

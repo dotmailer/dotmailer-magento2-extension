@@ -158,10 +158,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * @return $this
+     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
         parent::beforeSave();
+        //@codingStandardsIgnoreEnd
         if ($this->isObjectNew()) {
             $this->setCreatedAt($this->_dateTime->formatDate(true));
         }
@@ -423,6 +425,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             );
                         }
                     } catch (\Exception $e) {
+                        //@codingStandardsIgnoreStart
                         $item->setMessage($e->getMessage())
                             ->setImportStatus(self::FAILED)
                             ->save();
@@ -466,6 +469,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                                     . $response->status
                                 )
                                 ->save();
+                            //@codingStandardsIgnoreEnd
                         } else {
                             //Not finished
                             $this->_totalItems += 1;
@@ -554,6 +558,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     protected function _csvToArray($filename)
     {
+        //@codingStandardsIgnoreStart
         if (!file_exists($filename) || !is_readable($filename)) {
             return false;
         }
@@ -569,6 +574,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 }
             }
             fclose($handle);
+            //@codingStandardsIgnoreEnd
         }
 
         $contacts = [];

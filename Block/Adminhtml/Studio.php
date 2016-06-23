@@ -143,14 +143,11 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
         if ($refreshToken) {
             $code = $this->_helper->getCode();
-            $params = 'client_id='
-                . $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
-                .
-                '&client_secret='
-                . $this->_helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID)
-                .
-                '&refresh_token=' . $refreshToken .
-                '&grant_type=refresh_token';
+            $params = 'client_id=' . $this->_helper->getWebsiteConfig(
+                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
+                . '&client_secret=' . $this->_helper->getWebsiteConfig(
+                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID)
+                . '&refresh_token=' . $refreshToken . '&grant_type=refresh_token';
 
             $url = $this->_configFactory->getTokenUrl();
 
@@ -160,6 +157,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
             /*
              * Refresh Token request.
              */
+            //@codingStandardsIgnoreStart
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
@@ -186,7 +184,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
                 $token = $response->access_token;
             }
-
+            //@codingStandardsIgnoreEnd
             return $token;
         } else {
             $this->_messageManager->addNotice('Please Connect To Access The Page.');

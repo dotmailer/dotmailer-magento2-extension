@@ -25,6 +25,10 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
     protected $_writer;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
+     */
+    protected $test;
 
     /**
      * ApiValidate constructor.
@@ -35,10 +39,12 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Config\Storage\Writer $writer
     ) {
         $this->_helper = $data;
+        $this->test = $test;
         $this->_context = $context;
         $this->messageManager = $context->getMessageManager();
         $this->_objectManager = $context->getObjectManager();
@@ -51,9 +57,11 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
+     * @codingStandardsIgnoreStart
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        //@codingStandardsIgnoreEnd
         $groups = $this->_context->getRequest()->getPost('groups');
 
         if (isset($groups['api']['fields']['username']['inherit'])
@@ -70,9 +78,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         //skip if the inherit option is selected
         if ($apiUsername && $apiPassword) {
             $this->_helper->log('----VALIDATING ACCOUNT---');
-            $testModel
-                     = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Apiconnector\Test');
-            $isValid = $testModel->validate($apiUsername, $apiPassword);
+            $isValid = $this->test->validate($apiUsername, $apiPassword);
             if ($isValid) {
 
                 //save endpoint for account

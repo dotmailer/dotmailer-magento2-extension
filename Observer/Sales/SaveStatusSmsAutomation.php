@@ -56,7 +56,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     }
 
     /**
-     * Execute method.
+     * Save/reset the order as transactional data.
      *
      * @param \Magento\Framework\Event\Observer $observer
      *
@@ -134,7 +134,9 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                                 ->setWebsiteId($websiteId)
                                 ->setStoreName($storeName)
                                 ->setProgramId($programId);
+                            //@codingStandardsIgnoreStart
                             $automation->save();
+                            //@codingStandardsIgnoreEnd
                         } catch (\Exception $e) {
                             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
                         }

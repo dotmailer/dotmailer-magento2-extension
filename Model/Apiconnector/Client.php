@@ -231,6 +231,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $url = $this->_apiEndpoint
             . "/v2/address-books/{$addressBookId}/contacts/import";
 
+        //@codingStandardsIgnoreStart
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_USERPWD,
@@ -258,6 +259,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         // send contacts to address book
         $result = curl_exec($ch);
         $result = json_decode($result);
+        //@codingStandardsIgnoreEnd
 
         if (isset($result->message)) {
             $message = 'POST ADDRESS BOOK ' . $addressBookId
@@ -560,6 +562,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param $contactId
      *
+     * @return null
      * @throws \Exception
      */
     public function deleteContact($contactId)
@@ -571,7 +574,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'DELETE CONTACT : ' . $url . ', ' . $response->message;
+            $message = 'deleteContact : ' . $url . ', ' . $response->message;
             $this->_helper->log($message);
         }
 
@@ -654,8 +657,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Creates a contact.
      *
-     * @param string $email
+     * @param $email
      *
+     * @return null
      * @throws \Exception
      */
     public function postContacts($email)
@@ -672,7 +676,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'CREATE A NEW CONTACT : ' . $email . ' , url ' . $url
+            $message = 'postContacts : ' . $email . ' , url ' . $url
                 . ', ' . $response->message;
             $this->_helper->log($message);
         }
@@ -872,7 +876,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'DELETE BULK ADDRESS BOOK CONTACTS ' . $response->message
+            $message = 'deleteAddressBookContactsInbulk ' . $response->message
                 . ' address book ' . $addressBookId;
             $this->_helper->log($message);
         }
@@ -945,7 +949,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = ' CREATE CAMPAIGN ' . $response->message;
+            $message = 'postCampaign : ' . $response->message;
             $this->_helper->log($message);
         }
 

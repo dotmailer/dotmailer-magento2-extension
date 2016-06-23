@@ -18,8 +18,10 @@ class MassDelete extends \Magento\Backend\App\Action
         } else {
             try {
                 foreach ($ids as $id) {
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->load($id);
+                    //@codingStandardsIgnoreStart
+                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->setEmailContactId($id);
                     $model->delete();
+                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {

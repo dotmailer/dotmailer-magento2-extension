@@ -175,7 +175,7 @@ class Order
         )->getWebsite();
 
         $customAttributes
-                 = $this->_helper->getConfigSelectedCustomOrderAttributes(
+            = $this->_helper->getConfigSelectedCustomOrderAttributes(
             $website
         );
 
@@ -511,7 +511,7 @@ class Order
 
     /**
      * Get options for the item.
-     * 
+     *
      * @return array
      */
     protected function _getOrderItemOptions($orderItem)

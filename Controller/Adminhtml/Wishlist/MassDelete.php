@@ -2,26 +2,28 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 
-use Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist as WishlistController;
 use Magento\Framework\Controller\ResultFactory;
 
-class MassDelete extends WishlistController
+class MassDelete extends \Magento\Backend\App\Action
 {
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     public function execute()
     {
-        $searchIds = $this->getRequest()->getParam('id');
-        if (!is_array($searchIds)) {
-            $this->messageManager->addError(__('Please select wishlists.'));
+        $ids = $this->getRequest()->getParam('id');
+
+        if (!is_array($ids)) {
+            $this->messageManager->addError(__('Please select wishlist.'));
         } else {
             try {
-                foreach ($searchIds as $searchId) {
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->load($searchId);
+                foreach ($ids as $id) {
+                    //@codingStandardsIgnoreStart
+                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Wishlist')->setId($id);
                     $model->delete();
+                    //@codingStandardsIgnoreEnd
                 }
-                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
+                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {
                 $this->messageManager->addError($e->getMessage());
             }

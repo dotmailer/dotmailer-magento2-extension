@@ -169,7 +169,9 @@ class Catalog
                             $this->_setImported($this->_productIds);
 
                             //set number of product imported
+                            //@codingStandardsIgnoreStart
                             $this->_countProducts += count($products);
+                            //@codingStandardsIgnoreEnd
                         }
                         //using single api
                         $this->_exportInSingle(
