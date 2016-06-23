@@ -202,19 +202,22 @@ class Books extends \Magento\Framework\View\Element\Template
                 foreach ($dataFieldsFromConfig as $dataFieldFromConfig) {
                     if (isset($processedConnectorDataFields[$dataFieldFromConfig])) {
                         $value = '';
-                        if (isset($processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name])) {
+                        if (isset($processedContactDataFields[$processedConnectorDataFields[
+                                                              $dataFieldFromConfig]->name])) {
                             if ($processedConnectorDataFields[$dataFieldFromConfig]->type
                                 == 'Date'
                             ) {
                                 $value
-                                       = $processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name];
+                                       = $processedContactDataFields[$processedConnectorDataFields[
+                                                                     $dataFieldFromConfig]->name];
                                 $value = new \Zend_Date(
                                     $value, \Zend_Date::ISO_8601
                                 );
                                 $value = $value->toString('M/d/Y');
                             } else {
                                 $value
-                                    = $processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name];
+                                    = $processedContactDataFields[$processedConnectorDataFields[
+                                                                  $dataFieldFromConfig]->name];
                             }
                         }
 

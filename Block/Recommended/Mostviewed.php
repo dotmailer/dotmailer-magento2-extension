@@ -97,36 +97,36 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             ->setPageSize($limit);
 
         //filter collection by category by category_id
-        if ($cat_id = $this->getRequest()->getParam('category_id')) {
-            $category = $this->_categoryFactory->create()->load($cat_id);
+        if ($catId = $this->getRequest()->getParam('category_id')) {
+            $category = $this->_categoryFactory->create()->load($catId);
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        array('ccpi' => 'catalog_category_product_index'),
+                        ['ccpi' => 'catalog_category_product_index'],
                         'e.entity_id = ccpi.product_id',
-                        array('category_id')
+                        ['category_id']
                     )
-                    ->where('ccpi.category_id =?', $cat_id);
+                    ->where('ccpi.category_id =?', $catId);
             } else {
-                $this->helper->log('Most viewed. Category id ' . $cat_id
+                $this->helper->log('Most viewed. Category id ' . $catId
                     . ' is invalid. It does not exist.');
             }
         }
 
         //filter collection by category by category_name
-        if ($cat_name = $this->getRequest()->getParam('category_name')) {
+        if ($catName = $this->getRequest()->getParam('category_name')) {
             $category = $this->_categoryFactory->create()
-                ->loadByAttribute('name', $cat_name);
+                ->loadByAttribute('name', $catName);
             if ($category) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        array('ccpi' => 'catalog_category_product_index'),
+                        ['ccpi' => 'catalog_category_product_index'],
                         'e.entity_id  = ccpi.product_id',
-                        array('category_id')
+                        ['category_id']
                     )
                     ->where('ccpi.category_id =?', $category->getId());
             } else {
-                $this->helper->log('Most viewed. Category name ' . $cat_name
+                $this->helper->log('Most viewed. Category name ' . $catName
                     . ' is invalid. It does not exist.');
             }
         }

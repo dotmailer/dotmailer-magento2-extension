@@ -237,7 +237,7 @@ class File
      */
     public function deleteDir($path)
     {
-        $classFunc = array(__CLASS__, __FUNCTION__);
+        $classFunc = [__CLASS__, __FUNCTION__];
         //@codingStandardsIgnoreStart
         return is_file($path)
             ?
