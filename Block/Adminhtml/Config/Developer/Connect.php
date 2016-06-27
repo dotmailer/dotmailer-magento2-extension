@@ -21,6 +21,17 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     protected $_helper;
 
     /**
+     * @var \Magento\Backend\Model\Auth\Session
+     */
+    protected $_sessionModel;
+
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Config
+     */
+    protected $_configHelper;
+
+    /**
      * Connect constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data      $helper
@@ -30,11 +41,16 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\Config $configHelper,
         \Magento\Backend\Model\Auth $auth,
+        \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Backend\Block\Template\Context $context,
         $data = []
     ) {
         $this->_helper = $helper;
+        $this->_configHelper = $configHelper;
+        $this->_sessionModel = $sessionModel;
+
         $this->_auth = $auth;
 
         parent::__construct($context, $data);
@@ -63,7 +79,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
-        $url = $this->_helper->getAuthoriseUrl();
+        $url = $this->getAuthoriseUrl();
         $ssl = $this->_checkForSecureUrl();
         $disabled = false;
         //disable for ssl missing
@@ -105,5 +121,37 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         }
 
         return $this;
+    }
+
+    /**
+     * Autorisation url for OAUTH.
+     *
+     * @return string
+     */
+    public function getAuthoriseUrl()
+    {
+        $clientId = $this->_scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
+        );
+
+        //callback uri if not set custom
+        $redirectUri = $this->getRedirectUri();
+        $redirectUri .= 'connector/email/callback';
+
+        $adminUser = $this->_sessionModel->getUser();
+        //query params
+        $params = [
+            'redirect_uri' => $redirectUri,
+            'scope' => 'Account',
+            'state' => $adminUser->getId(),
+            'response_type' => 'code',
+        ];
+
+        $authorizeBaseUrl = $this->_configHelper
+            ->getAuthorizeLink();
+        $url = $authorizeBaseUrl . http_build_query($params)
+            . '&client_id=' . $clientId;
+
+        return $url;
     }
 }
