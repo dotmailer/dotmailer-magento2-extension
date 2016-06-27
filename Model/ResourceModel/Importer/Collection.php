@@ -8,10 +8,9 @@ class Collection extends
     /**
      * Initialize resource collection.
      */
-    public function _construct()
+    protected function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\Importer',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Importer');
+        $this->_init('Dotdigitalgroup\Email\Model\Importer', 'Dotdigitalgroup\Email\Model\ResourceModel\Importer');
     }
 
     /**

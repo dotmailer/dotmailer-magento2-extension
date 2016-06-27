@@ -50,6 +50,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 
     /**
+     * @var \Zend\Log\Logger
+     */
+    protected $_connectorLogger;
+
+    /**
+     * @var
+     */
+    protected $logFileName = 'connector.log';
+
+
+    /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     protected $customerFactory;
@@ -79,6 +90,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Store\Model\Store $store
     ) {
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/' . $this->logFileName);
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+        $this->_connectorLogger = $logger;
         $this->_adapter = $adapter;
         $this->_sessionModel = $sessionModel;
         $this->_productMetadata = $productMetadata;
@@ -316,7 +331,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function log($data)
     {
-        $this->_logger->info($data);
+        $this->_connectorLogger->info($data);
     }
 
     /**
@@ -327,7 +342,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function debug($title, $context)
     {
-        $this->_logger->debug($title, $context);
+        $this->_connectorLogger->debug($title, $context);
     }
 
     /**
@@ -338,7 +353,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function error($title, $error)
     {
-        $this->_logger->error($title, $error);
+        $this->_connectorLogger->error($title, $error);
     }
 
     /**

@@ -62,7 +62,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected function _prepareCollection()
     {
-        $this->setCollection($this->_importerFactory->create());
+        $collection = $this->_importerFactory->create();
+
+        $this->setCollection($collection);
 
         return parent::_prepareCollection();
     }
