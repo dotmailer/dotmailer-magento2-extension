@@ -146,7 +146,7 @@ class Order
      *
      * @return $this
      */
-    public function setOrder($orderData)
+    public function setOrderData($orderData)
     {
         $this->id = $orderData->getIncrementId();
         $this->quoteId = $orderData->getQuoteId();
