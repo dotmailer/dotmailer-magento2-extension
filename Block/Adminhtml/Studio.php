@@ -25,6 +25,11 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     protected $_messageManager;
 
     /**
+     * @var \Magento\Backend\Model\Auth\Session
+     */
+    protected $_sessionModel;
+
+    /**
      * Studio constructor.
      *
      * @param \Magento\Backend\Model\Auth $auth
@@ -38,10 +43,12 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         \Dotdigitalgroup\Email\Helper\Config $configFactory,
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context,
+        \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Framework\Message\ManagerInterface $messageManager
     ) {
         $this->_auth = $auth;
         $this->_helper = $dataHelper;
+        $this->_sessionModel = $sessionModel;
         $this->_configFactory = $configFactory;
         $this->_messageManager = $messageManager;
 
@@ -142,7 +149,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         $refreshToken = $adminUser->getRefreshToken();
 
         if ($refreshToken) {
-            $code = $this->_helper->getCode();
+            $code = $this->getCode();
             $params = 'client_id=' . $this->_helper->getWebsiteConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
                 . '&client_secret=' . $this->_helper->getWebsiteConfig(
@@ -191,5 +198,19 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
             return '';
         }
+    }
+
+    /**
+     * Retrieve authorisation code.
+     *
+     * @return mixed
+     */
+    public function getCode()
+    {
+        $adminUser = $this->_sessionModel
+            ->getUser();
+        $code = $adminUser->getEmailCode();
+
+        return $code;
     }
 }
