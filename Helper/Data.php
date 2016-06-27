@@ -349,7 +349,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function error($title, $error)
     {
-        $this->_connectorLogger->error($title, $error);
+        $this->_connectorLogger->debug($title, $error);
     }
 
     /**

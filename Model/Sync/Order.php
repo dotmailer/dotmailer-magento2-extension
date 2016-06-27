@@ -74,25 +74,25 @@ class Order
     /**
      * Order constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory          $importerFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
-     * @param \Magento\Sales\Model\OrderFactory                     $salesOrderFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                    $helper
      * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory   $connectorOrderFactory
      * @param \Dotdigitalgroup\Email\Model\OrderFactory             $orderFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory           $contactFactory
      * @param \Magento\Framework\App\ResourceConnection             $resource
-     * @param \Dotdigitalgroup\Email\Helper\Data                    $helper
+     * @param \Magento\Sales\Model\OrderFactory                     $salesOrderFactory
      * @param \Magento\Store\Model\StoreManagerInterface            $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
-        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
         \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->_importerFactory = $importerFactory;
@@ -163,9 +163,8 @@ class Order
                 $error = false;
                 foreach ($ordersForSingleSync as $order) {
                     $this->_helper->log(
-                        '--------- register Order sync in single with importer ---------- : '
-                        . $order->id
-                    );
+                        '--------- register Order sync in single with importer ---------- : ');
+
                     //register in queue with importer
                     $this->_importerFactory->create()
                         ->registerQueue(
@@ -202,6 +201,7 @@ class Order
     protected function _searchAccounts()
     {
         $this->_orderIds = [];
+        $this->_orderIdsForSingleSync = [];
         $websites = $this->_helper->getWebsites(true);
         foreach ($websites as $website) {
             $apiEnabled = $this->_helper->isEnabled($website);
@@ -284,14 +284,16 @@ class Order
             return [];
         }
 
-
-        //email_order order ids
-        $orderIds = $orderCollection->getColumnValues('order_id');
-        //get the order collection
-        $salesOrderCollection = $this->_orderFactory->create()
-            ->getCollection()
-            ->addFieldToFilter('entity_id', ['in' => $orderIds]);
         try {
+
+            //email_order order ids
+            $orderIds = $orderCollection->getColumnValues('order_id');
+
+            //get the order collection
+            $salesOrderCollection = $this->_salesOrderFactory->create()
+                ->getCollection()
+                ->addFieldToFilter('entity_id', ['in' => $orderIds]);
+
             foreach ($salesOrderCollection as $order) {
 
                 $storeId   = $order->getStoreId();
@@ -339,9 +341,7 @@ class Order
             $client = $this->_helper->getWebsiteApiClient($websiteId);
 
             //no api credentials or the guest has no been mapped
-            if (!$client
-                || !$addressBookId
-                    = $this->_helper->getGuestAddressBook($websiteId)
+            if (!$client || !$addressBookId = $this->_helper->getGuestAddressBook($websiteId)
             ) {
                 return false;
             }
