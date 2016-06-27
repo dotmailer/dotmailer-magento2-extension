@@ -79,7 +79,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
-        $url = $this->_helper->getAuthoriseUrl();
+        $url = $this->getAuthoriseUrl();
         $ssl = $this->_checkForSecureUrl();
         $disabled = false;
         //disable for ssl missing
