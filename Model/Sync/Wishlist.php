@@ -17,10 +17,6 @@ class Wishlist
      */
     protected $_objectManager;
     /**
-     * @var
-     */
-    protected $_wishlists;
-    /**
      * @var array
      */
     protected $_wishlistIds = [];
@@ -60,6 +56,10 @@ class Wishlist
      * @var \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory
      */
     protected $_itemCollection;
+    /**
+     * @var \Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory
+     */
+    protected $_mageWishlistCollection;
 
     /**
      * Wishlist constructor.
@@ -74,6 +74,7 @@ class Wishlist
      * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
      * @param \Magento\Framework\App\ResourceConnection                        $resource
      * @param \Magento\Framework\StdLib\Datetime                               $datetime
+     * @param \Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory $mageWishlistCollection
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
@@ -85,7 +86,8 @@ class Wishlist
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Framework\StdLib\Datetime $datetime
+        \Magento\Framework\StdLib\Datetime $datetime,
+        \Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory $mageWishlistCollection
     ) {
         $this->_itemCollection = $itemCollection;
         $this->_wishlistCollection = $wishlistCollection;
@@ -97,6 +99,7 @@ class Wishlist
         $this->_helper = $helper;
         $this->_resource = $resource;
         $this->_datetime = $datetime;
+        $this->_mageWishlistCollection = $mageWishlistCollection;
     }
 
     /**
@@ -125,19 +128,7 @@ class Wishlist
                 $this->_start = microtime(true);
                 $this->_exportWishlistForWebsite($website);
                 //send wishlist as transactional data
-                if (isset($this->_wishlists[$website->getId()])) {
-                    $this->_helper->log(
-                        '---------- Start wishlist bulk sync ----------'
-                    );
-                    $websiteWishlists = $this->_wishlists[$website->getId()];
-                    //register in queue with importer
-                    $this->_importerFactory->create()
-                        ->registerQueue(
-                            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
-                            $websiteWishlists,
-                            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                            $website->getId()
-                        );
+                if (!empty($this->_wishlistIds)) {
                     //mark connector wishlist as  imported
                     $this->_setImported($this->_wishlistIds);
                 }
@@ -163,8 +154,6 @@ class Wishlist
      */
     protected function _exportWishlistForWebsite(\Magento\Store\Model\Website $website)
     {
-        //reset wishlists
-        $this->_wishlists = [];
         $this->_wishlistIds = [];
         //sync limit
         $limit = $this->_helper->getWebsiteConfig(
@@ -176,7 +165,7 @@ class Wishlist
         //email_wishlist wishlist ids
         $wishlistIds = $collection->getColumnValues('wishlist_id');
 
-        $wishlistCollection = $this->_wishlistCollection->create()
+        $wishlistCollection = $this->_mageWishlistCollection->create()
             ->addFieldToFilter('wishlist_id', ['in' => $wishlistIds]);
         $wishlistCollection->getSelect()
             ->joinLeft(
@@ -188,7 +177,6 @@ class Wishlist
 
 
         foreach ($wishlistCollection as $wishlist) {
-
             $wishlistId = $wishlist->getid();
             $wishlistItems = $wishlist->getItemCollection();
 
@@ -279,7 +267,7 @@ class Wishlist
         //email_wishlist wishlist ids
         $wishlistIds = $collection->getColumnValues('wishlist_id');
 
-        $wishlistCollection = $this->_wishlistCollection->create()
+        $wishlistCollection = $this->_mageWishlistCollection->create()
             ->addFieldToFilter('wishlist_id', ['in' => $wishlistIds]);
         $wishlistCollection->getSelect()
             ->joinLeft(
