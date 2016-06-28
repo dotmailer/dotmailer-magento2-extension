@@ -353,8 +353,7 @@ class Order
             $contactApi = $client->postContacts($email);
 
             //contact is suppressed cannot add to address book, mark as suppressed.
-            if (isset($contactApi->message)
-                && $contactApi->message
+            if (isset($contactApi->message) && $contactApi->message
                 == 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED'
             ) {
 
@@ -396,9 +395,6 @@ class Order
             );
         } catch (\Exception $e) {
             $this->_helper->debug((string)$e, []);
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __($e->getMessage())
-            );
         }
 
         return true;
