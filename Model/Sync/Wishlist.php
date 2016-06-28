@@ -17,6 +17,10 @@ class Wishlist
      */
     protected $_objectManager;
     /**
+     * @var
+     */
+    protected $_wishlists;
+    /**
      * @var array
      */
     protected $_wishlistIds = [];
@@ -59,7 +63,6 @@ class Wishlist
     /**
      * @var \Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory
      */
-    protected $_mageWishlistCollection;
 
     /**
      * Wishlist constructor.
@@ -128,7 +131,19 @@ class Wishlist
                 $this->_start = microtime(true);
                 $this->_exportWishlistForWebsite($website);
                 //send wishlist as transactional data
-                if (!empty($this->_wishlistIds)) {
+                if (isset($this->_wishlists[$website->getId()])) {
+                    $this->_helper->log(
+                        '---------- Start wishlist bulk sync ----------'
+                    );
+                    $websiteWishlists = $this->_wishlists[$website->getId()];
+                    //register in queue with importer
+                    $this->_importerFactory->create()
+                        ->registerQueue(
+                            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
+                            $websiteWishlists,
+                            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                            $website->getId()
+                        );
                     //mark connector wishlist as  imported
                     $this->_setImported($this->_wishlistIds);
                 }
@@ -154,6 +169,8 @@ class Wishlist
      */
     protected function _exportWishlistForWebsite(\Magento\Store\Model\Website $website)
     {
+        //reset wishlists
+        $this->_wishlists   = array();
         $this->_wishlistIds = [];
         //sync limit
         $limit = $this->_helper->getWebsiteConfig(
@@ -197,31 +214,9 @@ class Wishlist
                     $connectorWishlist->setItem($wishlistItem);
                     $this->_count++;
                 }
-                //send wishlist as transactional data
-                $this->_start = microtime(true);
-                //register in queue with importer
-                $check = $this->_importerFactory->create()
-                    ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
-                        $connectorWishlist,
-                        \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
-                        $website->getId()
-                    );
-                if ($check) {
-                    $this->_wishlistIds[] = $wishlistId;
-                }
-            } else {
-                //register in queue with importer
-                $check = $this->_importerFactory->create()
-                    ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
-                        [$wishlist->getId()],
-                        \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
-                        $website->getId()
-                    );
-                if ($check) {
-                    $this->_wishlistIds[] = $wishlistId;
-                }
+                //set wishlists for later use
+                $this->_wishlists[$website->getId()][] = $connectorWishlist;
+                $this->_wishlistIds[] = $wishlistId;
             }
         }
     }
