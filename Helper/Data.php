@@ -333,8 +333,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Log data into debug.log file.
      *
-     * @param $title
-     * @param $context
+     * @param string $title
+     * @param array|Traversable $context
      */
     public function debug($title, $context)
     {
