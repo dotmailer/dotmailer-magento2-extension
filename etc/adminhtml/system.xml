@@ -1521,6 +1521,9 @@
                 <field id="ip_addresses" translate="label" type="textarea" sortOrder="10" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Dynamic Pages IP Restriction</label>
+                    <comment><![CDATA[Enter ip addresses separated by comma (,). Always keep these ip's.
+                    For R1 : 94.143.111.1 94.143.111.2, 94.143.111.3.
+                    For R2 : 104.208.235.109 to stay secure, empty list will ignore security check.]]></comment>
                 </field>
             </group>
             <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1"
