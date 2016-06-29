@@ -146,13 +146,13 @@
         </connector_transactional_emails>
         <connector_configuration>
             <data_fields>
-                <order_statuses>complete,pending</order_statuses>
+                <order_status>complete,pending</order_status>
                 <brand_attribute>0</brand_attribute>
             </data_fields>
             <transactional_data>
                 <order_statuses>complete,pending</order_statuses>
-                <order_custom_attributes></order_custom_attributes>
-                <order_product_attributes></order_product_attributes>
+                <order_custom_attributes>0</order_custom_attributes>
+                <order_product_attributes>0</order_product_attributes>
                 <order_product_custom_options>0</order_product_custom_options>
             </transactional_data>
             <abandoned_carts>
@@ -169,27 +169,26 @@
                 <page_enabled>0</page_enabled>
             </tracking>
             <dynamic_content_style>
-                <dynamic_syling><![CDATA[table{font-family: Arial, Helvetica, sans-serif; font-size:12px;}]]></dynamic_syling>
-                <font><![CDATA[Arial, Helvetica, sans-serif;]]></font>
-                <name_color><![CDATA[#000000]]></name_color>
-                <name_font_size><![CDATA[12px]]></name_font_size>
-                <name_style></name_style>
+                <dynamic_styling><![CDATA[table{font-family: Arial, Helvetica, sans-serif; font-size:12px;}]]></dynamic_styling>
+                <font_color><![CDATA[#000000]]></font_color>
+                <font_size><![CDATA[12px]]></font_size>
+                <font_style>0</font_style>
                 <price_color><![CDATA[#000000]]></price_color>
                 <price_font_size><![CDATA[12px]]></price_font_size>
-                <price_style></price_style>
-                <link_color><![CDATA[#000000]]></link_color>
-                <link_font_size><![CDATA[12px]]></link_font_size>
-                <link_style></link_style>
+                <price_style>0</price_style>
+                <product_link_color><![CDATA[#000000]]></product_link_color>
+                <product_link_font_size><![CDATA[12px]]></product_link_font_size>
+                <product_link_style>0</product_link_style>
+                <font><![CDATA[Arial, Helvetica, sans-serif;]]></font>
+                <color><![CDATA[#000000]]></color>
                 <other_color><![CDATA[#000000]]></other_color>
-                <other_font_size><![CDATA[14px]]></other_font_size>
-                <other_style></other_style>
-                <font_picker><![CDATA[Arial, Helvetica, sans-serif]]></font_picker>
-                <doc_color><![CDATA[#FFFFFF]]></doc_color>
-                <coupon_color><![CDATA[#000000]]></coupon_color>
+                <other_font_size><![CDATA[12px]]></other_font_size>
+                <other_font_style>0</other_font_style>
+                <coupon_font_color><![CDATA[#000000]]></coupon_font_color>
                 <coupon_font_size><![CDATA[14px]]></coupon_font_size>
-                <coupon_style></coupon_style>
+                <coupon_font_style>0</coupon_font_style>
                 <coupon_font_picker><![CDATA[Arial, Helvetica, sans-serif]]></coupon_font_picker>
-                <coupon_doc_color><![CDATA[#FFFFFF]]></coupon_doc_color>
+                <coupon_background_color><![CDATA[#FFFFFF]]></coupon_background_color>
             </dynamic_content_style>
             <dynamic_content_edit>
                 <link_text></link_text>
@@ -200,15 +199,15 @@
             </admin>
             <catalog_sync>
                 <catalog_values>1</catalog_values>
-                <catalog_visibility></catalog_visibility>
-                <catalog_type></catalog_type>
+                <catalog_visibility>0</catalog_visibility>
+                <catalog_type>0</catalog_type>
             </catalog_sync>
-            <address_book_pref>
+            <customer_addressbook>
                 <can_change>0</can_change>
-                <show_books></show_books>
+                <show_books>0</show_books>
                 <can_show_fields>0</can_show_fields>
-                <fields_to_show></fields_to_show>
-            </address_book_pref>
+                <fields_to_show>0</fields_to_show>
+            </customer_addressbook>
         </connector_configuration>
         <connector_data_mapping>
             <customer_data>
@@ -321,7 +320,7 @@
                 <test_connect></test_connect>
             </oauth>
             <ip_restriction>
-                <ip_addresses>94.143.111.2, 94.143.111.3</ip_addresses>
+                <ip_addresses>94.143.111.1,94.143.111.2,94.143.111.3,104.208.235.109</ip_addresses>
             </ip_restriction>
             <cron_schedules>
                 <importer>*/5 * * * *</importer>
