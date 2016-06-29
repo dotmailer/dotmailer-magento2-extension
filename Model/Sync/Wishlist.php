@@ -63,6 +63,7 @@ class Wishlist
     /**
      * @var \Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory
      */
+    protected $_mageWishlistCollection;
 
     /**
      * Wishlist constructor.
