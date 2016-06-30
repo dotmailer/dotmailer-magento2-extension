@@ -3,6 +3,7 @@
     <preference for="Magento\Framework\Mail\Transport" type="Dotdigitalgroup\Email\Model\Mail\Transport"/>
     <preference for="Magento\Newsletter\Model\Subscriber" type="Dotdigitalgroup\Email\Model\Newsletter\Sub"/>
     <preference for="Magento\Customer\Model\EmailNotification" type="Dotdigitalgroup\Email\Model\Customer\EmailNotification"/>
+    <preference for="Magento\Customer\Model\AccountManagement" type="Dotdigitalgroup\Email\Model\Customer"/>
 
     <virtualType name="ContactGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
         <arguments>
