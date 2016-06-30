@@ -92,4 +92,24 @@ class Customer extends \Magento\Customer\Model\AccountManagement
             return parent::sendNewAccountEmail($customer, $type, $backUrl, $storeId, $sendemailStoreId);
         }
     }
+
+
+    /**
+     * @param \Magento\Customer\Api\Data\CustomerInterface $customer
+     * @param string                                       $redirectUrl
+     *
+     * @return $this
+     */
+    protected function sendEmailConfirmation(\Magento\Customer\Api\Data\CustomerInterface $customer, $redirectUrl)
+    {
+        $storeId = $this->getWebsiteStoreId($customer);
+        if ($this->_scopeConfig->isSetFlag(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
+            'store', $storeId)
+        ) {
+            return $this;
+        } else {
+
+            parent::sendEmailConfirmation($customer, $redirectUrl);
+        }
+    }
 }
