@@ -34,10 +34,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Framework\App\ProductMetadata
      */
     protected $_productMetadata;
-    /**
-     * @var \Magento\Backend\Model\Auth\Session
-     */
-    protected $_sessionModel;
+
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
@@ -50,6 +47,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 
     /**
+     * @var \Zend\Log\Logger
+     */
+    protected $_connectorLogger;
+
+    /**
+     * @var
+     */
+    protected $logFileName = 'connector.log';
+
+
+    /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     protected $customerFactory;
@@ -57,18 +65,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Data constructor.
      *
-     * @param \Magento\Backend\Model\Auth\Session $sessionModel
-     * @param \Magento\Framework\App\ProductMetadata $productMetadata
+     * @param \Magento\Framework\App\ProductMetadata      $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
-     * @param \Magento\Framework\App\ResourceConnection $adapter
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Config\Model\ResourceModel\Config  $resourceConfig
+     * @param \Magento\Framework\App\ResourceConnection   $adapter
+     * @param \Magento\Framework\App\Helper\Context       $context
+     * @param \Magento\Framework\ObjectManagerInterface   $objectManager
+     * @param \Magento\Store\Model\StoreManagerInterface  $storeManager
+     * @param \Magento\Customer\Model\CustomerFactory     $customerFactory
+     * @param \Magento\Backend\Model\Auth\Session         $sessionModel
+     * @param \Magento\Store\Model\Store                  $store
      */
     public function __construct(
-
-        \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Framework\App\ProductMetadata $productMetadata,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
@@ -79,8 +87,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Store\Model\Store $store
     ) {
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/' . $this->logFileName);
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+        $this->_connectorLogger = $logger;
         $this->_adapter = $adapter;
-        $this->_sessionModel = $sessionModel;
         $this->_productMetadata = $productMetadata;
         $this->_contactFactory = $contactFactory;
         $this->_resourceConfig = $resourceConfig;
@@ -316,18 +327,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function log($data)
     {
-        $this->_logger->info($data);
+        $this->_connectorLogger->info($data);
     }
 
     /**
      * Log data into debug.log file.
      *
-     * @param $title
-     * @param $context
+     * @param string $title
+     * @param array|Traversable $context
      */
     public function debug($title, $context)
     {
-        $this->_logger->debug($title, $context);
+        $this->_connectorLogger->debug($title, $context);
     }
 
     /**
@@ -338,7 +349,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function error($title, $error)
     {
-        $this->_logger->error($title, $error);
+        $this->_connectorLogger->debug($title, $error);
     }
 
     /**
@@ -614,52 +625,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return unserialize($attr);
     }
 
-    /**
-     * Retrieve authorisation code.
-     *
-     * @return mixed
-     */
-    public function getCode()
-    {
-        $adminUser = $this->_sessionModel
-            ->getUser();
-        $code = $adminUser->getEmailCode();
-
-        return $code;
-    }
-
-    /**
-     * Autorisation url for OAUTH.
-     *
-     * @return string
-     */
-    public function getAuthoriseUrl()
-    {
-        $clientId = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
-        );
-
-        //callback uri if not set custom
-        $redirectUri = $this->getRedirectUri();
-        $redirectUri .= 'connector/email/callback';
-
-        $adminUser = $this->_sessionModel->getUser();
-        //query params
-        $params = [
-            'redirect_uri' => $redirectUri,
-            'scope' => 'Account',
-            'state' => $adminUser->getId(),
-            'response_type' => 'code',
-        ];
-
-        //Circular dependency when using di
-        $authorizeBaseUrl = $this->_objectManager->create('Dotdigitalgroup\Email\Helper\Config')
-            ->getAuthorizeLink();
-        $url = $authorizeBaseUrl . http_build_query($params)
-            . '&client_id=' . $clientId;
-
-        return $url;
-    }
+   
 
     /**
      * Get callback authorization link.

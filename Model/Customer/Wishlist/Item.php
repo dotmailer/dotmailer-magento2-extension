@@ -93,10 +93,10 @@ class Item
      */
     public function setPrice($product)
     {
-        $this->price = $product->getFinalPrice();
+        $this->price = (float)number_format($product->getFinalPrice(), 2, '.', '');
         $total = $this->price * $this->qty;
 
-        $this->totalValueOfProduct = number_format($total, 2, '.', ',');
+        $this->totalValueOfProduct = (float)number_format($total, 2, '.', '');
 
         return $this;
     }

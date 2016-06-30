@@ -57,11 +57,14 @@ class Review
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
     protected $_reviewCollection;
-
     /**
      * @var \Magento\Review\Model\Rating\Option\Vote
      */
     protected $vote;
+    /**
+     * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
+     */
+    protected $_mageReviewCollection;
 
     /**
      * Review constructor.
@@ -77,6 +80,7 @@ class Review
      * @param \Magento\Framework\App\ResourceConnection                           $resource
      * @param \Magento\Framework\Stdlib\Datetime                                  $datetime
      * @param \Magento\Review\Model\Rating\Option\Vote                            $vote
+     * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory        $mageReviewCollection
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
@@ -89,7 +93,8 @@ class Review
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Framework\Stdlib\Datetime $datetime,
-        \Magento\Review\Model\Rating\Option\Vote $vote
+        \Magento\Review\Model\Rating\Option\Vote $vote,
+        \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
     ) {
         $this->_reviewCollection = $reviewCollection;
         $this->_ratingFactory = $ratingFactory;
@@ -102,6 +107,7 @@ class Review
         $this->_resource = $resource;
         $this->_dateTime = $datetime;
         $this->vote = $vote;
+        $this->_mageReviewCollection = $mageReviewCollection;
     }
 
     /**
@@ -177,10 +183,22 @@ class Review
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
             $website
         );
-        $reviews = $this->_getReviewsToExport($website, $limit);
+        $emailReviews = $this->_getReviewsToExport($website, $limit);
         $this->_reviewIds = [];
 
-        if ($reviews->getSize()) {
+        if ($emailReviews->getSize()) {
+            $reviews = $this->_mageReviewCollection->create()
+                ->addFieldToFilter(
+                    'main_table.review_id', ['in' => $emailReviews->getColumnValues('review_id')]
+                )
+                ->addFieldToFilter('customer_id', ['notnull' => 'true']);
+
+            $reviews->getSelect()
+                ->joinLeft(
+                    ['c' => 'customer_entity'],
+                    'c.entity_id = customer_id',
+                    ['email', 'store_id']
+                );
             foreach ($reviews as $mageReview) {
                 try {
                     $product = $this->_productFactory->create()

@@ -74,25 +74,25 @@ class Order
     /**
      * Order constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory          $importerFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
-     * @param \Magento\Sales\Model\OrderFactory                     $salesOrderFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                    $helper
      * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory   $connectorOrderFactory
      * @param \Dotdigitalgroup\Email\Model\OrderFactory             $orderFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory           $contactFactory
      * @param \Magento\Framework\App\ResourceConnection             $resource
-     * @param \Dotdigitalgroup\Email\Helper\Data                    $helper
+     * @param \Magento\Sales\Model\OrderFactory                     $salesOrderFactory
      * @param \Magento\Store\Model\StoreManagerInterface            $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
-        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
         \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->_importerFactory = $importerFactory;
@@ -107,7 +107,7 @@ class Order
     }
 
     /**
-     * initial sync the transactional data.
+     * Initial sync the transactional data.
      *
      * @return array
      *
@@ -125,19 +125,19 @@ class Order
             $orderIds = $account->getOrderIds();
             $ordersForSingleSync = $account->getOrdersForSingleSync();
             $orderIdsForSingleSync = $account->getOrderIdsForSingleSync();
+            //@codingStandardsIgnoreStart
             $numOrdersForSingleSync = count($ordersForSingleSync);
             $website = $account->getWebsites();
             $numOrders = count($orders);
+            //@codingStandardsIgnoreEnd
             $this->_countOrders += $numOrders;
             $this->_countOrders += $numOrdersForSingleSync;
             //send transactional for any number of orders set
             if ($numOrders) {
                 $this->_helper->log(
-                    '--------- register Order sync with importer ---------- : '
-                    . count($orders)
+                    '--------- Order sync ---------- : ' . $numOrders
                 );
-                //register in queue with importer
-                //$this->_helper->debug('orders', $orders);
+                //queue order into importer
                 $this->_helper->error('orders', $orders);
                 try {
                     $this->_importerFactory->create()
@@ -163,9 +163,8 @@ class Order
                 $error = false;
                 foreach ($ordersForSingleSync as $order) {
                     $this->_helper->log(
-                        '--------- register Order sync in single with importer ---------- : '
-                        . $order->id
-                    );
+                        '--------- register Order sync in single with importer ---------- : ');
+
                     //register in queue with importer
                     $this->_importerFactory->create()
                         ->registerQueue(
@@ -202,6 +201,7 @@ class Order
     protected function _searchAccounts()
     {
         $this->_orderIds = [];
+        $this->_orderIdsForSingleSync = [];
         $websites = $this->_helper->getWebsites(true);
         foreach ($websites as $website) {
             $apiEnabled = $this->_helper->isEnabled($website);
@@ -284,38 +284,41 @@ class Order
             return [];
         }
 
-        foreach ($orderCollection as $order) {
-            try {
-                $salesOrder = $this->_salesOrderFactory->create()->load(
-                    $order->getOrderId()
-                );
-                $storeId = $order->getStoreId();
-                $websiteId = $this->_storeManager->getStore($storeId)
-                    ->getWebsiteId();
-                /*
+        try {
+
+            //email_order order ids
+            $orderIds = $orderCollection->getColumnValues('order_id');
+
+            //get the order collection
+            $salesOrderCollection = $this->_salesOrderFactory->create()
+                ->getCollection()
+                ->addFieldToFilter('entity_id', ['in' => $orderIds]);
+
+            foreach ($salesOrderCollection as $order) {
+
+                $storeId   = $order->getStoreId();
+                $websiteId = $this->_storeManager->getStore($storeId)->getWebsiteId();
+                /**
                  * Add guest to contacts table.
                  */
-                if ($salesOrder->getCustomerIsGuest()) {
+                if ($order->getCustomerIsGuest()) {
                     $this->_createGuestContact(
-                        $salesOrder->getCustomerEmail(), $websiteId, $storeId
+                        $order->getCustomerEmail(), $websiteId, $storeId
                     );
                 }
-                if ($salesOrder->getId()) {
-                    $connectorOrder = $this->_connectorOrderFactory->create()
-                        ->setOrder($salesOrder);
+                if ($order->getId()) {
+                    $connectorOrder = $this->_connectorOrderFactory->create();
+                    $connectorOrder->setOrderData($order);
                     $orders[] = $connectorOrder;
                 }
                 if ($modified) {
-                    $this->_orderIdsForSingleSync[] = $order->getOrderId();
+                    $this->_orderIdsForSingleSync[] = $order->getId();
                 } else {
-                    $this->_orderIds[] = $order->getOrderId();
+                    $this->_orderIds[] = $order->getId();
                 }
-            } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, []);
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    __($e->getMessage())
-                );
             }
+        } catch (\Exception $e) {
+            $this->_helper->debug((string)$e, []);
         }
 
         return $orders;
@@ -338,9 +341,7 @@ class Order
             $client = $this->_helper->getWebsiteApiClient($websiteId);
 
             //no api credentials or the guest has no been mapped
-            if (!$client
-                || !$addressBookId
-                    = $this->_helper->getGuestAddressBook($websiteId)
+            if (!$client || !$addressBookId = $this->_helper->getGuestAddressBook($websiteId)
             ) {
                 return false;
             }
@@ -352,8 +353,7 @@ class Order
             $contactApi = $client->postContacts($email);
 
             //contact is suppressed cannot add to address book, mark as suppressed.
-            if (isset($contactApi->message)
-                && $contactApi->message
+            if (isset($contactApi->message) && $contactApi->message
                 == 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED'
             ) {
 
@@ -395,9 +395,6 @@ class Order
             );
         } catch (\Exception $e) {
             $this->_helper->debug((string)$e, []);
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __($e->getMessage())
-            );
         }
 
         return true;

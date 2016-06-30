@@ -49,10 +49,14 @@ class Wishlist
 
     /**
      * @param mixed $customerId
+     *
+     * @return $this
      */
     public function setCustomerId($customerId)
     {
         $this->customerId = (int)$customerId;
+
+        return $this;
     }
 
     /**
@@ -125,5 +129,19 @@ class Wishlist
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set email
+     *
+     * @param $email
+     *
+     * @return $this
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
     }
 }

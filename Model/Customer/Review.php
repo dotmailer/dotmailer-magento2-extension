@@ -182,7 +182,9 @@ class Review
         $this->setId($review->getReviewId())
             ->setWebsiteName($websiteName)
             ->setStoreName($storeName)
-            ->setReviewDate($review->getCreatedAt());
+            ->setReviewDate($review->getCreatedAt())
+            ->setCustomerId($review->getCustomerId())
+            ->setEmail($review->getEmail());
 
         return $this;
     }
@@ -265,6 +267,20 @@ class Review
     public function getWebsiteName()
     {
         return $this->websiteName;
+    }
+
+    /**
+     * Set email
+     *
+     * @param $email
+     *
+     * @return $this
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     /**

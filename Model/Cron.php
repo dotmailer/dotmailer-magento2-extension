@@ -68,21 +68,21 @@ class Cron
     /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory $campaignFactory
-     * @param Sync\OrderFactory $syncOrderFactory
-     * @param Sales\QuoteFactory $quoteFactory
-     * @param Sync\ReviewFactory $reviewFactory
-     * @param Sales\OrderFactory $orderFactory
-     * @param Sync\WishlistFactory $wishlistFactory
-     * @param Customer\GuestFactory $guestFactory
-     * @param Newsletter\SubscriberFactory $subscriberFactory
-     * @param Sync\CatalogFactory $catalogFactorty
-     * @param ImporterFactory $importerFactory
-     * @param Sync\AutomationFactory $automationFactory
-     * @param Apiconnector\ContactFactory $contact
+     * @param Sync\CampaignFactory               $campaignFactory
+     * @param Sync\OrderFactory                  $syncOrderFactory
+     * @param Sales\QuoteFactory                 $quoteFactory
+     * @param Sync\ReviewFactory                 $reviewFactory
+     * @param Sales\OrderFactory                 $orderFactory
+     * @param Sync\WishlistFactory               $wishlistFactory
+     * @param Customer\GuestFactory              $guestFactory
+     * @param Newsletter\SubscriberFactory       $subscriberFactory
+     * @param Sync\CatalogFactory                $catalogFactorty
+     * @param ImporterFactory                    $importerFactory
+     * @param Sync\AutomationFactory             $automationFactory
+     * @param Apiconnector\ContactFactory        $contact
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param ResourceModel\Importer $importerResource
+     * @param ResourceModel\Importer             $importerResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
