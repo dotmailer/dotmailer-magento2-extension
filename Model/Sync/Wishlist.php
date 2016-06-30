@@ -60,10 +60,6 @@ class Wishlist
      * @var \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory
      */
     protected $_itemCollection;
-    /**
-     * @var \Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory
-     */
-    protected $_mageWishlistCollection;
 
     /**
      * Wishlist constructor.
@@ -78,7 +74,6 @@ class Wishlist
      * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
      * @param \Magento\Framework\App\ResourceConnection                        $resource
      * @param \Magento\Framework\StdLib\Datetime                               $datetime
-     * @param \Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory $mageWishlistCollection
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
@@ -90,8 +85,7 @@ class Wishlist
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Framework\StdLib\Datetime $datetime,
-        \Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory $mageWishlistCollection
+        \Magento\Framework\StdLib\Datetime $datetime
     ) {
         $this->_itemCollection = $itemCollection;
         $this->_wishlistCollection = $wishlistCollection;
@@ -103,7 +97,6 @@ class Wishlist
         $this->_helper = $helper;
         $this->_resource = $resource;
         $this->_datetime = $datetime;
-        $this->_mageWishlistCollection = $mageWishlistCollection;
     }
 
     /**
@@ -148,11 +141,12 @@ class Wishlist
                     //mark connector wishlist as  imported
                     $this->_setImported($this->_wishlistIds);
                 }
-
-                $message = 'Total time for wishlist bulk sync : ' . gmdate(
-                        'H:i:s', microtime(true) - $this->_start
-                    );
-                $this->_helper->log($message);
+                if (count($this->_wishlists)) {
+                    $message = 'Total time for wishlist bulk sync : ' . gmdate(
+                            'H:i:s', microtime(true) - $this->_start
+                        );
+                    $this->_helper->log($message);
+                }
 
                 //using single api
                 $this->_exportWishlistForWebsiteInSingle($website);
@@ -171,7 +165,7 @@ class Wishlist
     protected function _exportWishlistForWebsite(\Magento\Store\Model\Website $website)
     {
         //reset wishlists
-        $this->_wishlists   = array();
+        $this->_wishlists = [];
         $this->_wishlistIds = [];
         //sync limit
         $limit = $this->_helper->getWebsiteConfig(
@@ -180,44 +174,38 @@ class Wishlist
         );
         //wishlist collection
         $collection = $this->_getWishlistToImport($website, $limit);
-        //email_wishlist wishlist ids
-        $wishlistIds = $collection->getColumnValues('wishlist_id');
 
-        $wishlistCollection = $this->_mageWishlistCollection->create()
-            ->addFieldToFilter('wishlist_id', ['in' => $wishlistIds]);
-        $wishlistCollection->getSelect()
-            ->joinLeft(
-                ['c' => 'customer_entity'],
-                'c.entity_id = customer_id',
-                ['email', 'store_id']
+        foreach ($collection as $emailWishlist) {
+            $customer = $this->_customerFactory->create()->load(
+                $emailWishlist->getCustomerId()
             );
+            $wishlist = $this->_wishlist->create()
+                ->load($emailWishlist->getWishlistId());
 
+            $wishListItemCollection = $this->_itemCollection->create()
+                ->addFieldToFilter('wishlist_id', $wishlist->getWishlistId());
 
-
-        foreach ($wishlistCollection as $wishlist) {
-            $wishlistId = $wishlist->getid();
-            $wishlistItems = $wishlist->getItemCollection();
-
+            //set customer for wishlist
             $connectorWishlist = $this->_wishlistFactory->create()
-                ->setId($wishlistId)
-                ->setUpdatedAt($wishlist->getUpdatedAt())
-                ->setCustomerId($wishlist->getCustomerId())
-                ->setEmail($wishlist->getEmail());
+                ->setCustomer($customer)
+                ->setId($wishlist->getId())
+                ->setUpdatedAt($wishlist->getUpdatedAt());
 
-            if ($wishlistItems->getSize()) {
-                foreach ($wishlistItems as $item) {
-                    $product      = $item->getProduct();
+            if ($wishListItemCollection->getSize()) {
+                foreach ($wishListItemCollection as $item) {
+                    $product = $item->getProduct();
                     $wishlistItem = $this->_itemFactory->create()
                         ->setProduct($product)
                         ->setQty($item->getQty())
                         ->setPrice($product);
                     //store for wishlists
                     $connectorWishlist->setItem($wishlistItem);
-                    $this->_count++;
+                    ++$this->_count;
                 }
+
                 //set wishlists for later use
                 $this->_wishlists[$website->getId()][] = $connectorWishlist;
-                $this->_wishlistIds[] = $wishlistId;
+                $this->_wishlistIds[] = $emailWishlist->getWishlistId();
             }
         }
     }
@@ -260,68 +248,66 @@ class Wishlist
         );
         $this->_wishlistIds = [];
 
-        //email_wishlist wishlist ids
-        $wishlistIds = $collection->getColumnValues('wishlist_id');
-
-        $wishlistCollection = $this->_mageWishlistCollection->create()
-            ->addFieldToFilter('wishlist_id', ['in' => $wishlistIds]);
-        $wishlistCollection->getSelect()
-            ->joinLeft(
-                ['c' => 'customer_entity'],
-                'c.entity_id = customer_id',
-                ['email', 'store_id']
+        foreach ($collection as $emailWishlist) {
+            $customer = $this->_customerFactory->create()->load(
+                $emailWishlist->getCustomerId()
             );
-
-        foreach ($wishlistCollection as $wishlist) {
-
-            $wishlistId = $wishlist->getid();
-            $wishlistItems = $wishlist->getItemCollection();
-
+            $wishlist = $this->_wishlist->create()->load(
+                $emailWishlist->getWishlistId()
+            );
             $connectorWishlist = $this->_wishlistFactory->create()
-                ->setId($wishlistId)
-                ->setUpdatedAt($wishlist->getUpdatedAt())
-                ->setCustomerId($wishlist->getCustomerId())
-                ->setEmail($wishlist->getEmail());
+                ->setCustomer($customer);
+            $connectorWishlist->setId($wishlist->getId());
+            $wishListItemCollection = $wishlist->getItemCollection();
 
-            if ($wishlistItems->getSize()) {
-                foreach ($wishlistItems as $item) {
-                    $product      = $item->getProduct();
+            if ($wishListItemCollection->getSize()) {
+                foreach ($wishListItemCollection as $item) {
+                    $product = $item->getProduct();
                     $wishlistItem = $this->_itemFactory->create()
                         ->setProduct($product)
                         ->setQty($item->getQty())
                         ->setPrice($product);
                     //store for wishlists
                     $connectorWishlist->setItem($wishlistItem);
-                    $this->_count++;
+                    ++$this->_count;
                 }
                 //send wishlist as transactional data
+                $this->_helper->log(
+                    '---------- Start wishlist single sync ----------'
+                );
                 $this->_start = microtime(true);
                 //register in queue with importer
-                $check = $this->_importerFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
                         $connectorWishlist,
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
                         $website->getId()
                     );
-                if ($check) {
-                    $this->_wishlistIds[] = $wishlistId;
-                }
+
+                $this->_wishlistIds[] = $emailWishlist->getWishlistId();
+                $message = 'Total time for wishlist single sync : '
+                    . gmdate('H:i:s', microtime(true) - $this->_start);
+                $this->_helper->log($message);
             } else {
                 //register in queue with importer
-                $check = $this->_importerFactory->create()
+                $this->_importerFactory->create()
                     ->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
                         [$wishlist->getId()],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                         $website->getId()
                     );
-                if ($check) {
-                    $this->_wishlistIds[] = $wishlistId;
-                }
+
+                $this->_wishlistIds[] = $emailWishlist->getWishlistId();
+
+                $message = 'Total time for wishlist single sync : ' . gmdate(
+                        'H:i:s', microtime(true) - $this->_start
+                    );
+                $this->_helper->log($message);
             }
         }
-        if ( ! empty($this->_wishlistIds)) {
+        if (!empty($this->_wishlistIds)) {
             $this->_setImported($this->_wishlistIds, true);
         }
     }
