@@ -171,7 +171,7 @@ class Wishlist
     protected function _exportWishlistForWebsite(\Magento\Store\Model\Website $website)
     {
         //reset wishlists
-        $this->_wishlists   = array();
+        $this->_wishlists = [];
         $this->_wishlistIds = [];
         //sync limit
         $limit = $this->_helper->getWebsiteConfig(
