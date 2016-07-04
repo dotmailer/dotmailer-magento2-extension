@@ -111,6 +111,8 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
             $connection->quoteInto("{$orderTableAliasName}.state <> ?", \Magento\Sales\Model\Order::STATE_CANCELED),
         ];
         $orderJoinCondition[] = $this->prepareBetweenSql($fieldName, $from, $to);
+        $storeId = $this->_storeManager->getStore()->getId();
+
 
         $reportProductCollection->getSelect()->reset()
             ->from(
@@ -120,7 +122,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
             ['order' => $reportProductCollection->getTable('sales_order')],
             implode(' AND ', $orderJoinCondition),
             []
-        )->columns(['sku', 'name', 'store_id', 'price'])
+        )->columns(['sku'])
             ->where(
             'parent_item_id IS NULL'
         )->group(
@@ -129,7 +131,8 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
             'SUM(order_items.qty_ordered) > ?',
             0
         )->limit($limit);
-        //@todo check for currnt website filter ->addWebsiteFilter($websiteId)
+        
+        $reportProductCollection->setStoreIds([$storeId]);
         $productSkus = $reportProductCollection->getColumnValues('sku');
 
         $productCollection = $this->_productFactory->create()
