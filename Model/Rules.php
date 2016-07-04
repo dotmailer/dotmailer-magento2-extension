@@ -42,14 +42,17 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     protected $config;
 
+
     /**
-     * Review constructor.
+     * Rules constructor.
      *
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
+     * @param Adminhtml\Source\Rules\Type                                  $rulesType
+     * @param \Magento\Framework\Model\Context                             $context
+     * @param \Magento\Framework\Registry                                  $registry
+     * @param \Magento\Eav\Model\Config                                    $config
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param array $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
+     * @param array                                                        $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $rulesType,
@@ -64,7 +67,15 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         $this->rulesType = $rulesType;
         parent::__construct($context, $registry, $resource, $resourceCollection,
             $data);
+    }
+
+    /**
+     * Construct.
+     */
+    public function _construct()
+    {
         $this->_defaultOptions = $this->rulesType->defaultOptions();
+
         $this->_conditionMap = [
             'eq' => 'neq',
             'neq' => 'eq',
@@ -101,8 +112,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             'items_qty' => 'items_qty',
             'customer_email' => 'main_table.customer_email',
         ];
+        parent::_construct();
         $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Rules');
-
     }
 
     /**
