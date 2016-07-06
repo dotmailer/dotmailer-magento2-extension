@@ -97,10 +97,10 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         //date range
         $from = $this->recommnededHelper->getTimeFromConfig($mode);
         $date  = new \Zend_Date($this->_localeDate->date()->getTimestamp());
+
         $to = $date->toString(\Zend_Date::ISO_8601);
         //create report collection
         $reportProductCollection = $this->_productSoldFactory->create();
-
         $connection = $this->_resource->getConnection();
         $orderTableAliasName = $connection->quoteIdentifier('order');
         $fieldName = $orderTableAliasName . '.created_at';
@@ -116,22 +116,19 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 
         $reportProductCollection->getSelect()->reset()
             ->from(
-            ['order_items' => $reportProductCollection->getTable('sales_order_item')],
-            ['ordered_qty' => 'SUM(order_items.qty_ordered)', 'order_items_name' => 'order_items.name']
-        )->joinInner(
-            ['order' => $reportProductCollection->getTable('sales_order')],
-            implode(' AND ', $orderJoinCondition),
-            []
-        )->columns(['sku'])
-            ->where(
-            'parent_item_id IS NULL'
-        )->group(
-            'order_items.product_id'
-        )->having(
-            'SUM(order_items.qty_ordered) > ?',
-            0
-        )->limit($limit);
-        
+                ['order_items' => $reportProductCollection->getTable('sales_order_item')],
+                ['ordered_qty' => 'SUM(order_items.qty_ordered)', 'order_items_name' => 'order_items.name']
+            )->joinInner(
+                ['order' => $reportProductCollection->getTable('sales_order')],
+                implode(' AND ', $orderJoinCondition),
+                []
+            )->columns(['sku'])
+                ->where('parent_item_id IS NULL')
+            ->group('order_items.product_id')
+            ->having('SUM(order_items.qty_ordered) > ?', 0)
+            ->order('ordered_qty DESC')
+            ->limit($limit);
+
         $reportProductCollection->setStoreIds([$storeId]);
         $productSkus = $reportProductCollection->getColumnValues('sku');
 
@@ -153,6 +150,14 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         return $this->recommnededHelper->getDisplayType();
     }
 
+    /**
+     * Prepare between sql.
+     *
+     * @param string $fieldName Field name with table suffix ('created_at' or 'main_table.created_at')
+     * @param string $from
+     * @param string $to
+     * @return string Formatted sql string
+     */
     protected function prepareBetweenSql($fieldName, $from, $to)
     {
         $connection = $this->_resource->getConnection();
@@ -177,7 +182,4 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
     }
-
-
-
 }
