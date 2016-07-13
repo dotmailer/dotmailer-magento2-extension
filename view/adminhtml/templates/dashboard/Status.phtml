@@ -1,0 +1,28 @@
+<table class="message-system-short">
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('API valid')?>:</strong>
+        </th>
+        <td><?php echo $block->getApiValid() ?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('Cron last execution')?>:</strong>
+        </th>
+        <td><?php echo $block->getCronLastExecution(); ?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('Dynamic content passcode')?>:</strong>
+        </th>
+        <td><?php echo $block->getDynamicContentPasscode()?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('Abandoned Cart limit time')?>:</strong>
+        </th>
+        <td><?php echo $block->getAbandonedCartLimit()?></td>
+    </tr>
+</table>
+    
+

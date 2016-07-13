@@ -4,11 +4,24 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Dashboard;
 
 class Information extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    protected $_template = 'dashboard/information.phtml';
-    
 
+    /**
+     * @var string
+     */
+    protected $_template = 'dashboard/information.phtml';
+
+
+    /**
+     * Helper.
+     * 
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     protected $data;
 
+    /**
+     * Test class.
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
+     */
     protected $test;
 
 
@@ -102,7 +115,8 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
 
         $result = $this->test->validate($apiUsername, $apiPassword);
 
-        return ($result)? 'Valid' : 'Not Valid';
+        return ($result)? '<span class="message message-success">Valid</span>' :
+            '<span class="message message-error">Not Valid</span>';
     }
 
     /**
@@ -116,7 +130,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         $date = $this->data->getDateLastCronRun('ddg_automation_importer');
 
         if (! $date) {
-            $date = 'No cron found';
+            $date = '<span class="message message-error">No cron found</span>';
         }
         return $date;
     }
@@ -139,7 +153,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     public function getAbandonedCartLimit()
     {
         return ($this->data->getAbandonedCartLimit())?
-            '<span style="background: #e22626; color: #ffffff">' . $this->data->getAbandonedCartLimit().
+            '<span class="message message-warning">' . $this->data->getAbandonedCartLimit().
             ' h</span>' : 'No limit';
     }
 }

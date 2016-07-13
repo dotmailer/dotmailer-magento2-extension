@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
-class Dashboar22d extends \Magento\Backend\App\Action
+class Dashboard extends \Magento\Backend\App\Action
 {
     /**
      * @var \Magento\Framework\View\Result\PageFactory
@@ -43,6 +43,6 @@ class Dashboar22d extends \Magento\Backend\App\Action
      */
     protected function _isAllowed()
     {
-        //return $this->_authorization->isAllowed('Dotdigitalgroup_Email::dashboard');
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::dashboard');
     }
 }
