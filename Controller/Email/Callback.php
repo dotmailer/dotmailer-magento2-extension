@@ -41,6 +41,7 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      */
     public function __construct(
+        \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Backend\Helper\Data $backendData,
         \Dotdigitalgroup\Email\Helper\Config $config,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface,
@@ -49,6 +50,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper
     ) {
+        $this->_customerFactory = $customerFactory;
         $this->_adminHelper = $backendData;
         $this->_config = $config;
         $this->scopeConfig = $scopeConfigInterface;
@@ -64,6 +66,20 @@ class Callback extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
+        $collection = $this->_customerFactory->create()->getCollection()
+            ->addFieldToSelect('*')
+         //  ->addFieldtoFilter('disable_auto_group_change', '0')
+           ->addFieldtoFilter('is_active', '0')
+        ;
+
+//var_dump($collection->getColumnValues('is_active'));die;
+        foreach ($collection as $item) {
+            var_dump($item->getData());
+        }
+die;
+        var_dump((string)$collection->getSelect());die;
+        return $collection->getData();
+
         $code = $this->getRequest()->getParam('code', false);
         $userId = $this->getRequest()->getParam('state');
         //load admin user

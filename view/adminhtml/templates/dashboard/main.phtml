@@ -1,0 +1,17 @@
+<div class="content-header">
+    <?php echo $block->getChildHtml('adminhtml.system.config.switcher');?>
+</div>
+<div class="dashboard-container">
+    <?php echo $block->getChildHtml('store_language');?>
+    <table cellspacing="25" width="100%" class="message-system-inner">
+        <tr>
+            <td width="45%"><?php echo $block->getChildHtml('dotdigitalgroup.email.dashboard_left') ?></td>
+            <td width="45%"><?php echo $block->getChildHtml('dotdigitalgroup.email.dashboard_right') ?></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td><?php echo $block->getChildHtml('dotdigitalgroup.email.dashboard_config') ?></td>
+        </tr>
+    </table>
+</div>
