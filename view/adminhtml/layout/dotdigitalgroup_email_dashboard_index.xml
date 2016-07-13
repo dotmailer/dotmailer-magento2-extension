@@ -16,7 +16,7 @@
                 <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information" name="dotdigitalgroup.email.dashboard_left" template="dashboard/information.phtml">
                     <block class="Magento\Store\Block\Switcher" name="store_language" as="store_language" template="switch/languages.phtml"/>
                 </block>
-                <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information" name="dotdigitalgroup.email.dashboard_right" template="dashboard/status.phtml">
+                <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information" name="dotdigitalgroup.email.dashboard_right" template="dashboard/connector.phtml">
                 </block>
                 <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Configuration" name="dotdigitalgroup.email.dashboard_config"/>
             </block>
