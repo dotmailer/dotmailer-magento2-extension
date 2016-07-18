@@ -36,9 +36,9 @@ class Test
                 ->setApiPassword($apiPassword);
 
             $accountInfo = $client->getAccountInfo();
+            
             if (isset($accountInfo->message)) {
-                $this->_helper->log('VALIDATION ERROR :  '
-                    . $accountInfo->message);
+                $this->_helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
 
                 return false;
             }

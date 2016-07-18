@@ -18,7 +18,9 @@
                         <resource id="Dotdigitalgroup_Email::catalog" title="Dotmailer Catalog" sortOrder="70"/>
                         <resource id="Dotdigitalgroup_Email::importer" title="Dotmailer Importer" sortOrder="80"/>
                         <resource id="Dotdigitalgroup_Email::campaign" title="Dotmailer Campaign" sortOrder="90"/>
-                        <resource id="Dotdigitalgroup_Email::automation_enrollment" title="Dotmailer Enrollment Automation" sortOrder="100"/>
+                        <resource id="Dotdigitalgroup_Email::cron" title="Dotmailer Cron" sortOrder="100"/>
+                        <resource id="Dotdigitalgroup_Email::dashboard" title="Dotmailer Dashboard" sortOrder="110"/>
+                        <resource id="Dotdigitalgroup_Email::automation_enrollment" title="Dotmailer Enrollment Automation" sortOrder="120"/>
                     </resource>
                 </resource>
                 <resource id="Magento_Backend::stores">

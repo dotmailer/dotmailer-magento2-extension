@@ -6,6 +6,9 @@ use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+
+    const MODULE_NAME = 'Dotdigitalgroup_Email';
+    
     /**
      * @var object
      */
@@ -56,11 +59,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $logFileName = 'connector.log';
 
+    /**
+     * @var \Magento\Framework\Module\ModuleListInterface
+     */
+    protected $_moduleInterface;
+
 
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     protected $customerFactory;
+
+    /**
+     * @var \Magento\Cron\Model\ScheduleFactory
+     */
+    protected $_schelduleFactory;
 
     /**
      * Data constructor.
@@ -85,6 +98,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
+        \Magento\Framework\Module\ModuleListInterface $moduleListInterface,
+        \Magento\Cron\Model\ScheduleFactory $schedule,
         \Magento\Store\Model\Store $store
     ) {
         $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/' . $this->logFileName);
@@ -92,12 +107,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $logger->addWriter($writer);
         $this->_connectorLogger = $logger;
         $this->_adapter = $adapter;
+        $this->_schelduleFactory = $schedule;
         $this->_productMetadata = $productMetadata;
         $this->_contactFactory = $contactFactory;
         $this->_resourceConfig = $resourceConfig;
         $this->_storeManager = $storeManager;
         $this->_objectManager = $objectManager;
         $this->customerFactory = $customerFactory;
+        $this->_moduleInterface = $moduleListInterface;
         $this->_store = $store;
 
         parent::__construct($context);
@@ -1359,5 +1376,56 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return false;
+    }
+
+    /**
+     * Get current connector version.
+     * 
+     * @return mixed
+     */
+    public function getConnectorVersion()
+    {
+        return $this->_moduleInterface->getOne(self::MODULE_NAME)['setup_version'];
+    }
+
+    /**
+     * Get the abandoned cart limit.
+     * 
+     * @return mixed
+     */
+    public function getAbandonedCartLimit()
+    {
+        $cartLimit = $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT
+        );
+        
+        return $cartLimit;
+    }
+
+
+    /**
+     * Get the date for the last time cron run.
+     * @param $cronjob
+     *
+     * @return bool
+     */
+    public function getDateLastCronRun($cronJob)
+    {
+        $collection = $this->_schelduleFactory->create()
+            ->getCollection()
+            ->addFieldToFilter('status', \Magento\Cron\Model\Schedule::STATUS_SUCCESS)
+            ->addFieldToFilter('job_code', $cronJob)
+        ;
+        //limit and order the results
+        $collection->getSelect()
+            ->limit(1)
+            ->order('executed_at DESC');
+
+        if ($collection->getSize() == 0) {
+            return false;
+        }
+        $executedAt = $collection->getFirstItem()->getExecutedAt();
+        
+        return $executedAt;
     }
 }

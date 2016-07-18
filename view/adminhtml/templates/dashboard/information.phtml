@@ -1,0 +1,34 @@
+<table class="message-system-short">
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('PHP Version')?>:</strong>
+        </th>
+        <td><div class="message-link"><?php echo $block->escapeHtml($this->getPhpVersion()) ?></td></div>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('PHP max execution time')?>:</strong>
+        </th>
+        <td><?php echo $block->getPhpMaxExecutionTime(); ?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('Mode ')?>:</strong>
+        </th>
+        <td><?php echo $block->getDeveloperMode()?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('Magento Version ')?>:</strong>
+        </th>
+        <td><?php echo $block->getMagentoVersion()  .  '  ' . $block->getMagentoEdition()?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label"><?php echo __('Connector Version ')?>:</strong>
+        </th>
+        <td><?php echo $block->getConnectorVersion()?></td>
+    </tr>
+
+</table>
+    
