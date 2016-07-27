@@ -399,6 +399,7 @@ class InstallSchema implements InstallSchemaInterface
                     )
                 ),
                 array(
+                    'customer_id',
                     'email' => 'subscriber_email',
                     'col2' => new \Zend_Db_Expr('1'),
                     'col3' => new \Zend_Db_Expr('1'),
@@ -408,6 +409,7 @@ class InstallSchema implements InstallSchemaInterface
             ->where('customer_id =?', 0)
             ->where('subscriber_status =?', 1);
         $insertArray = array(
+            'customer_id',
             'email',
             'is_subscriber',
             'subscriber_status',
