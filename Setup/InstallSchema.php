@@ -399,7 +399,6 @@ class InstallSchema implements InstallSchemaInterface
                     )
                 ),
                 array(
-                    'customer_id',
                     'email' => 'subscriber_email',
                     'col2' => new \Zend_Db_Expr('1'),
                     'col3' => new \Zend_Db_Expr('1'),
@@ -409,7 +408,6 @@ class InstallSchema implements InstallSchemaInterface
             ->where('customer_id =?', 0)
             ->where('subscriber_status =?', 1);
         $insertArray = array(
-            'customer_id',
             'email',
             'is_subscriber',
             'subscriber_status',
@@ -419,6 +417,27 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_contact'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
+
+        //Update contacts with customers that are subscribers
+        $select = $installer->getConnection()->select();
+
+        //join
+        $select->joinLeft(
+            array('ns' => $installer->getTable('newsletter_subscriber')),
+            "dc.customer_id = ns.customer_id",
+            array(
+                'is_subscriber' => new \Zend_Db_Expr('1'),
+                'subscriber_status' => new \Zend_Db_Expr('1')
+            )
+        )->where('ns.subscriber_status =?', 1);
+
+        //update query from select
+        $updateSql = $select->crossUpdateFromSelect(
+            array('dc' => $installer->getTable('email_contact'))
+        );
+
+        //run query
+        $installer->getConnection()->query($updateSql);
 
         //Insert and populate email order the table
         $select = $installer->getConnection()->select()
