@@ -94,7 +94,16 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'null' => 'Not Send',
             ],
             'filter_condition_callback' => [$this, 'filterCallbackContact'],
-        ])->addColumn('message', [
+        ])->addColumn(
+            'send_id', array(
+                'header' => __('Send Id'),
+                'align' => 'left',
+                'width' => '300px',
+                'index' => 'send_id',
+                'type' => 'text',
+                'escape' => true
+            )
+        )->addColumn('message', [
             'header' => __('Send Message'),
             'align' => 'left',
             'width' => '300px',
