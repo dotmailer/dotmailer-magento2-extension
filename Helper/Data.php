@@ -469,6 +469,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteApiClient($website = 0, $username = '', $password = '')
     {
+        //if api is not enabled
+        if (!$this->isEnabled($website)) {
+            return false;
+        }
+
         if ($username && $password) {
             $apiUsername = $username;
             $apiPassword = $password;
