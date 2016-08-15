@@ -167,22 +167,26 @@ class Automation
                 $this->typeId = $automation->getTypeId();
                 $this->websiteId = $automation->getWebsiteId();
                 $this->storeName = $automation->getStoreName();
-                $contactId = $this->_helper->getContactId(
-                    $email, $this->websiteId
-                );
-                //contact id is valid, can update datafields
-                if ($contactId) {
-                    //need to update datafields
-                    $this->updateDatafieldsByType(
-                        $this->automationType, $email
+
+                //Only if api is enabled and credentials are filled
+                if ($this->_helper->getWebsiteApiClient($this->websiteId)) {
+                    $contactId = $this->_helper->getContactId(
+                        $email, $this->websiteId
                     );
-                    $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contactId;
-                } else {
-                    // the contact is suppressed or the request failed
-                    //@codingStandardsIgnoreStart
-                    $automation->setEnrolmentStatus('Suppressed')
-                        ->save();
-                    //@codingStandardsIgnoreEnd
+                    //contact id is valid, can update datafields
+                    if ($contactId) {
+                        //need to update datafields
+                        $this->updateDatafieldsByType(
+                            $this->automationType, $email
+                        );
+                        $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contactId;
+                    } else {
+                        // the contact is suppressed or the request failed
+                        //@codingStandardsIgnoreStart
+                        $automation->setEnrolmentStatus('Suppressed')
+                            ->save();
+                        //@codingStandardsIgnoreEnd
+                    }
                 }
             }
             foreach ($contacts as $websiteId => $websiteContacts) {
