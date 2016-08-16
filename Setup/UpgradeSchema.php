@@ -28,12 +28,12 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             //add column
             $connection->addColumn(
-                $campaignTable, 'send_id', array(
+                $campaignTable, 'send_id', [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                     'nullable' => false,
                     'default' => '',
                     'comment' => 'Campaign Send Id'
-                )
+                ]
             );
         }
         $setup->endSetup();
