@@ -442,6 +442,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $response = $client->postContacts($email);
 
         if (isset($response->message)) {
+            $contact->setEmailImported(1);
+            if ($response->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
+                $contact->setSuppressed(1);
+            }
+            $contact->save();
             return false;
         }
         //save contact id
@@ -464,6 +469,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteApiClient($website = 0, $username = '', $password = '')
     {
+        //if api is not enabled
+        if (!$this->isEnabled($website)) {
+            return false;
+        }
+
         if ($username && $password) {
             $apiUsername = $username;
             $apiPassword = $password;
