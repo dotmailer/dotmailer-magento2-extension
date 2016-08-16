@@ -5,25 +5,6 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
-     * @var \Magento\Framework\Stdlib\DateTime
-     */
-    protected $_dateTime;
-
-    /**
-     * Campaign constructor.
-     *
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
-     */
-    public function __construct(
-        \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Magento\Framework\Stdlib\DateTime $dateTime
-    ) {
-        $this->_dateTime = $dateTime;
-        parent::__construct($context);
-    }
-
-    /**
      * Initialize resource.
      */
     public function _construct()
@@ -41,14 +22,13 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function setMessage($campaignId, $message)
     {
         try {
-            $now = $this->_dateTime->formatDate(true);
             $conn = $this->getConnection();
             $conn->update(
                 $this->getMainTable(),
                 [
                     'message' => $message,
                     'is_sent' => 1,
-                    'sent_at' => $now
+                    'sent_at' => time()
                 ],
                 ['campaign_id = ?' => $campaignId]
             );
@@ -67,10 +47,9 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function setSent($campaignId, $sendId = false)
     {
         try {
-            $now = $this->_dateTime->formatDate(true);
             $bind = [
                 'is_sent' => 1,
-                'sent_at' => $now
+                'sent_at' => time()
             ];
             if ($sendId) {
                 $bind['send_id'] = $sendId;
