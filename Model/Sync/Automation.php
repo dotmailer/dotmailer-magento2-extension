@@ -15,7 +15,7 @@ class Automation
     /**
      * @var array
      */
-    public $automationTypes = array(
+    public $automationTypes = [
         self::AUTOMATION_TYPE_NEW_CUSTOMER =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER,
         self::AUTOMATION_TYPE_NEW_SUBSCRIBER =>
@@ -30,7 +30,7 @@ class Automation
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
         'order_automation_' =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS
-    );
+    ];
 
     /**
      * @var int
@@ -151,7 +151,7 @@ class Automation
             if ($type == 'order_automation_') {
                 $automationCollection->addFieldToFilter(
                     'automation_type',
-                    array('like' => '%' . $type . '%')
+                    ['like' => '%' . $type . '%']
                 );
             } else {
                 $automationCollection->addFieldToFilter(
