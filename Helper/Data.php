@@ -135,8 +135,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $website
         );
+        $apiUsername = $this->getApiUsername($website);
+        $apiPassword = $this->getApiPassword($website);
+        if (!$apiUsername || !$apiPassword || !$enabled) {
+            return false;
+        }
 
-        return (bool)$enabled;
+        return true;
     }
 
     /**
@@ -469,7 +474,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $username
      * @param string $password
      *
-     * @return bool|mixed
+     * @return \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
     public function getWebsiteApiClient($website = 0, $username = '', $password = '')
     {
@@ -479,10 +484,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } else {
             $apiUsername = $this->getApiUsername($website);
             $apiPassword = $this->getApiPassword($website);
-
-            if (!$apiUsername || !$apiPassword) {
-                return false;
-            }
         }
 
         $client = $this->_objectManager->create(
