@@ -438,6 +438,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return $contactId;
         }
 
+        if (!$this->isEnabled($websiteId)) {
+            return false;
+        }
+
         $client = $this->getWebsiteApiClient($websiteId);
         $response = $client->postContacts($email);
 
@@ -469,11 +473,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteApiClient($website = 0, $username = '', $password = '')
     {
-        //if api is not enabled
-        if (!$this->isEnabled($website)) {
-            return false;
-        }
-
         if ($username && $password) {
             $apiUsername = $username;
             $apiPassword = $password;
@@ -932,8 +931,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         if (!empty($data)) {
             //update data fields
-            $client = $this->getWebsiteApiClient($website);
-            $client->updateContactDatafieldsByEmail($email, $data);
+            if ($this->isEnabled($website)) {
+                $client = $this->getWebsiteApiClient($website);
+                $client->updateContactDatafieldsByEmail($email, $data);
+            }
         }
     }
 
@@ -946,16 +947,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function updateLastQuoteId($quoteId, $email, $websiteId)
     {
-        $client = $this->getWebsiteApiClient($websiteId);
-        //last quote id config data mapped
-        $quoteIdField = $this->getLastQuoteId();
+        if ($this->isEnabled($websiteId)) {
+            $client = $this->getWebsiteApiClient($websiteId);
+            //last quote id config data mapped
+            $quoteIdField = $this->getLastQuoteId();
 
-        $data[] = [
-            'Key' => $quoteIdField,
-            'Value' => $quoteId,
-        ];
-        //update datafields for conctact
-        $client->updateContactDatafieldsByEmail($email, $data);
+            $data[] = [
+                'Key' => $quoteIdField,
+                'Value' => $quoteId,
+            ];
+            //update datafields for conctact
+            $client->updateContactDatafieldsByEmail($email, $data);
+        }
     }
 
     /**
@@ -1124,17 +1127,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function updateAbandonedProductName($name, $email, $websiteId)
     {
-        $client = $this->getWebsiteApiClient($websiteId);
-        // id config data mapped
-        $field = $this->getAbandonedProductName();
+        if ($this->isEnabled($websiteId)) {
+            $client = $this->getWebsiteApiClient($websiteId);
+            // id config data mapped
+            $field = $this->getAbandonedProductName();
 
-        if ($field) {
-            $data[] = [
-                'Key' => $field,
-                'Value' => $name,
-            ];
-            //update data field for contact
-            $client->updateContactDatafieldsByEmail($email, $data);
+            if ($field) {
+                $data[] = [
+                    'Key' => $field,
+                    'Value' => $name,
+                ];
+                //update data field for contact
+                $client->updateContactDatafieldsByEmail($email, $data);
+            }
         }
     }
 

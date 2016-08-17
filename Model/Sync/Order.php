@@ -338,7 +338,10 @@ class Order
     protected function _createGuestContact($email, $websiteId, $storeId)
     {
         try {
-            $client = $this->_helper->getWebsiteApiClient($websiteId);
+            $client = false;
+            if ($this->_helper->isEnabled($websiteId)) {
+                $client = $this->_helper->getWebsiteApiClient($websiteId);
+            }
 
             //no api credentials or the guest has no been mapped
             if (!$client || !$addressBookId = $this->_helper->getGuestAddressBook($websiteId)

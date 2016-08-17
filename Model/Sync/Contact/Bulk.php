@@ -48,20 +48,22 @@ class Bulk
         foreach ($collection as $item) {
             $websiteId = $item->getWebsiteId();
             $file = $item->getImportFile();
-            $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
+            if ($this->_helper->isEnabled($websiteId)) {
+                $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
 
-            $addressBook = $this->_getAddressBook(
-                $item->getImportType(), $websiteId
-            );
-
-            if (!empty($file) && !empty($addressBook) && $this->_client) {
-
-                //import contacts from csv file
-                $result = $this->_client->postAddressBookContactsImport(
-                    $file, $addressBook
+                $addressBook = $this->_getAddressBook(
+                    $item->getImportType(), $websiteId
                 );
 
-                $this->_handleItemAfterSync($item, $result);
+                if (!empty($file) && !empty($addressBook) && $this->_client) {
+
+                    //import contacts from csv file
+                    $result = $this->_client->postAddressBookContactsImport(
+                        $file, $addressBook
+                    );
+
+                    $this->_handleItemAfterSync($item, $result);
+                }
             }
         }
     }

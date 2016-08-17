@@ -41,7 +41,10 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     {
         $result = ['errors' => false, 'message' => ''];
         $website = $this->getRequest()->getParam('website', 0);
-        $client = $this->_data->getWebsiteApiClient($website);
+        $client = false;
+        if ($this->_data->isEnabled()) {
+            $client = $this->_data->getWebsiteApiClient($website);
+        }
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 
         if (!$client) {

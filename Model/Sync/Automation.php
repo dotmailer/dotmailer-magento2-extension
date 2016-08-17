@@ -169,7 +169,9 @@ class Automation
                 $this->storeName = $automation->getStoreName();
 
                 //Only if api is enabled and credentials are filled
-                if ($this->_helper->getWebsiteApiClient($this->websiteId)) {
+                if ($this->_helper->isEnabled($this->websiteId) &&
+                    $this->_helper->getWebsiteApiClient($this->websiteId)
+                ) {
                     $contactId = $this->_helper->getContactId(
                         $email, $this->websiteId
                     );

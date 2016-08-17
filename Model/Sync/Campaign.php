@@ -79,7 +79,10 @@ class Campaign
                 $email = $campaign->getEmail();
                 $campaignId = $campaign->getCampaignId();
                 $websiteId = $website->getId();
-                $client = $this->_helper->getWebsiteApiClient($websiteId);
+                $client = false;
+                if ($this->_helper->isEnabled($websiteId)) {
+                    $client = $this->_helper->getWebsiteApiClient($websiteId);
+                }
                 //Only if valid client is returned
                 if ($client) {
                     //@codingStandardsIgnoreStart

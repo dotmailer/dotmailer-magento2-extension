@@ -41,16 +41,18 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
         $apiPassword = base64_decode($params['api_password']);
         //@codingStandardsIgnoreEnd
         //validate api, check against account info.
-        $client = $this->data->getWebsiteApiClient();
-        $result = $client->validate($apiUsername, $apiPassword);
+        if ($this->data->isEnabled()) {
+            $client = $this->data->getWebsiteApiClient();
+            $result = $client->validate($apiUsername, $apiPassword);
 
-        $resonseData['success'] = true;
-        //validation failed
-        if (!$result) {
-            $resonseData['success'] = false;
-            $resonseData['message'] = 'Authorization has been denied for this request.';
+            $resonseData['success'] = true;
+            //validation failed
+            if (!$result) {
+                $resonseData['success'] = false;
+                $resonseData['message'] = 'Authorization has been denied for this request.';
+            }
+
+            $this->getResponse()->representJson($this->jsonHelper->jsonEncode($resonseData));
         }
-
-        $this->getResponse()->representJson($this->jsonHelper->jsonEncode($resonseData));
     }
 }
