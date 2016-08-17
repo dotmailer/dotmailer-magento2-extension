@@ -130,7 +130,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isEnabled($website = 0)
     {
         $website = $this->_storeManager->getWebsite($website);
-        $enabled = $this->scopeConfig->getValue(
+        $enabled = $this->scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $website
