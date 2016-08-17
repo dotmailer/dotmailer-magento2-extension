@@ -347,6 +347,12 @@ class Contact
 
             return false;
         }
+
+        if (!$this->_helper->isEnabled($websiteId)) {
+            $this->_messageManager->addError('Api is not enabled');
+            return false;
+        }
+
         $client = $this->_helper->getWebsiteApiClient($website);
 
         //create customer filename

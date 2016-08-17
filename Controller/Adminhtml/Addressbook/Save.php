@@ -37,13 +37,15 @@ class Save extends \Magento\Backend\App\AbstractAction
         $visibility = $this->getRequest()->getParam('visibility');
         $website = $this->getRequest()->getParam('website', 0);
 
-        $client = $this->_helperData->getWebsiteApiClient($website);
-        if (strlen($addressBookName)) {
-            $response = $client->postAddressBooks($addressBookName, $visibility);
-            if (isset($response->message)) {
-                $this->messageManager->addError($response->message);
-            } else {
-                $this->messageManager->addSuccess('Address book : ' . $addressBookName . ' created.');
+        if ($this->_helperData->isEnabled($website)) {
+            $client = $this->_helperData->getWebsiteApiClient($website);
+            if (strlen($addressBookName)) {
+                $response = $client->postAddressBooks($addressBookName, $visibility);
+                if (isset($response->message)) {
+                    $this->messageManager->addError($response->message);
+                } else {
+                    $this->messageManager->addSuccess('Address book : ' . $addressBookName . ' created.');
+                }
             }
         }
     }

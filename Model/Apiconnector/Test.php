@@ -30,6 +30,10 @@ class Test
      */
     public function validate($apiUsername, $apiPassword)
     {
+        if (!$this->_helper->isEnabled()) {
+            return false;
+        }
+
         $client = $this->_helper->getWebsiteApiClient();
         if ($apiUsername && $apiPassword) {
             $client->setApiUsername($apiUsername)
