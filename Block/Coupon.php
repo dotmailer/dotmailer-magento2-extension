@@ -10,7 +10,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
      */
     public $helper;
     /**
-     * @var \Magento\Salesrule\Model\RuleFactory
+     * @var \Magento\SalesRule\Model\RuleFactory
      */
     protected $_ruleFactory;
     /**
@@ -18,7 +18,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
      */
     protected $_massGeneratorFactory;
     /**
-     * @var \Magento\Salesrule\Model\CouponFactory
+     * @var \Magento\SalesRule\Model\CouponFactory
      */
     protected $_couponFactory;
 
@@ -26,19 +26,19 @@ class Coupon extends \Magento\Framework\View\Element\Template
      * Coupon constructor.
      *
      * @param \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory
-     * @param \Magento\Salesrule\Model\CouponFactory               $couponFactory
+     * @param \Magento\SalesRule\Model\CouponFactory               $couponFactory
      * @param \Magento\Framework\View\Element\Template\Context     $context
      * @param \Dotdigitalgroup\Email\Helper\Data                   $helper
-     * @param \Magento\Salesrule\Model\RuleFactory                 $ruleFactory
+     * @param \Magento\SalesRule\Model\RuleFactory                 $ruleFactory
      * @param array                                                $data
      */
     public function __construct(
 
         \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory,
-        \Magento\Salesrule\Model\CouponFactory $couponFactory,
+        \Magento\SalesRule\Model\CouponFactory $couponFactory,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Salesrule\Model\RuleFactory $ruleFactory,
+        \Magento\SalesRule\Model\RuleFactory $ruleFactory,
         array $data = []
     ) {
         $this->helper = $helper;
