@@ -22,7 +22,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             //remove quote table
             $connection->dropTable($setup->getTable('email_quote'));
         }
-        if (version_compare($context->getVersion(), '2.0.4') < 0) {
+        if (version_compare($context->getVersion(), '2.0.6') < 0) {
             //modify email_campaign table
             $campaignTable = $setup->getTable('email_campaign');
 
@@ -64,6 +64,13 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             //remove column
             $connection->dropColumn($campaignTable, 'is_sent');
+
+            //add index
+            $connection->addIndex(
+                $campaignTable,
+                $setup->getIdxName($campaignTable, ['send_status']),
+                ['send_status']
+            );
         }
         $setup->endSetup();
     }
