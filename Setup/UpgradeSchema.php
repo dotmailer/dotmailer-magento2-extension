@@ -22,7 +22,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             //remove quote table
             $connection->dropTable($setup->getTable('email_quote'));
         }
-        if (version_compare($context->getVersion(), '2.0.6') < 0) {
+        if (version_compare($context->getVersion(), '2.0.6', '<')) {
             //modify email_campaign table
             $campaignTable = $setup->getTable('email_campaign');
 

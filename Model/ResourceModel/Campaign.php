@@ -23,7 +23,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function setMessage($ids, $message, $sendId = false)
     {
         try {
-            $ids = implode("', '", $ids);
+            $ids = implode("','", $ids);
             if ($sendId) {
                 $map = 'send_id';
             } else {

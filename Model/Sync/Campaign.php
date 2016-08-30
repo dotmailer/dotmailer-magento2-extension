@@ -188,7 +188,7 @@ class Campaign
     protected function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
     {
         $emailCollection = $this->_campaignCollection->create()
-            ->addFieldToFilter('send_status', ['eq' => $sendStatus])
+            ->addFieldToFilter('send_status', $sendStatus)
             ->addFieldToFilter('campaign_id', ['notnull' => true])
             ->addFieldToFilter('store_id', ['in' => $storeIds]);
 
