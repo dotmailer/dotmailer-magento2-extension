@@ -157,9 +157,9 @@ class Order
             $orderData->getCreatedAt(), \Zend_Date::ISO_8601
         );
         $this->purchaseDate = $createdAt->toString(\Zend_Date::ISO_8601);
-
         $this->deliveryMethod = $orderData->getShippingDescription();
-        $this->deliveryTotal = (float)$orderData->getShippingAmount();
+        $this->deliveryTotal = (float)number_format(
+            $orderData->getShippingAmount(), 2, '.', '');
         $this->currency = $orderData->getStoreCurrencyCode();
 
         if ($payment = $orderData->getPayment()) {
