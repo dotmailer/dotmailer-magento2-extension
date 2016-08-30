@@ -1301,4 +1301,30 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         return $response;
     }
+
+    /**
+     * Gets the send status using send ID.
+     *
+     * @param $id
+     * @return object
+     */
+    public function getSendStatus($id)
+    {
+        $url = $this->_apiEndpoint . self::REST_CAMPAIGN_SEND . '/' . $id;
+        $this->setUrl($url)
+            ->setVerb('GET');
+        $response = $this->execute();
+        //log error
+        if (isset($response->message)
+            && !in_array(
+                $response->message, $this->exludeMessages
+            )
+        ) {
+            $message = 'GETS THE SEND STATUS USING SEND ID: '
+                . $response->message;
+            $this->_helper->log($message);
+
+        }
+        return $response;
+    }
 }

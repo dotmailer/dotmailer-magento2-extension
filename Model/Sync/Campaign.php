@@ -72,6 +72,9 @@ class Campaign
     public function sendCampaigns()
     {
         foreach ($this->_storeManager->getWebsites(true) as $website) {
+            //check send status for processing
+            $this->_checkSendStatus($website);
+            //start send process
             $storeIds = $this->_websiteFactory->create()->load($website->getId())->getStoreIds();
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = [];
@@ -88,12 +91,12 @@ class Campaign
                     //@codingStandardsIgnoreStart
                     if (!$campaignId) {
                         $campaign->setMessage('Missing campaign id: ' . $campaignId)
-                            ->setIsSent(1)
+                            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
                             ->save();
                         continue;
                     } elseif (!$email) {
-                        $campaign->setMessage('Missing email : ' . $email)
-                            ->setIsSent(1)
+                        $campaign->setMessage('Missing email')
+                            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
                             ->save();
                         continue;
                     }
@@ -139,9 +142,11 @@ class Campaign
                                 }
                             }
                             $campaignsToSend[$campaignId]['contacts'][] = $contactId;
+                            $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
                         } else {
-                            //update the failed to send email message error message from post contact
-                            $campaign->setContactMessage($contactId)->setIsSent(1)
+                            //update the failed to send email message error message
+                            $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
+                                ->setMessage('contact id returned is not numeric for email ' . $email)
                                 ->save();
                         }
                     } catch (\Exception $e) {
@@ -160,14 +165,12 @@ class Campaign
                     );
                     if (isset($response->message)) {
                         //update  the failed to send email message
-                        $this->_campaignResourceModel->setMessage($campaignId, $response->message);
+                        $this->_campaignResourceModel->setMessage($data['ids'], $response->message);
+                    } elseif (isset($response->id)) {
+                        $this->_campaignResourceModel->setProcessing($campaignId, $response->id);
                     } else {
-                        //Set sent with/without send id
-                        if (isset($response->id)) {
-                            $this->_campaignResourceModel->setSent($campaignId, $response->id);
-                        } else {
-                            $this->_campaignResourceModel->setSent($campaignId);
-                        }
+                        //update  the failed to send email message
+                        $this->_campaignResourceModel->setMessage($data['ids'], 'No send id returned.');
                     }
                 }
             }
@@ -175,21 +178,58 @@ class Campaign
     }
 
     /**
-     * Get pending campaigns.
+     * Get campaign collection
      *
      * @param $storeIds
+     * @param $sendStatus
+     * @param $sendIdCheck
      * @return mixed
      */
-    protected function _getEmailCampaigns($storeIds)
+    protected function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
     {
         $emailCollection = $this->_campaignCollection->create()
-            ->addFieldToFilter('is_sent', ['null' => true])
+            ->addFieldToFilter('send_status', ['eq' => $sendStatus])
             ->addFieldToFilter('campaign_id', ['notnull' => true])
             ->addFieldToFilter('store_id', ['in' => $storeIds]);
+
+        //check for send id
+        if ($sendIdCheck) {
+            $emailCollection->addFieldToFilter('send_id', ['notnull' => true])
+                ->getSelect()
+                ->group('send_id');
+        } else {
+            $emailCollection->getSelect()
+                ->order('campaign_id');
+        }
+
         $emailCollection->getSelect()
-            ->order('campaign_id')
             ->limit(self::SEND_EMAIL_CONTACT_LIMIT);
 
         return $emailCollection;
+    }
+
+    /**
+     * Check send status
+     *
+     * @param $website
+     */
+    private function _checkSendStatus($website)
+    {
+        $storeIds = $this->_websiteFactory->create()->load($website->getId())->getStoreIds();
+        $campaigns = $this->_getEmailCampaigns(
+            $storeIds,
+            \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
+            true
+        );
+        foreach ($campaigns as $campaign) {
+            $client = $this->_helper->getWebsiteApiClient($website);
+            $response = $client->getSendStatus($campaign->getSendId());
+            if (isset($response->message)) {
+                //update  the failed to send email message
+                $this->_campaignResourceModel->setMessage([$campaign->getSendId()], $response->message);
+            } elseif ($response->status == 'Sent') {
+                $this->_campaignResourceModel->setSent($campaign->getSendId());
+            }
+        }
     }
 }

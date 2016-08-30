@@ -15,22 +15,29 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set error message
      *
-     * @param $campaignId
+     * @param $ids
      * @param $message
+     * @param $sendId
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setMessage($campaignId, $message)
+    public function setMessage($ids, $message, $sendId = false)
     {
         try {
+            $ids = implode("', '", $ids);
+            if ($sendId) {
+                $map = 'send_id';
+            } else {
+                $map = 'id';
+            }
             $conn = $this->getConnection();
             $conn->update(
                 $this->getMainTable(),
                 [
                     'message' => $message,
-                    'is_sent' => 1,
+                    'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
                     'sent_at' => time()
                 ],
-                ['campaign_id = ?' => $campaignId]
+                ["$map in ('$ids')"]
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
@@ -40,20 +47,41 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set sent
      *
-     * @param $campaignId
-     * @param bool $sendId
+     * @param $sendId
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setSent($campaignId, $sendId = false)
+    public function setSent($sendId)
     {
         try {
             $bind = [
-                'is_sent' => 1,
+                'send_status' => \Dotdigitalgroup\Email\Model\Campaign::SENT,
                 'sent_at' => time()
             ];
-            if ($sendId) {
-                $bind['send_id'] = $sendId;
-            }
+            $conn = $this->getConnection();
+            $conn->update(
+                $this->getMainTable(),
+                $bind,
+                ['send_id = ?' => $sendId]
+            );
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+        }
+    }
+
+    /**
+     * Set processing
+     *
+     * @param $campaignId
+     * @param $sendId
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function setProcessing($campaignId, $sendId)
+    {
+        try {
+            $bind = [
+                'send_status' => \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
+                'send_id' => $sendId
+            ];
             $conn = $this->getConnection();
             $conn->update(
                 $this->getMainTable(),
