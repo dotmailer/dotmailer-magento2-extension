@@ -86,7 +86,7 @@ class Order
      */
     public $orderStatus;
     /**
-     * @var \Magento\Framework\Stdlib\Datetime
+     * @var \Magento\Framework\Stdlib\DateTime
      */
     protected $_datetime;
     /**
@@ -119,7 +119,7 @@ class Order
      * @param \Magento\Customer\Model\CustomerFactory                                  $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                       $helperData
      * @param \Magento\Store\Model\StoreManagerInterface                               $storeManagerInterface
-     * @param \Magento\Framework\Stdlib\Datetime                                       $datetime
+     * @param \Magento\Framework\Stdlib\DateTime                                       $datetime
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
@@ -128,7 +128,7 @@ class Order
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Stdlib\Datetime $datetime
+        \Magento\Framework\Stdlib\DateTime $datetime
     ) {
         $this->_setFactory = $setFactory;
         $this->_attributeCollection = $attributeCollection;

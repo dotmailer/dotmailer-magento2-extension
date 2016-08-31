@@ -78,7 +78,7 @@ class Review
      * @param \Magento\Review\Model\ReviewFactory                                 $reviewFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                  $data
      * @param \Magento\Framework\App\ResourceConnection                           $resource
-     * @param \Magento\Framework\Stdlib\Datetime                                  $datetime
+     * @param \Magento\Framework\Stdlib\DateTime                                  $datetime
      * @param \Magento\Review\Model\Rating\Option\Vote                            $vote
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory        $mageReviewCollection
      */
@@ -92,7 +92,7 @@ class Review
         \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Framework\Stdlib\Datetime $datetime,
+        \Magento\Framework\Stdlib\DateTime $datetime,
         \Magento\Review\Model\Rating\Option\Vote $vote,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
     ) {
@@ -271,7 +271,7 @@ class Review
             $write = $coreResource->getConnection('core_write');
             $tableName = $coreResource->getTableName('email_review');
             $ids = implode(', ', $ids);
-            $now = new \Datetime();
+            $now = new \DateTime();
             $nowDate = $this->_dateTime->formatDate($now->getTimestamp());
             $write->update(
                 $tableName,
