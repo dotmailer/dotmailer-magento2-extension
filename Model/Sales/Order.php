@@ -62,7 +62,7 @@ class Order
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\Stdlib\Datetime $datetime
+     * @param \Magento\Framework\Stdlib\DateTime $datetime
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
@@ -72,7 +72,7 @@ class Order
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Stdlib\Datetime $datetime,
+        \Magento\Framework\Stdlib\DateTime $datetime,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->_quoteCollection = $quoteCollection;
