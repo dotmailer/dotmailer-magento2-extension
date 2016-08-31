@@ -170,9 +170,7 @@ class Order
         /*
          * custom order attributes
          */
-        $website = $this->_storeManager->getStore(
-            $orderData->getStore()
-        )->getWebsite();
+        $website = $this->_storeManager->getStore($orderData->getStore())->getWebsite();
 
         $customAttributes
             = $this->_helper->getConfigSelectedCustomOrderAttributes(
@@ -329,7 +327,7 @@ class Order
                 $attributeSetName = $this->_setFactory->create()
                     ->load($productModel->getAttributeSetId())
                     ->getAttributeSetName();
-                $this->products[] = [
+                $productData = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
                     'qty' => (int)number_format(
@@ -343,9 +341,13 @@ class Order
                     'attributes' => $attributes,
                     'custom-options' => $customOptions,
                 ];
+                if (! $customOptions)
+                    unset($productData['custom-options']);
+                $this->products[] = $productData;
+
             } else {
                 // when no product information is available limit to this data
-                $this->products[] = [
+                $productData = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
                     'qty' => (int)number_format(
@@ -359,6 +361,9 @@ class Order
                     'attributes' => [],
                     'custom-options' => $customOptions,
                 ];
+                if (! $customOptions)
+                    unset($productData['custom-options']);
+                $this->products[] = $productData;
             }
         }
 
@@ -566,6 +571,12 @@ class Order
                 '_setFactory',
             ]
         );
+        if (! $this->couponCode)
+            $properties = array_diff($properties, ['couponCode']);
+
+        if (! $this->custom)
+            $properties = array_diff($properties, ['custom']);
+
 
         return $properties;
     }
