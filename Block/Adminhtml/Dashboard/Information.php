@@ -24,6 +24,11 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected $test;
 
+    /**
+     * @var \Magento\Framework\App\ProductMetadata
+     */
+    protected $productMetadata;
+
 
     /**
      * Information constructor.
@@ -39,8 +44,10 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Framework\App\ProductMetadataFactory $productMetadata,
         array $data = []
     ) {
+        $this->productMetadata = $productMetadata->create();
         $this->test = $test;
         $this->data = $helper;
         parent::__construct($context, $backendHelper, $data);
@@ -78,7 +85,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getMagentoVersion()
     {
-        $productMetadata = new \Magento\Framework\App\ProductMetadata();
+        $productMetadata = $this->productMetadata;
 
         return __('ver. %1', $productMetadata->getVersion());
     }
@@ -88,10 +95,9 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getMagentoEdition()
     {
-        $productMetadata = new \Magento\Framework\App\ProductMetadata();
+        $productMetadata = $this->productMetadata;
 
         return $productMetadata->getEdition();
-
     }
 
 
