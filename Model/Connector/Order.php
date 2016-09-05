@@ -319,6 +319,10 @@ class Order
 
                                 $attributes[][$attributeCode]
                                     = $this->_limitLength($value);
+                            } elseif(is_array($value)) { // check for multi select values
+                                $value = implode($value, ', ');
+                                $attributes[][$attributeCode]
+                                    = $this->_limitLength($value);
                             }
                         }
                     }
