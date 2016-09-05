@@ -320,7 +320,7 @@
                 <test_connect></test_connect>
             </oauth>
             <ip_restriction>
-                <ip_addresses>94.143.111.1,94.143.111.2,94.143.111.3,104.208.235.109</ip_addresses>
+                <ip_addresses>94.143.111.1, 94.143.111.2, 94.143.111.3, 104.208.235.109, 52.174.92.164</ip_addresses>
             </ip_restriction>
             <cron_schedules>
                 <importer>*/5 * * * *</importer>
