@@ -594,14 +594,19 @@
                     <label>New Subscriber</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
+                <field id="first_order_automation" translate="label" type="select" sortOrder="25" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
+                    <label>First Customer Order</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
+                </field>
                 <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>New Customer Order</label>
+                    <label>Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
                 <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>New Guest Order</label>
+                    <label>Guest Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
                 <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="0"

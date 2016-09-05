@@ -11,6 +11,7 @@ class Automation
     const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
     const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
     const AUTOMATION_STATUS_PENDING = 'pending';
+    const AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER = 'first_order_automation';
 
     /**
      * @var array
@@ -29,7 +30,9 @@ class Automation
         self::AUTOMATION_TYPE_NEW_WISHLIST =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
         'order_automation_' =>
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
+        self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER
     ];
 
     /**
@@ -258,22 +261,15 @@ class Automation
     {
         switch ($type) {
             case self::AUTOMATION_TYPE_NEW_CUSTOMER :
-                $this->_updateDefaultDatafields($email);
-                break;
             case self::AUTOMATION_TYPE_NEW_SUBSCRIBER :
+            case self::AUTOMATION_TYPE_NEW_WISHLIST :
                 $this->_updateDefaultDatafields($email);
                 break;
             case self::AUTOMATION_TYPE_NEW_ORDER :
-                $this->_updateNewOrderDatafields();
-                break;
-            case self::AUTOMATION_TYPE_NEW_GUEST_ORDER:
-                $this->_updateNewOrderDatafields();
-                break;
             case self::AUTOMATION_TYPE_NEW_REVIEW :
+            case self::AUTOMATION_TYPE_NEW_GUEST_ORDER :
+            case self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER :
                 $this->_updateNewOrderDatafields();
-                break;
-            case self::AUTOMATION_TYPE_NEW_WISHLIST:
-                $this->_updateDefaultDatafields($email);
                 break;
             default:
                 $this->_updateDefaultDatafields($email);

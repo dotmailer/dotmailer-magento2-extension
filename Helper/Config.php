@@ -189,6 +189,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW = 'connector_automation/visitor_automation/review_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST = 'connector_automation/visitor_automation/wishlist_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS = 'connector_automation/order_status_automation/program';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER = 'connector_automation/visitor_automation/first_order_automation';
 
     /**
      * ROI SECTION.
