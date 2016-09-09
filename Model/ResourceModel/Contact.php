@@ -115,4 +115,14 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
     }
+
+    public function insert($data)
+    {
+        try {
+            $write = $this->getConnection();
+            $write->insertMultiple($this->getMainTable(), $data);
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+        }
+    }
 }
