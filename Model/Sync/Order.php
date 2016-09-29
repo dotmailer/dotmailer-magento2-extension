@@ -313,7 +313,9 @@ class Order
                 /**
                  * Add guest to contacts table.
                  */
-                if ($order->getCustomerIsGuest()) {
+                if ($order->getCustomerIsGuest()
+                    && $order->getCustomerEmail()
+                ) {
                     //add guest to the list
                     $this->_guests[] = [
                         'email' => $order->getCustomerEmail(),
