@@ -16,7 +16,7 @@ class Automation
     /**
      * @var array
      */
-    public $automationTypes = array(
+    public $automationTypes = [
         self::AUTOMATION_TYPE_NEW_CUSTOMER =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER,
         self::AUTOMATION_TYPE_NEW_SUBSCRIBER =>
@@ -29,7 +29,7 @@ class Automation
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW,
         self::AUTOMATION_TYPE_NEW_WISHLIST =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST
-    );
+    ];
 
     /**
      * @var int
