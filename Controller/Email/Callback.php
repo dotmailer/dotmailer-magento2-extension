@@ -66,20 +66,6 @@ class Callback extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $collection = $this->_customerFactory->create()->getCollection()
-            ->addFieldToSelect('*')
-         //  ->addFieldtoFilter('disable_auto_group_change', '0')
-           ->addFieldtoFilter('is_active', '0')
-        ;
-
-//var_dump($collection->getColumnValues('is_active'));die;
-        foreach ($collection as $item) {
-            var_dump($item->getData());
-        }
-die;
-        var_dump((string)$collection->getSelect());die;
-        return $collection->getData();
-
         $code = $this->getRequest()->getParam('code', false);
         $userId = $this->getRequest()->getParam('state');
         //load admin user

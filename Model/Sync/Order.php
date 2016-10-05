@@ -47,7 +47,7 @@ class Order
     protected $_resource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
     protected $_contactFactory;
     /**
@@ -70,19 +70,23 @@ class Order
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     protected $_importerFactory;
+    /**
+     * @var array
+     */
+    protected $_guests = [];
 
     /**
      * Order constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory          $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                    $helper
-     * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory   $connectorOrderFactory
-     * @param \Dotdigitalgroup\Email\Model\OrderFactory             $orderFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory           $contactFactory
-     * @param \Magento\Framework\App\ResourceConnection             $resource
-     * @param \Magento\Sales\Model\OrderFactory                     $salesOrderFactory
-     * @param \Magento\Store\Model\StoreManagerInterface            $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory
+     * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -90,7 +94,7 @@ class Order
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
         \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -183,6 +187,14 @@ class Order
                 }
             }
             unset($this->accounts[$account->getApiUsername()]);
+        }
+
+        /**
+         * Add guest to contacts table.
+         */
+        if (!empty($this->_guests)) {
+            $this->_contactFactory->create()
+                ->insert($this->_guests);
         }
 
         if ($this->_countOrders) {
@@ -301,10 +313,16 @@ class Order
                 /**
                  * Add guest to contacts table.
                  */
-                if ($order->getCustomerIsGuest()) {
-                    $this->_createGuestContact(
-                        $order->getCustomerEmail(), $websiteId, $storeId
-                    );
+                if ($order->getCustomerIsGuest()
+                    && $order->getCustomerEmail()
+                ) {
+                    //add guest to the list
+                    $this->_guests[] = [
+                        'email' => $order->getCustomerEmail(),
+                        'website_id' => $websiteId,
+                        'store_id' => $storeId,
+                        'is_guest' => 1
+                    ];
                 }
                 if ($order->getId()) {
                     $connectorOrder = $this->_connectorOrderFactory->create();
@@ -322,85 +340,6 @@ class Order
         }
 
         return $orders;
-    }
-
-    /**
-     * Create a guest contact.
-     *
-     * @param $email
-     * @param $websiteId
-     * @param $storeId
-     *
-     * @return bool
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    protected function _createGuestContact($email, $websiteId, $storeId)
-    {
-        try {
-            $client = false;
-            if ($this->_helper->isEnabled($websiteId)) {
-                $client = $this->_helper->getWebsiteApiClient($websiteId);
-            }
-
-            //no api credentials or the guest has no been mapped
-            if (!$client || !$addressBookId = $this->_helper->getGuestAddressBook($websiteId)
-            ) {
-                return false;
-            }
-
-            $contactModel = $this->_contactFactory->create()
-                ->loadByCustomerEmail($email, $websiteId);
-
-            //check if contact exists, create if not
-            $contactApi = $client->postContacts($email);
-
-            //contact is suppressed cannot add to address book, mark as suppressed.
-            if (isset($contactApi->message) && $contactApi->message
-                == 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED'
-            ) {
-
-                //mark new contacts as guest.
-                if ($contactModel->isObjectNew()) {
-                    $contactModel->setIsGuest(1);
-                }
-                $contactModel->setSuppressed(1);
-                $contactModel->save();
-
-                return false;
-            }
-
-            //add guest to address book
-            $response = $client->postAddressBookContacts(
-                $addressBookId, $contactApi
-            );
-            //set contact as was found as guest and
-            $contactModel->setIsGuest(1)
-                ->setStoreId($storeId)
-                ->setEmailImported(1);
-            //contact id
-            if (isset($contactApi->id)) {
-                $contactModel->setContactId();
-            }
-            //mark the contact as surpressed
-            if (isset($response->message)
-                && $response->message
-                == 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED'
-            ) {
-                $contactModel->setSuppressed(1);
-            }
-            //save
-            $contactModel->save();
-
-            $this->_helper->log(
-                '-- guest found : ' . $email . ' website : ' . $websiteId
-                . ' ,store : ' . $storeId
-            );
-        } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
-        }
-
-        return true;
     }
 
     /**

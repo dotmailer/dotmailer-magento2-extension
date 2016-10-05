@@ -77,7 +77,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
             $generator->setUsesPerCoupon(1);
             $generator->setDash(3);
             $generator->setLength(9);
-            $generator->setPrefix('');
+            $generator->setPrefix('DOT-');
             $generator->setSuffix('');
             //set the generation settings
             $rule->setCouponCodeGenerator($generator);
@@ -93,12 +93,34 @@ class Coupon extends \Magento\Framework\View\Element\Template
                 ->loadByCode($couponCode);
             $couponModel->setType(
                 \Magento\SalesRule\Model\Rule::COUPON_TYPE_NO_COUPON
-            );
+            )->setGeneratedByDotmailer(1);
+
+            if ($this->validateDate($params['expiration_date'])) {
+                $couponModel->setExpirationDate($params['expiration_date']);
+            } elseif ($rule->getToDate()) {
+                $couponModel->setExpirationDate($rule->getToDate());
+            }
+
             $couponModel->save();
 
             return $couponCode;
         }
 
+        return false;
+    }
+
+    /**
+     * Validate date
+     *
+     * @param $date
+     * @return bool
+     */
+    protected function validateDate($date)
+    {
+        $validator = new \Zend_Validate_Date();
+        if (isset($date) && $date != '' && $validator->isValid($date)) {
+            return true;
+        }
         return false;
     }
 
