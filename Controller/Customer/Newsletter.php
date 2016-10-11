@@ -136,13 +136,13 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                         }
                         if ($processedFields[$key] == 'Date') {
                             $date = new \Zend_Date($value, 'Y/M/d');
-                            $dataFields[$key] = $date->toString(
+                            $paramDataFields[$key] = $date->toString(
                                 \Zend_Date::ISO_8601
                             );
                         }
                         $data[] = [
                             'Key' => $key,
-                            'Value' => $dataFields[$key],
+                            'Value' => $paramDataFields[$key],
                         ];
                     }
                 }
