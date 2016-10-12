@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="page.main.actions">
+            <block class="Magento\Backend\Block\Store\Switcher" name="adminhtml.report.product.downloads.store_switcher" template="Dotdigitalgroup_Email::store/switcher.phtml">
+                <arguments>
+                    <argument name="switch_websites" xsi:type="string">1</argument>
+                    <argument name="switch_store_groups" xsi:type="string">0</argument>
+                    <argument name="switch_store_views" xsi:type="string">0</argument>
+                    <argument name="default_selection_name" xsi:type="string" translate="true">All Websites</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="content">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard" name="dotdigitalgroup.email.dashboard.grid.container">
+                <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information" name="dotdigitalgroup.email.dashboard_left" template="dashboard/information.phtml">
+                    <block class="Magento\Store\Block\Switcher" name="store_language" as="store_language" template="switch/languages.phtml"/>
+                </block>
+                <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information" name="dotdigitalgroup.email.dashboard_right" template="dashboard/connector.phtml"/>
+            </block>
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Configuration" name="dotdigitalgroup.email.dashboard_config"/>
+        </referenceContainer>
+    </body>
+</page>

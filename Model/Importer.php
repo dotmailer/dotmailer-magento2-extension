@@ -401,9 +401,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         if ($items = $this->_getImportingItems($this->_bulkSyncLimit)) {
             foreach ($items as $item) {
                 $websiteId = $item->getWebsiteId();
-                $client = $this->_helper->getWebsiteApiClient(
-                    $websiteId
-                );
+                $client = false;
+                if ($this->_helper->isEnabled($websiteId)) {
+                    $client = $this->_helper->getWebsiteApiClient(
+                        $websiteId
+                    );
+                }
                 if ($client) {
                     try {
                         if (

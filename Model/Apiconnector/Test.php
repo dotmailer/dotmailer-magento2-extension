@@ -30,15 +30,19 @@ class Test
      */
     public function validate($apiUsername, $apiPassword)
     {
+        if (!$this->_helper->isEnabled()) {
+            return false;
+        }
+
         $client = $this->_helper->getWebsiteApiClient();
         if ($apiUsername && $apiPassword) {
             $client->setApiUsername($apiUsername)
                 ->setApiPassword($apiPassword);
 
             $accountInfo = $client->getAccountInfo();
+            
             if (isset($accountInfo->message)) {
-                $this->_helper->log('VALIDATION ERROR :  '
-                    . $accountInfo->message);
+                $this->_helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
 
                 return false;
             }

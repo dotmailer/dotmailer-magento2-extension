@@ -11,11 +11,12 @@ class Automation
     const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
     const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
     const AUTOMATION_STATUS_PENDING = 'pending';
+    const ORDER_STATUS_AUTOMATION = 'order_automation_';
 
     /**
      * @var array
      */
-    public $automationTypes = array(
+    public $automationTypes = [
         self::AUTOMATION_TYPE_NEW_CUSTOMER =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER,
         self::AUTOMATION_TYPE_NEW_SUBSCRIBER =>
@@ -27,10 +28,8 @@ class Automation
         self::AUTOMATION_TYPE_NEW_REVIEW =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW,
         self::AUTOMATION_TYPE_NEW_WISHLIST =>
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
-        'order_automation_' =>
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS
-    );
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST
+    ];
 
     /**
      * @var int
@@ -136,28 +135,50 @@ class Automation
      */
     public function sync()
     {
+        $automationOrderStatusCollection = $this->_automationFactory->create()
+            ->addFieldToFilter(
+                'enrolment_status', self::AUTOMATION_STATUS_PENDING
+            );
+        $automationOrderStatusCollection
+            ->addFieldToFilter(
+                'automation_type',
+                ['like' => '%' . self::ORDER_STATUS_AUTOMATION . '%']
+            )->getSelect()->group('automation_type');
+        $statusTypes
+            = $automationOrderStatusCollection->getColumnValues('automation_type');
+        foreach ($statusTypes as $type) {
+            $this->automationTypes[$type]
+                = \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS;
+        }
         //send the campaign by each types
         foreach ($this->automationTypes as $type => $config) {
             $contacts = [];
             $websites = $this->_helper->getWebsites(true);
             foreach ($websites as $website) {
-                $contacts[$website->getId()]['programId'] = $this->_helper->getWebsiteConfig($config, $website);
+                if (strpos($type, self::ORDER_STATUS_AUTOMATION) !== false) {
+                    $configValue
+                        = unserialize($this->_helper->getWebsiteConfig($config, $website));
+                    if (is_array($configValue) && !empty($configValue)) {
+                        foreach ($configValue as $one) {
+                            if (strpos($type, $one['status']) !== false) {
+                                $contacts[$website->getId()]['programId']
+                                    = $one['automation'];
+                            }
+                        }
+                    }
+                } else {
+                    $contacts[$website->getId()]['programId']
+                        = $this->_helper->getWebsiteConfig($config, $website);
+                }
             }
             //get collection from type
-            $automationCollection = $this->_automationFactory->create()
-                ->addFieldToFilter(
-                    'enrolment_status', self::AUTOMATION_STATUS_PENDING
-                );
-            if ($type == 'order_automation_') {
-                $automationCollection->addFieldToFilter(
-                    'automation_type',
-                    array('like' => '%' . $type . '%')
-                );
-            } else {
-                $automationCollection->addFieldToFilter(
-                    'automation_type', $type
-                );
-            }
+            $automationCollection = $this->_automationFactory->create();
+            $automationCollection->addFieldToFilter(
+                'enrolment_status', self::AUTOMATION_STATUS_PENDING
+            );
+            $automationCollection->addFieldToFilter(
+                'automation_type', $type
+            );
             //limit because of the each contact request to get the id
             $automationCollection->getSelect()->limit($this->limit);
             foreach ($automationCollection as $automation) {
@@ -167,6 +188,11 @@ class Automation
                 $this->typeId = $automation->getTypeId();
                 $this->websiteId = $automation->getWebsiteId();
                 $this->storeName = $automation->getStoreName();
+                $typeDouble = $type;
+                //Set type to generic automation status if type contains constant value
+                if (strpos($typeDouble, self::ORDER_STATUS_AUTOMATION) !== false) {
+                    $typeDouble = self::ORDER_STATUS_AUTOMATION;
+                }
                 $contactId = $this->_helper->getContactId(
                     $email, $this->websiteId
                 );
@@ -174,7 +200,7 @@ class Automation
                 if ($contactId) {
                     //need to update datafields
                     $this->updateDatafieldsByType(
-                        $this->automationType, $email
+                        $typeDouble, $email
                     );
                     $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contactId;
                 } else {
@@ -252,22 +278,15 @@ class Automation
     {
         switch ($type) {
             case self::AUTOMATION_TYPE_NEW_CUSTOMER :
-                $this->_updateDefaultDatafields($email);
-                break;
             case self::AUTOMATION_TYPE_NEW_SUBSCRIBER :
+            case self::AUTOMATION_TYPE_NEW_WISHLIST :
                 $this->_updateDefaultDatafields($email);
                 break;
             case self::AUTOMATION_TYPE_NEW_ORDER :
-                $this->_updateNewOrderDatafields();
-                break;
-            case self::AUTOMATION_TYPE_NEW_GUEST_ORDER:
-                $this->_updateNewOrderDatafields();
-                break;
+            case self::AUTOMATION_TYPE_NEW_GUEST_ORDER :
             case self::AUTOMATION_TYPE_NEW_REVIEW :
+            case self::ORDER_STATUS_AUTOMATION :
                 $this->_updateNewOrderDatafields();
-                break;
-            case self::AUTOMATION_TYPE_NEW_WISHLIST:
-                $this->_updateDefaultDatafields($email);
                 break;
             default:
                 $this->_updateDefaultDatafields($email);
@@ -390,6 +409,8 @@ class Automation
      *
      * @param $contacts
      * @param $websiteId
+     *
+     * @return mixed
      */
     public function sendContactsToAutomation($contacts, $websiteId)
     {

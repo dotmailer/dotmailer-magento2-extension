@@ -60,6 +60,7 @@
                 <guest_order_automation>0</guest_order_automation>
                 <review_automation>0</review_automation>
                 <wishlist_automation>0</wishlist_automation>
+                <first_order_automation>0</first_order_automation>
             </visitor_automation>
             <order_status_automation>
                 <status_to_automation></status_to_automation>
@@ -180,7 +181,7 @@
                 <product_link_font_size><![CDATA[12px]]></product_link_font_size>
                 <product_link_style>0</product_link_style>
                 <font><![CDATA[Arial, Helvetica, sans-serif;]]></font>
-                <color><![CDATA[#000000]]></color>
+                <color><![CDATA[#FFFFFF]]></color>
                 <other_color><![CDATA[#000000]]></other_color>
                 <other_font_size><![CDATA[12px]]></other_font_size>
                 <other_font_style>0</other_font_style>
@@ -320,7 +321,7 @@
                 <test_connect></test_connect>
             </oauth>
             <ip_restriction>
-                <ip_addresses>94.143.111.1,94.143.111.2,94.143.111.3,104.208.235.109</ip_addresses>
+                <ip_addresses>94.143.111.1, 94.143.111.2, 94.143.111.3, 104.208.235.109, 52.174.92.164</ip_addresses>
             </ip_restriction>
             <cron_schedules>
                 <importer>*/5 * * * *</importer>

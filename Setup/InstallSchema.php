@@ -375,16 +375,16 @@ class InstallSchema implements InstallSchemaInterface
          */
         $select = $installer->getConnection()->select()
             ->from(
-                array('customer' => $installer->getTable('customer_entity')),
-                array(
+                ['customer' => $installer->getTable('customer_entity')],
+                [
                     'customer_id' => 'entity_id',
                     'email',
                     'website_id',
                     'store_id'
-                )
+                ]
             );
 
-        $insertArray = array('customer_id', 'email', 'website_id', 'store_id');
+        $insertArray = ['customer_id', 'email', 'website_id', 'store_id'];
         $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_contact'), $insertArray, false
         );
@@ -393,52 +393,73 @@ class InstallSchema implements InstallSchemaInterface
         // subscribers that are not customers
         $select = $installer->getConnection()->select()
             ->from(
-                array(
+                [
                     'subscriber' => $installer->getTable(
                         'newsletter_subscriber'
                     )
-                ),
-                array(
+                ],
+                [
                     'email' => 'subscriber_email',
                     'col2' => new \Zend_Db_Expr('1'),
                     'col3' => new \Zend_Db_Expr('1'),
                     'store_id',
-                )
+                ]
             )
             ->where('customer_id =?', 0)
             ->where('subscriber_status =?', 1);
-        $insertArray = array(
+        $insertArray = [
             'email',
             'is_subscriber',
             'subscriber_status',
             'store_id'
-        );
+        ];
         $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_contact'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
 
+        //Update contacts with customers that are subscribers
+        $select = $installer->getConnection()->select();
+
+        //join
+        $select->joinLeft(
+            ['ns' => $installer->getTable('newsletter_subscriber')],
+            "dc.customer_id = ns.customer_id",
+            [
+                'is_subscriber' => new \Zend_Db_Expr('1'),
+                'subscriber_status' => new \Zend_Db_Expr('1')
+            ]
+        )->where('ns.subscriber_status =?', 1);
+
+        //update query from select
+        $updateSql = $select->crossUpdateFromSelect(
+            ['dc' => $installer->getTable('email_contact')]
+        );
+
+        //run query
+        $installer->getConnection()->query($updateSql);
+
         //Insert and populate email order the table
         $select = $installer->getConnection()->select()
             ->from(
                 $installer->getTable('sales_order'),
-                array(
+                [
                     'order_id' => 'entity_id',
                     'quote_id',
                     'store_id',
                     'created_at',
                     'updated_at',
                     'order_status' => 'status'
-                )
+                ]
             );
-        $insertArray = array(
+        $insertArray = [
             'order_id',
             'quote_id',
             'store_id',
             'created_at',
             'updated_at',
             'order_status'
-        );
+        ];
         $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_order'), $insertArray, false
         );
@@ -477,12 +498,12 @@ class InstallSchema implements InstallSchemaInterface
 
         $select = $installer->getConnection()->select();
         $select->joinLeft(
-            array('sfo' => $installer->getTable('sales_order')),
+            ['sfo' => $installer->getTable('sales_order')],
             'eo.order_id = sfo.entity_id',
-            array('order_status' => 'sfo.status')
+            ['order_status' => 'sfo.status']
         );
         $updateSql = $select->crossUpdateFromSelect(
-            array('eo' => $installer->getTable('email_order'))
+            ['eo' => $installer->getTable('email_order')]
         );
         $installer->getConnection()->query($updateSql);
 
@@ -560,31 +581,31 @@ class InstallSchema implements InstallSchemaInterface
 
         //populate review table.
         $inCond = $installer->getConnection()->prepareSqlCondition(
-            'review_detail.customer_id', array('notnull' => true)
+            'review_detail.customer_id', ['notnull' => true]
         );
         $select = $installer->getConnection()->select()
             ->from(
-                array('review' => $installer->getTable('review')),
-                array(
+                ['review' => $installer->getTable('review')],
+                [
                     'review_id' => 'review.review_id',
                     'created_at' => 'review.created_at'
-                )
+                ]
             )
             ->joinLeft(
-                array('review_detail' => $installer->getTable('review_detail')),
+                ['review_detail' => $installer->getTable('review_detail')],
                 'review_detail.review_id = review.review_id',
-                array(
+                [
                     'store_id' => 'review_detail.store_id',
                     'customer_id' => 'review_detail.customer_id'
-                )
+                ]
             )
             ->where($inCond);
-        $insertArray = array(
+        $insertArray = [
             'review_id',
             'created_at',
             'store_id',
             'customer_id'
-        );
+        ];
         $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_review'), $insertArray, false
         );
@@ -681,20 +702,20 @@ class InstallSchema implements InstallSchemaInterface
         //wishlist populate
         $select = $installer->getConnection()->select()
             ->from(
-                array('wishlist' => $installer->getTable('wishlist')),
-                array(
+                ['wishlist' => $installer->getTable('wishlist')],
+                [
                     'wishlist_id',
                     'customer_id',
                     'created_at' => 'updated_at'
-                )
+                ]
             )->joinLeft(
-                array('ce' => $installer->getTable('customer_entity')),
+                ['ce' => $installer->getTable('customer_entity')],
                 'wishlist.customer_id = ce.entity_id',
-                array('store_id')
+                ['store_id']
             )->joinInner(
-                array('wi' => $installer->getTable('wishlist_item')),
+                ['wi' => $installer->getTable('wishlist_item')],
                 'wishlist.wishlist_id = wi.wishlist_id',
-                array('item_count' => 'count(wi.wishlist_id)')
+                ['item_count' => 'count(wi.wishlist_id)']
             )->group('wi.wishlist_id');
 
         $insertArray = [
@@ -793,22 +814,22 @@ class InstallSchema implements InstallSchemaInterface
         $select = $installer->getConnection()->select()
             ->from(
                 $installer->getTable('quote'),
-                array(
+                [
                     'quote_id' => 'entity_id',
                     'store_id',
                     'customer_id',
                     'created_at'
-                )
+                ]
             )
             ->where('customer_id !=?', null)
             ->where('is_active =?', 1)
             ->where('items_count >?', 0);
-        $insertArray = array(
+        $insertArray = [
             'quote_id',
             'store_id',
             'customer_id',
             'created_at'
-        );
+        ];
         $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_quote'), $insertArray, false
         );
@@ -881,17 +902,17 @@ class InstallSchema implements InstallSchemaInterface
         //Populate catalog table
         $select = $installer->getConnection()->select()
             ->from(
-                array(
+                [
                     'catalog' => $installer->getTable(
                         'catalog_product_entity'
                     )
-                ),
-                array(
+                ],
+                [
                     'product_id' => 'catalog.entity_id',
                     'created_at' => 'catalog.created_at'
-                )
+                ]
             );
-        $insertArray = array('product_id', 'created_at');
+        $insertArray = ['product_id', 'created_at'];
         $sqlQuery = $select->insertFromSelect(
             $installer->getTable('email_catalog'), $insertArray, false
         );
@@ -960,7 +981,7 @@ class InstallSchema implements InstallSchemaInterface
         $types = ObjectManager::getInstance()->create(
             'Magento\Catalog\Model\Product\Type'
         )->toOptionArray();
-        $options = array();
+        $options = [];
         foreach ($types as $type) {
             $options[] = $type['value'];
         }
@@ -969,7 +990,7 @@ class InstallSchema implements InstallSchemaInterface
         $visibilities = ObjectManager::getInstance()->create(
             'Magento\Catalog\Model\Product\Visibility'
         )->toOptionArray();
-        $options = array();
+        $options = [];
         foreach ($visibilities as $visibility) {
             $options[] = $visibility['value'];
         }

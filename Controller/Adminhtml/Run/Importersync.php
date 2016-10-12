@@ -38,8 +38,8 @@ class Importersync extends \Magento\Backend\App\AbstractAction
 
         $this->messageManager->addSuccess($result['message']);
 
-        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
+        $redirectBack = $this->_redirect->getRefererUrl();
 
-        $this->_redirect($redirectUrl);
+        $this->_redirect($redirectBack);
     }
 }

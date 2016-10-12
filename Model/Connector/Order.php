@@ -86,7 +86,7 @@ class Order
      */
     public $orderStatus;
     /**
-     * @var \Magento\Framework\Stdlib\Datetime
+     * @var \Magento\Framework\Stdlib\DateTime
      */
     protected $_datetime;
     /**
@@ -119,7 +119,7 @@ class Order
      * @param \Magento\Customer\Model\CustomerFactory                                  $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                       $helperData
      * @param \Magento\Store\Model\StoreManagerInterface                               $storeManagerInterface
-     * @param \Magento\Framework\Stdlib\Datetime                                       $datetime
+     * @param \Magento\Framework\Stdlib\DateTime                                       $datetime
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
@@ -128,7 +128,7 @@ class Order
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Stdlib\Datetime $datetime
+        \Magento\Framework\Stdlib\DateTime $datetime
     ) {
         $this->_setFactory = $setFactory;
         $this->_attributeCollection = $attributeCollection;
@@ -157,9 +157,9 @@ class Order
             $orderData->getCreatedAt(), \Zend_Date::ISO_8601
         );
         $this->purchaseDate = $createdAt->toString(\Zend_Date::ISO_8601);
-
         $this->deliveryMethod = $orderData->getShippingDescription();
-        $this->deliveryTotal = (float)$orderData->getShippingAmount();
+        $this->deliveryTotal = (float)number_format(
+            $orderData->getShippingAmount(), 2, '.', '');
         $this->currency = $orderData->getStoreCurrencyCode();
 
         if ($payment = $orderData->getPayment()) {
@@ -170,9 +170,7 @@ class Order
         /*
          * custom order attributes
          */
-        $website = $this->_storeManager->getStore(
-            $orderData->getStore()
-        )->getWebsite();
+        $website = $this->_storeManager->getStore($orderData->getStore())->getWebsite();
 
         $customAttributes
             = $this->_helper->getConfigSelectedCustomOrderAttributes(
@@ -321,6 +319,10 @@ class Order
 
                                 $attributes[][$attributeCode]
                                     = $this->_limitLength($value);
+                            } elseif(is_array($value)) { // check for multi select values
+                                $value = implode($value, ', ');
+                                $attributes[][$attributeCode]
+                                    = $this->_limitLength($value);
                             }
                         }
                     }
@@ -329,7 +331,7 @@ class Order
                 $attributeSetName = $this->_setFactory->create()
                     ->load($productModel->getAttributeSetId())
                     ->getAttributeSetName();
-                $this->products[] = [
+                $productData = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
                     'qty' => (int)number_format(
@@ -343,9 +345,13 @@ class Order
                     'attributes' => $attributes,
                     'custom-options' => $customOptions,
                 ];
+                if (! $customOptions)
+                    unset($productData['custom-options']);
+                $this->products[] = $productData;
+
             } else {
                 // when no product information is available limit to this data
-                $this->products[] = [
+                $productData = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
                     'qty' => (int)number_format(
@@ -359,6 +365,9 @@ class Order
                     'attributes' => [],
                     'custom-options' => $customOptions,
                 ];
+                if (! $customOptions)
+                    unset($productData['custom-options']);
+                $this->products[] = $productData;
             }
         }
 
@@ -566,6 +575,12 @@ class Order
                 '_setFactory',
             ]
         );
+        if (! $this->couponCode)
+            $properties = array_diff($properties, ['couponCode']);
+
+        if (! $this->custom)
+            $properties = array_diff($properties, ['custom']);
+
 
         return $properties;
     }

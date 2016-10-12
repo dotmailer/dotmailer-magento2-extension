@@ -15,18 +15,20 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
             $result = true;
             $websiteId = $item->getWebsiteId();
             $email = unserialize($item->getImportData());
-            $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
+            if ($this->_helper->isEnabled($websiteId)) {
+                $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
 
-            if ($this->_client) {
-                $apiContact = $this->_client->postContacts($email);
-                if (!isset($apiContact->message) && isset($apiContact->id)) {
-                    $result = $this->_client->deleteContact($apiContact->id);
-                } elseif (isset($apiContact->message) && !isset($apiContact->id)) {
-                    $result = $apiContact;
-                }
+                if ($this->_client) {
+                    $apiContact = $this->_client->postContacts($email);
+                    if (!isset($apiContact->message) && isset($apiContact->id)) {
+                        $result = $this->_client->deleteContact($apiContact->id);
+                    } elseif (isset($apiContact->message) && !isset($apiContact->id)) {
+                        $result = $apiContact;
+                    }
 
-                if ($result) {
-                    $this->_handleSingleItemAfterSync($item, $result);
+                    if ($result) {
+                        $this->_handleSingleItemAfterSync($item, $result);
+                    }
                 }
             }
         }

@@ -29,6 +29,12 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     const XML_PATH_GUEST_LOSTBASKET_2_CAMPAIGN = 'abandoned_carts/guests/campaign_2';
     const XML_PATH_GUEST_LOSTBASKET_3_CAMPAIGN = 'abandoned_carts/guests/campaign_3';
 
+    //Send Status
+    const PENDING = 0;
+    const PROCESSING = 1;
+    const SENT = 2;
+    const FAILED = 3;
+
     //error messages
     const SEND_EMAIL_CONTACT_ID_MISSING = 'Error : missing contact id - will try later to send ';
 

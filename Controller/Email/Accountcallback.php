@@ -193,7 +193,10 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     protected function _setupDataFields($username, $password)
     {
         $error = false;
-        $apiModel = $this->_helper->getWebsiteApiClient(0, $username, $password);
+        $apiModel = false;
+        if ($this->_helper->isEnabled()) {
+            $apiModel = $this->_helper->getWebsiteApiClient(0, $username, $password);
+        }
         if (!$apiModel) {
             $error = true;
             $this->_helper->log('setupDataFields client is not enabled');
@@ -241,7 +244,10 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             'Magento_Guests' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
         ];
         $error = false;
-        $client = $this->_helper->getWebsiteApiClient(0, $username, $password);
+        $client = false;
+        if ($this->_helper->isEnabled()) {
+            $client = $this->_helper->getWebsiteApiClient(0, $username, $password);
+        }
         if (!$client) {
             $error = true;
             $this->_helper->log('createAddressBooks client is not enabled');

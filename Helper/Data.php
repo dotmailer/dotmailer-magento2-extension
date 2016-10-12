@@ -6,6 +6,9 @@ use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+
+    const MODULE_NAME = 'Dotdigitalgroup_Email';
+    
     /**
      * @var object
      */
@@ -56,11 +59,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $logFileName = 'connector.log';
 
+    /**
+     * @var \Magento\Framework\Module\ModuleListInterface
+     */
+    protected $_moduleInterface;
+
 
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     protected $customerFactory;
+
+    /**
+     * @var \Magento\Cron\Model\ScheduleFactory
+     */
+    protected $_schelduleFactory;
 
     /**
      * Data constructor.
@@ -85,6 +98,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
+        \Magento\Framework\Module\ModuleListInterface $moduleListInterface,
+        \Magento\Cron\Model\ScheduleFactory $schedule,
         \Magento\Store\Model\Store $store
     ) {
         $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/' . $this->logFileName);
@@ -92,12 +107,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $logger->addWriter($writer);
         $this->_connectorLogger = $logger;
         $this->_adapter = $adapter;
+        $this->_schelduleFactory = $schedule;
         $this->_productMetadata = $productMetadata;
         $this->_contactFactory = $contactFactory;
         $this->_resourceConfig = $resourceConfig;
         $this->_storeManager = $storeManager;
         $this->_objectManager = $objectManager;
         $this->customerFactory = $customerFactory;
+        $this->_moduleInterface = $moduleListInterface;
         $this->_store = $store;
 
         parent::__construct($context);
@@ -113,13 +130,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isEnabled($website = 0)
     {
         $website = $this->_storeManager->getWebsite($website);
-        $enabled = $this->scopeConfig->getValue(
+        $enabled = $this->scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $website
         );
+        $apiUsername = $this->getApiUsername($website);
+        $apiPassword = $this->getApiPassword($website);
+        if (!$apiUsername || !$apiPassword || !$enabled) {
+            return false;
+        }
 
-        return (bool)$enabled;
+        return true;
     }
 
     /**
@@ -421,10 +443,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return $contactId;
         }
 
+        if (!$this->isEnabled($websiteId)) {
+            return false;
+        }
+
         $client = $this->getWebsiteApiClient($websiteId);
         $response = $client->postContacts($email);
 
         if (isset($response->message)) {
+            $contact->setEmailImported(1);
+            if ($response->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
+                $contact->setSuppressed(1);
+            }
+            $contact->save();
             return false;
         }
         //save contact id
@@ -443,7 +474,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $username
      * @param string $password
      *
-     * @return bool|mixed
+     * @return \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
     public function getWebsiteApiClient($website = 0, $username = '', $password = '')
     {
@@ -453,10 +484,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } else {
             $apiUsername = $this->getApiUsername($website);
             $apiPassword = $this->getApiPassword($website);
-
-            if (!$apiUsername || !$apiPassword) {
-                return false;
-            }
         }
 
         $client = $this->_objectManager->create(
@@ -905,8 +932,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         if (!empty($data)) {
             //update data fields
-            $client = $this->getWebsiteApiClient($website);
-            $client->updateContactDatafieldsByEmail($email, $data);
+            if ($this->isEnabled($website)) {
+                $client = $this->getWebsiteApiClient($website);
+                $client->updateContactDatafieldsByEmail($email, $data);
+            }
         }
     }
 
@@ -919,16 +948,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function updateLastQuoteId($quoteId, $email, $websiteId)
     {
-        $client = $this->getWebsiteApiClient($websiteId);
-        //last quote id config data mapped
-        $quoteIdField = $this->getLastQuoteId();
+        if ($this->isEnabled($websiteId)) {
+            $client = $this->getWebsiteApiClient($websiteId);
+            //last quote id config data mapped
+            $quoteIdField = $this->getLastQuoteId();
 
-        $data[] = [
-            'Key' => $quoteIdField,
-            'Value' => $quoteId,
-        ];
-        //update datafields for conctact
-        $client->updateContactDatafieldsByEmail($email, $data);
+            $data[] = [
+                'Key' => $quoteIdField,
+                'Value' => $quoteId,
+            ];
+            //update datafields for conctact
+            $client->updateContactDatafieldsByEmail($email, $data);
+        }
     }
 
     /**
@@ -1097,17 +1128,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function updateAbandonedProductName($name, $email, $websiteId)
     {
-        $client = $this->getWebsiteApiClient($websiteId);
-        // id config data mapped
-        $field = $this->getAbandonedProductName();
+        if ($this->isEnabled($websiteId)) {
+            $client = $this->getWebsiteApiClient($websiteId);
+            // id config data mapped
+            $field = $this->getAbandonedProductName();
 
-        if ($field) {
-            $data[] = [
-                'Key' => $field,
-                'Value' => $name,
-            ];
-            //update data field for contact
-            $client->updateContactDatafieldsByEmail($email, $data);
+            if ($field) {
+                $data[] = [
+                    'Key' => $field,
+                    'Value' => $name,
+                ];
+                //update data field for contact
+                $client->updateContactDatafieldsByEmail($email, $data);
+            }
         }
     }
 
@@ -1359,5 +1392,56 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return false;
+    }
+
+    /**
+     * Get current connector version.
+     * 
+     * @return mixed
+     */
+    public function getConnectorVersion()
+    {
+        return $this->_moduleInterface->getOne(self::MODULE_NAME)['setup_version'];
+    }
+
+    /**
+     * Get the abandoned cart limit.
+     * 
+     * @return mixed
+     */
+    public function getAbandonedCartLimit()
+    {
+        $cartLimit = $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT
+        );
+        
+        return $cartLimit;
+    }
+
+
+    /**
+     * Get the date for the last time cron run.
+     * @param $cronjob
+     *
+     * @return bool
+     */
+    public function getDateLastCronRun($cronJob)
+    {
+        $collection = $this->_schelduleFactory->create()
+            ->getCollection()
+            ->addFieldToFilter('status', \Magento\Cron\Model\Schedule::STATUS_SUCCESS)
+            ->addFieldToFilter('job_code', $cronJob)
+        ;
+        //limit and order the results
+        $collection->getSelect()
+            ->limit(1)
+            ->order('executed_at DESC');
+
+        if ($collection->getSize() == 0) {
+            return false;
+        }
+        $executedAt = $collection->getFirstItem()->getExecutedAt();
+        
+        return $executedAt;
     }
 }

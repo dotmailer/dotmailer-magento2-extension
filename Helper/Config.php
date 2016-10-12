@@ -163,7 +163,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE = 'connector_configuration/catalog_sync/catalog_type';
     //Abandoned Cart
     const XML_PATH_CONNECTOR_EMAIL_CAPTURE = 'connector_configuration/abandoned_carts/email_capture';
-    const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT = 'connector_configuration/abandoned_carts/limits';
+    const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT = 'connector_configuration/abandoned_carts/cart_limit';
     const XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER = 'connector_configuration/abandoned_carts/easy_capture_newsletter';
     const XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED = 'connector_configuration/abandoned_carts/link_back_to_cart';
     const XML_PATH_CONNECTOR_CONTENT_LINK_TEXT = 'connector_configuration/abandoned_carts/link_text';
@@ -189,6 +189,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW = 'connector_automation/visitor_automation/review_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST = 'connector_automation/visitor_automation/wishlist_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS = 'connector_automation/order_status_automation/program';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER = 'connector_automation/visitor_automation/first_order_automation';
 
     /**
      * ROI SECTION.

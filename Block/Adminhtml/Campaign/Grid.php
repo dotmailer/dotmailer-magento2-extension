@@ -81,20 +81,28 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'index' => 'email',
             'type' => 'text',
             'escape' => true,
-        ])->addColumn('is_sent', [
-            'header' => __('Is Sent'),
+        ])->addColumn('send_status', [
+            'header' => __('Send Status'),
             'align' => 'center',
             'width' => '20px',
-            'index' => 'is_sent',
+            'index' => 'send_status',
             'escape' => true,
             'type' => 'options',
-            'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
             'options' => [
-                '1' => 'Is Send',
-                'null' => 'Not Send',
-            ],
-            'filter_condition_callback' => [$this, 'filterCallbackContact'],
-        ])->addColumn('message', [
+                \Dotdigitalgroup\Email\Model\Campaign::PENDING => 'Pending',
+                \Dotdigitalgroup\Email\Model\Campaign::PROCESSING => 'Processing',
+                \Dotdigitalgroup\Email\Model\Campaign::SENT => 'Sent',
+                \Dotdigitalgroup\Email\Model\Campaign::FAILED => 'Failed',
+            ]
+        ])->addColumn('send_id', [
+                'header' => __('Send Id'),
+                'align' => 'left',
+                'width' => '300px',
+                'index' => 'send_id',
+                'type' => 'text',
+                'escape' => true
+            ]
+        )->addColumn('message', [
             'header' => __('Send Message'),
             'align' => 'left',
             'width' => '300px',

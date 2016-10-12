@@ -594,14 +594,19 @@
                     <label>New Subscriber</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
+                <field id="first_order_automation" translate="label" type="select" sortOrder="25" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
+                    <label>First Customer Order</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
+                </field>
                 <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>New Customer Order</label>
+                    <label>Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
                 <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>New Guest Order</label>
+                    <label>Guest Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
                 <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="0"
@@ -782,10 +787,10 @@
                     <label>Product Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <!--<field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="0" showInWebsite="1" showInDefault="1">-->
-                    <!--<label>Best Sellers URL</label>-->
-                    <!--<frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>-->
-                <!--</field>-->
+                <field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Best Sellers URL</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>
+                </field>
                 <field id="most_viewed_url" translate="comment label" sortOrder="180" type="label" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Most Viewed URL</label>
@@ -892,6 +897,22 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
+                </field>
+                <field id="bestsellers" translate="label" sortOrder="140" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Best Sellers</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="bestsellers_display_type" translate="label" type="select" sortOrder="150" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Display Type</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
+                </field>
+                <field id="bestsellers_items_to_display" translate="label" type="select" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Items To Display</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
+                </field>
+                <field id="bestsellers_time_period" translate="label" type="select" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Time Period</label>
+                    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
                 </field>
                 <field id="most_viewed" translate="label" sortOrder="180" showInStore="0" showInWebsite="1"
                        showInDefault="1">
@@ -1521,9 +1542,9 @@
                 <field id="ip_addresses" translate="label" type="textarea" sortOrder="10" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Dynamic Pages IP Restriction</label>
-                    <comment><![CDATA[Enter ip addresses separated by comma (,). Always keep these ip's.
-                    For R1 : 94.143.111.1 94.143.111.2, 94.143.111.3.
-                    For R2 : 104.208.235.109 to stay secure, empty list will ignore security check.]]></comment>
+                    <comment><![CDATA[Enter IP addresses separated by comma (,). An empty list will ignore any security check.
+                        Please ensure you keep the latest dotmailer IP ranges included
+                        <a href="https://support.dotmailer.com/hc/en-gb/articles/216282318-Security-settings#ip" target="_blank"> here</a>.]]></comment>
                 </field>
             </group>
             <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1"

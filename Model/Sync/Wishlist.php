@@ -73,7 +73,7 @@ class Wishlist
      * @param \Magento\Customer\Model\CustomerFactory                          $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
      * @param \Magento\Framework\App\ResourceConnection                        $resource
-     * @param \Magento\Framework\StdLib\Datetime                               $datetime
+     * @param \Magento\Framework\StdLib\DateTime                               $datetime
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
@@ -85,7 +85,7 @@ class Wishlist
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Framework\StdLib\Datetime $datetime
+        \Magento\Framework\StdLib\DateTime $datetime
     ) {
         $this->_itemCollection = $itemCollection;
         $this->_wishlistCollection = $wishlistCollection;
@@ -347,7 +347,7 @@ class Wishlist
             $write = $coreResource->getConnection('core_write');
             $tableName = $coreResource->getTableName('email_wishlist');
             $ids = implode(', ', $ids);
-            $now = new \Datetime();
+            $now = new \DateTime();
             $nowDate = $this->_datetime->formatDate($now->getTimestamp());
 
             //mark imported modified wishlists
