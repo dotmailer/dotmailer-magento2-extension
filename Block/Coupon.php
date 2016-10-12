@@ -117,19 +117,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
         return false;
     }
 
-    /**
-     * Validate input days is valid
-     *
-     * @param $days
-     * @return bool
-     */
-    protected function validateDate($days)
-    {
-        if (isset($date) && $date != '' && is_int($days)) {
-            return true;
-        }
-        return false;
-    }
 
     /**
      * @return array
