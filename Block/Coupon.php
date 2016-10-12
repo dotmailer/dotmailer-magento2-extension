@@ -95,8 +95,16 @@ class Coupon extends \Magento\Framework\View\Element\Template
                 \Magento\SalesRule\Model\Rule::COUPON_TYPE_NO_COUPON
             )->setGeneratedByDotmailer(1);
 
-            if ($this->validateDate($params['expiration_date'])) {
-                $couponModel->setExpirationDate($params['expiration_date']);
+            if (isset($params['expire_days'])
+                && $params['expire_days'] != ''
+                && is_int($params['expire_days'])
+            ) {
+                $now = new \DateTime(
+                    'now', new \DateTimeZone('UTC')
+                );
+                $interval = new \DateInterval('P' . $params['expire_days'] . 'D');
+                $expirationDate = $now->add($interval);
+                $couponModel->setExpirationDate($expirationDate->format('Y-m-d H:i:s'));
             } elseif ($rule->getToDate()) {
                 $couponModel->setExpirationDate($rule->getToDate());
             }
@@ -109,20 +117,6 @@ class Coupon extends \Magento\Framework\View\Element\Template
         return false;
     }
 
-    /**
-     * Validate date
-     *
-     * @param $date
-     * @return bool
-     */
-    protected function validateDate($date)
-    {
-        $validator = new \Zend_Validate_Date();
-        if (isset($date) && $date != '' && $validator->isValid($date)) {
-            return true;
-        }
-        return false;
-    }
 
     /**
      * @return array

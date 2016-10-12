@@ -40,7 +40,7 @@ class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
 
         //full url
         $text = $baseUrl . 'connector/email/coupon/id/[INSERT ID HERE]/code/'
-            . $passcode . '/expiration_date/YYYY-MM-DD/@EMAIL@';
+            . $passcode . '/expire_days/[INSERT NUMBER OF DAYS HERE]/@EMAIL@';
         $element->setData('value', $text);
         $element->setData('disabled', 'disabled');
 
