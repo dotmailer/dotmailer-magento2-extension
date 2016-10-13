@@ -12,6 +12,7 @@ class Automation
     const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
     const AUTOMATION_STATUS_PENDING = 'pending';
     const ORDER_STATUS_AUTOMATION = 'order_automation_';
+    const AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER = 'first_order_automation';
 
     /**
      * @var array
@@ -28,7 +29,9 @@ class Automation
         self::AUTOMATION_TYPE_NEW_REVIEW =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW,
         self::AUTOMATION_TYPE_NEW_WISHLIST =>
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
+        self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER
     ];
 
     /**
@@ -286,6 +289,7 @@ class Automation
             case self::AUTOMATION_TYPE_NEW_GUEST_ORDER :
             case self::AUTOMATION_TYPE_NEW_REVIEW :
             case self::ORDER_STATUS_AUTOMATION :
+            case self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER :
                 $this->_updateNewOrderDatafields();
                 break;
             default:
