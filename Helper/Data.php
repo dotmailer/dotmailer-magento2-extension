@@ -1205,7 +1205,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    private function isWebsiteSecure()
+    protected function isWebsiteSecure()
     {
         $isFrontendSecure  = $this->_storeManager->getStore()->isFrontUrlSecure();
         $isCurrentlySecure = $this->_storeManager->getStore()->isCurrentlySecure();
