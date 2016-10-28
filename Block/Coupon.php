@@ -95,10 +95,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
                 \Magento\SalesRule\Model\Rule::COUPON_TYPE_NO_COUPON
             )->setGeneratedByDotmailer(1);
 
-            if (isset($params['expire_days'])
-                && $params['expire_days'] != ''
-                && is_int($params['expire_days'])
-            ) {
+            if (is_numeric($params['expire_days'])) {
                 $now = new \DateTime(
                     'now', new \DateTimeZone('UTC')
                 );
