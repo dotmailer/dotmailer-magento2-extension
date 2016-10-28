@@ -1196,7 +1196,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getEmailCaptureUrl()
     {
         return $this->_storeManager->getStore()->getUrl(
-            'connector/ajax/emailcapture'
+            'connector/ajax/emailcapture', ['_secure' => $this->getRequest()->isSecure()]
         );
     }
 
