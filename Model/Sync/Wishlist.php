@@ -66,16 +66,16 @@ class Wishlist
     /**
      * Wishlist constructor.
      *
-     * @param \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory     $itemCollection
+     * @param \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory          $itemCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection
-     * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory       $itemFactory
-     * @param \Dotdigitalgroup\Email\Model\Customer\WishlistFactory            $wishlistFactory
-     * @param \Magento\Wishlist\Model\WishlistFactory                          $wishlist
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Customer\Model\CustomerFactory                          $customerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
-     * @param \Magento\Framework\App\ResourceConnection                        $resource
-     * @param \Magento\Framework\StdLib\DateTime                               $datetime
+     * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory            $itemFactory
+     * @param \Dotdigitalgroup\Email\Model\Customer\WishlistFactory                 $wishlistFactory
+     * @param \Magento\Wishlist\Model\WishlistFactory                               $wishlist
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                          $importerFactory
+     * @param \Magento\Customer\Model\CustomerFactory                               $customerFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                                    $helper
+     * @param \Magento\Framework\App\ResourceConnection                             $resource
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime                           $datetime
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
@@ -87,7 +87,7 @@ class Wishlist
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Framework\StdLib\DateTime $datetime
+        \Magento\Framework\Stdlib\DateTime\DateTime $datetime
     ) {
         $this->_itemCollection = $itemCollection;
         $this->_wishlistCollection = $wishlistCollection;
@@ -342,12 +342,8 @@ class Wishlist
     }
 
     /**
-     * Set imported in bulk query.
-     *
-     * @param            $ids
-     * @param bool|false $modified
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param      $ids
+     * @param bool $modified
      */
     protected function _setImported($ids, $modified = false)
     {
@@ -356,8 +352,7 @@ class Wishlist
             $write = $coreResource->getConnection('core_write');
             $tableName = $coreResource->getTableName('email_wishlist');
             $ids = implode(', ', $ids);
-            $now = new \DateTime();
-            $nowDate = $this->_datetime->formatDate($now->getTimestamp());
+            $now = $this->_datetime->gmtDate();
 
             //mark imported modified wishlists
             if ($modified) {
@@ -365,14 +360,14 @@ class Wishlist
                     $tableName,
                     [
                         'wishlist_modified' => new \Zend_Db_Expr('null'),
-                        'updated_at' => $nowDate,
+                        'updated_at' => $now,
                     ],
                     "wishlist_id IN ($ids)"
                 );
             } else {
                 $write->update(
                     $tableName,
-                    ['wishlist_imported' => 1, 'updated_at' => $nowDate],
+                    ['wishlist_imported' => 1, 'updated_at' => $now],
                     "wishlist_id IN ($ids)"
                 );
             }
