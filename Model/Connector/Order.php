@@ -310,16 +310,13 @@ class Order
                                     break;
                             }
 
-                            if ($value
-                                && !is_array(
-                                    $value
-                                )
-                            ) {
+                            if ($value && !is_array($value)) {
                                 // check limit on text and assign value to array
 
                                 $attributes[][$attributeCode]
                                     = $this->_limitLength($value);
-                            } elseif(is_array($value)) { // check for multi select values
+                            } elseif(is_array($value)) {
+
                                 $value = implode($value, ', ');
                                 $attributes[][$attributeCode]
                                     = $this->_limitLength($value);
@@ -365,8 +362,9 @@ class Order
                     'attributes' => [],
                     'custom-options' => $customOptions,
                 ];
-                if (! $customOptions)
+                if (! $customOptions) {
                     unset($productData['custom-options']);
+                }
                 $this->products[] = $productData;
             }
         }
@@ -575,11 +573,13 @@ class Order
                 '_setFactory',
             ]
         );
-        if (! $this->couponCode)
+        if (! $this->couponCode) {
             $properties = array_diff($properties, ['couponCode']);
+        }
 
-        if (! $this->custom)
+        if (! $this->custom) {
             $properties = array_diff($properties, ['custom']);
+        }
 
 
         return $properties;

@@ -2,8 +2,42 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
-class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
+
+class Update extends Delete
 {
+
+    /**
+     * @var Contact
+     */
+    protected $contactResource;
+
+    /**
+     * Update constructor.
+     *
+     * @param Contact                                     $contactResource
+     * @param \Dotdigitalgroup\Email\Helper\Data          $helper
+     * @param \Dotdigitalgroup\Email\Helper\File          $fileHelper
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     */
+    public function __construct(
+        Contact $contactResource,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+    ) {
+        $this->contactResource = $contactResource;
+
+        parent::__construct($helper, $fileHelper, $contactFactory);
+    }
+
+    /**
+     * Keep the suppressed contact ids that needs to update.
+     *
+     * @var array
+     */
+    protected $suppressedContactIds;
+
     /**
      * Sync.
      *
@@ -68,14 +102,8 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                                 $this->_helper->getSubscriberAddressBook($websiteId), $contactId
                             );
                         } else {
-                            //@codingStandardsIgnoreStart
-                            $contactEmail = $this->_contactFactory->create()
-                                ->load($id);
-                            if ($contactEmail->getId()) {
-                                $contactEmail->setSuppressed('1')
-                                    ->save();
-                            }
-                            //@codingStandardsIgnoreEnd
+                            //suppress contacts
+                            $this->suppressedContactIds[] = $id;
                         }
                     }
 
@@ -83,5 +111,7 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                 }
             }
         }
+        //update suppress status for contact ids
+        $this->contactResource->setContactSuppressedForContactIds($this->suppressedContactIds);
     }
 }
