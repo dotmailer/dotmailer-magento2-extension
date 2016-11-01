@@ -246,9 +246,7 @@ class Order
                 $customOptions = $this->_getOrderItemOptions($productItem);
             }
 
-            //load product by product id, for compatibility
-            $productModel = $this->_productFactory->create()
-                ->load($productItem->getProductId());
+            $productModel = $productItem->getProduct();
 
             if ($productModel) {
                 // category names
