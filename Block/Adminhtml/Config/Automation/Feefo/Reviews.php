@@ -21,7 +21,7 @@ class Reviews extends \Magento\Config\Block\System\Config\Form\Field
     ) {
         $this->_helper = $data;
 
-        return parent::__construct($context);
+        parent::__construct($context);
     }
 
     /**
