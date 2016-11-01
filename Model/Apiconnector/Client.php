@@ -1327,4 +1327,42 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
         return $response;
     }
+
+
+    /**
+     * Get access token.
+     *
+     * @param string $url
+     * @param array $params
+     *
+     * @return string/object
+     */
+    public function getAccessToken($url, $params)
+    {
+        //@codingStandardsIgnoreStart
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POST, count($params));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_HTTPHEADER,
+            array('Content-Type: application/x-www-form-urlencoded'));
+
+        $response = json_decode(curl_exec($ch));
+
+        if (isset($response->error)) {
+            $this->_helper->log('Token Error Number:' . curl_errno($ch)
+                . 'Error String:' . curl_error($ch));
+        }
+        curl_close($ch);
+
+        if (! isset($response->message) && isset($response->access_token)) {
+            return $response->access_token;
+        }
+        //@codingStandardsIgnoreEnd
+        return $response;
+    }
 }
