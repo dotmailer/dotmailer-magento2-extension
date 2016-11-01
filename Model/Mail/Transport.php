@@ -55,8 +55,8 @@ class Transport extends \Zend_Mail_Transport_Smtp
                 $this->sendMail->send($this->_message);
             }
         } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\MailException(new \Magento\Framework\Phrase($e->getMessage()),
-                $e);
+            throw new \Magento\Framework\Exception\MailException(
+                __($e->getMessage()), $e);
         }
     }
 }
