@@ -142,28 +142,31 @@ class Subscriber
             //file headers
             $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename),
                 ['Email', 'emailType', $subscriberStoreName]);
-            //write subscriber data to csv file
-            foreach ($subscribers as $subscriber) {
-                try {
-                    $email = $subscriber->getEmail();
-                    //@codingStandardsIgnoreStart
-                    $subscriber->setSubscriberImported(1)
-                        ->save();
-                    //@codingStandardsIgnoreEnd
-                    $subscriberFactory = $this->_subscriberFactory->create()
-                        ->loadByEmail($email);
 
-                    $storeName
-                        = $this->storeManager->getStore($subscriberFactory->getStoreId())
-                        ->getName();
-                    // save data for subscribers
-                    $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename),
-                        [$email, 'Html', $storeName]);
-                    ++$updated;
-                } catch (\Exception $e) {
-                    throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-                }
+            $emails = $subscribers->getColumnValues('email');
+
+            $subscriberFactory = $this->_subscriberFactory->create();
+            $subscribersData   = $subscriberFactory->getCollection()
+                ->addFieldToFilter('subscriber_email', ['in' => $emails])
+                ->addFieldToSelect(['subscriber_email', 'store_id'])
+                ->toArray();
+
+            foreach ($subscribers as $subscriber) {
+
+                $email     = $subscriber->getEmail();
+                $storeId   = $this->getStoreIdForSubscriber($email, $subscribersData['items']);
+
+                $storeName = $this->storeManager->getStore($storeId)
+                    ->getName();
+
+                // save data for subscribers
+                $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename),
+                    [$email, 'Html', $storeName]
+                );
+                $subscriber->setSubscriberImported(1)->save();
+                ++$updated;
             }
+
             $this->_helper->log('Subscriber filename: ' . $subscribersFilename);
             //register in queue with importer
             $this->_importerFactory->create()
@@ -179,5 +182,24 @@ class Subscriber
         $this->_countSubscriber += $updated;
 
         return $updated;
+    }
+
+    /**
+     * @param $email
+     * @param $subscribers
+     *
+     * @return bool
+     */
+    protected function getStoreIdForSubscriber($email, $subscribers)
+    {
+
+        foreach ($subscribers as $subscriber) {
+
+            if ($subscriber['subscriber_email'] == $email) {
+                return $subscriber['store_id'];
+            }
+        }
+
+        return false;
     }
 }
