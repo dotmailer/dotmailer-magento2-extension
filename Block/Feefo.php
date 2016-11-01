@@ -60,7 +60,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     /**
      * Get customer's service score logo and output it.
      *
-     * @return string
+     * @return array
      */
     public function getServiceScoreLogo()
     {
@@ -74,10 +74,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $vendorUrl = 'http://www.feefo.com/feefo/viewvendor.jsp?logon='
             . $logon;
 
-        return
-            "<a href=\"$vendorUrl\" target='_blank'>
-                <img alt='Feefo logo' border='0' src=\"$fullUrl\" title='See what our customers say about us'>
-             </a>";
+        return ['vendorUrl' => $vendorUrl, 'fullUrl' => $fullUrl];
     }
 
     /**
