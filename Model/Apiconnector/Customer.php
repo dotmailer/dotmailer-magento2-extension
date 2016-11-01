@@ -222,9 +222,12 @@ class Customer
     public function getLastReviewDate()
     {
         if (count($this->reviewCollection)) {
-            //@codingStandardsIgnoreStart
-            return $this->reviewCollection->getFirstItem()->getCreatedAt();
-            //@codingStandardsIgnoreEnd
+
+            $createdAt = $this->reviewCollection->getSelect()->limit(1)
+                ->getFirstItem()
+                ->getCreatedAt();
+                
+            return $createdAt;
         }
 
         return '';
