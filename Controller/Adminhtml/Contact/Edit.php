@@ -86,7 +86,7 @@ class Edit extends \Magento\Backend\App\Action
             //load the and check the contact model
             $model->load($id);
             if (!$model->getId()) {
-                $this->messageManager->addError(__('This contact no longer exists.'));
+                $this->messageManager->addErrorMessage(__('This contact no longer exists.'));
                 /** \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
                 $resultRedirect = $this->resultRedirectFactory->create();
 

@@ -91,9 +91,9 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
                     }
                 }
 
-                $this->messageManager->addSuccess(__('API Credentials Valid.'));
+                $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));
             } else {
-                $this->messageManager->addWarning(__('Authorization has been denied for this request.'));
+                $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
             }
         }
 

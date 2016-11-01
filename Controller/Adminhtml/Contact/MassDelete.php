@@ -14,7 +14,7 @@ class MassDelete extends \Magento\Backend\App\Action
         $ids = $this->getRequest()->getParam('id');
 
         if (!is_array($ids)) {
-            $this->messageManager->addError(__('Please select contact.'));
+            $this->messageManager->addErrorMessage(__('Please select contact.'));
         } else {
             try {
                 foreach ($ids as $id) {
@@ -23,9 +23,9 @@ class MassDelete extends \Magento\Backend\App\Action
                     $model->delete();
                     //@codingStandardsIgnoreEnd
                 }
-                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
+                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
+                $this->messageManager->addErrorMessage($e->getMessage());
             }
         }
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
