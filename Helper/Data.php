@@ -495,39 +495,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Api username from config.
-     *
-     * @param int /object $website
+     * @param int $website
      *
      * @return mixed
      */
     public function getApiUsername($website = 0)
     {
-        $website = $this->_storeManager->getWebsite($website);
-
-        return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getId()
-        );
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME, $website);
     }
 
     /**
-     * Get api password from config.
-     *
      * @param int $website
      *
-     * @return string
+     * @return mixed
      */
     public function getApiPassword($website = 0)
     {
-        $website = $this->_storeManager->getWebsite($website);
-
-        return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getId()
-        );
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD, $website);
     }
 
     /**
@@ -689,7 +675,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get website level config.
+     * Get website config.
      *
      * @param     $path
      * @param int $website
@@ -698,12 +684,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteConfig($path, $website = 0)
     {
-        $website = $this->_storeManager->getWebsite($website);
-
         return $this->scopeConfig->getValue(
             $path,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getId()
+            $website
         );
     }
 
