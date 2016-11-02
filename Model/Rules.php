@@ -41,6 +41,10 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @var \Magento\Eav\Model\Config
      */
     protected $config;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    protected $_coreResource;
 
 
     /**
@@ -50,6 +54,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\Model\Context                             $context
      * @param \Magento\Framework\Registry                                  $registry
      * @param \Magento\Eav\Model\Config                                    $config
+     * @param \Magento\Framework\App\ResourceConnection                    $resourceConnection
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
      * @param array                                                        $data
@@ -59,10 +64,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Eav\Model\Config $config,
+        \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->_coreResource = $resourceConnection;
         $this->config = $config;
         $this->rulesType = $rulesType;
         parent::__construct($context, $registry, $resource, $resourceCollection,
@@ -228,26 +235,26 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         if ($type == self::ABANDONED) {
             $collection->getSelect()
                 ->joinLeft(
-                    ['quote_address' => 'quote_address'],
+                    ['quote_address' => $this->_coreResource->getTableName('quote_address')],
                     'main_table.entity_id = quote_address.quote_id',
                     ['shipping_method', 'country_id', 'city', 'region_id']
                 )->joinLeft(
-                    ['quote_payment' => 'quote_payment'],
+                    ['quote_payment' => $this->_coreResource->getTableName('quote_payment')],
                     'main_table.entity_id = quote_payment.quote_id',
                     ['method']
                 )->where('address_type = ?', 'shipping');
         } elseif ($type == self::REVIEW) {
             $collection->getSelect()
                 ->join(
-                    ['order_address' => 'sales_order_address'],
+                    ['order_address' => $this->_coreResource->getTableName('sales_order_address')],
                     'main_table.entity_id = order_address.parent_id',
                     ['country_id', 'city', 'region_id']
                 )->join(
-                    ['order_payment' => 'sales_order_payment'],
+                    ['order_payment' => $this->_coreResource->getTableName('sales_order_payment')],
                     'main_table.entity_id = order_payment.parent_id',
                     ['method']
                 )->join(
-                    ['quote' => 'quote'],
+                    ['quote' => $this->_coreResource->getTableName('quote')],
                     'main_table.quote_id = quote.entity_id',
                     ['items_qty']
                 )->where('order_address.address_type = ?', 'shipping');

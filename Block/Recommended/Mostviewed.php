@@ -41,6 +41,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Magento\Reports\Model\ResourceModel\Product\CollectionFactory
      */
     protected $_reportProductCollection;
+    protected $_coreResource;
 
     /**
      * Mostviewed constructor.
@@ -52,6 +53,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param \Magento\Catalog\Model\ProductFactory                          $productFactory
      * @param \Dotdigitalgroup\Email\Helper\Recommended                      $recommended
      * @param \Magento\Catalog\Model\CategoryFactory                         $categtoryFactory
+     * @param \Magento\Framework\App\ResourceConnection                      $resourceConnection
      * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection
      * @param array                                                          $data
      */
@@ -63,9 +65,11 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Model\CategoryFactory $categtoryFactory,
+        \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection,
         array $data = []
     ) {
+        $this->_coreResource = $resourceConnection;
         $this->_productCollectionFactory = $productCollectionFactory;
         $this->_productFactory = $productFactory;
         $this->_categoryFactory = $categtoryFactory;
@@ -102,7 +106,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        ['ccpi' => 'catalog_category_product_index'],
+                        ['ccpi' => $this->_coreResource->getTableName('catalog_category_product_index')],
                         'e.entity_id = ccpi.product_id',
                         ['category_id']
                     )
@@ -120,7 +124,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($category) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        ['ccpi' => 'catalog_category_product_index'],
+                        ['ccpi' => $this->_coreResource->getTableName('catalog_category_product_index')],
                         'e.entity_id  = ccpi.product_id',
                         ['category_id']
                     )

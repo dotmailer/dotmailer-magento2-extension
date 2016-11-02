@@ -71,6 +71,11 @@ class Review
     protected $_coreDate;
 
     /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    protected $_coreResource;
+
+    /**
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
@@ -79,6 +84,7 @@ class Review
      * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory                 $connectorFactory
      * @param \Magento\Customer\Model\CustomerFactory                             $customerFactory
      * @param \Magento\Catalog\Model\ProductFactory                               $productFactory
+     * @param \Magento\Framework\App\ResourceConnection                           $resourceConnection
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory                        $importerFactory
      * @param \Magento\Review\Model\ReviewFactory                                 $reviewFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                  $data
@@ -94,6 +100,7 @@ class Review
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
@@ -102,6 +109,7 @@ class Review
         \Magento\Review\Model\Rating\Option\Vote $vote,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
     ) {
+        $this->_coreResource = $resourceConnection;
         $this->_coreDate = $coreDate;
         $this->_reviewCollection = $reviewCollection;
         $this->_ratingFactory = $ratingFactory;
@@ -202,7 +210,7 @@ class Review
 
             $reviews->getSelect()
                 ->joinLeft(
-                    ['c' => 'customer_entity'],
+                    ['c' => $this->_coreResource->getTableName('customer_entity')],
                     'c.entity_id = customer_id',
                     ['email', 'store_id']
                 );
