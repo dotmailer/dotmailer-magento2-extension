@@ -24,10 +24,6 @@ class Books extends \Magento\Framework\View\Element\Template
      * @var \Magento\Customer\Model\Session
      */
     protected $customerSession;
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    protected $dateTime;
 
     /**
      * Books constructor.
@@ -39,12 +35,10 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
-        $this->dateTime = $timezone;
         $this->_helper = $helper;
         $this->customerSession = $customerSession;
         parent::__construct($context, $data);
@@ -217,7 +211,7 @@ class Books extends \Magento\Framework\View\Element\Template
                                 $value
                                        = $processedContactDataFields[$processedConnectorDataFields[
                                                                      $dataFieldFromConfig]->name];
-                                $value = $this->dateTime->convertConfigTimeToUtc($value, 'm/d/Y');
+                                $value = $this->_localeDate->convertConfigTimeToUtc($value, 'm/d/Y');
                             } else {
                                 $value
                                     = $processedContactDataFields[$processedConnectorDataFields[
