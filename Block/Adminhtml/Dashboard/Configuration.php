@@ -66,5 +66,4 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     {
         return $this->getUrl('adminhtml/system_config/save', ['section' => 'connector_developer_settings']);
     }
-
 }

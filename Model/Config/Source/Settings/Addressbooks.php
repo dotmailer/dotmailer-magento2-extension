@@ -35,7 +35,6 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Config\Model\Config\Structure $configStructure
-
     ) {
         $this->_registry = $registry;
         $this->_helper = $data;

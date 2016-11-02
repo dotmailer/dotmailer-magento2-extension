@@ -88,7 +88,6 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
                         OR
                          (rule_coupons.expiration_date IS NOT NULL) AND
                          (rule_coupons.expiration_date >= ?) ', $now);
-
             } else {
                 $this->addFieldToFilter(
                     'main_table.coupon_type',

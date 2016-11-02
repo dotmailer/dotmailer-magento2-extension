@@ -143,8 +143,9 @@ class Wishlist
                 }
                 if (! empty($this->_wishlists)) {
                     $message = 'Total time for wishlist bulk sync : ' . gmdate(
-                            'H:i:s', microtime(true) - $this->_start
-                        );
+                        'H:i:s',
+                        microtime(true) - $this->_start
+                    );
                     $this->_helper->log($message);
                 }
 
@@ -177,8 +178,7 @@ class Wishlist
 
         $this->_wishlistIds = $emailWishlist->getColumnValues('wishlist_id');
 
-        if ( ! empty($this->_wishlistIds)) {
-
+        if (! empty($this->_wishlistIds)) {
             $collection = $this->_wishlist->getCollection()
                 ->addFieldToFilter('main_table.wishlist_id', ['in' => $this->_wishlistIds])
                 ->addFieldToFilter('customer_id', ['notnull' => 'true']);
@@ -191,7 +191,6 @@ class Wishlist
                 );
 
             foreach ($collection as $wishlist) {
-
                 $connectorWishlist = $this->_wishlistFactory->create();
                 $connectorWishlist->setId($wishlist->getId())
                     ->setUpdatedAt($wishlist->getUpdatedAt())
@@ -201,7 +200,6 @@ class Wishlist
                 $wishListItemCollection = $wishlist->getItemCollection();
                 if ($wishListItemCollection->getSize()) {
                     foreach ($wishListItemCollection as $item) {
-
                         $product      = $item->getProduct();
                         $wishlistItem = $this->_itemFactory->create();
                         $wishlistItem->setQty($item->getQty())
@@ -230,7 +228,8 @@ class Wishlist
         $collection = $this->_wishlistCollection->create()
             ->addFieldToFilter('wishlist_imported', ['null' => true])
             ->addFieldToFilter(
-                'store_id', ['in' => $website->getStoreIds()]
+                'store_id',
+                ['in' => $website->getStoreIds()]
             )
             ->addFieldToFilter('item_count', ['gt' => 0]);
         $collection->getSelect()->limit($limit);
@@ -251,7 +250,8 @@ class Wishlist
             $website
         );
         $collection = $this->_getModifiedWishlistToImport(
-            $website, $limit
+            $website,
+            $limit
         );
         $this->_wishlistIds = [];
         //email_wishlist wishlist ids
@@ -268,7 +268,6 @@ class Wishlist
             );
 
         foreach ($wishlistCollection as $wishlist) {
-
             $wishlistId = $wishlist->getid();
             $wishlistItems = $wishlist->getItemCollection();
 
@@ -280,7 +279,6 @@ class Wishlist
 
             if ($wishlistItems->getSize()) {
                 foreach ($wishlistItems as $item) {
-
                     $product      = $item->getProduct();
                     $wishlistItem = $this->_itemFactory->create()
                         ->setProduct($product)
@@ -294,7 +292,8 @@ class Wishlist
                 $this->_start = microtime(true);
                 //register in queue with importer
                 $check = $this->_importerFactory->create()
-                    ->registerQueue( Importer::IMPORT_TYPE_WISHLIST,
+                    ->registerQueue(
+                        Importer::IMPORT_TYPE_WISHLIST,
                         $connectorWishlist,
                         Importer::MODE_SINGLE,
                         $website->getId()
@@ -305,7 +304,8 @@ class Wishlist
             } else {
                 //register in queue with importer
                 $check = $this->_importerFactory->create()
-                    ->registerQueue( Importer::IMPORT_TYPE_WISHLIST,
+                    ->registerQueue(
+                        Importer::IMPORT_TYPE_WISHLIST,
                         [$wishlist->getId()],
                         Importer::MODE_SINGLE,
                         $website->getId()
@@ -333,7 +333,8 @@ class Wishlist
         $collection = $this->_wishlistCollection->create()
             ->addFieldToFilter('wishlist_modified', 1)
             ->addFieldToFilter(
-                'store_id', ['in' => $website->getStoreIds()]
+                'store_id',
+                ['in' => $website->getStoreIds()]
             );
         $collection->getSelect()->limit($limit);
 

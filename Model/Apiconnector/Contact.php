@@ -159,8 +159,9 @@ class Contact
         //sync proccessed
         if ($this->_countCustomers) {
             $message = 'Total time for sync : ' . gmdate(
-                    'H:i:s', microtime(true) - $this->_start
-                ) . ', Total contacts : ' . $this->_countCustomers;
+                'H:i:s',
+                microtime(true) - $this->_start
+            ) . ', Total contacts : ' . $this->_countCustomers;
             $this->_helper->log($message);
             $message .= $result['message'];
             $result['message'] = $message;
@@ -231,7 +232,8 @@ class Contact
         $headers[] = 'EmailType';
 
         $this->_file->outputCSV(
-            $this->_file->getFilePath($customersFile), $headers
+            $this->_file->getFilePath($customersFile),
+            $headers
         );
         /*
          * END HEADERS.
@@ -239,7 +241,8 @@ class Contact
 
         //customer collection
         $customerCollection = $this->_getCustomerCollection(
-            $customerIds, $website->getId()
+            $customerIds,
+            $website->getId()
         );
         $countIds = [];
         foreach ($customerCollection as $customer) {
@@ -277,7 +280,8 @@ class Contact
         );
         $this->_helper->log(
             '---------------------------- execution time :' . gmdate(
-                'H:i:s', microtime(true) - $this->_start
+                'H:i:s',
+                microtime(true) - $this->_start
             )
         );
         //file was created - continue for queue the export
@@ -299,7 +303,8 @@ class Contact
                 $tableName = $this->_resource->getTableName('email_contact');
                 $ids = implode(', ', $customerIds);
                 $connection->update(
-                    $tableName, ['email_imported' => 1],
+                    $tableName,
+                    ['email_imported' => 1],
                     "customer_id IN ($ids)"
                 );
             }
@@ -376,13 +381,15 @@ class Contact
         $headers[] = 'Email';
         $headers[] = 'EmailType';
         $this->_file->outputCSV(
-            $this->_file->getFilePath($customersFile), $headers
+            $this->_file->getFilePath($customersFile),
+            $headers
         );
         /*
          * END HEADERS.
          */
         $customerCollection = $this->_getCustomerCollection(
-            [$customerId], $website->getId()
+            [$customerId],
+            $website->getId()
         );
 
         foreach ($customerCollection as $customer) {
@@ -473,60 +480,102 @@ class Contact
             ->addAttributeToSelect('*')
             ->addNameToSelect()
             ->joinAttribute(
-                'billing_street', 'customer_address/street', 'default_billing',
-                null, 'left'
+                'billing_street',
+                'customer_address/street',
+                'default_billing',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'billing_city', 'customer_address/city', 'default_billing',
-                null, 'left'
+                'billing_city',
+                'customer_address/city',
+                'default_billing',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'billing_country_code', 'customer_address/country_id',
-                'default_billing', null, 'left'
+                'billing_country_code',
+                'customer_address/country_id',
+                'default_billing',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'billing_postcode', 'customer_address/postcode',
-                'default_billing', null, 'left'
+                'billing_postcode',
+                'customer_address/postcode',
+                'default_billing',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'billing_telephone', 'customer_address/telephone',
-                'default_billing', null, 'left'
+                'billing_telephone',
+                'customer_address/telephone',
+                'default_billing',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'billing_region', 'customer_address/region', 'default_billing',
-                null, 'left'
+                'billing_region',
+                'customer_address/region',
+                'default_billing',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'billing_company', 'customer_address/company', 'default_billing',
-                null, 'left'
+                'billing_company',
+                'customer_address/company',
+                'default_billing',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'shipping_street', 'customer_address/street',
-                'default_shipping', null, 'left'
+                'shipping_street',
+                'customer_address/street',
+                'default_shipping',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'shipping_city', 'customer_address/city', 'default_shipping',
-                null, 'left'
+                'shipping_city',
+                'customer_address/city',
+                'default_shipping',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'shipping_country_code', 'customer_address/country_id',
-                'default_shipping', null, 'left'
+                'shipping_country_code',
+                'customer_address/country_id',
+                'default_shipping',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'shipping_postcode', 'customer_address/postcode',
-                'default_shipping', null, 'left'
+                'shipping_postcode',
+                'customer_address/postcode',
+                'default_shipping',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'shipping_telephone', 'customer_address/telephone',
-                'default_shipping', null, 'left'
+                'shipping_telephone',
+                'customer_address/telephone',
+                'default_shipping',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'shipping_region', 'customer_address/region',
-                'default_shipping', null, 'left'
+                'shipping_region',
+                'customer_address/region',
+                'default_shipping',
+                null,
+                'left'
             )
             ->joinAttribute(
-                'shipping_company', 'customer_address/company',
-                'default_shipping', null, 'left'
+                'shipping_company',
+                'customer_address/company',
+                'default_shipping',
+                null,
+                'left'
             )
             ->addAttributeToFilter('entity_id', ['in' => $customerIds]);
 

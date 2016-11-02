@@ -46,8 +46,10 @@ class Review extends \Magento\Config\Block\System\Config\Form\Field
 
         //display the full url
         $text = sprintf(
-            '%sconnector/email/review/code/%s/order_id/@%s@', $baseUrl,
-            $passcode, $lastOrderId
+            '%sconnector/email/review/code/%s/order_id/@%s@',
+            $baseUrl,
+            $passcode,
+            $lastOrderId
         );
         $element->setData('value', $text);
 

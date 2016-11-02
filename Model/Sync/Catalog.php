@@ -186,8 +186,9 @@ class Catalog
 
         if ($this->_countProducts) {
             $message = 'Total time for sync : ' . gmdate(
-                    'H:i:s', microtime(true) - $this->_start
-                ) . ', Total synced = ' . $this->_countProducts;
+                'H:i:s',
+                microtime(true) - $this->_start
+            ) . ', Total synced = ' . $this->_countProducts;
             $this->_helper->log($message);
             $response['message'] = $message;
         }
@@ -280,11 +281,13 @@ class Catalog
         //for modified catalog
         if ($modified) {
             $connectorCollection->addFieldToFilter(
-                'modified', ['eq' => '1']
+                'modified',
+                ['eq' => '1']
             );
         } else {
             $connectorCollection->addFieldToFilter(
-                'imported', ['null' => 'true']
+                'imported',
+                ['null' => 'true']
             );
         }
         //set limit for collection
@@ -298,7 +301,8 @@ class Catalog
                 ->addAttributeToSelect('*')
                 ->addStoreFilter($store)
                 ->addAttributeToFilter(
-                    'entity_id', ['in' => $productIds]
+                    'entity_id',
+                    ['in' => $productIds]
                 );
 
             //visibility filter
@@ -308,7 +312,8 @@ class Catalog
             ) {
                 $visibility = explode(',', $visibility);
                 $productCollection->addAttributeToFilter(
-                    'visibility', ['in' => $visibility]
+                    'visibility',
+                    ['in' => $visibility]
                 );
             }
             //type filter
@@ -318,7 +323,8 @@ class Catalog
             ) {
                 $type = explode(',', $type);
                 $productCollection->addAttributeToFilter(
-                    'type_id', ['in' => $type]
+                    'type_id',
+                    ['in' => $type]
                 );
             }
 
@@ -348,19 +354,23 @@ class Catalog
 
             if ($modified) {
                 $write->update(
-                    $tableName, [
+                    $tableName,
+                    [
                     'modified' => new \Zend_Db_Expr('null'),
                     'updated_at' => gmdate('Y-m-d H:i:s'),
-                ], "product_id IN ($ids)"
+                    ],
+                    "product_id IN ($ids)"
                 );
             } else {
                 $write->update(
-                    $tableName, [
+                    $tableName,
+                    [
                     'imported' => '1',
                     'updated_at' => gmdate(
                         'Y-m-d H:i:s'
                     ),
-                ], "product_id IN ($ids)"
+                    ],
+                    "product_id IN ($ids)"
                 );
             }
         } catch (\Exception $e) {

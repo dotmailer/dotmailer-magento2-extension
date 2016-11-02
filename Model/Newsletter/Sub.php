@@ -13,7 +13,9 @@ class Sub extends \Magento\Newsletter\Model\Subscriber
     {
         if ($this->_scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS,
-            'store', $this->getStoreId())
+            'store',
+            $this->getStoreId()
+        )
         ) {
             return $this;
         } else {

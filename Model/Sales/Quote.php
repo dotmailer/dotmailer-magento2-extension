@@ -100,7 +100,7 @@ class Quote
 
     /**
      * Proccess abandoned carts.
-     * 
+     *
      * @param string $mode
      */
     public function proccessAbandonedCarts($mode = 'all')
@@ -121,20 +121,23 @@ class Quote
                         //number of the campaign use minutes
                         if ($num == 1) {
                             $minutes = $this->_getLostBasketCustomerInterval(
-                                $num, $storeId
+                                $num,
+                                $storeId
                             );
                             $interval = new \DateInterval(
                                 'PT' . $minutes . 'M'
                             );
                         } else {
                             $hours = (int)$this->_getLostBasketCustomerInterval(
-                                $num, $storeId
+                                $num,
+                                $storeId
                             );
                             $interval = new \DateInterval('PT' . $hours . 'H');
                         }
 
                         $fromTime = new \DateTime(
-                            'now', new \DateTimeZone('UTC')
+                            'now',
+                            new \DateTimeZone('UTC')
                         );
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
@@ -146,7 +149,10 @@ class Quote
 
                         //active quotes
                         $quoteCollection = $this->_getStoreQuotes(
-                            $fromDate, $toDate, $guest = false, $storeId
+                            $fromDate,
+                            $toDate,
+                            $guest = false,
+                            $storeId
                         );
                         //found abandoned carts
                         if ($quoteCollection->getSize()) {
@@ -158,7 +164,8 @@ class Quote
 
                         //campaign id for customers
                         $campaignId = $this->_getLostBasketCustomerCampaignId(
-                            $num, $storeId
+                            $num,
+                            $storeId
                         );
                         foreach ($quoteCollection as $quote) {
                             $email = $quote->getCustomerEmail();
@@ -166,7 +173,9 @@ class Quote
                             $quoteId = $quote->getId();
                             //api - set the last quote id for customer
                             $this->_helper->updateLastQuoteId(
-                                $quoteId, $email, $websiteId
+                                $quoteId,
+                                $email,
+                                $websiteId
                             );
 
                             $items = $quote->getAllItems();
@@ -183,14 +192,16 @@ class Quote
                             //api-send the most expensive product for abandoned cart
                             if ($mostExpensiveItem) {
                                 $this->_helper->updateAbandonedProductName(
-                                    $mostExpensiveItem->getName(), $email,
+                                    $mostExpensiveItem->getName(),
+                                    $email,
                                     $websiteId
                                 );
                             }
 
                             //send email only if the interval limit passed, no emails during this interval
                             $intervalLimit = $this->_checkCustomerCartLimit(
-                                $email, $storeId
+                                $email,
+                                $storeId
                             );
                             //no campign found for interval pass
                             if (!$intervalLimit) {
@@ -222,20 +233,23 @@ class Quote
                         //for the  first cart which use the minutes
                         if ($num == 1) {
                             $minutes = $this->_getLostBasketGuestIterval(
-                                $num, $storeId
+                                $num,
+                                $storeId
                             );
                             $interval = new \DateInterval(
                                 'PT' . $minutes . 'M'
                             );
                         } else {
                             $hours = $this->_getLostBasketGuestIterval(
-                                $num, $storeId
+                                $num,
+                                $storeId
                             );
                             $interval = new \DateInterval('PT' . $hours . 'H');
                         }
 
                         $fromTime = new \DateTime(
-                            'now', new \DateTimeZone('UTC')
+                            'now',
+                            new \DateTimeZone('UTC')
                         );
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
@@ -247,7 +261,10 @@ class Quote
 
                         //active guest quotes
                         $quoteCollection = $this->_getStoreQuotes(
-                            $fromDate, $toDate, $guest = true, $storeId
+                            $fromDate,
+                            $toDate,
+                            $guest = true,
+                            $storeId
                         );
                         //log the time for carts found
                         if ($quoteCollection->getSize()) {
@@ -257,7 +274,8 @@ class Quote
                             );
                         }
                         $guestCampaignId = $this->_getLostBasketGuestCampaignId(
-                            $num, $storeId
+                            $num,
+                            $storeId
                         );
                         foreach ($quoteCollection as $quote) {
                             $email = $quote->getCustomerEmail();
@@ -265,7 +283,9 @@ class Quote
                             $quoteId = $quote->getId();
                             // upate last quote id for the contact
                             $this->_helper->updateLastQuoteId(
-                                $quoteId, $email, $websiteId
+                                $quoteId,
+                                $email,
+                                $websiteId
                             );
                             // update abandoned product name for contact
                             $items = $quote->getAllItems();
@@ -282,14 +302,16 @@ class Quote
                             //api- set the most expensive product to datafield
                             if ($mostExpensiveItem) {
                                 $this->_helper->updateAbandonedProductName(
-                                    $mostExpensiveItem->getName(), $email,
+                                    $mostExpensiveItem->getName(),
+                                    $email,
                                     $websiteId
                                 );
                             }
 
                             //send email only if the interval limit passed, no emails during this interval
                             $campignFound = $this->_checkCustomerCartLimit(
-                                $email, $storeId
+                                $email,
+                                $storeId
                             );
 
                             //no campign found for interval pass
@@ -375,12 +397,14 @@ class Quote
         //guests
         if ($guest) {
             $salesCollection->addFieldToFilter(
-                'main_table.customer_id', ['null' => true]
+                'main_table.customer_id',
+                ['null' => true]
             );
         } else {
             //customers
             $salesCollection->addFieldToFilter(
-                'main_table.customer_id', ['notnull' => true]
+                'main_table.customer_id',
+                ['notnull' => true]
             );
         }
 
@@ -389,7 +413,8 @@ class Quote
         $websiteId = $this->_storeManager->getStore($storeId)
             ->getWebsiteId();
         $salesCollection = $ruleModel->process(
-            $salesCollection, \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
+            $salesCollection,
+            \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
             $websiteId
         );
 

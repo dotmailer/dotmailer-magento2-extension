@@ -267,10 +267,12 @@ class Contact extends \Magento\Framework\Model\AbstractModel
         try {
             $where = [];
             $where[] = $conn->quoteInto(
-                'email_imported is ?', new \Zend_Db_Expr('not null')
+                'email_imported is ?',
+                new \Zend_Db_Expr('not null')
             );
             $where[] = $conn->quoteInto(
-                'is_guest is ?', new \Zend_Db_Expr('not null')
+                'is_guest is ?',
+                new \Zend_Db_Expr('not null')
             );
 
             $num = $conn->update(

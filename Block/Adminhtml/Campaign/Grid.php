@@ -106,52 +106,51 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'index' => 'send_id',
                 'type' => 'text',
                 'escape' => true
-            ]
-        )->addColumn('message', [
+            ])->addColumn('message', [
             'header' => __('Send Message'),
             'align' => 'left',
             'width' => '300px',
             'index' => 'message',
             'type' => 'text',
             'escape' => true,
-        ])->addColumn('event_name', [
+            ])->addColumn('event_name', [
             'header' => __('Event Name'),
             'align' => 'left',
             'index' => 'event_name',
             'width' => '100px',
             'type' => 'string',
             'escape' => true,
-        ])->addColumn('quote_id', [
+            ])->addColumn('quote_id', [
             'header' => __('Quote ID'),
             'align' => 'left',
             'width' => '50px',
             'index' => 'quote_id',
             'type' => 'number',
             'escape' => true,
-        ])->addColumn('sent_at', [
+            ])->addColumn('sent_at', [
             'header' => __('Sent At'),
             'align' => 'center',
             'width' => '100px',
             'index' => 'sent_at',
             'type' => 'datetime',
             'escape' => true,
-        ])->addColumn('created_at', [
+            ])->addColumn('created_at', [
             'header' => __('Created At'),
             'align' => 'center',
             'width' => '100px',
             'index' => 'created_at',
             'type' => 'datetime',
             'escape' => true,
-        ])->addColumn('updated_at', [
+            ])->addColumn('updated_at', [
             'header' => __('Updated At'),
             'align' => 'center',
             'width' => '100px',
             'index' => 'updated_at',
             'type' => 'datetime',
             'escape' => true,
-        ]);
+            ]);
 
-        return parent::_prepareColumns();
+            return parent::_prepareColumns();
     }
 
     /**
@@ -183,8 +182,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'label' => __('Delete'),
                 'url' => $this->getUrl('*/*/massDelete'),
                 'confirm' => __('Are you sure?'),
-            ]
-        );
+            ]);
 
         return $this;
     }

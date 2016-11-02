@@ -2,8 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Mail;
 
-class Transport extends \Zend_Mail_Transport_Smtp
-    implements \Magento\Framework\Mail\TransportInterface
+class Transport extends \Zend_Mail_Transport_Smtp implements \Magento\Framework\Mail\TransportInterface
 {
     /**
      * @var \Magento\Framework\Mail\MessageInterface
@@ -38,8 +37,10 @@ class Transport extends \Zend_Mail_Transport_Smtp
         $this->_helper = $helper;
         $this->sendMail = $sendmail;
 
-        parent::__construct($this->_helper->getSmtpHost(),
-            $this->_helper->getTransportConfig());
+        parent::__construct(
+            $this->_helper->getSmtpHost(),
+            $this->_helper->getTransportConfig()
+        );
     }
 
     /**
@@ -51,12 +52,13 @@ class Transport extends \Zend_Mail_Transport_Smtp
             if ($this->_helper->isEnabled()) {
                 parent::send($this->_message);
             } else {
-
                 $this->sendMail->send($this->_message);
             }
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\MailException(
-                __($e->getMessage()), $e);
+                __($e->getMessage()),
+                $e
+            );
         }
     }
 }

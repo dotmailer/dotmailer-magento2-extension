@@ -763,8 +763,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $data,
         $collectionName = 'Orders'
     ) {
-        $order = $this->getContactsTransactionalDataByKey($collectionName,
-            $data->id);
+        $order = $this->getContactsTransactionalDataByKey(
+            $collectionName,
+            $data->id
+        );
         if (isset($order->message)
             && $order->message == self::API_ERROR_TRANS_NOT_EXISTS
         ) {
@@ -911,7 +913,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Gets all custom from addresses which can be used in a campaign.
-     * 
+     *
      * @throws \Exception
      */
     public function getCustomFromAddresses()
@@ -959,7 +961,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets all programs.
      * https://apiconnector.com/v2/programs?select={select}&skip={skip}.
-     * 
+     *
      * @throws \Exception
      */
     public function getPrograms()
@@ -1074,9 +1076,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->_helper->debug('deleteContactsTransactionalData',
+            $this->_helper->debug(
+                'deleteContactsTransactionalData',
                 ['DELETE CONTACTS TRANSACTIONAL DATA : ' . $url
-                . ' ' . $response->message]);
+                . ' ' . $response->message]
+            );
         }
 
         return $response;
@@ -1271,7 +1275,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Get contact import report faults.
-     * 
+     *
      * @param $id
      *
      * @return bool|null
@@ -1317,13 +1321,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         //log error
         if (isset($response->message)
             && !in_array(
-                $response->message, $this->exludeMessages
+                $response->message,
+                $this->exludeMessages
             )
         ) {
             $message = 'GETS THE SEND STATUS USING SEND ID: '
                 . $response->message;
             $this->_helper->log($message);
-
         }
         return $response;
     }

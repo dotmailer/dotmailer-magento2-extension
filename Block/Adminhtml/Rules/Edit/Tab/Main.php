@@ -2,8 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-class Main extends \Magento\Backend\Block\Widget\Form\Generic
-    implements \Magento\Backend\Block\Widget\Tab\TabInterface
+class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**
      * @var \Magento\Store\Model\System\Store
@@ -82,7 +81,8 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
 
-        $fieldset = $form->addFieldset('base_fieldset',
+        $fieldset = $form->addFieldset(
+            'base_fieldset',
             ['legend' => __('Rule Information')]
         );
 
@@ -127,8 +127,11 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
 
         if ($this->_storeManager->isSingleStoreMode()) {
             $websiteId = $this->_storeManager->getStore(true)->getWebsiteId();
-            $fieldset->addField('website_ids', 'hidden',
-                ['name' => 'website_ids[]', 'value' => $websiteId]);
+            $fieldset->addField(
+                'website_ids',
+                'hidden',
+                ['name' => 'website_ids[]', 'value' => $websiteId]
+            );
             $model->setWebsiteIds($websiteId);
         } else {
             $field = $fieldset->addField(

@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
-class Index extends   \Magento\Backend\App\AbstractAction
+class Index extends \Magento\Backend\App\AbstractAction
 {
     /**
      * @var PageFactory|\Magento\Framework\View\Result\PageFactory

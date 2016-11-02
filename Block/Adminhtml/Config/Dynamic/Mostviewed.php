@@ -39,7 +39,9 @@ class Mostviewed extends \Magento\Config\Block\System\Config\Form\Field
 
         //full url for dynamic content
         $text = sprintf(
-            '%sconnector/report/mostviewed/code/%s', $baseUrl, $passcode
+            '%sconnector/report/mostviewed/code/%s',
+            $baseUrl,
+            $passcode
         );
         $element->setData('value', $text);
 

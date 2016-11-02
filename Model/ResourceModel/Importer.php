@@ -42,7 +42,8 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $conn = $this->getConnection();
-            $num = $conn->update($this->getTable('email_importer'),
+            $num = $conn->update(
+                $this->getTable('email_importer'),
                 ['import_status' => 0],
                 ['id IN(?)' => $ids]
             );

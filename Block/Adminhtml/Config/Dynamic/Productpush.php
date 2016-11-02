@@ -39,7 +39,9 @@ class Productpush extends \Magento\Config\Block\System\Config\Form\Field
 
         //full url for dynamic content
         $text = sprintf(
-            '%sconnector/product/push/code/%s', $baseUrl, $passcode
+            '%sconnector/product/push/code/%s',
+            $baseUrl,
+            $passcode
         );
         $element->setData('value', $text);
 

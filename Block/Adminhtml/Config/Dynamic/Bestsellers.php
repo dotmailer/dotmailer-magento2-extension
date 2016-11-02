@@ -41,7 +41,9 @@ class Bestsellers extends \Magento\Config\Block\System\Config\Form\Field
 
         //full url
         $text = sprintf(
-            '%sconnector/report/bestsellers/code/%s', $baseUrl, $passcode
+            '%sconnector/report/bestsellers/code/%s',
+            $baseUrl,
+            $passcode
         );
         $element->setData('value', $text);
         $element->setData('disabled', 'disabled');

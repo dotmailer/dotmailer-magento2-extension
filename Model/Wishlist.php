@@ -29,7 +29,11 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
     ) {
         $this->_dateTime = $dateTime;
         parent::__construct(
-            $context, $registry, $resource, $resourceCollection, $data
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
         );
     }
 

@@ -46,8 +46,12 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 
         //full url for dynamic content
         $text
-            = sprintf('%sconnector/quoteproducts/crosssell/code/%s/quote_id/@%s@',
-            $baseUrl, $passcode, $lastQuoteId);
+            = sprintf(
+                '%sconnector/quoteproducts/crosssell/code/%s/quote_id/@%s@',
+                $baseUrl,
+                $passcode,
+                $lastQuoteId
+            );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

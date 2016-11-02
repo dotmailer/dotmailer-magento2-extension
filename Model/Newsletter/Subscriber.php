@@ -140,8 +140,10 @@ class Subscriber
             //get mapped storename
             $subscriberStoreName = $this->_helper->getMappedStoreName($website);
             //file headers
-            $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename),
-                ['Email', 'emailType', $subscriberStoreName]);
+            $this->_file->outputCSV(
+                $this->_file->getFilePath($subscribersFilename),
+                ['Email', 'emailType', $subscriberStoreName]
+            );
 
             $emails = $subscribers->getColumnValues('email');
 
@@ -152,7 +154,6 @@ class Subscriber
                 ->toArray();
 
             foreach ($subscribers as $subscriber) {
-
                 $email     = $subscriber->getEmail();
                 $storeId   = $this->getStoreIdForSubscriber($email, $subscribersData['items']);
 
@@ -160,7 +161,8 @@ class Subscriber
                     ->getName();
 
                 // save data for subscribers
-                $this->_file->outputCSV($this->_file->getFilePath($subscribersFilename),
+                $this->_file->outputCSV(
+                    $this->_file->getFilePath($subscribersFilename),
                     [$email, 'Html', $storeName]
                 );
                 $subscriber->setSubscriberImported(1)->save();
@@ -194,7 +196,6 @@ class Subscriber
     {
 
         foreach ($subscribers as $subscriber) {
-
             if ($subscriber['subscriber_email'] == $email) {
                 return $subscriber['store_id'];
             }

@@ -116,8 +116,10 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                     return $this;
                 }
                 $programId
-                    = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/wishlist_automation',
-                    $websiteId);
+                    = $this->_helper->getWebsiteConfig(
+                        'connector_automation/visitor_automation/wishlist_automation',
+                        $websiteId
+                    );
                 //wishlist program mapped
                 if ($programId) {
                     $automation = $this->_automationFactory->create();

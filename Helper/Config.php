@@ -275,7 +275,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Authorization link for OAUTH.
-     * 
+     *
      * @param int $website
      *
      * @return string
@@ -295,7 +295,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Is authorization link for custom domain set.
-     * 
+     *
      * @param int $website
      *
      * @return bool
@@ -343,7 +343,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $this->_storeManager->getStore()->getBaseUrl(
-            \Magento\Framework\UrlInterface::URL_TYPE_WEB, true
+            \Magento\Framework\UrlInterface::URL_TYPE_WEB,
+            true
         );
     }
 

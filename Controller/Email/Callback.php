@@ -74,9 +74,11 @@ class Callback extends \Magento\Framework\App\Action\Action
         //app code and admin user must be present
         if ($code && $adminUser->getId()) {
             $clientId = $this->scopeConfig->getValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID);
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
+            );
             $clientSecret = $this->scopeConfig->getValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID);
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID
+            );
             //callback uri if not set custom
             $redirectUri = $this->_storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true);

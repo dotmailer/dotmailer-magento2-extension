@@ -132,7 +132,9 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                 $this->_scopeConfig->getValue(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                    $order->getStore()));
+                    $order->getStore()
+                )
+            );
             if (!empty($configStatusAutomationMap)) {
                 foreach ($configStatusAutomationMap as $configMap) {
                     if ($configMap['status'] == $status) {
@@ -158,7 +160,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                     $automationTypeNewOrder
                         = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
                     $programIdNewOrder = $this->_helper->getAutomationIdByType(
-                        'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER', $order->getWebsiteId()
+                        'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
+                        $order->getWebsiteId()
                     );
                     //send to automation queue
                     $this->_doAutomationEnrolment(

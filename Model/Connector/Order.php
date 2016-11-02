@@ -156,12 +156,17 @@ class Order
         $this->storeName = $orderData->getStoreName();
 
         $createdAt = new \Zend_Date(
-            $orderData->getCreatedAt(), \Zend_Date::ISO_8601
+            $orderData->getCreatedAt(),
+            \Zend_Date::ISO_8601
         );
         $this->purchaseDate = $createdAt->toString(\Zend_Date::ISO_8601);
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float)number_format(
-            $orderData->getShippingAmount(), 2, '.', '');
+            $orderData->getShippingAmount(),
+            2,
+            '.',
+            ''
+        );
         $this->currency = $orderData->getStoreCurrencyCode();
 
         if ($payment = $orderData->getPayment()) {
@@ -176,8 +181,8 @@ class Order
 
         $customAttributes
             = $this->_helper->getConfigSelectedCustomOrderAttributes(
-            $website
-        );
+                $website
+            );
 
         if ($customAttributes) {
             $fields = $this->_helper->getOrderTableDescription();
@@ -186,7 +191,8 @@ class Order
                 if (isset($fields[$customAttribute])) {
                     $field = $fields[$customAttribute];
                     $value = $this->_getCustomAttributeValue(
-                        $field, $orderData
+                        $field,
+                        $orderData
                     );
                     if ($value) {
                         $this->_assignCustom($field, $value);
@@ -202,10 +208,12 @@ class Order
             $billingData = $orderData->getBillingAddress()->getData();
             $this->billingAddress = [
                 'billing_address_1' => $this->_getStreet(
-                    $billingData['street'], 1
+                    $billingData['street'],
+                    1
                 ),
                 'billing_address_2' => $this->_getStreet(
-                    $billingData['street'], 2
+                    $billingData['street'],
+                    2
                 ),
                 'billing_city' => $billingData['city'],
                 'billing_region' => $billingData['region'],
@@ -221,10 +229,12 @@ class Order
 
             $this->deliveryAddress = [
                 'delivery_address_1' => $this->_getStreet(
-                    $shippingData['street'], 1
+                    $shippingData['street'],
+                    1
                 ),
                 'delivery_address_2' => $this->_getStreet(
-                    $shippingData['street'], 2
+                    $shippingData['street'],
+                    2
                 ),
                 'delivery_city' => $shippingData['city'],
                 'delivery_region' => $shippingData['region'],
@@ -259,7 +269,9 @@ class Order
                     $categories = [];
                     $categories[] = $cat->getName();
                     $productCat[]['Name'] = substr(
-                        implode(', ', $categories), 0, 244
+                        implode(', ', $categories),
+                        0,
+                        244
                     );
                 }
 
@@ -280,7 +292,8 @@ class Order
                     foreach ($configAttributes as $attributeCode) {
                         //if config attribute is in attribute set
                         if (in_array(
-                            $attributeCode, $attributesFromAttributeSet
+                            $attributeCode,
+                            $attributesFromAttributeSet
                         )) {
                             //attribute input type
                             $inputType = $productModel->getResource()
@@ -299,7 +312,8 @@ class Order
                                     break;
                                 case 'date':
                                     $date = new \Zend_Date(
-                                        $productModel->getData($attributeCode), \Zend_Date::ISO_8601
+                                        $productModel->getData($attributeCode),
+                                        \Zend_Date::ISO_8601
                                     );
                                     $value = $date->toString(\Zend_Date::ISO_8601);
                                     break;
@@ -315,8 +329,7 @@ class Order
 
                                 $attributes[][$attributeCode]
                                     = $this->_limitLength($value);
-                            } elseif(is_array($value)) {
-
+                            } elseif (is_array($value)) {
                                 $value = implode($value, ', ');
                                 $attributes[][$attributeCode]
                                     = $this->_limitLength($value);
@@ -331,10 +344,14 @@ class Order
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
                     'qty' => (int)number_format(
-                        $productItem->getData('qty_ordered'), 2
+                        $productItem->getData('qty_ordered'),
+                        2
                     ),
                     'price' => (float)number_format(
-                        $productItem->getPrice(), 2, '.', ''
+                        $productItem->getPrice(),
+                        2,
+                        '.',
+                        ''
                     ),
                     'attribute-set' => $attributeSetName,
                     'categories' => $productCat,
@@ -345,17 +362,20 @@ class Order
                     unset($productData['custom-options']);
                 }
                 $this->products[] = $productData;
-
             } else {
                 // when no product information is available limit to this data
                 $productData = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
                     'qty' => (int)number_format(
-                        $productItem->getData('qty_ordered'), 2
+                        $productItem->getData('qty_ordered'),
+                        2
                     ),
                     'price' => (float)number_format(
-                        $productItem->getPrice(), 2, '.', ''
+                        $productItem->getPrice(),
+                        2,
+                        '.',
+                        ''
                     ),
                     'attribute-set' => '',
                     'categories' => [],
@@ -370,10 +390,16 @@ class Order
         }
 
         $this->orderSubtotal = (float)number_format(
-            $orderData->getData('subtotal'), 2, '.', ''
+            $orderData->getData('subtotal'),
+            2,
+            '.',
+            ''
         );
         $this->discountAmount = (float)number_format(
-            $orderData->getData('discount_amount'), 2, '.', ''
+            $orderData->getData('discount_amount'),
+            2,
+            '.',
+            ''
         );
         $orderTotal = abs(
             $orderData->getData('grand_total') - $orderData->getTotalRefunded()
@@ -445,7 +471,10 @@ class Order
 
                 case 'decimal':
                     $value = (float)number_format(
-                        $orderData->$function(), 2, '.', ''
+                        $orderData->$function(),
+                        2,
+                        '.',
+                        ''
                     );
                     break;
 
@@ -453,7 +482,8 @@ class Order
                 case 'datetime':
                 case 'date':
                     $date = new \Zend_Date(
-                        $orderData->$function(), \Zend_Date::ISO_8601
+                        $orderData->$function(),
+                        \Zend_Date::ISO_8601
                     );
                     $value = $date->toString(\Zend_Date::ISO_8601);
                     break;
@@ -542,11 +572,14 @@ class Order
         foreach ($orderItemOptions as $orderItemOption) {
             if (array_key_exists('value', $orderItemOption)
                 && array_key_exists(
-                    'label', $orderItemOption
+                    'label',
+                    $orderItemOption
                 )
             ) {
                 $label = str_replace(
-                    ' ', '-', $orderItemOption['label']
+                    ' ',
+                    '-',
+                    $orderItemOption['label']
                 );
                 $options[][$label] = $orderItemOption['value'];
             }

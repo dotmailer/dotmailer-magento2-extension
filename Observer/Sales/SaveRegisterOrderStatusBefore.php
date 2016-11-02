@@ -46,8 +46,10 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
         }
         //register the order status before change
         if (!$this->_registry->registry('sales_order_status_before')) {
-            $this->_registry->register('sales_order_status_before',
-                $orderStatus);
+            $this->_registry->register(
+                'sales_order_status_before',
+                $orderStatus
+            );
         }
 
         return $this;

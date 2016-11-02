@@ -45,8 +45,12 @@ class Content extends \Magento\Config\Block\System\Config\Form\Field
         $baseUrl = $this->_dataHelper->generateDynamicUrl();
 
         //display the full url
-        $text = sprintf('%sconnector/email/wishlist/code/%s/customer_id/@%s@',
-            $baseUrl, $passcode, $customerId);
+        $text = sprintf(
+            '%sconnector/email/wishlist/code/%s/customer_id/@%s@',
+            $baseUrl,
+            $passcode,
+            $customerId
+        );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

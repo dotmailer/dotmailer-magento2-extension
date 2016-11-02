@@ -113,7 +113,8 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     protected function _checkForSecureUrl()
     {
         $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
-            \Magento\Framework\UrlInterface::URL_TYPE_WEB, true
+            \Magento\Framework\UrlInterface::URL_TYPE_WEB,
+            true
         );
 
         if (!preg_match('/https/', $baseUrl)) {

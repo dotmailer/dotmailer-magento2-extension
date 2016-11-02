@@ -104,7 +104,8 @@ class Campaign
                     $campaignsToSend[$campaignId]['client'] = $client;
                     try {
                         $contactId = $this->_helper->getContactId(
-                            $campaign->getEmail(), $websiteId
+                            $campaign->getEmail(),
+                            $websiteId
                         );
                         if (is_numeric($contactId)) {
                             //update data fields for order review camapigns
@@ -137,7 +138,8 @@ class Campaign
                                 if (!empty($data)) {
                                     //update data fields
                                     $client->updateContactDatafieldsByEmail(
-                                        $email, $data
+                                        $email,
+                                        $data
                                     );
                                 }
                             }
@@ -161,7 +163,8 @@ class Campaign
                     $contacts = $data['contacts'];
                     $client = $data['client'];
                     $response = $client->postCampaignsSend(
-                        $campaignId, $contacts
+                        $campaignId,
+                        $contacts
                     );
                     if (isset($response->message)) {
                         //update  the failed to send email message

@@ -95,7 +95,7 @@ class Review
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
-         \Magento\Framework\Stdlib\DateTime\DateTime $coreDate,
+        \Magento\Framework\Stdlib\DateTime\DateTime $coreDate,
         \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory,
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,

@@ -57,72 +57,80 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected function _prepareColumns()
     {
         $this->addColumn(
-            'schedule_id', [
+            'schedule_id',
+            [
             'header'   => __('ID'),
             'width'    => '20px',
             'index'    => 'schedule_id',
             'type'     => 'number',
             'truncate' => 50,
             'escape'   => true,
-        ]
+            ]
         )->addColumn(
-            'job_code', [
+            'job_code',
+            [
             'header' => __('Job Code'),
             'align'  => 'left',
             'width'  => '50px',
             'index'  => 'job_code',
             'type'   => 'string',
             'escape' => true,
-        ]
+            ]
         )->addColumn(
-            'status', [
+            'status',
+            [
             'header' => __('Status'),
             'align'  => 'left',
             'width'  => '50px',
             'index'  => 'status',
             'type'   => 'string',
             'escape' => true,
-        ]
+            ]
         )->addColumn(
-            'messages', [
+            'messages',
+            [
             'header' => __('Message'),
             'align'  => 'center',
             'index'  => 'messages',
             'type'   => 'text',
             'escape' => true,
-        ]
+            ]
         )->addColumn(
-            'created_at', [
+            'created_at',
+            [
             'header' => __('Created At'),
             'align'  => 'left',
             'index'  => 'created_at',
             'type'   => 'datetime',
             'escape' => true,
-        ]
+            ]
         )->addColumn(
-            'scheduled_at', [
+            'scheduled_at',
+            [
             'header' => __('Scheduled At'),
             'align'  => 'left',
             'index'  => 'scheduled_at',
             'type'   => 'datetime',
             'escape' => true,
-        ]
+            ]
         )->addColumn(
-            'executed_at', [
+            'executed_at',
+            [
             'header' => __('Executed At'),
             'align'  => 'left',
             'index'  => 'executed_at',
             'type'   => 'datetime',
             'escape' => true,
-        ]
+            ]
         )->addColumn(
-            'finished_at', [
+            'finished_at',
+            [
             'header' => __('Finished At'),
             'align'  => 'left',
             'index'  => 'finished_at',
             'type'   => 'datetime',
             'escape' => true,
-        ]
+            ]
         );
 
         return parent::_prepareColumns();
@@ -136,7 +144,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');
         $this->getMassactionBlock()->addItem(
-            'delete', [
+            'delete',
+            [
                 'label'   => __('Delete'),
                 'url'     => $this->getUrl('*/*/massDelete'),
                 'confirm' => __('Are you sure?'),

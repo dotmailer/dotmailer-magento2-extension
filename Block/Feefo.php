@@ -112,7 +112,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
 
     /**
      * Get product reviews from feefo.
-     * 
+     *
      * @return array
      */
     public function getProductsReview()

@@ -274,7 +274,7 @@ class Datafield
 
     /**
      * Set contact datafields.
-     * 
+     *
      * @param array $contactDatafields
      */
     public function setContactDatafields($contactDatafields)
@@ -284,7 +284,7 @@ class Datafield
 
     /**
      * Get contact datafields.
-     * 
+     *
      * @return array
      */
     public function getContactDatafields()

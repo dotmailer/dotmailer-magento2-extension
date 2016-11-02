@@ -34,7 +34,6 @@ class Order extends \Magento\Framework\Model\AbstractModel
             //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
             //@codingStandardsIgnoreEnd
-
         } else {
             $this->setOrderId($orderId)
                 ->setQuoteId($quoteId);
@@ -99,7 +98,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
                 ->addFieldToFilter('modified', 1);
         } else {
             $collection->addFieldToFilter(
-                'email_imported', ['null' => true]
+                'email_imported',
+                ['null' => true]
             );
         }
 

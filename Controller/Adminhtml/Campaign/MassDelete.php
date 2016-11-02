@@ -22,12 +22,11 @@ class MassDelete extends CampaignController
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaign
-    )
-    {
+    ) {
+    
         $this->campaign = $campaign;
 
         parent::__construct($context);
-
     }
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect

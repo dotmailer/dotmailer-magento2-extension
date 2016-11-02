@@ -408,8 +408,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 }
                 if ($client) {
                     try {
-                        if (
-                            $item->getImportType() == self::IMPORT_TYPE_CONTACT
+                        if ($item->getImportType() == self::IMPORT_TYPE_CONTACT
                             or
                             $item->getImportType()
                             == self::IMPORT_TYPE_SUBSCRIBERS
@@ -423,8 +422,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                         } else {
                             $response
                                 = $client->getContactsTransactionalDataImportByImportId(
-                                $item->getImportId()
-                            );
+                                    $item->getImportId()
+                                );
                         }
                     } catch (\Exception $e) {
                         //@codingStandardsIgnoreStart
@@ -614,13 +613,15 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             $collection->addFieldToFilter('import_type', $condition);
         } else {
             $collection->addFieldToFilter(
-                'import_type', ['eq' => $importType]
+                'import_type',
+                ['eq' => $importType]
             );
         }
 
         $collection->addFieldToFilter('import_mode', ['eq' => $importMode])
             ->addFieldToFilter(
-                'import_status', ['eq' => self::NOT_IMPORTED]
+                'import_status',
+                ['eq' => self::NOT_IMPORTED]
             )
             ->setPageSize($limit)
             ->setCurPage(1);

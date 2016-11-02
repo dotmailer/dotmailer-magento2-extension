@@ -56,7 +56,9 @@ class Save extends \Magento\Backend\App\AbstractAction
                 if ($data['website_ids']) {
                     foreach ($data['website_ids'] as $websiteId) {
                         $result = $model->checkWebsiteBeforeSave(
-                            $websiteId, $data['type'], $id
+                            $websiteId,
+                            $data['type'],
+                            $id
                         );
                         if (!$result) {
                             $websiteName = $this->_storeManager->getWebsite(
@@ -110,7 +112,8 @@ class Save extends \Magento\Backend\App\AbstractAction
                 $this->_getSession()->setPageData(false);
                 if ($this->getRequest()->getParam('back')) {
                     $this->_redirect(
-                        '*/*/edit', ['id' => $model->getId()]
+                        '*/*/edit',
+                        ['id' => $model->getId()]
                     );
 
                     return;

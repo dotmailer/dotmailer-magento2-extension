@@ -43,7 +43,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             ]
         );
         $this->addColumn(
-            'automation', [
+            'automation',
+            [
                 'label' => __('Automation Program'),
                 'style' => 'width:120px',
             ]

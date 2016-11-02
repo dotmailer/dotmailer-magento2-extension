@@ -137,7 +137,7 @@ class Customer
 
     /**
      * Set customer data.
-     * 
+     *
      * @param $customer
      *
      * @return $this
@@ -193,7 +193,7 @@ class Customer
 
     /**
      * Customer reviews.
-     * 
+     *
      * @return $this
      */
     public function setReviewCollection()
@@ -209,7 +209,7 @@ class Customer
 
     /**
      * Number of reviews.
-     * 
+     *
      * @return int
      */
     public function getReviewCount()
@@ -219,13 +219,12 @@ class Customer
 
     /**
      * Last review date.
-     * 
+     *
      * @return string
      */
     public function getLastReviewDate()
     {
         if (count($this->reviewCollection)) {
-
             $createdAt = $this->reviewCollection->getSelect()->limit(1)
                 ->getFirstItem()
                 ->getCreatedAt();

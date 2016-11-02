@@ -45,8 +45,12 @@ class Upsell extends \Magento\Config\Block\System\Config\Form\Field
         $baseUrl = $this->_dataHelper->generateDynamicUrl();
 
         $text
-            = sprintf('%sconnector/quoteproducts/upsell/code/%s/quote_id/@%s@',
-            $baseUrl, $passcode, $lastQuoteId);
+            = sprintf(
+                '%sconnector/quoteproducts/upsell/code/%s/quote_id/@%s@',
+                $baseUrl,
+                $passcode,
+                $lastQuoteId
+            );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

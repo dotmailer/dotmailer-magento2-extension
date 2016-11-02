@@ -21,8 +21,8 @@ class MassDelete extends \Magento\Backend\App\Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-    )
-    {
+    ) {
+    
         $this->contact = $contactFactory;
         parent::__construct($context);
     }

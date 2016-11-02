@@ -226,8 +226,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
                     function doUpdate(item){
                         var url = '" . $this->getUrl(
-                'dotdigitalgroup_email/rules/ajax'
-            ) . "';
+            'dotdigitalgroup_email/rules/ajax'
+        ) . "';
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
                         var value = item.up(1).down().next(1);
@@ -258,8 +258,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
                     function doUpdateWithValues(item){
                         var url = '" . $this->getUrl(
-                'dotdigitalgroup_email/rules/selected'
-            ) . "';
+            'dotdigitalgroup_email/rules/selected'
+        ) . "';
                         var arrayKey = item.up(1).readAttribute('id');
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
@@ -294,8 +294,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
                     function doUpdateForCondition(item){
                         var url = '" . $this->getUrl(
-                'dotdigitalgroup_email/rules/value'
-            ) . "';
+            'dotdigitalgroup_email/rules/value'
+        ) . "';
                         var attribute = item.up(1).down();
                         var attributeValue = attribute.down().value;
                         var value = item.up().next();

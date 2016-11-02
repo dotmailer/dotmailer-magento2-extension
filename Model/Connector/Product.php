@@ -146,10 +146,16 @@ class Product
             ->getOptionArray();
         $this->visibility = (string)$options[$product->getVisibility()];
         $this->price = (float)number_format(
-            $product->getPrice(), 2, '.', ''
+            $product->getPrice(),
+            2,
+            '.',
+            ''
         );
         $this->specialPrice = (float)number_format(
-            $product->getSpecialPrice(), 2, '.', ''
+            $product->getSpecialPrice(),
+            2,
+            '.',
+            ''
         );
         $this->url = $product->getProductUrl();
 
@@ -215,7 +221,10 @@ class Product
                     $sOptions[$count]['sku'] = $selection->getSku();
                     $sOptions[$count]['id'] = $selection->getProductId();
                     $sOptions[$count]['price'] = (float)number_format(
-                        $selection->getPrice(), 2, '.', ''
+                        $selection->getPrice(),
+                        2,
+                        '.',
+                        ''
                     );
                     ++$count;
                 }
@@ -238,7 +247,10 @@ class Product
                     $options[$count]['option'] = $attribute['default_label'];
                     if (isset($attribute['pricing_value'])) {
                         $options[$count]['price'] = (float)number_format(
-                            $attribute['pricing_value'], 2, '.', ''
+                            $attribute['pricing_value'],
+                            2,
+                            '.',
+                            ''
                         );
                     }
                     ++$count;
@@ -247,8 +259,14 @@ class Product
             }
         }
 
-        unset($this->_itemFactory, $this->_mediaConfigFactory, $this->_visibilityFactory,
-            $this->_statusFactory, $this->_helper, $this->_storeManager);
+        unset(
+            $this->_itemFactory,
+            $this->_mediaConfigFactory,
+            $this->_visibilityFactory,
+            $this->_statusFactory,
+            $this->_helper,
+            $this->_storeManager
+        );
 
         return $this;
     }

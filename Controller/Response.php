@@ -18,7 +18,6 @@ class Response extends \Magento\Framework\App\Action\Action
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Action\Context $context
-
     ) {
         $this->_helper = $data;
         parent::__construct($context);
@@ -51,7 +50,7 @@ class Response extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Send empty response. 
+     * Send empty response.
      */
     protected function sendResponse()
     {
@@ -61,7 +60,8 @@ class Response extends \Magento\Framework\App\Action\Action
                 ->setHeader('Pragma', 'public', true)
                 ->setHeader(
                     'Cache-Control',
-                    'must-revalidate, post-check=0, pre-check=0', true
+                    'must-revalidate, post-check=0, pre-check=0',
+                    true
                 )
                 ->setHeader('Content-type', 'text/html; charset=UTF-8', true);
             $this->getResponse()->sendHeaders();

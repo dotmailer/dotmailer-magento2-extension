@@ -96,7 +96,8 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($productModel->getId()) {
                 //get single product for current mode
                 $recommendedProducts = $this->_getRecommendedProduct(
-                    $productModel, $mode
+                    $productModel,
+                    $mode
                 );
                 foreach ($recommendedProducts as $product) {
                     //check if still exists
@@ -172,7 +173,6 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             case 'crosssell':
                 $products = $productModel->getCrossSellProducts();
                 break;
-
         }
 
         return $products;

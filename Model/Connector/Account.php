@@ -81,7 +81,7 @@ class Account
 
     /**
      * Get api password.
-     * 
+     *
      * @return mixed
      */
     public function getApiPassword()
@@ -105,7 +105,7 @@ class Account
 
     /**
      * Get api username.
-     * 
+     *
      * @return mixed
      */
     public function getApiUsername()
@@ -115,7 +115,7 @@ class Account
 
     /**
      * Set contact book id.
-     * 
+     *
      * @param string $contactBookId
      */
     public function setContactBookId($contactBookId)
@@ -125,7 +125,7 @@ class Account
 
     /**
      * Get contact book ids.
-     * 
+     *
      * @return array
      */
     public function getContactBookIds()
@@ -135,7 +135,7 @@ class Account
 
     /**
      * Set contacts.
-     * 
+     *
      * @param array $contacts
      */
     public function setContacts($contacts)
@@ -149,7 +149,7 @@ class Account
 
     /**
      * Get contacts.
-     * 
+     *
      * @return array
      */
     public function getContacts()

@@ -72,8 +72,13 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         $this->_coreResource = $resourceConnection;
         $this->config = $config;
         $this->rulesType = $rulesType;
-        parent::__construct($context, $registry, $resource, $resourceCollection,
-            $data);
+        parent::__construct(
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
+        );
     }
 
     /**
@@ -266,7 +271,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         // ALL TRUE
         if ($combination == 1) {
             return $this->_processAndCombination(
-                $collection, $condition, $type
+                $collection,
+                $condition,
+                $type
             );
         }
         //ANY TRUE
@@ -319,11 +326,13 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             if ($cond == 'null') {
                 if ($value == '1') {
                     $collection->addFieldToFilter(
-                        $attribute, ['notnull' => true]
+                        $attribute,
+                        ['notnull' => true]
                     );
                 } elseif ($value == '0') {
                     $collection->addFieldToFilter(
-                        $attribute, [$cond => true]
+                        $attribute,
+                        [$cond => true]
                     );
                 }
             } else {
@@ -331,7 +340,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                     $value = '%' . $value . '%';
                 }
                 $collection->addFieldToFilter(
-                    $attribute, [$this->_conditionMap[$cond] => $value]
+                    $attribute,
+                    [$this->_conditionMap[$cond] => $value]
                 );
             }
         }
@@ -414,9 +424,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 $cond[] = $fieldsCondition;
             }
             if (!empty($multiFieldsConditions)) {
-                foreach (
-                    $multiFieldsConditions as $key => $multiFieldsCondition
-                ) {
+                foreach ($multiFieldsConditions as $key => $multiFieldsCondition) {
                     if (in_array($key, $column)) {
                         $exp = new \Zend_Db_Expr($key);
                         $column[] = $exp->__toString();
@@ -488,7 +496,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                             );
                             //evaluate conditions on values. if true then unset item from collection
                             if ($this->_evaluate(
-                                $value, $cond, $attributeValue
+                                $value,
+                                $cond,
+                                $attributeValue
                             )
                             ) {
                                 $collection->removeItemByKey(
@@ -513,7 +523,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                                 foreach ($attributeValue as $attrValue) {
                                     //evaluate conditions on values. if true then unset item from collection
                                     if ($this->_evaluate(
-                                        $value, $cond, $attrValue
+                                        $value,
+                                        $cond,
+                                        $attrValue
                                     )
                                     ) {
                                         $collection->removeItemByKey(
@@ -525,7 +537,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                             } else {
                                 //evaluate conditions on values. if true then unset item from collection
                                 if ($this->_evaluate(
-                                    $value, $cond, $attributeValue
+                                    $value,
+                                    $cond,
+                                    $attributeValue
                                 )
                                 ) {
                                     $collection->removeItemByKey(

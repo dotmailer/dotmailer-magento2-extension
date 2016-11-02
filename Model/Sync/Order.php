@@ -167,7 +167,8 @@ class Order
                 $error = false;
                 foreach ($ordersForSingleSync as $order) {
                     $this->_helper->log(
-                        '--------- register Order sync in single with importer ---------- : ');
+                        '--------- register Order sync in single with importer ---------- : '
+                    );
 
                     //register in queue with importer
                     $this->_importerFactory->create()
@@ -222,7 +223,8 @@ class Order
             if ($apiEnabled
                 && $this->_helper->getWebsiteConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-                    $website) && !empty($storeIds)
+                    $website
+                ) && !empty($storeIds)
             ) {
                 $this->_apiUsername = $this->_helper->getApiUsername($website);
                 $this->_apiPassword = $this->_helper->getApiPassword($website);
@@ -285,11 +287,16 @@ class Order
         if ($orderStatuses) {
             if ($modified) {
                 $orderCollection = $orderModel->getOrdersToImport(
-                    $storeIds, $limit, $orderStatuses, true
+                    $storeIds,
+                    $limit,
+                    $orderStatuses,
+                    true
                 );
             } else {
                 $orderCollection = $orderModel->getOrdersToImport(
-                    $storeIds, $limit, $orderStatuses
+                    $storeIds,
+                    $limit,
+                    $orderStatuses
                 );
             }
         } else {
@@ -297,7 +304,6 @@ class Order
         }
 
         try {
-
             //email_order order ids
             $orderIds = $orderCollection->getColumnValues('order_id');
 
@@ -307,7 +313,6 @@ class Order
                 ->addFieldToFilter('entity_id', ['in' => $orderIds]);
 
             foreach ($salesOrderCollection as $order) {
-
                 $storeId   = $order->getStoreId();
                 $websiteId = $this->_storeManager->getStore($storeId)->getWebsiteId();
                 /**
@@ -360,7 +365,8 @@ class Order
 
             if ($modified) {
                 $write->update(
-                    $tableName, [
+                    $tableName,
+                    [
                         'modified' => new \Zend_Db_Expr('null'),
                         'updated_at' => gmdate('Y-m-d H:i:s')
                     ],
@@ -368,7 +374,8 @@ class Order
                 );
             } else {
                 $write->update(
-                    $tableName, [
+                    $tableName,
+                    [
                         'email_imported' => 1,
                         'updated_at' => gmdate('Y-m-d H:i:s')
                     ],
