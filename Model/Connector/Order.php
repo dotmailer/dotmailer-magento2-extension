@@ -597,7 +597,7 @@ class Order
      *
      * @return string
      */
-    private function getAttributeSetName($product)
+    protected function getAttributeSetName($product)
     {
         $attributeSetRepository = $this->attributeSet->get($product->getAttributeSetId());
         return $attributeSetRepository->getAttributeSetName();

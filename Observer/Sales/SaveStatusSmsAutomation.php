@@ -187,7 +187,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      *
      * @param $data
      */
-    private function _doAutomationEnrolment($data)
+    protected function _doAutomationEnrolment($data)
     {
         //the program is not mapped
         if (!$data['programId']) {

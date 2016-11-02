@@ -13,7 +13,6 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
      * @param int $customerGroupId
      * @param string $couponCode
      * @param string|null $now
-     * @param \Magento\Quote\Model\Quote\Address $address allow extensions to further filter out rules based on quote address
      * @use $this->addWebsiteGroupDateFilter()
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @return $this
@@ -22,11 +21,10 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
         $websiteId,
         $customerGroupId,
         $couponCode = '',
-        $now = null,
-        \Magento\Quote\Model\Quote\Address $address = null
+        $now = null
     ) {
         if (!$this->getFlag('validation_filter')) {
-            if (is_null($now)) {
+            if ($now === null) {
                 $now = $this->_date->date()->format('Y-m-d');
             }
 
@@ -122,7 +120,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
     public function addWebsiteGroupDateFilter($websiteId, $customerGroupId, $now = null)
     {
         if (!$this->getFlag('website_group_date_filter')) {
-            if (is_null($now)) {
+            if ($now === null) {
                 $now = $this->_date->date()->format('Y-m-d');
             }
 

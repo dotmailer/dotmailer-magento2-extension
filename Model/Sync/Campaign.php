@@ -209,11 +209,9 @@ class Campaign
     }
 
     /**
-     * Check send status
-     *
      * @param $website
      */
-    private function _checkSendStatus($website)
+    protected function _checkSendStatus($website)
     {
         $storeIds = $this->_websiteFactory->create()->load($website->getId())->getStoreIds();
         $campaigns = $this->_getEmailCampaigns(

@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Customer extends \Magento\Customer\Model\AccountManagement
 {
-    private $_scopeConfig;
+    protected $_scopeConfig;
 
     /**
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
