@@ -127,7 +127,6 @@ class Contact
         //starting time for sync
         $this->_start = microtime(true);
         //resourse allocation
-        $this->_helper->allowResourceFullExecution();
         $started = false;
         //export bulk contacts
         foreach ($this->_helper->getWebsites() as $website) {

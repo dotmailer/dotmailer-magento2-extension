@@ -111,8 +111,6 @@ class Wishlist
     public function sync()
     {
         $response = ['success' => true, 'message' => 'Done.'];
-        //resource allocation
-        $this->_helper->allowResourceFullExecution();
         $websites = $this->_helper->getWebsites(true);
         foreach ($websites as $website) {
             $wishlistEnabled = $this->_helper->getWebsiteConfig(

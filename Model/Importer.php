@@ -397,7 +397,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     protected function _checkImportStatus()
     {
-        $this->_helper->allowResourceFullExecution();
         if ($items = $this->_getImportingItems($this->_bulkSyncLimit)) {
             foreach ($items as $item) {
                 $websiteId = $item->getWebsiteId();

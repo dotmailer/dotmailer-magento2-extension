@@ -234,7 +234,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SETUP_DATAFIELDS = 'connector_developer_settings/sync_settings/setup_data_fields';
     const XML_PATH_CONNECTOR_CLIENT_SECRET_ID = 'connector_developer_settings/oauth/client_key';
     const XML_PATH_CONNECTOR_CUSTOM_AUTHORIZATION = 'connector_developer_settings/oauth/custom_authorization';
-    const XML_PATH_CONNECTOR_RESOURCE_ALLOCATION = 'connector_developer_settings/import_settings/memory_limit';
     const XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED = 'connector_developer_settings/debug/debug_enabled';
     const XML_PATH_CONNECTOR_DEBUG_API_REQUEST_LIMIT = 'connector_developer_settings/debug/api_request_time_limit';
     const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT = 'connector_developer_settings/import_settings/transactional_data';

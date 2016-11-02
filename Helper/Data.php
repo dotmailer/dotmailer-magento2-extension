@@ -571,40 +571,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Allow to set the resource settings from config.
-     *
-     * @return $this
-     */
-    public function allowResourceFullExecution()
-    {
-        if ($this->isResourceAllocationEnabled()) {
-
-            /* it may be needed to set maximum execution time of the script to longer,
-             * like 60 minutes than usual */
-            //@codingStandardsIgnoreStart
-            set_time_limit(7200);
-
-            /* and memory to 512 megabytes */
-            ini_set('memory_limit', '512M');
-            //@codingStandardsIgnoreEnd
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use recommended resource allocation.
-     *
-     * @return bool
-     */
-    public function isResourceAllocationEnabled()
-    {
-        return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_RESOURCE_ALLOCATION
-        );
-    }
-
-    /**
      * Get all websites.
      *
      * @param bool|false $default

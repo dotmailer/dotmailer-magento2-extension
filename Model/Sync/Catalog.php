@@ -85,8 +85,6 @@ class Catalog
         $response = ['success' => true, 'message' => 'Done.'];
         $this->_start = microtime(true);
 
-        //resource allocation
-        $this->_helper->allowResourceFullExecution();
         $enabled = $this->_helper->isEnabled();
         $catalogSyncEnabled = $this->_helper->isCatalogSyncEnabled();
         //api and catalog sync enabled

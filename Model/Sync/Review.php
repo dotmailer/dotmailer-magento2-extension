@@ -137,8 +137,6 @@ class Review
         $this->_countReviews = 0;
         $this->_reviews = [];
         $this->_start = microtime(true);
-        //resource allocation
-        $this->_helper->allowResourceFullExecution();
         $websites = $this->_helper->getwebsites(true);
         foreach ($websites as $website) {
             $apiEnabled = $this->_helper->isEnabled($website);
