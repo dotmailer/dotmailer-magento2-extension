@@ -123,6 +123,7 @@ class Order
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
+        \Magento\Eav\Api\AttributeSetRepositoryInterface $attributeSet,
         \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -130,6 +131,7 @@ class Order
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Stdlib\DateTime $datetime
     ) {
+        $this->attributeSet = $attributeSet;
         $this->_setFactory = $setFactory;
         $this->_attributeCollection = $attributeCollection;
         $this->_productFactory = $productFactory;
@@ -323,9 +325,8 @@ class Order
                     }
                 }
 
-                $attributeSetName = $this->_setFactory->create()
-                    ->load($productModel->getAttributeSetId())
-                    ->getAttributeSetName();
+                $attributeSetName = $this->getAttributeSetName($productItem);
+
                 $productData = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
@@ -340,8 +341,9 @@ class Order
                     'attributes' => $attributes,
                     'custom-options' => $customOptions,
                 ];
-                if (! $customOptions)
+                if (! $customOptions) {
                     unset($productData['custom-options']);
+                }
                 $this->products[] = $productData;
 
             } else {
@@ -588,5 +590,16 @@ class Order
      */
     public function __wakeup()
     {
+    }
+
+    /**
+     * @param $product
+     *
+     * @return string
+     */
+    private function getAttributeSetName($product)
+    {
+        $attributeSetRepository = $this->attributeSet->get($product->getAttributeSetId());
+        return $attributeSetRepository->getAttributeSetName();
     }
 }
