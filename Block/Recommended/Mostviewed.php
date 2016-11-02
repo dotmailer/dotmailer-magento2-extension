@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+
 class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -17,10 +19,6 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $recommnededHelper;
 
-    /**
-     * @var
-     */
-    protected $_localeDate;
     /**
      * @var
      */
@@ -41,7 +39,14 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Magento\Reports\Model\ResourceModel\Product\CollectionFactory
      */
     protected $_reportProductCollection;
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
     protected $_coreResource;
+    /**
+     * @var TimezoneInterface
+     */
+    protected $dateTime;
 
     /**
      * Mostviewed constructor.
@@ -52,6 +57,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
      * @param \Magento\Catalog\Model\ProductFactory                          $productFactory
      * @param \Dotdigitalgroup\Email\Helper\Recommended                      $recommended
+     * @param TimezoneInterface                                              $timezone
      * @param \Magento\Catalog\Model\CategoryFactory                         $categtoryFactory
      * @param \Magento\Framework\App\ResourceConnection                      $resourceConnection
      * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection
@@ -64,11 +70,13 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
+        TimezoneInterface $timezone,
         \Magento\Catalog\Model\CategoryFactory $categtoryFactory,
         \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection,
         array $data = []
     ) {
+        $this->dateTime = $timezone;
         $this->_coreResource = $resourceConnection;
         $this->_productCollectionFactory = $productCollectionFactory;
         $this->_productFactory = $productFactory;
@@ -88,7 +96,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
-        $productsToDisplay = array();
+        $productsToDisplay = [];
         $mode = $this->getRequest()->getActionName();
         $limit
                            = $this->recommnededHelper->getDisplayLimitByMode($mode);

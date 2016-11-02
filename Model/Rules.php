@@ -30,7 +30,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * @var array
      */
-    protected $_used = array();
+    protected $_used = [];
 
     /**
      * @var Adminhtml\Source\Rules\Type

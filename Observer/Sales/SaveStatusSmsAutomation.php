@@ -40,14 +40,14 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     /**
      * SaveStatusSmsAutomation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory     $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\OrderFactory          $emailOrderFactory
-     * @param \Magento\Framework\Registry                        $registry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface         $storeManagerInterface
-     * @param \Magento\Store\Model\App\EmulationFactory          $emulationFactory
+     * @param \Dotdigitalgroup\Email\Model\AutomationFactory             $automationFactory
+     * @param \Dotdigitalgroup\Email\Model\OrderFactory                  $emailOrderFactory
+     * @param \Magento\Framework\Registry                                $registry
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface         $scopeConfig
+     * @param \Magento\Store\Model\StoreManagerInterface                 $storeManagerInterface
+     * @param \Magento\Store\Model\App\EmulationFactory                  $emulationFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Helper\Data                         $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,

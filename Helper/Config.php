@@ -284,7 +284,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         //base url, check for custom oauth domain
         if ($this->isAuthorizeCustomDomain($website)) {
-            $website = $this->_storeManager->getWebsite($website);
             $baseUrl = $this->_helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
                 . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         } else {

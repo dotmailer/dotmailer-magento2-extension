@@ -42,7 +42,7 @@ class Product
     /**
      * @var array
      */
-    public $categories = array();
+    public $categories = [];
 
     /**
      * @var string
@@ -67,7 +67,7 @@ class Product
     /**
      * @var array
      */
-    public $websites = array();
+    public $websites = [];
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data

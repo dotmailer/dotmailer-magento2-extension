@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Cron;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
+
     /**
      * @var \Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory
      */
@@ -57,64 +58,72 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     {
         $this->addColumn(
             'schedule_id', [
-            'header' => __('ID'),
-            'width' => '20px',
-            'index' => 'schedule_id',
-            'type' => 'number',
-                'truncate' => 50,
-            'escape' => true,
-        ])->addColumn(
+            'header'   => __('ID'),
+            'width'    => '20px',
+            'index'    => 'schedule_id',
+            'type'     => 'number',
+            'truncate' => 50,
+            'escape'   => true,
+        ]
+        )->addColumn(
             'job_code', [
-                'header' => __('Job Code'),
-            'align' => 'left',
-            'width' => '50px',
-            'index' => 'job_code',
-            'type' => 'string',
+            'header' => __('Job Code'),
+            'align'  => 'left',
+            'width'  => '50px',
+            'index'  => 'job_code',
+            'type'   => 'string',
             'escape' => true,
-        ])->addColumn(
+        ]
+        )->addColumn(
             'status', [
-                'header' => __('Status'),
-            'align' => 'left',
-            'width' => '50px',
-            'index' => 'status',
-            'type' => 'string',
+            'header' => __('Status'),
+            'align'  => 'left',
+            'width'  => '50px',
+            'index'  => 'status',
+            'type'   => 'string',
             'escape' => true,
-        ])->addColumn(
+        ]
+        )->addColumn(
             'messages', [
-                'header' => __('Message'),
-            'align' => 'center',
-            'index' => 'messages',
-            'type' => 'text',
+            'header' => __('Message'),
+            'align'  => 'center',
+            'index'  => 'messages',
+            'type'   => 'text',
             'escape' => true,
-        ])->addColumn(
+        ]
+        )->addColumn(
             'created_at', [
-                'header' => __('Created At'),
-            'align' => 'left',
-            'index' => 'created_at',
-            'type' => 'datetime',
+            'header' => __('Created At'),
+            'align'  => 'left',
+            'index'  => 'created_at',
+            'type'   => 'datetime',
             'escape' => true,
-        ])->addColumn(
+        ]
+        )->addColumn(
             'scheduled_at', [
-                'header' => __('Scheduled At'),
-            'align' => 'left',
-            'index' => 'scheduled_at',
-            'type' => 'datetime',
+            'header' => __('Scheduled At'),
+            'align'  => 'left',
+            'index'  => 'scheduled_at',
+            'type'   => 'datetime',
             'escape' => true,
-        ])->addColumn(
+        ]
+        )->addColumn(
             'executed_at', [
-                'header' => __('Executed At'),
-            'align' => 'left',
-            'index' => 'executed_at',
-            'type' => 'datetime',
+            'header' => __('Executed At'),
+            'align'  => 'left',
+            'index'  => 'executed_at',
+            'type'   => 'datetime',
             'escape' => true,
-        ])->addColumn(
+        ]
+        )->addColumn(
             'finished_at', [
-                'header' => __('Finished At'),
-            'align' => 'left',
-            'index' => 'finished_at',
-            'type' => 'datetime',
+            'header' => __('Finished At'),
+            'align'  => 'left',
+            'index'  => 'finished_at',
+            'type'   => 'datetime',
             'escape' => true,
-        ]);
+        ]
+        );
 
         return parent::_prepareColumns();
     }
@@ -128,8 +137,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->getMassactionBlock()->setFormFieldName('id');
         $this->getMassactionBlock()->addItem(
             'delete', [
-                'label' => __('Delete'),
-                'url' => $this->getUrl('*/*/massDelete'),
+                'label'   => __('Delete'),
+                'url'     => $this->getUrl('*/*/massDelete'),
                 'confirm' => __('Are you sure?'),
             ]
         );
