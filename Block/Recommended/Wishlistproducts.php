@@ -128,7 +128,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         //no product found to display
         if ($numItems == 0 || !$limit) {
             return [];
-        } elseif (count($items) > $limit) {
+        } elseif ($numItems > $limit) {
             $maxPerChild = 1;
         } else {
             $maxPerChild = number_format($limit / count($items));
