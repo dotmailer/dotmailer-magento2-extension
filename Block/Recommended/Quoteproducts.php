@@ -76,10 +76,10 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         //no product found to display
         if ($numItems == 0 || !$limit) {
             return [];
-        } elseif (count($quoteItems) > $limit) {
+        } elseif ($numItems > $limit) {
             $maxPerChild = 1;
         } else {
-            $maxPerChild = number_format($limit / count($quoteItems));
+            $maxPerChild = number_format($limit / $numItems);
         }
 
         $this->helper->log(

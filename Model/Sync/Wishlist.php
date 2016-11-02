@@ -259,7 +259,8 @@ class Wishlist
         //email_wishlist wishlist ids
         $wishlistIds = $collection->getColumnValues('wishlist_id');
 
-        $wishlistCollection = $this->_wishlist->getCollection()
+        $wishlistCollection = $this->_wishlist->create()
+            ->getCollection()
             ->addFieldToFilter('wishlist_id', ['in' => $wishlistIds]);
         $wishlistCollection->getSelect()
             ->joinLeft(
