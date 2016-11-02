@@ -84,10 +84,10 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         //no product found to display
         if ($numItems == 0 || !$limit) {
             return [];
-        } elseif (count($orderItems) > $limit) {
+        } elseif ($numItems > $limit) {
             $maxPerChild = 1;
         } else {
-            $maxPerChild = number_format($limit / count($orderItems));
+            $maxPerChild = number_format($limit / $numItems);
         }
 
         $this->helper->log(
