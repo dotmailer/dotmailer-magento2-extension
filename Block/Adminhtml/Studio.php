@@ -2,41 +2,62 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+
 /**
  * Class Studio.
  */
 class Studio extends \Magento\Backend\Block\Widget\Form
 {
+
     /**
+     * Helper config.
+     *
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
     protected $_configFactory;
     /**
+     * Helper.
+     *
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $_helper;
     /**
+     * Mage auth model.
+     *
      * @var \Magento\Backend\Model\Auth
      */
     protected $_auth;
     /**
-     * @var
+     * Messenger.
+     *
+     * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $_messageManager;
 
     /**
+     * Session model.
+     *
      * @var \Magento\Backend\Model\Auth\Session
      */
     protected $_sessionModel;
+    /**
+     * Apiconnector client.
+     *
+     * @var Client
+     */
+    protected $client;
 
     /**
      * Studio constructor.
      *
-     * @param \Magento\Backend\Model\Auth $auth
-     * @param \Dotdigitalgroup\Email\Helper\Config $configFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
-     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Model\Auth                 $auth
+     * @param \Dotdigitalgroup\Email\Helper\Config        $configFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data          $dataHelper
+     * @param \Magento\Backend\Block\Template\Context     $context
+     * @param \Magento\Backend\Model\Auth\Session         $sessionModel
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
+     * @param Client                                      $client
      */
     public function __construct(
         \Magento\Backend\Model\Auth $auth,
@@ -44,8 +65,10 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Model\Auth\Session $sessionModel,
-        \Magento\Framework\Message\ManagerInterface $messageManager
+        \Magento\Framework\Message\ManagerInterface $messageManager,
+        Client $client
     ) {
+        $this->client = $client;
         $this->_auth = $auth;
         $this->_helper = $dataHelper;
         $this->_sessionModel = $sessionModel;
@@ -144,73 +167,54 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      */
     public function generatetokenAction()
     {
-        //check for secure url
         $adminUser = $this->_auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
 
         if ($refreshToken) {
-            $code = $this->getCode();
-            $params = 'client_id=' . $this->_helper->getWebsiteConfig(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
-                . '&client_secret=' . $this->_helper->getWebsiteConfig(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID)
-                . '&refresh_token=' . $refreshToken . '&grant_type=refresh_token';
+            $token = $this->client->getAccessToken($this->buildUrlParams($refreshToken),
+                $this->_configFactory->getTokenUrl());
 
-            $url = $this->_configFactory->getTokenUrl();
-
-            $this->_helper->log('token code : ' . $code . ', params : '
-                . $params);
-
-            /*
-             * Refresh Token request.
-             */
-            //@codingStandardsIgnoreStart
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-            curl_setopt($ch, CURLOPT_POST, count($params));
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-            curl_setopt($ch, CURLOPT_HTTPHEADER,
-                array('Content-Type: application/x-www-form-urlencoded'));
-
-            $response = json_decode(curl_exec($ch));
-
-            if (isset($response->error)) {
-                $this->_helper->log('Token Error Number:' . curl_errno($ch)
-                    . 'Error String:' . curl_error($ch));
-            }
-            curl_close($ch);
-            $token = '';
-            if (isset($response->access_token)) {
-                //save the refresh token to the admin user
-                $adminUser->setRefreshToken($response->access_token)
+            //save the refresh token to the admin user
+            if (is_string($token)) {
+                $adminUser->setRefreshToken($token)
                     ->save();
-
-                $token = $response->access_token;
             }
-            //@codingStandardsIgnoreEnd
             return $token;
         } else {
-            $this->_messageManager->addNotice('Please Connect To Access The Page.');
-
-            return '';
+            $this->_messageManager->addNoticeMessage('Please Connect To Access The Page.');
         }
     }
 
     /**
      * Retrieve authorisation code.
      *
-     * @return mixed
+     * @return string
      */
     public function getCode()
     {
-        $adminUser = $this->_sessionModel
-            ->getUser();
+        $adminUser = $this->_sessionModel->getUser();
         $code = $adminUser->getEmailCode();
 
         return $code;
+    }
+
+    /**
+     * Build url param.
+     *
+     * @param string $refreshToken
+     *
+     * @return string
+     */
+    protected function buildUrlParams($refreshToken)
+    {
+        $params = 'client_id=' . $this->_helper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
+            )
+            . '&client_secret=' . $this->_helper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID
+            )
+            . '&refresh_token=' . $refreshToken . '&grant_type=refresh_token';
+
+        return $params;
     }
 }

@@ -116,6 +116,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
     }
 
+    /**
+     * @param $data
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function insert($data)
     {
         if (!empty($data)) {
@@ -126,5 +131,22 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
             }
         }
+    }
+
+    /**
+     * Set suppressed for contact ids.
+     *
+     * @param array $suppressedContactIds
+     *
+     * @return int
+     */
+    public function setContactSuppressedForContactIds($suppressedContactIds)
+    {
+        $conn = $this->getConnection();
+
+        return $conn->update($this->getMainTable(),
+            ['suppressed' => 1],
+            ['id IN(?)' => $suppressedContactIds]
+        );
     }
 }
