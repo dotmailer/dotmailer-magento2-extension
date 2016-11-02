@@ -143,7 +143,7 @@ class Wishlist
                     //mark connector wishlist as  imported
                     $this->_setImported($this->_wishlistIds);
                 }
-                if (count($this->_wishlists)) {
+                if (! empty($this->_wishlists)) {
                     $message = 'Total time for wishlist bulk sync : ' . gmdate(
                             'H:i:s', microtime(true) - $this->_start
                         );
