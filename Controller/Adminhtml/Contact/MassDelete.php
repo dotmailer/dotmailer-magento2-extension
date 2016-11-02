@@ -6,6 +6,26 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends \Magento\Backend\App\Action
 {
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
+    protected $contact;
+
+    /**
+     * MassDelete constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context         $context
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+    )
+    {
+        $this->contact = $contactFactory;
+        parent::__construct($context);
+    }
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
@@ -18,10 +38,8 @@ class MassDelete extends \Magento\Backend\App\Action
         } else {
             try {
                 foreach ($ids as $id) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->setEmailContactId($id);
+                    $model = $this->contact->setEmailContactId($id);
                     $model->delete();
-                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {

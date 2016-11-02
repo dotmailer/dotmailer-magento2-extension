@@ -4,40 +4,45 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Campaign;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
+
+    /**
+     * @var \Magento\Framework\Module\Manager
+     */
     protected $moduleManager;
 
+    /**
+     * @var
+     */
     protected $_gridFactory;
 
-    protected $_objectManager;
-
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
+     */
     protected $_campaignFactory;
 
     /**
      * Grid constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $gridFactory
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
-     * @param \Magento\Framework\Module\Manager $moduleManager
-     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
-     * @param array $data
+     * @param \Magento\Backend\Block\Template\Context                               $context
+     * @param \Magento\Backend\Helper\Data                                          $backendHelper
+     * @param \Magento\Framework\Module\Manager                                     $moduleManager
+     * @param array                                                                 $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $gridFactory,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
         $this->_campaignFactory = $gridFactory;
-        $this->_objectManager = $objectManagerInterface;
         $this->moduleManager = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
-     * Constructor.
+     *
      */
     protected function _construct()
     {

@@ -7,6 +7,26 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends Action
 {
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ReviewFactory
+     */
+    protected $review;
+
+    /**
+     * MassDelete constructor.
+     *
+     * @param Action\Context                             $context
+     * @param \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory
+    ) {
+        $this->review = $reviewFactory;
+
+        parent::__construct($context);
+    }
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
@@ -18,11 +38,8 @@ class MassDelete extends Action
         } else {
             try {
                 foreach ($searchIds as $searchId) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Review')
-                        ->setId($searchId);
+                    $model = $this->review->setId($searchId);
                     $model->delete();
-                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccessMessage(
                     __('Total of %1 record(s) were deleted.', count($searchIds))

@@ -7,6 +7,26 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends OrderController
 {
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\OrderFactory
+     */
+    protected $order;
+
+    /**
+     * MassDelete constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context       $context
+     * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
+    ) {
+        $this->order = $orderFactory;
+
+        parent::__construct($context);
+    }
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
@@ -18,10 +38,8 @@ class MassDelete extends OrderController
         } else {
             try {
                 foreach ($ids as $id) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Order')->setEmailOrderId($id);
+                    $model = $this->order->setEmailOrderId($id);
                     $model->delete();
-                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {
