@@ -22,8 +22,7 @@ class MassDelete extends \Magento\Backend\App\Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
-    )
-    {
+    ) {
         $this->catalog = $catalogFactory;
 
         parent::__construct($context);
@@ -39,7 +38,8 @@ class MassDelete extends \Magento\Backend\App\Action
         } else {
             try {
                 foreach ($searchIds as $searchId) {
-                    $model = $this->catalog->setId($searchId);
+                    $model = $this->catalog->create()
+                        ->setId($searchId);
                     $model->delete();
                 }
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($searchIds)));

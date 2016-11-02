@@ -38,7 +38,9 @@ class MassDelete extends \Magento\Backend\App\Action
             try {
                 //@codingStandardsIgnoreStart
                 foreach ($searchIds as $searchId) {
-                    $model = $this->automation->setId($searchId);
+                    $model = $this->automation
+                        ->create()
+                        ->setId($searchId);
                     $model->delete();
                 }
                 //@codingStandardsIgnoreEnd

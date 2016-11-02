@@ -43,7 +43,8 @@ class MassDelete extends ImporterController
             try {
                 foreach ($searchIds as $searchId) {
                     //@codingStandardsIgnoreStart
-                    $model = $this->_importerFactory->create()->setId($searchId);
+                    $model = $this->_importerFactory->create()
+                        ->setId($searchId);
                     $model->delete();
                     //@codingStandardsIgnoreEnd
                 }

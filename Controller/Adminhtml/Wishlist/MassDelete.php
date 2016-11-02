@@ -38,7 +38,8 @@ class MassDelete extends \Magento\Backend\App\Action
         } else {
             try {
                 foreach ($ids as $id) {
-                    $model = $this->wishlist->setId($id);
+                    $model = $this->wishlist->create()
+                        ->setId($id);
                     $model->delete();
                 }
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));

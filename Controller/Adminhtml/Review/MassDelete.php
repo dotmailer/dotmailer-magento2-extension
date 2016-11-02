@@ -38,7 +38,8 @@ class MassDelete extends Action
         } else {
             try {
                 foreach ($searchIds as $searchId) {
-                    $model = $this->review->setId($searchId);
+                    $model = $this->review->create()
+                        ->setId($searchId);
                     $model->delete();
                 }
                 $this->messageManager->addSuccessMessage(

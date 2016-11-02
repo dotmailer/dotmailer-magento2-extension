@@ -41,7 +41,8 @@ class MassDelete extends CampaignController
         } else {
             try {
                 foreach ($searchIds as $searchId) {
-                    $model = $this->campaign->setId($searchId);
+                    $model = $this->campaign->create()
+                        ->setId($searchId);
                     $model->delete();
                 }
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($searchIds)));

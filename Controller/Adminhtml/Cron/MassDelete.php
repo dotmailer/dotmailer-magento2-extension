@@ -22,10 +22,10 @@ class MassDelete extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context $context,
         \Magento\Cron\Model\ScheduleFactory $scheduleFactory
     ) {
-
-       $this->scheduleFactory = $scheduleFactory;
+        $this->scheduleFactory = $scheduleFactory;
         parent::__construct($context);
     }
+
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
@@ -38,7 +38,8 @@ class MassDelete extends \Magento\Backend\App\Action
         } else {
             try {
                 foreach ($ids as $id) {
-                    $model = $this->scheduleFactory->setId($id);
+                    $model = $this->scheduleFactory->create()
+                        ->setId($id);
                     $model->delete();
                 }
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
