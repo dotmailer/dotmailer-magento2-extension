@@ -16,6 +16,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Data\Form\FormKey\Validator
      */
     protected $_formKeyValidator;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     */
+    protected $_localeDate;
 
     /**
      * Newsletter constructor.
@@ -24,16 +28,19 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @param \Magento\Customer\Model\Session $session
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\Session $session,
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
         $this->_helper = $helper;
         $this->_customerSession = $session;
         $this->_formKeyValidator = $formKeyValidator;
+        $this->_localeDate = $localeDate;
         parent::__construct($context);
     }
 
@@ -138,10 +145,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                             $paramDataFields[$key] = (string)$value;
                         }
                         if ($processedFields[$key] == 'Date') {
-                            $date = new \Zend_Date($value, 'Y/M/d');
-                            $paramDataFields[$key] = $date->toString(
-                                \Zend_Date::ISO_8601
-                            );
+                            $paramDataFields[$key] = $this->_localeDate->date($value)->format(\Zend_Date::ISO_8601);
                         }
                         $data[] = [
                             'Key' => $key,

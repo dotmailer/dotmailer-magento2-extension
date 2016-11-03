@@ -55,17 +55,25 @@ class Review
     protected $_helper;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     */
+    protected $_localeDate;
+
+    /**
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
         $this->_helper = $data;
         $this->_storeManager = $storeManagerInterface;
+        $this->_localeDate = $localeDate;
     }
 
     /**
@@ -141,9 +149,7 @@ class Review
      */
     public function setReviewDate($date)
     {
-        $createdAt = new \Zend_Date($date, \Zend_Date::ISO_8601);
-
-        $this->reviewDate = $createdAt->toString(\Zend_Date::ISO_8601);
+        $this->reviewDate = $this->_localeDate->date($date)->format(\Zend_Date::ISO_8601);
 
         return $this;
     }
@@ -297,7 +303,7 @@ class Review
     public function __sleep()
     {
         $properties = array_keys(get_object_vars($this));
-        $properties = array_diff($properties, ['_storeManager', '_helper']);
+        $properties = array_diff($properties, ['_storeManager', '_helper', '_localeDate']);
 
         return $properties;
     }
