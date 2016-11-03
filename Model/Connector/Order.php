@@ -338,7 +338,7 @@ class Order
                     }
                 }
 
-                $attributeSetName = $this->getAttributeSetName($productItem);
+                $attributeSetName = $this->getAttributeSetName($productModel);
 
                 $productData = [
                     'name' => $productItem->getName(),
