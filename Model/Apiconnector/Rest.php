@@ -115,6 +115,7 @@ abstract class Rest
                     case '{':
                     case '[':
                         $level++;
+                        break;
                     case ',':
                         $endsLineLevel = $level;
                         break;
