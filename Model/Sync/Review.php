@@ -89,7 +89,6 @@ class Review
      * @param \Magento\Review\Model\ReviewFactory                                 $reviewFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                  $data
      * @param \Magento\Framework\App\ResourceConnection                           $resource
-     * @param \Magento\Framework\Stdlib\DateTime                                  $datetime
      * @param \Magento\Review\Model\Rating\Option\Vote                            $vote
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory        $mageReviewCollection
      */
@@ -105,10 +104,10 @@ class Review
         \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Framework\Stdlib\DateTime $datetime,
         \Magento\Review\Model\Rating\Option\Vote $vote,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
     ) {
+
         $this->_coreResource = $resourceConnection;
         $this->_coreDate = $coreDate;
         $this->_reviewCollection = $reviewCollection;
@@ -120,7 +119,6 @@ class Review
         $this->_importerFactory = $importerFactory;
         $this->_helper = $data;
         $this->_resource = $resource;
-        $this->_dateTime = $datetime;
         $this->vote = $vote;
         $this->_mageReviewCollection = $mageReviewCollection;
     }
