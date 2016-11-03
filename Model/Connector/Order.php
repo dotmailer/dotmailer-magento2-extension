@@ -86,9 +86,9 @@ class Order
      */
     public $orderStatus;
     /**
-     * @var \Magento\Framework\Stdlib\DateTime
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    protected $_datetime;
+    protected $_localeDate;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -119,7 +119,7 @@ class Order
      * @param \Magento\Customer\Model\CustomerFactory                                  $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                       $helperData
      * @param \Magento\Store\Model\StoreManagerInterface                               $storeManagerInterface
-     * @param \Magento\Framework\Stdlib\DateTime                                       $datetime
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
@@ -129,7 +129,7 @@ class Order
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Stdlib\DateTime $datetime
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
         $this->attributeSet = $attributeSet;
         $this->_setFactory = $setFactory;
@@ -137,7 +137,7 @@ class Order
         $this->_productFactory = $productFactory;
         $this->_customerFactory = $customerFactory;
         $this->_helper = $helperData;
-        $this->_datetime = $datetime;
+        $this->_localeDate = $localeDate;
         $this->_storeManager = $storeManagerInterface;
     }
 
@@ -155,11 +155,7 @@ class Order
         $this->email = $orderData->getCustomerEmail();
         $this->storeName = $orderData->getStoreName();
 
-        $createdAt = new \Zend_Date(
-            $orderData->getCreatedAt(),
-            \Zend_Date::ISO_8601
-        );
-        $this->purchaseDate = $createdAt->toString(\Zend_Date::ISO_8601);
+        $this->purchaseDate = $this->_localeDate->date($orderData->getCreatedAt())->format(\Zend_Date::ISO_8601);
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float)number_format(
             $orderData->getShippingAmount(),
@@ -311,11 +307,8 @@ class Order
                                     );
                                     break;
                                 case 'date':
-                                    $date = new \Zend_Date(
-                                        $productModel->getData($attributeCode),
-                                        \Zend_Date::ISO_8601
-                                    );
-                                    $value = $date->toString(\Zend_Date::ISO_8601);
+                                    $value = $this->_localeDate->date($productModel->getData($attributeCode))
+                                        ->format(\Zend_Date::ISO_8601);
                                     break;
                                 default:
                                     $value = $productModel->getData(
@@ -481,11 +474,7 @@ class Order
                 case 'timestamp':
                 case 'datetime':
                 case 'date':
-                    $date = new \Zend_Date(
-                        $orderData->$function(),
-                        \Zend_Date::ISO_8601
-                    );
-                    $value = $date->toString(\Zend_Date::ISO_8601);
+                    $value = $this->_localeDate->date($orderData->$function())->format(\Zend_Date::ISO_8601);
                     break;
 
                 default:
@@ -598,7 +587,7 @@ class Order
             $properties,
             [
                 '_storeManager',
-                '_datetime',
+                '_localeDate',
                 '_helper',
                 '_customerFactory',
                 '_productFactory',

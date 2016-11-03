@@ -50,6 +50,10 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Framework\App\ResourceConnection
      */
     protected $_adapter;
+    /**
+     * @var \Zend_Date
+     */
+    protected $_date;
 
     /**
      * Recommended constructor.
@@ -58,17 +62,20 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Zend_Date $date
      */
     public function __construct(
         \Magento\Framework\App\ResourceConnection $adapter,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Zend_Date $date
     ) {
         $this->_adapter = $adapter;
         $this->_helper = $data;
         $this->_context = $context;
         $this->_storeManager = $storeManager;
+        $this->_date = $date;
 
         parent::__construct($context);
     }
@@ -274,7 +281,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getTimeFromConfig($config)
     {
-        $now = new \Zend_Date();
+        $now = $this->_date;
         $period = 'M';
 
         if ($config == 'mostviewed') {
