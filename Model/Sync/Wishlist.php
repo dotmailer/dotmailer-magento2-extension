@@ -179,13 +179,14 @@ class Wishlist
         $this->_wishlistIds = $emailWishlist->getColumnValues('wishlist_id');
 
         if (! empty($this->_wishlistIds)) {
-            $collection = $this->_wishlist->getCollection()
+            $collection = $this->_wishlist->create()
+                ->getCollection()
                 ->addFieldToFilter('main_table.wishlist_id', ['in' => $this->_wishlistIds])
                 ->addFieldToFilter('customer_id', ['notnull' => 'true']);
 
             $collection->getSelect()
                 ->joinLeft(
-                    ['c' => $this->_resource->getTableName('customer/entity')],
+                    ['c' => $this->_resource->getTableName('customer_entity')],
                     'c.entity_id = customer_id',
                     ['email', 'store_id']
                 );
@@ -262,7 +263,7 @@ class Wishlist
             ->addFieldToFilter('wishlist_id', ['in' => $wishlistIds]);
         $wishlistCollection->getSelect()
             ->joinLeft(
-                ['c' => $this->_resource->getTableName('customer/entity')],
+                ['c' => $this->_resource->getTableName('customer_entity')],
                 'c.entity_id = customer_id',
                 ['email', 'store_id']
             );
