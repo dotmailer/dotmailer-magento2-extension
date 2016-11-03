@@ -59,13 +59,11 @@ class Guest
         $started = false;
 
         foreach ($websites as $website) {
-
             //check if the guest is mapped and enabled
             $addresbook = $this->_helper->getGuestAddressBook($website);
             $guestSyncEnabled = $this->_helper->isGuestSyncEnabled($website);
             $apiEnabled = $this->_helper->isEnabled($website);
             if ($addresbook && $guestSyncEnabled && $apiEnabled) {
-
                 //sync guests for website
                 $this->exportGuestPerWebsite($website);
 
@@ -98,8 +96,10 @@ class Guest
                 . date('d_m_Y_Hi') . '.csv');
             $this->_helper->log('Guest file: ' . $guestFilename);
             $storeName = $this->_helper->getMappedStoreName($website);
-            $this->_file->outputCSV($this->_file->getFilePath($guestFilename),
-                ['Email', 'emailType', $storeName]);
+            $this->_file->outputCSV(
+                $this->_file->getFilePath($guestFilename),
+                ['Email', 'emailType', $storeName]
+            );
 
             foreach ($guests as $guest) {
                 $email = $guest->getEmail();
@@ -110,8 +110,10 @@ class Guest
                     //@codingStandardsIgnoreEnd
                     $storeName = $website->getName();
                     // save data for guests
-                    $this->_file->outputCSV($this->_file->getFilePath($guestFilename),
-                        [$email, 'Html', $storeName]);
+                    $this->_file->outputCSV(
+                        $this->_file->getFilePath($guestFilename),
+                        [$email, 'Html', $storeName]
+                    );
                     ++$this->_countGuests;
                 } catch (\Exception $e) {
                     throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

@@ -43,10 +43,11 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             ]
         );
         $this->addColumn(
-            'automation', array(
+            'automation',
+            [
                 'label' => __('Automation Program'),
                 'style' => 'width:120px',
-            )
+            ]
         );
         $this->_addAfter = false;
         $this->_addButtonLabel = __('Add New Enrolment');

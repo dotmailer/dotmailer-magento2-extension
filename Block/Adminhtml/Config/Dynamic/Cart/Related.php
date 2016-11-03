@@ -47,8 +47,12 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
 
         //display the full url
         $text
-            = sprintf('%sconnector/quoteproducts/related/code/%s/quote_id/@%s@',
-            $baseUrl, $passcode, $lastQuoteId);
+            = sprintf(
+                '%sconnector/quoteproducts/related/code/%s/quote_id/@%s@',
+                $baseUrl,
+                $passcode,
+                $lastQuoteId
+            );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

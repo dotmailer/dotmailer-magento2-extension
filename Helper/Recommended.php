@@ -255,9 +255,10 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         );
         if ($fallbackIds) {
             return explode(
-                ',', $this->scopeConfig->getValue(
-                self::XML_PATH_FALLBACK_PRODUCTS_ITEMS
-            )
+                ',',
+                $this->scopeConfig->getValue(
+                    self::XML_PATH_FALLBACK_PRODUCTS_ITEMS
+                )
             );
         }
 

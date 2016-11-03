@@ -116,11 +116,13 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     protected function _deleteFromAccount($key)
     {
         $apiEnabled = $this->_scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED);
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED
+        );
         $catalogEnabled = $this->_helper->isCatalogSyncEnabled();
         if ($apiEnabled && $catalogEnabled) {
             $scope = $this->_scopeConfig->getValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES);
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES
+            );
             if ($scope == 1) {
                 //register in queue with importer
                 $this->_importerFactory->create()

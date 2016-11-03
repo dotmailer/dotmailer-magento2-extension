@@ -264,7 +264,7 @@ abstract class Rest
 
     /**
      * Execute curl get request.
-     * 
+     *
      * @param $ch
      */
     protected function executeGet($ch)

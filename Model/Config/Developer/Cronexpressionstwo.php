@@ -6,7 +6,7 @@ class Cronexpressionstwo
 {
     /**
      * Get options.
-     * 
+     *
      * @return array
      */
     public function toOptionArray()

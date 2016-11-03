@@ -2,8 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
-    implements \Magento\Backend\Block\Widget\Tab\TabInterface
+class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
@@ -81,7 +80,8 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
 
-        $fieldset = $form->addFieldset('base_fieldset',
+        $fieldset = $form->addFieldset(
+            'base_fieldset',
             ['legend' => __('Exclusion Rule Conditions')]
         );
 

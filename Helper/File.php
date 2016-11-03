@@ -93,7 +93,9 @@ class File
     public function archiveCSV($filename)
     {
         $this->moveFile(
-            $this->getOutputFolder(), $this->getArchiveFolder(), $filename
+            $this->getOutputFolder(),
+            $this->getArchiveFolder(),
+            $filename
         );
     }
 
@@ -214,12 +216,15 @@ class File
             // Enclose fields containing $delimiter, $enclosure or whitespace
             if ($encloseAll
                 || preg_match(
-                    "/(?:${delimiterEsc}|${enclosureEsc}|\s)/", $field
+                    "/(?:${delimiterEsc}|${enclosureEsc}|\s)/",
+                    $field
                 )
             ) {
                 $output[] = $enclosure . str_replace(
-                        $enclosure, $enclosure . $enclosure, $field
-                    ) . $enclosure;
+                    $enclosure,
+                    $enclosure . $enclosure,
+                    $field
+                ) . $enclosure;
             } else {
                 $output[] = $field;
             }

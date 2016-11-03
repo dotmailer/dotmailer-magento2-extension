@@ -91,7 +91,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                     foreach ($additionalSubscriptions as $additionalSubscription) {
                         if (!isset($processedAddressBooks[$additionalSubscription])) {
                             $bookResponse = $client->postAddressBookContacts(
-                                $additionalSubscription, $contact
+                                $additionalSubscription,
+                                $contact
                             );
                             if (isset($bookResponse->message)) {
                                 $bookError = true;
@@ -101,7 +102,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                     foreach ($processedAddressBooks as $bookId => $name) {
                         if (!in_array($bookId, $additionalSubscriptions)) {
                             $bookResponse = $client->deleteAddressBookContact(
-                                $bookId, $contact->id
+                                $bookId,
+                                $contact->id
                             );
                             if (isset($bookResponse->message)) {
                                 $bookError = true;
@@ -111,7 +113,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 } else {
                     foreach ($processedAddressBooks as $bookId => $name) {
                         $bookResponse = $client->deleteAddressBookContact(
-                            $bookId, $contact->id
+                            $bookId,
+                            $contact->id
                         );
                         if (isset($bookResponse->message)) {
                             $bookError = true;
@@ -147,7 +150,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                     }
                 }
                 $contactResponse = $client->updateContactDatafieldsByEmail(
-                    $customerEmail, $data
+                    $customerEmail,
+                    $data
                 );
 
                 if (isset($contactResponse->message) && $bookError) {

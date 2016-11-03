@@ -24,7 +24,6 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Checkout\Model\Session $session,
         \Magento\Framework\App\Action\Context $context
-
     ) {
         $this->_helper = $data;
         $this->_checkoutSession = $session;

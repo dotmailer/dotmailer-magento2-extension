@@ -53,7 +53,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * Execute method.
-     * 
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
@@ -80,7 +80,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
             $this->_helper->log('----VALIDATING ACCOUNT---');
             $isValid = $this->test->validate($apiUsername, $apiPassword);
             if ($isValid) {
-
                 //save endpoint for account
                 foreach ($isValid->properties as $property) {
                     if ($property->name == 'ApiEndpoint'
@@ -91,9 +90,9 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
                     }
                 }
 
-                $this->messageManager->addSuccess(__('API Credentials Valid.'));
+                $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));
             } else {
-                $this->messageManager->addWarning(__('Authorization has been denied for this request.'));
+                $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
             }
         }
 

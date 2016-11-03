@@ -79,14 +79,18 @@ class Ajax extends \Magento\Backend\App\AbstractAction
             $type = $this->ruleType->getInputType($attribute);
             $conditionOptions = $this->ruleCondition->getInputTypeOptions($type);
             $response['condition'] = $this->_getOptionHtml(
-                'conditions', $conditionName, $conditionOptions
+                'conditions',
+                $conditionName,
+                $conditionOptions
             );
 
             $elmType = $this->ruleValue->getValueElementType($attribute);
             if ($elmType == 'select') {
                 $valueOptions = $this->ruleValue->getValueSelectOptions($attribute);
                 $response['cvalue'] = $this->_getOptionHtml(
-                    'cvalue', $valueName, $valueOptions
+                    'cvalue',
+                    $valueName,
+                    $valueOptions
                 );
             } elseif ($elmType == 'text') {
                 $html = "<input style='width:160px' title='cvalue' class='' id='' name=$valueName />";

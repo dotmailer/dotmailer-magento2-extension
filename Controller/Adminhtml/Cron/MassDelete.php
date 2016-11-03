@@ -6,6 +6,26 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends \Magento\Backend\App\Action
 {
+
+    /**
+     * @var \Magento\Cron\Model\ScheduleFactory
+     */
+    public $scheduleFactory;
+
+    /**
+     * MassDelete constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Cron\Model\ScheduleFactory $scheduleFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Cron\Model\ScheduleFactory $scheduleFactory
+    ) {
+        $this->scheduleFactory = $scheduleFactory;
+        parent::__construct($context);
+    }
+
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
@@ -14,18 +34,17 @@ class MassDelete extends \Magento\Backend\App\Action
         $ids = $this->getRequest()->getParam('id');
 
         if (!is_array($ids)) {
-            $this->messageManager->addError(__('Please select cron.'));
+            $this->messageManager->addErrorMessage(__('Please select cron.'));
         } else {
             try {
                 foreach ($ids as $id) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->_objectManager->create('Magento\Cron\Model\Schedule')->setId($id);
+                    $model = $this->scheduleFactory->create()
+                        ->setId($id);
                     $model->delete();
-                    //@codingStandardsIgnoreEnd
                 }
-                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
+                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
+                $this->messageManager->addErrorMessage($e->getMessage());
             }
         }
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */

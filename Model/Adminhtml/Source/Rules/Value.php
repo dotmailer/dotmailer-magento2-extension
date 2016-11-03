@@ -77,8 +77,10 @@ class Value
                 return 'select';
             default:
                 $attribute
-                    = $this->_configFactory->getAttribute('catalog_product',
-                    $attribute);
+                    = $this->_configFactory->getAttribute(
+                        'catalog_product',
+                        $attribute
+                    );
                 if ($attribute->usesSource()) {
                     return 'select';
                 }
@@ -128,8 +130,10 @@ class Value
 
             default:
                 $attribute
-                    = $this->_configFactory->getAttribute('catalog_product',
-                    $attribute);
+                    = $this->_configFactory->getAttribute(
+                        'catalog_product',
+                        $attribute
+                    );
                 if ($attribute->usesSource()) {
                     $options = $attribute->getSource()->getAllOptions();
                 }

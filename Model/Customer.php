@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Customer extends \Magento\Customer\Model\AccountManagement
 {
-    private $_scopeConfig;
+    protected $_scopeConfig;
 
     /**
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
@@ -57,11 +57,31 @@ class Customer extends \Magento\Customer\Model\AccountManagement
         \Magento\Framework\Api\ExtensibleDataObjectConverter $extensibleDataObjectConverter
     ) {
         $this->_scopeConfig = $scopeConfig;
-        parent::__construct($customerFactory, $eventManager, $storeManager, $mathRandom, $validator,
-            $validationResultsDataFactory, $addressRepository, $customerMetadataService, $customerRegistry, $logger,
-            $encryptor, $configShare, $stringHelper, $customerRepository, $scopeConfig, $transportBuilder,
-            $dataProcessor, $registry, $customerViewHelper, $dateTime, $customerModel, $objectFactory,
-            $extensibleDataObjectConverter);
+        parent::__construct(
+            $customerFactory,
+            $eventManager,
+            $storeManager,
+            $mathRandom,
+            $validator,
+            $validationResultsDataFactory,
+            $addressRepository,
+            $customerMetadataService,
+            $customerRegistry,
+            $logger,
+            $encryptor,
+            $configShare,
+            $stringHelper,
+            $customerRepository,
+            $scopeConfig,
+            $transportBuilder,
+            $dataProcessor,
+            $registry,
+            $customerViewHelper,
+            $dateTime,
+            $customerModel,
+            $objectFactory,
+            $extensibleDataObjectConverter
+        );
     }
 
     /**
@@ -85,7 +105,9 @@ class Customer extends \Magento\Customer\Model\AccountManagement
     ) {
         if ($this->_scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
-            'store', $storeId)
+            'store',
+            $storeId
+        )
         ) {
             return $this;
         } else {
@@ -103,12 +125,14 @@ class Customer extends \Magento\Customer\Model\AccountManagement
     protected function sendEmailConfirmation(\Magento\Customer\Api\Data\CustomerInterface $customer, $redirectUrl)
     {
         $storeId = $this->getWebsiteStoreId($customer);
-        if ($this->_scopeConfig->isSetFlag(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
-            'store', $storeId)
+        if ($this->_scopeConfig->isSetFlag(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
+            'store',
+            $storeId
+        )
         ) {
             return $this;
         } else {
-
             parent::sendEmailConfirmation($customer, $redirectUrl);
         }
     }

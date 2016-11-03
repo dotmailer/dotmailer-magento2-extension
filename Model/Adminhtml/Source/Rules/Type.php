@@ -51,7 +51,8 @@ class Type
 
             default:
                 $attribute = $this->_configFactory->getAttribute(
-                    'catalog_product', $attribute
+                    'catalog_product',
+                    $attribute
                 );
                 if ($attribute->getFrontend()->getInputType() == 'price') {
                     return 'numeric';

@@ -13,7 +13,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
 
     /**
      * Helper.
-     * 
+     *
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $data;

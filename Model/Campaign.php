@@ -60,8 +60,13 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
         array $data = []
     ) {
         $this->_dateTime = $dateTime;
-        parent::__construct($context, $registry, $resource, $resourceCollection,
-            $data);
+        parent::__construct(
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
+        );
     }
 
     /**
@@ -86,8 +91,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
         $collection = $this->getCollection()
             ->addFieldToFilter('quote_id', $quoteId)
             ->addFieldToFilter('store_id', $storeId)
-            ->setPageSize(1)
-        ;
+            ->setPageSize(1);
 
         if ($collection->getSize()) {
             //@codingStandardsIgnoreStart

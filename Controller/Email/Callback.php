@@ -74,9 +74,11 @@ class Callback extends \Magento\Framework\App\Action\Action
         //app code and admin user must be present
         if ($code && $adminUser->getId()) {
             $clientId = $this->scopeConfig->getValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID);
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
+            );
             $clientSecret = $this->scopeConfig->getValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID);
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID
+            );
             //callback uri if not set custom
             $redirectUri = $this->_storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true);
@@ -101,7 +103,7 @@ class Callback extends \Magento\Framework\App\Action\Action
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_POST, count($data));
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
             $response = json_decode(curl_exec($ch));
 

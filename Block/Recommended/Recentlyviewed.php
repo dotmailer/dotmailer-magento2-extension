@@ -56,7 +56,6 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->storeManager = $this->_storeManager;
         $this->_productFactory = $productFactory;
         $this->_viewed = $viewed;
-
     }
 
     /**

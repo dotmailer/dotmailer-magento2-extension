@@ -167,13 +167,22 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     protected function _saveApiCreds($apiUser, $apiPass)
     {
         $this->_helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, '1', 'default', 0
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
+            '1',
+            'default',
+            0
         );
         $this->_helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME, $apiUser, 'default', 0
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
+            $apiUser,
+            'default',
+            0
         );
         $this->_helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD, $apiPass, 'default', 0
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
+            $apiPass,
+            'default',
+            0
         );
 
         //Clear config cache
@@ -213,7 +222,10 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
                     //map the successfully created data field
                     $this->_helper->saveConfigData(
                         'connector_data_mapping/customer_data/' . $key,
-                        strtoupper($dataField['name']), 'default', 0);
+                        strtoupper($dataField['name']),
+                        'default',
+                        0
+                    );
                     $this->_helper->log('successfully connected : ' . $dataField['name']);
                 }
             }
@@ -239,7 +251,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         ];
         $addressBookMap = [
             'Magento_Customers' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
-            'Magento_Subscribers' => 
+            'Magento_Subscribers' =>
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
             'Magento_Guests' => \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
         ];
@@ -279,16 +291,28 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     protected function _enableSyncForTrial()
     {
         $this->_helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED, '1', 'default', 0
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED,
+            '1',
+            'default',
+            0
         );
         $this->_helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED, '1', 'default', 0
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED,
+            '1',
+            'default',
+            0
         );
         $this->_helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED, '1', 'default', 0
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED,
+            '1',
+            'default',
+            0
         );
         $this->_helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, '1', 'default', 0
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
+            '1',
+            'default',
+            0
         );
 
         return true;
@@ -302,7 +326,10 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     protected function _saveApiEndPoint($value)
     {
         $this->_helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT, $value, 'default', 0
+            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+            $value,
+            'default',
+            0
         );
     }
 

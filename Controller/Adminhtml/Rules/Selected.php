@@ -93,7 +93,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 $this->_http->getHeaders()->clearHeaders();
 
                 return $this->_http->setHeader(
-                    'Content-Type', 'application/json'
+                    'Content-Type',
+                    'application/json'
                 )->setBody('Rule not found!');
             }
             $conditions = $rule->getCondition();
@@ -107,7 +108,9 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 'value="' . $selectedConditions . '"',
                 'value="' . $selectedConditions . '"' . 'selected="selected"',
                 $this->_getOptionHtml(
-                    'conditions', $conditionName, $conditionOptions
+                    'conditions',
+                    $conditionName,
+                    $conditionOptions
                 )
             );
 

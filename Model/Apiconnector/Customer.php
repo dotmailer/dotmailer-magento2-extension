@@ -89,6 +89,7 @@ class Customer
      *
      * @param \Dotdigitalgroup\Email\Model\ContactFactory                $contactFactory
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
+     * @param \Magento\Framework\Stdlib\DateTime                         $dateTime
      * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
      * @param \Magento\Review\Model\ResourceModel\Review\Collection      $reviewCollection
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
@@ -101,6 +102,7 @@ class Customer
     public function __construct(
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Review\Model\ResourceModel\Review\Collection $reviewCollection,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
@@ -110,9 +112,10 @@ class Customer
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory
     ) {
+        $this->dateTime = $dateTime;
+        $this->_objectManager = $objectManager;
         $this->_helper = $helper;
         $this->_store = $storeManager;
-        $this->_objectManager = $objectManager;
         $this->_contactFactory = $contactFactory;
         $this->reviewCollection = $reviewCollection;
         $this->orderCollection = $collectionFactory;
@@ -134,7 +137,7 @@ class Customer
 
     /**
      * Set customer data.
-     * 
+     *
      * @param $customer
      *
      * @return $this
@@ -190,7 +193,7 @@ class Customer
 
     /**
      * Customer reviews.
-     * 
+     *
      * @return $this
      */
     public function setReviewCollection()
@@ -206,7 +209,7 @@ class Customer
 
     /**
      * Number of reviews.
-     * 
+     *
      * @return int
      */
     public function getReviewCount()
@@ -216,15 +219,17 @@ class Customer
 
     /**
      * Last review date.
-     * 
+     *
      * @return string
      */
     public function getLastReviewDate()
     {
         if (count($this->reviewCollection)) {
-            //@codingStandardsIgnoreStart
-            return $this->reviewCollection->getFirstItem()->getCreatedAt();
-            //@codingStandardsIgnoreEnd
+            $createdAt = $this->reviewCollection->getSelect()->limit(1)
+                ->getFirstItem()
+                ->getCreatedAt();
+                
+            return $createdAt;
         }
 
         return '';
@@ -757,9 +762,7 @@ class Customer
         //last used from the reward history based on the points delta used
         //enterprise module
         //@codingStandardsIgnoreStart
-        $lastUsed = $this->_objectManager->create(
-            'Magento\Reward\Model\Reward\History'
-        )
+        $lastUsed = $this->historyFactory->create()
             ->addCustomerFilter($this->customer->getId())
             ->addWebsiteFilter($this->customer->getWebsiteId())
             ->addFieldToFilter('points_delta', ['lt' => 0])
@@ -972,9 +975,7 @@ class Customer
             $expiredAt = $this->reward->getExpirationDate();
 
             if ($expiredAt) {
-                $date = $this->_objectManager->create(
-                    'Magento\Framework\Stdlib\DateTime'
-                )->formatDate($expiredAt, 'short', true);
+                $date = $this->dateTime->formatDate($expiredAt, 'short', true);
             } else {
                 $date = '';
             }
@@ -990,12 +991,8 @@ class Customer
      */
     protected function _setReward()
     {
-        if ($rewardModel = $this->_objectManager->create(
-            'Magento\Reward\Model\Reward\History'))
-        {
-            $enHelper = $this->_objectManager->create(
-                'Magento\Reward\Helper\Reward'
-            );
+        if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')) {
+            $enHelper = $this->_objectManager->create('Magento\Reward\Helper\Reward');
             $collection = $rewardModel->getCollection()
                 ->addCustomerFilter($this->customer->getId())
                 ->addWebsiteFilter($this->customer->getWebsiteId())

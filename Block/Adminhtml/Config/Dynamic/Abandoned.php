@@ -47,8 +47,10 @@ class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
 
         // full url
         $text = sprintf(
-            '%sconnector/email/basket/code/%s/quote_id/@%s@', $baseUrl,
-            $passcode, $lastQuoteId
+            '%sconnector/email/basket/code/%s/quote_id/@%s@',
+            $baseUrl,
+            $passcode,
+            $lastQuoteId
         );
 
         $element->setData('value', $text);

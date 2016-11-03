@@ -1360,11 +1360,6 @@
             <group id="import_settings" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="0">
                 <label>Import Settings</label>
-                <field id="memory_limit" translate="label" sortOrder="10" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
-                    <label>Sync Memory Limit</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="batch_size" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Contact Sync Size</label>

@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
 class Customdatafields extends
-    \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
+ \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
     /**
      * Customer attributes.
@@ -67,7 +67,8 @@ class Customdatafields extends
             ]
         );
         $this->addColumn(
-            'datafield', [
+            'datafield',
+            [
                 'label' => __('DataField'),
                 'style' => 'width:120px',
             ]

@@ -171,8 +171,10 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         $refreshToken = $adminUser->getRefreshToken();
 
         if ($refreshToken) {
-            $token = $this->client->getAccessToken($this->buildUrlParams($refreshToken),
-                $this->_configFactory->getTokenUrl());
+            $token = $this->client->getAccessToken(
+                $this->buildUrlParams($refreshToken),
+                $this->_configFactory->getTokenUrl()
+            );
 
             //save the refresh token to the admin user
             if (is_string($token)) {
@@ -208,8 +210,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     protected function buildUrlParams($refreshToken)
     {
         $params = 'client_id=' . $this->_helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
-            )
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
+        )
             . '&client_secret=' . $this->_helper->getWebsiteConfig(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID
             )

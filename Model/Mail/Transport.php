@@ -2,8 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Mail;
 
-class Transport extends \Zend_Mail_Transport_Smtp
-    implements \Magento\Framework\Mail\TransportInterface
+class Transport extends \Zend_Mail_Transport_Smtp implements \Magento\Framework\Mail\TransportInterface
 {
     /**
      * @var \Magento\Framework\Mail\MessageInterface
@@ -14,14 +13,20 @@ class Transport extends \Zend_Mail_Transport_Smtp
      * @var \Dotdigitalgroup\Email\Helper\Transactional
      */
     protected $_helper;
+    /**
+     * @var \Zend_Mail_Transport_Sendmail
+     */
+    protected $sendMail;
 
     /**
      * Transport constructor.
      *
+     * @param \Zend_Mail_Transport_Sendmail               $sendmail
      * @param \Magento\Framework\Mail\MessageInterface    $message
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      */
     public function __construct(
+        \Zend_Mail_Transport_Sendmail $sendmail,
         \Magento\Framework\Mail\MessageInterface $message,
         \Dotdigitalgroup\Email\Helper\Transactional $helper
     ) {
@@ -30,14 +35,15 @@ class Transport extends \Zend_Mail_Transport_Smtp
         }
         $this->_message = $message;
         $this->_helper = $helper;
+        $this->sendMail = $sendmail;
 
-        parent::__construct($this->_helper->getSmtpHost(),
-            $this->_helper->getTransportConfig());
+        parent::__construct(
+            $this->_helper->getSmtpHost(),
+            $this->_helper->getTransportConfig()
+        );
     }
 
     /**
-     * Send a mail using this transport.
-     *
      * @throws \Magento\Framework\Exception\MailException
      */
     public function sendMessage()
@@ -46,12 +52,13 @@ class Transport extends \Zend_Mail_Transport_Smtp
             if ($this->_helper->isEnabled()) {
                 parent::send($this->_message);
             } else {
-                $normal = new \Zend_Mail_Transport_Sendmail();
-                $normal->send($this->_message);
+                $this->sendMail->send($this->_message);
             }
         } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\MailException(new \Magento\Framework\Phrase($e->getMessage()),
-                $e);
+            throw new \Magento\Framework\Exception\MailException(
+                __($e->getMessage()),
+                $e
+            );
         }
     }
 }

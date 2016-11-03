@@ -44,8 +44,12 @@ class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
         }
         //dynamic content url
         $text
-            = sprintf('%sconnector/report/recentlyviewed/code/%s/customer_id/@%s@',
-            $baseUrl, $passcode, $customerId);
+            = sprintf(
+                '%sconnector/report/recentlyviewed/code/%s/customer_id/@%s@',
+                $baseUrl,
+                $passcode,
+                $customerId
+            );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

@@ -73,7 +73,10 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
                      * map the succesful created datafield
                      */
                     $this->_data->saveConfigData(
-                        'connector_data_mapping/customer_data/' . $key, strtoupper($datafield['name']), $scope, $scopeId
+                        'connector_data_mapping/customer_data/' . $key,
+                        strtoupper($datafield['name']),
+                        $scope,
+                        $scopeId
                     );
                     $this->_data->log('successfully connected : ' . $datafield['name']);
                 }

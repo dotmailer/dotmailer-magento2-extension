@@ -84,10 +84,10 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         //no product found to display
         if ($numItems == 0 || !$limit) {
             return [];
-        } elseif (count($orderItems) > $limit) {
+        } elseif ($numItems > $limit) {
             $maxPerChild = 1;
         } else {
-            $maxPerChild = number_format($limit / count($orderItems));
+            $maxPerChild = number_format($limit / $numItems);
         }
 
         $this->helper->log(
@@ -105,7 +105,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
                 $recommendedProducts
                     = $this->_getRecommendedProduct($productModel, $mode);
                 foreach ($recommendedProducts as $product) {
-
                     //check if still exists
                     if ($product->getId() && $productsToDisplayCounter < $limit
                         && $i <= $maxPerChild
@@ -134,7 +133,8 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
                 ->getCollection()
                 ->addIdFilter($fallbackIds)
                 ->addAttributeToSelect(
-                    ['product_url', 'name', 'store_id', 'small_image', 'price']);
+                    ['product_url', 'name', 'store_id', 'small_image', 'price']
+                );
 
             foreach ($productCollection as $product) {
                 if ($product->isSaleable()) {

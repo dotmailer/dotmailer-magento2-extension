@@ -52,14 +52,15 @@ class Bulk
                 $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
 
                 $addressBook = $this->_getAddressBook(
-                    $item->getImportType(), $websiteId
+                    $item->getImportType(),
+                    $websiteId
                 );
 
                 if (!empty($file) && !empty($addressBook) && $this->_client) {
-
                     //import contacts from csv file
                     $result = $this->_client->postAddressBookContactsImport(
-                        $file, $addressBook
+                        $file,
+                        $addressBook
                     );
 
                     $this->_handleItemAfterSync($item, $result);
@@ -79,7 +80,7 @@ class Bulk
     protected function _getAddressBook($importType, $websiteId)
     {
         switch ($importType) {
-            case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT :
+            case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT:
                 $addressBook = $this->_helper->getCustomerAddressBook(
                     $websiteId
                 );
@@ -92,7 +93,7 @@ class Bulk
             case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_GUEST:
                 $addressBook = $this->_helper->getGuestAddressBook($websiteId);
                 break;
-            default :
+            default:
                 $addressBook = '';
         }
 

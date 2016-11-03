@@ -76,73 +76,87 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected function _prepareColumns()
     {
         $this->addColumn(
-            'email_order_id', [
+            'email_order_id',
+            [
                 'header' => __('Order ID'),
             'align' => 'left',
             'index' => 'email_order_id',
             'type' => 'number',
             'escape' => true,
-        ])->addColumn(
-            'store_id', [
+            ]
+        )->addColumn(
+            'store_id',
+            [
                 'header' => __('Store ID'),
-            'index' => 'store_id',
-            'type' => 'number',
+                'index' => 'store_id',
+                'type' => 'number',
                 'escape' => true,
-        ])->addColumn(
-            'order_status', [
-            'header' => __('Order Status'),
-            'align' => 'right',
-            'index' => 'order_status',
-            'type' => 'options',
-            'escape' => true,
+                ]
+        )->addColumn(
+            'order_status',
+            [
+                'header' => __('Order Status'),
+                'align' => 'right',
+                'index' => 'order_status',
+                'type' => 'options',
+                'escape' => true,
                 'options' => $this->_configFactory->create()->getStatuses(),
-        ])->addColumn(
-            'email_imported', [
-            'header' => __('Imported'),
-            'align' => 'center',
-            'index' => 'email_imported',
-            'type' => 'options',
-            'escape' => true,
-            'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options' => $this->_importedFactory->create()
+                ]
+        )->addColumn(
+            'email_imported',
+            [
+                'header' => __('Imported'),
+                'align' => 'center',
+                'index' => 'email_imported',
+                'type' => 'options',
+                'escape' => true,
+                'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+                'options' => $this->_importedFactory->create()
                     ->getOptions(),
-            'filter_condition_callback' => [
+                'filter_condition_callback' => [
                     $this,
                 'filterCallbackContact',
-            ],
-        ])->addColumn(
-            'modified', [
-            'header' => __('Modified'),
-            'align' => 'center',
-            'index' => 'modified',
-            'type' => 'options',
-            'escape' => true,
-            'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options' => [
+                ],
+                ]
+        )->addColumn(
+            'modified',
+            [
+                'header' => __('Modified'),
+                'align' => 'center',
+                'index' => 'modified',
+                'type' => 'options',
+                'escape' => true,
+                'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
+                'options' => [
                 1 => 'Modified',
                     null => 'Not Modified',
                 ],
-            'filter_condition_callback' => [
+                'filter_condition_callback' => [
                     $this,
                 'filterCallbackContact',
-            ],
-        ])->addColumn(
-            'created_at', [
+                ],
+                ]
+        )->addColumn(
+            'created_at',
+            [
                 'header' => __('Created At'),
-            'align' => 'center',
-            'index' => 'created_at',
-            'type' => 'datetime',
+                'align' => 'center',
+                'index' => 'created_at',
+                'type' => 'datetime',
                 'escape' => true,
-        ])->addColumn(
-            'updated_at', [
+                ]
+        )->addColumn(
+            'updated_at',
+            [
                 'header' => __('Updated At'),
-            'align' => 'center',
-            'index' => 'updated_at',
-            'type' => 'datetime',
+                'align' => 'center',
+                'index' => 'updated_at',
+                'type' => 'datetime',
                 'escape' => true,
-        ]);
+                ]
+        );
 
-        return parent::_prepareColumns();
+            return parent::_prepareColumns();
     }
 
     /**

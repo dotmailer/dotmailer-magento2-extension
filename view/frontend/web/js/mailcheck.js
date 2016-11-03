@@ -17,12 +17,13 @@
 
     defaultTopLevelDomains: ["co.jp", "co.uk", "com", "net", "org", "info", "edu", "gov", "mil", "ca"],
 
-    run: function(opts) {
+    run: function (opts) {
       opts.domains = opts.domains || Mailcheck.defaultDomains;
       opts.topLevelDomains = opts.topLevelDomains || Mailcheck.defaultTopLevelDomains;
       opts.distanceFunction = opts.distanceFunction || Mailcheck.sift3Distance;
 
-      var defaultCallback = function(result){ return result };
+      var defaultCallback = function (result) {
+ return result };
       var suggestedCallback = opts.suggested || defaultCallback;
       var emptyCallback = opts.empty || defaultCallback;
 
@@ -31,7 +32,7 @@
       return result ? suggestedCallback(result) : emptyCallback()
     },
 
-    suggest: function(email, domains, topLevelDomains, distanceFunction) {
+    suggest: function (email, domains, topLevelDomains, distanceFunction) {
       email = email.toLowerCase();
 
       var emailParts = this.splitEmail(email);
@@ -60,7 +61,7 @@
       return false;
     },
 
-    findClosestDomain: function(domain, domains, distanceFunction, threshold) {
+    findClosestDomain: function (domain, domains, distanceFunction, threshold) {
       threshold = threshold || this.topLevelThreshold;
       var dist;
       var minDist = 99;
@@ -69,7 +70,7 @@
       if (!domain || !domains) {
         return false;
       }
-      if(!distanceFunction) {
+      if (!distanceFunction) {
         distanceFunction = this.sift3Distance;
       }
 
@@ -91,7 +92,7 @@
       }
     },
 
-    sift3Distance: function(s1, s2) {
+    sift3Distance: function (s1, s2) {
       // sift3: http://siderite.blogspot.com/2007/04/super-fast-and-accurate-string-distance.html
       if (s1 == null || s1.length === 0) {
         if (s2 == null || s2.length === 0) {
@@ -133,7 +134,7 @@
       return (s1.length + s2.length) /2 - lcs;
     },
 
-    splitEmail: function(email) {
+    splitEmail: function (email) {
       var parts = email.trim().split('@');
 
       if (parts.length < 2) {
@@ -176,7 +177,7 @@
     // Encode the email address to prevent XSS but leave in valid
     // characters, following this official spec:
     // http://en.wikipedia.org/wiki/Email_address#Syntax
-    encodeEmail: function(email) {
+    encodeEmail: function (email) {
       var result = encodeURI(email);
       result = result.replace('%20', ' ').replace('%25', '%').replace('%5E', '^')
                      .replace('%60', '`').replace('%7B', '{').replace('%7C', '|')

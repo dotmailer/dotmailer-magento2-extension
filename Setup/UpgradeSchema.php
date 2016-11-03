@@ -28,7 +28,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             //add columns
             $connection->addColumn(
-                $campaignTable, 'send_id', [
+                $campaignTable,
+                'send_id',
+                [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                     'nullable' => false,
                     'default' => '',
@@ -36,7 +38,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
             $connection->addColumn(
-                $campaignTable, 'send_status', [
+                $campaignTable,
+                'send_status',
+                [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                     'nullable' => false,
                     'default' => 0,
@@ -75,7 +79,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '2.1.0', '<')) {
             $couponTable = $setup->getTable('salesrule_coupon');
             $connection->addColumn(
-                $couponTable, 'generated_by_dotmailer', [
+                $couponTable,
+                'generated_by_dotmailer',
+                [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                     'nullable' => true,
                     'default' => null,

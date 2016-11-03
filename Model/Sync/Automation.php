@@ -140,7 +140,8 @@ class Automation
     {
         $automationOrderStatusCollection = $this->_automationFactory->create()
             ->addFieldToFilter(
-                'enrolment_status', self::AUTOMATION_STATUS_PENDING
+                'enrolment_status',
+                self::AUTOMATION_STATUS_PENDING
             );
         $automationOrderStatusCollection
             ->addFieldToFilter(
@@ -177,10 +178,12 @@ class Automation
             //get collection from type
             $automationCollection = $this->_automationFactory->create();
             $automationCollection->addFieldToFilter(
-                'enrolment_status', self::AUTOMATION_STATUS_PENDING
+                'enrolment_status',
+                self::AUTOMATION_STATUS_PENDING
             );
             $automationCollection->addFieldToFilter(
-                'automation_type', $type
+                'automation_type',
+                $type
             );
             //limit because of the each contact request to get the id
             $automationCollection->getSelect()->limit($this->limit);
@@ -197,13 +200,15 @@ class Automation
                     $typeDouble = self::ORDER_STATUS_AUTOMATION;
                 }
                 $contactId = $this->_helper->getContactId(
-                    $email, $this->websiteId
+                    $email,
+                    $this->websiteId
                 );
                 //contact id is valid, can update datafields
                 if ($contactId) {
                     //need to update datafields
                     $this->updateDatafieldsByType(
-                        $typeDouble, $email
+                        $typeDouble,
+                        $email
                     );
                     $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contactId;
                 } else {
@@ -246,7 +251,9 @@ class Automation
                             'enrolment_status' => $this->programStatus,
                             'message' => $this->programMessage,
                             'updated_at' => $this->_localeDate->date(
-                                null, null, false
+                                null,
+                                null,
+                                false
                             )->format('Y-m-d H:i:s'),
                         ];
                         $where = ['id IN(?)' => $contactIds];
@@ -280,16 +287,16 @@ class Automation
     public function updateDatafieldsByType($type, $email)
     {
         switch ($type) {
-            case self::AUTOMATION_TYPE_NEW_CUSTOMER :
-            case self::AUTOMATION_TYPE_NEW_SUBSCRIBER :
-            case self::AUTOMATION_TYPE_NEW_WISHLIST :
+            case self::AUTOMATION_TYPE_NEW_CUSTOMER:
+            case self::AUTOMATION_TYPE_NEW_SUBSCRIBER:
+            case self::AUTOMATION_TYPE_NEW_WISHLIST:
                 $this->_updateDefaultDatafields($email);
                 break;
-            case self::AUTOMATION_TYPE_NEW_ORDER :
-            case self::AUTOMATION_TYPE_NEW_GUEST_ORDER :
-            case self::AUTOMATION_TYPE_NEW_REVIEW :
-            case self::ORDER_STATUS_AUTOMATION :
-            case self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER :
+            case self::AUTOMATION_TYPE_NEW_ORDER:
+            case self::AUTOMATION_TYPE_NEW_GUEST_ORDER:
+            case self::AUTOMATION_TYPE_NEW_REVIEW:
+            case self::ORDER_STATUS_AUTOMATION:
+            case self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER:
                 $this->_updateNewOrderDatafields();
                 break;
             default:
@@ -364,8 +371,8 @@ class Automation
             ];
         }
         if (($customerId = $website->getConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_ID
-            ))
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_ID
+        ))
             && $orderModel->getCustomerId()
         ) {
             $data[] = [
@@ -377,7 +384,8 @@ class Automation
             //update data fields
             $client = $this->_helper->getWebsiteApiClient($website);
             $client->updateContactDatafieldsByEmail(
-                $orderModel->getCustomerEmail(), $data
+                $orderModel->getCustomerEmail(),
+                $data
             );
         }
     }

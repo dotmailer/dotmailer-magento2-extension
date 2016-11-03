@@ -64,8 +64,10 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
             $automationType
                          = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_ORDER;
         }
-        $programId = $this->_helper->getAutomationIdByType($programType,
-            $order->getWebsiteId());
+        $programId = $this->_helper->getAutomationIdByType(
+            $programType,
+            $order->getWebsiteId()
+        );
 
         //the program is not mapped
         if (!$programId) {

@@ -6,6 +6,26 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends \Magento\Backend\App\Action
 {
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
+    protected $contact;
+
+    /**
+     * MassDelete constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context         $context
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+    ) {
+    
+        $this->contact = $contactFactory;
+        parent::__construct($context);
+    }
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
@@ -14,18 +34,17 @@ class MassDelete extends \Magento\Backend\App\Action
         $ids = $this->getRequest()->getParam('id');
 
         if (!is_array($ids)) {
-            $this->messageManager->addError(__('Please select contact.'));
+            $this->messageManager->addErrorMessage(__('Please select contact.'));
         } else {
             try {
                 foreach ($ids as $id) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Contact')->setEmailContactId($id);
+                    $model = $this->contact->create()
+                        ->setEmailContactId($id);
                     $model->delete();
-                    //@codingStandardsIgnoreEnd
                 }
-                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
+                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
+                $this->messageManager->addErrorMessage($e->getMessage());
             }
         }
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */

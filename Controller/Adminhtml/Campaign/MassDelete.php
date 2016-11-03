@@ -7,6 +7,27 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends CampaignController
 {
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\CampaignFactory
+     */
+    protected $campaign;
+
+    /**
+     * MassDelete constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context          $context
+     * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaign
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\CampaignFactory $campaign
+    ) {
+    
+        $this->campaign = $campaign;
+
+        parent::__construct($context);
+    }
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
@@ -15,18 +36,17 @@ class MassDelete extends CampaignController
         $searchIds = $this->getRequest()->getParam('id');
 
         if (!is_array($searchIds)) {
-            $this->messageManager->addError(__('Please select campaigns.'));
+            $this->messageManager->addErrorMessage(__('Please select campaigns.'));
         } else {
             try {
                 foreach ($searchIds as $searchId) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Campaign')->setId($searchId);
+                    $model = $this->campaign->create()
+                        ->setId($searchId);
                     $model->delete();
-                    //@codingStandardsIgnoreEnd
                 }
-                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
+                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($searchIds)));
             } catch (\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
+                $this->messageManager->addErrorMessage($e->getMessage());
             }
         }
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */

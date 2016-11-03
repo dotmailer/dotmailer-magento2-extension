@@ -99,7 +99,8 @@ class Update extends Delete
                         if (isset($result->id)) {
                             $contactId = $result->id;
                             $this->_client->deleteAddressBookContact(
-                                $this->_helper->getSubscriberAddressBook($websiteId), $contactId
+                                $this->_helper->getSubscriberAddressBook($websiteId),
+                                $contactId
                             );
                         } else {
                             //suppress contacts

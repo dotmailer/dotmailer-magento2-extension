@@ -188,11 +188,13 @@ class Order
 
                 $collection = $this->_orderCollection->create()
                     ->addFieldToFilter(
-                        'main_table.status', $orderStatusFromConfig
+                        'main_table.status',
+                        $orderStatusFromConfig
                     )
                     ->addFieldToFilter('main_table.created_at', $created)
                     ->addFieldToFilter(
-                        'main_table.store_id', ['in' => $storeIds]
+                        'main_table.store_id',
+                        ['in' => $storeIds]
                     );
 
                 if (!empty($campaignOrderIds)) {
@@ -205,7 +207,8 @@ class Order
                 //process rules on collection
                 $collection = $this->_rulesFactory->create()
                     ->process(
-                        $collection, \Dotdigitalgroup\Email\Model\Rules::REVIEW,
+                        $collection,
+                        \Dotdigitalgroup\Email\Model\Rules::REVIEW,
                         $website->getId()
                     );
 
@@ -218,13 +221,14 @@ class Order
 
     /**
      * Get customer last order id.
-     * 
+     *
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return bool|mixed
      */
     public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer
-    ) {
+    )
+    {
         $storeIds = $this->_storeManager->getWebsite(
             $customer->getWebsiteId()
         )->getStoreIds();
@@ -245,13 +249,14 @@ class Order
 
     /**
      * Get customer last quote id.
-     * 
+     *
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return bool|mixed
      */
     public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer
-    ) {
+    )
+    {
         $storeIds = $this->_storeManager->getWebsite(
             $customer->getWebsiteId()
         )->getStoreIds();

@@ -64,7 +64,7 @@ class Books extends \Magento\Framework\View\Element\Template
 
     /**
      * Get config values.
-     * 
+     *
      * @param $path
      * @param $website
      *
@@ -181,6 +181,7 @@ class Books extends \Magento\Framework\View\Element\Template
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS,
             $this->getCustomer()->getStore()->getWebsite()
         );
+
         if (strlen($dataFieldsFromConfig)) {
             $dataFieldsFromConfig = explode(',', $dataFieldsFromConfig);
             $contact = $this->getConnectorContact();
@@ -210,10 +211,7 @@ class Books extends \Magento\Framework\View\Element\Template
                                 $value
                                        = $processedContactDataFields[$processedConnectorDataFields[
                                                                      $dataFieldFromConfig]->name];
-                                $value = new \Zend_Date(
-                                    $value, \Zend_Date::ISO_8601
-                                );
-                                $value = $value->toString('M/d/Y');
+                                $value = $this->_localeDate->convertConfigTimeToUtc($value, 'm/d/Y');
                             } else {
                                 $value
                                     = $processedContactDataFields[$processedConnectorDataFields[

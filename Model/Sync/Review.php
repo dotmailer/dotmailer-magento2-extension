@@ -65,15 +65,26 @@ class Review
      * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
     protected $_mageReviewCollection;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    protected $_coreDate;
+
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    protected $_coreResource;
 
     /**
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime                         $coreDate
      * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory          $ratingFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory                 $connectorFactory
      * @param \Magento\Customer\Model\CustomerFactory                             $customerFactory
      * @param \Magento\Catalog\Model\ProductFactory                               $productFactory
+     * @param \Magento\Framework\App\ResourceConnection                           $resourceConnection
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory                        $importerFactory
      * @param \Magento\Review\Model\ReviewFactory                                 $reviewFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                  $data
@@ -84,10 +95,12 @@ class Review
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
+        \Magento\Framework\Stdlib\DateTime\DateTime $coreDate,
         \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory,
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
@@ -96,6 +109,8 @@ class Review
         \Magento\Review\Model\Rating\Option\Vote $vote,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
     ) {
+        $this->_coreResource = $resourceConnection;
+        $this->_coreDate = $coreDate;
         $this->_reviewCollection = $reviewCollection;
         $this->_ratingFactory = $ratingFactory;
         $this->_connectorReviewFactory = $connectorFactory;
@@ -122,8 +137,6 @@ class Review
         $this->_countReviews = 0;
         $this->_reviews = [];
         $this->_start = microtime(true);
-        //resource allocation
-        $this->_helper->allowResourceFullExecution();
         $websites = $this->_helper->getwebsites(true);
         foreach ($websites as $website) {
             $apiEnabled = $this->_helper->isEnabled($website);
@@ -195,7 +208,7 @@ class Review
 
             $reviews->getSelect()
                 ->joinLeft(
-                    ['c' => 'customer_entity'],
+                    ['c' => $this->_coreResource->getTableName('customer_entity')],
                     'c.entity_id = customer_id',
                     ['email', 'store_id']
                 );
@@ -271,8 +284,7 @@ class Review
             $write = $coreResource->getConnection('core_write');
             $tableName = $coreResource->getTableName('email_review');
             $ids = implode(', ', $ids);
-            $now = new \DateTime();
-            $nowDate = $this->_dateTime->formatDate($now->getTimestamp());
+            $nowDate = $this->_coreDate->gmtDate();
             $write->update(
                 $tableName,
                 ['review_imported' => 1, 'updated_at' => $nowDate],

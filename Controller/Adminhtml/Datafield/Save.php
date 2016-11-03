@@ -46,9 +46,9 @@ class Save extends \Magento\Backend\App\AbstractAction
         if (strlen($datafield)) {
             $response = $client->postDataFields($datafield, $type, $visibility, $default);
             if (isset($response->message)) {
-                $this->messageManager->addError($response->message);
+                $this->messageManager->addErrorMessage($response->message);
             } else {
-                $this->messageManager->addSuccess('Datafield : ' . $datafield . ' created.');
+                $this->messageManager->addSuccessMessage('Datafield : ' . $datafield . ' created.');
             }
         }
     }

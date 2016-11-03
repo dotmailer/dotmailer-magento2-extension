@@ -29,8 +29,13 @@ class Review extends \Magento\Framework\Model\AbstractModel
         array $data = []
     ) {
         $this->_dateTime = $dateTime;
-        parent::__construct($context, $registry, $resource, $resourceCollection,
-            $data);
+        parent::__construct(
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
+        );
     }
 
     /**

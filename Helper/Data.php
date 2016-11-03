@@ -166,8 +166,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function auth($authRequest)
     {
         if ($authRequest != $this->scopeConfig->getValue(
-                Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
-            )
+            Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
+        )
         ) {
             return false;
         }
@@ -224,7 +224,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $contextScopeId = null
     ) {
         $config = $this->scopeConfig->getValue(
-            $path, $contextScope, $contextScopeId
+            $path,
+            $contextScope,
+            $contextScopeId
         );
 
         return $config;
@@ -289,7 +291,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $passcode = $this->_getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
-            $scope, $scopeId
+            $scope,
+            $scopeId
         );
 
         return $passcode;
@@ -495,38 +498,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Api username from config.
-     *
-     * @param int /object $website
+     * @param int $website
      *
      * @return mixed
      */
     public function getApiUsername($website = 0)
     {
-        $website = $this->_storeManager->getWebsite($website);
-
-        return $this->scopeConfig->getValue(
+        return $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getId()
+            $website
         );
     }
 
     /**
-     * Get api password from config.
-     *
      * @param int $website
      *
-     * @return string
+     * @return mixed
      */
     public function getApiPassword($website = 0)
     {
-        $website = $this->_storeManager->getWebsite($website);
-
-        return $this->scopeConfig->getValue(
+        return $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getId()
+            $website
         );
     }
 
@@ -581,40 +574,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $website->getid()
-        );
-    }
-
-    /**
-     * Allow to set the resource settings from config.
-     *
-     * @return $this
-     */
-    public function allowResourceFullExecution()
-    {
-        if ($this->isResourceAllocationEnabled()) {
-
-            /* it may be needed to set maximum execution time of the script to longer,
-             * like 60 minutes than usual */
-            //@codingStandardsIgnoreStart
-            set_time_limit(7200);
-
-            /* and memory to 512 megabytes */
-            ini_set('memory_limit', '512M');
-            //@codingStandardsIgnoreEnd
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use recommended resource allocation.
-     *
-     * @return bool
-     */
-    public function isResourceAllocationEnabled()
-    {
-        return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_RESOURCE_ALLOCATION
         );
     }
 
@@ -689,7 +648,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get website level config.
+     * Get website config.
      *
      * @param     $path
      * @param int $website
@@ -698,12 +657,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteConfig($path, $website = 0)
     {
-        $website = $this->_storeManager->getWebsite($website);
-
         return $this->scopeConfig->getValue(
             $path,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getId()
+            $website
         );
     }
 
@@ -1088,7 +1045,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $store = $website->getDefaultStore();
         $mappedData = $this->scopeConfig->getValue(
             'connector_data_mapping/customer_data',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store->getId()
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store->getId()
         );
         unset($mappedData['custom_attributes'], $mappedData['abandoned_prod_name']);
         //skip non mapped customer datafields
@@ -1184,7 +1142,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $this->scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_MAILCHECK_ENABLED,
-            'store', $store
+            'store',
+            $store
         );
     }
 
@@ -1196,7 +1155,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getEmailCaptureUrl()
     {
         return $this->_storeManager->getStore()->getUrl(
-            'connector/ajax/emailcapture', ['_secure' => $this->isWebsiteSecure()]
+            'connector/ajax/emailcapture',
+            ['_secure' => $this->isWebsiteSecure()]
         );
     }
 
@@ -1210,8 +1170,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $isFrontendSecure  = $this->_storeManager->getStore()->isFrontUrlSecure();
         $isCurrentlySecure = $this->_storeManager->getStore()->isCurrentlySecure();
 
-        if($isFrontendSecure && $isCurrentlySecure)
-        {
+        if ($isFrontendSecure && $isCurrentlySecure) {
             return true;
         }
 
@@ -1235,28 +1194,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Dynamic styles from config.
-     * 
+     *
      * @return array
      */
     public function getDynamicStyles()
     {
         return $dynamicStyle = [
             'nameStyle' => explode(
-                ',', $this->_getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE
-            )),
+                ',',
+                $this->_getConfigValue(
+                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE
+                )
+            ),
             'priceStyle' => explode(
-                ',', $this->_getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE
-            )),
+                ',',
+                $this->_getConfigValue(
+                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE
+                )
+            ),
             'linkStyle' => explode(
-                ',', $this->_getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE
-            )),
+                ',',
+                $this->_getConfigValue(
+                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE
+                )
+            ),
             'otherStyle' => explode(
-                ',', $this->_getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE
-            )),
+                ',',
+                $this->_getConfigValue(
+                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE
+                )
+            ),
             'nameColor' => $this->_getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR
             ),
@@ -1295,7 +1262,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get display type for review product.
-     * 
+     *
      * @param mixed $website
      *
      * @return mixed
@@ -1333,7 +1300,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get review setting delay time.
-     * 
+     *
      * @param $website
      *
      * @return int
@@ -1352,26 +1319,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isNewProductOnly($website)
     {
-        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_NEW_PRODUCT,
-            $website);
+        return $this->getReviewWebsiteSettings(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_NEW_PRODUCT,
+            $website
+        );
     }
 
     /**
      * Get review campaign for automation review.
-     * 
+     *
      * @param $website
      *
      * @return int
      */
     public function getCampaign($website)
     {
-        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_CAMPAIGN,
-            $website);
+        return $this->getReviewWebsiteSettings(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_CAMPAIGN,
+            $website
+        );
     }
 
     /**
      * Get review anchor value.
-     * 
+     *
      * @param $website
      *
      * @return string
@@ -1383,15 +1354,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get review display type.
-     * 
+     *
      * @param $website
      *
      * @return string
      */
     public function getDisplayType($website)
     {
-        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE,
-            $website);
+        return $this->getReviewWebsiteSettings(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE,
+            $website
+        );
     }
 
     /**
@@ -1414,7 +1387,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get current connector version.
-     * 
+     *
      * @return mixed
      */
     public function getConnectorVersion()
@@ -1424,7 +1397,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get the abandoned cart limit.
-     * 
+     *
      * @return mixed
      */
     public function getAbandonedCartLimit()
@@ -1448,8 +1421,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $collection = $this->_schelduleFactory->create()
             ->getCollection()
             ->addFieldToFilter('status', \Magento\Cron\Model\Schedule::STATUS_SUCCESS)
-            ->addFieldToFilter('job_code', $cronJob)
-        ;
+            ->addFieldToFilter('job_code', $cronJob);
         //limit and order the results
         $collection->getSelect()
             ->limit(1)

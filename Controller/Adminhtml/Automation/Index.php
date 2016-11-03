@@ -6,7 +6,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
-class Index extends   \Magento\Backend\App\AbstractAction
+class Index extends \Magento\Backend\App\AbstractAction
 {
     /**
      * @var PageFactory

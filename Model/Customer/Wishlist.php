@@ -22,7 +22,7 @@ class Wishlist
      *
      * @var array
      */
-    public $items = array();
+    public $items = [];
 
     /**
      * @var float

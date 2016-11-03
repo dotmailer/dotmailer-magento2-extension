@@ -21,7 +21,7 @@ class Reviews extends \Magento\Config\Block\System\Config\Form\Field
     ) {
         $this->_helper = $data;
 
-        return parent::__construct($context);
+        parent::__construct($context);
     }
 
     /**
@@ -42,8 +42,11 @@ class Reviews extends \Magento\Config\Block\System\Config\Form\Field
         $baseUrl = $this->_helper->generateDynamicUrl();
 
         //display the full url
-        $text = sprintf('%sconnector/feefo/reviews/code/%s/quote_id/@QUOTE_ID@',
-            $baseUrl, $passcode);
+        $text = sprintf(
+            '%sconnector/feefo/reviews/code/%s/quote_id/@QUOTE_ID@',
+            $baseUrl,
+            $passcode
+        );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

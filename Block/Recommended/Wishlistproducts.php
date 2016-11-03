@@ -128,7 +128,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         //no product found to display
         if ($numItems == 0 || !$limit) {
             return [];
-        } elseif (count($items) > $limit) {
+        } elseif ($numItems > $limit) {
             $maxPerChild = 1;
         } else {
             $maxPerChild = number_format($limit / count($items));
@@ -147,7 +147,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($product->getId()) {
                 //get single product for current mode
                 $recommendedProducts = $this->_getRecommendedProduct(
-                    $product, $mode
+                    $product,
+                    $mode
                 );
                 foreach ($recommendedProducts as $product) {
                     //check if still exists
@@ -160,7 +161,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
                         $productsToDisplay[$product->getId()] = $product;
                         $i++;
                         $productsToDisplayCounter++;
-
                     }
                 }
             }
@@ -224,7 +224,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             case 'crosssell':
                 $products = $productModel->getCrossSellProducts();
                 break;
-
         }
 
         return $products;

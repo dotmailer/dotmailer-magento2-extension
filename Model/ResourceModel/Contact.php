@@ -23,10 +23,13 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $conn = $this->getConnection();
         try {
-            $num = $conn->update($this->getTable('email_contact'),
+            $num = $conn->update(
+                $this->getTable('email_contact'),
                 ['contact_id' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto('contact_id is ?',
-                    new \Zend_Db_Expr('not null'))
+                $conn->quoteInto(
+                    'contact_id is ?',
+                    new \Zend_Db_Expr('not null')
+                )
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
@@ -46,10 +49,13 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $conn = $this->getConnection();
-            $num = $conn->update($conn->getTableName('email_contact'),
+            $num = $conn->update(
+                $conn->getTableName('email_contact'),
                 ['email_imported' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto('email_imported is ?',
-                    new \Zend_Db_Expr('not null'))
+                $conn->quoteInto(
+                    'email_imported is ?',
+                    new \Zend_Db_Expr('not null')
+                )
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
@@ -73,8 +79,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $num = $conn->update(
                 $conn->getTableName('email_contact'),
                 ['subscriber_imported' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto('subscriber_imported is ?',
-                    new \Zend_Db_Expr('not null')));
+                $conn->quoteInto(
+                    'subscriber_imported is ?',
+                    new \Zend_Db_Expr('not null')
+                )
+            );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
@@ -144,7 +153,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $conn = $this->getConnection();
 
-        return $conn->update($this->getMainTable(),
+        return $conn->update(
+            $this->getMainTable(),
             ['suppressed' => 1],
             ['id IN(?)' => $suppressedContactIds]
         );

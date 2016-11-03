@@ -302,7 +302,5 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
         $this->createAbandonedCartRuleWithCondition($attribute1, 'neq', $value1, self::RULE_OPERATOR_AND);
         $this->createAbandonedCartRuleWithCondition($attribute2, 'eq', $value2, self::RULE_OPERATOR_AND);
-
     }
-
 }

@@ -26,7 +26,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
         \Magento\Quote\Model\Quote\Address $address = null
     ) {
         if (!$this->getFlag('validation_filter')) {
-            if (is_null($now)) {
+            if ($now === null) {
                 $now = $this->_date->date()->format('Y-m-d');
             }
 
@@ -88,7 +88,6 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
                         OR
                          (rule_coupons.expiration_date IS NOT NULL) AND
                          (rule_coupons.expiration_date >= ?) ', $now);
-
             } else {
                 $this->addFieldToFilter(
                     'main_table.coupon_type',
@@ -122,7 +121,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
     public function addWebsiteGroupDateFilter($websiteId, $customerGroupId, $now = null)
     {
         if (!$this->getFlag('website_group_date_filter')) {
-            if (is_null($now)) {
+            if ($now === null) {
                 $now = $this->_date->date()->format('Y-m-d');
             }
 

@@ -43,7 +43,11 @@ class Automation extends \Magento\Framework\Model\AbstractModel
         $this->_helper = $helper;
         $this->_storeManager = $storeManagerInterface;
         parent::__construct(
-            $context, $registry, $resource, $resourceCollection, $data
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
         );
     }
 
@@ -89,11 +93,15 @@ class Automation extends \Magento\Framework\Model\AbstractModel
         try {
             //Api is enabled
             $apiEnabled = $this->_helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
+                $websiteId
+            );
 
             //Automation enrolment
             $programId = $this->_helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER, $websiteId);
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER,
+                $websiteId
+            );
 
             //new contact program mapped
             if ($programId && $apiEnabled) {
