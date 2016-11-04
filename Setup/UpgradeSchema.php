@@ -89,19 +89,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
         }
-        if (version_compare($context->getVersion(), '2.1.2', '<')) {
-            /*
-            * drop rules table.
-            */
-            if ($setup->getConnection()->isTableExists(
-                $setup->getTable('email_rules')
-            )
-            ) {
-                $setup->getConnection()->dropTable(
-                    $setup->getTable('email_rules')
-                );
-            }
-        }
         $setup->endSetup();
     }
 }

@@ -45,6 +45,10 @@ class Order
      */
     protected $_orderCollection;
     /**
+     * @var \Dotdigitalgroup\Email\Model\RulesFactory
+     */
+    protected $_rulesFactory;
+    /**
      * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
      */
     protected $_quoteCollection;
@@ -56,6 +60,7 @@ class Order
      * Order constructor.
      *
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
@@ -66,6 +71,7 @@ class Order
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
+        \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
@@ -75,6 +81,7 @@ class Order
         \Zend_Date $date
     ) {
         $this->_quoteCollection = $quoteCollection;
+        $this->_rulesFactory = $rulesFactory;
         $this->_orderCollection = $orderCollection;
         $this->_campaignCollection = $campaignCollection;
         $this->_campaignFactory = $campaignFactory;
@@ -202,6 +209,14 @@ class Order
                         ['nin' => $campaignOrderIds]
                     );
                 }
+
+                //process rules on collection
+                $collection = $this->_rulesFactory->create()
+                    ->process(
+                        $collection,
+                        \Dotdigitalgroup\Email\Model\Rules::REVIEW,
+                        $website->getId()
+                    );
 
                 if ($collection->getSize()) {
                     $this->_reviewCollection[$website->getId()] = $collection;
