@@ -176,7 +176,7 @@
                 <font_style>0</font_style>
                 <price_color><![CDATA[#000000]]></price_color>
                 <price_font_size><![CDATA[12px]]></price_font_size>
-                <price_style>0</price_style>
+                <price_font_style>0</price_font_style>
                 <product_link_color><![CDATA[#000000]]></product_link_color>
                 <product_link_font_size><![CDATA[12px]]></product_link_font_size>
                 <product_link_style>0</product_link_style>
