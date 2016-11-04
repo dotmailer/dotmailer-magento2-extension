@@ -918,65 +918,6 @@ class InstallSchema implements InstallSchemaInterface
         );
         $installer->getConnection()->query($sqlQuery);
 
-        /*
-         * create rules table.
-         */
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_rules')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_rules')
-            );
-        }
-        $ruleTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_rules')
-        )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
-            )
-            ->addColumn(
-                'name', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 255,
-                ['nullable' => false, 'default' => ''], 'Rule Name'
-            )
-            ->addColumn(
-                'website_ids', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 255,
-                ['nullable' => false, 'default' => '0'], 'Website Id'
-            )
-            ->addColumn(
-                'type', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, null,
-                ['nullable' => false, 'default' => 0], 'Rule Type'
-            )
-            ->addColumn(
-                'status', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, null,
-                ['nullable' => false, 'default' => 0], 'Status'
-            )
-            ->addColumn(
-                'combination', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                null, ['nullable' => false, 'default' => '1'], 'Rule Condition'
-            )
-            ->addColumn(
-                'condition', \Magento\Framework\DB\Ddl\Table::TYPE_BLOB, null,
-                ['nullable' => false, 'default' => ''], 'Rule Condition'
-            )
-            ->addColumn(
-                'created_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null, [], 'Creation Time'
-            )
-            ->addColumn(
-                'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null, [], 'Update Time'
-            )
-            ->setComment('Connector Rules');
-        //create table
-        $installer->getConnection()->createTable($ruleTable);
-
         //Save all product types as string to extension's config value
         $types = ObjectManager::getInstance()->create(
             'Magento\Catalog\Model\Product\Type'

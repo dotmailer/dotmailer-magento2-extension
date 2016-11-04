@@ -64,15 +64,10 @@ class Quote
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     protected $_campaignCollection;
-    /**
-     * @var \Dotdigitalgroup\Email\Model\RulesFactory
-     */
-    protected $_rulesFactory;
 
     /**
      * Quote constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -81,7 +76,6 @@ class Quote
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -89,7 +83,6 @@ class Quote
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
     ) {
-        $this->_rulesFactory = $rulesFactory;
         $this->_helper = $helper;
         $this->_campaignCollection = $campaignCollection;
         $this->_campaignFactory = $campaignFactory;
@@ -407,16 +400,6 @@ class Quote
                 ['notnull' => true]
             );
         }
-
-        //process rules on collection
-        $ruleModel = $this->_rulesFactory->create();
-        $websiteId = $this->_storeManager->getStore($storeId)
-            ->getWebsiteId();
-        $salesCollection = $ruleModel->process(
-            $salesCollection,
-            \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
-            $websiteId
-        );
 
         return $salesCollection;
     }

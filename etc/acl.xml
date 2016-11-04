@@ -6,7 +6,6 @@
                 <resource id="Magento_Backend::marketing">
                     <resource id="Dotdigitalgroup_Email::automation" title="Dotmailer Automation" sortOrder="10">
                         <resource id="Dotdigitalgroup_Email::automation_studio" title="Automation Studio" sortOrder="10"/>
-                        <resource id="Dotdigitalgroup_Email::automation_exclusion_rules" title="Exclusion Rules" sortOrder="20"/>
                     </resource>
                 </resource>
                 <resource id="Magento_Reports::report">
