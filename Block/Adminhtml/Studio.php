@@ -4,9 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 
-/**
- * Class Studio.
- */
 class Studio extends \Magento\Backend\Block\Widget\Form
 {
 
@@ -16,18 +13,21 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
     protected $_configFactory;
+
     /**
      * Helper.
      *
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $_helper;
+
     /**
      * Mage auth model.
      *
      * @var \Magento\Backend\Model\Auth
      */
     protected $_auth;
+
     /**
      * Messenger.
      *
@@ -35,12 +35,6 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      */
     protected $_messageManager;
 
-    /**
-     * Session model.
-     *
-     * @var \Magento\Backend\Model\Auth\Session
-     */
-    protected $_sessionModel;
     /**
      * Apiconnector client.
      *
@@ -55,7 +49,6 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      * @param \Dotdigitalgroup\Email\Helper\Config        $configFactory
      * @param \Dotdigitalgroup\Email\Helper\Data          $dataHelper
      * @param \Magento\Backend\Block\Template\Context     $context
-     * @param \Magento\Backend\Model\Auth\Session         $sessionModel
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param Client                                      $client
      */
@@ -64,14 +57,12 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         \Dotdigitalgroup\Email\Helper\Config $configFactory,
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Framework\Message\ManagerInterface $messageManager,
         Client $client
     ) {
         $this->client = $client;
         $this->_auth = $auth;
         $this->_helper = $dataHelper;
-        $this->_sessionModel = $sessionModel;
         $this->_configFactory = $configFactory;
         $this->_messageManager = $messageManager;
 
@@ -188,16 +179,11 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     }
 
     /**
-     * Retrieve authorisation code.
-     *
-     * @return string
+     * @return mixed
      */
     public function getCode()
     {
-        $adminUser = $this->_sessionModel->getUser();
-        $code = $adminUser->getEmailCode();
-
-        return $code;
+        return $this->_auth->getUser()->getEmailCode();
     }
 
     /**

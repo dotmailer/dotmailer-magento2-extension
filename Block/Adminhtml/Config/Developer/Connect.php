@@ -35,6 +35,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      * Connect constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data      $helper
+     * @param \Dotdigitalgroup\Email\Helper\Config    $configHelper
      * @param \Magento\Backend\Model\Auth             $auth
      * @param \Magento\Backend\Block\Template\Context $context
      * @param array                                   $data
@@ -43,14 +44,11 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         \Magento\Backend\Model\Auth $auth,
-        \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Backend\Block\Template\Context $context,
         $data = []
     ) {
         $this->_helper = $helper;
         $this->_configHelper = $configHelper;
-        $this->_sessionModel = $sessionModel;
-
         $this->_auth = $auth;
 
         parent::__construct($context, $data);
@@ -80,10 +78,9 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     {
         //@codingStandardsIgnoreEnd
         $url = $this->getAuthoriseUrl();
-        $ssl = $this->_checkForSecureUrl();
         $disabled = false;
         //disable for ssl missing
-        if (!$ssl) {
+        if (! $this->_isSecureUrl()) {
             $disabled = true;
         }
 
@@ -107,10 +104,9 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Check the base url is using ssl.
-     * @return $this|bool
+     * @return bool
      */
-    protected function _checkForSecureUrl()
+    protected function _isSecureUrl()
     {
         $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
             \Magento\Framework\UrlInterface::URL_TYPE_WEB,
@@ -121,7 +117,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
             return false;
         }
 
-        return $this;
+        return true;
     }
 
     /**
@@ -139,7 +135,8 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         $redirectUri = $this->getRedirectUri();
         $redirectUri .= 'connector/email/callback';
 
-        $adminUser = $this->_sessionModel->getUser();
+        $adminUser = $this->_auth->getUser();
+
         //query params
         $params = [
             'redirect_uri' => $redirectUri,
