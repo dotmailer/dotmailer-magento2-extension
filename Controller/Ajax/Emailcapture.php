@@ -7,11 +7,11 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Checkout\Model\Session
      */
-    protected $_checkoutSession;
+    public $checkoutSession;
 
     /**
      * Emailcapture constructor.
@@ -25,8 +25,8 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
         \Magento\Checkout\Model\Session $session,
         \Magento\Framework\App\Action\Context $context
     ) {
-        $this->_helper = $data;
-        $this->_checkoutSession = $session;
+        $this->helper          = $data;
+        $this->checkoutSession = $session;
         parent::__construct($context);
     }
 
@@ -35,15 +35,15 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        if ($this->getRequest()->getParam('email') && $quote = $this->_checkoutSession->getQuote()) {
+        if ($this->getRequest()->getParam('email') && $quote = $this->checkoutSession->getQuote()) {
             $email = $this->getRequest()->getParam('email');
             if ($quote->hasItems()) {
                 try {
                     $quote->setCustomerEmail($email)->save();
-                    $this->_helper->log('ajax emailCapture email: ' . $email);
+                    $this->helper->log('ajax emailCapture email: ' . $email);
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string)$e, []);
-                    $this->_helper->log('ajax emailCapture fail for email: ' . $email);
+                    $this->helper->debug((string)$e, []);
+                    $this->helper->log('ajax emailCapture fail for email: ' . $email);
                 }
             }
         }

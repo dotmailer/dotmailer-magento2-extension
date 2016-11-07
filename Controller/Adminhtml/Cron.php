@@ -7,7 +7,7 @@ class Cron extends \Magento\Backend\App\Action
     /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
-    protected $resultPageFactory;
+    public $resultPageFactory;
 
     /**
      * Cron constructor.

@@ -10,11 +10,11 @@ class MassResend extends ImporterController
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
-    protected $_importerResource;
+    public $importerResource;
 
     /**
      * MassResend constructor.
@@ -26,7 +26,7 @@ class MassResend extends ImporterController
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importer
     ) {
-        $this->_importerResource = $importer;
+        $this->importerResource = $importer;
         parent::__construct($context);
     }
 
@@ -37,13 +37,13 @@ class MassResend extends ImporterController
     {
         $searchIds = $this->getRequest()->getParam('id');
         if (!is_array($searchIds)) {
-            $this->messageManager->addError(__('Please select importer.'));
+            $this->messageManager->addErrorMessage(__('Please select importer.'));
         } else {
             try {
-                $num = $this->_importerResource->massResend($searchIds);
-                $this->messageManager->addSuccess(__('Total of %1 record(s) were reset.', $num));
+                $num = $this->importerResource->massResend($searchIds);
+                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were reset.', $num));
             } catch (\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
+                $this->messageManager->addErrorMessage($e->getMessage());
             }
         }
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */

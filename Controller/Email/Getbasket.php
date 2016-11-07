@@ -7,27 +7,27 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
-    protected $_quoteFactory;
+    public $quoteFactory;
     /**
      * @var \Magento\Customer\Model\SessionFactory
      */
-    protected $_sessionFactory;
+    public $sessionFactory;
     /**
      * @var \Magento\Checkout\Model\SessionFactory
      */
-    protected $_checkoutSession;
+    public $checkoutSession;
     /**
      * @var
      */
-    protected $_quote;
+    public $quote;
 
     /**
      * Getbasket constructor.
      *
      * @param \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory
-     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
+     * @param \Magento\Quote\Model\QuoteFactory      $quoteFactory
      * @param \Magento\Customer\Model\SessionFactory $sessionFactory
-     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Framework\App\Action\Context  $context
      */
     public function __construct(
         \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,
@@ -35,9 +35,9 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         \Magento\Customer\Model\SessionFactory $sessionFactory,
         \Magento\Framework\App\Action\Context $context
     ) {
-        $this->_checkoutSession = $checkoutSessionFactory;
-        $this->_sessionFactory = $sessionFactory;
-        $this->_quoteFactory = $quoteFactory;
+        $this->checkoutSession = $checkoutSessionFactory;
+        $this->sessionFactory  = $sessionFactory;
+        $this->quoteFactory    = $quoteFactory;
         parent::__construct($context);
     }
 
@@ -52,7 +52,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             return $this->_redirect('');
         }
 
-        $quoteModel = $this->_quoteFactory->create()->load($quoteId);
+        $quoteModel = $this->quoteFactory->create()->load($quoteId);
 
         //no quote id redirect to base url
         if (!$quoteModel->getId()) {
@@ -60,7 +60,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         }
 
         //set quoteModel to _quote property for later use
-        $this->_quote = $quoteModel;
+        $this->quote = $quoteModel;
 
         if ($quoteModel->getCustomerId()) {
             $this->_handleCustomerBasket();
@@ -72,21 +72,21 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Process customer basket.
      */
-    protected function _handleCustomerBasket()
+    public function _handleCustomerBasket()
     {
-        $customerSession = $this->_sessionFactory->create();
-        $configCartUrl = $this->_quote->getStore()->getWebsite()->getConfig(
+        $customerSession = $this->sessionFactory->create();
+        $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL
         );
 
         //if customer is logged in then redirect to cart
         if ($customerSession->isLoggedIn()) {
-            $checkoutSession = $this->_checkoutSession->create();
+            $checkoutSession = $this->checkoutSession->create();
             if ($checkoutSession->getQuote()
                 && $checkoutSession->getQuote()->hasItems()
             ) {
                 $quote = $checkoutSession->getQuote();
-                if ($this->_quote->getId() != $quote->getId()) {
+                if ($this->quote->getId() != $quote->getId()) {
                     $this->_checkMissingAndAdd();
                 }
             } else {
@@ -110,11 +110,11 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                 $cartUrl = 'checkout/cart';
             }
             $customerSession->setAfterAuthUrl(
-                $this->_quote->getStore()->getUrl($cartUrl)
+                $this->quote->getStore()->getUrl($cartUrl)
             );
 
             //send customer to login page
-            $configLoginUrl = $this->_quote->getStore()->getWebsite()
+            $configLoginUrl = $this->quote->getStore()->getWebsite()
                 ->getConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LOGIN_URL
                 );
@@ -123,16 +123,16 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             } else {
                 $loginUrl = 'customer/account/login';
             }
-            $this->_redirect($this->_quote->getStore()->getUrl($loginUrl));
+            $this->_redirect($this->quote->getStore()->getUrl($loginUrl));
         }
     }
 
     /**
      * Check missing items from current quote and add.
      */
-    protected function _checkMissingAndAdd()
+    public function _checkMissingAndAdd()
     {
-        $checkoutSession = $this->_checkoutSession->create();
+        $checkoutSession = $this->checkoutSession->create();
         $currentQuote = $checkoutSession->getQuote();
 
         if ($currentQuote->hasItems()) {
@@ -142,7 +142,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             foreach ($currentSessionItems as $currentSessionItem) {
                 $currentItemIds[] = $currentSessionItem->getId();
             }
-            foreach ($this->_quote->getAllItems() as $item) {
+            foreach ($this->quote->getAllItems() as $item) {
                 if (!in_array($item->getId(), $currentItemIds)) {
                     $currentQuote->addItem($item);
                 }
@@ -156,11 +156,11 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Load quote and replace in session.
      */
-    protected function _loadAndReplace()
+    public function _loadAndReplace()
     {
-        $checkoutSession = $this->_checkoutSession->create();
-        $quote = $this->_quoteFactory->create()
-            ->load($this->_quote->getId());
+        $checkoutSession = $this->checkoutSession->create();
+        $quote = $this->quoteFactory->create()
+            ->load($this->quote->getId());
         $quote->setIsActive(true)->save();
         $checkoutSession->replaceQuote($quote);
     }
@@ -168,9 +168,9 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Process guest basket.
      */
-    protected function _handleGuestBasket()
+    public function _handleGuestBasket()
     {
-        $checkoutSession = $this->_checkoutSession->create();
+        $checkoutSession = $this->checkoutSession->create();
 
         if ($checkoutSession->getQuote()
             && $checkoutSession->getQuote()->hasItems()
@@ -180,7 +180,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             $this->_loadAndReplace();
         }
 
-        $configCartUrl = $this->_quote->getStore()->getWebsite()->getConfig(
+        $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL
         );
 
@@ -189,6 +189,6 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         } else {
             $url = 'checkout/cart';
         }
-        $this->_redirect($this->_quote->getStore()->getUrl($url));
+        $this->_redirect($this->quote->getStore()->getUrl($url));
     }
 }

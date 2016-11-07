@@ -11,21 +11,22 @@ class Edit extends \Magento\Backend\App\Action
      *
      * @var \Magento\Framework\Registry
      */
-    protected $_coreRegistry = null;
+    public $coreRegistry = null;
 
     /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
-    protected $resultPageFactory;
+    public $resultPageFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
+
     /**
      * @var \Magento\Backend\Model\SessionFactory
      */
-    protected $_sessionFactory;
+    public $sessionFactory;
 
     /**
      * Edit constructor.
@@ -43,10 +44,10 @@ class Edit extends \Magento\Backend\App\Action
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Framework\Registry $registry
     ) {
-        $this->_sessionFactory = $sessionFactory;
-        $this->_contactFactory = $contactFactory;
+        $this->sessionFactory    = $sessionFactory;
+        $this->contactFactory    = $contactFactory;
         $this->resultPageFactory = $resultPageFactory;
-        $this->_coreRegistry = $registry;
+        $this->coreRegistry      = $registry;
         parent::__construct($context);
     }
 
@@ -63,7 +64,7 @@ class Edit extends \Magento\Backend\App\Action
      *
      * @return \Magento\Backend\Model\View\Result\Page
      */
-    protected function _initAction()
+    public function _initAction()
     {
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
@@ -80,7 +81,7 @@ class Edit extends \Magento\Backend\App\Action
     public function execute()
     {
         $id = $this->getRequest()->getParam('email_contact_id');
-        $model = $this->_contactFactory->create();
+        $model = $this->contactFactory->create();
         //check the param contact id
         if ($id) {
             //load the and check the contact model
@@ -94,13 +95,13 @@ class Edit extends \Magento\Backend\App\Action
             }
         }
 
-        $data = $this->_sessionFactory->create()
+        $data = $this->sessionFactory->create()
             ->getFormData(true);
         if (!empty($data)) {
             $model->setData($data);
         }
 
-        $this->_coreRegistry->register('email_contact', $model);
+        $this->coreRegistry->register('email_contact', $model);
 
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->_initAction();

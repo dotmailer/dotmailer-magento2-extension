@@ -7,27 +7,27 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Customer\Model\Session
      */
-    protected $_customerSession;
+    public $customerSession;
     /**
      * @var \Magento\Framework\Data\Form\FormKey\Validator
      */
-    protected $_formKeyValidator;
+    public $formKeyValidator;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    protected $_localeDate;
+    public $localeDate;
 
     /**
      * Newsletter constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Customer\Model\Session $session
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+     * @param \Dotdigitalgroup\Email\Helper\Data                   $helper
+     * @param \Magento\Customer\Model\Session                      $session
+     * @param \Magento\Framework\App\Action\Context                $context
+     * @param \Magento\Framework\Data\Form\FormKey\Validator       $formKeyValidator
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
@@ -37,10 +37,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
-        $this->_helper = $helper;
-        $this->_customerSession = $session;
-        $this->_formKeyValidator = $formKeyValidator;
-        $this->_localeDate = $localeDate;
+        $this->helper           = $helper;
+        $this->customerSession  = $session;
+        $this->formKeyValidator = $formKeyValidator;
+        $this->localeDate       = $localeDate;
         parent::__construct($context);
     }
 
@@ -49,8 +49,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        if (!$this->_formKeyValidator->validate($this->getRequest())
-            or !$this->_customerSession->getConnectorContactId()
+        if (!$this->formKeyValidator->validate($this->getRequest())
+            or !$this->customerSession->getConnectorContactId()
         ) {
             return $this->_redirect('customer/account/');
         }
@@ -62,18 +62,18 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         $paramDataFields = $this->getRequest()->getParam(
             'data_fields'
         );
-        $customerId = $this->_customerSession->getConnectorContactId();
-        $customerEmail = $this->_customerSession->getCustomer()
+        $customerId = $this->customerSession->getConnectorContactId();
+        $customerEmail = $this->customerSession->getCustomer()
             ->getEmail();
 
         //client
-        $website = $this->_customerSession->getCustomer()->getStore()
+        $website = $this->customerSession->getCustomer()->getStore()
             ->getWebsite();
         //if enabled
-        if ($this->_helper->isEnabled($website)) {
-            $client = $this->_helper->getWebsiteApiClient($website);
-            $client->setApiUsername($this->_helper->getApiUsername($website))
-                ->setApiPassword($this->_helper->getApiPassword($website));
+        if ($this->helper->isEnabled($website)) {
+            $client = $this->helper->getWebsiteApiClient($website);
+            $client->setApiUsername($this->helper->getApiUsername($website))
+                ->setApiPassword($this->helper->getApiPassword($website));
 
             $contact = $client->getContactById($customerId);
             if (isset($contact->id)) {
@@ -82,7 +82,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 $addressBooks = $client->getContactAddressBooks(
                     $contact->id
                 );
-                $subscriberAddressBook = $this->_helper->getSubscriberAddressBook(
+                $subscriberAddressBook = $this->helper->getSubscriberAddressBook(
                     $website
                 );
                 $processedAddressBooks = [];
@@ -145,7 +145,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                             $paramDataFields[$key] = (string)$value;
                         }
                         if ($processedFields[$key] == 'Date') {
-                            $paramDataFields[$key] = $this->_localeDate->date($value)->format(\Zend_Date::ISO_8601);
+                            $paramDataFields[$key] = $this->localeDate->date($value)->format(\Zend_Date::ISO_8601);
                         }
                         $data[] = [
                             'Key' => $key,
@@ -159,18 +159,18 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 );
 
                 if (isset($contactResponse->message) && $bookError) {
-                    $this->messageManager->addError(
+                    $this->messageManager->addErrorMessage(
                         __(
                             'An error occurred while saving your subscription preferences.'
                         )
                     );
                 } else {
-                    $this->messageManager->addSuccess(
+                    $this->messageManager->addSuccessMessage(
                         __('The subscription preferences has been saved.')
                     );
                 }
             } else {
-                $this->messageManager->addError(
+                $this->messageManager->addErrorMessage(
                     __(
                         'An error occurred while saving your subscription preferences.'
                     )

@@ -7,11 +7,11 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helperData;
+    public $helperData;
 
     /**
      * Save constructor.
@@ -23,7 +23,7 @@ class Save extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->_helperData = $data;
+        $this->helperData     = $data;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -37,14 +37,14 @@ class Save extends \Magento\Backend\App\AbstractAction
         $visibility = $this->getRequest()->getParam('visibility');
         $website = $this->getRequest()->getParam('website', 0);
 
-        if ($this->_helperData->isEnabled($website)) {
-            $client = $this->_helperData->getWebsiteApiClient($website);
-            if (strlen($addressBookName)) {
+        if ($this->helperData->isEnabled($website)) {
+            $client = $this->helperData->getWebsiteApiClient($website);
+            if (! empty($addressBookName)) {
                 $response = $client->postAddressBooks($addressBookName, $visibility);
                 if (isset($response->message)) {
-                    $this->messageManager->addError($response->message);
+                    $this->messageManager->addErrorMessage($response->message);
                 } else {
-                    $this->messageManager->addSuccess('Address book : ' . $addressBookName . ' created.');
+                    $this->messageManager->addSuccessMessage('Address book : ' . $addressBookName . ' created.');
                 }
             }
         }

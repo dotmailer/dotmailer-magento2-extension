@@ -11,7 +11,7 @@ class MassDelete extends CampaignController
     /**
      * @var \Dotdigitalgroup\Email\Model\CampaignFactory
      */
-    protected $campaign;
+    public $campaign;
 
     /**
      * MassDelete constructor.
@@ -39,11 +39,13 @@ class MassDelete extends CampaignController
             $this->messageManager->addErrorMessage(__('Please select campaigns.'));
         } else {
             try {
+                //@codingStandardsIgnoreStart
                 foreach ($searchIds as $searchId) {
                     $model = $this->campaign->create()
                         ->setId($searchId);
                     $model->delete();
                 }
+                //@codingStandardsIgnoreEnd
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($searchIds)));
             } catch (\Exception $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());

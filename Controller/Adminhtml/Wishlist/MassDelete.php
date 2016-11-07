@@ -10,7 +10,7 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
-    protected $wishlist;
+    public $wishlist;
 
     /**
      * MassDelete constructor.

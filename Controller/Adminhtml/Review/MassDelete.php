@@ -11,7 +11,7 @@ class MassDelete extends Action
     /**
      * @var \Dotdigitalgroup\Email\Model\ReviewFactory
      */
-    protected $review;
+    public $review;
 
     /**
      * MassDelete constructor.
