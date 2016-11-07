@@ -6,7 +6,11 @@ use Magento\Framework\Stdlib\DateTime\DateTimeFormatterInterface;
 
 class Notification extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $dateTimeFormatter;
+
+    /**
+     * @var DateTimeFormatterInterface
+     */
+    public $dateTimeFormatter;
 
     /**
      * @param \Magento\Backend\Block\Template\Context $context
@@ -22,16 +26,21 @@ class Notification extends \Magento\Config\Block\System\Config\Form\Field
         $this->dateTimeFormatter = $dateTimeFormatter;
     }
 
-    protected function _getElementHtml(
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @return string
+     */
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $element->setValue($this->_cache->load(\Dotdigitalgroup\Email\Helper\Config::CONNECTOR_FEED_LAST_CHECK_TIME));
-        $format = $this->_localeDate->getDateTimeFormat(
+        $format = $this->localeDate->getDateTimeFormat(
             \IntlDateFormatter::MEDIUM
         );
 
         return $this->dateTimeFormatter->formatObject(
-            $this->_localeDate->date((int)$element->getValue()),
+            $this->localeDate->date((int)$element->getValue()),
             $format
         );
     }

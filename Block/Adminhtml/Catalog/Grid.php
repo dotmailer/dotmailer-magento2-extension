@@ -8,17 +8,17 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @var
      */
-    protected $_gridFactory;
+    public $gridFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
-    protected $_collectionFactory;
+    public $collectionFactory;
 
     /**
      * @var
      */
-    protected $imported;
+    public $imported;
 
     /**
      * Grid constructor.
@@ -36,15 +36,15 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported $imported,
         array $data = []
     ) {
-        $this->_collectionFactory = $gridFactory;
-        $this->imported = $imported;
+        $this->collectionFactory = $gridFactory;
+        $this->imported          = $imported;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
      * Constructor.
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('id');
@@ -55,9 +55,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $collection = $this->_collectionFactory->create();
+        $collection = $this->collectionFactory->create();
         $this->setCollection($collection);
 
         return parent::_prepareCollection();
@@ -68,7 +68,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @return $this
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn('product_id', [
             'header' => __('Product ID'),
@@ -137,7 +137,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

@@ -4,33 +4,29 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Importer;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    /**
-     * @var object
-     */
-    protected $_gridFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
     /**
      * @var array
      */
-    protected $statusOptions;
+    public $statusOptions;
     /**
      * @var array
      */
-    protected $modeOptions;
+    public $modeOptions;
 
     /**
      * Grid constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\ModeFactory   $modeFactory
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\StatusFactory $statusFactory
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\ModeFactory    $modeFactory
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\StatusFactory  $statusFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory $gridFactory
-     * @param \Magento\Backend\Block\Template\Context                              $context
-     * @param \Magento\Backend\Helper\Data                                         $backendHelper
-     * @param array                                                                $data
+     * @param \Magento\Backend\Block\Template\Context                               $context
+     * @param \Magento\Backend\Helper\Data                                          $backendHelper
+     * @param array                                                                 $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer\ModeFactory $modeFactory,
@@ -40,16 +36,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Helper\Data $backendHelper,
         array $data = []
     ) {
-        $this->_importerFactory = $gridFactory;
-        $this->statusOptions = $statusFactory->create()->getOptions();
-        $this->modeOptions = $modeFactory->create()->getOptions();
+        $this->importerFactory = $gridFactory;
+        $this->statusOptions   = $statusFactory->create()->getOptions();
+        $this->modeOptions     = $modeFactory->create()->getOptions();
 
         parent::__construct($context, $backendHelper, $data);
     }
 
-    /**
-     */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('importer');
@@ -60,9 +54,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $collection = $this->_importerFactory->create();
+        $collection = $this->importerFactory->create();
 
         $this->setCollection($collection);
 
@@ -74,7 +68,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @return $this
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn('id', [
             'header' => __('ID'),
@@ -141,7 +135,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

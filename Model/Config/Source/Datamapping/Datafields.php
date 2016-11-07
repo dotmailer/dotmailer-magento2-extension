@@ -7,19 +7,19 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
 
     /**
      * Configuration structure.
      *
      * @var \Magento\Config\Model\Config\Structure
      */
-    protected $_configStructure;
+    public $configStructure;
 
     /**
      * Datafields constructor.
@@ -33,8 +33,8 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_helper = $data;
-        $this->_registry = $registry;
+        $this->helper        = $data;
+        $this->registry      = $registry;
         $this->_storeManager = $storeManager;
     }
 
@@ -49,18 +49,18 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
         //default data option
         $fields[] = ['value' => '0', 'label' => '-- Please Select --'];
 
-        $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
+        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsite());
         if ($apiEnabled) {
-            $savedDatafields = $this->_registry->registry('datafields');
+            $savedDatafields = $this->registry->registry('datafields');
 
             //get saved datafileds from registry
             if ($savedDatafields) {
                 $datafields = $savedDatafields;
             } else {
                 //grab the datafields request and save to register
-                $client = $this->_helper->getWebsiteApiClient();
+                $client = $this->helper->getWebsiteApiClient();
                 $datafields = $client->getDatafields();
-                $this->_registry->register('datafields', $datafields);
+                $this->registry->register('datafields', $datafields);
             }
 
             //set the api error message for the first option

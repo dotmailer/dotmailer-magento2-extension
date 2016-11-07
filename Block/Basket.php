@@ -16,15 +16,15 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var
      */
-    protected $_quote;
+    public $quote;
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
-    protected $_quoteFactory;
+    public $quoteFactory;
     /**
      * @var \Magento\Store\Model\App\EmulationFactory
      */
-    protected $_emulationFactory;
+    public $emulationFactory;
 
     /**
      * Basket constructor.
@@ -44,10 +44,10 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []
     ) {
-        $this->_quoteFactory = $quoteFactory;
-        $this->helper = $helper;
-        $this->priceHelper = $priceHelper;
-        $this->_emulationFactory = $emulationFactory;
+        $this->quoteFactory     = $quoteFactory;
+        $this->helper           = $helper;
+        $this->priceHelper      = $priceHelper;
+        $this->emulationFactory = $emulationFactory;
 
         parent::__construct($context, $data);
     }
@@ -67,7 +67,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
             return false;
         }
         $quoteId = $params['quote_id'];
-        $quoteModel = $this->_quoteFactory->create()
+        $quoteModel = $this->quoteFactory->create()
             ->loadByIdWithoutStore($quoteId);
 
         //check for any quote for this email, don't want to render further
@@ -82,12 +82,12 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
             return false;
         }
 
-        $this->_quote = $quoteModel;
+        $this->quote = $quoteModel;
 
         //Start environment emulation of the specified store
         $storeId = $quoteModel->getStoreId();
 
-        $appEmulation = $this->_emulationFactory->create();
+        $appEmulation = $this->emulationFactory->create();
         $appEmulation->startEnvironmentEmulation($storeId);
 
         $quoteItems = $quoteModel->getAllItems();
@@ -134,7 +134,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getGrandTotal()
     {
-        return $this->_quote->getGrandTotal();
+        return $this->quote->getGrandTotal();
     }
 
     /**
@@ -144,9 +144,9 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getUrlForLink()
     {
-        return $this->_quote->getStore()->getUrl(
+        return $this->quote->getStore()->getUrl(
             'connector/email/getbasket',
-            ['quote_id' => $this->_quote->getId()]
+            ['quote_id' => $this->quote->getId()]
         );
     }
 
@@ -157,7 +157,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function canShowUrl()
     {
-        return (boolean)$this->_quote->getStore()->getWebsite()->getConfig(
+        return (boolean)$this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED
         );
     }
@@ -167,7 +167,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function takeMeToCartTextForUrl()
     {
-        return $this->_quote->getStore()->getWebsite()->getConfig(
+        return $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_TEXT
         );
     }

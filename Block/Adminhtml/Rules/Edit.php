@@ -10,7 +10,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
 
     /**
      * Initialize form
@@ -24,11 +24,11 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
         \Magento\Framework\Registry $registry,
         \Magento\Backend\Block\Widget\Context $context
     ) {
-        $this->_registry = $registry;
-        $this->_objectId = 'id';
+        $this->registry    = $registry;
+        $this->_objectId   = 'id';
         $this->_blockGroup = 'Dotdigitalgroup_Email';
         $this->_controller = 'adminhtml_rules';
-        $data = [];
+        $data              = [];
         parent::__construct($context, $data);
 
         $this->addButton('save_and_continue_edit', [
@@ -45,7 +45,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
      */
     public function getHeaderText()
     {
-        $rule = $this->_registry->registry('current_ddg_rule');
+        $rule = $this->registry->registry('current_ddg_rule');
 
         if ($rule->getId()) {
             return __('Edit Rule ' . $this->escapeHtml($rule->getName()));

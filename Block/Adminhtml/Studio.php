@@ -12,35 +12,35 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      *
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
-    protected $_configFactory;
+    public $configFactory;
 
     /**
      * Helper.
      *
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * Mage auth model.
      *
      * @var \Magento\Backend\Model\Auth
      */
-    protected $_auth;
+    public $auth;
 
     /**
      * Messenger.
      *
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $_messageManager;
+    public $messageManager;
 
     /**
      * Apiconnector client.
      *
      * @var Client
      */
-    protected $client;
+    public $client;
 
     /**
      * Studio constructor.
@@ -60,11 +60,11 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         \Magento\Framework\Message\ManagerInterface $messageManager,
         Client $client
     ) {
-        $this->client = $client;
-        $this->_auth = $auth;
-        $this->_helper = $dataHelper;
-        $this->_configFactory = $configFactory;
-        $this->_messageManager = $messageManager;
+        $this->client         = $client;
+        $this->auth           = $auth;
+        $this->helper         = $dataHelper;
+        $this->configFactory  = $configFactory;
+        $this->messageManager = $messageManager;
 
         parent::__construct($context, []);
     }
@@ -72,7 +72,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     /**
      * Constructor. Initialization required variables for class instance.
      */
-    protected function _construct()
+    public function _construct()
     {
         $this->_blockGroup = 'Dotdigitalgroup\Email';
         $this->_controller = 'adminhtml_studio';
@@ -143,7 +143,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     {
         // authorize or create token.
         $token = $this->generatetokenAction();
-        $baseUrl = $this->_configFactory
+        $baseUrl = $this->configFactory
             ->getLogUserUrl();
 
         $loginuserUrl = $baseUrl . $token . '&suppressfooter=true';
@@ -158,13 +158,13 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      */
     public function generatetokenAction()
     {
-        $adminUser = $this->_auth->getUser();
+        $adminUser = $this->auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
 
         if ($refreshToken) {
             $token = $this->client->getAccessToken(
                 $this->buildUrlParams($refreshToken),
-                $this->_configFactory->getTokenUrl()
+                $this->configFactory->getTokenUrl()
             );
 
             //save the refresh token to the admin user
@@ -174,7 +174,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
             }
             return $token;
         } else {
-            $this->_messageManager->addNoticeMessage('Please Connect To Access The Page.');
+            $this->messageManager->addNoticeMessage('Please Connect To Access The Page.');
         }
     }
 
@@ -183,7 +183,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      */
     public function getCode()
     {
-        return $this->_auth->getUser()->getEmailCode();
+        return $this->auth->getUser()->getEmailCode();
     }
 
     /**
@@ -193,12 +193,12 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      *
      * @return string
      */
-    protected function buildUrlParams($refreshToken)
+    public function buildUrlParams($refreshToken)
     {
-        $params = 'client_id=' . $this->_helper->getWebsiteConfig(
+        $params = 'client_id=' . $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
         )
-            . '&client_secret=' . $this->_helper->getWebsiteConfig(
+            . '&client_secret=' . $this->helper->getWebsiteConfig(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID
             )
             . '&refresh_token=' . $refreshToken . '&grant_type=refresh_token';

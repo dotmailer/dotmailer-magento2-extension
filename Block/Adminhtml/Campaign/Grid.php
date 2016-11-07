@@ -8,17 +8,17 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @var \Magento\Framework\Module\Manager
      */
-    protected $moduleManager;
+    public $moduleManager;
 
     /**
      * @var
      */
-    protected $_gridFactory;
+    public $gridFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
-    protected $_campaignFactory;
+    public $campaignFactory;
 
     /**
      * Grid constructor.
@@ -36,15 +36,15 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Framework\Module\Manager $moduleManager,
         array $data = []
     ) {
-        $this->_campaignFactory = $gridFactory;
-        $this->moduleManager = $moduleManager;
+        $this->campaignFactory = $gridFactory;
+        $this->moduleManager   = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
      *
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('id');
@@ -55,15 +55,15 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $collection = $this->_campaignFactory->create();
+        $collection = $this->campaignFactory->create();
         $this->setCollection($collection);
 
         return parent::_prepareCollection();
     }
 
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn('id', [
             'header' => __('Campaign ID'),
@@ -154,8 +154,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     }
 
     /**
-     * Callback action for the imported subscribers/contacts.
-     *
      * @param $collection
      * @param $column
      */
@@ -174,7 +172,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

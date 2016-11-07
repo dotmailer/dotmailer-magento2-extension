@@ -18,15 +18,15 @@ class Feefo extends \Magento\Framework\View\Element\Template
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
-    protected $_quoteFactory;
+    public $quoteFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
 
     /**
      * Feefo constructor.
@@ -49,12 +49,11 @@ class Feefo extends \Magento\Framework\View\Element\Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper = $helper;
-        $this->priceHelper = $priceHelper;
-        $this->_orderFactory = $orderFactory;
-        $this->_productFactory = $productFactory;
-        $this->_quoteFactory = $quoteFactory;
-        $this->_orderFactory = $orderFactory;
+        $this->helper         = $helper;
+        $this->priceHelper    = $priceHelper;
+        $this->orderFactory   = $orderFactory;
+        $this->productFactory = $productFactory;
+        $this->quoteFactory   = $quoteFactory;
     }
 
     /**
@@ -86,7 +85,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     {
         $products = [];
         $quoteId = $this->_request->getParam('quote_id');
-        $quoteModel = $this->_quoteFactory->create()
+        $quoteModel = $this->quoteFactory->create()
             ->load($quoteId);
 
         if (!$quoteModel->getId()) {

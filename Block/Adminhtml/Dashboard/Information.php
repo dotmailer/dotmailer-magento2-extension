@@ -8,7 +8,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @var string
      */
-    protected $_template = 'dashboard/information.phtml';
+    public $_template = 'dashboard/information.phtml';
 
 
     /**
@@ -16,18 +16,18 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $data;
+    public $data;
 
     /**
      * Test class.
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
      */
-    protected $test;
+    public $test;
 
     /**
      * @var \Magento\Framework\App\ProductMetadata
      */
-    protected $productMetadata;
+    public $productMetadata;
 
 
     /**
