@@ -113,7 +113,6 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $orderJoinCondition[] = $this->prepareBetweenSql($fieldName, $from, $to);
         $storeId = $this->_storeManager->getStore()->getId();
 
-
         $reportProductCollection->getSelect()->reset()
             ->from(
                 ['order_items' => $reportProductCollection->getTable('sales_order_item')],
@@ -135,7 +134,8 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $productCollection = $this->_productFactory->create()
             ->getCollection()
             ->addAttributeToSelect('*')
-            ->addFieldToFilter('sku', ['in', $productSkus]);
+            ->addFieldToFilter('sku', ['in' => $productSkus])
+        ;
 
         return $productCollection;
     }
