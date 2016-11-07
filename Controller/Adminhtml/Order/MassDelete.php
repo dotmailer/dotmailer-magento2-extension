@@ -11,7 +11,7 @@ class MassDelete extends OrderController
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
-    protected $order;
+    public $order;
 
     /**
      * MassDelete constructor.
@@ -37,11 +37,13 @@ class MassDelete extends OrderController
             $this->messageManager->addErrorMessage(__('Please select orders.'));
         } else {
             try {
+                //@codingStandardsIgnoreStart
                 foreach ($ids as $id) {
                     $model = $this->order->create()
                         ->setEmailOrderId($id);
                     $model->delete();
                 }
+                //@codingStandardsIgnoreEnd
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());

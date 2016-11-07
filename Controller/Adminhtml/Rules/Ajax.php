@@ -9,25 +9,25 @@ class Ajax extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\App\Response\Http
      */
-    protected $_http;
+    public $http;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
-    protected $ruleType;
+    public $ruleType;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
      */
-    protected $ruleCondition;
+    public $ruleCondition;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
-    protected $ruleValue;
+    public $ruleValue;
 
     /**
      * @var \Magento\Framework\Json\Encoder
      */
-    protected $jsonEncoder;
+    public $jsonEncoder;
 
     /**
      * Ajax constructor.
@@ -52,7 +52,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
         $this->ruleValue = $ruleValue;
         $this->jsonEncoder = $jsonEncoder;
         parent::__construct($context);
-        $this->_http = $http;
+        $this->http = $http;
     }
 
     /**
@@ -60,7 +60,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    protected function _isAllowed()
+    public function _isAllowed()
     {
         return $this->_authorization->isAllowed(
             'Dotdigitalgroup_Email::exclusion_rules'
@@ -96,8 +96,8 @@ class Ajax extends \Magento\Backend\App\AbstractAction
                 $html = "<input style='width:160px' title='cvalue' class='' id='' name=$valueName />";
                 $response['cvalue'] = $html;
             }
-            $this->_http->getHeaders()->clearHeaders();
-            $this->_http->setHeader('Content-Type', 'application/json')
+            $this->http->getHeaders()->clearHeaders();
+            $this->http->setHeader('Content-Type', 'application/json')
                 ->setBody(
                     $this->jsonEncoder->encode($response)
                 );
@@ -113,7 +113,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      *
      * @return string
      */
-    protected function _getOptionHtml($title, $name, $options)
+    public function _getOptionHtml($title, $name, $options)
     {
         $block = $this->_view->getLayout()->createBlock(
             'Magento\Framework\View\Element\Html\Select'

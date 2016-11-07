@@ -7,11 +7,11 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
-    protected $rules;
+    public $rules;
 
     /**
      * Save constructor.
@@ -26,8 +26,8 @@ class Save extends \Magento\Backend\App\AbstractAction
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         parent::__construct($context);
-        $this->rules = $rules;
-        $this->_storeManager = $storeManagerInterface;
+        $this->rules        = $rules;
+        $this->storeManager = $storeManagerInterface;
     }
 
     /**
@@ -35,7 +35,7 @@ class Save extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    protected function _isAllowed()
+    public function _isAllowed()
     {
         return $this->_authorization->isAllowed(
             'Dotdigitalgroup_Email::exclusion_rules'
@@ -61,10 +61,10 @@ class Save extends \Magento\Backend\App\AbstractAction
                             $id
                         );
                         if (!$result) {
-                            $websiteName = $this->_storeManager->getWebsite(
+                            $websiteName = $this->storeManager->getWebsite(
                                 $websiteId
                             )->getName();
-                            $this->messageManager->addError(
+                            $this->messageManager->addErrorMessage(
                                 __(
                                     'Rule already exist for website '
                                     . $websiteName
@@ -106,7 +106,7 @@ class Save extends \Magento\Backend\App\AbstractAction
                 $this->_getSession()->setPageData($model->getData());
 
                 $model->save();
-                $this->messageManager->addSuccess(
+                $this->messageManager->addSuccessMessage(
                     __('The rule has been saved.')
                 );
                 $this->_getSession()->setPageData(false);
@@ -122,7 +122,7 @@ class Save extends \Magento\Backend\App\AbstractAction
 
                 return;
             } catch (\Exception $e) {
-                $this->messageManager->addError(
+                $this->messageManager->addErrorMessage(
                     __(
                         'An error occurred while saving the rule data. Please review the log and try again.'
                     )

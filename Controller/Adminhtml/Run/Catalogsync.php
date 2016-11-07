@@ -7,23 +7,23 @@ class Catalogsync extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\Sync\CatalogFactory
      */
-    protected $_catalogFactory;
+    public $catalogFactory;
 
     /**
      * Catalogsync constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactory
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Backend\App\Action\Context              $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->_catalogFactory = $catalogFactory;
+        $this->catalogFactory = $catalogFactory;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -33,10 +33,10 @@ class Catalogsync extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $result = $this->_catalogFactory->create()
+        $result = $this->catalogFactory->create()
             ->sync();
 
-        $this->messageManager->addSuccess($result['message']);
+        $this->messageManager->addSuccessMessage($result['message']);
 
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 

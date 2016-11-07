@@ -10,12 +10,12 @@ class MassDelete extends ImporterController
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * @var object
      */
-    protected $messageManager;
+    public $messageManager;
 
     /**
      * MassDelete constructor.
@@ -27,7 +27,7 @@ class MassDelete extends ImporterController
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
-        $this->_importerFactory = $importerFactory;
+        $this->importerFactory = $importerFactory;
         parent::__construct($context);
     }
 
@@ -43,7 +43,7 @@ class MassDelete extends ImporterController
             try {
                 foreach ($searchIds as $searchId) {
                     //@codingStandardsIgnoreStart
-                    $model = $this->_importerFactory->create()
+                    $model = $this->importerFactory->create()
                         ->setId($searchId);
                     $model->delete();
                     //@codingStandardsIgnoreEnd
