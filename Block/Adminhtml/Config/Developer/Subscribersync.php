@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 class Subscribersync extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_buttonLabel = 'Run Now';
+
+    /**
+     * @var string
+     */
+    public $buttonLabel = 'Run Now';
 
     /**
      * @param $buttonLabel
@@ -13,7 +17,7 @@ class Subscribersync extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function setButtonLabel($buttonLabel)
     {
-        $this->_buttonLabel = $buttonLabel;
+        $this->buttonLabel = $buttonLabel;
 
         return $this;
     }
@@ -26,7 +30,7 @@ class Subscribersync extends \Magento\Config\Block\System\Config\Form\Field
      * @return string
      * @codingStandardsIgnoreStart
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
         $url
@@ -35,7 +39,7 @@ class Subscribersync extends \Magento\Config\Block\System\Config\Form\Field
         return $this->getLayout()
             ->createBlock('Magento\Backend\Block\Widget\Button')
             ->setType('button')
-            ->setLabel(__($this->_buttonLabel))
+            ->setLabel(__($this->buttonLabel))
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
     }

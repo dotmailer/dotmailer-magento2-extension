@@ -11,12 +11,10 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
     /**
      * @var string
      */
-    protected $_template = 'dashboard/main.phtml';
+    public $_template = 'dashboard/main.phtml';
 
-    /**
-     * Block constructor.
-     */
-    protected function _construct()
+
+    public function _construct()
     {
         $this->_blockGroup = 'Dotdigitalgroup_Email';
         $this->_controller = 'adminhtml_dashboard';
@@ -52,7 +50,7 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
     /**
      * @return string
      */
-    protected function getContactSyncLink()
+    public function getContactSyncLink()
     {
         return $this->getUrl('dotdigitalgroup_email/run/contactsync');
     }
@@ -60,7 +58,7 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
     /**
      * @return string
      */
-    protected function getImporterLink()
+    public function getImporterLink()
     {
         return $this->getUrl('dotdigitalgroup_email/run/importersync');
     }

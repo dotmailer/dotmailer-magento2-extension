@@ -8,7 +8,7 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @var string
      */
-    protected $_buttonLabel = 'Run Now';
+    public $buttonLabel = 'Run Now';
 
     /**
      * @param $buttonLabel
@@ -17,7 +17,7 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function setButtonLabel($buttonLabel)
     {
-        $this->_buttonLabel = $buttonLabel;
+        $this->buttonLabel = $buttonLabel;
 
         return $this;
     }
@@ -30,7 +30,7 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
      * @return string
      * @codingStandardsIgnoreStart
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
         $url = $this->_urlBuilder->getUrl(
@@ -41,7 +41,7 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
             'Magento\Backend\Block\Widget\Button'
         )
             ->setType('button')
-            ->setLabel(__($this->_buttonLabel))
+            ->setLabel(__($this->buttonLabel))
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
     }

@@ -19,27 +19,27 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
      */
-    protected $_clientFactory;
+    public $clientFactory;
 
     /**
      * Product constructor.
      *
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Magento\Sales\Model\OrderFactory                       $orderFactory
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context $context
-     * @param array $data
+     * @param \Magento\Catalog\Model\ProductFactory                   $productFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended               $recommended
+     * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
+     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context                  $context
+     * @param array                                                   $data
      */
     public function __construct(
         \Magento\Sales\Model\OrderFactory $orderFactory,
@@ -52,12 +52,12 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_orderFactory = $orderFactory;
-        $this->_clientFactory = $clientFactory;
+        $this->orderFactory      = $orderFactory;
+        $this->clientFactory     = $clientFactory;
         $this->recommendedHelper = $recommended;
-        $this->_productFactory = $productFactory;
-        $this->helper = $helper;
-        $this->priceHelper = $priceHelper;
+        $this->productFactory    = $productFactory;
+        $this->helper            = $helper;
+        $this->priceHelper       = $priceHelper;
     }
 
     /**
@@ -73,7 +73,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         $orderId = $this->getRequest()->getParam('order_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
-        $orderModel = $this->_orderFactory->create()
+        $orderModel = $this->orderFactory->create()
             ->load($orderId);
         //number of product items to be displayed
         $limit = $this->recommendedHelper
@@ -129,7 +129,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
             $fallbackIds = $this->recommendedHelper->getFallbackIds();
 
 
-            $productCollection = $this->_productFactory->create()
+            $productCollection = $this->productFactory->create()
                 ->getCollection()
                 ->addIdFilter($fallbackIds)
                 ->addAttributeToSelect(
@@ -163,7 +163,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    protected function _getRecommendedProduct($productModel, $mode)
+    public function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = [];

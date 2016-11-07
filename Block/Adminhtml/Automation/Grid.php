@@ -7,17 +7,17 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @var
      */
-    protected $_gridFactory;
+    public $gridFactory;
 
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    public $objectManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
      */
-    protected $_automationFactory;
+    public $automationFactory;
 
     /**
      * Grid constructor.
@@ -35,8 +35,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Store\Model\System\Store $store,
         array $data = []
     ) {
-        $this->_automationFactory = $gridFactory;
-        $this->store = $store;
+        $this->automationFactory = $gridFactory;
+        $this->store             = $store;
 
         parent::__construct($context, $backendHelper, $data);
     }
@@ -44,7 +44,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Constructor.
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('id');
@@ -55,9 +55,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $collection = $this->_automationFactory->create();
+        $collection = $this->automationFactory->create();
         $this->setCollection($collection);
         $this->setDefaultSort('updated_at');
         $this->setDefaultDir('DESC');
@@ -70,7 +70,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @throws \Exception
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn('id', [
             'header' => __('ID'),
@@ -149,7 +149,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

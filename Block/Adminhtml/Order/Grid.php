@@ -4,22 +4,19 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Order;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    /**
-     * @var
-     */
-    protected $_gridFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
     /**
      * @var \Magento\Sales\Model\Order\ConfigFactory
      */
-    protected $_configFactory;
+    public $configFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory
      */
-    protected $_importedFactory;
+    public $importedFactory;
 
     /**
      * Grid constructor.
@@ -39,16 +36,16 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $gridFactory,
         array $data = []
     ) {
-        $this->_importedFactory = $importedFactory;
-        $this->_configFactory = $configFactory;
-        $this->_orderFactory = $gridFactory;
+        $this->importedFactory = $importedFactory;
+        $this->configFactory   = $configFactory;
+        $this->orderFactory    = $gridFactory;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
      * Constructor.
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('order');
@@ -59,9 +56,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $collection = $this->_orderFactory->create();
+        $collection = $this->orderFactory->create();
         $this->setCollection($collection);
 
         parent::_prepareCollection();
@@ -73,7 +70,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @return $this
      * @throws \Exception
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn(
             'email_order_id',
@@ -100,7 +97,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'index' => 'order_status',
                 'type' => 'options',
                 'escape' => true,
-                'options' => $this->_configFactory->create()->getStatuses(),
+                'options' => $this->configFactory->create()->getStatuses(),
                 ]
         )->addColumn(
             'email_imported',
@@ -111,7 +108,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'type' => 'options',
                 'escape' => true,
                 'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-                'options' => $this->_importedFactory->create()
+                'options' => $this->importedFactory->create()
                     ->getOptions(),
                 'filter_condition_callback' => [
                     $this,
@@ -180,7 +177,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('email_order_id');
         $this->getMassactionBlock()->setFormFieldName('email_order_id');

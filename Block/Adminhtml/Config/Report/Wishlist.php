@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Report;
 
 class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_buttonLabel = 'Contact Report';
+
+    /**
+     * @var string
+     */
+    public $buttonLabel = 'Contact Report';
 
     /**
      * @param $buttonLabel
@@ -13,7 +17,7 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function setButtonLabel($buttonLabel)
     {
-        $this->_buttonLabel = $buttonLabel;
+        $this->buttonLabel = $buttonLabel;
 
         return $this;
     }
@@ -21,7 +25,7 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Set template to itself.
      */
-    protected function _prepareLayout()
+    public function _prepareLayout()
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
@@ -63,12 +67,12 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $originalData = $element->getOriginalData();
         $buttonLabel = !empty($originalData['button_label'])
-            ? $originalData['button_label'] : $this->_buttonLabel;
+            ? $originalData['button_label'] : $this->buttonLabel;
         $url
                       = $this->_urlBuilder->getUrl('dotdigitalgroup_email/addressbook/save');
         $this->addData(

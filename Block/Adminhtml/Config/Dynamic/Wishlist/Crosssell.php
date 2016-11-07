@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist;
 
 class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_dataHelper;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $dataHelper;
 
     /**
      * Crosssell constructor.
@@ -16,7 +20,7 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context
     ) {
-        $this->_dataHelper = $dataHelper;
+        $this->dataHelper = $dataHelper;
 
         parent::__construct($context);
     }
@@ -26,14 +30,14 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //passcode to append for url
-        $passcode = $this->_dataHelper->getPasscode();
+        $passcode = $this->dataHelper->getPasscode();
         //last order id witch information will be generated
-        $customerId = $this->_dataHelper->getMappedCustomerId();
+        $customerId = $this->dataHelper->getMappedCustomerId();
 
-        if (!strlen($passcode)) {
+        if (empty($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         if (!$customerId) {
@@ -41,7 +45,7 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
         }
 
         //generate the base url and display for default store id
-        $baseUrl = $this->_dataHelper->generateDynamicUrl();
+        $baseUrl = $this->dataHelper->generateDynamicUrl();
 
         //display the full url
         $text = sprintf('%sconnector/wishlist/crosssell/code/%s/customer_id/@%s@', $baseUrl, $passcode, $customerId);

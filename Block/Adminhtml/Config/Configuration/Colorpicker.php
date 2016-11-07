@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration;
 
 class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_text;
+    public $text;
 
     /**
      * Colorpicker constructor.
@@ -16,7 +16,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Data\Form\Element\Text $text
     ) {
-        $this->_text = $text;
+        $this->text = $text;
         parent::__construct($context);
     }
 
@@ -25,11 +25,11 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return mixed|string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         // Use Varien text element as a basis
-        $input = $this->_text;
+        $input = $this->text;
 
         // Set data from config element on Varien text element
         $input->setForm($element->getForm())
@@ -53,7 +53,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getJs($htmlId)
+    public function _getJs($htmlId)
     {
         return '<script type="text/javascript">
 			require([\'jquery\', \'domReady!\'], function($){
