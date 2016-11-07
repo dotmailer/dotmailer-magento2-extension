@@ -7,11 +7,11 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
      */
-    protected $_reviewFactory;
+    public $reviewFactory;
 
     /**
      * Reviewsreset constructor.
@@ -23,7 +23,7 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->_reviewFactory = $reviewFactory;
+        $this->reviewFactory  = $reviewFactory;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -33,10 +33,10 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $this->_reviewFactory->create()
+        $this->reviewFactory->create()
             ->resetReviews();
 
-        $this->messageManager->addSuccess(__('Done.'));
+        $this->messageManager->addSuccessMessage(__('Done.'));
 
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 

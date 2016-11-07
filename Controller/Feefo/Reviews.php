@@ -12,7 +12,7 @@ class Reviews extends \Dotdigitalgroup\Email\Controller\Response
         //authenticate
         $this->authenticate();
 
-        if (!$this->_helper->getFeefoLogon() or !$this->getRequest()->getParam('quote_id')) {
+        if (!$this->helper->getFeefoLogon() or !$this->getRequest()->getParam('quote_id')) {
             $this->sendResponse();
 
             return;

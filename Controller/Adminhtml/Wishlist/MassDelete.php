@@ -10,7 +10,7 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
-    protected $wishlist;
+    public $wishlist;
 
     /**
      * MassDelete constructor.
@@ -37,11 +37,13 @@ class MassDelete extends \Magento\Backend\App\Action
             $this->messageManager->addErrorMessage(__('Please select wishlist.'));
         } else {
             try {
+                //@codingStandardsIgnoreStart
                 foreach ($ids as $id) {
                     $model = $this->wishlist->create()
                         ->setId($id);
                     $model->delete();
                 }
+                //@codingStandardsIgnoreEnd
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());

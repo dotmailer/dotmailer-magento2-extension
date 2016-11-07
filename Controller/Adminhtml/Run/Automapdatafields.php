@@ -7,29 +7,30 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_data;
+    public $data;
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
      */
-    protected $datafield;
+    public $datafield;
 
     /**
      * Automapdatafields constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data               $data
+     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $datafield
+     * @param \Magento\Backend\App\Action\Context              $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $datafield,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->_data = $data;
-        $this->datafield = $datafield;
+        $this->data           = $data;
+        $this->datafield      = $datafield;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -42,13 +43,13 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
         $result = ['errors' => false, 'message' => ''];
         $website = $this->getRequest()->getParam('website', 0);
         $client = false;
-        if ($this->_data->isEnabled()) {
-            $client = $this->_data->getWebsiteApiClient($website);
+        if ($this->data->isEnabled()) {
+            $client = $this->data->getWebsiteApiClient($website);
         }
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 
         if (!$client) {
-            $this->messageManager->addNotice('Please enable api first.');
+            $this->messageManager->addNoticeMessage('Please enable api first.');
         } else {
             // get all possible datatifileds
             $datafields = $this->datafield->getContactDatafields();
@@ -72,19 +73,19 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
                     /*
                      * map the succesful created datafield
                      */
-                    $this->_data->saveConfigData(
+                    $this->data->saveConfigData(
                         'connector_data_mapping/customer_data/' . $key,
                         strtoupper($datafield['name']),
                         $scope,
                         $scopeId
                     );
-                    $this->_data->log('successfully connected : ' . $datafield['name']);
+                    $this->data->log('successfully connected : ' . $datafield['name']);
                 }
             }
             if ($result['errors']) {
-                $this->messageManager->addNotice($result['message']);
+                $this->messageManager->addNoticeMessage($result['message']);
             } else {
-                $this->messageManager->addSuccess('All Datafields Created And Mapped.');
+                $this->messageManager->addSuccessMessage('All Datafields Created And Mapped.');
             }
         }
 

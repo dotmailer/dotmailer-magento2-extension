@@ -7,12 +7,12 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_dataHelper;
+    public $dataHelper;
 
     /**
      * Save constructor.
@@ -24,7 +24,7 @@ class Save extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->_dataHelper = $data;
+        $this->dataHelper     = $data;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -41,9 +41,9 @@ class Save extends \Magento\Backend\App\AbstractAction
 
         $website = $this->getRequest()->getParam('website', 0);
 
-        $client = $this->_dataHelper->getWebsiteApiClient($website);
+        $client = $this->dataHelper->getWebsiteApiClient($website);
 
-        if (strlen($datafield)) {
+        if (! empty($datafield)) {
             $response = $client->postDataFields($datafield, $type, $visibility, $default);
             if (isset($response->message)) {
                 $this->messageManager->addErrorMessage($response->message);

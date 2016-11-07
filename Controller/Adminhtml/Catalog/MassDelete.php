@@ -7,11 +7,10 @@ use Magento\Framework\Controller\ResultFactory;
 class MassDelete extends \Magento\Backend\App\Action
 {
 
-
     /**
      * @var \Dotdigitalgroup\Email\Model\CatalogFactory
      */
-    protected $catalog;
+    public $catalog;
 
     /**
      * MassDelete constructor.
@@ -37,11 +36,13 @@ class MassDelete extends \Magento\Backend\App\Action
             $this->messageManager->addErrorMessage(__('Please select catalog.'));
         } else {
             try {
+                //@codingStandardsIgnoreStart
                 foreach ($searchIds as $searchId) {
                     $model = $this->catalog->create()
                         ->setId($searchId);
                     $model->delete();
                 }
+                //@codingStandardsIgnoreEnd
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($searchIds)));
             } catch (\Exception $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
