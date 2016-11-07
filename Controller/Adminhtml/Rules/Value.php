@@ -7,22 +7,24 @@ class Value extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\App\Response\Http
      */
-    protected $_http;
+    public $http;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
-    protected $ruleValue;
+    public $ruleValue;
     /**
      * @var \Magento\Framework\Json\Encoder
      */
-    protected $jsonEncoder;
+    public $jsonEncoder;
 
     /**
      * Value constructor.
      *
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\App\Response\Http $http
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue
+     * @param \Magento\Framework\Json\Encoder                           $jsonEncoder
+     * @param \Magento\Backend\App\Action\Context                       $context
+     * @param \Magento\Framework\App\Response\Http                      $http
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
@@ -32,8 +34,8 @@ class Value extends \Magento\Backend\App\AbstractAction
     ) {
         $this->jsonEncoder = $jsonEncoder;
         $this->ruleValue = $ruleValue;
+        $this->http = $http;
         parent::__construct($context);
-        $this->_http = $http;
     }
 
     /**
@@ -41,7 +43,7 @@ class Value extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    protected function _isAllowed()
+    public function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }
@@ -58,19 +60,19 @@ class Value extends \Magento\Backend\App\AbstractAction
         if ($valueName && $attributeValue && $conditionValue) {
             if ($conditionValue == 'null') {
                 $valueOptions = $this->ruleValue->getValueSelectOptions($attributeValue, true);
-                $response['cvalue'] = $this->_getOptionHtml('cvalue', $valueName, $valueOptions);
+                $response['cvalue'] = $this->getOptionHtml('cvalue', $valueName, $valueOptions);
             } else {
                 $elmType = $this->ruleValue->getValueElementType($attributeValue);
                 if ($elmType == 'select') {
                     $valueOptions = $this->ruleValue->getValueSelectOptions($attributeValue);
-                    $response['cvalue'] = $this->_getOptionHtml('cvalue', $valueName, $valueOptions);
+                    $response['cvalue'] = $this->getOptionHtml('cvalue', $valueName, $valueOptions);
                 } elseif ($elmType == 'text') {
                     $html = "<input style='width:160px' title='cvalue' class='' id='' name=$valueName />";
                     $response['cvalue'] = $html;
                 }
             }
-            $this->_http->getHeaders()->clearHeaders();
-            $this->_http->setHeader('Content-Type', 'application/json')->setBody(
+            $this->http->getHeaders()->clearHeaders();
+            $this->http->setHeader('Content-Type', 'application/json')->setBody(
                 $this->jsonEncoder->encode($response)
             );
         }
@@ -83,7 +85,7 @@ class Value extends \Magento\Backend\App\AbstractAction
      *
      * @return string
      */
-    protected function _getOptionHtml($title, $name, $options)
+    public function getOptionHtml($title, $name, $options)
     {
         $block = $this->_view->getLayout()->createBlock('Magento\Framework\View\Element\Html\Select');
         $block->setOptions($options)

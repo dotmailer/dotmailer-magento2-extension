@@ -7,28 +7,28 @@ class Selected extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\App\Response\Http
      */
-    protected $_http;
+    public $http;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
-    protected $rulesFactory;
+    public $rulesFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
-    protected $ruleType;
+    public $ruleType;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
      */
-    protected $ruleCondition;
+    public $ruleCondition;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
-    protected $ruleValue;
+    public $ruleValue;
     /**
      * @var
      */
-    protected $jsonEncoder;
+    public $jsonEncoder;
 
     /**
      * Selected constructor.
@@ -57,7 +57,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
         $this->jsonEncoder = $jsonEncoder;
         
         parent::__construct($context);
-        $this->_http = $http;
+        $this->http = $http;
     }
 
     /**
@@ -65,7 +65,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    protected function _isAllowed()
+    public function _isAllowed()
     {
         return $this->_authorization->isAllowed(
             'Dotdigitalgroup_Email::exclusion_rules'
@@ -90,9 +90,9 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 ->load($id);
             //rule not found
             if (!$rule->getId()) {
-                $this->_http->getHeaders()->clearHeaders();
+                $this->http->getHeaders()->clearHeaders();
 
-                return $this->_http->setHeader(
+                return $this->http->setHeader(
                     'Content-Type',
                     'application/json'
                 )->setBody('Rule not found!');
@@ -107,7 +107,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
             $response['condition'] = str_replace(
                 'value="' . $selectedConditions . '"',
                 'value="' . $selectedConditions . '"' . 'selected="selected"',
-                $this->_getOptionHtml(
+                $this->getOptionHtml(
                     'conditions',
                     $conditionName,
                     $conditionOptions
@@ -128,17 +128,15 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 $response['cvalue'] = str_replace(
                     'value="' . $selectedValues . '"',
                     'value="' . $selectedValues . '"' . 'selected="selected"',
-                    $this->_getOptionHtml('cvalue', $valueName, $valueOptions)
+                    $this->getOptionHtml('cvalue', $valueName, $valueOptions)
                 );
             } elseif ($elmType == 'text') {
-                $html = "<input style='width:160px' title='cvalue' class='' id='' name='$valueName' value='$selectedValues'/>";
+                $html = "<input style='width:160px' title='cvalue' name='$valueName' value='$selectedValues'/>";
                 $response['cvalue'] = $html;
             }
-            $this->_http->getHeaders()->clearHeaders();
-            $this->_http->setHeader('Content-Type', 'application/json')
-                ->setBody(
-                    $this->jsonEncoder->encode($response)
-                );
+            $this->http->getHeaders()->clearHeaders();
+            $this->http->setHeader('Content-Type', 'application/json')
+                ->setBody($this->jsonEncoder->encode($response));
         }
     }
 
@@ -149,7 +147,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      *
      * @return string
      */
-    protected function _getOptionHtml($title, $name, $options)
+    public function getOptionHtml($title, $name, $options)
     {
         $block = $this->_view->getLayout()->createBlock(
             'Magento\Framework\View\Element\Html\Select'

@@ -45,12 +45,15 @@ class Response extends \Magento\Framework\App\Action\Action
         }
     }
 
+    /**
+     *
+     */
     public function execute()
     {
     }
 
     /**
-     * Send empty response.
+     *
      */
     public function sendResponse()
     {
