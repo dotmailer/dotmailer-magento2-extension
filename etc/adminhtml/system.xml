@@ -1140,6 +1140,7 @@
             <group id="dynamic_content_style" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1"
                    showInStore="0">
                 <label>Dynamic Content Styling</label>
+                <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Fieldset</frontend_model>
                 <field id="dynamic_styling" translate="comment label" sortOrder="10" type="textarea" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Dynamic Styling</label>
