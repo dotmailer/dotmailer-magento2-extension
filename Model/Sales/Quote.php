@@ -68,7 +68,18 @@ class Quote
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
     protected $_rulesFactory;
-
+    /**
+     * @var \DateInterval
+     */
+    protected $_dateInterval;
+    /**
+     * @var \Magento\Framework\Intl\DateTimeFactory
+     */
+    protected $dateTime;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     */
+    protected $timeZone;
     /**
      * Quote constructor.
      *
@@ -79,6 +90,9 @@ class Quote
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
+     * @param \DateInterval $dateInterval
+     * @param \Magento\Framework\Intl\DateTimeFactory $dateTimeFactory
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
@@ -87,7 +101,10 @@ class Quote
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
+        \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory,
+        \DateInterval $dateInterval,
+        \Magento\Framework\Intl\DateTimeFactory $dateTimeFactory,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     ) {
         $this->_rulesFactory = $rulesFactory;
         $this->_helper = $helper;
@@ -96,6 +113,9 @@ class Quote
         $this->_storeManager = $storeManager;
         $this->_quoteCollection = $collectionFactory;
         $this->scopeConfig = $scopeConfig;
+        $this->_dateInterval = $dateInterval;
+        $this->dateTime = $dateTimeFactory;
+        $this->timeZone = $timezone;
     }
 
     /**
@@ -124,24 +144,28 @@ class Quote
                                 $num,
                                 $storeId
                             );
-                            $interval = new \DateInterval(
-                                'PT' . $minutes . 'M'
+                            $interval = $this->_dateInterval->createFromDateString(
+                                $minutes . ' minutes'
                             );
                         } else {
                             $hours = (int)$this->_getLostBasketCustomerInterval(
                                 $num,
                                 $storeId
                             );
-                            $interval = new \DateInterval('PT' . $hours . 'H');
+                            $interval = $this->_dateInterval->createFromDateString(
+                                $hours . ' hours'
+                            );
                         }
 
-                        $fromTime = new \DateTime(
+                        $fromTime = $this->dateTime->create(
                             'now',
-                            new \DateTimeZone('UTC')
+                            $this->timeZone->getDefaultTimezone()
                         );
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
-                        $fromTime->sub(new \DateInterval('PT5M'));
+                        $fromTime->sub(
+                            $this->_dateInterval->createFromDateString('5 minutes')
+                        );
 
                         //format time
                         $fromDate = $fromTime->format('Y-m-d H:i:s');
@@ -236,24 +260,28 @@ class Quote
                                 $num,
                                 $storeId
                             );
-                            $interval = new \DateInterval(
-                                'PT' . $minutes . 'M'
+                            $interval = $this->_dateInterval->createFromDateString(
+                                $minutes . ' minutes'
                             );
                         } else {
                             $hours = $this->_getLostBasketGuestIterval(
                                 $num,
                                 $storeId
                             );
-                            $interval = new \DateInterval('PT' . $hours . 'H');
+                            $interval = $this->_dateInterval->createFromDateString(
+                                $hours . ' hours'
+                            );
                         }
 
-                        $fromTime = new \DateTime(
+                        $fromTime = $this->dateTime->create(
                             'now',
-                            new \DateTimeZone('UTC')
+                            $this->timeZone->getDefaultTimezone()
                         );
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
-                        $fromTime->sub(new \DateInterval('PT5M'));
+                        $fromTime->sub(
+                            $this->_dateInterval->createFromDateString('5 minutes')
+                        );
 
                         //format time
                         $fromDate = $fromTime->format('Y-m-d H:i:s');
@@ -458,9 +486,14 @@ class Quote
             return false;
         }
 
-        $fromTime = new \DateTime('now', new \DateTimeZone('UTC'));
+        $fromTime = $this->dateTime->create(
+            'now',
+            $this->timeZone->getDefaultTimezone()
+        );
         $toTime = clone $fromTime;
-        $interval = new \DateInterval('PT' . $cartLimit . 'H');
+        $interval = $this->_dateInterval->createFromDateString(
+            $cartLimit . ' hours'
+        );
         $fromTime->sub($interval);
 
         $fromDate = $fromTime->getTimestamp();

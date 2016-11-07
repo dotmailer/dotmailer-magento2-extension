@@ -62,7 +62,10 @@ class Wishlist
      * @var \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory
      */
     protected $_itemCollection;
-
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    protected $_datetime;
     /**
      * Wishlist constructor.
      *
