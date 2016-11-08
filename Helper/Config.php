@@ -222,21 +222,16 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Developer SECTION.
      */
-    const XML_PATH_CONNECTOR_FEED_URL = 'connector_developer_settings/feed_configuration/feed_url';
     const XML_PATH_CONNECTOR_CLIENT_ID = 'connector_developer_settings/oauth/client_id';
     const XML_PATH_CONNECTOR_SYNC_LIMIT = 'connector_developer_settings/import_settings/batch_size';
-    const XML_PATH_CONNECTOR_FEED_ENABLED = 'connector_developer_settings/feed_configuration/feed_enabled';
-    const XML_PATH_RAYGUN_APPLICATION_CODE = 'connector_developer_settings/debug/raygun_code';
     const XML_PATH_CONNECTOR_CUSTOM_DOMAIN = 'connector_developer_settings/oauth/custom_domain';
-    const XML_PATH_CONNECTOR_FEED_FREQUENCY = 'connector_developer_settings/feed_configuration/frequency';
-    const XML_PATH_RAYGUN_APPLICATION_ASYNC = 'connector_developer_settings/debug/raygun_async';
-    const XML_PATH_CONNECTOR_FEED_USE_HTTPS = 'connector_developer_settings/feed_configuration/use_https';
     const XML_PATH_CONNECTOR_SETUP_DATAFIELDS = 'connector_developer_settings/sync_settings/setup_data_fields';
     const XML_PATH_CONNECTOR_CLIENT_SECRET_ID = 'connector_developer_settings/oauth/client_key';
     const XML_PATH_CONNECTOR_CUSTOM_AUTHORIZATION = 'connector_developer_settings/oauth/custom_authorization';
     const XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED = 'connector_developer_settings/debug/debug_enabled';
     const XML_PATH_CONNECTOR_DEBUG_API_REQUEST_LIMIT = 'connector_developer_settings/debug/api_request_time_limit';
-    const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT = 'connector_developer_settings/import_settings/transactional_data';
+    const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT =
+        'connector_developer_settings/import_settings/transactional_data';
     const XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES = 'connector_developer_settings/ip_restriction/ip_addresses';
 
     /**
