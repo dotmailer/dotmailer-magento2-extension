@@ -7,7 +7,7 @@ class Tabs extends \Magento\Backend\Block\Widget\Tabs
     /**
      * Constructor.
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('ddg_rules_tabs');

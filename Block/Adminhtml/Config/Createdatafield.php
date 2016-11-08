@@ -9,18 +9,16 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @var string
      */
-    protected $_buttonLabel = 'New Datafield';
+    public $buttonLabel = 'New Datafield';
 
     /**
-     * Set Validate VAT Button Label.
+     * @param $buttonLabel
      *
-     * @param string $buttonLabel
-     *
-     * @return \Magento\Customer\Block\Adminhtml\System\Config\Validatevat
+     * @return $this
      */
     public function setButtonLabel($buttonLabel)
     {
-        $this->_buttonLabel = $buttonLabel;
+        $this->buttonLabel = $buttonLabel;
 
         return $this;
     }
@@ -28,7 +26,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @return $this
      */
-    protected function _prepareLayout()
+    public function _prepareLayout()
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
@@ -45,12 +43,12 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $originalData = $element->getOriginalData();
         $buttonLabel = !empty($originalData['button_label'])
-            ? $originalData['button_label'] : $this->_buttonLabel;
+            ? $originalData['button_label'] : $this->buttonLabel;
         $url
                       = $this->_urlBuilder->getUrl('dotdigitalgroup_email/datafield/save');
         $this->addData(
@@ -86,7 +84,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getAddRowButtonHtml($title)
+    public function _getAddRowButtonHtml($title)
     {
         return $this->getLayout()->createBlock('adminhtml/widget_button')
             ->setType('button')

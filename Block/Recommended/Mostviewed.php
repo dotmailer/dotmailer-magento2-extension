@@ -18,29 +18,25 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     public $recommnededHelper;
 
     /**
-     * @var
-     */
-    protected $_productCollection;
-    /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
-    protected $_categoryFactory;
+    public $categoryFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory|\Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
-    protected $_productFactory;
+    public $productFactory;
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
-    protected $_productCollectionFactory;
+    public $productCollectionFactory;
     /**
      * @var \Magento\Reports\Model\ResourceModel\Product\CollectionFactory
      */
-    protected $_reportProductCollection;
+    public $reportProductCollection;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_coreResource;
+    public $coreResource;
 
     /**
      * Mostviewed constructor.
@@ -68,14 +64,14 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection,
         array $data = []
     ) {
-        $this->_coreResource = $resourceConnection;
-        $this->_productCollectionFactory = $productCollectionFactory;
-        $this->_productFactory = $productFactory;
-        $this->_categoryFactory = $categtoryFactory;
-        $this->_reportProductCollection = $reportProductCollection;
-        $this->helper = $helper;
-        $this->recommnededHelper = $recommended;
-        $this->priceHelper = $priceHelper;
+        $this->coreResource             = $resourceConnection;
+        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productFactory           = $productFactory;
+        $this->categoryFactory          = $categtoryFactory;
+        $this->reportProductCollection  = $reportProductCollection;
+        $this->helper                   = $helper;
+        $this->recommnededHelper        = $recommended;
+        $this->priceHelper              = $priceHelper;
 
         parent::__construct($context, $data);
     }
@@ -91,19 +87,19 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $mode = $this->getRequest()->getActionName();
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  = $this->recommnededHelper->getTimeFromConfig($mode);
-        $to = $this->_localeDate->date()->format(\Zend_Date::ISO_8601);
+        $to = $this->localeDate->date()->format(\Zend_Date::ISO_8601);
 
-        $reportProductCollection = $this->_reportProductCollection->create()
+        $reportProductCollection = $this->reportProductCollection->create()
             ->addViewsCount($from, $to)
             ->setPageSize($limit);
 
         //filter collection by category by category_id
         if ($catId = $this->getRequest()->getParam('category_id')) {
-            $category = $this->_categoryFactory->create()->load($catId);
+            $category = $this->categoryFactory->create()->load($catId);
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        ['ccpi' => $this->_coreResource->getTableName('catalog_category_product_index')],
+                        ['ccpi' => $this->coreResource->getTableName('catalog_category_product_index')],
                         'e.entity_id = ccpi.product_id',
                         ['category_id']
                     )
@@ -116,12 +112,12 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 
         //filter collection by category by category_name
         if ($catName = $this->getRequest()->getParam('category_name')) {
-            $category = $this->_categoryFactory->create()
+            $category = $this->categoryFactory->create()
                 ->loadByAttribute('name', $catName);
             if ($category) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        ['ccpi' => $this->_coreResource->getTableName('catalog_category_product_index')],
+                        ['ccpi' => $this->coreResource->getTableName('catalog_category_product_index')],
                         'e.entity_id  = ccpi.product_id',
                         ['category_id']
                     )
@@ -135,7 +131,7 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         //product ids from the report product collection
         $productIds = $reportProductCollection->getColumnValues('entity_id');
 
-        $productCollectionFactory = $this->_productCollectionFactory->create();
+        $productCollectionFactory = $this->productCollectionFactory->create();
         $productCollectionFactory->addIdFilter($productIds)
             ->addAttributeToSelect(
                 ['product_url', 'name', 'store_id', 'small_image', 'price']

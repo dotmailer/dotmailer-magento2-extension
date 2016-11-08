@@ -4,18 +4,15 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    /**
-     * @var
-     */
-    protected $_gridFactory;
+
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    public $_objectManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory
      */
-    protected $_rulesFactory;
+    public $rulesFactory;
 
     /**
      * Grid constructor.
@@ -33,7 +30,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
-        $this->_rulesFactory = $gridFactory;
+        $this->rulesFactory   = $gridFactory;
         $this->_objectManager = $objectManagerInterface;
         parent::__construct($context, $backendHelper, $data);
     }
@@ -41,7 +38,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Constructor.
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('rules');
@@ -52,9 +49,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $collection = $this->_rulesFactory->create();
+        $collection = $this->rulesFactory->create();
         $this->setCollection($collection);
 
         parent::_prepareCollection();
@@ -67,7 +64,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @return $this
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn(
             'rule_id',
@@ -146,7 +143,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

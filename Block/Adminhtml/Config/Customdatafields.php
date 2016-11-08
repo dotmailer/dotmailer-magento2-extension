@@ -10,28 +10,34 @@ class Customdatafields extends
      *
      * @var object
      */
-    protected $_attributeRenderer;
+    public $attributeRenderer;
 
     /**
      * Customer datafields.
      *
      * @var object
      */
-    protected $_datafieldRenderer;
+    public $datafieldRenderer;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields
      */
-    protected $datafieldsFactory;
+    public $datafieldsFactory;
 
     /**
      * @var \Magento\Framework\Data\Form\Element\Factory
      */
-    protected $_elementFactory;
+    public $elementFactory;
 
-    protected $_getDatafieldRenderer;
+    /**
+     * @var
+     */
+    public $getDatafieldRenderer;
 
-    protected $_getAttributeRenderer;
+    /**
+     * @var
+     */
+    public $getAttributeRenderer;
 
     /**
      * Customdatafields constructor.
@@ -47,18 +53,18 @@ class Customdatafields extends
         \Magento\Backend\Block\Template\Context $context,
         array $data = []
     ) {
-        $this->_elementFactory = $elementFactory;
+        $this->elementFactory    = $elementFactory;
         $this->datafieldsFactory = $datafields->create();
-        $this->_addAfter = false;
+        $this->_addAfter         = false;
 
         $this->_addButtonLabel = __('Add New Attribute');
         parent::__construct($context, $data);
     }
 
-    protected function _prepareToRender()
+    public function _prepareToRender()
     {
-        $this->_getDatafieldRenderer = null;
-        $this->_getAttributeRenderer = null;
+        $this->getDatafieldRenderer = null;
+        $this->getAttributeRenderer = null;
         $this->addColumn(
             'attribute',
             [
@@ -75,11 +81,16 @@ class Customdatafields extends
         );
     }
 
+    /**
+     * @param string $columnName
+     *
+     * @return mixed|string
+     */
     public function renderCellTemplate($columnName)
     {
         if ($columnName == 'attribute' && isset($this->_columns[$columnName])) {
             $options = $this->getElement()->getValues();
-            $element = $this->_elementFactory->create('select');
+            $element = $this->elementFactory->create('select');
             $element->setForm(
                 $this->getForm()
             )->setName(
@@ -95,7 +106,7 @@ class Customdatafields extends
 
         if ($columnName == 'datafield' && isset($this->_columns[$columnName])) {
             $options = $this->datafieldsFactory->toOptionArray();
-            $element = $this->_elementFactory->create('select');
+            $element = $this->elementFactory->create('select');
             $element->setForm(
                 $this->getForm()
             )->setName(
@@ -115,7 +126,7 @@ class Customdatafields extends
     /**
      * @param \Magento\Framework\DataObject $row
      */
-    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
+    public function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
         $options = [];
 
@@ -136,15 +147,15 @@ class Customdatafields extends
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getAttributeRenderer()
+    public function _getAttributeRenderer()
     {
-        $this->_attributeRenderer = $this->getLayout()->createBlock(
+        $this->attributeRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
 
-        return $this->_attributeRenderer;
+        return $this->attributeRenderer;
     }
 
     /**
@@ -152,15 +163,15 @@ class Customdatafields extends
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getDatafieldRenderer()
+    public function _getDatafieldRenderer()
     {
-        $this->_datafieldRenderer = $this->getLayout()->createBlock(
+        $this->datafieldRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
 
-        return $this->_datafieldRenderer;
+        return $this->datafieldRenderer;
     }
 
     /**

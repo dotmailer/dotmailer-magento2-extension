@@ -7,7 +7,7 @@ class Reviews extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * Reviews constructor.
@@ -19,7 +19,7 @@ class Reviews extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\Block\Template\Context $context
     ) {
-        $this->_helper = $data;
+        $this->helper = $data;
 
         parent::__construct($context);
     }
@@ -29,17 +29,17 @@ class Reviews extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
-        $passcode = $this->_helper->getPasscode();
+        $passcode = $this->helper->getPasscode();
 
-        if (!strlen($passcode)) {
+        if (empty($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
 
         //generate the base url and display for default store id
-        $baseUrl = $this->_helper->generateDynamicUrl();
+        $baseUrl = $this->helper->generateDynamicUrl();
 
         //display the full url
         $text = sprintf(

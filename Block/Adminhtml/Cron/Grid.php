@@ -8,11 +8,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @var \Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory
      */
-    protected $_gridFactory;
+    public $gridFactory;
+
     /**
-     * @var
+     * @var \Magento\Cron\Model\ResourceModel\Schedule\Collection
      */
-    protected $_campaignFactory;
+    public $campaignFactory;
 
     /**
      * Grid constructor.
@@ -28,14 +29,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Helper\Data $backendHelper,
         array $data = []
     ) {
-        $this->_gridFactory = $gridFactory;
+        $this->gridFactory = $gridFactory;
 
         parent::__construct($context, $backendHelper, $data);
     }
 
-    /**
-     */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('schedule_id');
@@ -46,15 +45,18 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $collection = $this->_gridFactory->create();
+        $collection = $this->gridFactory->create();
         $this->setCollection($collection);
 
         return parent::_prepareCollection();
     }
 
-    protected function _prepareColumns()
+    /**
+     * @return $this
+     */
+    public function _prepareColumns()
     {
         $this->addColumn(
             'schedule_id',
@@ -139,7 +141,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

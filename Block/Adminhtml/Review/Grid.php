@@ -4,18 +4,15 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Review;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    /**
-     * @var
-     */
-    protected $_gridFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
-    protected $_reviewFactory;
+    public $reviewFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory
      */
-    protected $_importedFactory;
+    public $importedFactory;
 
     /**
      * Grid constructor.
@@ -33,8 +30,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $gridFactory,
         array $data = []
     ) {
-        $this->_importedFactory = $importedFactory;
-        $this->_reviewFactory = $gridFactory;
+        $this->importedFactory = $importedFactory;
+        $this->reviewFactory   = $gridFactory;
 
         parent::__construct($context, $backendHelper, $data);
     }
@@ -42,7 +39,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Constructor.
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('review');
@@ -53,9 +50,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $this->setCollection($this->_reviewFactory->create());
+        $this->setCollection($this->reviewFactory->create());
 
         return parent::_prepareCollection();
     }
@@ -65,7 +62,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @throws \Exception
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn('review_id', [
             'header' => __('Review ID'),
@@ -91,7 +88,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type' => 'options',
             'escape' => true,
             'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options' => $this->_importedFactory->create()
+            'options' => $this->importedFactory->create()
                 ->getOptions(),
             'filter_condition_callback' => [$this, 'filterCallbackContact'],
         ])->addColumn('created_at', [
@@ -132,7 +129,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

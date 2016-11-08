@@ -1478,34 +1478,6 @@
                     <comment>Set the number in seconds that api calls greater will be logged.</comment>
                 </field>
             </group>
-            <group id="feed_configuration" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
-                <label>Feed Configuration</label>
-                <field id="feed_enabled" translate="label" sortOrder="10" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
-                    <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
-                </field>
-                <field id="feed_url" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Feed URL</label>
-                </field>
-                <field id="feed_secure_url" translate="label" sortOrder="30" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
-                    <label>Use HTTPS to get the feed. </label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="frequency" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Update Frequency</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Frequency</source_model>
-                </field>
-                <field id="feed_last_update" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Last Update</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Notification</frontend_model>
-                </field>
-            </group>
             <group id="oauth" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>OAUTH Credentials</label>
                 <field id="client_id" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"

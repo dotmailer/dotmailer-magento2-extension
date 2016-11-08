@@ -7,7 +7,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
     /**
      * @var \Magento\Store\Model\System\Store
      */
-    protected $_systemStore;
+    public $systemStore;
 
     /**
      * Main constructor.
@@ -25,7 +25,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
         \Magento\Store\Model\System\Store $systemStore,
         array $data = []
     ) {
-        $this->_systemStore = $systemStore;
+        $this->systemStore = $systemStore;
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
@@ -74,7 +74,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _prepareForm()
+    public function _prepareForm()
     {
         $model = $this->_coreRegistry->registry('current_ddg_rule');
 
@@ -142,7 +142,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
                     'label' => __('Websites'),
                     'title' => __('Websites'),
                     'required' => true,
-                    'values' => $this->_systemStore->getWebsiteValuesForForm(),
+                    'values' => $this->systemStore->getWebsiteValuesForForm(),
                 ]
             );
             $renderer = $this->getLayout()->createBlock(

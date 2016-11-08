@@ -7,22 +7,27 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @var
      */
-    protected $_gridFactory;
+    public $gridFactory;
 
     /**
      * @var \Magento\Store\Model\System\StoreFactory
      */
-    protected $_storeFactory;
+    public $storeFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
      */
-    protected $_collectionFactory;
+    public $collectionFactory;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
+    public $contactFactory;
 
     /**
      * Grid constructor.
@@ -44,16 +49,16 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Dotdigitalgroup\Email\Model\ContactFactory $gridFactory,
         array $data = []
     ) {
-        $this->_collectionFactory = $collectionFactory;
-        $this->_contactFactory = $gridFactory;
-        $this->_importerFactory = $importerFactory;
-        $this->_storeFactory = $storeFactory;
+        $this->collectionFactory = $collectionFactory;
+        $this->contactFactory    = $gridFactory;
+        $this->importerFactory   = $importerFactory;
+        $this->storeFactory      = $storeFactory;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('contact');
@@ -64,9 +69,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $this->setCollection($this->_collectionFactory->create());
+        $this->setCollection($this->collectionFactory->create());
 
         return parent::_prepareCollection();
     }
@@ -77,7 +82,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @throws \Exception
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn(
             'email_contact_id',
@@ -142,7 +147,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'index' => 'email_imported',
             'escape' => true,
             'type' => 'options',
-            'options' => $this->_importerFactory->create()->getOptions(),
+            'options' => $this->importerFactory->create()->getOptions(),
             'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
         ])->addColumn('subscriber_imported', [
             'header' => __('Subscriber Imported'),
@@ -152,7 +157,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'escape' => true,
             'type' => 'options',
             'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options' => $this->_importerFactory->create()->getOptions(),
+            'options' => $this->importerFactory->create()->getOptions(),
         ])->addColumn('suppressed', [
             'header' => __('Suppressed'),
             'align' => 'right',
@@ -171,7 +176,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'header' => __('Website'),
             'align' => 'center',
             'type' => 'options',
-            'options' => $this->_storeFactory->create()
+            'options' => $this->storeFactory->create()
                 ->getWebsiteOptionHash(true),
             'index' => 'website_id',
         ]);
@@ -187,7 +192,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

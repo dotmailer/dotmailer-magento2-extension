@@ -23,7 +23,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
 
     /**
      * Push constructor.
@@ -39,16 +39,15 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        //\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper = $helper;
-        $this->_productFactory = $productFactory;
+        $this->helper            = $helper;
+        $this->productFactory    = $productFactory;
         $this->recommnededHelper = $recommended;
-        $this->priceHelper = $priceHelper;
+        $this->priceHelper       = $priceHelper;
     }
 
     /**
@@ -62,7 +61,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $productIds = $this->recommnededHelper->getProductPushIds();
 
-        $productCollection = $this->_productFactory->create()->getCollection()
+        $productCollection = $this->productFactory->create()->getCollection()
             ->addAttributeToSelect('*')
             ->addAttributeToFilter('entity_id', ['in' => $productIds]);
         $productCollection->getSelect()->limit($limit);

@@ -8,7 +8,7 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var
      */
-    protected $_quote;
+    public $_quote;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -20,19 +20,16 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
     /**
      * @var \Magento\Review\Model\ReviewFactory
      */
-    protected $_reviewFactory;
-    /**
-     * @var
-     */
-    protected $_reviewHelper;
+    public $reviewFactory;
+
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
      */
-    protected $_productCollection;
+    public $productCollection;
 
     /**
      * Order constructor.
@@ -54,11 +51,11 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
-        $this->_productCollection = $productCollection;
-        $this->_reviewFactory = $reviewFactory;
-        $this->_orderFactory = $orderFactory;
-        $this->helper = $helper;
-        $this->priceHelper = $priceHelper;
+        $this->productCollection = $productCollection;
+        $this->reviewFactory     = $reviewFactory;
+        $this->orderFactory      = $orderFactory;
+        $this->helper            = $helper;
+        $this->priceHelper       = $priceHelper;
 
         parent::__construct($context, $data);
     }
@@ -84,7 +81,7 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
             if (!$orderId) {
                 return false;
             }
-            $order = $this->_orderFactory->create()->load($orderId);
+            $order = $this->orderFactory->create()->load($orderId);
             $this->_coreRegistry->unregister('current_order'); // additional measure
             $this->_coreRegistry->register('current_order', $order);
         }
@@ -140,7 +137,7 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         foreach ($items as $key => $item) {
             $productId = $item->getProduct()->getId();
 
-            $collection = $this->_reviewFactory->create()->getCollection()
+            $collection = $this->reviewFactory->create()->getCollection()
                 ->addCustomerFilter($customerId)
                 ->addStoreFilter($order->getStoreId())
                 ->addFieldToFilter('main_table.entity_pk_value', $productId);
@@ -166,7 +163,7 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
         foreach ($items as $item) {
             $productIds[] = $item->getProductId();
         }
-        $items = $this->_productCollection
+        $items = $this->productCollection
             ->addAttributeToSelect('*')
             ->addFieldToFilter('entity_id', ['in' => $productIds]);
 

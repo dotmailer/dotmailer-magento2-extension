@@ -7,19 +7,19 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-    protected $_dateTime;
+    public $dateTime;
     /**
      * @var \Magento\CatalogInventory\Model\StockFactory
      */
-    protected $_stockFactory;
+    public $stockFactory;
     /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
-    protected $_categoryFactory;
+    public $categoryFactory;
     /**
      * @var \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory
      */
-    protected $_productSoldFactory;
+    public $productSoldFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -37,11 +37,11 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_resource;
+    public $resource;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
 
     /**
      * Bestsellers constructor.
@@ -71,15 +71,15 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
         array $data = []
     ) {
-        $this->_productFactory = $productFactory;
-        $this->_resource = $resource;
-        $this->helper = $helper;
-        $this->_dateTime = $dateTime;
-        $this->priceHelper = $priceHelper;
-        $this->_stockFactory = $stockFactory;
-        $this->recommnededHelper = $recommended;
-        $this->_categoryFactory = $categoryFactory;
-        $this->_productSoldFactory = $productSoldFactory;
+        $this->productFactory     = $productFactory;
+        $this->resource           = $resource;
+        $this->helper             = $helper;
+        $this->dateTime           = $dateTime;
+        $this->priceHelper        = $priceHelper;
+        $this->stockFactory       = $stockFactory;
+        $this->recommnededHelper  = $recommended;
+        $this->categoryFactory    = $categoryFactory;
+        $this->productSoldFactory = $productSoldFactory;
         parent::__construct($context, $data);
     }
 
@@ -96,12 +96,12 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         //date range
         $from = $this->recommnededHelper->getTimeFromConfig($mode);
-        $date  = new \Zend_Date($this->_localeDate->date()->getTimestamp());
+        $date  = new \Zend_Date($this->localeDate->date()->getTimestamp());
 
         $to = $date->toString(\Zend_Date::ISO_8601);
         //create report collection
-        $reportProductCollection = $this->_productSoldFactory->create();
-        $connection = $this->_resource->getConnection();
+        $reportProductCollection = $this->productSoldFactory->create();
+        $connection = $this->resource->getConnection();
         $orderTableAliasName = $connection->quoteIdentifier('order');
         $fieldName = $orderTableAliasName . '.created_at';
         $orderTableAliasName = $connection->quoteIdentifier('order');
@@ -112,7 +112,6 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         ];
         $orderJoinCondition[] = $this->prepareBetweenSql($fieldName, $from, $to);
         $storeId = $this->_storeManager->getStore()->getId();
-
 
         $reportProductCollection->getSelect()->reset()
             ->from(
@@ -132,10 +131,10 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $reportProductCollection->setStoreIds([$storeId]);
         $productSkus = $reportProductCollection->getColumnValues('sku');
 
-        $productCollection = $this->_productFactory->create()
+        $productCollection = $this->productFactory->create()
             ->getCollection()
             ->addAttributeToSelect('*')
-            ->addFieldToFilter('sku', ['in', $productSkus]);
+            ->addFieldToFilter('sku', ['in' => $productSkus]);
 
         return $productCollection;
     }
@@ -158,9 +157,9 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param string $to
      * @return string Formatted sql string
      */
-    protected function prepareBetweenSql($fieldName, $from, $to)
+    public function prepareBetweenSql($fieldName, $from, $to)
     {
-        $connection = $this->_resource->getConnection();
+        $connection = $this->resource->getConnection();
         return sprintf(
             '(%s BETWEEN %s AND %s)',
             $fieldName,

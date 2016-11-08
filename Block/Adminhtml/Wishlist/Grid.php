@@ -4,27 +4,24 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Wishlist;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    /**
-     * @var
-     */
-    protected $_gridFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
      */
-    protected $_wishlistFactory;
+    public $wishlistFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory
      */
-    protected $_importedFactory;
+    public $importedFactory;
 
     /**
      * Grid constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
+     * @param \Magento\Backend\Block\Template\Context                               $context
+     * @param \Magento\Backend\Helper\Data                                          $backendHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $gridFactory
-     * @param array $data
+     * @param array                                                                 $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\ImportedFactory $importedFactory,
@@ -33,15 +30,15 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $gridFactory,
         array $data = []
     ) {
-        $this->_importedFactory = $importedFactory;
-        $this->_wishlistFactory = $gridFactory;
+        $this->importedFactory = $importedFactory;
+        $this->wishlistFactory = $gridFactory;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
      * Constructor.
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('wishlist');
@@ -52,9 +49,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $this->setCollection($this->_wishlistFactory->create());
+        $this->setCollection($this->wishlistFactory->create());
 
         return parent::_prepareCollection();
     }
@@ -64,7 +61,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @throws \Exception
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn('wishlist_id', [
             'header' => __('Wishlist ID'),
@@ -91,7 +88,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type' => 'options',
             'escape' => true,
             'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options' => $this->_importedFactory->create()
+            'options' => $this->importedFactory->create()
                 ->getOptions(),
             'filter_condition_callback' => [$this, 'filterCallbackContact'],
         ])->addColumn('wishlist_modified', [
@@ -101,7 +98,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'type' => 'options',
             'escape' => true,
             'renderer' => 'Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Imported',
-            'options' => $this->_importedFactory->create()
+            'options' => $this->importedFactory->create()
                 ->getOptions(),
             'filter_condition_callback' => [$this, 'filterCallbackContact'],
         ])->addColumn('created_at', [
@@ -142,7 +139,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');
