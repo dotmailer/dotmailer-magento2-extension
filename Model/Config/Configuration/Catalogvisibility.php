@@ -7,7 +7,7 @@ class Catalogvisibility
     /**
      * @var \Magento\Catalog\Model\Product\Visibility
      */
-    protected $_productVisibility;
+    public $productVisibility;
 
     /**
      * Catalogvisibility constructor.
@@ -17,7 +17,7 @@ class Catalogvisibility
     public function __construct(
         \Magento\Catalog\Model\Product\Visibility $productVisibility
     ) {
-        $this->_productVisibility = $productVisibility;
+        $this->productVisibility = $productVisibility;
     }
 
     /**
@@ -28,7 +28,7 @@ class Catalogvisibility
     public function toOptionArray()
     {
         $visibilities
-            = $this->_productVisibility->getAllOptions();
+            = $this->productVisibility->getAllOptions();
         $options[] = [
             'label' => __('---- Default Option ----'),
             'value' => '0',

@@ -7,7 +7,7 @@ class Orderstatus
     /**
      * @var \Magento\Sales\Model\Config\Source\Order\Status
      */
-    protected $status;
+    public $status;
 
     /**
      * Orderstatus constructor.
@@ -29,8 +29,7 @@ class Orderstatus
     {
         $statuses = $this->status->toOptionArray();
 
-        // Remove the "please select" option if present
-        if (count($statuses) > 0 && $statuses[0]['value'] == '') {
+        if (! empty($statuses) && $statuses[0]['value'] == '') {
             array_shift($statuses);
         }
 

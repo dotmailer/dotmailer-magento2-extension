@@ -14,43 +14,43 @@ class Subscriber
     /**
      * @var
      */
-    protected $_start;
+    public $start;
 
     /**
      * Global number of subscriber updated.
      *
      * @var int
      */
-    protected $_countSubscriber = 0;
+    public $countSubscriber = 0;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    protected $_file;
+    public $file;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $storeManager;
+    public $storeManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory
      */
-    protected $_subscriberFactory;
+    public $subscriberFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * Subscriber constructor.
@@ -70,12 +70,12 @@ class Subscriber
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_importerFactory = $importerFactory;
-        $this->_file = $file;
-        $this->_helper = $helper;
-        $this->_subscriberFactory = $subscriberFactory;
-        $this->_contactFactory = $contactFactory;
-        $this->storeManager = $storeManager;
+        $this->importerFactory   = $importerFactory;
+        $this->file              = $file;
+        $this->helper            = $helper;
+        $this->subscriberFactory = $subscriberFactory;
+        $this->contactFactory    = $contactFactory;
+        $this->storeManager      = $storeManager;
     }
 
     /**
@@ -85,25 +85,25 @@ class Subscriber
      */
     public function sync()
     {
-        $response = ['success' => true, 'message' => ''];
-        $this->_start = microtime(true);
-        $websites = $this->_helper->getWebsites(true);
-        $started = false;
+        $response    = ['success' => true, 'message' => ''];
+        $this->start = microtime(true);
+        $websites    = $this->helper->getWebsites(true);
+        $started     = false;
 
         foreach ($websites as $website) {
             //if subscriber is enabled and mapped
-            $apiEnabled = $this->_helper->isEnabled($website->getid());
+            $apiEnabled = $this->helper->isEnabled($website->getid());
             $subscriberEnaled
-                = $this->_helper->isSubscriberSyncEnabled($website->getid());
+                = $this->helper->isSubscriberSyncEnabled($website->getid());
             $addressBook
-                        = $this->_helper->getSubscriberAddressBook($website->getId());
+                        = $this->helper->getSubscriberAddressBook($website->getId());
             //enabled and mapped
             if ($apiEnabled && $addressBook && $subscriberEnaled) {
                 //ready to start sync
                 $numUpdated = $this->exportSubscribersPerWebsite($website);
 
-                if ($this->_countSubscriber && !$started) {
-                    $this->_helper->log('---------------------- Start subscriber sync -------------------');
+                if ($this->countSubscriber && !$started) {
+                    $this->helper->log('---------------------- Start subscriber sync -------------------');
                     $started = true;
                 }
                 // show message for any number of customers
@@ -129,25 +129,25 @@ class Subscriber
     public function exportSubscribersPerWebsite($website)
     {
         $updated = 0;
-        $limit = $this->_helper->getSyncLimit($website->getId());
+        $limit = $this->helper->getSyncLimit($website->getId());
         //subscriber collection to import
-        $subscribers = $this->_contactFactory->create()
+        $subscribers = $this->contactFactory->create()
             ->getSubscribersToImport($website, $limit);
 
         if ($subscribers->getSize()) {
             $subscribersFilename = strtolower($website->getCode()
                 . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
             //get mapped storename
-            $subscriberStoreName = $this->_helper->getMappedStoreName($website);
+            $subscriberStoreName = $this->helper->getMappedStoreName($website);
             //file headers
-            $this->_file->outputCSV(
-                $this->_file->getFilePath($subscribersFilename),
+            $this->file->outputCSV(
+                $this->file->getFilePath($subscribersFilename),
                 ['Email', 'emailType', $subscriberStoreName]
             );
 
             $emails = $subscribers->getColumnValues('email');
 
-            $subscriberFactory = $this->_subscriberFactory->create();
+            $subscriberFactory = $this->subscriberFactory->create();
             $subscribersData   = $subscriberFactory->getCollection()
                 ->addFieldToFilter('subscriber_email', ['in' => $emails])
                 ->addFieldToSelect(['subscriber_email', 'store_id'])
@@ -161,17 +161,17 @@ class Subscriber
                     ->getName();
 
                 // save data for subscribers
-                $this->_file->outputCSV(
-                    $this->_file->getFilePath($subscribersFilename),
+                $this->file->outputCSV(
+                    $this->file->getFilePath($subscribersFilename),
                     [$email, 'Html', $storeName]
                 );
                 $subscriber->setSubscriberImported(1)->save();
                 ++$updated;
             }
 
-            $this->_helper->log('Subscriber filename: ' . $subscribersFilename);
+            $this->helper->log('Subscriber filename: ' . $subscribersFilename);
             //register in queue with importer
-            $this->_importerFactory->create()
+            $this->importerFactory->create()
                 ->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBERS,
                     '',
@@ -181,7 +181,7 @@ class Subscriber
                 );
         }
         //add updated number for the website
-        $this->_countSubscriber += $updated;
+        $this->countSubscriber += $updated;
 
         return $updated;
     }
@@ -192,7 +192,7 @@ class Subscriber
      *
      * @return bool
      */
-    protected function getStoreIdForSubscriber($email, $subscribers)
+    public function getStoreIdForSubscriber($email, $subscribers)
     {
 
         foreach ($subscribers as $subscriber) {

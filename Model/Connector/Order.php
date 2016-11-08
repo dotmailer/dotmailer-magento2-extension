@@ -88,38 +88,39 @@ class Order
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    protected $_localeDate;
+    public $localeDate;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    protected $_customerFactory;
+    public $customerFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory
      */
-    protected $_attributeCollection;
+    public $attributeCollection;
     /**
      * @var \Magento\Eav\Model\Entity\Attribute\SetFactory
      */
-    protected $_setFactory;
+    public $setFactory;
 
     /**
      * Order constructor.
      *
      * @param \Magento\Eav\Model\Entity\Attribute\SetFactory                           $setFactory
+     * @param \Magento\Eav\Api\AttributeSetRepositoryInterface                         $attributeSet
      * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection
      * @param \Magento\Catalog\Model\ProductFactory                                    $productFactory
      * @param \Magento\Customer\Model\CustomerFactory                                  $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                       $helperData
      * @param \Magento\Store\Model\StoreManagerInterface                               $storeManagerInterface
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface                     $localeDate
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
@@ -131,14 +132,14 @@ class Order
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
-        $this->attributeSet = $attributeSet;
-        $this->_setFactory = $setFactory;
-        $this->_attributeCollection = $attributeCollection;
-        $this->_productFactory = $productFactory;
-        $this->_customerFactory = $customerFactory;
-        $this->_helper = $helperData;
-        $this->_localeDate = $localeDate;
-        $this->_storeManager = $storeManagerInterface;
+        $this->attributeSet        = $attributeSet;
+        $this->setFactory          = $setFactory;
+        $this->attributeCollection = $attributeCollection;
+        $this->productFactory      = $productFactory;
+        $this->customerFactory     = $customerFactory;
+        $this->helper              = $helperData;
+        $this->localeDate          = $localeDate;
+        $this->_storeManager       = $storeManagerInterface;
     }
 
     /**
@@ -155,7 +156,7 @@ class Order
         $this->email = $orderData->getCustomerEmail();
         $this->storeName = $orderData->getStoreName();
 
-        $this->purchaseDate = $this->_localeDate->date($orderData->getCreatedAt())->format(\Zend_Date::ISO_8601);
+        $this->purchaseDate = $this->localeDate->date($orderData->getCreatedAt())->format(\Zend_Date::ISO_8601);
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float)number_format(
             $orderData->getShippingAmount(),
@@ -176,12 +177,12 @@ class Order
         $website = $this->_storeManager->getStore($orderData->getStore())->getWebsite();
 
         $customAttributes
-            = $this->_helper->getConfigSelectedCustomOrderAttributes(
+            = $this->helper->getConfigSelectedCustomOrderAttributes(
                 $website
             );
 
         if ($customAttributes) {
-            $fields = $this->_helper->getOrderTableDescription();
+            $fields = $this->helper->getOrderTableDescription();
             $this->custom = [];
             foreach ($customAttributes as $customAttribute) {
                 if (isset($fields[$customAttribute])) {
@@ -239,7 +240,7 @@ class Order
             ];
         }
 
-        $syncCustomOption = $this->_helper->getWebsiteConfig(
+        $syncCustomOption = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS,
             $website
         );
@@ -273,7 +274,7 @@ class Order
 
                 $attributes = [];
                 //selected attributes from config
-                $configAttributes = $this->_helper->getWebsiteConfig(
+                $configAttributes = $this->helper->getWebsiteConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES,
                     $orderData->getStore()->getWebsite()
                 );
@@ -307,7 +308,7 @@ class Order
                                     );
                                     break;
                                 case 'date':
-                                    $value = $this->_localeDate->date($productModel->getData($attributeCode))
+                                    $value = $this->localeDate->date($productModel->getData($attributeCode))
                                         ->format(\Zend_Date::ISO_8601);
                                     break;
                                 default:
@@ -413,7 +414,7 @@ class Order
      *
      * @return string
      */
-    protected function _getStreet($street, $line)
+    public function _getStreet($street, $line)
     {
         $street = explode("\n", $street);
         if ($line == 1) {
@@ -444,7 +445,7 @@ class Order
      *
      * @return float|int|null|string
      */
-    protected function _getCustomAttributeValue($field, $orderData)
+    public function _getCustomAttributeValue($field, $orderData)
     {
         $type = $field['DATA_TYPE'];
 
@@ -474,14 +475,14 @@ class Order
                 case 'timestamp':
                 case 'datetime':
                 case 'date':
-                    $value = $this->_localeDate->date($orderData->$function())->format(\Zend_Date::ISO_8601);
+                    $value = $this->localeDate->date($orderData->$function())->format(\Zend_Date::ISO_8601);
                     break;
 
                 default:
                     $value = $orderData->$function();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return $value;
@@ -493,7 +494,7 @@ class Order
      * @param $field
      * @param $value
      */
-    protected function _assignCustom($field, $value)
+    public function _assignCustom($field, $value)
     {
         $this->custom[$field['COLUMN_NAME']] = $value;
     }
@@ -505,10 +506,10 @@ class Order
      *
      * @return array
      */
-    protected function _getAttributesArray($attributeSetId)
+    public function _getAttributesArray($attributeSetId)
     {
         $result = [];
-        $attributes = $this->_attributeCollection->create()
+        $attributes = $this->attributeCollection->create()
             ->setAttributeSetFilter($attributeSetId)
             ->getItems();
 
@@ -526,7 +527,7 @@ class Order
      *
      * @return string
      */
-    protected function _limitLength($value)
+    public function _limitLength($value)
     {
         if (strlen($value) > 250) {
             $value = substr($value, 0, 250);
@@ -540,7 +541,7 @@ class Order
      *
      * @return array
      */
-    protected function _getOrderItemOptions($orderItem)
+    public function _getOrderItemOptions($orderItem)
     {
         $orderItemOptions = $orderItem->getProductOptions();
 
@@ -619,7 +620,7 @@ class Order
      *
      * @return string
      */
-    protected function getAttributeSetName($product)
+    public function getAttributeSetName($product)
     {
         $attributeSetRepository = $this->attributeSet->get($product->getAttributeSetId());
         return $attributeSetRepository->getAttributeSetName();

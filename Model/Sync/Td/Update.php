@@ -13,19 +13,20 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
     {
         foreach ($collection as $item) {
             $websiteId = $item->getWebsiteId();
-            if ($this->_helper->isEnabled($websiteId)) {
-                $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
+            if ($this->helper->isEnabled($websiteId)) {
+                $this->client = $this->helper->getWebsiteApiClient($websiteId);
+                //@codingStandardsIgnoreStart
                 $importData = unserialize($item->getImportData());
-
-                if ($this->_client) {
+                //@codingStandardsIgnoreEnd
+                if ($this->client) {
                     if (strpos($item->getImportType(), 'Catalog_') !== false) {
-                        $result = $this->_client->postContactsTransactionalData(
+                        $result = $this->client->postContactsTransactionalData(
                             $importData,
                             $item->getImportType(),
                             true
                         );
                     } else {
-                        $result = $this->_client->postContactsTransactionalData(
+                        $result = $this->client->postContactsTransactionalData(
                             $importData,
                             $item->getImportType()
                         );

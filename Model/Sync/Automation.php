@@ -74,46 +74,40 @@ class Automation
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
-    /**
-     * @var
-     */
-    protected $_objectManager;
+    public $storeManager;
+
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_resource;
+    public $resource;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    protected $_localeDate;
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $_scopeConfig;
+    public $localeDate;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
      */
-    protected $_automationFactory;
+    public $automationFactory;
 
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
 
     /**
      * Automation constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory
-     * @param \Magento\Framework\App\ResourceConnection                          $resource
-     * @param \Dotdigitalgroup\Email\Helper\Data                                 $helper
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface               $localeDate
-     * @param \Magento\Store\Model\StoreManagerInterface                         $storeManagerInterface
-     * @param \Magento\Sales\Model\OrderFactory                                  $orderFactory
+     * @param \Magento\Framework\App\ResourceConnection                               $resource
+     * @param \Dotdigitalgroup\Email\Helper\Data                                      $helper
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface                    $localeDate
+     * @param \Magento\Store\Model\StoreManagerInterface                              $storeManagerInterface
+     * @param \Magento\Sales\Model\OrderFactory                                       $orderFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory,
@@ -123,12 +117,12 @@ class Automation
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Sales\Model\OrderFactory $orderFactory
     ) {
-        $this->_automationFactory = $automationFactory;
-        $this->_helper = $helper;
-        $this->_storeManager = $storeManagerInterface;
-        $this->_resource = $resource;
-        $this->_localeDate = $localeDate;
-        $this->_orderFactory = $orderFactory;
+        $this->automationFactory = $automationFactory;
+        $this->helper            = $helper;
+        $this->storeManager      = $storeManagerInterface;
+        $this->resource          = $resource;
+        $this->localeDate        = $localeDate;
+        $this->orderFactory      = $orderFactory;
     }
 
     /**
@@ -138,7 +132,7 @@ class Automation
      */
     public function sync()
     {
-        $automationOrderStatusCollection = $this->_automationFactory->create()
+        $automationOrderStatusCollection = $this->automationFactory->create()
             ->addFieldToFilter(
                 'enrolment_status',
                 self::AUTOMATION_STATUS_PENDING
@@ -157,11 +151,11 @@ class Automation
         //send the campaign by each types
         foreach ($this->automationTypes as $type => $config) {
             $contacts = [];
-            $websites = $this->_helper->getWebsites(true);
+            $websites = $this->helper->getWebsites(true);
             foreach ($websites as $website) {
                 if (strpos($type, self::ORDER_STATUS_AUTOMATION) !== false) {
                     $configValue
-                        = unserialize($this->_helper->getWebsiteConfig($config, $website));
+                        = unserialize($this->helper->getWebsiteConfig($config, $website));
                     if (is_array($configValue) && !empty($configValue)) {
                         foreach ($configValue as $one) {
                             if (strpos($type, $one['status']) !== false) {
@@ -172,11 +166,11 @@ class Automation
                     }
                 } else {
                     $contacts[$website->getId()]['programId']
-                        = $this->_helper->getWebsiteConfig($config, $website);
+                        = $this->helper->getWebsiteConfig($config, $website);
                 }
             }
             //get collection from type
-            $automationCollection = $this->_automationFactory->create();
+            $automationCollection = $this->automationFactory->create();
             $automationCollection->addFieldToFilter(
                 'enrolment_status',
                 self::AUTOMATION_STATUS_PENDING
@@ -199,7 +193,7 @@ class Automation
                 if (strpos($typeDouble, self::ORDER_STATUS_AUTOMATION) !== false) {
                     $typeDouble = self::ORDER_STATUS_AUTOMATION;
                 }
-                $contactId = $this->_helper->getContactId(
+                $contactId = $this->helper->getContactId(
                     $email,
                     $this->websiteId
                 );
@@ -243,14 +237,14 @@ class Automation
                         $this->programStatus = 'Deactivated';
                     }
                     //update contacts with the new status, and log the error message if failes
-                    $coreResource = $this->_resource;
+                    $coreResource = $this->resource;
                     $conn = $coreResource->getConnection('core_write');
                     try {
                         $contactIds = array_keys($contactsArray);
                         $bind = [
                             'enrolment_status' => $this->programStatus,
                             'message' => $this->programMessage,
-                            'updated_at' => $this->_localeDate->date(
+                            'updated_at' => $this->localeDate->date(
                                 null,
                                 null,
                                 false
@@ -264,7 +258,7 @@ class Automation
                         );
                         //number of updated records
                         if ($num) {
-                            $this->_helper->log(
+                            $this->helper->log(
                                 'Automation type : ' . $type . ', updated : ' . $num
                             );
                         }
@@ -310,19 +304,19 @@ class Automation
      *
      * @param string $email
      */
-    protected function _updateDefaultDatafields($email)
+    public function _updateDefaultDatafields($email)
     {
-        $website = $this->_storeManager->getWebsite($this->websiteId);
-        $this->_helper->updateDataFields($email, $website, $this->storeName);
+        $website = $this->storeManager->getWebsite($this->websiteId);
+        $this->helper->updateDataFields($email, $website, $this->storeName);
     }
 
     /**
      * Update new order default datafields.
      */
-    protected function _updateNewOrderDatafields()
+    public function _updateNewOrderDatafields()
     {
-        $website = $this->_storeManager->getWebsite($this->websiteId);
-        $orderModel = $this->_orderFactory->create()
+        $website = $this->storeManager->getWebsite($this->websiteId);
+        $orderModel = $this->orderFactory->create()
             ->load($this->typeId);
         //data fields
         if ($lastOrderId = $website->getConfig(
@@ -382,7 +376,7 @@ class Automation
         }
         if (!empty($data)) {
             //update data fields
-            $client = $this->_helper->getWebsiteApiClient($website);
+            $client = $this->helper->getWebsiteApiClient($website);
             $client->updateContactDatafieldsByEmail(
                 $orderModel->getCustomerEmail(),
                 $data
@@ -397,13 +391,13 @@ class Automation
      *
      * @return bool
      */
-    protected function _checkCampignEnrolmentActive($programId)
+    public function _checkCampignEnrolmentActive($programId)
     {
         //program is not set
         if (!$programId) {
             return false;
         }
-        $client = $this->_helper->getWebsiteApiClient($this->websiteId);
+        $client = $this->helper->getWebsiteApiClient($this->websiteId);
         $program = $client->getProgramById($programId);
         //program status
         if (isset($program->status)) {
@@ -426,7 +420,7 @@ class Automation
      */
     public function sendContactsToAutomation($contacts, $websiteId)
     {
-        $client = $this->_helper->getWebsiteApiClient($websiteId);
+        $client = $this->helper->getWebsiteApiClient($websiteId);
         $data = [
             'Contacts' => $contacts,
             'ProgramId' => $this->programId,
