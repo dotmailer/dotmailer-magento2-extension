@@ -92,11 +92,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Framework\Module\ModuleListInterface $moduleListInterface,
         \Magento\Cron\Model\ScheduleFactory $schedule,
-        \Zend\Log\Logger $logger,
         \Magento\Store\Model\Store $store
     ) {
         //@codingStandardsIgnoreStart
         $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/' . $this->logFileName);
+        $logger = new \Zend\Log\Logger();
         //@codingStandardsIgnoreEnd
         $logger->addWriter($writer);
         $this->connectorLogger  = $logger;
