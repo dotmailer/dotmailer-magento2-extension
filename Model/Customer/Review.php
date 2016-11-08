@@ -307,11 +307,4 @@ class Review
 
         return $properties;
     }
-
-    /**
-     * Init not serializable fields.
-     */
-    public function __wakeup()
-    {
-    }
 }

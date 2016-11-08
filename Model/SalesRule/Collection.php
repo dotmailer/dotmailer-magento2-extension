@@ -18,7 +18,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
      * @use $this->addWebsiteGroupDateFilter()
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      *
-*@return $this
+     * @return $this
      */
     public function setValidationFilter(
         $websiteId,

@@ -125,7 +125,8 @@ class Campaign
                                     ];
                                 }
                                 if ($orderIncrementId = $this->helper->getWebsiteConfig(
-                                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
+                                    \Dotdigitalgroup\Email\Helper\Config::
+                                    XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
                                     $websiteId
                                 )
                                 ) {

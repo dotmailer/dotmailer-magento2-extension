@@ -154,8 +154,10 @@ class Automation
             $websites = $this->helper->getWebsites(true);
             foreach ($websites as $website) {
                 if (strpos($type, self::ORDER_STATUS_AUTOMATION) !== false) {
+                    //@codingStandardsIgnoreStart
                     $configValue
                         = unserialize($this->helper->getWebsiteConfig($config, $website));
+                    //@codingStandardsIgnoreEnd
                     if (is_array($configValue) && !empty($configValue)) {
                         foreach ($configValue as $one) {
                             if (strpos($type, $one['status']) !== false) {

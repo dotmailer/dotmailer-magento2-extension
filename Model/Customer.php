@@ -119,7 +119,6 @@ class Customer extends \Magento\Customer\Model\AccountManagement
         }
     }
 
-
     /**
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @param string                                       $redirectUrl

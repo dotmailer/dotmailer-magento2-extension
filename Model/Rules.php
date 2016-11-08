@@ -46,7 +46,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     public $coreResource;
 
-
     /**
      * Rules constructor.
      *
@@ -156,8 +155,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     public function _afterLoad()
     {
         parent::_afterLoad();
+        //@codingStandardsIgnoreStart
         $this->setCondition(unserialize($this->getCondition()));
-
+        //@codingStandardsIgnoreEnd
         return $this;
     }
 
@@ -230,8 +230,10 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             return $collection;
         }
 
+        //@codingStandardsIgnoreStart
         //if rule has no conditions then return the collection untouched
         $condition = unserialize($rule->getCondition());
+        //@codingStandardsIgnoreEnd
         if (empty($condition)) {
             return $collection;
         }

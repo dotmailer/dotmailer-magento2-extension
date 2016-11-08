@@ -224,11 +224,13 @@ class Customer
      */
     public function getLastReviewDate()
     {
-        if (count($this->reviewCollection)) {
-            $createdAt = $this->reviewCollection->getSelect()->limit(1)
+        if (! empty($this->reviewCollection)) {
+            //@codingStandardsIgnoreStart
+            $createdAt = $this->reviewCollection->getSelect()
+                ->limit(1)
                 ->getFirstItem()
                 ->getCreatedAt();
-                
+            //@codingStandardsIgnoreEnd
             return $createdAt;
         }
 
@@ -991,6 +993,7 @@ class Customer
      */
     public function _setReward()
     {
+        //@codingStandardsIgnoreStart
         if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')) {
             $enHelper = $this->_objectManager->create('Magento\Reward\Helper\Reward');
             $collection = $rewardModel->getCollection()
@@ -1001,7 +1004,6 @@ class Customer
                 ->skipExpiredDuplicates()
                 ->setDefaultOrder();
 
-            //@codingStandardsIgnoreStart
             $item = $collection->setPageSize(1)
                 ->setCurPage(1)
                 ->getFirstItem();
