@@ -10,41 +10,41 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * @var
      */
-    protected $_conditionMap;
+    public $conditionMap;
     /**
      * @var
      */
-    protected $_defaultOptions;
+    public $defaultOptions;
     /**
      * @var
      */
-    protected $_attributeMapForQuote;
+    public $attributeMapForQuote;
     /**
      * @var
      */
-    protected $_attributeMapForOrder;
+    public $attributeMapForOrder;
     /**
      * @var
      */
-    protected $_productAttribute;
+    public $productAttribute;
     /**
      * @var array
      */
-    protected $_used = [];
+    public $used = [];
 
     /**
      * @var Adminhtml\Source\Rules\Type
      */
-    protected $rulesType;
+    public $rulesType;
 
     /**
      * @var \Magento\Eav\Model\Config
      */
-    protected $config;
+    public $config;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_coreResource;
+    public $coreResource;
 
 
     /**
@@ -69,9 +69,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_coreResource = $resourceConnection;
-        $this->config = $config;
-        $this->rulesType = $rulesType;
+        $this->coreResource = $resourceConnection;
+        $this->config       = $config;
+        $this->rulesType    = $rulesType;
         parent::__construct(
             $context,
             $registry,
@@ -86,9 +86,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     public function _construct()
     {
-        $this->_defaultOptions = $this->rulesType->defaultOptions();
+        $this->defaultOptions = $this->rulesType->defaultOptions();
 
-        $this->_conditionMap = [
+        $this->conditionMap         = [
             'eq' => 'neq',
             'neq' => 'eq',
             'gteq' => 'lteq',
@@ -98,7 +98,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             'like' => 'nlike',
             'nlike' => 'like',
         ];
-        $this->_attributeMapForQuote = [
+        $this->attributeMapForQuote = [
             'method' => 'method',
             'shipping_method' => 'shipping_method',
             'country_id' => 'country_id',
@@ -111,7 +111,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             'items_qty' => 'main_table.items_qty',
             'customer_email' => 'main_table.customer_email',
         ];
-        $this->_attributeMapForOrder = [
+        $this->attributeMapForOrder = [
             'method' => 'method',
             'shipping_method' => 'main_table.shipping_method',
             'country_id' => 'country_id',
@@ -153,7 +153,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return $this
      */
-    protected function _afterLoad()
+    public function _afterLoad()
     {
         parent::_afterLoad();
         $this->setCondition(unserialize($this->getCondition()));
@@ -240,26 +240,26 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         if ($type == self::ABANDONED) {
             $collection->getSelect()
                 ->joinLeft(
-                    ['quote_address' => $this->_coreResource->getTableName('quote_address')],
+                    ['quote_address' => $this->coreResource->getTableName('quote_address')],
                     'main_table.entity_id = quote_address.quote_id',
                     ['shipping_method', 'country_id', 'city', 'region_id']
                 )->joinLeft(
-                    ['quote_payment' => $this->_coreResource->getTableName('quote_payment')],
+                    ['quote_payment' => $this->coreResource->getTableName('quote_payment')],
                     'main_table.entity_id = quote_payment.quote_id',
                     ['method']
                 )->where('address_type = ?', 'shipping');
         } elseif ($type == self::REVIEW) {
             $collection->getSelect()
                 ->join(
-                    ['order_address' => $this->_coreResource->getTableName('sales_order_address')],
+                    ['order_address' => $this->coreResource->getTableName('sales_order_address')],
                     'main_table.entity_id = order_address.parent_id',
                     ['country_id', 'city', 'region_id']
                 )->join(
-                    ['order_payment' => $this->_coreResource->getTableName('sales_order_payment')],
+                    ['order_payment' => $this->coreResource->getTableName('sales_order_payment')],
                     'main_table.entity_id = order_payment.parent_id',
                     ['method']
                 )->join(
-                    ['quote' => $this->_coreResource->getTableName('quote')],
+                    ['quote' => $this->coreResource->getTableName('quote')],
                     'main_table.quote_id = quote.entity_id',
                     ['items_qty']
                 )->where('order_address.address_type = ?', 'shipping');
@@ -291,7 +291,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return mixed
      */
-    protected function _processAndCombination($collection, $conditions, $type)
+    public function _processAndCombination($collection, $conditions, $type)
     {
         foreach ($conditions as $condition) {
             $attribute = $condition['attribute'];
@@ -304,22 +304,22 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             }
 
             //ignore conditions for already used attribute
-            if (in_array($attribute, $this->_used)) {
+            if (in_array($attribute, $this->used)) {
                 continue;
             }
             //set used to check later
-            $this->_used[] = $attribute;
+            $this->used[] = $attribute;
 
             if ($type == self::REVIEW
-                && isset($this->_attributeMapForQuote[$attribute])
+                && isset($this->attributeMapForQuote[$attribute])
             ) {
-                $attribute = $this->_attributeMapForOrder[$attribute];
+                $attribute = $this->attributeMapForOrder[$attribute];
             } elseif ($type == self::ABANDONED
-                && isset($this->_attributeMapForOrder[$attribute])
+                && isset($this->attributeMapForOrder[$attribute])
             ) {
-                $attribute = $this->_attributeMapForQuote[$attribute];
+                $attribute = $this->attributeMapForQuote[$attribute];
             } else {
-                $this->_productAttribute[] = $condition;
+                $this->productAttribute[] = $condition;
                 continue;
             }
 
@@ -341,7 +341,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 }
                 $collection->addFieldToFilter(
                     $attribute,
-                    [$this->_conditionMap[$cond] => $value]
+                    [$this->conditionMap[$cond] => $value]
                 );
             }
         }
@@ -358,7 +358,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return mixed
      */
-    protected function _processOrCombination($collection, $conditions, $type)
+    public function _processOrCombination($collection, $conditions, $type)
     {
         $fieldsConditions = [];
         $multiFieldsConditions = [];
@@ -373,15 +373,15 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             }
 
             if ($type == self::REVIEW
-                && isset($this->_attributeMapForQuote[$attribute])
+                && isset($this->attributeMapForQuote[$attribute])
             ) {
-                $attribute = $this->_attributeMapForOrder[$attribute];
+                $attribute = $this->attributeMapForOrder[$attribute];
             } elseif ($type == self::ABANDONED
-                && isset($this->_attributeMapForOrder[$attribute])
+                && isset($this->attributeMapForOrder[$attribute])
             ) {
-                $attribute = $this->_attributeMapForQuote[$attribute];
+                $attribute = $this->attributeMapForQuote[$attribute];
             } else {
-                $this->_productAttribute[] = $condition;
+                $this->productAttribute[] = $condition;
                 continue;
             }
 
@@ -407,11 +407,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 }
                 if (isset($fieldsConditions[$attribute])) {
                     $multiFieldsConditions[$attribute]
-                        = [$this->_conditionMap[$cond] => $value];
+                        = [$this->conditionMap[$cond] => $value];
                     continue;
                 }
                 $fieldsConditions[$attribute]
-                    = [$this->_conditionMap[$cond] => $value];
+                    = [$this->conditionMap[$cond] => $value];
             }
         }
         //all rules condition will be with or combination
@@ -449,10 +449,10 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return mixed
      */
-    protected function _processProductAttributes($collection)
+    public function _processProductAttributes($collection)
     {
         //if no product attribute or collection empty return collection
-        if (empty($this->_productAttribute) or !$collection->getSize()) {
+        if (empty($this->productAttribute) or !$collection->getSize()) {
             return $collection;
         }
 
@@ -468,7 +468,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                     $product
                 );
 
-                foreach ($this->_productAttribute as $productAttribute) {
+                foreach ($this->productAttribute as $productAttribute) {
                     $attribute = $productAttribute['attribute'];
                     $cond = $productAttribute['conditions'];
                     $value = $productAttribute['cvalue'];
@@ -566,7 +566,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return bool
      */
-    protected function _evaluate($varOne, $op, $varTwo)
+    public function _evaluate($varOne, $op, $varTwo)
     {
         switch ($op) {
             case 'eq':

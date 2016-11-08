@@ -33,27 +33,27 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var \Magento\Framework\App\Helper\Context
      */
-    protected $_context;
+    public $context;
     /**
      * @var Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var
      */
-    protected $_backendConfig;
+    public $backendConfig;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_adapter;
+    public $adapter;
     /**
      * @var \Zend_Date
      */
-    protected $_date;
+    public $date;
 
     /**
      * Recommended constructor.
@@ -71,11 +71,11 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Zend_Date $date
     ) {
-        $this->_adapter = $adapter;
-        $this->_helper = $data;
-        $this->_context = $context;
-        $this->_storeManager = $storeManager;
-        $this->_date = $date;
+        $this->adapter      = $adapter;
+        $this->helper       = $data;
+        $this->context      = $context;
+        $this->storeManager = $storeManager;
+        $this->date         = $date;
 
         parent::__construct($context);
     }
@@ -87,7 +87,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getDisplayType()
     {
-        $mode = $this->_context->getRequest()->getActionName();
+        $mode = $this->context->getRequest()->getActionName();
 
         $type = '';
 
@@ -281,7 +281,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getTimeFromConfig($config)
     {
-        $now = $this->_date;
+        $now = $this->date;
         $period = 'M';
 
         if ($config == 'mostviewed') {

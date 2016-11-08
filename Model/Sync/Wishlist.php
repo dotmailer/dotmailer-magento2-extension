@@ -147,7 +147,7 @@ class Wishlist
                 if (!empty($this->wishlists)) {
                     $message = 'Total time for wishlist bulk sync : ' . gmdate(
                         'H:i:s',
-                            microtime(true) - $this->start
+                        microtime(true) - $this->start
                     );
                     $this->helper->log($message);
                 }

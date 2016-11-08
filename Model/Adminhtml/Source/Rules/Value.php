@@ -7,28 +7,28 @@ class Value
     /**
      * @var
      */
-    protected $_configFactory;
-    protected $_yesno;
+    public $configFactory;
+    public $yesno;
     /**
      * @var \Magento\Directory\Model\Config\Source\Country
      */
-    protected $_country;
+    public $country;
     /**
      * @var \Magento\Directory\Model\Config\Source\Allregion
      */
-    protected $_allregion;
+    public $allregion;
     /**
      * @var \Magento\Shipping\Model\Config\Source\Allmethods
      */
-    protected $_allShippingMethods;
+    public $allShippingMethods;
     /**
      * @var \Magento\Payment\Model\Config\Source\Allmethods
      */
-    protected $_allPaymentMethods;
+    public $allPaymentMethods;
     /**
      * @var \Magento\Customer\Model\Config\Source\Group
      */
-    protected $_group;
+    public $group;
 
     /**
      * Value constructor.
@@ -50,13 +50,13 @@ class Value
         \Magento\Payment\Model\Config\Source\Allmethods $allPaymentMethods,
         \Magento\Customer\Model\Config\Source\Group $group
     ) {
-        $this->_configFactory = $configFactory->create();
-        $this->_yesno = $yesno;
-        $this->_country = $country;
-        $this->_allregion = $allregion;
-        $this->_allShippingMethods = $allShippingMethods;
-        $this->_allPaymentMethods = $allPaymentMethods;
-        $this->_group = $group;
+        $this->configFactory      = $configFactory->create();
+        $this->yesno              = $yesno;
+        $this->country            = $country;
+        $this->allregion          = $allregion;
+        $this->allShippingMethods = $allShippingMethods;
+        $this->allPaymentMethods  = $allPaymentMethods;
+        $this->group              = $group;
     }
 
     /**
@@ -77,7 +77,7 @@ class Value
                 return 'select';
             default:
                 $attribute
-                    = $this->_configFactory->getAttribute(
+                    = $this->configFactory->getAttribute(
                         'catalog_product',
                         $attribute
                     );
@@ -102,35 +102,35 @@ class Value
         $options = [];
         if ($isEmpty) {
             $options
-                = $this->_yesno->toOptionArray();
+                = $this->yesno->toOptionArray();
 
             return $options;
         }
 
         switch ($attribute) {
             case 'country_id':
-                $options = $this->_country->toOptionArray();
+                $options = $this->country->toOptionArray();
                 break;
 
             case 'region_id':
-                $options = $this->_allregion->toOptionArray();
+                $options = $this->allregion->toOptionArray();
                 break;
 
             case 'shipping_method':
-                $options = $this->_allShippingMethods->toOptionArray();
+                $options = $this->allShippingMethods->toOptionArray();
                 break;
 
             case 'method':
-                $options = $this->_allPaymentMethods->toOptionArray();
+                $options = $this->allPaymentMethods->toOptionArray();
                 break;
 
             case 'customer_group_id':
-                $options = $this->_group->toOptionArray();
+                $options = $this->group->toOptionArray();
                 break;
 
             default:
                 $attribute
-                    = $this->_configFactory->getAttribute(
+                    = $this->configFactory->getAttribute(
                         'catalog_product',
                         $attribute
                     );
@@ -149,6 +149,6 @@ class Value
      */
     public function toOptionArray()
     {
-        return $this->_allPaymentMethods->toOptionArray();
+        return $this->allPaymentMethods->toOptionArray();
     }
 }

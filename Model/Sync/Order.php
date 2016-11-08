@@ -7,73 +7,73 @@ class Order
     /**
      * @var array
      */
-    protected $accounts = [];
+    public $accounts = [];
     /**
      * @var string
      */
-    protected $_apiUsername;
+    public $apiUsername;
     /**
      * @var string
      */
-    protected $_apiPassword;
+    public $apiPassword;
 
     /**
      * Global number of orders.
      *
      * @var int
      */
-    protected $_countOrders = 0;
+    public $countOrders = 0;
 
     /**
      * @var
      */
-    protected $_orderIds;
+    public $orderIds;
     /**
      * @var
      */
-    protected $_orderIdsForSingleSync;
+    public $orderIdsForSingleSync;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_resource;
+    public $resource;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_salesOrderFactory;
+    public $salesOrderFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\OrderFactory
      */
-    protected $_connectorOrderFactory;
+    public $connectorOrderFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\AccountFactory
      */
-    protected $_accountFactory;
+    public $accountFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
     /**
      * @var array
      */
-    protected $_guests = [];
+    public $guests = [];
 
     /**
      * Order constructor.
@@ -99,15 +99,15 @@ class Order
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_importerFactory = $importerFactory;
-        $this->_connectorOrderFactory = $connectorOrderFactory;
-        $this->_accountFactory = $accountFactory;
-        $this->_salesOrderFactory = $salesOrderFactory;
-        $this->_orderFactory = $orderFactory;
-        $this->_contactFactory = $contactFactory;
-        $this->_helper = $helper;
-        $this->_storeManager = $storeManagerInterface;
-        $this->_resource = $resource;
+        $this->importerFactory       = $importerFactory;
+        $this->connectorOrderFactory = $connectorOrderFactory;
+        $this->accountFactory        = $accountFactory;
+        $this->salesOrderFactory     = $salesOrderFactory;
+        $this->orderFactory          = $orderFactory;
+        $this->contactFactory        = $contactFactory;
+        $this->helper                = $helper;
+        $this->storeManager          = $storeManagerInterface;
+        $this->resource              = $resource;
     }
 
     /**
@@ -134,17 +134,17 @@ class Order
             $website = $account->getWebsites();
             $numOrders = count($orders);
             //@codingStandardsIgnoreEnd
-            $this->_countOrders += $numOrders;
-            $this->_countOrders += $numOrdersForSingleSync;
+            $this->countOrders += $numOrders;
+            $this->countOrders += $numOrdersForSingleSync;
             //send transactional for any number of orders set
             if ($numOrders) {
-                $this->_helper->log(
+                $this->helper->log(
                     '--------- Order sync ---------- : ' . $numOrders
                 );
                 //queue order into importer
-                $this->_helper->error('orders', $orders);
+                $this->helper->error('orders', $orders);
                 try {
-                    $this->_importerFactory->create()
+                    $this->importerFactory->create()
                         ->registerQueue(
                             \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
                             $orders,
@@ -152,7 +152,7 @@ class Order
                             $website[0]
                         );
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string)$e, []);
+                    $this->helper->debug((string)$e, []);
                     throw new \Magento\Framework\Exception\LocalizedException(
                         __($e->getMessage())
                     );
@@ -160,25 +160,25 @@ class Order
 
                 $this->_setImported($orderIds);
 
-                $this->_helper->log('----------end order sync----------');
+                $this->helper->log('----------end order sync----------');
             }
 
             if ($numOrdersForSingleSync) {
                 $error = false;
                 foreach ($ordersForSingleSync as $order) {
-                    $this->_helper->log(
+                    $this->helper->log(
                         '--------- register Order sync in single with importer ---------- : '
                     );
 
                     //register in queue with importer
-                    $this->_importerFactory->create()
+                    $this->importerFactory->create()
                         ->registerQueue(
                             \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
                             $order,
                             \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
                             $website[0]
                         );
-                    $this->_helper->log(
+                    $this->helper->log(
                         '----------end order sync in single----------'
                     );
                 }
@@ -193,14 +193,14 @@ class Order
         /**
          * Add guest to contacts table.
          */
-        if (!empty($this->_guests)) {
-            $this->_contactFactory->create()
-                ->insert($this->_guests);
+        if (!empty($this->guests)) {
+            $this->contactFactory->create()
+                ->insert($this->guests);
         }
 
-        if ($this->_countOrders) {
+        if ($this->countOrders) {
             $response['message'] = 'Number of updated orders : '
-                . $this->_countOrders;
+                . $this->countOrders;
         }
 
         return $response;
@@ -211,48 +211,48 @@ class Order
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _searchAccounts()
+    public function _searchAccounts()
     {
-        $this->_orderIds = [];
-        $this->_orderIdsForSingleSync = [];
-        $websites = $this->_helper->getWebsites(true);
+        $this->orderIds              = [];
+        $this->orderIdsForSingleSync = [];
+        $websites                    = $this->helper->getWebsites(true);
         foreach ($websites as $website) {
-            $apiEnabled = $this->_helper->isEnabled($website);
+            $apiEnabled = $this->helper->isEnabled($website);
             $storeIds = $website->getStoreIds();
             // api and order sync should be enabled, skip website with no store ids
             if ($apiEnabled
-                && $this->_helper->getWebsiteConfig(
+                && $this->helper->getWebsiteConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
                     $website
                 ) && !empty($storeIds)
             ) {
-                $this->_apiUsername = $this->_helper->getApiUsername($website);
-                $this->_apiPassword = $this->_helper->getApiPassword($website);
+                $this->apiUsername = $this->helper->getApiUsername($website);
+                $this->apiPassword = $this->helper->getApiPassword($website);
                 // limit for orders included to sync
-                $limit = $this->_helper->getWebsiteConfig(
+                $limit = $this->helper->getWebsiteConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
                     $website
                 );
-                if (!isset($this->accounts[$this->_apiUsername])) {
-                    $account = $this->_accountFactory->create()
-                        ->setApiUsername($this->_apiUsername)
-                        ->setApiPassword($this->_apiPassword);
-                    $this->accounts[$this->_apiUsername] = $account;
+                if (!isset($this->accounts[$this->apiUsername])) {
+                    $account                            = $this->accountFactory->create()
+                        ->setApiUsername($this->apiUsername)
+                        ->setApiPassword($this->apiPassword);
+                    $this->accounts[$this->apiUsername] = $account;
                 }
-                $this->accounts[$this->_apiUsername]->setOrders(
+                $this->accounts[$this->apiUsername]->setOrders(
                     $this->getConnectorOrders($website, $limit)
                 );
-                $this->accounts[$this->_apiUsername]->setOrderIds(
-                    $this->_orderIds
+                $this->accounts[$this->apiUsername]->setOrderIds(
+                    $this->orderIds
                 );
-                $this->accounts[$this->_apiUsername]->setWebsites(
+                $this->accounts[$this->apiUsername]->setWebsites(
                     $website->getId()
                 );
-                $this->accounts[$this->_apiUsername]->setOrdersForSingleSync(
+                $this->accounts[$this->apiUsername]->setOrdersForSingleSync(
                     $this->getConnectorOrders($website, $limit, true)
                 );
-                $this->accounts[$this->_apiUsername]->setOrderIdsForSingleSync(
-                    $this->_orderIdsForSingleSync
+                $this->accounts[$this->apiUsername]->setOrderIdsForSingleSync(
+                    $this->orderIdsForSingleSync
                 );
             }
         }
@@ -276,12 +276,12 @@ class Order
     ) {
         $orders = [];
         $storeIds = $website->getStoreIds();
-        $orderModel = $this->_orderFactory->create();
+        $orderModel = $this->orderFactory->create();
         if (empty($storeIds)) {
             return [];
         }
 
-        $orderStatuses = $this->_helper->getConfigSelectedStatus($website);
+        $orderStatuses = $this->helper->getConfigSelectedStatus($website);
 
         //any statuses found
         if ($orderStatuses) {
@@ -308,13 +308,13 @@ class Order
             $orderIds = $orderCollection->getColumnValues('order_id');
 
             //get the order collection
-            $salesOrderCollection = $this->_salesOrderFactory->create()
+            $salesOrderCollection = $this->salesOrderFactory->create()
                 ->getCollection()
                 ->addFieldToFilter('entity_id', ['in' => $orderIds]);
 
             foreach ($salesOrderCollection as $order) {
                 $storeId   = $order->getStoreId();
-                $websiteId = $this->_storeManager->getStore($storeId)->getWebsiteId();
+                $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
                 /**
                  * Add guest to contacts table.
                  */
@@ -322,7 +322,7 @@ class Order
                     && $order->getCustomerEmail()
                 ) {
                     //add guest to the list
-                    $this->_guests[] = [
+                    $this->guests[] = [
                         'email' => $order->getCustomerEmail(),
                         'website_id' => $websiteId,
                         'store_id' => $storeId,
@@ -330,18 +330,18 @@ class Order
                     ];
                 }
                 if ($order->getId()) {
-                    $connectorOrder = $this->_connectorOrderFactory->create();
+                    $connectorOrder = $this->connectorOrderFactory->create();
                     $connectorOrder->setOrderData($order);
                     $orders[] = $connectorOrder;
                 }
                 if ($modified) {
-                    $this->_orderIdsForSingleSync[] = $order->getId();
+                    $this->orderIdsForSingleSync[] = $order->getId();
                 } else {
-                    $this->_orderIds[] = $order->getId();
+                    $this->orderIds[] = $order->getId();
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return $orders;
@@ -355,10 +355,10 @@ class Order
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _setImported($ids, $modified = false)
+    public function _setImported($ids, $modified = false)
     {
         try {
-            $coreResource = $this->_resource;
+            $coreResource = $this->resource;
             $write = $coreResource->getConnection('core_write');
             $tableName = $coreResource->getTableName('email_order');
             $ids = implode(', ', $ids);
@@ -383,7 +383,7 @@ class Order
                 );
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
     }
 }

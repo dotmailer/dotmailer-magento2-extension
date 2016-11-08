@@ -7,11 +7,11 @@ class Type
     /**
      * @var
      */
-    protected $_configFactory;
+    public $configFactory;
     /**
      * @var
      */
-    protected $_productFactory;
+    public $productFactory;
 
     /**
      * Type constructor.
@@ -23,8 +23,8 @@ class Type
         \Magento\Eav\Model\ConfigFactory $configFactory,
         \Magento\SalesRule\Model\Rule\Condition\ProductFactory $productFactory
     ) {
-        $this->_configFactory = $configFactory->create();
-        $this->_productFactory = $productFactory->create();
+        $this->configFactory  = $configFactory->create();
+        $this->productFactory = $productFactory->create();
     }
 
     /**
@@ -50,7 +50,7 @@ class Type
                 return 'select';
 
             default:
-                $attribute = $this->_configFactory->getAttribute(
+                $attribute = $this->configFactory->getAttribute(
                     'catalog_product',
                     $attribute
                 );
@@ -95,7 +95,7 @@ class Type
     public function toOptionArray()
     {
         $defaultOptions = $this->defaultOptions();
-        $productCondition = $this->_productFactory;
+        $productCondition = $this->productFactory;
         $productAttributes = $productCondition->loadAttributeOptions()
             ->getAttributeOption();
         $pAttributes = [];

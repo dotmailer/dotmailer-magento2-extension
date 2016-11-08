@@ -13,10 +13,12 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
      * @param int $customerGroupId
      * @param string $couponCode
      * @param string|null $now
-     * @param \Magento\Quote\Model\Quote\Address $address allow extensions to further filter out rules based on quote address
+     * @param \Magento\Quote\Model\Quote\Address $address allow extensions to further
+     *                                                    filter out rules based on quote address
      * @use $this->addWebsiteGroupDateFilter()
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @return $this
+     *
+*@return $this
      */
     public function setValidationFilter(
         $websiteId,
@@ -38,7 +40,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
             $select = $this->getSelect();
 
             $connection = $this->getConnection();
-            if (strlen($couponCode)) {
+            if (! empty($couponCode)) {
                 $select->joinLeft(
                     ['rule_coupons' => $this->getTable('salesrule_coupon')],
                     $connection->quoteInto(

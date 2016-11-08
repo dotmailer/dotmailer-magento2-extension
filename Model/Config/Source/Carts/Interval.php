@@ -9,7 +9,7 @@ class Interval
      *
      * @var array
      */
-    protected $_times
+    public $times
         = [
             1,
             2,
@@ -39,7 +39,7 @@ class Interval
     {
         $result = $row = [];
         $i = 0;
-        foreach ($this->_times as $one) {
+        foreach ($this->times as $one) {
             if ($i == 0) {
                 $row = [
                     'value' => $one,
