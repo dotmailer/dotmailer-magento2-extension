@@ -48,26 +48,28 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
 
-            //update table with historical send values
-            $select = $connection->select();
+            if ($connection->tableColumnExists($campaignTable, 'is_sent')) {
+                //update table with historical send values
+                $select = $connection->select();
 
-            //join
-            $select->joinLeft(
-                ['oc' => $campaignTable],
-                "oc.id = nc.id",
-                [
-                    'send_status' => new \Zend_Db_Expr(\Dotdigitalgroup\Email\Model\Campaign::SENT)
-                ]
-            )->where('oc.is_sent =?', 1);
+                //join
+                $select->joinLeft(
+                    ['oc' => $campaignTable],
+                    "oc.id = nc.id",
+                    [
+                        'send_status' => new \Zend_Db_Expr(\Dotdigitalgroup\Email\Model\Campaign::SENT)
+                    ]
+                )->where('oc.is_sent =?', 1);
 
-            //update query from select
-            $updateSql = $select->crossUpdateFromSelect(['nc' => $campaignTable]);
+                //update query from select
+                $updateSql = $select->crossUpdateFromSelect(['nc' => $campaignTable]);
 
-            //run query
-            $connection->query($updateSql);
+                //run query
+                $connection->query($updateSql);
 
-            //remove column
-            $connection->dropColumn($campaignTable, 'is_sent');
+                //remove column
+                $connection->dropColumn($campaignTable, 'is_sent');
+            }
 
             //add index
             $connection->addIndex(
