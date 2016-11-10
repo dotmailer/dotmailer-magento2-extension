@@ -7,60 +7,68 @@ class Contact
     /**
      * @var
      */
-    protected $_start;
+    public $start;
     /**
      * @var int
      */
-    protected $_countCustomers = 0;
+    public $countCustomers = 0;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $_messageManager;
+    public $messageManager;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $_scopeConfig;
+    public $scopeConfig;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
     /**
      * @var
      */
-    protected $_contactCollection;
+    public $contactCollection;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_resource;
+    public $resource;
     /**
      * @var
      */
-    protected $_subscriberFactory;
+    public $subscriberFactory;
     /**
      * @var
      */
-    protected $_customerCollection;
+    public $customerCollection;
     /**
      * @var CustomerFactory
      */
-    protected $_emailCustomer;
+    public $emailCustomer;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\File
+     */
+    public $file;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Config
+     */
+    public $config;
 
     /**
      * Contact constructor.
@@ -96,23 +104,23 @@ class Contact
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
     ) {
-        $this->_importerFactory = $importerFactory;
-        $this->_file = $file;
-        $this->_config = $config;
-        $this->_helper = $helper;
-        $this->_registry = $registry;
-        $this->_resource = $resource;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_storeManager = $storeManagerInterface;
-        $this->_messageManager = $context->getMessageManager();
+        $this->importerFactory = $importerFactory;
+        $this->file            = $file;
+        $this->config          = $config;
+        $this->helper          = $helper;
+        $this->registry        = $registry;
+        $this->resource        = $resource;
+        $this->scopeConfig     = $scopeConfig;
+        $this->storeManager    = $storeManagerInterface;
+        $this->messageManager  = $context->getMessageManager();
         //email contact
-        $this->_emailCustomer = $customerFactory;
-        $this->_contactFactory = $contactFactory;
-        $this->_customerCollection = $customerCollectionFactory;
+        $this->emailCustomer      = $customerFactory;
+        $this->contactFactory     = $contactFactory;
+        $this->customerCollection = $customerCollectionFactory;
         //email contact collection
-        $this->_contactCollection = $contactCollectionFactory;
+        $this->contactCollection = $contactCollectionFactory;
         //newsletter subscriber
-        $this->_subscriberFactory = $subscriberFactory;
+        $this->subscriberFactory = $subscriberFactory;
     }
 
     /**
@@ -125,16 +133,16 @@ class Contact
         //result message
         $result = ['success' => true, 'message' => ''];
         //starting time for sync
-        $this->_start = microtime(true);
+        $this->start = microtime(true);
         //resourse allocation
         $started = false;
         //export bulk contacts
-        foreach ($this->_helper->getWebsites() as $website) {
-            $apiEnabled = $this->_helper->isEnabled($website);
-            $customerSyncEnabled = $this->_helper->isCustomerSyncEnabled(
+        foreach ($this->helper->getWebsites() as $website) {
+            $apiEnabled = $this->helper->isEnabled($website);
+            $customerSyncEnabled = $this->helper->isCustomerSyncEnabled(
                 $website
             );
-            $customerAddressBook = $this->_helper->getCustomerAddressBook(
+            $customerAddressBook = $this->helper->getCustomerAddressBook(
                 $website
             );
 
@@ -143,8 +151,8 @@ class Contact
                 //start log
                 $contactsUpdated = $this->exportCustomersForWebsite($website);
 
-                if ($this->_countCustomers && !$started) {
-                    $this->_helper->log(
+                if ($this->countCustomers && !$started) {
+                    $this->helper->log(
                         '---------- Start customer sync ----------'
                     );
                     $started = true;
@@ -157,12 +165,12 @@ class Contact
             }
         }
         //sync proccessed
-        if ($this->_countCustomers) {
+        if ($this->countCustomers) {
             $message = 'Total time for sync : ' . gmdate(
                 'H:i:s',
-                microtime(true) - $this->_start
-            ) . ', Total contacts : ' . $this->_countCustomers;
-            $this->_helper->log($message);
+                microtime(true) - $this->start
+            ) . ', Total contacts : ' . $this->countCustomers;
+            $this->helper->log($message);
             $message .= $result['message'];
             $result['message'] = $message;
         }
@@ -181,19 +189,19 @@ class Contact
     {
         $allMappedHash = [];
         //admin sync limit of batch size for contacts
-        $syncLimit = $this->_helper->getSyncLimit($website);
+        $syncLimit = $this->helper->getSyncLimit($website);
         //address book id mapped
-        $customerAddressBook = $this->_helper->getCustomerAddressBook($website);
+        $customerAddressBook = $this->helper->getCustomerAddressBook($website);
 
         //skip website if address book not mapped
         if (!$customerAddressBook) {
             return 0;
         }
 
-        $connection = $this->_resource->getConnection();
+        $connection = $this->resource->getConnection();
 
         //contacts ready for website
-        $contacts = $this->_contactCollection->create()
+        $contacts = $this->contactCollection->create()
             ->addFieldToSelect('*')
             ->addFieldToFilter('email_imported', ['null' => true])
             ->addFieldToFilter('customer_id', ['neq' => '0'])
@@ -208,19 +216,19 @@ class Contact
         $customersFile = strtolower(
             $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
         );
-        $this->_helper->log('Customers file : ' . $customersFile);
+        $this->helper->log('Customers file : ' . $customersFile);
         //get customers ids
         $customerIds = $contacts->getColumnValues('customer_id');
         /*
          * HEADERS.
          */
-        $mappedHash = $this->_helper->getWebsiteCustomerMappingDatafields(
+        $mappedHash = $this->helper->getWebsiteCustomerMappingDatafields(
             $website
         );
         $headers = $mappedHash;
 
         //custom customer attributes
-        $customAttributes = $this->_helper->getCustomAttributes($website);
+        $customAttributes = $this->helper->getCustomAttributes($website);
 
         if ($customAttributes) {
             foreach ($customAttributes as $data) {
@@ -231,8 +239,8 @@ class Contact
         $headers[] = 'Email';
         $headers[] = 'EmailType';
 
-        $this->_file->outputCSV(
-            $this->_file->getFilePath($customersFile),
+        $this->file->outputCSV(
+            $this->file->getFilePath($customersFile),
             $headers
         );
         /*
@@ -246,7 +254,7 @@ class Contact
         );
         $countIds = [];
         foreach ($customerCollection as $customer) {
-            $connectorCustomer = $this->_emailCustomer->create();
+            $connectorCustomer = $this->emailCustomer->create();
             $connectorCustomer->setMappingHash($mappedHash);
             $connectorCustomer->setCustomerData($customer);
             //count number of customers
@@ -265,8 +273,8 @@ class Contact
             $connectorCustomer->setData('Html');
 
             // save csv file data for customers
-            $this->_file->outputCSV(
-                $this->_file->getFilePath($customersFile),
+            $this->file->outputCSV(
+                $this->file->getFilePath($customersFile),
                 $connectorCustomer->toCSVArray()
             );
 
@@ -275,22 +283,22 @@ class Contact
         }
 
         $customerNum = count($customerIds);
-        $this->_helper->log(
+        $this->helper->log(
             'Website : ' . $website->getName() . ', customers = ' . $customerNum
         );
-        $this->_helper->log(
+        $this->helper->log(
             '---------------------------- execution time :' . gmdate(
                 'H:i:s',
-                microtime(true) - $this->_start
+                microtime(true) - $this->start
             )
         );
         //file was created - continue for queue the export
         //@codingStandardsIgnoreStart
-        if (is_file($this->_file->getFilePath($customersFile))) {
+        if (is_file($this->file->getFilePath($customersFile))) {
             //@codingStandardsIgnoreEnd
             if ($customerNum > 0) {
                 //register in queue with importer
-                $this->_importerFactory->create()
+                $this->importerFactory->create()
                     ->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
                         '',
@@ -300,7 +308,7 @@ class Contact
                     );
                 //set imported
 
-                $tableName = $this->_resource->getTableName('email_contact');
+                $tableName = $this->resource->getTableName('email_contact');
                 $ids = implode(', ', $customerIds);
                 $connection->update(
                     $tableName,
@@ -310,7 +318,7 @@ class Contact
             }
         }
 
-        $this->_countCustomers += $customerNum;
+        $this->countCustomers += $customerNum;
 
         return $customerNum;
     }
@@ -325,63 +333,63 @@ class Contact
     public function syncContact($contactId = null)
     {
         if ($contactId) {
-            $contact = $this->_contactFactory->create()
+            $contact = $this->contactFactory->create()
                 ->load($contactId);
         } else {
-            $contact = $this->_registry->registry('current_contact');
+            $contact = $this->registry->registry('current_contact');
         }
         if (!$contact->getId()) {
-            $this->_messageManager->addError('No contact found!');
+            $this->messageManager->addError('No contact found!');
 
             return false;
         }
 
         $websiteId = $contact->getWebsiteId();
-        $website = $this->_storeManager->getWebsite($websiteId);
+        $website = $this->storeManager->getWebsite($websiteId);
         $updated = 0;
         $customers = $headers = $allMappedHash = [];
-        $this->_helper->log('---------- Start single customer sync ----------');
+        $this->helper->log('---------- Start single customer sync ----------');
         //skip if the mapping field is missing
-        if (!$this->_helper->getCustomerAddressBook($website)) {
+        if (!$this->helper->getCustomerAddressBook($website)) {
             return false;
         }
         $customerId = $contact->getCustomerId();
         if (!$customerId) {
-            $this->_messageManager->addError('Cannot manually sync guests!');
+            $this->messageManager->addError('Cannot manually sync guests!');
 
             return false;
         }
 
-        if (!$this->_helper->isEnabled($websiteId)) {
-            $this->_messageManager->addError('Api is not enabled');
+        if (!$this->helper->isEnabled($websiteId)) {
+            $this->messageManager->addError('Api is not enabled');
             return false;
         }
 
-        $client = $this->_helper->getWebsiteApiClient($website);
+        $client = $this->helper->getWebsiteApiClient($website);
 
         //create customer filename
         $customersFile = strtolower(
             $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
         );
-        $this->_helper->log('Customers file : ' . $customersFile);
+        $this->helper->log('Customers file : ' . $customersFile);
 
         /*
          * HEADERS.
          */
-        $mappedHash = $this->_helper->getWebsiteCustomerMappingDatafields(
+        $mappedHash = $this->helper->getWebsiteCustomerMappingDatafields(
             $website
         );
         $headers = $mappedHash;
         //custom customer attributes
-        $customAttributes = $this->_helper->getCustomAttributes($website);
+        $customAttributes = $this->helper->getCustomAttributes($website);
         foreach ($customAttributes as $data) {
             $headers[] = $data['datafield'];
             $allMappedHash[$data['attribute']] = $data['datafield'];
         }
         $headers[] = 'Email';
         $headers[] = 'EmailType';
-        $this->_file->outputCSV(
-            $this->_file->getFilePath($customersFile),
+        $this->file->outputCSV(
+            $this->file->getFilePath($customersFile),
             $headers
         );
         /*
@@ -393,7 +401,7 @@ class Contact
         );
 
         foreach ($customerCollection as $customer) {
-            $contactModel = $this->_contactFactory->create()
+            $contactModel = $this->contactFactory->create()
                 ->loadByCustomerEmail($customer->getEmail(), $websiteId);
             //contact with this email not found
             if (!$contactModel->getId()) {
@@ -402,7 +410,7 @@ class Contact
             /*
              * DATA.
              */
-            $connectorCustomer = $this->_emailCustomer->create()
+            $connectorCustomer = $this->emailCustomer->create()
                 ->setMappingHash($mappedHash)
                 ->setCustomerData($customer);
 
@@ -416,8 +424,8 @@ class Contact
             $connectorCustomer->setData($customer->getEmail());
             $connectorCustomer->setData('Html');
             // save csv file data for customers
-            $this->_file->outputCSV(
-                $this->_file->getFilePath($customersFile),
+            $this->file->outputCSV(
+                $this->file->getFilePath($customersFile),
                 $connectorCustomer->toCSVArray()
             );
 
@@ -429,7 +437,7 @@ class Contact
             $contactModel->setEmailImported(
                 \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED
             );
-            $subscriber = $this->_subscriberFactory->create()->loadByEmail(
+            $subscriber = $this->subscriberFactory->create()->loadByEmail(
                 $customer->getEmail()
             );
             if ($subscriber->isSubscribed()) {
@@ -441,12 +449,12 @@ class Contact
             ++$updated;
         }
 
-        if (is_file($this->_file->getFilePath($customersFile))) {
+        if (is_file($this->file->getFilePath($customersFile))) {
             //@codingStandardsIgnoreEnd
             //import contacts
             if ($updated > 0) {
                 //register in queue with importer
-                $this->_importerFactory->create()
+                $this->importerFactory->create()
                     ->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
                         '',
@@ -456,7 +464,7 @@ class Contact
                     );
                 $client->postAddressBookContactsImport(
                     $customersFile,
-                    $this->_helper->getCustomerAddressBook($website)
+                    $this->helper->getCustomerAddressBook($website)
                 );
             }
         }
@@ -474,9 +482,9 @@ class Contact
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getCustomerCollection($customerIds, $websiteId = 0)
+    public function _getCustomerCollection($customerIds, $websiteId = 0)
     {
-        $customerCollection = $this->_customerCollection->create()
+        $customerCollection = $this->customerCollection->create()
             ->addAttributeToSelect('*')
             ->addNameToSelect()
             ->joinAttribute(
@@ -579,31 +587,31 @@ class Contact
             )
             ->addAttributeToFilter('entity_id', ['in' => $customerIds]);
 
-        $quote = $this->_resource->getTableName(
+        $quote = $this->resource->getTableName(
             'quote'
         );
-        $salesOrder = $this->_resource->getTableName(
+        $salesOrder = $this->resource->getTableName(
             'sales_order'
         );
-        $customerLog = $this->_resource->getTableName(
+        $customerLog = $this->resource->getTableName(
             'customer_log'
         );
-        $eavAttribute = $this->_resource->getTableName(
+        $eavAttribute = $this->resource->getTableName(
             'eav_attribute'
         );
-        $salesOrderGrid = $this->_resource->getTableName(
+        $salesOrderGrid = $this->resource->getTableName(
             'sales_order_grid'
         );
-        $salesOrderItem = $this->_resource->getTableName(
+        $salesOrderItem = $this->resource->getTableName(
             'sales_order_item'
         );
-        $catalogCategoryProductIndex = $this->_resource->getTableName(
+        $catalogCategoryProductIndex = $this->resource->getTableName(
             'catalog_category_product'
         );
-        $eavAttributeOptionValue = $this->_resource->getTableName(
+        $eavAttributeOptionValue = $this->resource->getTableName(
             'eav_attribute_option_value'
         );
-        $catalogProductEntityInt = $this->_resource->getTableName(
+        $catalogProductEntityInt = $this->resource->getTableName(
             'catalog_product_entity_int'
         );
 
@@ -618,14 +626,14 @@ class Contact
 
         // customer order information
         $alias = 'subselect';
-        $statuses = $this->_helper->getWebsiteConfig(
+        $statuses = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
             $websiteId
         );
         $statuses = explode(',', $statuses);
 
-        $orderTable = $this->_resource->getTableName('sales_order');
-        $connection = $this->_resource->getConnection();
+        $orderTable = $this->resource->getTableName('sales_order');
+        $connection = $this->resource->getConnection();
         //@codingStandardsIgnoreStart
         $subselect = $connection->select()
             ->from(

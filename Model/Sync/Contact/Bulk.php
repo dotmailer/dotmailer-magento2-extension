@@ -7,19 +7,19 @@ class Bulk
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var
      */
-    protected $_client;
+    public $client;
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    protected $_fileHelper;
+    public $fileHelper;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
 
     /**
      * Bulk constructor.
@@ -33,9 +33,9 @@ class Bulk
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
-        $this->_helper = $helper;
-        $this->_fileHelper = $fileHelper;
-        $this->_contactFactory = $contactFactory;
+        $this->helper         = $helper;
+        $this->fileHelper     = $fileHelper;
+        $this->contactFactory = $contactFactory;
     }
 
     /**
@@ -48,17 +48,17 @@ class Bulk
         foreach ($collection as $item) {
             $websiteId = $item->getWebsiteId();
             $file = $item->getImportFile();
-            if ($this->_helper->isEnabled($websiteId)) {
-                $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
+            if ($this->helper->isEnabled($websiteId)) {
+                $this->client = $this->helper->getWebsiteApiClient($websiteId);
 
                 $addressBook = $this->_getAddressBook(
                     $item->getImportType(),
                     $websiteId
                 );
 
-                if (!empty($file) && !empty($addressBook) && $this->_client) {
+                if (!empty($file) && !empty($addressBook) && $this->client) {
                     //import contacts from csv file
-                    $result = $this->_client->postAddressBookContactsImport(
+                    $result = $this->client->postAddressBookContactsImport(
                         $file,
                         $addressBook
                     );
@@ -77,21 +77,21 @@ class Bulk
      *
      * @return mixed|string
      */
-    protected function _getAddressBook($importType, $websiteId)
+    public function _getAddressBook($importType, $websiteId)
     {
         switch ($importType) {
             case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT:
-                $addressBook = $this->_helper->getCustomerAddressBook(
+                $addressBook = $this->helper->getCustomerAddressBook(
                     $websiteId
                 );
                 break;
             case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBERS:
-                $addressBook = $this->_helper->getSubscriberAddressBook(
+                $addressBook = $this->helper->getSubscriberAddressBook(
                     $websiteId
                 );
                 break;
             case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_GUEST:
-                $addressBook = $this->_helper->getGuestAddressBook($websiteId);
+                $addressBook = $this->helper->getGuestAddressBook($websiteId);
                 break;
             default:
                 $addressBook = '';
@@ -107,7 +107,7 @@ class Bulk
      * @param      $result
      * @param bool $file
      */
-    protected function _handleItemAfterSync($item, $result)
+    public function _handleItemAfterSync($item, $result)
     {
         $curlError = $this->_checkCurlError($item);
 
@@ -143,10 +143,10 @@ class Bulk
      *
      * @return bool
      */
-    protected function _checkCurlError($item)
+    public function _checkCurlError($item)
     {
         //if curl error 28
-        $curlError = $this->_client->getCurlError();
+        $curlError = $this->client->getCurlError();
         if ($curlError) {
             $item->setMessage($curlError)
                 ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)

@@ -7,16 +7,16 @@ class Transport extends \Zend_Mail_Transport_Smtp implements \Magento\Framework\
     /**
      * @var \Magento\Framework\Mail\MessageInterface
      */
-    protected $_message;
+    public $message;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Transactional
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Zend_Mail_Transport_Sendmail
      */
-    protected $sendMail;
+    public $sendMail;
 
     /**
      * Transport constructor.
@@ -33,13 +33,13 @@ class Transport extends \Zend_Mail_Transport_Smtp implements \Magento\Framework\
         if (!$message instanceof \Zend_Mail) {
             throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
         }
-        $this->_message = $message;
-        $this->_helper = $helper;
+        $this->message  = $message;
+        $this->helper   = $helper;
         $this->sendMail = $sendmail;
 
         parent::__construct(
-            $this->_helper->getSmtpHost(),
-            $this->_helper->getTransportConfig()
+            $this->helper->getSmtpHost(),
+            $this->helper->getTransportConfig()
         );
     }
 
@@ -49,10 +49,10 @@ class Transport extends \Zend_Mail_Transport_Smtp implements \Magento\Framework\
     public function sendMessage()
     {
         try {
-            if ($this->_helper->isEnabled()) {
-                parent::send($this->_message);
+            if ($this->helper->isEnabled()) {
+                parent::send($this->message);
             } else {
-                $this->sendMail->send($this->_message);
+                $this->sendMail->send($this->message);
             }
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\MailException(

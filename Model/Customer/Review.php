@@ -47,17 +47,17 @@ class Review
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    protected $_localeDate;
+    public $localeDate;
 
     /**
      * Review constructor.
@@ -71,9 +71,9 @@ class Review
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
-        $this->_helper = $data;
-        $this->_storeManager = $storeManagerInterface;
-        $this->_localeDate = $localeDate;
+        $this->helper       = $data;
+        $this->storeManager = $storeManagerInterface;
+        $this->localeDate   = $localeDate;
     }
 
     /**
@@ -149,7 +149,7 @@ class Review
      */
     public function setReviewDate($date)
     {
-        $this->reviewDate = $this->_localeDate->date($date)->format(\Zend_Date::ISO_8601);
+        $this->reviewDate = $this->localeDate->date($date)->format(\Zend_Date::ISO_8601);
 
         return $this;
     }
@@ -182,7 +182,7 @@ class Review
      */
     public function setReviewData(\Magento\Review\Model\Review $review)
     {
-        $store = $this->_storeManager->getStore($review->getStoreId());
+        $store = $this->storeManager->getStore($review->getStoreId());
         $websiteName = $store->getWebsite()->getName();
         $storeName = $store->getName();
         $this->setId($review->getReviewId())
@@ -306,12 +306,5 @@ class Review
         $properties = array_diff($properties, ['_storeManager', '_helper', '_localeDate']);
 
         return $properties;
-    }
-
-    /**
-     * Init not serializable fields.
-     */
-    public function __wakeup()
-    {
     }
 }

@@ -9,7 +9,7 @@ class Cartlimit
      *
      * @var array
      */
-    protected $_times
+    public $times
         = [
             0,
             1,
@@ -40,7 +40,7 @@ class Cartlimit
     {
         $result = $row = [];
         $i = 0;
-        foreach ($this->_times as $one) {
+        foreach ($this->times as $one) {
             if ($i == 0) {
                 $row = ['value' => $one, 'label' => 'No Limit'];
             } elseif ($i == 1) {

@@ -86,13 +86,20 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_DATE = 'connector_data_mapping/customer_data/last_order_date';
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID = 'connector_data_mapping/customer_data/last_order_id';
     const XML_PATH_CONNECTOR_CUSTOMER_TOTAL_REFUND = 'connector_data_mapping/customer_data/total_refund';
-    const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID = 'connector_data_mapping/customer_data/last_increment_id';
-    const XML_PATH_CONNECTOR_CUSTOMER_MOST_PURCHASED_CATEGORY = 'connector_data_mapping/customer_data/most_pur_category';
-    const XML_PATH_CONNECTOR_CUSTOMER_MOST_PURCHASED_BRAND = 'connector_data_mapping/customer_data/most_pur_brand';
-    const XML_PATH_CONNECTOR_CUSTOMER_MOST_FREQUENT_PURCHASE_DAY = 'connector_data_mapping/customer_data/most_freq_pur_day';
-    const XML_PATH_CONNECTOR_CUSTOMER_MOST_FREQUENT_PURCHASE_MONTH = 'connector_data_mapping/customer_data/most_freq_pur_mon';
-    const XML_PATH_CONNECTOR_CUSTOMER_FIRST_CATEGORY_PURCHASED = 'connector_data_mapping/customer_data/first_category_pur';
-    const XML_PATH_CONNECTOR_CUSTOMER_LAST_CATEGORY_PURCHASED = 'connector_data_mapping/customer_data/last_category_pur';
+    const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID =
+        'connector_data_mapping/customer_data/last_increment_id';
+    const XML_PATH_CONNECTOR_CUSTOMER_MOST_PURCHASED_CATEGORY =
+        'connector_data_mapping/customer_data/most_pur_category';
+    const XML_PATH_CONNECTOR_CUSTOMER_MOST_PURCHASED_BRAND =
+        'connector_data_mapping/customer_data/most_pur_brand';
+    const XML_PATH_CONNECTOR_CUSTOMER_MOST_FREQUENT_PURCHASE_DAY =
+        'connector_data_mapping/customer_data/most_freq_pur_day';
+    const XML_PATH_CONNECTOR_CUSTOMER_MOST_FREQUENT_PURCHASE_MONTH =
+        'connector_data_mapping/customer_data/most_freq_pur_mon';
+    const XML_PATH_CONNECTOR_CUSTOMER_FIRST_CATEGORY_PURCHASED =
+        'connector_data_mapping/customer_data/first_category_pur';
+    const XML_PATH_CONNECTOR_CUSTOMER_LAST_CATEGORY_PURCHASED =
+        'connector_data_mapping/customer_data/last_category_pur';
     const XML_PATH_CONNECTOR_CUSTOMER_FIRST_BRAND_PURCHASED = 'connector_data_mapping/customer_data/first_brand_pur';
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_BRAND_PURCHASED = 'connector_data_mapping/customer_data/last_brand_pur';
     const XML_PATH_CONNECTOR_CUSTOMER_SUBSCRIBER_STATUS = 'connector_data_mapping/customer_data/subscriber_status';
@@ -110,9 +117,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Dynamic Content.
      */
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WIHSLIST_DISPLAY = 'connector_dynamic_content/products/wishlist_display_type';
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_REVIEW_DISPLAY_TYPE = 'connector_dynamic_content/products/review_display_type';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE =
+        'connector_dynamic_content/external_dynamic_content_urls/passcode';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WIHSLIST_DISPLAY =
+        'connector_dynamic_content/products/wishlist_display_type';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_REVIEW_DISPLAY_TYPE =
+        'connector_dynamic_content/products/review_display_type';
 
     /**
      * CONFIGURATION SECTION.
@@ -122,9 +132,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
     //Transactional Data
     const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS = 'connector_configuration/transactional_data/order_statuses';
-    const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES = 'connector_configuration/transactional_data/order_custom_attributes';
-    const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES = 'connector_configuration/transactional_data/order_product_attributes';
-    const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS = 'connector_configuration/transactional_data/order_product_custom_options';
+    const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES =
+        'connector_configuration/transactional_data/order_custom_attributes';
+    const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES =
+        'connector_configuration/transactional_data/order_product_attributes';
+    const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS =
+        'connector_configuration/transactional_data/order_product_custom_options';
     //Admin
     const XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS = 'connector_configuration/admin/disable_newsletter_success';
     const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS = 'connector_configuration/admin/disable_customer_success';
@@ -145,10 +158,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE = 'connector_configuration/dynamic_content_style/other_font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE = 'connector_configuration/dynamic_content_style/other_font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR = 'connector_configuration/dynamic_content_style/coupon_font_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE = 'connector_configuration/dynamic_content_style/coupon_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE =
+        'connector_configuration/dynamic_content_style/coupon_font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE = 'connector_configuration/dynamic_content_style/coupon_font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT = 'connector_configuration/dynamic_content_style/coupon_font_picker';
-    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR = 'connector_configuration/dynamic_content_style/coupon_background_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR =
+        'connector_configuration/dynamic_content_style/coupon_background_color';
     //dynamic content product review
     const XML_PATH_REVIEW_STATUS = 'connector_automation/review_settings/status';
     const XML_PATH_REVIEW_DELAY = 'connector_automation/review_settings/delay';
@@ -164,16 +179,20 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     //Abandoned Cart
     const XML_PATH_CONNECTOR_EMAIL_CAPTURE = 'connector_configuration/abandoned_carts/email_capture';
     const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT = 'connector_configuration/abandoned_carts/cart_limit';
-    const XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER = 'connector_configuration/abandoned_carts/easy_capture_newsletter';
+    const XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER =
+        'connector_configuration/abandoned_carts/easy_capture_newsletter';
     const XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED = 'connector_configuration/abandoned_carts/link_back_to_cart';
     const XML_PATH_CONNECTOR_CONTENT_LINK_TEXT = 'connector_configuration/abandoned_carts/link_text';
     const XML_PATH_CONNECTOR_CONTENT_CART_URL = 'connector_configuration/abandoned_carts/cart_url';
     const XML_PATH_CONNECTOR_CONTENT_LOGIN_URL = 'connector_configuration/abandoned_carts/login_url';
     // Address Book Pref
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS = 'connector_configuration/customer_addressbook/can_change';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS =
+        'connector_configuration/customer_addressbook/can_change';
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS = 'connector_configuration/customer_addressbook/show_books';
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS = 'connector_configuration/customer_addressbook/can_show_fields';
-    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS = 'connector_configuration/customer_addressbook/fields_to_show';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS =
+        'connector_configuration/customer_addressbook/can_show_fields';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS =
+        'connector_configuration/customer_addressbook/fields_to_show';
     //Dynamic Content
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT = 'connector_configuration/dynamic_content/link_text';
     //Mailcheck
@@ -183,13 +202,16 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      * Automation studio.
      */
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER = 'connector_automation/visitor_automation/customer_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER = 'connector_automation/visitor_automation/subscriber_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER =
+        'connector_automation/visitor_automation/subscriber_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER = 'connector_automation/visitor_automation/order_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER = 'connector_automation/visitor_automation/guest_order_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER =
+        'connector_automation/visitor_automation/guest_order_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW = 'connector_automation/visitor_automation/review_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST = 'connector_automation/visitor_automation/wishlist_automation';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS = 'connector_automation/order_status_automation/program';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER = 'connector_automation/visitor_automation/first_order_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER =
+        'connector_automation/visitor_automation/first_order_automation';
 
     /**
      * ROI SECTION.
@@ -244,12 +266,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';
 
-    protected $_storeManager;
+    public $storeManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * Config constructor.
@@ -263,8 +285,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_storeManager = $storeManager;
-        $this->_helper = $data;
+        $this->storeManager = $storeManager;
+        $this->helper       = $data;
         parent::__construct($context);
     }
 
@@ -279,7 +301,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         //base url, check for custom oauth domain
         if ($this->isAuthorizeCustomDomain($website)) {
-            $baseUrl = $this->_helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
+            $baseUrl = $this->helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
                 . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         } else {
             $baseUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
@@ -297,7 +319,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isAuthorizeCustomDomain($website = 0)
     {
-        $website = $this->_storeManager->getWebsite($website);
+        $website = $this->storeManager->getWebsite($website);
         $customDomain = $website->getConfig(
             self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
         );
@@ -314,9 +336,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getRegionAuthorize($website)
     {
-        $website = $this->_storeManager->getWebsite($website);
+        $website = $this->storeManager->getWebsite($website);
 
-        $apiEndpoint = $this->_helper->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website) . DIRECTORY_SEPARATOR;
+        $apiEndpoint = $this->helper->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website) . DIRECTORY_SEPARATOR;
         //replace the api with the app prefix from the domain name
         $regionBaseUrl = str_replace('api', 'app', $apiEndpoint);
 
@@ -337,7 +359,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             return $callback;
         }
 
-        return $this->_storeManager->getStore()->getBaseUrl(
+        return $this->storeManager->getStore()->getBaseUrl(
             \Magento\Framework\UrlInterface::URL_TYPE_WEB,
             true
         );
@@ -353,7 +375,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public function getTokenUrl($website = 0)
     {
         if ($this->isAuthorizeCustomDomain($website)) {
-            $website = $this->_storeManager->getWebsite($website);
+            $website = $this->storeManager->getWebsite($website);
 
             $tokenUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) .
                 self::API_CONNECTOR_OAUTH_URL_TOKEN;
@@ -374,7 +396,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public function getLogUserUrl($website = 0)
     {
         if ($this->isAuthorizeCustomDomain($website)) {
-            $logUserUrl = $this->_helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
+            $logUserUrl = $this->helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
                 . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         } else {
             $logUserUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_LOG_USER;

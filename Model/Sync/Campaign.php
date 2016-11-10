@@ -10,35 +10,35 @@ class Campaign
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var
      */
-    protected $_storeManger;
+    public $storeManger;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
-    protected $_campaignCollection;
+    public $campaignCollection;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
 
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_salesOrderFactory;
+    public $salesOrderFactory;
 
     /**
      * @var \Magento\Store\Model\WebsiteFactory
      */
-    protected $_websiteFactory;
+    public $websiteFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
      */
-    protected $_campaignResourceModel;
+    public $campaignResourceModel;
 
     /**
      * Campaign constructor.
@@ -56,12 +56,12 @@ class Campaign
         \Magento\Store\Model\WebsiteFactory $websiteFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResourceModel
     ) {
-        $this->_campaignResourceModel = $campaignResourceModel;
-        $this->_websiteFactory = $websiteFactory;
-        $this->_helper = $data;
-        $this->_campaignCollection = $campaignFactory;
-        $this->_storeManager = $storeManagerInterface;
-        $this->_salesOrderFactory = $salesOrderFactory;
+        $this->campaignResourceModel = $campaignResourceModel;
+        $this->websiteFactory        = $websiteFactory;
+        $this->helper                = $data;
+        $this->campaignCollection    = $campaignFactory;
+        $this->storeManager          = $storeManagerInterface;
+        $this->salesOrderFactory     = $salesOrderFactory;
     }
 
     /**
@@ -71,11 +71,11 @@ class Campaign
      */
     public function sendCampaigns()
     {
-        foreach ($this->_storeManager->getWebsites(true) as $website) {
+        foreach ($this->storeManager->getWebsites(true) as $website) {
             //check send status for processing
             $this->_checkSendStatus($website);
             //start send process
-            $storeIds = $this->_websiteFactory->create()->load($website->getId())->getStoreIds();
+            $storeIds = $this->websiteFactory->create()->load($website->getId())->getStoreIds();
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = [];
             foreach ($emailsToSend as $campaign) {
@@ -83,8 +83,8 @@ class Campaign
                 $campaignId = $campaign->getCampaignId();
                 $websiteId = $website->getId();
                 $client = false;
-                if ($this->_helper->isEnabled($websiteId)) {
-                    $client = $this->_helper->getWebsiteApiClient($websiteId);
+                if ($this->helper->isEnabled($websiteId)) {
+                    $client = $this->helper->getWebsiteApiClient($websiteId);
                 }
                 //Only if valid client is returned
                 if ($client) {
@@ -103,18 +103,18 @@ class Campaign
                     //@codingStandardsIgnoreEnd
                     $campaignsToSend[$campaignId]['client'] = $client;
                     try {
-                        $contactId = $this->_helper->getContactId(
+                        $contactId = $this->helper->getContactId(
                             $campaign->getEmail(),
                             $websiteId
                         );
                         if (is_numeric($contactId)) {
                             //update data fields for order review camapigns
                             if ($campaign->getEventName() == 'Order Review') {
-                                $order = $this->_salesOrderFactory->create()->loadByIncrementId(
+                                $order = $this->salesOrderFactory->create()->loadByIncrementId(
                                     $campaign->getOrderIncrementId()
                                 );
 
-                                if ($lastOrderId = $this->_helper->getWebsiteConfig(
+                                if ($lastOrderId = $this->helper->getWebsiteConfig(
                                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID,
                                     $websiteId
                                 )
@@ -124,8 +124,9 @@ class Campaign
                                         'Value' => $order->getId(),
                                     ];
                                 }
-                                if ($orderIncrementId = $this->_helper->getWebsiteConfig(
-                                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
+                                if ($orderIncrementId = $this->helper->getWebsiteConfig(
+                                    \Dotdigitalgroup\Email\Helper\Config::
+                                    XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
                                     $websiteId
                                 )
                                 ) {
@@ -168,12 +169,12 @@ class Campaign
                     );
                     if (isset($response->message)) {
                         //update  the failed to send email message
-                        $this->_campaignResourceModel->setMessage($data['ids'], $response->message);
+                        $this->campaignResourceModel->setMessage($data['ids'], $response->message);
                     } elseif (isset($response->id)) {
-                        $this->_campaignResourceModel->setProcessing($campaignId, $response->id);
+                        $this->campaignResourceModel->setProcessing($campaignId, $response->id);
                     } else {
                         //update  the failed to send email message
-                        $this->_campaignResourceModel->setMessage($data['ids'], 'No send id returned.');
+                        $this->campaignResourceModel->setMessage($data['ids'], 'No send id returned.');
                     }
                 }
             }
@@ -188,9 +189,9 @@ class Campaign
      * @param $sendIdCheck
      * @return mixed
      */
-    protected function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
+    public function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
     {
-        $emailCollection = $this->_campaignCollection->create()
+        $emailCollection = $this->campaignCollection->create()
             ->addFieldToFilter('send_status', $sendStatus)
             ->addFieldToFilter('campaign_id', ['notnull' => true])
             ->addFieldToFilter('store_id', ['in' => $storeIds]);
@@ -214,22 +215,22 @@ class Campaign
     /**
      * @param $website
      */
-    protected function _checkSendStatus($website)
+    public function _checkSendStatus($website)
     {
-        $storeIds = $this->_websiteFactory->create()->load($website->getId())->getStoreIds();
+        $storeIds = $this->websiteFactory->create()->load($website->getId())->getStoreIds();
         $campaigns = $this->_getEmailCampaigns(
             $storeIds,
             \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
             true
         );
         foreach ($campaigns as $campaign) {
-            $client = $this->_helper->getWebsiteApiClient($website);
+            $client = $this->helper->getWebsiteApiClient($website);
             $response = $client->getSendStatus($campaign->getSendId());
             if (isset($response->message)) {
                 //update  the failed to send email message
-                $this->_campaignResourceModel->setMessage([$campaign->getSendId()], $response->message);
+                $this->campaignResourceModel->setMessage([$campaign->getSendId()], $response->message);
             } elseif ($response->status == 'Sent') {
-                $this->_campaignResourceModel->setSent($campaign->getSendId());
+                $this->campaignResourceModel->setSent($campaign->getSendId());
             }
         }
     }

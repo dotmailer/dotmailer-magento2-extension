@@ -7,23 +7,23 @@ class Item
     /**
      * @var
      */
-    protected $sku;
+    public $sku;
     /**
      * @var
      */
-    protected $qty;
+    public $qty;
     /**
      * @var
      */
-    protected $name;
+    public $name;
     /**
      * @var
      */
-    protected $price;
+    public $price;
     /**
      * @var
      */
-    protected $totalValueOfProduct;
+    public $totalValueOfProduct;
 
     /**
      * @param $product

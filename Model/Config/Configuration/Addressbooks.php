@@ -7,15 +7,15 @@ class Addressbooks
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
 
     /**
      * Addressbooks constructor.
@@ -29,27 +29,27 @@ class Addressbooks
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\Registry $registry
     ) {
-        $this->_storeManager = $storeManagerInterface;
-        $this->_helper = $data;
-        $this->_registry = $registry;
+        $this->storeManager = $storeManagerInterface;
+        $this->helper       = $data;
+        $this->registry     = $registry;
     }
 
     /**
      * Get address books.
      */
-    protected function getAddressBooks()
+    public function getAddressBooks()
     {
-        $website = $this->_helper->getWebsite();
-        $client = $this->_helper->getWebsiteApiClient($website);
+        $website = $this->helper->getWebsite();
+        $client = $this->helper->getWebsiteApiClient($website);
 
-        $savedAddressBooks = $this->_registry->registry('addressbooks');
+        $savedAddressBooks = $this->registry->registry('addressbooks');
         //get saved address books from registry
         if ($savedAddressBooks) {
             $addressBooks = $savedAddressBooks;
         } else {
             // api all address books
             $addressBooks = $client->getAddressBooks();
-            $this->_registry->register('addressbooks', $addressBooks);
+            $this->registry->register('addressbooks', $addressBooks);
         }
 
         return $addressBooks;
@@ -66,8 +66,8 @@ class Addressbooks
             'label' => __('---- Default Option ----'),
             'value' => '0',
         ];
-        $website = $this->_helper->getWebsite();
-        $apiEnabled = $this->_helper->isEnabled($website);
+        $website = $this->helper->getWebsite();
+        $apiEnabled = $this->helper->isEnabled($website);
 
         //get address books options
         if ($apiEnabled) {
@@ -81,7 +81,7 @@ class Addressbooks
             }
 
             $subscriberAddressBook
-                = $this->_helper->getSubscriberAddressBook($this->_helper->getWebsite());
+                = $this->helper->getSubscriberAddressBook($this->helper->getWebsite());
 
             //set up fields with book id and label
             foreach ($addressBooks as $book) {

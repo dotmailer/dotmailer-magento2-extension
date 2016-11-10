@@ -2,8 +2,30 @@
 
 namespace Dotdigitalgroup\Email\Model\SalesRule;
 
+use Magento\Framework\Stdlib\DateTime;
+
 class Coupon extends \Magento\SalesRule\Model\ResourceModel\Coupon
 {
+
+    /**
+     * @var DateTime
+     */
+    public $dateTime;
+
+    /**
+     * Coupon constructor.
+     *
+     * @param DateTime                                          $dateTime
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     */
+    public function __construct(
+        DateTime $dateTime,
+        \Magento\Framework\Model\ResourceModel\Db\Context $context
+    ) {
+        $this->dateTime = $dateTime;
+        parent::__construct($context);
+    }
+
     /**
      * Update auto generated Specific Coupon if it's rule changed
      *
@@ -25,8 +47,8 @@ class Coupon extends \Magento\SalesRule\Model\ResourceModel\Coupon
             $updateArray['usage_per_customer'] = $rule->getUsesPerCustomer();
         }
 
-        $ruleNewDate = new \DateTime($rule->getToDate());
-        $ruleOldDate = new \DateTime($rule->getOrigData('to_date'));
+        $ruleNewDate = $this->dateTime->formatDate($rule->getToDate());
+        $ruleOldDate = $this->dateTime->formatDate($rule->getOrigData('to_date'));
 
         if ($ruleNewDate != $ruleOldDate) {
             $updateArray['expiration_date'] = $rule->getToDate();

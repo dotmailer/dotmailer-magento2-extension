@@ -11,59 +11,59 @@ class Cron
     /**
      * @var Sync\AutomationFactory
      */
-    protected $_automationFactory;
+    public $automationFactory;
     /**
      * @var ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
     /**
      * @var Sync\CatalogFactory
      */
-    protected $_catalogFactory;
+    public $catalogFactory;
     /**
      * @var Newsletter\SubscriberFactory
      */
-    protected $_subscriberFactory;
+    public $subscriberFactory;
     /**
      * @var Customer\GuestFactory
      */
-    protected $_guestFactory;
+    public $guestFactory;
     /**
      * @var Sync\WishlistFactory
      */
-    protected $_wishlistFactory;
+    public $wishlistFactory;
     /**
      * @var Sales\OrderFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
     /**
      * @var Sync\ReviewFactory
      */
-    protected $_reviewFactory;
+    public $reviewFactory;
     /**
      * @var Sales\QuoteFactory
      */
-    protected $_quoteFactory;
+    public $quoteFactory;
     /**
      * @var Sync\OrderFactory
      */
-    protected $_syncOrderFactory;
+    public $syncOrderFactory;
     /**
      * @var Sync\CampaignFactory
      */
-    protected $_campaignFactory;
+    public $campaignFactory;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    protected $_fileHelper;
+    public $fileHelper;
     /**
      * @var ResourceModel\Importer
      */
-    protected $_importerResource;
+    public $importerResource;
 
     /**
      * Cron constructor.
@@ -101,21 +101,21 @@ class Cron
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
     ) {
-        $this->_campaignFactory = $campaignFactory;
-        $this->_syncOrderFactory = $syncOrderFactory;
-        $this->_quoteFactory = $quoteFactory;
-        $this->_reviewFactory = $reviewFactory;
-        $this->_orderFactory = $orderFactory;
-        $this->_wishlistFactory = $wishlistFactory;
-        $this->_guestFactory = $guestFactory;
-        $this->_subscriberFactory = $subscriberFactory;
-        $this->_catalogFactory = $catalogFactorty;
-        $this->_importerFactory = $importerFactory;
-        $this->_automationFactory = $automationFactory;
-        $this->contactFactory = $contact;
-        $this->_helper = $helper;
-        $this->_fileHelper = $fileHelper;
-        $this->_importerResource = $importerResource;
+        $this->campaignFactory   = $campaignFactory;
+        $this->syncOrderFactory  = $syncOrderFactory;
+        $this->quoteFactory      = $quoteFactory;
+        $this->reviewFactory     = $reviewFactory;
+        $this->orderFactory      = $orderFactory;
+        $this->wishlistFactory   = $wishlistFactory;
+        $this->guestFactory      = $guestFactory;
+        $this->subscriberFactory = $subscriberFactory;
+        $this->catalogFactory    = $catalogFactorty;
+        $this->importerFactory   = $importerFactory;
+        $this->automationFactory = $automationFactory;
+        $this->contactFactory    = $contact;
+        $this->helper           = $helper;
+        $this->fileHelper       = $fileHelper;
+        $this->importerResource = $importerResource;
     }
 
     /**
@@ -147,11 +147,11 @@ class Cron
     public function subscribersAndGuestSync()
     {
         //sync subscribers
-        $subscriberModel = $this->_subscriberFactory->create();
+        $subscriberModel = $this->subscriberFactory->create();
         $result = $subscriberModel->sync();
 
         //sync guests
-        $this->_guestFactory->create()->sync();
+        $this->guestFactory->create()->sync();
 
         return $result;
     }
@@ -163,7 +163,7 @@ class Cron
      */
     public function catalogSync()
     {
-        $result = $this->_catalogFactory->create()
+        $result = $this->catalogFactory->create()
             ->sync();
 
         return $result;
@@ -176,7 +176,7 @@ class Cron
      */
     public function emailImporter()
     {
-        return $this->_importerFactory->create()->processQueue();
+        return $this->importerFactory->create()->processQueue();
     }
 
     /**
@@ -187,7 +187,7 @@ class Cron
         //sync reviews
         $this->reviewSync();
         //sync wishlist
-        $this->_wishlistFactory->create()->sync();
+        $this->wishlistFactory->create()->sync();
     }
 
     /**
@@ -198,9 +198,9 @@ class Cron
     public function reviewSync()
     {
         //find orders to review and register campaign
-        $this->_orderFactory->create()->createReviewCampaigns();
+        $this->orderFactory->create()->createReviewCampaigns();
         //sync reviews
-        $result = $this->_reviewFactory->create()->sync();
+        $result = $this->reviewFactory->create()->sync();
 
         return $result;
     }
@@ -210,7 +210,7 @@ class Cron
      */
     public function abandonedCarts()
     {
-        $this->_quoteFactory->create()->proccessAbandonedCarts();
+        $this->quoteFactory->create()->proccessAbandonedCarts();
     }
 
     /**
@@ -218,7 +218,7 @@ class Cron
      */
     public function syncAutomation()
     {
-        $this->_automationFactory->create()->sync();
+        $this->automationFactory->create()->sync();
     }
 
     /**
@@ -228,7 +228,7 @@ class Cron
      */
     public function sendCampaigns()
     {
-        $this->_campaignFactory->create()->sendCampaigns();
+        $this->campaignFactory->create()->sendCampaigns();
     }
 
     /**
@@ -237,7 +237,7 @@ class Cron
     public function orderSync()
     {
         // send order
-        $orderResult = $this->_syncOrderFactory->create()->sync();
+        $orderResult = $this->syncOrderFactory->create()->sync();
 
         return $orderResult;
     }
@@ -257,13 +257,13 @@ class Cron
         ];
         $message = 'Cleaning cron job result :';
         foreach ($tables as $key => $table) {
-            $result = $this->_importerResource->cleanup($table);
+            $result = $this->importerResource->cleanup($table);
             $message .= " $result records removed from $key .";
         }
-        $archivedFolder = $this->_fileHelper->getArchiveFolder();
-        $result = $this->_fileHelper->deleteDir($archivedFolder);
+        $archivedFolder = $this->fileHelper->getArchiveFolder();
+        $result = $this->fileHelper->deleteDir($archivedFolder);
         $message .= ' Deleting archived folder result : ' . $result;
-        $this->_helper->log($message);
+        $this->helper->log($message);
 
         return $message;
     }
