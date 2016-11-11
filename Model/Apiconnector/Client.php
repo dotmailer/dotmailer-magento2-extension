@@ -778,6 +778,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
         $apiData = [
             'Key' => $data->id,
+            'ContactIdentifier' => $data->email,
             'Json' => json_encode($data->expose()),
         ];
 
