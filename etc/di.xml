@@ -22,17 +22,4 @@
             <argument name="target" xsi:type="object">Magento\Catalog\Pricing\Price\Pool</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Magento\Cron\Model\ResourceModel\Schedule\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
-        <arguments>
-            <argument name="mainTable" xsi:type="string">cron_schedule</argument>
-            <argument name="resourceModel" xsi:type="string">Magento\Cron\Model\ResourceModel\Schedule</argument>
-        </arguments>
-    </virtualType>
-    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
-        <arguments>
-            <argument name="collections" xsi:type="array">
-                <item name="cron_report_grid_data_source" xsi:type="string">Magento\Cron\Model\ResourceModel\Schedule\Collection</item>
-            </argument>
-        </arguments>
-    </type>
 </config>

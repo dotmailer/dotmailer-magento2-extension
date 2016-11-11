@@ -54,7 +54,7 @@ class Contact
      */
     public $customerCollection;
     /**
-     * @var CustomerFactory
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Customer
      */
     public $emailCustomer;
     /**
@@ -339,7 +339,7 @@ class Contact
             $contact = $this->registry->registry('current_contact');
         }
         if (!$contact->getId()) {
-            $this->messageManager->addError('No contact found!');
+            $this->messageManager->addErrorMessage('No contact found!');
 
             return false;
         }
@@ -355,13 +355,13 @@ class Contact
         }
         $customerId = $contact->getCustomerId();
         if (!$customerId) {
-            $this->messageManager->addError('Cannot manually sync guests!');
+            $this->messageManager->addErrorMessage('Cannot manually sync guests!');
 
             return false;
         }
 
         if (!$this->helper->isEnabled($websiteId)) {
-            $this->messageManager->addError('Api is not enabled');
+            $this->messageManager->addErrorMessage('Api is not enabled');
             return false;
         }
 
@@ -616,11 +616,10 @@ class Contact
         );
 
         // get the last login date from the log_customer table
-        $customerCollection->getSelect()->columns(
-            [
-                'last_logged_date' => new \Zend_Db_Expr(
-                    "(SELECT last_login_at FROM  $customerLog WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)"
-                ),
+        $customerCollection->getSelect()->columns([
+            'last_logged_date' => new \Zend_Db_Expr(
+                "(SELECT last_login_at FROM  $customerLog WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)"
+            ),
             ]
         );
 

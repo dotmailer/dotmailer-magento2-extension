@@ -224,7 +224,7 @@ class Customer
      */
     public function getLastReviewDate()
     {
-        if (! empty($this->reviewCollection)) {
+        if ($this->reviewCollection->getSize()) {
             //@codingStandardsIgnoreStart
             $createdAt = $this->reviewCollection->getSelect()
                 ->limit(1)

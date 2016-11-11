@@ -587,13 +587,13 @@ class Order
         $properties = array_diff(
             $properties,
             [
-                '_storeManager',
-                '_localeDate',
-                '_helper',
-                '_customerFactory',
-                '_productFactory',
-                '_attributeCollection',
-                '_setFactory',
+                'storeManager',
+                'localeDate',
+                'helper',
+                'customerFactory',
+                'productFactory',
+                'attributeCollection',
+                'setFactory',
             ]
         );
         if (! $this->couponCode) {
