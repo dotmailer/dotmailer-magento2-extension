@@ -31,7 +31,7 @@ class MassDelete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $ids = $this->getRequest()->getParam('id');
+        $ids = $this->getRequest()->getParam('selected');
 
         if (!is_array($ids)) {
             $this->messageManager->addErrorMessage(__('Please select contact.'));

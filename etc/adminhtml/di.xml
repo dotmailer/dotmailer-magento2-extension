@@ -7,10 +7,66 @@
             <argument name="resourceModel" xsi:type="string">Magento\Cron\Model\ResourceModel\Schedule</argument>
         </arguments>
     </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_importer</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Importer</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_automation</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Automation</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_campaign</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Campaign</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_contact</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Contact</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_catalog</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Catalog</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_order</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Order</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Review\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_review</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Review</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_wishlist</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Wishlist</argument>
+        </arguments>
+    </virtualType>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
                 <item name="cron_report_grid_data_source" xsi:type="string">Magento\Cron\Model\ResourceModel\Schedule\Collection</item>
+                <item name="importer_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection</item>
+                <item name="automation_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection</item>
+                <item name="campaign_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection</item>
+                <item name="contact_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection</item>
+                <item name="catalog_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection</item>
+                <item name="order_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection</item>
+                <item name="review_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Review\Collection</item>
+                <item name="wishlist_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\Collection</item>
             </argument>
         </arguments>
     </type>

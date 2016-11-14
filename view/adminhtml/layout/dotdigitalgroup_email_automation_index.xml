@@ -2,13 +2,10 @@
 
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head>
-        <css src="Dotdigitalgroup_Email::styles.css"/>
-    </head>
-    <update handle="dotdigitalgroup_email_automation_grid_block"/>
+    <update handle="styles"/>
     <body>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Automation" name="dotdigitalgroup.email.automation.grid.container"/>
+            <uiComponent name="dotdigitalgroup_automation_grid"/>
         </referenceContainer>
     </body>
 </page>

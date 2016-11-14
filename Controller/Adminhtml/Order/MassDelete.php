@@ -32,7 +32,7 @@ class MassDelete extends OrderController
      */
     public function execute()
     {
-        $ids = $this->getRequest()->getParam('email_order_id');
+        $ids = $this->getRequest()->getParam('selected');
         if (!is_array($ids)) {
             $this->messageManager->addErrorMessage(__('Please select orders.'));
         } else {
