@@ -193,7 +193,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     protected function _doAutomationEnrolment($data)
     {
         //the program is not mapped
-        if (!$data['programId']) {
+        if (! $data['programId']) {
             $this->_helper->log(
                 'automation type : ' . $data['automationType'] . ' program id not found'
             );
