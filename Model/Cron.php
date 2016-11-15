@@ -29,7 +29,7 @@ class Cron
      */
     public $guestFactory;
     /**
-     * @var Sync\WishlistFactory
+     * @var Sync\Wishlist
      */
     public $wishlistFactory;
     /**
@@ -187,7 +187,8 @@ class Cron
         //sync reviews
         $this->reviewSync();
         //sync wishlist
-        $this->wishlistFactory->create()->sync();
+        $this->wishlistFactory->create()
+            ->sync();
     }
 
     /**

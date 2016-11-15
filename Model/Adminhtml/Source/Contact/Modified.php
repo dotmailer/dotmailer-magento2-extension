@@ -14,7 +14,7 @@ class Modified implements \Magento\Framework\Data\OptionSourceInterface
         return [
             [
                 'value' => 'null',
-                'label' => 'Not Modified',
+                'label' => '',
 
             ],
             [

@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
-    <!--Declare data source, columns list, button...-->
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">dotdigitalgroup_importer_grid.importer_report_grid_data_source</item>
             <item name="deps" xsi:type="string">dotdigitalgroup_importer_grid.importer_report_grid_data_source</item>
-            <!--Declare the data source name which will be defined below-->
         </item>
         <item name="spinner" xsi:type="string">dotdigitalgroup_importer_columns</item>
-        <!--Declare the listing of columns which will be defined below-->
     </argument>
     <dataSource name="importer_report_grid_data_source">
-        <!--The data source-->
         <argument name="dataProvider" xsi:type="configurableObject">
             <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
             <argument name="name" xsi:type="string">importer_report_grid_data_source</argument>
@@ -87,7 +83,7 @@
                         <item name="url" xsi:type="url" path="*/*/massDelete"/>
                         <item name="confirm" xsi:type="array">
                             <item name="title" xsi:type="string" translate="true">Delete items</item>
-                            <item name="message" xsi:type="string" translate="true">Are you sure to delete ?</item>
+                            <item name="message" xsi:type="string" translate="true">Are you sure to delete?</item>
                         </item>
                     </item>
                 </argument>
