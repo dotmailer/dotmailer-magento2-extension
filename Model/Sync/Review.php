@@ -144,12 +144,6 @@ class Review
             );
             $storeIds = $website->getStoreIds();
             if ($apiEnabled && $reviewEnabled && !empty($storeIds)) {
-                //start the sync
-                if (!$this->countReviews) {
-                    $this->helper->log(
-                        '---------- Start reviews sync ----------'
-                    );
-                }
                 $this->_exportReviewsForWebsite($website);
             }
 
