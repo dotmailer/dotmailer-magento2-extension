@@ -29,13 +29,13 @@ class Order
      */
     public $purchaseDate;
     /**
-     * @var string
+     * @var array
      */
-    public $deliveryAddress;
+    public $deliveryAddress = [];
     /**
-     * @var string
+     * @var array
      */
-    public $billingAddress;
+    public $billingAddress = [];
     /**
      * @var array
      */
@@ -79,7 +79,7 @@ class Order
     /**
      * @var array
      */
-    public $custom;
+    public $custom = [];
 
     /**
      * @var string
