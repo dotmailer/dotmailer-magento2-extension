@@ -32,7 +32,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
 
             /* We need to overwrite joinLeft if coupon is applied */
             $this->getSelect()->reset();
-            parent::_initSelect();
+            $this->getSelect()->from(['main_table' => $this->getMainTable()]);
 
             $this->addWebsiteGroupDateFilter($websiteId, $customerGroupId, $now);
             $select = $this->getSelect();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Cron;
+namespace Dotdigitalgroup\Email\Controller\Adminhtml\Dashboard;
 
 class Grid extends Index
 {
