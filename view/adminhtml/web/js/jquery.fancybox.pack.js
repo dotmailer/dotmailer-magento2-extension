@@ -1,5 +1,5 @@
 /*! fancyBox v2.1.5 fancyapps.com | fancyapps.com/fancybox/#license */
-require(["jquery"], function ($) {
+require(['jquery', 'domReady'], function ($) {
     (function (r, G, f, v) {
         var J = f("html"), n = f(r), p = f(G), b = f.fancybox = function () {
             b.open.apply(this, arguments)
@@ -122,19 +122,15 @@ require(["jquery"], function ($) {
             transitions: {},
             helpers: {},
             open: function (a, d) {
-                if (a && (f.isPlainObject(d) || (d = {}), !1 !== b.close(!0))) {
-return f.isArray(a) || (a = t(a) ? f(a).get() : [a]), f.each(a, function (e, c) {
+                if (a && (f.isPlainObject(d) || (d = {}), !1 !== b.close(!0)))return f.isArray(a) || (a = t(a) ? f(a).get() : [a]), f.each(a, function (e, c) {
                     var k = {}, g, h, j, m, l;
                     "object" === f.type(c) && (c.nodeType && (c = f(c)), t(c) ? (k = {
                         href: c.data("fancybox-href") || c.attr("href"),
                         title: c.data("fancybox-title") || c.attr("title"),
                         isDom: !0,
                         element: c
-                    }, f.metadata && f.extend(
-                        !0,
-                        k,
-                        c.metadata()
-                    )) : k = c);
+                    }, f.metadata && f.extend(!0, k,
+                        c.metadata())) : k = c);
                     g = d.href || k.href || (q(c) ? c : null);
                     h = d.title !== v ? d.title : k.title || "";
                     m = (j = d.content || k.content) ? "html" : d.type || k.type;
@@ -145,8 +141,7 @@ return f.isArray(a) || (a = t(a) ? f(a).get() : [a]), f.each(a, function (e, c) 
                     f.extend(k, {href: g, type: m, content: j, title: h, selector: l});
                     a[e] = k
                 }), b.opts = f.extend(!0, {}, b.defaults, d), d.keys !== v && (b.opts.keys = d.keys ? f.extend({}, b.defaults.keys, d.keys) : !1), b.group = a, b._start(b.opts.index)
-            }
-                },
+            },
             cancel: function () {
                 var a = b.coming;
                 a && !1 !== b.trigger("onCancel") && (b.hideLoading(), b.ajaxLoad && b.ajaxLoad.abort(), b.ajaxLoad = null, b.imgPreload && (b.imgPreload.onload = b.imgPreload.onerror = null), a.wrap && a.wrap.stop(!0, !0).trigger("onReset").remove(), b.coming = null, b.current ||
@@ -170,17 +165,13 @@ return f.isArray(a) || (a = t(a) ? f(a).get() : [a]), f.each(a, function (e, c) 
                     b.trigger("onPlayEnd")
                 };
                 if (!0 === a || !b.player.isActive && !1 !== a) {
-                    if (b.current && (b.current.loop || b.current.index < b.group.length - 1)) {
-b.player.isActive = !0, p.bind(
-    "onCancel.player beforeClose.player": c,
-    "onUpdate.player": e,
-    "beforeLoad.player": d
-    }
-), e(), b.trigger("onPlayStart")
-                } else {
-c()
-            }
-                },
+                    if (b.current && (b.current.loop || b.current.index < b.group.length - 1))b.player.isActive = !0, p.bind({
+                        "onCancel.player beforeClose.player": c,
+                        "onUpdate.player": e,
+                        "beforeLoad.player": d
+                    }), e(), b.trigger("onPlayStart")
+                } else c()
+            },
             next: function (a) {
                 var d = b.current;
                 d && (q(a) || (a = d.direction.next), b.jumpto(d.index + 1, a, "next"))
@@ -219,10 +210,8 @@ c()
                 b.hideLoading();
                 a = f('<div id="fancybox-loading"><div></div></div>').click(b.cancel).appendTo("body");
                 p.bind("keydown.loading", function (a) {
-                    if (27 === (a.which || a.keyCode)) {
-a.preventDefault(), b.cancel()
-                }
-                    });
+                    if (27 === (a.which || a.keyCode))a.preventDefault(), b.cancel()
+                });
                 b.defaults.fixed || (d = b.getViewport(), a.css({
                     position: "absolute",
                     top: 0.5 * d.h + d.y,
@@ -246,27 +235,16 @@ a.preventDefault(), b.cancel()
                 var a = b.current, d;
                 a && (n.bind("orientationchange.fb" + (s ? "" : " resize.fb") + (a.autoCenter && !a.locked ? " scroll.fb" : ""), b.update), (d = a.keys) && p.bind("keydown.fb", function (e) {
                     var c = e.which || e.keyCode, k = e.target || e.srcElement;
-                    if (27 === c && b.coming) {
-return !1;
-                    }
+                    if (27 === c && b.coming)return !1;
                     !e.ctrlKey && (!e.altKey && !e.shiftKey && !e.metaKey && (!k || !k.type && !f(k).is("[contenteditable]"))) && f.each(d, function (d, k) {
-                        if (1 < a.group.length && k[c] !== v) {
-return b[d](k[c]), e.preventDefault(), !1;
-                        }
-                        if (-1 < f.inArray(c, k)) {
-return b[d](), e.preventDefault(), !1
-                    }
-                        })
+                        if (1 < a.group.length && k[c] !== v)return b[d](k[c]), e.preventDefault(), !1;
+                        if (-1 < f.inArray(c, k))return b[d](), e.preventDefault(), !1
+                    })
                 }), f.fn.mousewheel && a.mouseWheel && b.wrap.bind("mousewheel.fb", function (d, c, k, g) {
-                    for (var h = f(d.target || null), j = !1; h.length && !j && !h.is(".fancybox-skin") && !h.is(".fancybox-wrap");) {
-j = h[0] && !(h[0].style.overflow && "hidden" === h[0].style.overflow) &&
+                    for (var h = f(d.target || null), j = !1; h.length && !j && !h.is(".fancybox-skin") && !h.is(".fancybox-wrap");)j = h[0] && !(h[0].style.overflow && "hidden" === h[0].style.overflow) &&
                         (h[0].clientWidth && h[0].scrollWidth > h[0].clientWidth || h[0].clientHeight && h[0].scrollHeight > h[0].clientHeight), h = f(h).parent();
-                    }
                     if (0 !== c && !j && 1 < b.group.length && !a.canShrink) {
-                        if (0 < g || 0 < k) {
-b.prev(0 < g ? "down" : "left"); } else if (0 > g || 0 > k) {
-b.next(0 > g ? "up" : "right");
-                        }
+                        if (0 < g || 0 < k)b.prev(0 < g ? "down" : "left"); else if (0 > g || 0 > k)b.next(0 > g ? "up" : "right");
                         d.preventDefault()
                     }
                 }))
@@ -275,17 +253,10 @@ b.next(0 > g ? "up" : "right");
                 var e, c = d || b.coming || b.current;
                 if (c) {
                     f.isFunction(c[a]) && (e = c[a].apply(c, Array.prototype.slice.call(arguments, 1)));
-                    if (!1 === e) {
-return !1;
-                    }
+                    if (!1 === e)return !1;
                     c.helpers && f.each(c.helpers, function (d, e) {
-                        if (e && b.helpers[d] && f.isFunction(b.helpers[d][a])) {
-b.helpers[d][a](f.extend(
-    !0,
-    },
-    b.helpers[d].defaults,
-    e
-), c)
+                        if (e && b.helpers[d] && f.isFunction(b.helpers[d][a]))b.helpers[d][a](f.extend(!0,
+                            {}, b.helpers[d].defaults, e), c)
                     });
                     p.trigger(a)
                 }
@@ -300,9 +271,7 @@ b.helpers[d][a](f.extend(
                 var d = {}, e, c;
                 a = l(a);
                 e = b.group[a] || null;
-                if (!e) {
-return !1;
-                }
+                if (!e)return !1;
                 d = f.extend(!0, {}, b.opts, e);
                 e = d.margin;
                 c = d.padding;
@@ -318,17 +287,12 @@ return !1;
                 d.group = b.group;
                 d.index = a;
                 b.coming = d;
-                if (!1 === b.trigger("beforeLoad")) {
-b.coming = null; } else {
+                if (!1 === b.trigger("beforeLoad"))b.coming = null; else {
                     c = d.type;
                     e = d.href;
-                    if (!c) {
-return b.coming = null, b.current && b.router && "jumpto" !== b.router ? (b.current.index = a, b[b.router](b.direction)) : !1;
-                    }
+                    if (!c)return b.coming = null, b.current && b.router && "jumpto" !== b.router ? (b.current.index = a, b[b.router](b.direction)) : !1;
                     b.isActive = !0;
-                    if ("image" === c || "swf" === c) {
-d.autoHeight = d.autoWidth = !1, d.scrolling = "visible";
-                    }
+                    if ("image" === c || "swf" === c)d.autoHeight = d.autoWidth = !1, d.scrolling = "visible";
                     "image" === c && (d.aspectRatio = !0);
                     "iframe" === c && s && (d.scrolling = "scroll");
                     d.wrap = f(d.tpl.wrap).addClass("fancybox-" + (s ? "mobile" : "desktop") + " fancybox-type-" + c + " fancybox-tmp " + d.wrapCSS).appendTo(d.parent || "body");
@@ -342,11 +306,8 @@ d.autoHeight = d.autoWidth = !1, d.scrolling = "visible";
                     });
                     b.trigger("onReady");
                     if ("inline" === c || "html" === c) {
-                        if (!d.content || !d.content.length) {
-return b._error("content")
-                    } } else if (!e) {
-return b._error("href");
-                    }
+                        if (!d.content || !d.content.length)return b._error("content")
+                    } else if (!e)return b._error("href");
                     "image" === c ? b._loadImage() : "ajax" === c ? b._loadAjax() : "iframe" === c ? b._loadIframe() : b._afterLoad()
                 }
             },
@@ -408,20 +369,14 @@ return b._error("href");
                 a.iframe.preload || b._afterLoad()
             },
             _preloadImages: function () {
-                var a = b.group, d = b.current, e = a.length, c = d.preload ? Math.min(
-                    d.preload,
-                    e - 1
-                ) : 0, f, g;
-                for (g = 1; g <= c; g += 1) {
-f = a[(d.index + g) % e], "image" === f.type && f.href && ((new Image).src = f.href)
-            }
-                },
+                var a = b.group, d = b.current, e = a.length, c = d.preload ? Math.min(d.preload,
+                    e - 1) : 0, f, g;
+                for (g = 1; g <= c; g += 1)f = a[(d.index + g) % e], "image" === f.type && f.href && ((new Image).src = f.href)
+            },
             _afterLoad: function () {
                 var a = b.coming, d = b.current, e, c, k, g, h;
                 b.hideLoading();
-                if (a && !1 !== b.isActive) {
-if (!1 === b.trigger("afterLoad", a, d)) {
-a.wrap.stop(!0).trigger("onReset").remove(), b.coming = null; } else {
+                if (a && !1 !== b.isActive)if (!1 === b.trigger("afterLoad", a, d))a.wrap.stop(!0).trigger("onReset").remove(), b.coming = null; else {
                     d && (b.trigger("beforeChange", d), d.wrap.stop(!0).removeClass("fancybox-opened").find(".fancybox-item, .fancybox-nav").remove());
                     b.unbindEvents();
                     e = a.content;
@@ -441,10 +396,8 @@ a.wrap.stop(!0).trigger("onReset").remove(), b.coming = null; } else {
                             }));
                             break;
                         case "image":
-                            e = a.tpl.image.replace(
-                                "{href}",
-                                g
-                            );
+                            e = a.tpl.image.replace("{href}",
+                                g);
                             break;
                         case "swf":
                             e = '<object id="fancybox-swf" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + g + '"></param>', h = "", f.each(a.swf, function (a, b) {
@@ -462,14 +415,10 @@ a.wrap.stop(!0).trigger("onReset").remove(), b.coming = null; } else {
                     b.coming = null;
                     b.bindEvents();
                     if (b.isOpened) {
-                        if (d.prevMethod) {
-b.transitions[d.prevMethod]()
-                    } } else {
-f(".fancybox-wrap").not(a.wrap).stop(!0).trigger("onReset").remove();
-                    }
+                        if (d.prevMethod)b.transitions[d.prevMethod]()
+                    } else f(".fancybox-wrap").not(a.wrap).stop(!0).trigger("onReset").remove();
                     b.transitions[b.isOpened ? a.nextMethod : a.openMethod]();
                     b._preloadImages()
-                }
                 }
             },
             _setDimension: function () {
@@ -483,16 +432,12 @@ f(".fancybox-wrap").not(a.wrap).stop(!0).trigger("onReset").remove();
                 C = E(c) ? (a.w - z) * l(c) / 100 : c;
                 A = E(j) ? (a.h - t) * l(j) / 100 : j;
                 if ("iframe" === h.type) {
-                    if (H = h.content, h.autoHeight && 1 === H.data("ready")) {
-try {
+                    if (H = h.content, h.autoHeight && 1 === H.data("ready"))try {
                         H[0].contentWindow.document.location && (g.width(C).height(9999), F = H.contents().find("body"), q && F.css("overflow-x", "hidden"), A = F.outerHeight(!0))
-                    }
                     } catch (G) {
                     }
                 } else if (h.autoWidth ||
-                    h.autoHeight) {
-g.addClass("fancybox-tmp"), h.autoWidth || g.width(C), h.autoHeight || g.height(A), h.autoWidth && (C = g.width()), h.autoHeight && (A = g.height()), g.removeClass("fancybox-tmp");
-                }
+                    h.autoHeight)g.addClass("fancybox-tmp"), h.autoWidth || g.width(C), h.autoHeight || g.height(A), h.autoWidth && (C = g.width()), h.autoHeight && (A = g.height()), g.removeClass("fancybox-tmp");
                 c = l(C);
                 j = l(A);
                 D = C / A;
@@ -507,13 +452,7 @@ g.addClass("fancybox-tmp"), h.autoWidth || g.width(C), h.autoHeight || g.height(
                 r = a.h - r;
                 h.aspectRatio ? (c > n && (c = n, j = l(c / D)), j > p && (j = p, c = l(j * D)), c < m && (c = m, j = l(c / D)), j < u && (j = u, c = l(j * D))) : (c = Math.max(m, Math.min(c, n)), h.autoHeight &&
                 "iframe" !== h.type && (g.width(c), j = g.height()), j = Math.max(u, Math.min(j, p)));
-                if (h.fitToView) {
-if (g.width(c).height(j), e.width(c + x), a = e.width(), y = e.height(), h.aspectRatio) {
-for (; (a > z || y > r) && (c > m && j > u) && !(19 < d++);) {
-j = Math.max(u, Math.min(p, j - 10)), c = l(j * D), c < m && (c = m, j = l(c / D)), c > n && (c = n, j = l(c / D)), g.width(c).height(j), e.width(c + x), a = e.width(), y = e.height(); } } else {
-c = Math.max(m, Math.min(c, c - (a - z))), j = Math.max(u, Math.min(j, j - (y - r)));
-}
-                }
+                if (h.fitToView)if (g.width(c).height(j), e.width(c + x), a = e.width(), y = e.height(), h.aspectRatio)for (; (a > z || y > r) && (c > m && j > u) && !(19 < d++);)j = Math.max(u, Math.min(p, j - 10)), c = l(j * D), c < m && (c = m, j = l(c / D)), c > n && (c = n, j = l(c / D)), g.width(c).height(j), e.width(c + x), a = e.width(), y = e.height(); else c = Math.max(m, Math.min(c, c - (a - z))), j = Math.max(u, Math.min(j, j - (y - r)));
                 q && ("auto" === s && j < A && c + x + q < z) && (c += q);
                 g.width(c).height(j);
                 e.width(c + x);
@@ -582,9 +521,7 @@ c = Math.max(m, Math.min(c, c - (a - z))), j = Math.max(u, Math.min(j, j - (y - 
                 !e && (a.isDom && d.is(":visible")) && (e = d.find("img:first"), e.length || (e = d));
                 t(e) ? (c = e.offset(), e.is("img") && (f = e.outerWidth(), g = e.outerHeight())) :
                     (c.top = m.y + (m.h - g) * a.topRatio, c.left = m.x + (m.w - f) * a.leftRatio);
-                if ("fixed" === b.wrap.css("position") || a.locked) {
-c.top -= m.y, c.left -= m.x;
-                }
+                if ("fixed" === b.wrap.css("position") || a.locked)c.top -= m.y, c.left -= m.x;
                 return c = {
                     top: w(c.top - h * a.topRatio),
                     left: w(c.left - j * a.leftRatio),
@@ -595,11 +532,9 @@ c.top -= m.y, c.left -= m.x;
                 var e, c, f = d.prop;
                 c = b.current;
                 var g = c.wrapSpace, h = c.skinSpace;
-                if ("width" === f || "height" === f) {
-e = d.end === d.start ? 1 : (a - d.start) / (d.end - d.start), b.isClosing && (e = 1 - e), c = "width" === f ? c.wPadding : c.hPadding, c = a - c, b.skin[f](l("width" === f ? c : c - g * e)), b.inner[f](l("width" ===
+                if ("width" === f || "height" === f)e = d.end === d.start ? 1 : (a - d.start) / (d.end - d.start), b.isClosing && (e = 1 - e), c = "width" === f ? c.wPadding : c.hPadding, c = a - c, b.skin[f](l("width" === f ? c : c - g * e)), b.inner[f](l("width" ===
                 f ? c : c - g * e - h * e))
-            }
-                }, zoomIn: function () {
+            }, zoomIn: function () {
                 var a = b.current, d = a.pos, e = a.openEffect, c = "elastic" === e, k = f.extend({opacity: 1}, d);
                 delete k.position;
                 c ? (d = this.getOrigPosition(), a.openOpacity && (d.opacity = 0.1)) : "fade" === e && (d.opacity = 0.1);
@@ -612,15 +547,13 @@ e = d.end === d.start ? 1 : (a - d.start) / (d.end - d.start), b.isClosing && (e
             }, zoomOut: function () {
                 var a = b.current, d = a.closeEffect, e = "elastic" === d, c = {opacity: 0.1};
                 e && (c = this.getOrigPosition(), a.closeOpacity && (c.opacity = 0.1));
-                b.wrap.animate(
-                    c,
+                b.wrap.animate(c,
                     {
                         duration: "none" === d ? 0 : a.closeSpeed,
                         easing: a.closeEasing,
                         step: e ? this.step : null,
                         complete: b._afterZoomOut
-                    }
-                )
+                    })
             }, changeIn: function () {
                 var a = b.current, d = a.nextEffect, e = a.pos, c = {opacity: 1}, f = b.direction, g;
                 e.opacity = 0.1;
@@ -660,11 +593,9 @@ e = d.end === d.start ? 1 : (a - d.start) / (d.end - d.start), b.isClosing && (e
                 this.overlay ? this.overlay.unbind(".overlay").width("auto").height("auto") : this.create(a);
                 this.fixed || (n.bind("resize.overlay", f.proxy(this.update, this)), this.update());
                 a.closeClick && this.overlay.bind("click.overlay", function (a) {
-                    if (f(a.target).hasClass("fancybox-overlay")) {
-return b.isActive ?
+                    if (f(a.target).hasClass("fancybox-overlay"))return b.isActive ?
                         b.close() : d.close(), !1
-                }
-                    });
+                });
                 this.overlay.css(a.css).show()
             },
             close: function () {
