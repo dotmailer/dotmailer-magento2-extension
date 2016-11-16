@@ -736,7 +736,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
         $url = $this->_apiEndpoint . self::REST_TRANSACTIONAL_DATA_IMPORT
             . $collectionName;
-        $this->setURl($url)
+        $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($orders);
 
@@ -776,6 +776,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
         $apiData = [
             'Key' => $data->id,
+            'ContactIdentifier' => $data->email,
             'Json' => json_encode($data->expose()),
         ];
 
@@ -942,7 +943,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     public function postCampaign($data)
     {
         $url = $this->_apiEndpoint . self::REST_CREATE_CAMPAIGN;
-        $this->setURl($url)
+        $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($data);
 
@@ -1095,7 +1096,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     {
         $url = $this->_apiEndpoint . self::REST_CREATE_CAMPAIGN
             . "/$campaignId/attachments";
-        $this->setURl($url)
+        $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($data);
 
@@ -1203,7 +1204,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
         $url = $this->_apiEndpoint . self::REST_TRANSACTIONAL_DATA_IMPORT
             . $collectionName;
-        $this->setURl($url)
+        $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($orders);
 
