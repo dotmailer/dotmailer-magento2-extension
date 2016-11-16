@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
-class Interval
+class Interval implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Available times.

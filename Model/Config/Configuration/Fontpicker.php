@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Fontpicker
+class Fontpicker implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Options getter. web safe fonts.

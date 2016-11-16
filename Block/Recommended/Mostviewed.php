@@ -88,7 +88,6 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  = $this->recommnededHelper->getTimeFromConfig($mode);
         $to = $this->localeDate->date()->format(\Zend_Date::ISO_8601);
-
         $reportProductCollection = $this->reportProductCollection->create()
             ->addViewsCount($from, $to)
             ->setPageSize($limit);

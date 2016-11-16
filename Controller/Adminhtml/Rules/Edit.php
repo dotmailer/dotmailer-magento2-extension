@@ -7,11 +7,11 @@ class Edit extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $registry;
+    public $registry;
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
-    protected $rules;
+    public $rules;
 
     /**
      * Edit constructor.
@@ -35,7 +35,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    protected function _isAllowed()
+    public function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }
@@ -62,7 +62,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
             $emailRules = $emailRules->load($id);
 
             if (!$emailRules->getId()) {
-                $this->messageManager->addError(__('This rule no longer exists.'));
+                $this->messageManager->addErrorMessage(__('This rule no longer exists.'));
                 $this->_redirect('*/*');
             }
         }

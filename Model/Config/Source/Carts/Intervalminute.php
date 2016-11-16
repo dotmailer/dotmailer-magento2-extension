@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
-class Intervalminute implements \Magento\Framework\Option\ArrayInterface
+class Intervalminute implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Lost basket hour options.

@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
+use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 
 class Update extends Delete
@@ -55,7 +56,7 @@ class Update extends Delete
                 $result = true;
 
                 if ($this->client) {
-                    if ($item->getImportMode() == \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_EMAIL_UPDATE) {
+                    if ($item->getImportMode() == Importer::MODE_CONTACT_EMAIL_UPDATE) {
                         $emailBefore = $importData['emailBefore'];
                         $email = $importData['email'];
                         $isSubscribed = $importData['isSubscribed'];
@@ -81,7 +82,7 @@ class Update extends Delete
                             }
                         }
                     } elseif ($item->getImportMode()
-                        == \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED
+                        == Importer::MODE_SUBSCRIBER_RESUBSCRIBED
                     ) {
                         $email = $importData['email'];
                         $apiContact = $this->client->postContacts($email);
@@ -94,7 +95,7 @@ class Update extends Delete
                             $apiContact = $this->client->getContactByEmail($email);
                             $result = $this->client->postContactsResubscribe($apiContact);
                         }
-                    } elseif ($item->getImportMode() == \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE) {
+                    } elseif ($item->getImportMode() == Importer::MODE_SUBSCRIBER_UPDATE) {
                         $email = $importData['email'];
                         $id = $importData['id'];
                         $result = $this->client->postContacts($email);

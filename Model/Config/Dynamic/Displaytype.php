@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Dynamic;
 
-class Displaytype
+class Displaytype implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Display type mode.

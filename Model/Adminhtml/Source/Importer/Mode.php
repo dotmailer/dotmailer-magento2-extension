@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer;
 
-class Mode  implements \Magento\Framework\Data\OptionSourceInterface
+class Mode implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Contact imported options.

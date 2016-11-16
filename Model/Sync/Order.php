@@ -153,9 +153,6 @@ class Order
                         );
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);
-                    throw new \Magento\Framework\Exception\LocalizedException(
-                        __($e->getMessage())
-                    );
                 }
 
                 $this->_setImported($orderIds);
@@ -367,7 +364,7 @@ class Order
                 $write->update(
                     $tableName,
                     [
-                        'modified' => new \Zend_Db_Expr('null'),
+                        'modified' => 'null',
                         'updated_at' => gmdate('Y-m-d H:i:s')
                     ],
                     "order_id IN ($ids)"

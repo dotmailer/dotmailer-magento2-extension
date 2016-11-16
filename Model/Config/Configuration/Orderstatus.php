@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Orderstatus
+class Orderstatus implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * @var \Magento\Sales\Model\Config\Source\Order\Status

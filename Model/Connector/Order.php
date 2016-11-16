@@ -70,7 +70,6 @@ class Order
      * @var string
      */
     public $currency;
-
     /**
      * @var
      */
@@ -603,7 +602,6 @@ class Order
         if (! $this->custom) {
             $properties = array_diff($properties, ['custom']);
         }
-
 
         return $properties;
     }

@@ -7,7 +7,7 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Model\Automation
      */
-    protected $_automation;
+    public $automation;
 
     /**
      * NewAutomation constructor.
@@ -17,7 +17,7 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         \Dotdigitalgroup\Email\Model\Automation $automation
     ) {
-        $this->_automation = $automation;
+        $this->automation = $automation;
     }
 
     /**
@@ -31,7 +31,7 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
     {
         $customer = $observer->getEvent()->getCustomer();
         //New Automation enrolment to queue
-        $this->_automation->newCustomerAutomation($customer);
+        $this->automation->newCustomerAutomation($customer);
         return $this;
     }
 }

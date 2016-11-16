@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Productattributes
+class Productattributes implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection

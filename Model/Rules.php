@@ -280,7 +280,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         }
         //ANY TRUE
         if ($combination == 2) {
-            return $this->_processOrCombination($collection, $condition, $type);
+            return $this->processOrCombination($collection, $condition, $type);
         }
     }
 
@@ -360,7 +360,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return mixed
      */
-    public function _processOrCombination($collection, $conditions, $type)
+    public function processOrCombination($collection, $conditions, $type)
     {
         $fieldsConditions = [];
         $multiFieldsConditions = [];

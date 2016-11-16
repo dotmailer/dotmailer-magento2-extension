@@ -7,15 +7,15 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Dotdigitalgroup\Email\Model\CatalogFactory
      */
-    protected $_catalogFactory;
+    public $catalogFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
-    protected $_catalogCollection;
+    public $catalogCollection;
 
     /**
      * ReimportProduct constructor.
@@ -29,9 +29,9 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_helper = $data;
-        $this->_catalogFactory = $catalogFactory;
-        $this->_catalogCollection = $catalogCollectionFactory;
+        $this->helper            = $data;
+        $this->catalogFactory    = $catalogFactory;
+        $this->catalogCollection = $catalogCollectionFactory;
     }
 
     /**
@@ -45,14 +45,14 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
             $object = $observer->getEvent()->getDataObject();
             $productId = $object->getId();
 
-            if ($item = $this->_loadProduct($productId)) {
+            if ($item = $this->loadProduct($productId)) {
                 if ($item->getImported()) {
                     $item->setModified(1)
                         ->save();
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
     }
 
@@ -63,9 +63,9 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @return bool
      */
-    protected function _loadProduct($productId)
+    public function loadProduct($productId)
     {
-        $collection = $this->_catalogCollection->create()
+        $collection = $this->catalogCollection->create()
             ->addFieldToFilter('product_id', $productId)
             ->setPageSize(1);
 
@@ -74,7 +74,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
             return $collection->getFirstItem();
             //@codingStandardsIgnoreEnd
         } else {
-            $this->_catalogFactory->create()
+            $this->catalogFactory->create()
                 ->setProductId($productId)
                 ->save();
         }

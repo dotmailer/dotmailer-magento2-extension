@@ -10,7 +10,9 @@ class Preview extends \Magento\Backend\Block\Template
      */
     public function getCurrencySymbol()
     {
-        return $this->_storeManager->getStore()->getCurrentCurrency()->getCurrencySymbol();
+        return $this->_storeManager->getStore()
+            ->getCurrentCurrency()
+            ->getCurrencySymbol();
     }
 
     /**

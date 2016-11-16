@@ -101,11 +101,8 @@ class Bulk
     }
 
     /**
-     * Proccess item after sync.
-     *
-     * @param      $item
-     * @param      $result
-     * @param bool $file
+     * @param $item
+     * @param $result
      */
     public function _handleItemAfterSync($item, $result)
     {

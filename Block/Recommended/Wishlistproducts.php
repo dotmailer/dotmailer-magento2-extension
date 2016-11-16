@@ -68,7 +68,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     public function _getWishlistItems()
     {
         $wishlist = $this->_getWishlist();
-        if ($wishlist && count($wishlist->getItemCollection())) {
+        if ($wishlist && ! empty($wishlist->getItemCollection())) {
             return $wishlist->getItemCollection();
         } else {
             return [];

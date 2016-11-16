@@ -39,7 +39,10 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
             $email = $this->getRequest()->getParam('email');
             if ($quote->hasItems()) {
                 try {
-                    $quote->setCustomerEmail($email)->save();
+                    $quote->setCustomerEmail($email);
+
+                    $quote->getResource()->save($quote);
+
                     $this->helper->log('ajax emailCapture email: ' . $email);
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);

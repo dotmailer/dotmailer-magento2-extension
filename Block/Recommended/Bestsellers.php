@@ -2,12 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+use Magento\Store\Model\Store;
+
 class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
-     */
-    public $dateTime;
     /**
      * @var \Magento\CatalogInventory\Model\StockFactory
      */
@@ -50,7 +48,6 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param \Magento\Framework\App\ResourceConnection                           $resource
      * @param \Magento\Framework\Pricing\Helper\Data                              $priceHelper
      * @param \Dotdigitalgroup\Email\Helper\Recommended                           $recommended
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime                         $dateTime
      * @param \Magento\Catalog\Model\CategoryFactory                              $categoryFactory
      * @param \Magento\Catalog\Block\Product\Context                              $context
      * @param \Magento\CatalogInventory\Model\StockFactory                        $stockFactory
@@ -63,7 +60,6 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Catalog\Block\Product\Context $context,
         \Magento\CatalogInventory\Model\StockFactory $stockFactory,
@@ -74,7 +70,6 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->productFactory     = $productFactory;
         $this->resource           = $resource;
         $this->helper             = $helper;
-        $this->dateTime           = $dateTime;
         $this->priceHelper        = $priceHelper;
         $this->stockFactory       = $stockFactory;
         $this->recommnededHelper  = $recommended;
@@ -96,9 +91,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         //date range
         $from = $this->recommnededHelper->getTimeFromConfig($mode);
-        $date  = new \Zend_Date($this->localeDate->date()->getTimestamp());
-
-        $to = $date->toString(\Zend_Date::ISO_8601);
+        $to = $this->localeDate->date()->format(\Zend_Date::ISO_8601);
         //create report collection
         $reportProductCollection = $this->productSoldFactory->create();
         $connection = $this->resource->getConnection();
@@ -175,6 +168,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getTextForUrl($store)
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(

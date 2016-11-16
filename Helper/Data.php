@@ -1406,8 +1406,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get the date for the last time cron run.
-     * @param $cronjob
+     * @param $cronJob
      *
      * @return bool
      */

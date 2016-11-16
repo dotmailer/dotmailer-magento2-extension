@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional;
 
-class Mode
+class Mode implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Options getter.

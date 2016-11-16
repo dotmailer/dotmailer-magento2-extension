@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Catalogvalues
+class Catalogvalues implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Get options.
