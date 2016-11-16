@@ -356,7 +356,7 @@ class Catalog
                 $write->update(
                     $tableName,
                     [
-                    'modified' => new \Zend_Db_Expr('null'),
+                    'modified' => 'null',
                     'updated_at' => gmdate('Y-m-d H:i:s'),
                     ],
                     "product_id IN ($ids)"

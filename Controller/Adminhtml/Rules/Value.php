@@ -53,6 +53,7 @@ class Value extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
+        $response = [];
         $valueName = $this->getRequest()->getParam('value');
         $conditionValue = $this->getRequest()->getParam('condValue');
         $attributeValue = $this->getRequest()->getParam('attributeValue');

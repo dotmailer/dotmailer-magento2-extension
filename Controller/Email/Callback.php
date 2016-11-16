@@ -32,7 +32,6 @@ class Callback extends \Magento\Framework\App\Action\Action
     /**
      * Callback constructor.
      *
-     * @param \Magento\Customer\Model\CustomerFactory            $customerFactory
      * @param \Magento\Backend\Helper\Data                       $backendData
      * @param \Dotdigitalgroup\Email\Helper\Config               $config
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
@@ -42,7 +41,6 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @param \Dotdigitalgroup\Email\Helper\Data                 $helper
      */
     public function __construct(
-        \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Backend\Helper\Data $backendData,
         \Dotdigitalgroup\Email\Helper\Config $config,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface,
@@ -51,7 +49,6 @@ class Callback extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper
     ) {
-        $this->_customerFactory = $customerFactory;
         $this->adminHelper      = $backendData;
         $this->config           = $config;
         $this->scopeConfig      = $scopeConfigInterface;

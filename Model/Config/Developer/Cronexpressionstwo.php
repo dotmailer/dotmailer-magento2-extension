@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Developer;
 
-class Cronexpressionstwo
+class Cronexpressionstwo implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Get options.

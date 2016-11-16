@@ -250,42 +250,4 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 
         return $countContacts;
     }
-
-    /**
-     * Reset the imported contacts as guest.
-     *
-     * @return int
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function resetAllGuestContacts()
-    {
-        $coreResource = $this->_resource;
-
-        $conn = $coreResource->getConnection();
-
-        try {
-            $where = [];
-            $where[] = $conn->quoteInto(
-                'email_imported is ?',
-                new \Zend_Db_Expr('not null')
-            );
-            $where[] = $conn->quoteInto(
-                'is_guest is ?',
-                new \Zend_Db_Expr('not null')
-            );
-
-            $num = $conn->update(
-                $coreResource->getTableName('email_contact'),
-                ['email_imported' => new \Zend_Db_Expr('null')],
-                $where
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __($e->getMessage())
-            );
-        }
-
-        return $num;
-    }
 }

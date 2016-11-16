@@ -87,6 +87,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getTextForUrl($store)
     {
+        /** @var \Magento\Store\Model\Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(

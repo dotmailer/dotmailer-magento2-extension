@@ -11,22 +11,22 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
-    public $rules;
+    public $ruleFactory;
 
     /**
      * Save constructor.
      *
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Model\Rules $rules
+     * @param \Magento\Backend\App\Action\Context        $context
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory  $rulesFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Model\Rules $rules,
+        \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         parent::__construct($context);
-        $this->rules        = $rules;
+        $this->ruleFactory  = $rulesFactory;
         $this->storeManager = $storeManagerInterface;
     }
 
@@ -49,13 +49,13 @@ class Save extends \Magento\Backend\App\AbstractAction
     {
         if ($this->getRequest()->getParams()) {
             try {
-                $model = $this->rules;
+                $ruleModel = $this->ruleFactory->create();
                 $data = $this->getRequest()->getParams();
                 $id = $this->getRequest()->getParam('id');
 
                 if ($data['website_ids']) {
                     foreach ($data['website_ids'] as $websiteId) {
-                        $result = $model->checkWebsiteBeforeSave(
+                        $result = $ruleModel->checkWebsiteBeforeSave(
                             $websiteId,
                             $data['type'],
                             $id
@@ -79,14 +79,14 @@ class Save extends \Magento\Backend\App\AbstractAction
                                     )
                                 ]
                             );
-
                             return;
                         }
                     }
                 }
 
-                $model->load($id);
-                if ($id != $model->getId()) {
+                $ruleModel->getResource()->load($ruleModel, $id);
+
+                if ($id != $ruleModel->getId()) {
                     throw new \Magento\Framework\Exception\LocalizedException(
                         __('Wrong rule specified.')
                     );
@@ -99,13 +99,14 @@ class Save extends \Magento\Backend\App\AbstractAction
                                 unset($value['__empty']);
                             }
                         }
-                        $model->setData($key, $value);
+                        $ruleModel->setData($key, $value);
                     }
                 }
 
-                $this->_getSession()->setPageData($model->getData());
+                $this->_getSession()->setPageData($ruleModel->getData());
 
-                $model->save();
+                $ruleModel->getResource()->save($ruleModel);
+
                 $this->messageManager->addSuccessMessage(
                     __('The rule has been saved.')
                 );
@@ -113,7 +114,7 @@ class Save extends \Magento\Backend\App\AbstractAction
                 if ($this->getRequest()->getParam('back')) {
                     $this->_redirect(
                         '*/*/edit',
-                        ['id' => $model->getId()]
+                        ['id' => $ruleModel->getId()]
                     );
 
                     return;

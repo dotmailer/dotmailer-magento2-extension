@@ -26,8 +26,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $num = $conn->update(
                 $conn->getTableName('email_catalog'),
                 [
-                    'imported' => new \Zend_Db_Expr('null'),
-                    'modified' => new \Zend_Db_Expr('null'),
+                    'imported' => 'null',
+                    'modified' => 'null',
                 ]
             );
         } catch (\Exception $e) {

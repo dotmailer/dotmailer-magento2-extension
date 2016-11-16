@@ -46,7 +46,6 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
         );
     }
 
-
     /**
      * @return string
      */

@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Developer;
 
-class Transactionaldata
+class Transactionaldata implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Get options.

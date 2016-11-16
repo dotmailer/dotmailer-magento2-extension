@@ -5,11 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Automation\Status;
 class Options implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
-     * @var null|array
-     */
-    protected $options;
-
-    /**
      * @return array|null
      */
     public function toOptionArray()

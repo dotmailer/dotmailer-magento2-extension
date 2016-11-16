@@ -52,10 +52,13 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             return $this->_redirect('');
         }
 
-        $quoteModel = $this->quoteFactory->create()->load($quoteId);
+        /** @var \Magento\Quote\Model\Quote $quoteModel */
+        $quoteModel = $this->quoteFactory->create();
+
+        $quoteModel->getResource()->load($quoteModel, $quoteId);
 
         //no quote id redirect to base url
-        if (!$quoteModel->getId()) {
+        if (! $quoteModel->getId()) {
             return $this->_redirect('');
         }
 

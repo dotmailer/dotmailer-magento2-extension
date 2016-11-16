@@ -10,7 +10,7 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
      */
-    protected $rules;
+    public $rules;
 
     /**
      * MassDelete constructor.

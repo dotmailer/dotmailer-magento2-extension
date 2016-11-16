@@ -26,11 +26,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_TEMPLATES = '/v2/templates';
 
     //rest error responces
-    const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. Please contact support. ERROR_APIUSAGE_EXCEEDED';
+    const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. 
+        Please contact support. ERROR_APIUSAGE_EXCEEDED';
     const API_ERROR_TRANS_ALLOWANCE = 'TransactionalDataAllowanceInMegabytes';
     const API_ERROR_EMAIL_NOT_VALID = 'Email is not a valid email address. ERROR_PARAMETER_INVALID';
     const API_ERROR_FEATURENOTACTIVE = 'Error: ERROR_FEATURENOTACTIVE';
-    const API_ERROR_REPORT_NOT_FOUND = 'Import is not processed yet or completed with error. ERROR_IMPORT_REPORT_NOT_FOUND';
+    const API_ERROR_REPORT_NOT_FOUND =
+        'Import is not processed yet or completed with error. ERROR_IMPORT_REPORT_NOT_FOUND';
     const API_ERROR_TRANS_NOT_EXISTS = 'Error: ERROR_TRANSACTIONAL_DATA_DOES_NOT_EXIST';
     const API_ERROR_DATAFIELD_EXISTS = 'Field already exists. ERROR_NON_UNIQUE_DATAFIELD';
     const API_ERROR_CONTACT_NOT_FOUND = 'Error: ERROR_CONTACT_NOT_FOUND';
@@ -130,9 +132,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             if (is_object($accountInfo) && !isset($accountInfo->message)) {
                 //save endpoint for account
                 foreach ($accountInfo->properties as $property) {
-                    if ($property->name == 'ApiEndpoint'
-                        && strlen($property->value)
-                    ) {
+                    if ($property->name == 'ApiEndpoint' && ! empty($property->value)) {
                         $apiEndpoint = $property->value;
                         $this->_saveApiEndpoint($property->value);
                         break;
@@ -736,7 +736,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
         $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA_IMPORT
             . $collectionName;
-        $this->setURl($url)
+        $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($orders);
 
@@ -945,7 +945,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     public function postCampaign($data)
     {
         $url = $this->apiEndpoint . self::REST_CREATE_CAMPAIGN;
-        $this->setURl($url)
+        $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($data);
 
@@ -1100,7 +1100,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     {
         $url = $this->apiEndpoint . self::REST_CREATE_CAMPAIGN
             . "/$campaignId/attachments";
-        $this->setURl($url)
+        $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($data);
 
@@ -1208,7 +1208,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
         $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA_IMPORT
             . $collectionName;
-        $this->setURl($url)
+        $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($orders);
 
@@ -1332,7 +1332,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
         return $response;
     }
-
 
     /**
      * Get access token.

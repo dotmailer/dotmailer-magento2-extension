@@ -38,9 +38,11 @@ class MassDelete extends Action
         } else {
             try {
                 foreach ($searchIds as $searchId) {
+                    //@codingStandardsIgnoreStart
                     $model = $this->review->create()
                         ->setId($searchId);
                     $model->delete();
+                    //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccessMessage(
                     __('Total of %1 record(s) were deleted.', count($searchIds))

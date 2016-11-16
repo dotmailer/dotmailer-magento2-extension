@@ -75,7 +75,9 @@ class Campaign
             //check send status for processing
             $this->_checkSendStatus($website);
             //start send process
-            $storeIds = $this->websiteFactory->create()->load($website->getId())->getStoreIds();
+            $storeIds = $this->websiteFactory->create()
+                ->load($website->getId())
+                ->getStoreIds();
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = [];
             foreach ($emailsToSend as $campaign) {
@@ -162,6 +164,7 @@ class Campaign
             foreach ($campaignsToSend as $campaignId => $data) {
                 if (isset($data['contacts']) && isset($data['client'])) {
                     $contacts = $data['contacts'];
+                    /** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
                     $client = $data['client'];
                     $response = $client->postCampaignsSend(
                         $campaignId,
@@ -217,7 +220,9 @@ class Campaign
      */
     public function _checkSendStatus($website)
     {
-        $storeIds = $this->websiteFactory->create()->load($website->getId())->getStoreIds();
+        $storeIds = $this->websiteFactory->create()
+            ->load($website->getId())
+            ->getStoreIds();
         $campaigns = $this->_getEmailCampaigns(
             $storeIds,
             \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,

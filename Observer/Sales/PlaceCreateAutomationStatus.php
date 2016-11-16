@@ -7,15 +7,15 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
-    protected $_automationFactory;
+    public $automationFactory;
 
     /**
      * PlaceCreateAutomationStatus constructor.
@@ -29,9 +29,9 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_automationFactory = $automationFactory;
-        $this->_helper = $data;
-        $this->_storeManager = $storeManagerInterface;
+        $this->automationFactory = $automationFactory;
+        $this->helper            = $data;
+        $this->storeManager      = $storeManagerInterface;
     }
 
     /**
@@ -45,11 +45,11 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
     {
         $order = $observer->getEvent()->getOrder();
         $email = $order->getCustomerEmail();
-        $website = $this->_storeManager->getWebsite($order->getWebsiteId());
-        $storeName = $this->_storeManager->getStore($order->getStoreId())
+        $website = $this->storeManager->getWebsite($order->getWebsiteId());
+        $storeName = $this->storeManager->getStore($order->getStoreId())
             ->getName();
         //if api is not enabled
-        if (!$this->_helper->isEnabled($website)) {
+        if (!$this->helper->isEnabled($website)) {
             return $this;
         }
         //automation enrolment for order
@@ -64,7 +64,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
             $automationType
                          = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_ORDER;
         }
-        $programId = $this->_helper->getAutomationIdByType(
+        $programId = $this->helper->getAutomationIdByType(
             $programType,
             $order->getWebsiteId()
         );
@@ -74,7 +74,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
             return $this;
         }
         try {
-            $this->_automationFactory->create()
+            $this->automationFactory->create()
                 ->setEmail($email)
                 ->setAutomationType($automationType)
                 ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
@@ -84,7 +84,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
                 ->setProgramId($programId)
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return $this;

@@ -12,6 +12,7 @@ class Edc extends \Magento\Framework\View\Element\Template
      */
     public function getTextForUrl($store)
     {
+        /** @var \Magento\Store\Model\Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(

@@ -55,7 +55,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getWishlistItems()
     {
         $wishlist = $this->_getWishlist();
-        if ($wishlist && count($wishlist->getItemCollection())) {
+        if ($wishlist && ! empty($wishlist->getItemCollection())) {
             return $wishlist->getItemCollection();
         } else {
             return false;
@@ -74,7 +74,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 
         $customer = $this->customerFactory->create()
             ->load($customerId);
-        if (!$customer->getId()) {
+        if (! $customer->getId()) {
             return false;
         }
 
@@ -113,6 +113,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getTextForUrl($store)
     {
+        /** @var \Magento\Store\Model\Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(

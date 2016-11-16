@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Dynamic;
 
-class Gridview
+class Gridview implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Grid display options.

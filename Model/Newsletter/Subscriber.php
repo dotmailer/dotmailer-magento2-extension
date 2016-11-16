@@ -79,9 +79,7 @@ class Subscriber
     }
 
     /**
-     * SUBSCRIBER SYNC.
-     *
-     * @return $this
+     * @return array
      */
     public function sync()
     {
@@ -165,7 +163,9 @@ class Subscriber
                     $this->file->getFilePath($subscribersFilename),
                     [$email, 'Html', $storeName]
                 );
+                //@codingStandardsIgnoreStart
                 $subscriber->setSubscriberImported(1)->save();
+                //@codingStandardsIgnoreEnd
                 ++$updated;
             }
 

@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Cartlimit
+class Cartlimit implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Available times.

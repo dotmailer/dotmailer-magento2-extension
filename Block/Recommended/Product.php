@@ -128,7 +128,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         if ($productsToDisplayCounter < $limit) {
             $fallbackIds = $this->recommendedHelper->getFallbackIds();
 
-
             $productCollection = $this->productFactory->create()
                 ->getCollection()
                 ->addIdFilter($fallbackIds)

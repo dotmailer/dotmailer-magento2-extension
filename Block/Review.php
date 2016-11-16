@@ -2,13 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
-class Order extends \Magento\Catalog\Block\Product\AbstractProduct
+class Review extends \Magento\Catalog\Block\Product\AbstractProduct
 {
-
-    /**
-     * @var
-     */
-    public $_quote;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -63,22 +58,22 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Current Order.
      *
-     * @return $this|bool|mixed
+     * @return bool|mixed
      */
     public function getOrder()
     {
         $orderId = $this->_coreRegistry->registry('order_id');
         $order = $this->_coreRegistry->registry('current_order');
-        if (!$orderId) {
+        if (! $orderId) {
             $orderId = $this->getRequest()->getParam('order_id');
-            if (!$orderId) {
+            if (! $orderId) {
                 return false;
             }
             $this->_coreRegistry->unregister('order_id'); // additional measure
             $this->_coreRegistry->register('order_id', $orderId);
         }
-        if (!$order) {
-            if (!$orderId) {
+        if (! $order) {
+            if (! $orderId) {
                 return false;
             }
             $order = $this->orderFactory->create()->load($orderId);
@@ -97,9 +92,8 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getMode($mode = 'list')
     {
         if ($this->getOrder()) {
-            $website = $this->_storeManager->getStore(
-                $this->getOrder()->getStoreId()
-            )
+            $website = $this->_storeManager
+                ->getStore($this->getOrder()->getStoreId())
                 ->getWebsite();
             $mode = $this->helper->getReviewDisplayType($website);
         }
@@ -117,11 +111,11 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function filterItemsForReview($items, $websiteId)
     {
-        if (!count($items)) {
+        $order = $this->getOrder();
+
+        if (empty($items) || ! $order) {
             return false;
         }
-
-        $order = $this->getOrder();
 
         //if customer is guest then no need to filter any items
         if ($order->getCustomerIsGuest()) {
@@ -152,11 +146,14 @@ class Order extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @return $this|\Magento\Framework\Data\Collection\AbstractDb
+     * @return array|\Magento\Framework\Data\Collection\AbstractDb
      */
     public function getItems()
     {
         $order = $this->getOrder();
+        if (! $order) {
+            return [];
+        }
         $items = $order->getAllVisibleItems();
         $productIds = [];
         //get the product ids for the collection

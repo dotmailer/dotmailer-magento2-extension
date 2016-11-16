@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Fontsize
+class Fontsize implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Options getter. Styling options.

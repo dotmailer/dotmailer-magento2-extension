@@ -7,41 +7,38 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    protected $_registry;
+    public $helper;
+
     /**
      * @var \Psr\Log\LoggerInterface
      */
-    protected $_scopeConfig;
+    public $scopeConfig;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\CatalogFactory
      */
-    protected $_catalogFactory;
+    public $catalogFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
-    protected $_catalogCollection;
+    public $catalogCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * RemoveProduct constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\CatalogFactory                     $catalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                         $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\CatalogFactory                          $catalogFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                              $data
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface                      $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data                                   $data
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface                   $scopeConfig
+     * @param \Magento\Store\Model\StoreManagerInterface                           $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -51,12 +48,12 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_importerFactory = $importerFactory;
-        $this->_helper = $data;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_catalogFactory = $catalogFactory;
-        $this->_catalogCollection = $catalogCollectionFactory;
-        $this->_storeManager = $storeManagerInterface;
+        $this->importerFactory   = $importerFactory;
+        $this->helper            = $data;
+        $this->scopeConfig       = $scopeConfig;
+        $this->catalogFactory    = $catalogFactory;
+        $this->catalogCollection = $catalogCollectionFactory;
+        $this->storeManager      = $storeManagerInterface;
     }
 
     /**
@@ -69,16 +66,16 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
         try {
             $object = $observer->getEvent()->getDataObject();
             $productId = $object->getId();
-            if ($item = $this->_loadProduct($productId)) {
+            if ($item = $this->loadProduct($productId)) {
                 //if imported delete from account
                 if ($item->getImported()) {
-                    $this->_deleteFromAccount($productId);
+                    $this->deleteFromAccount($productId);
                 }
                 //delete from table
                 $item->delete();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
     }
 
@@ -89,9 +86,9 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @return bool
      */
-    protected function _loadProduct($productId)
+    public function loadProduct($productId)
     {
-        $collection = $this->_catalogCollection->create()
+        $collection = $this->catalogCollection->create()
             ->addFieldToFilter('product_id', $productId)
             ->setPageSize(1);
 
@@ -100,7 +97,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
             return $collection->getFirstItem();
             //@codingStandardsIgnoreEnd
         } else {
-            $this->_catalogFactory->create()
+            $this->catalogFactory->create()
                 ->setProductId($productId)
                 ->save();
         }
@@ -113,19 +110,19 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @param int $key
      */
-    protected function _deleteFromAccount($key)
+    public function deleteFromAccount($key)
     {
-        $apiEnabled = $this->_scopeConfig->getValue(
+        $apiEnabled = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED
         );
-        $catalogEnabled = $this->_helper->isCatalogSyncEnabled();
+        $catalogEnabled = $this->helper->isCatalogSyncEnabled();
         if ($apiEnabled && $catalogEnabled) {
-            $scope = $this->_scopeConfig->getValue(
+            $scope = $this->scopeConfig->getValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES
             );
             if ($scope == 1) {
                 //register in queue with importer
-                $this->_importerFactory->create()
+                $this->importerFactory->create()
                     ->registerQueue(
                         'Catalog_Default',
                         [$key],
@@ -134,13 +131,13 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                     );
             }
             if ($scope == 2) {
-                $stores = $this->_storeManager->getStores();
+                $stores = $this->storeManager->getStores();
                 foreach ($stores as $store) {
                     $websiteCode = $store->getWebsite()->getCode();
                     $storeCode = $store->getCode();
 
                     //register in queue with importer
-                    $this->_importerFactory->create()
+                    $this->importerFactory->create()
                         ->registerQueue(
                             'Catalog_' . $websiteCode . '_' . $storeCode,
                             [$key],

@@ -7,35 +7,32 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
-    /**
-     * @var
-     */
-    protected $_storeManager;
+    public $helper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * RemoveContact constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory  $contactFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data           $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_contactFactory = $contactFactory;
-        $this->_importerFactory = $importerFactory;
-        $this->_helper = $data;
+        $this->contactFactory  = $contactFactory;
+        $this->importerFactory = $importerFactory;
+        $this->helper          = $data;
     }
 
     /**
@@ -50,8 +47,8 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         $customer = $observer->getEvent()->getCustomer();
         $email = $customer->getEmail();
         $websiteId = $customer->getWebsiteId();
-        $apiEnabled = $this->_helper->isEnabled($websiteId);
-        $customerSync = $this->_helper->isCustomerSyncEnabled($websiteId);
+        $apiEnabled = $this->helper->isEnabled($websiteId);
+        $customerSync = $this->helper->isCustomerSyncEnabled($websiteId);
 
         /*
          * Remove contact.
@@ -59,20 +56,20 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         if ($apiEnabled && $customerSync) {
             try {
                 //register in queue with importer
-                $this->_importerFactory->create()->registerQueue(
+                $this->importerFactory->create()->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
                     $email,
                     \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_DELETE,
                     $websiteId
                 );
-                $contactModel = $this->_contactFactory->create()
+                $contactModel = $this->contactFactory->create()
                     ->loadByCustomerEmail($email, $websiteId);
                 if ($contactModel->getId()) {
                     //remove contact
                     $contactModel->delete();
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, []);
+                $this->helper->debug((string)$e, []);
             }
         }
 

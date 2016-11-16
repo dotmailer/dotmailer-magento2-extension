@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use DOMDocument;
+use XSLTProcessor;
+
 const FEEFO_URL = 'http://www.feefo.com/feefo/xmlfeed.jsp?';
 
 class Feefo extends \Magento\Framework\View\Element\Template
@@ -27,6 +30,14 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @var \Magento\Catalog\Model\ProductFactory
      */
     public $productFactory;
+    /**
+     * @var DOMDocument
+     */
+    public $domDocument;
+    /**
+     * @var XSLTProcessor
+     */
+    public $processor;
 
     /**
      * Feefo constructor.
@@ -40,6 +51,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @param array                                            $data
      */
     public function __construct(
+        XSLTProcessor $processor,
+        DOMDocument $document,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
@@ -50,6 +63,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
     ) {
         parent::__construct($context, $data);
         $this->helper         = $helper;
+        $this->domDocument = $document;
+        $this->processor = $processor;
         $this->priceHelper    = $priceHelper;
         $this->orderFactory   = $orderFactory;
         $this->productFactory = $productFactory;
@@ -85,6 +100,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     {
         $products = [];
         $quoteId = $this->_request->getParam('quote_id');
+        /** @var \Magento\Quote\Model\Quote $quoteModel */
         $quoteModel = $this->quoteFactory->create()
             ->load($quoteId);
 
@@ -132,8 +148,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
             $url = 'http://www.feefo.com/feefo/xmlfeed.jsp?logon=' . $logon
                 . '&limit=' . $limit . '&vendorref=' . $sku
                 . '&mode=productonly';
-            $doc = new \DOMDocument();
-            $xsl = new \XSLTProcessor();
+            $doc = $this->domDocument;
+            $xsl = $this->processor;
             //@codingStandardsIgnoreStart
             if ($check) {
                 $doc->load($feefoDir . DIRECTORY_SEPARATOR . 'feedback.xsl');

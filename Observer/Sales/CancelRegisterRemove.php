@@ -7,31 +7,31 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * CancelRegisterRemove constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data           $data
+     * @param \Magento\Store\Model\StoreManagerInterface   $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_importerFactory = $importerFactory;
-        $this->_helper = $data;
-        $this->_storeManager = $storeManagerInterface;
+        $this->importerFactory = $importerFactory;
+        $this->helper          = $data;
+        $this->storeManager    = $storeManagerInterface;
     }
 
     /**
@@ -45,14 +45,14 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
     {
         $order = $observer->getEvent()->getOrder();
         $incrementId = $order->getIncrementId();
-        $websiteId = $this->_storeManager->getStore($order->getStoreId())
+        $websiteId = $this->storeManager->getStore($order->getStoreId())
             ->getWebsiteId();
 
-        $orderSync = $this->_helper->isOrderSyncEnabled($websiteId);
+        $orderSync = $this->helper->isOrderSyncEnabled($websiteId);
 
-        if ($this->_helper->isEnabled($websiteId) && $orderSync) {
+        if ($this->helper->isEnabled($websiteId) && $orderSync) {
             //register in queue with importer
-            $this->_importerFactory->create()
+            $this->importerFactory->create()
                 ->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
                     [$incrementId],

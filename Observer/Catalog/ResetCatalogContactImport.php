@@ -7,27 +7,27 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    protected $_connectorCatalogFactory;
+    public $connectorCatalogFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
-    protected $_connectorContactFactory;
+    public $connectorContactFactory;
 
     /**
      * ResetCatalogContactImport constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $connectorContactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $connectorCatalogFactory
-     * @param \Magento\Framework\Registry $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Registry                               $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data                        $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $connectorContactFactory,
@@ -35,10 +35,10 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_connectorContactFactory = $connectorContactFactory;
-        $this->_connectorCatalogFactory = $connectorCatalogFactory;
-        $this->_helper = $data;
-        $this->_registry = $registry;
+        $this->connectorContactFactory = $connectorContactFactory;
+        $this->connectorCatalogFactory = $connectorCatalogFactory;
+        $this->helper                  = $data;
+        $this->registry                = $registry;
     }
 
     /**
@@ -51,7 +51,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         try {
-            if (!$this->_registry->registry('core_config_data_save_after_done')) {
+            if (!$this->registry->registry('core_config_data_save_after_done')) {
                 if ($groups = $observer->getEvent()->getConfigData()
                     ->getGroups()
                 ) {
@@ -59,13 +59,13 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
                         $configAfter
                             = $groups['catalog_sync']['fields']['catalog_values']['value'];
                         $configBefore
-                            = $this->_registry->registry('core_config_data_save_before');
+                            = $this->registry->registry('core_config_data_save_before');
                         if ($configAfter != $configBefore) {
                             //reset catalog to re-import
-                            $this->_connectorCatalogFactory->create()
+                            $this->connectorCatalogFactory->create()
                                 ->reset();
                         }
-                        $this->_registry->register(
+                        $this->registry->register(
                             'core_config_data_save_after_done',
                             true
                         );
@@ -73,7 +73,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
                 }
             }
 
-            if (!$this->_registry->registry('core_config_data_save_after_done_status')) {
+            if (!$this->registry->registry('core_config_data_save_after_done_status')) {
                 if ($groups = $observer->getEvent()->getConfigData()
                     ->getGroups()
                 ) {
@@ -81,13 +81,13 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
                         $configAfter
                             = $groups['data_fields']['fields']['order_statuses']['value'];
                         $configBefore
-                            = $this->_registry->registry('core_config_data_save_before_status');
+                            = $this->registry->registry('core_config_data_save_before_status');
                         if ($configAfter != $configBefore) {
                             //reset all contacts
-                            $this->_connectorContactFactory->create()
+                            $this->connectorContactFactory->create()
                                 ->resetAllContacts();
                         }
-                        $this->_registry->register(
+                        $this->registry->register(
                             'core_config_data_save_after_done_status',
                             true
                         );
@@ -95,7 +95,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return $this;

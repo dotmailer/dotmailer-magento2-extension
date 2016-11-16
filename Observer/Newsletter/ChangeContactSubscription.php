@@ -7,28 +7,28 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
-    protected $_automationFactory;
+    public $automationFactory;
     /**
      * @var
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * ChangeContactSubscription constructor.
@@ -38,7 +38,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      * @param \Magento\Framework\Registry                    $registry
      * @param \Dotdigitalgroup\Email\Helper\Data             $data
      * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory   $importerFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -48,12 +48,12 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
-        $this->_automationFactory = $automationFactory;
-        $this->_contactFactory = $contactFactory;
-        $this->_helper = $data;
-        $this->_storeManager = $storeManagerInterface;
-        $this->_registry = $registry;
-        $this->_importerFactory = $importerFactory->create();
+        $this->automationFactory = $automationFactory;
+        $this->contactFactory    = $contactFactory;
+        $this->helper            = $data;
+        $this->storeManager      = $storeManagerInterface;
+        $this->registry          = $registry;
+        $this->importerFactory   = $importerFactory->create();
     }
 
     /**
@@ -69,15 +69,15 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         $email = $subscriber->getEmail();
         $storeId = $subscriber->getStoreId();
         $subscriberStatus = $subscriber->getSubscriberStatus();
-        $websiteId = $this->_storeManager->getStore($subscriber->getStoreId())
+        $websiteId = $this->storeManager->getStore($subscriber->getStoreId())
             ->getWebsiteId();
         //check if enabled
-        if (!$this->_helper->isEnabled($websiteId)) {
+        if (!$this->helper->isEnabled($websiteId)) {
             return $this;
         }
 
         try {
-            $contactEmail = $this->_contactFactory->create()
+            $contactEmail = $this->contactFactory->create()
                 ->loadByCustomerEmail($email, $websiteId);
 
             // only for subscribers
@@ -87,7 +87,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                     ->setIsSubscriber('1');
                 //Subscriber subscribed when it is suppressed in table then re-subscribe
                 if ($contactEmail->getSuppressed()) {
-                    $this->_importerFactory->registerQueue(
+                    $this->importerFactory->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
                         ['email' => $email],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
@@ -107,7 +107,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 $contactId = $contactEmail->getContactId();
                 //get the contact id
                 if (!$contactId) {
-                    $this->_importerFactory->registerQueue(
+                    $this->importerFactory->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
                         ['email' => $email, 'id' => $contactEmail->getId()],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
@@ -119,13 +119,13 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             }
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
-            $emailReg = $this->_registry->registry($email . '_subscriber_save');
+            $emailReg = $this->registry->registry($email . '_subscriber_save');
             if ($emailReg) {
                 return $this;
             }
-            $this->_registry->register($email . '_subscriber_save', $email);
+            $this->registry->register($email . '_subscriber_save', $email);
             //add subscriber to automation
-            $this->_addSubscriberToAutomation($email, $subscriber, $websiteId);
+            $this->addSubscriberToAutomation($email, $subscriber, $websiteId);
 
             //update the contact
             $contactEmail->setStoreId($storeId);
@@ -133,7 +133,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             //update contact
             $contactEmail->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return $this;
@@ -148,11 +148,11 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _addSubscriberToAutomation($email, $subscriber, $websiteId)
+    public function addSubscriberToAutomation($email, $subscriber, $websiteId)
     {
         $storeId = $subscriber->getStoreId();
-        $store = $this->_storeManager->getStore($storeId);
-        $programId = $this->_helper->getWebsiteConfig(
+        $store = $this->storeManager->getStore($storeId);
+        $programId = $this->helper->getWebsiteConfig(
             'connector_automation/visitor_automation/subscriber_automation',
             $websiteId
         );
@@ -163,7 +163,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         try {
             //@codingStandardsIgnoreStart
             //check the subscriber alredy exists
-            $enrolmentCollection = $this->_automationFactory->create()
+            $enrolmentCollection = $this->automationFactory->create()
                 ->getCollection()
                 ->addFieldToFilter('email', $email)
                 ->addFieldToFilter(
@@ -177,7 +177,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             //add new subscriber to automation
             if (!$enrolment->getId()) {
                 //save subscriber to the queue
-                $automation = $this->_automationFactory->create()
+                $automation = $this->automationFactory->create()
                     ->setEmail($email)
                     ->setAutomationType(
                         \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER

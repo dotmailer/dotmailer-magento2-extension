@@ -9,7 +9,7 @@ class Books extends \Magento\Framework\View\Element\Template
      *
      * @var object
      */
-    public $_client;
+    public $client;
 
     /**
      * Contact id.
@@ -83,15 +83,15 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function _getApiClient()
     {
-        if (empty($this->_client)) {
+        if (empty($this->client)) {
             $website = $this->getCustomer()->getStore()->getWebsite();
             $client = $this->helper->getWebsiteApiClient($website);
             $client->setApiUsername($this->helper->getApiUsername($website))
                 ->setApiPassword($this->helper->getApiPassword($website));
-            $this->_client = $client;
+            $this->client = $client;
         }
 
-        return $this->_client;
+        return $this->client;
     }
 
     /**
@@ -120,7 +120,7 @@ class Books extends \Magento\Framework\View\Element\Template
             $this->getCustomer()->getStore()->getWebsite()
         );
 
-        if (strlen($additionalFromConfig)) {
+        if (! empty($additionalFromConfig)) {
             $additionalFromConfig = explode(',', $additionalFromConfig);
             $this->getConnectorContact();
             if ($this->contactId) {
@@ -183,7 +183,7 @@ class Books extends \Magento\Framework\View\Element\Template
             $this->getCustomer()->getStore()->getWebsite()
         );
 
-        if (strlen($dataFieldsFromConfig)) {
+        if (! empty($dataFieldsFromConfig)) {
             $dataFieldsFromConfig = explode(',', $dataFieldsFromConfig);
             $contact = $this->getConnectorContact();
             if ($this->contactId) {

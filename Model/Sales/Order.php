@@ -136,9 +136,8 @@ class Order
                     if ($order->getCustomerId()) {
                         $emailCampaign->setCustomerId($order->getCustomerId());
                     }
-
                     //@codingStandardsIgnoreStart
-                    $emailCampaign->save();
+                    $emailCampaign->getResource()->save($emailCampaign);
                     //@codingStandardsIgnoreEnd
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);

@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 
-class Visibility
+class Visibility implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Get options.
