@@ -15,4 +15,16 @@ class Collection extends
             'Dotdigitalgroup\Email\Model\ResourceModel\Wishlist'
         );
     }
+
+    /**
+     * Join the customer email and store id.
+     * @return \Magento\Framework\DB\Select
+     */
+    public function joinLeftCustomer()
+    {
+        return $this->getSelect()
+            ->joinLeft([
+                'c' => $this->_resource->getTable('customer_entity')
+            ], 'c.entity_id = customer_id', ['email', 'store_id']);
+    }
 }

@@ -31,7 +31,7 @@ class MassDelete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $searchIds = $this->getRequest()->getParam('id');
+        $searchIds = $this->getRequest()->getParam('selected');
         if (!is_array($searchIds)) {
             $this->messageManager->addErrorMessage(__('Please select catalog.'));
         } else {

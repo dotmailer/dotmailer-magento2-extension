@@ -145,8 +145,9 @@ class File
 
     /**
      * @param $filepath
+     * @param $csv
      */
-    public function outputCSV($filepath)
+    public function outputCSV($filepath, $csv)
     {
         /*
          * Open for writing only; place the file pointer at the end of the file.
@@ -154,7 +155,7 @@ class File
          */
         //@codingStandardsIgnoreStart
         $handle = fopen($filepath, 'a');
-
+        fputcsv($handle, $csv, ',', '"');
         fclose($handle);
         //@codingStandardsIgnoreEnd
     }

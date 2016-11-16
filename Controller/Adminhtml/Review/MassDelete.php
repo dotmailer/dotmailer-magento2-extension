@@ -32,7 +32,7 @@ class MassDelete extends Action
      */
     public function execute()
     {
-        $searchIds = $this->getRequest()->getParam('id');
+        $searchIds = $this->getRequest()->getParam('selected');
         if (!is_array($searchIds)) {
             $this->messageManager->addErrorMessage(__('Please select reviews.'));
         } else {

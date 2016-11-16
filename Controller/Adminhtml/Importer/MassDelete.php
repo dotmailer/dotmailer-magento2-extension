@@ -36,7 +36,7 @@ class MassDelete extends ImporterController
      */
     public function execute()
     {
-        $searchIds = $this->getRequest()->getParam('id');
+        $searchIds = $this->getRequest()->getParam('selected');
         if (!is_array($searchIds)) {
             $this->messageManager->addError(__('Please select importer.'));
         } else {

@@ -26,8 +26,8 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $num = $conn->update(
                 $conn->getTableName('email_wishlist'),
                 [
-                    'wishlist_imported' => new \Zend_Db_Expr('null'),
-                    'wishlist_modified' => new \Zend_Db_Expr('null'),
+                    'wishlist_imported' => 'null',
+                    'wishlist_modified' => 'null',
                 ]
             );
         } catch (\Exception $e) {

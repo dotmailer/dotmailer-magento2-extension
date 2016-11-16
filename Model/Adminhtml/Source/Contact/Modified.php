@@ -2,18 +2,25 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact;
 
-class Modified
+class Modified implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Contact imported options.
      *
      * @return array
      */
-    public function getOptions()
+    public function toOptionArray()
     {
         return [
-            '1' => __('Modified'),
-            'null' => __('Not Modified'),
+            [
+                'value' => 'null',
+                'label' => '',
+
+            ],
+            [
+                'value' => '1',
+                'label' => 'Modified',
+            ]
         ];
     }
 }

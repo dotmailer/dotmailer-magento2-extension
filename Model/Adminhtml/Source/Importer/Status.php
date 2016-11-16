@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer;
 
-class Status
+class Status implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Contact imported options.
@@ -17,5 +17,33 @@ class Status
             \Dotdigitalgroup\Email\Model\Importer::IMPORTED => __('Imported'),
             \Dotdigitalgroup\Email\Model\Importer::FAILED => __('Failed'),
         ];
+    }
+
+
+    /**
+     * @return array
+     */
+    public function toOptionArray()
+    {
+        $options = [
+            [
+                'value' => '0',
+                'label' => 'Not Imported',
+            ],
+            [
+                'value' => '1',
+                'label' => 'Importing',
+            ],
+            [
+                'value' => '2',
+                'label' => 'Imported',
+            ],
+            [
+                'value' => '3',
+                'label' => 'Failed',
+            ]
+        ];
+
+        return $options;
     }
 }
