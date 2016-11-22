@@ -90,7 +90,6 @@ class Catalog
         //api and catalog sync enabled
         if ($enabled && $catalogSyncEnabled) {
             try {
-                $this->helper->log('---------- Start catalog sync ----------');
 
                 //remove product with product id set and no product
                 $write = $this->resource->getConnection('core_write');
