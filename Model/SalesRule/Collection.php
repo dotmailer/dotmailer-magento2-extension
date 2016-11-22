@@ -97,8 +97,10 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
                 );
             }
 
-            $select->where('(main_table.to_date IS NULL) OR (main_table.to_date >= ?)',
-            $now);
+            $select->where(
+                '(main_table.to_date IS NULL) OR (main_table.to_date >= ?)',
+                $now
+            );
 
             $this->setOrder('sort_order', self::SORT_ORDER_ASC);
             $this->setFlag('validation_filter', true);
@@ -141,7 +143,8 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
                     ' = ?',
                     (int)$customerGroupId
                 ),
-                [])
+                []
+            )
                 ->where('from_date is null or from_date <= ?', $now);
 
             $this->addIsActiveFilter();
