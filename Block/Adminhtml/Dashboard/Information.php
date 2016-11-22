@@ -10,7 +10,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public $_template = 'dashboard/information.phtml';
 
-
     /**
      * Helper.
      *
@@ -28,7 +27,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      * @var \Magento\Framework\App\ProductMetadata
      */
     public $productMetadata;
-
 
     /**
      * Information constructor.
@@ -52,7 +50,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->data = $helper;
         parent::__construct($context, $backendHelper, $data);
     }
-
 
     /**
      * @return string
@@ -100,7 +97,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         return $productMetadata->getEdition();
     }
 
-
     /**
      * @return mixed
      */
@@ -108,7 +104,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     {
         return __('v. %1', $this->data->getConnectorVersion());
     }
-
 
     /**
      * Get the api creds are valid.

@@ -620,8 +620,7 @@ class Contact
             'last_logged_date' => new \Zend_Db_Expr(
                 "(SELECT last_login_at FROM  $customerLog WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)"
             ),
-            ]
-        );
+            ]);
 
         // customer order information
         $alias = 'subselect';
@@ -649,22 +648,21 @@ class Contact
             $subselect->where('status in (?)', $statuses);
         }
 
-        $customerCollection->getSelect()->columns(
-            [
-                'last_order_date' => new \Zend_Db_Expr(
-                    "(SELECT created_at FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
-                ),
-                'last_order_id' => new \Zend_Db_Expr(
-                    "(SELECT entity_id FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
-                ),
-                'last_increment_id' => new \Zend_Db_Expr(
-                    "(SELECT increment_id FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
-                ),
-                'last_quote_id' => new \Zend_Db_Expr(
-                    "(SELECT entity_id FROM $quote WHERE customer_id = e.entity_id ORDER BY created_at DESC LIMIT 1)"
-                ),
-                'first_category_id' => new \Zend_Db_Expr(
-                    "(
+        $columnData =  [
+            'last_order_date' => new \Zend_Db_Expr(
+                "(SELECT created_at FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
+            ),
+            'last_order_id' => new \Zend_Db_Expr(
+                "(SELECT entity_id FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
+            ),
+            'last_increment_id' => new \Zend_Db_Expr(
+                "(SELECT increment_id FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
+            ),
+            'last_quote_id' => new \Zend_Db_Expr(
+                "(SELECT entity_id FROM $quote WHERE customer_id = e.entity_id ORDER BY created_at DESC LIMIT 1)"
+            ),
+            'first_category_id' => new \Zend_Db_Expr(
+                "(
                         SELECT ccpi.category_id FROM $salesOrder as sfo
                         left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                         left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
@@ -672,9 +670,9 @@ class Contact
                         ORDER BY sfo.created_at ASC, sfoi.price DESC
                         LIMIT 1
                     )"
-                ),
-                'last_category_id' => new \Zend_Db_Expr(
-                    "(
+            ),
+            'last_category_id' => new \Zend_Db_Expr(
+                "(
                         SELECT ccpi.category_id FROM $salesOrder as sfo
                         left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                         left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
@@ -682,27 +680,27 @@ class Contact
                         ORDER BY sfo.created_at DESC, sfoi.price DESC
                         LIMIT 1
                     )"
-                ),
-                'product_id_for_first_brand' => new \Zend_Db_Expr(
-                    "(
+            ),
+            'product_id_for_first_brand' => new \Zend_Db_Expr(
+                "(
                         SELECT sfoi.product_id FROM $salesOrder as sfo
                         left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                         WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
                         ORDER BY sfo.created_at ASC, sfoi.price DESC
                         LIMIT 1
                     )"
-                ),
-                'product_id_for_last_brand' => new \Zend_Db_Expr(
-                    "(
+            ),
+            'product_id_for_last_brand' => new \Zend_Db_Expr(
+                "(
                         SELECT sfoi.product_id FROM $salesOrder as sfo
                         left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                         WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
                         ORDER BY sfo.created_at DESC, sfoi.price DESC
                         LIMIT 1
                     )"
-                ),
-                'week_day' => new \Zend_Db_Expr(
-                    "(
+            ),
+            'week_day' => new \Zend_Db_Expr(
+                "(
                         SELECT dayname(created_at) as week_day
                         FROM $salesOrder
                         WHERE customer_id = e.entity_id
@@ -711,9 +709,9 @@ class Contact
                         ORDER BY (COUNT(*)) DESC
                         LIMIT 1
                     )"
-                ),
-                'month_day' => new \Zend_Db_Expr(
-                    "(
+            ),
+            'month_day' => new \Zend_Db_Expr(
+                "(
                         SELECT monthname(created_at) as month_day
                         FROM $salesOrder
                         WHERE customer_id = e.entity_id
@@ -722,9 +720,9 @@ class Contact
                         ORDER BY (COUNT(*)) DESC
                         LIMIT 1
                     )"
-                ),
-                'most_category_id' => new \Zend_Db_Expr(
-                    "(
+            ),
+            'most_category_id' => new \Zend_Db_Expr(
+                "(
                         SELECT ccpi.category_id FROM $salesOrder as sfo
                         LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                         LEFT JOIN $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
@@ -734,23 +732,54 @@ class Contact
                         ORDER BY COUNT(sfoi.product_id) DESC
                         LIMIT 1
                     )"
-                ),
-                'most_brand' => new \Zend_Db_Expr(
-                    "(
-                        SELECT eaov.value from $salesOrder sfo
-                        LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
-                        LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
-                        LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                        WHERE sfo.customer_id = e.entity_id AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
-                        GROUP BY eaov.value
-                        HAVING count(*) > 0
-                        ORDER BY count(*) DESC
-                        LIMIT 1
-                    )"
-                ),
-            ]
+            )
+        ];
+
+        /**
+         * CatalogStaging fix.
+         * @todo this will fix https://github.com/magento/magento2/issues/6478
+         */
+        $rowIdExists = $this->isRowIdExistsInCatalogProductEntityId();
+
+        if ($rowIdExists) {
+            $mostData = new \Zend_Db_Expr(
+                "(
+                    SELECT eaov.value from $salesOrder sfo
+                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                    LEFT JOIN $catalogProductEntityInt pei on pei.row_id = sfoi.product_id
+                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
+                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
+                    WHERE sfo.customer_id = e.entity_id AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
+                    GROUP BY eaov.value
+                    HAVING count(*) > 0
+                    ORDER BY count(*) DESC
+                    LIMIT 1
+                )"
+            );
+        } else {
+            $mostData = new \Zend_Db_Expr(
+                "(
+                    SELECT eaov.value from $salesOrder sfo
+                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                    LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
+                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
+                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
+                    WHERE sfo.customer_id = e.entity_id AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
+                    GROUP BY eaov.value
+                    HAVING count(*) > 0
+                    ORDER BY count(*) DESC
+                    LIMIT 1
+                )"
+            );
+
+        }
+
+        $columnData['most_brand'] = $mostData;
+
+        $customerCollection->getSelect()->columns(
+            $columnData
         );
+
 
         $customerCollection->getSelect()
             ->joinLeft(
@@ -760,5 +789,13 @@ class Contact
         //@codingStandardsIgnoreEnd
 
         return $customerCollection;
+    }
+
+    private function isRowIdExistsInCatalogProductEntityId()
+    {
+
+        $connection = $this->resource->getConnection();
+
+        return  $connection->tableColumnExists($this->resource->getTableName('catalog_product_entity_int'), 'row_id');
     }
 }

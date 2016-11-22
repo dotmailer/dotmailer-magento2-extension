@@ -55,5 +55,4 @@ class MassDelete extends \Magento\Backend\App\Action
 
         return $resultRedirect;
     }
-
 }
