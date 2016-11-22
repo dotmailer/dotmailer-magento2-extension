@@ -212,7 +212,7 @@ class Books extends \Magento\Framework\View\Element\Template
                                 $value
                                        = $processedContactDataFields[$processedConnectorDataFields[
                                                                      $dataFieldFromConfig]->name];
-                                $value = $this->localeDate->convertConfigTimeToUtc($value, 'm/d/Y');
+                                $value = $this->_localeDate->convertConfigTimeToUtc($value, 'm/d/Y');
                             } else {
                                 $value
                                     = $processedContactDataFields[$processedConnectorDataFields[
