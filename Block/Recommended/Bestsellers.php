@@ -91,7 +91,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         //date range
         $from = $this->recommnededHelper->getTimeFromConfig($mode);
-        $to = $this->localeDate->date()->format(\Zend_Date::ISO_8601);
+        $to = $this->_localeDate->date()->format(\Zend_Date::ISO_8601);
         //create report collection
         $reportProductCollection = $this->productSoldFactory->create();
         $connection = $this->resource->getConnection();

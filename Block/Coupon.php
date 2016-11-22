@@ -103,7 +103,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
             )->setGeneratedByDotmailer(1);
 
             if (is_numeric($params['expire_days'])) {
-                $expireDate = $this->localeDate->date()
+                $expireDate = $this->_localeDate->date()
                     ->add(new \DateInterval(sprintf('P%sD', $params['expire_days'])));
 
                 $couponModel->setExpirationDate($expireDate);
