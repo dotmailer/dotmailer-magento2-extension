@@ -54,19 +54,4 @@
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Wishlist</argument>
         </arguments>
     </virtualType>
-    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
-        <arguments>
-            <argument name="collections" xsi:type="array">
-                <item name="cron_report_grid_data_source" xsi:type="string">Magento\Cron\Model\ResourceModel\Schedule\Collection</item>
-                <item name="importer_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection</item>
-                <item name="automation_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection</item>
-                <item name="campaign_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection</item>
-                <item name="contact_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection</item>
-                <item name="catalog_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection</item>
-                <item name="order_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection</item>
-                <item name="review_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Review\Collection</item>
-                <item name="wishlist_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\Collection</item>
-            </argument>
-        </arguments>
-    </type>
 </config>
