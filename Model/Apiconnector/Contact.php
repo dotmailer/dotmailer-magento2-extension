@@ -46,7 +46,7 @@ class Contact
      */
     public $resource;
     /**
-     * @var
+     * @var76
      */
     public $subscriberFactory;
     /**
@@ -179,13 +179,11 @@ class Contact
     }
 
     /**
-     * * Execute the contact sync for the website.
-     *
-     * @param \Magento\Store\Model\Website $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      *
      * @return int
      */
-    public function exportCustomersForWebsite(\Magento\Store\Model\Website $website)
+    public function exportCustomersForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website)
     {
         $allMappedHash = [];
         //admin sync limit of batch size for contacts
@@ -445,7 +443,7 @@ class Contact
                     ->setSubscriberStatus($subscriber->getSubscriberStatus());
             }
             //@codingStandardsIgnoreStart
-            $contactModel->save();
+            $contactModel->getResource()->save($contactModel);
             ++$updated;
         }
 
@@ -775,11 +773,9 @@ class Contact
         }
 
         $columnData['most_brand'] = $mostData;
-
         $customerCollection->getSelect()->columns(
             $columnData
         );
-
 
         $customerCollection->getSelect()
             ->joinLeft(
