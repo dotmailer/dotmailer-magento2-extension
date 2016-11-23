@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+// @codingStandardsIgnoreFile
+
 class Quote
 {
     //customer

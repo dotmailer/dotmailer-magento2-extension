@@ -5,9 +5,8 @@ dotmailer for Magento2
 Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
 
 
-#known bugs 
-
- - Enterprise versions what are using the CatalogStaging will get an error on entity_id column not found related to this bug(https://github.com/magento/magento2/issues/6478)
+#V2.1.4
+###### Features
 
 #V2.1.0
 ###### Features
