@@ -5,21 +5,29 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules;
 class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
 
+    /**
+     * @var
+     */
+    public $getAttributeRenderer;
 
-    protected $getAttributeRenderer;
+    /**
+     * @var
+     */
+    public $getConditionsRenderer;
 
-    protected $getConditionsRenderer;
-
-    protected $getValueRenderer;
+    /**
+     * @var
+     */
+    public $getValueRenderer;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
      */
-    protected $condition;
+    public $condition;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
-    protected $value;
+    public $value;
 
     /**
      * Customdatafields constructor.

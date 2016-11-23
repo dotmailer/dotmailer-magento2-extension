@@ -25,7 +25,6 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      */
     public $sessionModel;
 
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
