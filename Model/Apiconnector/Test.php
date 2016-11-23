@@ -7,7 +7,7 @@ class Test
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * Test constructor.
@@ -17,7 +17,7 @@ class Test
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_helper = $data;
+        $this->helper = $data;
     }
 
     /**
@@ -30,11 +30,11 @@ class Test
      */
     public function validate($apiUsername, $apiPassword)
     {
-        if (!$this->_helper->isEnabled()) {
+        if (!$this->helper->isEnabled()) {
             return false;
         }
 
-        $client = $this->_helper->getWebsiteApiClient();
+        $client = $this->helper->getWebsiteApiClient();
         if ($apiUsername && $apiPassword) {
             $client->setApiUsername($apiUsername)
                 ->setApiPassword($apiPassword);
@@ -42,7 +42,7 @@ class Test
             $accountInfo = $client->getAccountInfo();
             
             if (isset($accountInfo->message)) {
-                $this->_helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
+                $this->helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
 
                 return false;
             }

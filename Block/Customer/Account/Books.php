@@ -9,29 +9,30 @@ class Books extends \Magento\Framework\View\Element\Template
      *
      * @var object
      */
-    protected $_client;
+    public $client;
+
     /**
      * Contact id.
      *
      * @var string
      */
-    protected $contactId;
+    public $contactId;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Customer\Model\Session
      */
-    protected $customerSession;
+    public $customerSession;
 
     /**
      * Books constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Dotdigitalgroup\Email\Helper\Data               $helper
+     * @param \Magento\Customer\Model\Session                  $customerSession
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param array $data
+     * @param array                                            $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -39,7 +40,7 @@ class Books extends \Magento\Framework\View\Element\Template
         \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
-        $this->_helper = $helper;
+        $this->helper          = $helper;
         $this->customerSession = $customerSession;
         parent::__construct($context, $data);
     }
@@ -47,7 +48,7 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * @return \Magento\Customer\Model\Customer
      */
-    protected function getCustomer()
+    public function getCustomer()
     {
         return $this->customerSession->getCustomer();
     }
@@ -64,15 +65,15 @@ class Books extends \Magento\Framework\View\Element\Template
 
     /**
      * Get config values.
-     * 
+     *
      * @param $path
      * @param $website
      *
      * @return mixed
      */
-    protected function _getWebsiteConfigFromHelper($path, $website)
+    public function _getWebsiteConfigFromHelper($path, $website)
     {
-        return $this->_helper->getWebsiteConfig($path, $website);
+        return $this->helper->getWebsiteConfig($path, $website);
     }
 
     /**
@@ -80,17 +81,17 @@ class Books extends \Magento\Framework\View\Element\Template
      *
      * @return bool|mixed|object
      */
-    protected function _getApiClient()
+    public function _getApiClient()
     {
-        if (empty($this->_client)) {
+        if (empty($this->client)) {
             $website = $this->getCustomer()->getStore()->getWebsite();
-            $client = $this->_helper->getWebsiteApiClient($website);
-            $client->setApiUsername($this->_helper->getApiUsername($website))
-                ->setApiPassword($this->_helper->getApiPassword($website));
-            $this->_client = $client;
+            $client = $this->helper->getWebsiteApiClient($website);
+            $client->setApiUsername($this->helper->getApiUsername($website))
+                ->setApiPassword($this->helper->getApiPassword($website));
+            $this->client = $client;
         }
 
-        return $this->_client;
+        return $this->client;
     }
 
     /**
@@ -119,7 +120,7 @@ class Books extends \Magento\Framework\View\Element\Template
             $this->getCustomer()->getStore()->getWebsite()
         );
 
-        if (strlen($additionalFromConfig)) {
+        if (! empty($additionalFromConfig)) {
             $additionalFromConfig = explode(',', $additionalFromConfig);
             $this->getConnectorContact();
             if ($this->contactId) {
@@ -181,7 +182,8 @@ class Books extends \Magento\Framework\View\Element\Template
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS,
             $this->getCustomer()->getStore()->getWebsite()
         );
-        if (strlen($dataFieldsFromConfig)) {
+
+        if (! empty($dataFieldsFromConfig)) {
             $dataFieldsFromConfig = explode(',', $dataFieldsFromConfig);
             $contact = $this->getConnectorContact();
             if ($this->contactId) {
@@ -210,10 +212,7 @@ class Books extends \Magento\Framework\View\Element\Template
                                 $value
                                        = $processedContactDataFields[$processedConnectorDataFields[
                                                                      $dataFieldFromConfig]->name];
-                                $value = new \Zend_Date(
-                                    $value, \Zend_Date::ISO_8601
-                                );
-                                $value = $value->toString('M/d/Y');
+                                $value = $this->_localeDate->convertConfigTimeToUtc($value, 'm/d/Y');
                             } else {
                                 $value
                                     = $processedContactDataFields[$processedConnectorDataFields[

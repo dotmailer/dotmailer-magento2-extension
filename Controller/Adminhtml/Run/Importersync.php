@@ -7,24 +7,24 @@ class Importersync extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * Importersync constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Backend\App\Action\Context          $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->_importerFactory = $importerFactory;
-        $this->messageManager = $context->getMessageManager();
+        $this->importerFactory = $importerFactory;
+        $this->messageManager  = $context->getMessageManager();
 
         parent::__construct($context);
     }
@@ -34,9 +34,9 @@ class Importersync extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $result = $this->_importerFactory->create()->processQueue();
+        $result = $this->importerFactory->create()->processQueue();
 
-        $this->messageManager->addSuccess($result['message']);
+        $this->messageManager->addSuccessMessage($result['message']);
 
         $redirectBack = $this->_redirect->getRefererUrl();
 

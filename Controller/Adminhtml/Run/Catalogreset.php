@@ -7,23 +7,23 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    protected $_catalogFactory;
+    public $catalogFactory;
 
     /**
      * Catalogreset constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Backend\App\Action\Context                       $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->_catalogFactory = $catalogFactory;
+        $this->catalogFactory = $catalogFactory;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -33,10 +33,10 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $this->_catalogFactory->create()
+        $this->catalogFactory->create()
             ->resetCatalog();
 
-        $this->messageManager->addSuccess(__('Done.'));
+        $this->messageManager->addSuccessMessage(__('Done.'));
 
         $redirectUrl = $this->getUrl(
             'adminhtml/system_config/edit',

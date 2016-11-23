@@ -7,11 +7,11 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
 
     /**
      * SaveRegisterOrderStatusBefore constructor.
@@ -23,8 +23,8 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Framework\Registry $registry
     ) {
-        $this->_orderFactory = $orderFactory;
-        $this->_registry = $registry;
+        $this->orderFactory = $orderFactory;
+        $this->registry     = $registry;
     }
 
     /**
@@ -40,14 +40,16 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
             $orderStatus = $order->getStatus();
         } else {
             // the reloaded status
-            $reloaded = $this->_orderFactory->create()
+            $reloaded = $this->orderFactory->create()
                 ->load($order->getId());
             $orderStatus = $reloaded->getStatus();
         }
         //register the order status before change
-        if (!$this->_registry->registry('sales_order_status_before')) {
-            $this->_registry->register('sales_order_status_before',
-                $orderStatus);
+        if (!$this->registry->registry('sales_order_status_before')) {
+            $this->registry->register(
+                'sales_order_status_before',
+                $orderStatus
+            );
         }
 
         return $this;

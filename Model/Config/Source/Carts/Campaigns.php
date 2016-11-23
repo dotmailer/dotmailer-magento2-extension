@@ -2,16 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
-class Campaigns implements \Magento\Framework\Option\ArrayInterface
+class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
 
     /**
      * Campaigns constructor.
@@ -23,8 +23,8 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_registry = $registry;
-        $this->_helper = $data;
+        $this->registry = $registry;
+        $this->helper   = $data;
     }
 
     /**
@@ -35,18 +35,18 @@ class Campaigns implements \Magento\Framework\Option\ArrayInterface
         $fields = [];
         $fields[] = ['value' => '0', 'label' => '-- Please Select --'];
 
-        $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
+        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsite());
 
         if ($apiEnabled) {
-            $savedCampaigns = $this->_registry->registry('campaigns');
+            $savedCampaigns = $this->registry->registry('campaigns');
 
             if (is_array($savedCampaigns)) {
                 $campaigns = $savedCampaigns;
             } else {
                 //grab the datafields request and save to register
-                $client = $this->_helper->getWebsiteApiClient();
+                $client = $this->helper->getWebsiteApiClient();
                 $campaigns = $client->getCampaigns();
-                $this->_registry->register('campaigns', $campaigns);
+                $this->registry->register('campaigns', $campaigns);
             }
 
             //set the api error message for the first option

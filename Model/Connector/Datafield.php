@@ -32,7 +32,7 @@ class Datafield
      *
      * @var array
      */
-    protected $_contactDatafields
+    public $contactDatafields
         = [
             'customer_id' => [
                 'name' => 'CUSTOMER_ID',
@@ -274,22 +274,22 @@ class Datafield
 
     /**
      * Set contact datafields.
-     * 
+     *
      * @param array $contactDatafields
      */
     public function setContactDatafields($contactDatafields)
     {
-        $this->_contactDatafields = $contactDatafields;
+        $this->contactDatafields = $contactDatafields;
     }
 
     /**
      * Get contact datafields.
-     * 
+     *
      * @return array
      */
     public function getContactDatafields()
     {
-        return $this->_contactDatafields;
+        return $this->contactDatafields;
     }
 
     /**

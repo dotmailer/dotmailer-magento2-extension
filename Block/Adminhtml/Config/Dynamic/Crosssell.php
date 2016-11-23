@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_dataHelper;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $dataHelper;
 
     /**
      * Crosssell constructor.
@@ -16,7 +20,7 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context
     ) {
-        $this->_dataHelper = $dataHelper;
+        $this->dataHelper = $dataHelper;
 
         parent::__construct($context);
     }
@@ -26,17 +30,17 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //base url
-        $baseUrl = $this->_dataHelper->generateDynamicUrl();
+        $baseUrl = $this->dataHelper->generateDynamicUrl();
         //config passcode
-        $passcode = $this->_dataHelper->getPasscode();
+        $passcode = $this->dataHelper->getPasscode();
         //last order id for dynamic page
-        $lastOrderId = $this->_dataHelper->getLastOrderId();
+        $lastOrderId = $this->dataHelper->getLastOrderId();
 
-        if (!strlen($passcode)) {
+        if (empty($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         //alert message for last order id is not mapped
@@ -45,8 +49,12 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
         }
 
         //full url for dynamic content
-        $text = sprintf('%sconnector/product/crosssell/code/%s/order_id/@%s@',
-            $baseUrl, $passcode, $lastOrderId);
+        $text = sprintf(
+            '%sconnector/product/crosssell/code/%s/order_id/@%s@',
+            $baseUrl,
+            $passcode,
+            $lastOrderId
+        );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

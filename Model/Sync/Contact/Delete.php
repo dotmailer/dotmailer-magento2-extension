@@ -14,14 +14,16 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
         foreach ($collection as $item) {
             $result = true;
             $websiteId = $item->getWebsiteId();
+            //@codingStandardsIgnoreStart
             $email = unserialize($item->getImportData());
-            if ($this->_helper->isEnabled($websiteId)) {
-                $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
+            //@codingStandardsIgnoreEnd
+            if ($this->helper->isEnabled($websiteId)) {
+                $this->client = $this->helper->getWebsiteApiClient($websiteId);
 
-                if ($this->_client) {
-                    $apiContact = $this->_client->postContacts($email);
+                if ($this->client) {
+                    $apiContact = $this->client->postContacts($email);
                     if (!isset($apiContact->message) && isset($apiContact->id)) {
-                        $result = $this->_client->deleteContact($apiContact->id);
+                        $result = $this->client->deleteContact($apiContact->id);
                     } elseif (isset($apiContact->message) && !isset($apiContact->id)) {
                         $result = $apiContact;
                     }
@@ -38,7 +40,7 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
      * @param $item
      * @param $result
      */
-    protected function _handleSingleItemAfterSync($item, $result)
+    public function _handleSingleItemAfterSync($item, $result)
     {
         $curlError = $this->_checkCurlError($item);
 

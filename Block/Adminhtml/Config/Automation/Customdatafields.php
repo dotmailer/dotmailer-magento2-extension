@@ -2,15 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation;
 
-class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
+class Customdatafields extends
+ \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
-    protected $_statusRenderer;
+    public $statusRenderer;
 
-    protected $_automationRenderer;
+    public $automationRenderer;
 
-    protected $_programFactory;
+    public $programFactory;
 
-    protected $_elementFactory;
+    public $elementFactory;
 
     /**
      * Customdatafields constructor.
@@ -26,12 +27,12 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         \Magento\Backend\Block\Template\Context $context,
         array $data = []
     ) {
-        $this->_elementFactory = $elementFactory;
-        $this->_programFactory = $programFactory->create();
+        $this->elementFactory = $elementFactory;
+        $this->programFactory = $programFactory->create();
         parent::__construct($context, $data);
     }
 
-    protected function _prepareToRender()
+    public function _prepareToRender()
     {
         $this->_getStatusRenderer = null;
         $this->_getAutomationRenderer = null;
@@ -43,10 +44,11 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             ]
         );
         $this->addColumn(
-            'automation', array(
+            'automation',
+            [
                 'label' => __('Automation Program'),
                 'style' => 'width:120px',
-            )
+            ]
         );
         $this->_addAfter = false;
         $this->_addButtonLabel = __('Add New Enrolment');
@@ -63,7 +65,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     {
         if ($columnName == 'status' && isset($this->_columns[$columnName])) {
             $options = $this->getElement()->getValues();
-            $element = $this->_elementFactory->create('select');
+            $element = $this->elementFactory->create('select');
             $element->setForm(
                 $this->getForm()
             )->setName(
@@ -79,8 +81,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         if ($columnName == 'automation'
             && isset($this->_columns[$columnName])
         ) {
-            $options = $this->_programFactory->toOptionArray();
-            $element = $this->_elementFactory->create('select');
+            $options = $this->programFactory->toOptionArray();
+            $element = $this->elementFactory->create('select');
             $element->setForm(
                 $this->getForm()
             )->setName(
@@ -100,7 +102,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * @param \Magento\Framework\DataObject $row
      */
-    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
+    public function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
         $optionExtraAttr = [];
         $optionExtraAttr['option_' . $this->_getStatusRenderer()
@@ -120,15 +122,15 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getStatusRenderer()
+    public function _getStatusRenderer()
     {
-        $this->_statusRenderer = $this->getLayout()->createBlock(
+        $this->statusRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
 
-        return $this->_statusRenderer;
+        return $this->statusRenderer;
     }
 
     /**
@@ -136,15 +138,15 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getAutomationRenderer()
+    public function _getAutomationRenderer()
     {
-        $this->_automationRenderer = $this->getLayout()->createBlock(
+        $this->automationRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
 
-        return $this->_automationRenderer;
+        return $this->automationRenderer;
     }
 
     /**

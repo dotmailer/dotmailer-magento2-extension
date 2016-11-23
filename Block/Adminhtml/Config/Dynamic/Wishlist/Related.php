@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist;
 
 class Related extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_dataHelper;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $dataHelper;
 
     /**
      * Related constructor.
@@ -16,7 +20,7 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context
     ) {
-        $this->_dataHelper = $dataHelper;
+        $this->dataHelper = $dataHelper;
 
         parent::__construct($context);
     }
@@ -26,15 +30,15 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //passcode to append for url
-        $passcode = $this->_dataHelper->getPasscode();
+        $passcode = $this->dataHelper->getPasscode();
         //last order id witch information will be generated
-        $customerId = $this->_dataHelper->getMappedCustomerId();
+        $customerId = $this->dataHelper->getMappedCustomerId();
 
-        if (!strlen($passcode)) {
+        if (empty($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         if (!$customerId) {
@@ -42,11 +46,15 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
         }
 
         //generate the base url and display for default store id
-        $baseUrl = $this->_dataHelper->generateDynamicUrl();
+        $baseUrl = $this->dataHelper->generateDynamicUrl();
 
         //display the full url
-        $text = sprintf('%sconnector/wishlist/related/code/%s/customer_id/@%s@',
-            $baseUrl, $passcode, $customerId);
+        $text = sprintf(
+            '%sconnector/wishlist/related/code/%s/customer_id/@%s@',
+            $baseUrl,
+            $passcode,
+            $customerId
+        );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

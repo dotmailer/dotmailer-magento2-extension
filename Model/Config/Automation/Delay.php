@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Automation;
 
-class Delay
+class Delay implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Returns the values for field delay.

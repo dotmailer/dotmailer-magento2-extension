@@ -8,7 +8,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     /**
      * @var
      */
-    protected $originalParams;
+    public $originalParams;
 
     /**
      * Configuration constructor.
@@ -32,11 +32,10 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     /**
      * @return $this
      */
-    protected function _prepareLayout()
+    public function _prepareLayout()
     {
         $this->_prepareRequestParams();
         parent::_prepareLayout();
-       // $this->_resetRequestParams();
 
         return $this;
     }
@@ -44,7 +43,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     /**
      *
      */
-    protected function _prepareRequestParams()
+    public function _prepareRequestParams()
     {
         $this->originalParams = $this->getRequest()->getParam('section');
         
@@ -54,7 +53,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     /**
      *
      */
-    protected function _resetRequestParams()
+    public function _resetRequestParams()
     {
         $this->getRequest()->setParam('section', $this->originalParams);
     }
@@ -66,5 +65,4 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     {
         return $this->getUrl('adminhtml/system_config/save', ['section' => 'connector_developer_settings']);
     }
-
 }

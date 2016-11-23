@@ -7,7 +7,7 @@ class Order
     /**
      * @var array
      */
-    protected $accounts = [];
+    public $accounts = [];
     /**
      * @var string
      */
@@ -18,41 +18,44 @@ class Order
      *
      * @var int
      */
-    protected $_countOrders = 0;
+    public $countOrders = 0;
 
     /**
      * @var array
      */
-    protected $_reviewCollection = [];
+    public $reviewCollection = [];
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\CampaignFactory
      */
-    protected $_campaignFactory;
+    public $campaignFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
-    protected $_campaignCollection;
+    public $campaignCollection;
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
-    protected $_orderCollection;
+    public $orderCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
-    protected $_rulesFactory;
+    public $rulesFactory;
     /**
      * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
      */
-    protected $_quoteCollection;
-
+    public $quoteCollection;
+    /**
+     * @var \Zend_Date
+     */
+    public $date;
     /**
      * Order constructor.
      *
@@ -64,6 +67,7 @@ class Order
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime $datetime
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Zend_Date $date
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
@@ -73,16 +77,18 @@ class Order
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime $datetime,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        \Zend_Date $date
     ) {
-        $this->_quoteCollection = $quoteCollection;
-        $this->_rulesFactory = $rulesFactory;
-        $this->_orderCollection = $orderCollection;
-        $this->_campaignCollection = $campaignCollection;
-        $this->_campaignFactory = $campaignFactory;
-        $this->_helper = $helper;
-        $this->dateTime = $datetime;
-        $this->_storeManager = $storeManagerInterface;
+        $this->quoteCollection    = $quoteCollection;
+        $this->rulesFactory       = $rulesFactory;
+        $this->orderCollection    = $orderCollection;
+        $this->campaignCollection = $campaignCollection;
+        $this->campaignFactory    = $campaignFactory;
+        $this->helper             = $helper;
+        $this->dateTime           = $datetime;
+        $this->storeManager       = $storeManagerInterface;
+        $this->date               = $date;
     }
 
     /**
@@ -94,7 +100,7 @@ class Order
     {
         $this->searchOrdersForReview();
 
-        foreach ($this->_reviewCollection as $websiteId => $collection) {
+        foreach ($this->reviewCollection as $websiteId => $collection) {
             $this->registerCampaign($collection, $websiteId);
         }
     }
@@ -105,20 +111,20 @@ class Order
      * @param $collection
      * @param $websiteId
      */
-    protected function registerCampaign($collection, $websiteId)
+    public function registerCampaign($collection, $websiteId)
     {
         //review campaign id
-        $campaignId = $this->_helper->getCampaign($websiteId);
+        $campaignId = $this->helper->getCampaign($websiteId);
 
         if ($campaignId) {
             foreach ($collection as $order) {
-                $this->_helper->log(
+                $this->helper->log(
                     '-- Order Review: ' . $order->getIncrementId()
                     . ' Campaign Id: ' . $campaignId
                 );
 
                 try {
-                    $emailCampaign = $this->_campaignFactory->create()
+                    $emailCampaign = $this->campaignFactory->create()
                         ->setEmail($order->getCustomerEmail())
                         ->setStoreId($order->getStoreId())
                         ->setCampaignId($campaignId)
@@ -130,12 +136,11 @@ class Order
                     if ($order->getCustomerId()) {
                         $emailCampaign->setCustomerId($order->getCustomerId());
                     }
-
                     //@codingStandardsIgnoreStart
-                    $emailCampaign->save();
+                    $emailCampaign->getResource()->save($emailCampaign);
                     //@codingStandardsIgnoreEnd
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string)$e, []);
+                    $this->helper->debug((string)$e, []);
                 }
             }
         }
@@ -144,40 +149,40 @@ class Order
     /**
      * Search for orders to review per website.
      */
-    protected function searchOrdersForReview()
+    public function searchOrdersForReview()
     {
-        $websites = $this->_helper->getwebsites(true);
+        $websites = $this->helper->getwebsites(true);
 
         foreach ($websites as $website) {
-            $apiEnabled = $this->_helper->isEnabled($website);
+            $apiEnabled = $this->helper->isEnabled($website);
             if ($apiEnabled
-                && $this->_helper->getWebsiteConfig(
+                && $this->helper->getWebsiteConfig(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
                     $website
                 )
-                && $this->_helper->getOrderStatus($website)
-                && $this->_helper->getDelay($website)
+                && $this->helper->getOrderStatus($website)
+                && $this->helper->getDelay($website)
             ) {
                 $storeIds = $website->getStoreIds();
                 if (empty($storeIds)) {
                     continue;
                 }
 
-                $orderStatusFromConfig = $this->_helper->getOrderStatus(
+                $orderStatusFromConfig = $this->helper->getOrderStatus(
                     $website
                 );
-                $delayInDays = $this->_helper->getDelay(
+                $delayInDays = $this->helper->getDelay(
                     $website
                 );
 
-                $campaignCollection = $this->_campaignCollection->create()
+                $campaignCollection = $this->campaignCollection->create()
                     ->addFieldToFilter('event_name', 'Order Review');
 
                 $campaignOrderIds = $campaignCollection->getColumnValues(
                     'order_increment_id'
                 );
 
-                $fromTime = new \Zend_Date();
+                $fromTime = $this->date;
                 $fromTime->subDay($delayInDays);
                 $toTime = clone $fromTime;
                 $to = $toTime->toString('YYYY-MM-dd HH:mm:ss');
@@ -186,13 +191,15 @@ class Order
 
                 $created = ['from' => $from, 'to' => $to, 'date' => true];
 
-                $collection = $this->_orderCollection->create()
+                $collection = $this->orderCollection->create()
                     ->addFieldToFilter(
-                        'main_table.status', $orderStatusFromConfig
+                        'main_table.status',
+                        $orderStatusFromConfig
                     )
                     ->addFieldToFilter('main_table.created_at', $created)
                     ->addFieldToFilter(
-                        'main_table.store_id', ['in' => $storeIds]
+                        'main_table.store_id',
+                        ['in' => $storeIds]
                     );
 
                 if (!empty($campaignOrderIds)) {
@@ -203,14 +210,15 @@ class Order
                 }
 
                 //process rules on collection
-                $collection = $this->_rulesFactory->create()
+                $collection = $this->rulesFactory->create()
                     ->process(
-                        $collection, \Dotdigitalgroup\Email\Model\Rules::REVIEW,
+                        $collection,
+                        \Dotdigitalgroup\Email\Model\Rules::REVIEW,
                         $website->getId()
                     );
 
                 if ($collection->getSize()) {
-                    $this->_reviewCollection[$website->getId()] = $collection;
+                    $this->reviewCollection[$website->getId()] = $collection;
                 }
             }
         }
@@ -218,17 +226,18 @@ class Order
 
     /**
      * Get customer last order id.
-     * 
+     *
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return bool|mixed
      */
     public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer
-    ) {
-        $storeIds = $this->_storeManager->getWebsite(
+    )
+    {
+        $storeIds = $this->storeManager->getWebsite(
             $customer->getWebsiteId()
         )->getStoreIds();
-        $collection = $this->_orderCollection->create()
+        $collection = $this->orderCollection->create()
             ->addFieldToFilter('customer_id', $customer->getId())
             ->addFieldToFilter('store_id', ['in' => $storeIds])
             ->setPageSize(1)
@@ -245,17 +254,18 @@ class Order
 
     /**
      * Get customer last quote id.
-     * 
+     *
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return bool|mixed
      */
     public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer
-    ) {
-        $storeIds = $this->_storeManager->getWebsite(
+    )
+    {
+        $storeIds = $this->storeManager->getWebsite(
             $customer->getWebsiteId()
         )->getStoreIds();
-        $collection = $this->_quoteCollection->create()
+        $collection = $this->quoteCollection->create()
             ->addFieldToFilter('customer_id', $customer->getId())
             ->addFieldToFilter('store_id', ['in' => $storeIds])
             ->setPageSize(1)

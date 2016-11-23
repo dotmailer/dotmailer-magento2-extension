@@ -15,15 +15,15 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
-    protected $_recommendedHelper;
+    public $recommendedHelper;
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
-    protected $_quoteFactory;
+    public $quoteFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
 
     /**
      * Quoteproducts constructor.
@@ -46,11 +46,11 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper = $helper;
-        $this->_productFactory = $productFactory;
-        $this->_quoteFactory = $quoteFactory;
-        $this->_recommendedHelper = $recommendedHelper;
-        $this->priceHelper = $priceHelper;
+        $this->helper            = $helper;
+        $this->productFactory    = $productFactory;
+        $this->quoteFactory      = $quoteFactory;
+        $this->recommendedHelper = $recommendedHelper;
+        $this->priceHelper       = $priceHelper;
     }
 
     /**
@@ -66,20 +66,20 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $quoteId = $this->getRequest()->getParam('quote_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
-        $quoteModel = $this->_quoteFactory->create()
+        $quoteModel = $this->quoteFactory->create()
             ->load($quoteId);
         //number of product items to be displayed
-        $limit = $this->_recommendedHelper->getDisplayLimitByMode($mode);
+        $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
         $quoteItems = $quoteModel->getAllItems();
         $numItems = count($quoteItems);
 
         //no product found to display
         if ($numItems == 0 || !$limit) {
             return [];
-        } elseif (count($quoteItems) > $limit) {
+        } elseif ($numItems > $limit) {
             $maxPerChild = 1;
         } else {
-            $maxPerChild = number_format($limit / count($quoteItems));
+            $maxPerChild = number_format($limit / $numItems);
         }
 
         $this->helper->log(
@@ -96,7 +96,8 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($productModel->getId()) {
                 //get single product for current mode
                 $recommendedProducts = $this->_getRecommendedProduct(
-                    $productModel, $mode
+                    $productModel,
+                    $mode
                 );
                 foreach ($recommendedProducts as $product) {
                     //check if still exists
@@ -120,9 +121,9 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
         //check for more space to fill up the table with fallback products
         if ($productsToDisplayCounter < $limit) {
-            $fallbackIds = $this->_recommendedHelper->getFallbackIds();
+            $fallbackIds = $this->recommendedHelper->getFallbackIds();
 
-            $productCollection = $this->_productFactory->create()
+            $productCollection = $this->productFactory->create()
                 ->getCollection()
                 ->addIdFilter($fallbackIds)
                 ->addAttributeToSelect(
@@ -158,7 +159,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    protected function _getRecommendedProduct($productModel, $mode)
+    public function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = [];
@@ -172,7 +173,6 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             case 'crosssell':
                 $products = $productModel->getCrossSellProducts();
                 break;
-
         }
 
         return $products;
@@ -185,7 +185,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getMode()
     {
-        return $this->_recommendedHelper->getDisplayType();
+        return $this->recommendedHelper->getDisplayType();
     }
 
     /**
@@ -197,7 +197,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getColumnCount()
     {
-        return $this->_recommendedHelper->getDisplayLimitByMode(
+        return $this->recommendedHelper->getDisplayLimitByMode(
             $this->getRequest()->getActionName()
         );
     }

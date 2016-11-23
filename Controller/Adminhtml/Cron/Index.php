@@ -7,7 +7,7 @@ class Index extends \Magento\Backend\App\Action
     /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
-    protected $resultPageFactory;
+    public $resultPageFactory;
 
     /**
      * Index constructor.
@@ -37,12 +37,16 @@ class Index extends \Magento\Backend\App\Action
     public function execute()
     {
 
+        //Call page factory to render layout and page content
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
+        //Set the menu which will be active for this page
         $resultPage->setActiveMenu('Dotdigitalgroup_Email::cron');
-        $resultPage->addBreadcrumb(__('Cron'), __('Cron '));
-        $resultPage->addBreadcrumb(__('Cron'), __('Cron'));
+        //Set the header title of grid
         $resultPage->getConfig()->getTitle()->prepend(__('Cron Tasks'));
+
+        $resultPage->addBreadcrumb(__('Report'), __('Report'));
+        $resultPage->addBreadcrumb(__('Cron'), __('Cron'));
 
         return $resultPage;
     }

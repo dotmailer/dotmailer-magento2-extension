@@ -13,18 +13,20 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
     {
         foreach ($collection as $item) {
             $websiteId = $item->getWebsiteId();
-            if ($this->_helper->isEnabled($websiteId)) {
-                $this->_client = $this->_helper->getWebsiteApiClient($websiteId);
+            if ($this->helper->isEnabled($websiteId)) {
+                $this->client = $this->helper->getWebsiteApiClient($websiteId);
+                //@codingStandardsIgnoreStart
                 $importData = unserialize($item->getImportData());
+                //@codingStandardsIgnoreEnd
 
-                if ($this->_client) {
+                if ($this->client) {
                     if (strpos($item->getImportType(), 'Catalog_') !== false) {
-                        $result = $this->_client->postAccountTransactionalDataImport(
+                        $result = $this->client->postAccountTransactionalDataImport(
                             $importData,
                             $item->getImportType()
                         );
                     } else {
-                        $result = $this->_client->postContactsTransactionalDataImport(
+                        $result = $this->client->postContactsTransactionalDataImport(
                             $importData,
                             $item->getImportType()
                         );

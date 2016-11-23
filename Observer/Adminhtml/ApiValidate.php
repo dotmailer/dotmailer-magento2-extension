@@ -7,28 +7,28 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Backend\App\Action\Context
      */
-    protected $_context;
+    public $context;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    public $objectManager;
     /**
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
-    protected $_writer;
+    public $writer;
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
      */
-    protected $test;
+    public $test;
 
     /**
      * ApiValidate constructor.
@@ -43,17 +43,17 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Config\Storage\Writer $writer
     ) {
-        $this->_helper = $data;
-        $this->test = $test;
-        $this->_context = $context;
+        $this->helper         = $data;
+        $this->test           = $test;
+        $this->context        = $context;
         $this->messageManager = $context->getMessageManager();
-        $this->_objectManager = $context->getObjectManager();
-        $this->_writer = $writer;
+        $this->objectManager  = $context->getObjectManager();
+        $this->writer         = $writer;
     }
 
     /**
      * Execute method.
-     * 
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
@@ -62,7 +62,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         //@codingStandardsIgnoreEnd
-        $groups = $this->_context->getRequest()->getPost('groups');
+        $groups = $this->context->getRequest()->getPost('groups');
 
         if (isset($groups['api']['fields']['username']['inherit'])
             || isset($groups['api']['fields']['password']['inherit'])
@@ -77,23 +77,21 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 
         //skip if the inherit option is selected
         if ($apiUsername && $apiPassword) {
-            $this->_helper->log('----VALIDATING ACCOUNT---');
+            $this->helper->log('----VALIDATING ACCOUNT---');
             $isValid = $this->test->validate($apiUsername, $apiPassword);
             if ($isValid) {
-
                 //save endpoint for account
                 foreach ($isValid->properties as $property) {
-                    if ($property->name == 'ApiEndpoint'
-                        && strlen($property->value)
+                    if ($property->name == 'ApiEndpoint' && ! empty($property->value)
                     ) {
-                        $this->_saveApiEndpoint($property->value);
+                        $this->saveApiEndpoint($property->value);
                         break;
                     }
                 }
 
-                $this->messageManager->addSuccess(__('API Credentials Valid.'));
+                $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));
             } else {
-                $this->messageManager->addWarning(__('Authorization has been denied for this request.'));
+                $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
             }
         }
 
@@ -105,9 +103,9 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      *
      * @param string $apiEndpoint
      */
-    protected function _saveApiEndpoint($apiEndpoint)
+    public function saveApiEndpoint($apiEndpoint)
     {
-        $this->_writer->save(
+        $this->writer->save(
             \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
             $apiEndpoint
         );

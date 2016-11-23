@@ -12,7 +12,11 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
-    protected $_viewed;
+
+    /**
+     * @var \Magento\Reports\Block\Product\Viewed
+     */
+    public $viewed;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
@@ -20,11 +24,11 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Magento\Customer\Model\SessionFactory
      */
-    protected $_sessionFactory;
+    public $sessionFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
 
     /**
      * Recentlyviewed constructor.
@@ -49,14 +53,13 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_sessionFactory = $sessionFactory;
-        $this->helper = $helper;
+        $this->sessionFactory    = $sessionFactory;
+        $this->helper            = $helper;
         $this->recommnededHelper = $recommended;
-        $this->priceHelper = $priceHelper;
-        $this->storeManager = $this->_storeManager;
-        $this->_productFactory = $productFactory;
-        $this->_viewed = $viewed;
-
+        $this->priceHelper       = $priceHelper;
+        $this->storeManager      = $this->_storeManager;
+        $this->productFactory    = $productFactory;
+        $this->viewed            = $viewed;
     }
 
     /**
@@ -71,16 +74,16 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $customerId = $this->getRequest()->getParam('customer_id');
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         //login customer to receive the recent products
-        $session = $this->_sessionFactory->create();
+        $session = $this->sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
-        $collection = $this->_viewed;
+        $collection = $this->viewed;
         $productItems = $collection->getItemsCollection()
             ->setPageSize($limit);
 
         //get the product ids from items collection
         $productIds = $productItems->getColumnValues('product_id');
         //get product collection to check for salable
-        $productCollection = $this->_productFactory->create()->getCollection()
+        $productCollection = $this->productFactory->create()->getCollection()
             ->addAttributeToSelect('*')
             ->addFieldToFilter('entity_id', ['in' => $productIds]);
         //show products only if is salable

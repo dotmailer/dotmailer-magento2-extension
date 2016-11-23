@@ -41,7 +41,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
-    protected $_dateTime;
+    public $dateTime;
 
     /**
      * @param \Magento\Framework\Model\Context                        $context
@@ -59,9 +59,14 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_dateTime = $dateTime;
-        parent::__construct($context, $registry, $resource, $resourceCollection,
-            $data);
+        $this->dateTime = $dateTime;
+        parent::__construct(
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
+        );
     }
 
     /**
@@ -86,8 +91,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
         $collection = $this->getCollection()
             ->addFieldToFilter('quote_id', $quoteId)
             ->addFieldToFilter('store_id', $storeId)
-            ->setPageSize(1)
-        ;
+            ->setPageSize(1);
 
         if ($collection->getSize()) {
             //@codingStandardsIgnoreStart
@@ -112,9 +116,9 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
         //@codingStandardsIgnoreEnd
         parent::beforeSave();
         if ($this->isObjectNew()) {
-            $this->setCreatedAt($this->_dateTime->formatDate(true));
+            $this->setCreatedAt($this->dateTime->formatDate(true));
         }
-        $this->setUpdatedAt($this->_dateTime->formatDate(true));
+        $this->setUpdatedAt($this->dateTime->formatDate(true));
 
         return $this;
     }

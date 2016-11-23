@@ -2,55 +2,69 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
-/**
- * Class Studio.
- */
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+
 class Studio extends \Magento\Backend\Block\Widget\Form
 {
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Config
-     */
-    protected $_configFactory;
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    protected $_helper;
-    /**
-     * @var \Magento\Backend\Model\Auth
-     */
-    protected $_auth;
-    /**
-     * @var
-     */
-    protected $_messageManager;
 
     /**
-     * @var \Magento\Backend\Model\Auth\Session
+     * Helper config.
+     *
+     * @var \Dotdigitalgroup\Email\Helper\Config
      */
-    protected $_sessionModel;
+    public $configFactory;
+
+    /**
+     * Helper.
+     *
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $helper;
+
+    /**
+     * Mage auth model.
+     *
+     * @var \Magento\Backend\Model\Auth
+     */
+    public $auth;
+
+    /**
+     * Messenger.
+     *
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
+    public $messageManager;
+
+    /**
+     * Apiconnector client.
+     *
+     * @var Client
+     */
+    public $client;
 
     /**
      * Studio constructor.
      *
-     * @param \Magento\Backend\Model\Auth $auth
-     * @param \Dotdigitalgroup\Email\Helper\Config $configFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
-     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Model\Auth                 $auth
+     * @param \Dotdigitalgroup\Email\Helper\Config        $configFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data          $dataHelper
+     * @param \Magento\Backend\Block\Template\Context     $context
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
+     * @param Client                                      $client
      */
     public function __construct(
         \Magento\Backend\Model\Auth $auth,
         \Dotdigitalgroup\Email\Helper\Config $configFactory,
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Model\Auth\Session $sessionModel,
-        \Magento\Framework\Message\ManagerInterface $messageManager
+        \Magento\Framework\Message\ManagerInterface $messageManager,
+        Client $client
     ) {
-        $this->_auth = $auth;
-        $this->_helper = $dataHelper;
-        $this->_sessionModel = $sessionModel;
-        $this->_configFactory = $configFactory;
-        $this->_messageManager = $messageManager;
+        $this->client         = $client;
+        $this->auth           = $auth;
+        $this->helper         = $dataHelper;
+        $this->configFactory  = $configFactory;
+        $this->messageManager = $messageManager;
 
         parent::__construct($context, []);
     }
@@ -58,7 +72,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     /**
      * Constructor. Initialization required variables for class instance.
      */
-    protected function _construct()
+    public function _construct()
     {
         $this->_blockGroup = 'Dotdigitalgroup\Email';
         $this->_controller = 'adminhtml_studio';
@@ -129,7 +143,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     {
         // authorize or create token.
         $token = $this->generatetokenAction();
-        $baseUrl = $this->_configFactory
+        $baseUrl = $this->configFactory
             ->getLogUserUrl();
 
         $loginuserUrl = $baseUrl . $token . '&suppressfooter=true';
@@ -144,73 +158,51 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      */
     public function generatetokenAction()
     {
-        //check for secure url
-        $adminUser = $this->_auth->getUser();
+        $adminUser = $this->auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
 
         if ($refreshToken) {
-            $code = $this->getCode();
-            $params = 'client_id=' . $this->_helper->getWebsiteConfig(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID)
-                . '&client_secret=' . $this->_helper->getWebsiteConfig(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID)
-                . '&refresh_token=' . $refreshToken . '&grant_type=refresh_token';
+            $token = $this->client->getAccessToken(
+                $this->buildUrlParams($refreshToken),
+                $this->configFactory->getTokenUrl()
+            );
 
-            $url = $this->_configFactory->getTokenUrl();
-
-            $this->_helper->log('token code : ' . $code . ', params : '
-                . $params);
-
-            /*
-             * Refresh Token request.
-             */
-            //@codingStandardsIgnoreStart
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-            curl_setopt($ch, CURLOPT_POST, count($params));
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-            curl_setopt($ch, CURLOPT_HTTPHEADER,
-                array('Content-Type: application/x-www-form-urlencoded'));
-
-            $response = json_decode(curl_exec($ch));
-
-            if (isset($response->error)) {
-                $this->_helper->log('Token Error Number:' . curl_errno($ch)
-                    . 'Error String:' . curl_error($ch));
-            }
-            curl_close($ch);
-            $token = '';
-            if (isset($response->access_token)) {
-                //save the refresh token to the admin user
-                $adminUser->setRefreshToken($response->access_token)
+            //save the refresh token to the admin user
+            if (is_string($token)) {
+                $adminUser->setRefreshToken($token)
                     ->save();
-
-                $token = $response->access_token;
             }
-            //@codingStandardsIgnoreEnd
             return $token;
         } else {
-            $this->_messageManager->addNotice('Please Connect To Access The Page.');
-
-            return '';
+            $this->messageManager->addNoticeMessage('Please Connect To Access The Page.');
         }
     }
 
     /**
-     * Retrieve authorisation code.
-     *
      * @return mixed
      */
     public function getCode()
     {
-        $adminUser = $this->_sessionModel
-            ->getUser();
-        $code = $adminUser->getEmailCode();
+        return $this->auth->getUser()->getEmailCode();
+    }
 
-        return $code;
+    /**
+     * Build url param.
+     *
+     * @param string $refreshToken
+     *
+     * @return string
+     */
+    public function buildUrlParams($refreshToken)
+    {
+        $params = 'client_id=' . $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
+        )
+            . '&client_secret=' . $this->helper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID
+            )
+            . '&refresh_token=' . $refreshToken . '&grant_type=refresh_token';
+
+        return $params;
     }
 }

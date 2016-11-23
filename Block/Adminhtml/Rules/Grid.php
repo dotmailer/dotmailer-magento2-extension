@@ -4,18 +4,15 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    /**
-     * @var
-     */
-    protected $_gridFactory;
+
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    public $_objectManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory
      */
-    protected $_rulesFactory;
+    public $rulesFactory;
 
     /**
      * Grid constructor.
@@ -33,7 +30,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
-        $this->_rulesFactory = $gridFactory;
+        $this->rulesFactory   = $gridFactory;
         $this->_objectManager = $objectManagerInterface;
         parent::__construct($context, $backendHelper, $data);
     }
@@ -41,7 +38,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Constructor.
      */
-    protected function _construct()
+    public function _construct()
     {
         parent::_construct();
         $this->setId('rules');
@@ -52,9 +49,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @return $this
      */
-    protected function _prepareCollection()
+    public function _prepareCollection()
     {
-        $collection = $this->_rulesFactory->create();
+        $collection = $this->rulesFactory->create();
         $this->setCollection($collection);
 
         parent::_prepareCollection();
@@ -67,74 +64,86 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      *
      * @return $this
      */
-    protected function _prepareColumns()
+    public function _prepareColumns()
     {
         $this->addColumn(
-            'rule_id', [
+            'rule_id',
+            [
             'header' => __('ID'),
             'align' => 'right',
             'width' => '50px',
             'index' => 'id',
-        ]);
+            ]
+        );
 
-        $this->addColumn(
-            'name', [
-            'header' => __('Rule Name'),
-            'align' => 'left',
-            'width' => '150px',
-            'index' => 'name',
-        ]);
+            $this->addColumn(
+                'name',
+                [
+                'header' => __('Rule Name'),
+                'align' => 'left',
+                'width' => '150px',
+                'index' => 'name',
+                ]
+            );
 
-        $this->addColumn(
-            'type', [
-            'header' => __('Rule Type'),
-            'align' => 'left',
-            'width' => '150px',
-            'index' => 'type',
-            'type' => 'options',
-            'options' => [
+            $this->addColumn(
+                'type',
+                [
+                'header' => __('Rule Type'),
+                'align' => 'left',
+                'width' => '150px',
+                'index' => 'type',
+                'type' => 'options',
+                'options' => [
                 1 => 'Abandoned Cart Exclusion Rule',
                 2 => 'Review Email Exclusion Rule',
-            ],
-        ]);
-        $this->addColumn(
-            'status', [
-            'header' => __('Status'),
-            'align' => 'left',
-            'width' => '80px',
-            'index' => 'status',
-            'type' => 'options',
-            'options' => [
+                ],
+                ]
+            );
+            $this->addColumn(
+                'status',
+                [
+                'header' => __('Status'),
+                'align' => 'left',
+                'width' => '80px',
+                'index' => 'status',
+                'type' => 'options',
+                'options' => [
                 1 => 'Active',
                 0 => 'Inactive',
-            ],
-        ]);
+                ],
+                ]
+            );
 
-        $this->addColumn(
-            'created_at', [
-            'header' => __('Created At'),
-            'align' => 'left',
-            'width' => '120px',
-            'type' => 'datetime',
-            'index' => 'created_at',
-        ]);
+            $this->addColumn(
+                'created_at',
+                [
+                'header' => __('Created At'),
+                'align' => 'left',
+                'width' => '120px',
+                'type' => 'datetime',
+                'index' => 'created_at',
+                ]
+            );
 
-        $this->addColumn(
-            'updated_at', [
-            'header' => __('Updated At'),
-            'align' => 'left',
-            'width' => '120px',
-            'type' => 'datetime',
-            'index' => 'updated_at',
-        ]);
+            $this->addColumn(
+                'updated_at',
+                [
+                'header' => __('Updated At'),
+                'align' => 'left',
+                'width' => '120px',
+                'type' => 'datetime',
+                'index' => 'updated_at',
+                ]
+            );
 
-        return parent::_prepareColumns();
+            return parent::_prepareColumns();
     }
 
     /**
      * @return $this
      */
-    protected function _prepareMassaction()
+    public function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('id');

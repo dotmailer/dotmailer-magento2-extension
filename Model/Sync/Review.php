@@ -7,107 +7,120 @@ class Review
     /**
      * @var
      */
-    protected $_start;
+    public $start;
     /**
      * @var
      */
-    protected $_reviews;
+    public $reviews;
     /**
      * @var
      */
-    protected $_countReviews;
+    public $countReviews;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_resource;
+    public $resource;
 
     /**
      * @var
      */
-    protected $_reviewIds;
+    public $reviewIds;
     /**
      * @var \Magento\Review\Model\ReviewFactory
      */
-    protected $_reviewFactory;
+    public $reviewFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    protected $_customerFactory;
+    public $customerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\ReviewFactory
      */
-    protected $_connectorReviewFactory;
+    public $connectorReviewFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory
      */
-    protected $_ratingFactory;
+    public $ratingFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
-    protected $_reviewCollection;
+    public $reviewCollection;
     /**
      * @var \Magento\Review\Model\Rating\Option\Vote
      */
-    protected $vote;
+    public $vote;
     /**
      * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
-    protected $_mageReviewCollection;
+    public $mageReviewCollection;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    public $coreDate;
+
+    /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    public $coreResource;
 
     /**
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime                         $coreDate
      * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory          $ratingFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory                 $connectorFactory
      * @param \Magento\Customer\Model\CustomerFactory                             $customerFactory
      * @param \Magento\Catalog\Model\ProductFactory                               $productFactory
+     * @param \Magento\Framework\App\ResourceConnection                           $resourceConnection
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory                        $importerFactory
      * @param \Magento\Review\Model\ReviewFactory                                 $reviewFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                  $data
      * @param \Magento\Framework\App\ResourceConnection                           $resource
-     * @param \Magento\Framework\Stdlib\DateTime                                  $datetime
      * @param \Magento\Review\Model\Rating\Option\Vote                            $vote
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory        $mageReviewCollection
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
+        \Magento\Framework\Stdlib\DateTime\DateTime $coreDate,
         \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory,
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Framework\Stdlib\DateTime $datetime,
         \Magento\Review\Model\Rating\Option\Vote $vote,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
     ) {
-        $this->_reviewCollection = $reviewCollection;
-        $this->_ratingFactory = $ratingFactory;
-        $this->_connectorReviewFactory = $connectorFactory;
-        $this->_customerFactory = $customerFactory;
-        $this->_productFactory = $productFactory;
-        $this->_reviewFactory = $reviewFactory;
-        $this->_importerFactory = $importerFactory;
-        $this->_helper = $data;
-        $this->_resource = $resource;
-        $this->_dateTime = $datetime;
-        $this->vote = $vote;
-        $this->_mageReviewCollection = $mageReviewCollection;
+
+        $this->coreResource           = $resourceConnection;
+        $this->coreDate               = $coreDate;
+        $this->reviewCollection       = $reviewCollection;
+        $this->ratingFactory          = $ratingFactory;
+        $this->connectorReviewFactory = $connectorFactory;
+        $this->customerFactory        = $customerFactory;
+        $this->productFactory         = $productFactory;
+        $this->reviewFactory          = $reviewFactory;
+        $this->importerFactory        = $importerFactory;
+        $this->helper                 = $data;
+        $this->resource               = $resource;
+        $this->vote                   = $vote;
+        $this->mageReviewCollection  = $mageReviewCollection;
     }
 
     /**
@@ -119,34 +132,26 @@ class Review
     {
         $response = ['success' => true, 'message' => 'Done.'];
 
-        $this->_countReviews = 0;
-        $this->_reviews = [];
-        $this->_start = microtime(true);
-        //resource allocation
-        $this->_helper->allowResourceFullExecution();
-        $websites = $this->_helper->getwebsites(true);
+        $this->countReviews = 0;
+        $this->reviews      = [];
+        $this->start        = microtime(true);
+        $websites           = $this->helper->getwebsites(true);
         foreach ($websites as $website) {
-            $apiEnabled = $this->_helper->isEnabled($website);
-            $reviewEnabled = $this->_helper->getWebsiteConfig(
+            $apiEnabled = $this->helper->isEnabled($website);
+            $reviewEnabled = $this->helper->getWebsiteConfig(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED,
                 $website
             );
             $storeIds = $website->getStoreIds();
             if ($apiEnabled && $reviewEnabled && !empty($storeIds)) {
-                //start the sync
-                if (!$this->_countReviews) {
-                    $this->_helper->log(
-                        '---------- Start reviews sync ----------'
-                    );
-                }
                 $this->_exportReviewsForWebsite($website);
             }
 
-            if (isset($this->_reviews[$website->getId()])) {
-                $reviews = $this->_reviews[$website->getId()];
+            if (isset($this->reviews[$website->getId()])) {
+                $reviews = $this->reviews[$website->getId()];
                 //send reviews as transactional data
                 //register in queue with importer
-                $this->_importerFactory->create()
+                $this->importerFactory->create()
                     ->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_REVIEWS,
                         $reviews,
@@ -154,18 +159,18 @@ class Review
                         $website->getId()
                     );
                 //if no error then set imported
-                $this->_setImported($this->_reviewIds);
+                $this->_setImported($this->reviewIds);
                 //@codingStandardsIgnoreStart
-                $this->_countReviews += count($reviews);
+                $this->countReviews += count($reviews);
                 //@codingStandardsIgnoreStop
             }
         }
 
-        if ($this->_countReviews) {
+        if ($this->countReviews) {
             $message = 'Total time for sync : ' . gmdate(
-                    'H:i:s', microtime(true) - $this->_start
-                ) . ', Total synced = ' . $this->_countReviews;
-            $this->_helper->log($message);
+                    'H:i:s', microtime(true) - $this->start
+                ) . ', Total synced = ' . $this->countReviews;
+            $this->helper->log($message);
             $response['message'] = $message;
         }
 
@@ -177,17 +182,17 @@ class Review
      *
      * @param \Magento\Store\Model\Website $website
      */
-    protected function _exportReviewsForWebsite(\Magento\Store\Model\Website $website)
+    public function _exportReviewsForWebsite(\Magento\Store\Model\Website $website)
     {
-        $limit = $this->_helper->getWebsiteConfig(
+        $limit           = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
             $website
         );
-        $emailReviews = $this->_getReviewsToExport($website, $limit);
-        $this->_reviewIds = [];
+        $emailReviews    = $this->_getReviewsToExport($website, $limit);
+        $this->reviewIds = [];
 
         if ($emailReviews->getSize()) {
-            $reviews = $this->_mageReviewCollection->create()
+            $reviews = $this->mageReviewCollection->create()
                 ->addFieldToFilter(
                     'main_table.review_id', ['in' => $emailReviews->getColumnValues('review_id')]
                 )
@@ -195,13 +200,13 @@ class Review
 
             $reviews->getSelect()
                 ->joinLeft(
-                    ['c' => 'customer_entity'],
+                    ['c' => $this->coreResource->getTableName('customer_entity')],
                     'c.entity_id = customer_id',
                     ['email', 'store_id']
                 );
             foreach ($reviews as $mageReview) {
                 try {
-                    $product = $this->_productFactory->create()
+                    $product = $this->productFactory->create()
                         ->getCollection()
                         ->addIdFilter($mageReview->getEntityPkValue())
                         ->setStoreId($mageReview->getStoreId())
@@ -211,7 +216,7 @@ class Review
                         ->setPage(1, 1)
                         ->getFirstItem();
 
-                    $connectorReview = $this->_connectorReviewFactory->create()
+                    $connectorReview = $this->connectorReviewFactory->create()
                         ->setReviewData($mageReview)
                         ->setProduct($product);
 
@@ -225,17 +230,17 @@ class Review
                     );
 
                     foreach ($votesCollection as $ratingItem) {
-                        $rating = $this->_ratingFactory->create()
+                        $rating = $this->ratingFactory->create()
                             ->setRating($ratingItem)
                         ;
                         $connectorReview->createRating(
                             $ratingItem->getRatingCode(), $rating
                         );
                     }
-                    $this->_reviews[$website->getId()][] = $connectorReview;
-                    $this->_reviewIds[] = $mageReview->getReviewId();
+                    $this->reviews[$website->getId()][] = $connectorReview;
+                    $this->reviewIds[]                  = $mageReview->getReviewId();
                 } catch (\Exception $e) {
-                    $this->_helper->debug((string)$e, []);
+                    $this->helper->debug((string)$e, []);
                 }
             }
         }
@@ -249,9 +254,9 @@ class Review
      *
      * @return mixed
      */
-    protected function _getReviewsToExport(\Magento\Store\Model\Website $website, $limit = 100)
+    public function _getReviewsToExport(\Magento\Store\Model\Website $website, $limit = 100)
     {
-        return $this->_reviewCollection->create()
+        return $this->reviewCollection->create()
             ->addFieldToFilter('review_imported', ['null' => 'true'])
             ->addFieldToFilter(
                 'store_id', ['in' => $website->getStoreIds()]
@@ -264,22 +269,21 @@ class Review
      *
      * @param $ids
      */
-    protected function _setImported($ids)
+    public function _setImported($ids)
     {
         try {
-            $coreResource = $this->_resource;
+            $coreResource = $this->resource;
             $write = $coreResource->getConnection('core_write');
             $tableName = $coreResource->getTableName('email_review');
             $ids = implode(', ', $ids);
-            $now = new \DateTime();
-            $nowDate = $this->_dateTime->formatDate($now->getTimestamp());
+            $nowDate = $this->coreDate->gmtDate();
             $write->update(
                 $tableName,
                 ['review_imported' => 1, 'updated_at' => $nowDate],
                 "review_id IN ($ids)"
             );
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
     }
 }

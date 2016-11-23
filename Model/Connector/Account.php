@@ -7,63 +7,63 @@ class Account
     /**
      * @var
      */
-    protected $_apiUsername;
+    public $apiUsername;
     /**
      * @var
      */
-    protected $_apiPassword;
+    public $apiPassword;
     /**
      * @var
      */
-    protected $_limit;
+    public $limit;
     /**
      * @var
      */
-    protected $_contactBookId;
+    public $contactBookId;
     /**
      * @var
      */
-    protected $_subscriberBookId;
+    public $subscriberBookId;
     /**
      * @var array
      */
-    protected $_websites = [];
+    public $websites = [];
     /**
      * @var
      */
-    protected $_csvHeaders;
+    public $csvHeaders;
     /**
      * @var
      */
-    protected $_customersFilename;
+    public $customersFilename;
     /**
      * @var
      */
-    protected $_subscribersFilename;
+    public $subscribersFilename;
     /**
      * @var
      */
-    protected $_mappingHash;
+    public $mappingHash;
     /**
      * @var array
      */
-    protected $_contacts = [];
+    public $contacts = [];
     /**
      * @var array
      */
-    protected $_orders = [];
+    public $orders = [];
     /**
      * @var
      */
-    protected $_orderIds;
+    public $orderIds;
     /**
      * @var array
      */
-    protected $_ordersForSingleSync = [];
+    public $ordersForSingleSync = [];
     /**
      * @var
      */
-    protected $_orderIdsForSingleSync;
+    public $orderIdsForSingleSync;
 
     /**
      * Set api password.
@@ -74,19 +74,19 @@ class Account
      */
     public function setApiPassword($apiPassword)
     {
-        $this->_apiPassword = $apiPassword;
+        $this->apiPassword = $apiPassword;
 
         return $this;
     }
 
     /**
      * Get api password.
-     * 
+     *
      * @return mixed
      */
     public function getApiPassword()
     {
-        return $this->_apiPassword;
+        return $this->apiPassword;
     }
 
     /**
@@ -98,63 +98,63 @@ class Account
      */
     public function setApiUsername($apiUsername)
     {
-        $this->_apiUsername = $apiUsername;
+        $this->apiUsername = $apiUsername;
 
         return $this;
     }
 
     /**
      * Get api username.
-     * 
+     *
      * @return mixed
      */
     public function getApiUsername()
     {
-        return $this->_apiUsername;
+        return $this->apiUsername;
     }
 
     /**
      * Set contact book id.
-     * 
+     *
      * @param string $contactBookId
      */
     public function setContactBookId($contactBookId)
     {
-        $this->_contactBookId[$contactBookId] = $contactBookId;
+        $this->contactBookId[$contactBookId] = $contactBookId;
     }
 
     /**
      * Get contact book ids.
-     * 
+     *
      * @return array
      */
     public function getContactBookIds()
     {
-        return $this->_contactBookId;
+        return $this->contactBookId;
     }
 
     /**
      * Set contacts.
-     * 
+     *
      * @param array $contacts
      */
     public function setContacts($contacts)
     {
-        if (!empty($this->_contacts)) {
-            $this->_contacts += $contacts;
+        if (!empty($this->contacts)) {
+            $this->contacts += $contacts;
         } else {
-            $this->_contacts[] = $contacts;
+            $this->contacts[] = $contacts;
         }
     }
 
     /**
      * Get contacts.
-     * 
+     *
      * @return array
      */
     public function getContacts()
     {
-        return $this->_contacts;
+        return $this->contacts;
     }
 
     /**
@@ -164,7 +164,7 @@ class Account
      */
     public function setCustomersFilename($customersFilename)
     {
-        $this->_customersFilename = $customersFilename;
+        $this->customersFilename = $customersFilename;
     }
 
     /**
@@ -172,7 +172,7 @@ class Account
      */
     public function getCustomersFilename()
     {
-        return $this->_customersFilename;
+        return $this->customersFilename;
     }
 
     /**
@@ -180,7 +180,7 @@ class Account
      */
     public function setLimit($limit)
     {
-        $this->_limit = $limit;
+        $this->limit = $limit;
     }
 
     /**
@@ -188,7 +188,7 @@ class Account
      */
     public function getLimit()
     {
-        return $this->_limit;
+        return $this->limit;
     }
 
     /**
@@ -196,7 +196,7 @@ class Account
      */
     public function setMappingHash($mappingHash)
     {
-        $this->_mappingHash = $mappingHash;
+        $this->mappingHash = $mappingHash;
     }
 
     /**
@@ -204,7 +204,7 @@ class Account
      */
     public function getMappingHash()
     {
-        return $this->_mappingHash;
+        return $this->mappingHash;
     }
 
     /**
@@ -213,7 +213,7 @@ class Account
     public function setOrders($orders)
     {
         foreach ($orders as $order) {
-            $this->_orders[$order->id] = $order;
+            $this->orders[$order->id] = $order;
         }
     }
 
@@ -222,7 +222,7 @@ class Account
      */
     public function getOrders()
     {
-        return $this->_orders;
+        return $this->orders;
     }
 
     /**
@@ -230,7 +230,7 @@ class Account
      */
     public function setSubscriberBookId($subscriberBookId)
     {
-        $this->_subscriberBookId[$subscriberBookId] = $subscriberBookId;
+        $this->subscriberBookId[$subscriberBookId] = $subscriberBookId;
     }
 
     /**
@@ -238,7 +238,7 @@ class Account
      */
     public function getSubscriberBookIds()
     {
-        return $this->_subscriberBookId;
+        return $this->subscriberBookId;
     }
 
     /**
@@ -246,7 +246,7 @@ class Account
      */
     public function setSubscribersFilename($subscribersFilename)
     {
-        $this->_subscribersFilename = $subscribersFilename;
+        $this->subscribersFilename = $subscribersFilename;
     }
 
     /**
@@ -254,7 +254,7 @@ class Account
      */
     public function getSubscribersFilename()
     {
-        return $this->_subscribersFilename;
+        return $this->subscribersFilename;
     }
 
     /**
@@ -262,7 +262,7 @@ class Account
      */
     public function setCsvHeaders($csvHeaders)
     {
-        $this->_csvHeaders = $csvHeaders;
+        $this->csvHeaders = $csvHeaders;
     }
 
     /**
@@ -270,7 +270,7 @@ class Account
      */
     public function getCsvHeaders()
     {
-        return $this->_csvHeaders;
+        return $this->csvHeaders;
     }
 
     /**
@@ -278,7 +278,7 @@ class Account
      */
     public function setWebsites($websites)
     {
-        $this->_websites[] = $websites;
+        $this->websites[] = $websites;
     }
 
     /**
@@ -286,7 +286,7 @@ class Account
      */
     public function getWebsites()
     {
-        return $this->_websites;
+        return $this->websites;
     }
 
     /**
@@ -294,7 +294,7 @@ class Account
      */
     public function setOrderIds($orderIds)
     {
-        $this->_orderIds = $orderIds;
+        $this->orderIds = $orderIds;
     }
 
     /**
@@ -302,7 +302,7 @@ class Account
      */
     public function getOrderIds()
     {
-        return $this->_orderIds;
+        return $this->orderIds;
     }
 
     /**
@@ -311,7 +311,7 @@ class Account
     public function setOrdersForSingleSync($orders)
     {
         foreach ($orders as $order) {
-            $this->_ordersForSingleSync[$order->id] = $order;
+            $this->ordersForSingleSync[$order->id] = $order;
         }
     }
 
@@ -320,7 +320,7 @@ class Account
      */
     public function getOrdersForSingleSync()
     {
-        return $this->_ordersForSingleSync;
+        return $this->ordersForSingleSync;
     }
 
     /**
@@ -328,7 +328,7 @@ class Account
      */
     public function setOrderIdsForSingleSync($orderIds)
     {
-        $this->_orderIdsForSingleSync = $orderIds;
+        $this->orderIdsForSingleSync = $orderIds;
     }
 
     /**
@@ -336,6 +336,6 @@ class Account
      */
     public function getOrderIdsForSingleSync()
     {
-        return $this->_orderIdsForSingleSync;
+        return $this->orderIdsForSingleSync;
     }
 }

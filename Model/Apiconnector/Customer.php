@@ -37,27 +37,27 @@ class Customer
     /**
      * @var
      */
-    protected $_mappingHash;
+    public $mappingHash;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Customer\Model\GroupFactory
      */
-    protected $_groupFactory;
+    public $groupFactory;
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory
      */
-    protected $_subscriberFactory;
+    public $subscriberFactory;
     /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
-    protected $_categoryFactory;
+    public $categoryFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
     /**
      * @var
      */
@@ -66,17 +66,17 @@ class Customer
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
-    protected $orderCollection;
+    public $orderCollection;
 
     /**
      * @var
      */
-    protected $contactFactory;
+    public $contactFactory;
 
     /**
      * @var array
      */
-    protected $subscriberStatus
+    public $subscriberStatus
         = [
             \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
             \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
@@ -89,6 +89,7 @@ class Customer
      *
      * @param \Dotdigitalgroup\Email\Model\ContactFactory                $contactFactory
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
+     * @param \Magento\Framework\Stdlib\DateTime                         $dateTime
      * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
      * @param \Magento\Review\Model\ResourceModel\Review\Collection      $reviewCollection
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
@@ -101,6 +102,7 @@ class Customer
     public function __construct(
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Review\Model\ResourceModel\Review\Collection $reviewCollection,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
@@ -110,16 +112,17 @@ class Customer
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory
     ) {
-        $this->_helper = $helper;
-        $this->_store = $storeManager;
-        $this->_objectManager = $objectManager;
-        $this->_contactFactory = $contactFactory;
-        $this->reviewCollection = $reviewCollection;
-        $this->orderCollection = $collectionFactory;
-        $this->_groupFactory = $groupFactory;
-        $this->_subscriberFactory = $subscriberFactory;
-        $this->_categoryFactory = $categoryFactory;
-        $this->_productFactory = $productFactory;
+        $this->dateTime          = $dateTime;
+        $this->_objectManager    = $objectManager;
+        $this->helper            = $helper;
+        $this->_store            = $storeManager;
+        $this->_contactFactory   = $contactFactory;
+        $this->reviewCollection  = $reviewCollection;
+        $this->orderCollection   = $collectionFactory;
+        $this->groupFactory      = $groupFactory;
+        $this->subscriberFactory = $subscriberFactory;
+        $this->categoryFactory   = $categoryFactory;
+        $this->productFactory    = $productFactory;
     }
 
     /**
@@ -134,7 +137,7 @@ class Customer
 
     /**
      * Set customer data.
-     * 
+     *
      * @param $customer
      *
      * @return $this
@@ -190,7 +193,7 @@ class Customer
 
     /**
      * Customer reviews.
-     * 
+     *
      * @return $this
      */
     public function setReviewCollection()
@@ -206,7 +209,7 @@ class Customer
 
     /**
      * Number of reviews.
-     * 
+     *
      * @return int
      */
     public function getReviewCount()
@@ -216,15 +219,19 @@ class Customer
 
     /**
      * Last review date.
-     * 
+     *
      * @return string
      */
     public function getLastReviewDate()
     {
-        if (count($this->reviewCollection)) {
+        if ($this->reviewCollection->getSize()) {
             //@codingStandardsIgnoreStart
-            return $this->reviewCollection->getFirstItem()->getCreatedAt();
+            $createdAt = $this->reviewCollection->getSelect()
+                ->limit(1)
+                ->getFirstItem()
+                ->getCreatedAt();
             //@codingStandardsIgnoreEnd
+            return $createdAt;
         }
 
         return '';
@@ -608,7 +615,7 @@ class Customer
      *
      * @return bool|string
      */
-    protected function _getCustomerGender()
+    public function _getCustomerGender()
     {
         $genderId = $this->customer->getGender();
         if (is_numeric($genderId)) {
@@ -621,7 +628,7 @@ class Customer
         return '';
     }
 
-    protected function _getStreet($street, $line)
+    public function _getStreet($street, $line)
     {
         $street = explode("\n", $street);
         if (isset($street[$line - 1])) {
@@ -631,7 +638,7 @@ class Customer
         return '';
     }
 
-    protected function _getWebsiteName()
+    public function _getWebsiteName()
     {
         $websiteId = $this->customer->getWebsiteId();
         $website = $this->_store->getWebsite($websiteId);
@@ -642,7 +649,7 @@ class Customer
         return '';
     }
 
-    protected function _getStoreName()
+    public function _getStoreName()
     {
         $storeId = $this->customer->getStoreId();
         $store = $this->_store->getStore($storeId);
@@ -661,7 +668,7 @@ class Customer
      */
     public function setMappingHash($mapping_hash)
     {
-        $this->_mappingHash = $mapping_hash;
+        $this->mappingHash = $mapping_hash;
 
         return $this;
     }
@@ -671,13 +678,13 @@ class Customer
      */
     public function getMappingHash()
     {
-        return $this->_mappingHash;
+        return $this->mappingHash;
     }
 
-    protected function _getCustomerGroup()
+    public function _getCustomerGroup()
     {
         $groupId = $this->customer->getGroupId();
-        $groupModel = $this->_groupFactory->create()
+        $groupModel = $this->groupFactory->create()
             ->load($groupId);
         if ($groupModel) {
             return $groupModel->getCode();
@@ -695,7 +702,7 @@ class Customer
      */
     public function setMappigHash($value)
     {
-        $this->_mappingHash = $value;
+        $this->mappingHash = $value;
 
         return $this;
     }
@@ -717,7 +724,7 @@ class Customer
      */
     public function getSubscriberStatus()
     {
-        $subscriberModel = $this->_subscriberFactory->create()
+        $subscriberModel = $this->subscriberFactory->create()
             ->loadByCustomerId($this->customer->getId());
 
         if ($subscriberModel->getCustomerId()) {
@@ -757,9 +764,7 @@ class Customer
         //last used from the reward history based on the points delta used
         //enterprise module
         //@codingStandardsIgnoreStart
-        $lastUsed = $this->_objectManager->create(
-            'Magento\Reward\Model\Reward\History'
-        )
+        $lastUsed = $this->historyFactory->create()
             ->addCustomerFilter($this->customer->getId())
             ->addWebsiteFilter($this->customer->getWebsiteId())
             ->addFieldToFilter('points_delta', ['lt' => 0])
@@ -770,7 +775,7 @@ class Customer
         //@codingStandardsIgnoreEnd
         //for any valid date
         if ($lastUsed) {
-            return $this->_helper->formatDate($lastUsed, 'short', true);
+            return $this->helper->formatDate($lastUsed, 'short', true);
         }
 
         return '';
@@ -785,7 +790,7 @@ class Customer
     {
         $id = $this->customer->getMostCategoryId();
         if ($id) {
-            return $this->_categoryFactory->create()->load($id)
+            return $this->categoryFactory->create()->load($id)
                 ->setStoreId($this->customer->getStoreId())
                 ->getName();
         }
@@ -847,7 +852,7 @@ class Customer
     {
         $id = $this->customer->getFirstCategoryId();
         if ($id) {
-            return $this->_categoryFactory->create()->load($id)
+            return $this->categoryFactory->create()->load($id)
                 ->setStoreId($this->customer->getStoreId())
                 ->getName();
         }
@@ -865,7 +870,7 @@ class Customer
         $categoryId = $this->customer->getLastCategoryId();
         //customer last category id
         if ($categoryId) {
-            return $this->_categoryFactory->create()
+            return $this->categoryFactory->create()
                 ->setStoreId($this->customer->getStoreId())
                 ->load($categoryId)
                 ->getName();
@@ -898,16 +903,16 @@ class Customer
         return $this->_getBrandValue($id);
     }
 
-    protected function _getBrandValue($id)
+    public function _getBrandValue($id)
     {
         //attribute mapped from the config
-        $attribute = $this->_helper->getWebsiteConfig(
+        $attribute = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
             $this->customer->getWebsiteId()
         );
         //if the id and attribute found
         if ($id && $attribute) {
-            $brand = $this->_productFactory->create()
+            $brand = $this->productFactory->create()
                 ->setStoreId($this->customer->getStoreId())
                 ->load($id)
                 ->getAttributeText($attribute);
@@ -972,9 +977,7 @@ class Customer
             $expiredAt = $this->reward->getExpirationDate();
 
             if ($expiredAt) {
-                $date = $this->_objectManager->create(
-                    'Magento\Framework\Stdlib\DateTime'
-                )->formatDate($expiredAt, 'short', true);
+                $date = $this->dateTime->formatDate($expiredAt, 'short', true);
             } else {
                 $date = '';
             }
@@ -988,14 +991,11 @@ class Customer
     /**
      * Get the customer reward.
      */
-    protected function _setReward()
+    public function _setReward()
     {
-        if ($rewardModel = $this->_objectManager->create(
-            'Magento\Reward\Model\Reward\History'))
-        {
-            $enHelper = $this->_objectManager->create(
-                'Magento\Reward\Helper\Reward'
-            );
+        //@codingStandardsIgnoreStart
+        if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')) {
+            $enHelper = $this->_objectManager->create('Magento\Reward\Helper\Reward');
             $collection = $rewardModel->getCollection()
                 ->addCustomerFilter($this->customer->getId())
                 ->addWebsiteFilter($this->customer->getWebsiteId())
@@ -1004,7 +1004,6 @@ class Customer
                 ->skipExpiredDuplicates()
                 ->setDefaultOrder();
 
-            //@codingStandardsIgnoreStart
             $item = $collection->setPageSize(1)
                 ->setCurPage(1)
                 ->getFirstItem();

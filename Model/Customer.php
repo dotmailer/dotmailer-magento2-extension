@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Customer extends \Magento\Customer\Model\AccountManagement
 {
-    private $_scopeConfig;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    public $scopeConfig;
 
     /**
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
@@ -56,12 +60,32 @@ class Customer extends \Magento\Customer\Model\AccountManagement
         \Magento\Framework\DataObjectFactory $objectFactory,
         \Magento\Framework\Api\ExtensibleDataObjectConverter $extensibleDataObjectConverter
     ) {
-        $this->_scopeConfig = $scopeConfig;
-        parent::__construct($customerFactory, $eventManager, $storeManager, $mathRandom, $validator,
-            $validationResultsDataFactory, $addressRepository, $customerMetadataService, $customerRegistry, $logger,
-            $encryptor, $configShare, $stringHelper, $customerRepository, $scopeConfig, $transportBuilder,
-            $dataProcessor, $registry, $customerViewHelper, $dateTime, $customerModel, $objectFactory,
-            $extensibleDataObjectConverter);
+        $this->scopeConfig = $scopeConfig;
+        parent::__construct(
+            $customerFactory,
+            $eventManager,
+            $storeManager,
+            $mathRandom,
+            $validator,
+            $validationResultsDataFactory,
+            $addressRepository,
+            $customerMetadataService,
+            $customerRegistry,
+            $logger,
+            $encryptor,
+            $configShare,
+            $stringHelper,
+            $customerRepository,
+            $scopeConfig,
+            $transportBuilder,
+            $dataProcessor,
+            $registry,
+            $customerViewHelper,
+            $dateTime,
+            $customerModel,
+            $objectFactory,
+            $extensibleDataObjectConverter
+        );
     }
 
     /**
@@ -76,16 +100,18 @@ class Customer extends \Magento\Customer\Model\AccountManagement
      * @throws \Magento\Framework\Exception\LocalizedException
      * @deprecated
      */
-    protected function sendNewAccountEmail(
+    public function sendNewAccountEmail(
         $customer,
         $type = self::NEW_ACCOUNT_EMAIL_REGISTERED,
         $backUrl = '',
         $storeId = '0',
         $sendemailStoreId = null
     ) {
-        if ($this->_scopeConfig->isSetFlag(
+        if ($this->scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
-            'store', $storeId)
+            'store',
+            $storeId
+        )
         ) {
             return $this;
         } else {
@@ -93,22 +119,23 @@ class Customer extends \Magento\Customer\Model\AccountManagement
         }
     }
 
-
     /**
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @param string                                       $redirectUrl
      *
      * @return $this
      */
-    protected function sendEmailConfirmation(\Magento\Customer\Api\Data\CustomerInterface $customer, $redirectUrl)
+    public function sendEmailConfirmation(\Magento\Customer\Api\Data\CustomerInterface $customer, $redirectUrl)
     {
         $storeId = $this->getWebsiteStoreId($customer);
-        if ($this->_scopeConfig->isSetFlag(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
-            'store', $storeId)
+        if ($this->scopeConfig->isSetFlag(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
+            'store',
+            $storeId
+        )
         ) {
             return $this;
         } else {
-
             parent::sendEmailConfirmation($customer, $redirectUrl);
         }
     }

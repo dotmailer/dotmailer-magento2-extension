@@ -7,20 +7,27 @@ class Delete extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
-    protected $rules;
+    public $rules;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
 
+    /**
+     * Delete constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context        $context
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\Rules         $rules
+     */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\Rules $rules
     ) {
         parent::__construct($context);
-        $this->rules = $rules;
-        $this->_storeManager = $storeManagerInterface;
+        $this->rules        = $rules;
+        $this->storeManager = $storeManagerInterface;
     }
 
     /**
@@ -28,7 +35,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    protected function _isAllowed()
+    public function _isAllowed()
     {
         return $this->_authorization->isAllowed(
             'Dotdigitalgroup_Email::exclusion_rules'
@@ -45,14 +52,14 @@ class Delete extends \Magento\Backend\App\AbstractAction
                 $model = $this->rules;
                 $model->setId($id);
                 $model->delete();
-                $this->messageManager->addSuccess(
+                $this->messageManager->addSuccessMessage(
                     __('The rule has been deleted.')
                 );
                 $this->_redirect('*/*/');
 
                 return;
             } catch (\Exception $e) {
-                $this->messageManager->addError(
+                $this->messageManager->addErrorMessage(
                     __('An error occurred while deleting the rule. Please review the log and try again.')
                 );
                 $this->_redirect(
@@ -63,7 +70,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
                 return;
             }
         }
-        $this->messageManager->addError(
+        $this->messageManager->addErrorMessage(
             __('Unable to find a rule to delete.')
         );
         $this->_redirect('*/*/');

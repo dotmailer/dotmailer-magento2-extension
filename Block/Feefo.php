@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use DOMDocument;
+use XSLTProcessor;
+
 const FEEFO_URL = 'http://www.feefo.com/feefo/xmlfeed.jsp?';
 
 class Feefo extends \Magento\Framework\View\Element\Template
@@ -18,15 +21,23 @@ class Feefo extends \Magento\Framework\View\Element\Template
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_orderFactory;
+    public $orderFactory;
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
-    protected $_quoteFactory;
+    public $quoteFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
+    /**
+     * @var DOMDocument
+     */
+    public $domDocument;
+    /**
+     * @var XSLTProcessor
+     */
+    public $processor;
 
     /**
      * Feefo constructor.
@@ -40,6 +51,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @param array                                            $data
      */
     public function __construct(
+        XSLTProcessor $processor,
+        DOMDocument $document,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
@@ -49,18 +62,19 @@ class Feefo extends \Magento\Framework\View\Element\Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper = $helper;
-        $this->priceHelper = $priceHelper;
-        $this->_orderFactory = $orderFactory;
-        $this->_productFactory = $productFactory;
-        $this->_quoteFactory = $quoteFactory;
-        $this->_orderFactory = $orderFactory;
+        $this->helper         = $helper;
+        $this->domDocument = $document;
+        $this->processor = $processor;
+        $this->priceHelper    = $priceHelper;
+        $this->orderFactory   = $orderFactory;
+        $this->productFactory = $productFactory;
+        $this->quoteFactory   = $quoteFactory;
     }
 
     /**
      * Get customer's service score logo and output it.
      *
-     * @return string
+     * @return array
      */
     public function getServiceScoreLogo()
     {
@@ -74,10 +88,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $vendorUrl = 'http://www.feefo.com/feefo/viewvendor.jsp?logon='
             . $logon;
 
-        return
-            "<a href=\"$vendorUrl\" target='_blank'>
-                <img alt='Feefo logo' border='0' src=\"$fullUrl\" title='See what our customers say about us'>
-             </a>";
+        return ['vendorUrl' => $vendorUrl, 'fullUrl' => $fullUrl];
     }
 
     /**
@@ -89,7 +100,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
     {
         $products = [];
         $quoteId = $this->_request->getParam('quote_id');
-        $quoteModel = $this->_quoteFactory->create()
+        /** @var \Magento\Quote\Model\Quote $quoteModel */
+        $quoteModel = $this->quoteFactory->create()
             ->load($quoteId);
 
         if (!$quoteModel->getId()) {
@@ -115,7 +127,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
 
     /**
      * Get product reviews from feefo.
-     * 
+     *
      * @return array
      */
     public function getProductsReview()
@@ -136,8 +148,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
             $url = 'http://www.feefo.com/feefo/xmlfeed.jsp?logon=' . $logon
                 . '&limit=' . $limit . '&vendorref=' . $sku
                 . '&mode=productonly';
-            $doc = new \DOMDocument();
-            $xsl = new \XSLTProcessor();
+            $doc = $this->domDocument;
+            $xsl = $this->processor;
             //@codingStandardsIgnoreStart
             if ($check) {
                 $doc->load($feefoDir . DIRECTORY_SEPARATOR . 'feedback.xsl');

@@ -7,12 +7,12 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $data;
+    public $data;
 
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
-    protected $jsonHelper;
+    public $jsonHelper;
 
     /**
      * Ajaxvalidation constructor.

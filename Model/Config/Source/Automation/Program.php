@@ -2,27 +2,27 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Automation;
 
-class Program
+class Program implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var
      */
-    protected $rest;
+    public $rest;
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
-    protected $_request;
+    public $request;
 
     /**
      * Configuration structure.
      *
      * @var \Magento\Config\Model\Config\Structure
      */
-    protected $_configStructure;
+    public $configStructure;
 
     /**
      * Program constructor.
@@ -38,9 +38,9 @@ class Program
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_helper = $data;
-        $this->_registry = $registry;
-        $this->_request = $requestInterface;
+        $this->helper        = $data;
+        $this->_registry     = $registry;
+        $this->request       = $requestInterface;
         $this->_storeManager = $storeManager;
     }
 
@@ -53,13 +53,13 @@ class Program
     {
         $fields = [];
         $fields[] = ['value' => '0', 'label' => __('-- Disabled --')];
-        $websiteName = $this->_request->getParam('website', false);
+        $websiteName = $this->request->getParam('website', false);
         $website = ($websiteName)
             ? $this->_storeManager->getWebsite($websiteName) : 0;
         //api client is enabled
-        $apiEnabled = $this->_helper->isEnabled($website);
+        $apiEnabled = $this->helper->isEnabled($website);
         if ($apiEnabled) {
-            $client = $this->_helper->getWebsiteApiClient($website);
+            $client = $this->helper->getWebsiteApiClient($website);
             $programs = $client->getPrograms();
 
             foreach ($programs as $one) {

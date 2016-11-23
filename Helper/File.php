@@ -9,44 +9,44 @@ class File
     /**
      * @var string
      */
-    protected $_outputFolder;
+    public $outputFolder;
     /**
      * @var string
      */
-    protected $_outputArchiveFolder;
+    public $outputArchiveFolder;
 
     /**
      * @var string
      */
-    protected $delimiter;
+    public $delimiter;
     /**
      * @var string
      */
-    protected $enclosure;
+    public $enclosure;
     /**
      * @var Data
      */
-    protected $helper;
+    public $helper;
 
     /**
      * File constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param Data                                            $helper
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
-     * @param \Magento\Framework\Filesystem $filesystem
+     * @param \Magento\Framework\Filesystem                   $filesystem
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
         \Magento\Framework\Filesystem $filesystem
     ) {
-        $this->helper = $helper;
-        $this->directoryList = $directoryList;
-        $this->filesystem = $filesystem;
-        $var = $directoryList->getPath('var');
-        $this->_outputFolder = $var . DIRECTORY_SEPARATOR . 'export'
+        $this->helper              = $helper;
+        $this->directoryList       = $directoryList;
+        $this->filesystem          = $filesystem;
+        $var                       = $directoryList->getPath('var');
+        $this->outputFolder        = $var . DIRECTORY_SEPARATOR . 'export'
             . DIRECTORY_SEPARATOR . 'email';
-        $this->_outputArchiveFolder = $this->_outputFolder
+        $this->outputArchiveFolder = $this->outputFolder
             . DIRECTORY_SEPARATOR . 'archive';
 
         $this->delimiter = ','; // tab character
@@ -58,9 +58,9 @@ class File
      */
     public function getOutputFolder()
     {
-        $this->pathExists($this->_outputFolder);
+        $this->pathExists($this->outputFolder);
 
-        return $this->_outputFolder;
+        return $this->outputFolder;
     }
 
     /**
@@ -68,9 +68,9 @@ class File
      */
     public function getArchiveFolder()
     {
-        $this->pathExists($this->_outputArchiveFolder);
+        $this->pathExists($this->outputArchiveFolder);
 
-        return $this->_outputArchiveFolder;
+        return $this->outputArchiveFolder;
     }
 
     /**
@@ -93,7 +93,9 @@ class File
     public function archiveCSV($filename)
     {
         $this->moveFile(
-            $this->getOutputFolder(), $this->getArchiveFolder(), $filename
+            $this->getOutputFolder(),
+            $this->getArchiveFolder(),
+            $filename
         );
     }
 
@@ -137,13 +139,11 @@ class File
         if (fwrite($fp, $fqCsv) == 0) {
             throw new \Exception('Problem writing CSV file');
         }
-        //@codingStandardsIgnoreEnd
         fclose($fp);
+        //@codingStandardsIgnoreEnd
     }
 
     /**
-     * Output an array to the output file.
-     *
      * @param $filepath
      * @param $csv
      */
@@ -155,18 +155,9 @@ class File
          */
         //@codingStandardsIgnoreStart
         $handle = fopen($filepath, 'a');
-        //@codingStandardsIgnoreEnd
-
-        // for some reason passing the preset delimiter/enclosure variables results in error
-        //$this->delimiter $this->enclosure
-        if (fputcsv($handle, $csv, ',', '"') == 0) {
-            $message = new \Magento\Framework\Phrase(
-                'Problem writing CSV file'
-            );
-            new \Magento\Framework\Exception\FileSystemException($message);
-        }
-
+        fputcsv($handle, $csv, ',', '"');
         fclose($handle);
+        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -194,7 +185,7 @@ class File
      *
      * @return string
      */
-    protected function arrayToCsv(
+    public function arrayToCsv(
         array &$fields,
         $delimiter,
         $enclosure,
@@ -214,12 +205,15 @@ class File
             // Enclose fields containing $delimiter, $enclosure or whitespace
             if ($encloseAll
                 || preg_match(
-                    "/(?:${delimiterEsc}|${enclosureEsc}|\s)/", $field
+                    "/(?:${delimiterEsc}|${enclosureEsc}|\s)/",
+                    $field
                 )
             ) {
                 $output[] = $enclosure . str_replace(
-                        $enclosure, $enclosure . $enclosure, $field
-                    ) . $enclosure;
+                    $enclosure,
+                    $enclosure . $enclosure,
+                    $field
+                ) . $enclosure;
             } else {
                 $output[] = $field;
             }

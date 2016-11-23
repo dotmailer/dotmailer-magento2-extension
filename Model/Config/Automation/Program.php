@@ -2,24 +2,24 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Automation;
 
-class Program implements \Magento\Framework\Option\ArrayInterface
+class Program implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
-    protected $_request;
+    public $request;
 
     /**
      * Program constructor.
@@ -35,10 +35,10 @@ class Program implements \Magento\Framework\Option\ArrayInterface
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Registry $registry
     ) {
-        $this->_helper = $data;
-        $this->_request = $requestInterface;
-        $this->_storeManager = $storeManagerInterface;
-        $this->_registry = $registry;
+        $this->helper       = $data;
+        $this->request      = $requestInterface;
+        $this->storeManager = $storeManagerInterface;
+        $this->registry     = $registry;
     }
 
     /**
@@ -51,22 +51,22 @@ class Program implements \Magento\Framework\Option\ArrayInterface
         $fields = [];
         $fields[] = ['value' => '0', 'label' => '-- Disabled --'];
 
-        $websiteName = $this->_request->getParam('website', false);
+        $websiteName = $this->request->getParam('website', false);
         $website = ($websiteName)
-            ? $this->_storeManager->getWebsite($websiteName) : 0;
+            ? $this->storeManager->getWebsite($websiteName) : 0;
 
-        if ($this->_helper->isEnabled($website)) {
-            $savedPrograms = $this->_registry->registry('programs');
+        if ($this->helper->isEnabled($website)) {
+            $savedPrograms = $this->registry->registry('programs');
 
             //get saved datafileds from registry
             if (is_array($savedPrograms)) {
                 $programs = $savedPrograms;
             } else {
                 //grab the datafields request and save to register
-                $client = $this->_helper->getWebsiteApiClient($website);
+                $client = $this->helper->getWebsiteApiClient($website);
                 $programs = $client->getPrograms();
-                $this->_registry->unregister('programs');
-                $this->_registry->register('programs', $programs);
+                $this->registry->unregister('programs');
+                $this->registry->register('programs', $programs);
             }
 
             //set the api error message for the first option

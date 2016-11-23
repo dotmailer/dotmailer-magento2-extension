@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Review;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
@@ -11,7 +10,7 @@ class Index extends \Magento\Backend\App\Action
     /**
      * @var PageFactory
      */
-    protected $resultPageFactory;
+    public $resultPageFactory;
 
     /**
      * @param Context $context

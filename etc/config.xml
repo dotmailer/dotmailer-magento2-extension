@@ -176,7 +176,7 @@
                 <font_style>0</font_style>
                 <price_color><![CDATA[#000000]]></price_color>
                 <price_font_size><![CDATA[12px]]></price_font_size>
-                <price_style>0</price_style>
+                <price_font_style>0</price_font_style>
                 <product_link_color><![CDATA[#000000]]></product_link_color>
                 <product_link_font_size><![CDATA[12px]]></product_link_font_size>
                 <product_link_style>0</product_link_style>
@@ -286,7 +286,6 @@
         </connector_roi_tracking>
         <connector_developer_settings>
             <import_settings>
-                <memory_limit>0</memory_limit>
                 <batch_size>500</batch_size>
                 <orders>50</orders>
                 <importer_bulk_limit>1</importer_bulk_limit>
@@ -305,8 +304,6 @@
             <debug>
                 <debug_enabled>1</debug_enabled>
                 <api_request_time_limit>10</api_request_time_limit>
-                <raygun_code>JOWaQ4nf4Ox7eAFUvr+TAw==</raygun_code>
-                <raygun_async>1</raygun_async>
             </debug>
             <feed_configuration>
                 <feed_enabled>1</feed_enabled>

@@ -28,7 +28,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             //add columns
             $connection->addColumn(
-                $campaignTable, 'send_id', [
+                $campaignTable,
+                'send_id',
+                [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                     'nullable' => false,
                     'default' => '',
@@ -36,7 +38,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
             $connection->addColumn(
-                $campaignTable, 'send_status', [
+                $campaignTable,
+                'send_status',
+                [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                     'nullable' => false,
                     'default' => 0,
@@ -44,26 +48,28 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
 
-            //update table with historical send values
-            $select = $connection->select();
+            if ($connection->tableColumnExists($campaignTable, 'is_sent')) {
+                //update table with historical send values
+                $select = $connection->select();
 
-            //join
-            $select->joinLeft(
-                ['oc' => $campaignTable],
-                "oc.id = nc.id",
-                [
-                    'send_status' => new \Zend_Db_Expr(\Dotdigitalgroup\Email\Model\Campaign::SENT)
-                ]
-            )->where('oc.is_sent =?', 1);
+                //join
+                $select->joinLeft(
+                    ['oc' => $campaignTable],
+                    "oc.id = nc.id",
+                    [
+                        'send_status' => new \Zend_Db_Expr(\Dotdigitalgroup\Email\Model\Campaign::SENT)
+                    ]
+                )->where('oc.is_sent =?', 1);
 
-            //update query from select
-            $updateSql = $select->crossUpdateFromSelect(['nc' => $campaignTable]);
+                //update query from select
+                $updateSql = $select->crossUpdateFromSelect(['nc' => $campaignTable]);
 
-            //run query
-            $connection->query($updateSql);
+                //run query
+                $connection->query($updateSql);
 
-            //remove column
-            $connection->dropColumn($campaignTable, 'is_sent');
+                //remove column
+                $connection->dropColumn($campaignTable, 'is_sent');
+            }
 
             //add index
             $connection->addIndex(
@@ -75,7 +81,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '2.1.0', '<')) {
             $couponTable = $setup->getTable('salesrule_coupon');
             $connection->addColumn(
-                $couponTable, 'generated_by_dotmailer', [
+                $couponTable,
+                'generated_by_dotmailer',
+                [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                     'nullable' => true,
                     'default' => null,

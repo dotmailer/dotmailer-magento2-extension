@@ -2,12 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Publicdatafields
+class Publicdatafields implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * Publicdatafields constructor.
@@ -17,7 +17,7 @@ class Publicdatafields
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_helper = $data;
+        $this->helper = $data;
     }
 
     /**
@@ -25,10 +25,10 @@ class Publicdatafields
      *
      * @return mixed
      */
-    protected function getDataFields()
+    public function getDataFields()
     {
-        $website = $this->_helper->getWebsite();
-        $client = $this->_helper->getWebsiteApiClient($website);
+        $website = $this->helper->getWebsite();
+        $client = $this->helper->getWebsiteApiClient($website);
 
         //grab the datafields request and save to register
         $datafields = $client->getDataFields();
@@ -47,7 +47,7 @@ class Publicdatafields
             'label' => __('---- Default Option ----'),
             'value' => '0',
         ];
-        $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
+        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsite());
         //get datafields options
         if ($apiEnabled) {
             $datafields = $this->getDataFields();

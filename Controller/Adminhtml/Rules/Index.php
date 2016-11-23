@@ -2,12 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
-class Index extends   \Magento\Backend\App\AbstractAction
+class Index extends \Magento\Backend\App\AbstractAction
 {
     /**
      * @var PageFactory|\Magento\Framework\View\Result\PageFactory
      */
-    protected $resultPageFactory;
+    public $resultPageFactory;
 
     /**
      * Index constructor.
@@ -28,7 +28,7 @@ class Index extends   \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    protected function _isAllowed()
+    public function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }

@@ -6,10 +6,6 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
     /**
-     * @var
-     */
-    protected $_website;
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
@@ -20,11 +16,11 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    protected $_customerFactory;
+    public $customerFactory;
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
-    protected $_wishlistFactory;
+    public $wishlistFactory;
 
     /**
      * Wishlist constructor.
@@ -45,10 +41,10 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_wishlistFactory = $wishlistFactory;
-        $this->_customerFactory = $customerFactory;
-        $this->helper = $helper;
-        $this->priceHelper = $priceHelper;
+        $this->wishlistFactory = $wishlistFactory;
+        $this->customerFactory = $customerFactory;
+        $this->helper          = $helper;
+        $this->priceHelper     = $priceHelper;
     }
 
     /**
@@ -59,7 +55,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getWishlistItems()
     {
         $wishlist = $this->_getWishlist();
-        if ($wishlist && count($wishlist->getItemCollection())) {
+        if ($wishlist && ! empty($wishlist->getItemCollection())) {
             return $wishlist->getItemCollection();
         } else {
             return false;
@@ -69,20 +65,20 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @return bool|\Magento\Framework\DataObject
      */
-    protected function _getWishlist()
+    public function _getWishlist()
     {
         $customerId = $this->getRequest()->getParam('customer_id');
         if (!$customerId) {
             return false;
         }
 
-        $customer = $this->_customerFactory->create()
+        $customer = $this->customerFactory->create()
             ->load($customerId);
-        if (!$customer->getId()) {
+        if (! $customer->getId()) {
             return false;
         }
 
-        $collection = $this->_wishlistFactory->create()->getCollection()
+        $collection = $this->wishlistFactory->create()->getCollection()
             ->addFieldToFilter('customer_id', $customerId)
             ->setOrder('updated_at', 'DESC')
             ->setPageSize(1);
@@ -117,6 +113,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getTextForUrl($store)
     {
+        /** @var \Magento\Store\Model\Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(

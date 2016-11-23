@@ -7,22 +7,22 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     /**
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
-    protected $_remoteAddress;
+    public $remoteAddress;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\Timezone
      */
-    protected $_localeDate;
+    public $localeDate;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * Trial constructor.
      *
@@ -45,10 +45,10 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
         \Dotdigitalgroup\Email\Helper\Data $helper,
         array $data = []
     ) {
-        $this->_remoteAddress = $remoteAddress;
-        $this->_storeManager = $storeManager;
-        $this->_localeDate = $localeDate;
-        $this->_helper = $helper;
+        $this->remoteAddress = $remoteAddress;
+        $this->storeManager  = $storeManager;
+        $this->localeDate    = $localeDate;
+        $this->helper        = $helper;
         parent::__construct($context, $authSession, $jsHelper, $data);
     }
 
@@ -61,7 +61,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
-        if (!$this->_helper->isFrontEndAdminSecure()) {
+        if (!$this->helper->isFrontEndAdminSecure()) {
             $html = '<a class="various" href=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/trialerror.png') .
                 '><img style="margin-bottom:15px;" src=' .
@@ -107,14 +107,14 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      *
      * @return string
      */
-    protected function _getIframeFormUrl()
+    public function _getIframeFormUrl()
     {
         $formUrl = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_URL;
-        $ipAddress = $this->_remoteAddress->getRemoteAddress();
+        $ipAddress = $this->remoteAddress->getRemoteAddress();
         $timezone = $this->_getTimeZoneId();
         $culture = $this->_getCultureId();
-        $company = $this->_helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
-        $callback = $this->_storeManager->getStore()
+        $company = $this->helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
+        $callback = $this->storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
         //query params
         $params = [
@@ -134,9 +134,9 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      *
      * @return string
      */
-    protected function _getTimeZoneId()
+    public function _getTimeZoneId()
     {
-        $timeZone = $this->_localeDate->getConfigTimezone();
+        $timeZone = $this->localeDate->getConfigTimezone();
         $result = '085';
         if ($timeZone) {
             $timeZones = [
@@ -587,7 +587,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      *
      * @return mixed
      */
-    protected function _getCultureId()
+    public function _getCultureId()
     {
         $fallback = 'en_US';
         $supportedCultures = [
@@ -600,7 +600,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
             'ru_RU' => '1049',
             'pt_PT' => '2070',
         ];
-        $localeCode = $this->_helper->getWebsiteConfig(\Magento\Directory\Helper\Data::XML_PATH_DEFAULT_LOCALE);
+        $localeCode = $this->helper->getWebsiteConfig(\Magento\Directory\Helper\Data::XML_PATH_DEFAULT_LOCALE);
         if (isset($supportedCultures[$localeCode])) {
             return $supportedCultures[$localeCode];
         }

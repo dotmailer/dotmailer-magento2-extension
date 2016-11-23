@@ -16,9 +16,9 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
                 $adminUser->setRefreshToken('')
                     ->save();
             }
-            $this->messageManager->addSuccess('Successfully disconnected');
+            $this->messageManager->addSuccessMessage('Successfully disconnected');
         } catch (\Exception $e) {
-            $this->messageManager->addError($e->getMessage());
+            $this->messageManager->addErrorMessage($e->getMessage());
         }
 
         $this->_redirect('*/system_config/*');

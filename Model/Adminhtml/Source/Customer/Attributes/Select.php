@@ -7,7 +7,7 @@ class Select
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    protected $_customerFactory;
+    public $customerFactory;
 
     /**
      * Select constructor.
@@ -17,7 +17,7 @@ class Select
     public function __construct(
         \Magento\Customer\Model\CustomerFactory $customerFactory
     ) {
-        $this->_customerFactory = $customerFactory;
+        $this->customerFactory = $customerFactory;
     }
 
     /**
@@ -45,7 +45,7 @@ class Select
             'rp_token_create_at',
             'website_id',
         ];
-        $attributes = $this->_customerFactory->create()
+        $attributes = $this->customerFactory->create()
             ->getAttributes();
 
         foreach ($attributes as $attribute) {

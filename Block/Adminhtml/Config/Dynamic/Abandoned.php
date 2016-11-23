@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_dataHelper;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $dataHelper;
 
     /**
      * Abandoned constructor.
@@ -16,7 +20,7 @@ class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context
     ) {
-        $this->_dataHelper = $dataHelper;
+        $this->dataHelper = $dataHelper;
 
         parent::__construct($context);
     }
@@ -26,29 +30,31 @@ class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //base url for dynamic content
-        $baseUrl = $this->_dataHelper->generateDynamicUrl();
-        $passcode = $this->_dataHelper->getPasscode();
+        $baseUrl = $this->dataHelper->generateDynamicUrl();
+        $passcode = $this->dataHelper->getPasscode();
 
         //last quote id for dynamic page
-        $lastQuoteId = $this->_dataHelper->getLastQuoteId();
+        $lastQuoteId = $this->dataHelper->getLastQuoteId();
 
         //config passcode
-        if (!strlen($passcode)) {
+        if (empty($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         //alert message for last order id is not mapped
-        if (!$lastQuoteId) {
+        if (! $lastQuoteId) {
             $lastQuoteId = '[PLEASE MAP THE LAST QUOTE ID]';
         }
 
         // full url
         $text = sprintf(
-            '%sconnector/email/basket/code/%s/quote_id/@%s@', $baseUrl,
-            $passcode, $lastQuoteId
+            '%sconnector/email/basket/code/%s/quote_id/@%s@',
+            $baseUrl,
+            $passcode,
+            $lastQuoteId
         );
 
         $element->setData('value', $text);

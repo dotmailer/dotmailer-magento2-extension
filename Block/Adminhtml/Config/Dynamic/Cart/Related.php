@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart;
 
 class Related extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_dataHelper;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $dataHelper;
 
     /**
      * Related constructor.
@@ -16,7 +20,7 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context
     ) {
-        $this->_dataHelper = $dataHelper;
+        $this->dataHelper = $dataHelper;
 
         parent::__construct($context);
     }
@@ -26,15 +30,15 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //passcode to append for url
-        $passcode = $this->_dataHelper->getPasscode();
+        $passcode = $this->dataHelper->getPasscode();
         //last quote id for dynamic page
-        $lastQuoteId = $this->_dataHelper->getLastQuoteId();
+        $lastQuoteId = $this->dataHelper->getLastQuoteId();
 
-        if (!strlen($passcode)) {
+        if (empty($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         //alert message for last order id is not mapped
@@ -43,12 +47,15 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
         }
 
         //generate the base url and display for default store id
-        $baseUrl = $this->_dataHelper->generateDynamicUrl();
+        $baseUrl = $this->dataHelper->generateDynamicUrl();
 
         //display the full url
-        $text
-            = sprintf('%sconnector/quoteproducts/related/code/%s/quote_id/@%s@',
-            $baseUrl, $passcode, $lastQuoteId);
+        $text = sprintf(
+            '%sconnector/quoteproducts/related/code/%s/quote_id/@%s@',
+            $baseUrl,
+            $passcode,
+            $lastQuoteId
+        );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

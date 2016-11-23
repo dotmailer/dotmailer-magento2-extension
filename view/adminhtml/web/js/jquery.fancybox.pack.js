@@ -1,5 +1,5 @@
 /*! fancyBox v2.1.5 fancyapps.com | fancyapps.com/fancybox/#license */
-require(["jquery"], function ($) {
+require(['jquery', 'domReady'], function ($) {
     (function (r, G, f, v) {
         var J = f("html"), n = f(r), p = f(G), b = f.fancybox = function () {
             b.open.apply(this, arguments)

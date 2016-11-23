@@ -42,7 +42,7 @@ class Product
     /**
      * @var array
      */
-    public $categories = array();
+    public $categories = [];
 
     /**
      * @var string
@@ -67,36 +67,36 @@ class Product
     /**
      * @var array
      */
-    public $websites = array();
+    public $websites = [];
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var
      */
-    protected $_scopeConfig;
+    public $scopeConfig;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory
      */
-    protected $_statusFactory;
+    public $statusFactory;
     /**
      * @var \Magento\Catalog\Model\Product\VisibilityFactory
      */
-    protected $_visibilityFactory;
+    public $visibilityFactory;
     /**
      * @var \Magento\Catalog\Model\Product\Media\ConfigFactory
      */
-    protected $_mediaConfigFactory;
+    public $mediaConfigFactory;
     /**
      * @var \Magento\CatalogInventory\Model\Stock\ItemFactory
      */
-    protected $_itemFactory;
+    public $itemFactory;
 
     /**
      * Product constructor.
@@ -116,12 +116,12 @@ class Product
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
     ) {
-        $this->_itemFactory = $itemFactory;
-        $this->_mediaConfigFactory = $mediaConfigFactory;
-        $this->_visibilityFactory = $visibilityFactory;
-        $this->_statusFactory = $statusFactory;
-        $this->_helper = $helper;
-        $this->_storeManager = $storeManagerInterface;
+        $this->itemFactory        = $itemFactory;
+        $this->mediaConfigFactory = $mediaConfigFactory;
+        $this->visibilityFactory  = $visibilityFactory;
+        $this->statusFactory      = $statusFactory;
+        $this->helper             = $helper;
+        $this->storeManager       = $storeManagerInterface;
     }
 
     /**
@@ -137,26 +137,32 @@ class Product
         $this->sku = $product->getSku();
         $this->name = $product->getName();
 
-        $status = $this->_statusFactory->create()
+        $status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());
 
         $this->status = $status->getText();
 
-        $options = $this->_visibilityFactory->create()
+        $options = $this->visibilityFactory->create()
             ->getOptionArray();
         $this->visibility = (string)$options[$product->getVisibility()];
         $this->price = (float)number_format(
-            $product->getPrice(), 2, '.', ''
+            $product->getPrice(),
+            2,
+            '.',
+            ''
         );
         $this->specialPrice = (float)number_format(
-            $product->getSpecialPrice(), 2, '.', ''
+            $product->getSpecialPrice(),
+            2,
+            '.',
+            ''
         );
         $this->url = $product->getProductUrl();
 
-        $this->imagePath = $this->_mediaConfigFactory->create()
+        $this->imagePath = $this->mediaConfigFactory->create()
             ->getMediaUrl($product->getSmallImage());
 
-        $stock = $this->_itemFactory->create()
+        $stock = $this->itemFactory->create()
             ->setProduct($product);
 
         $this->stock = (float)number_format($stock->getQty(), 2, '.', '');
@@ -183,7 +189,7 @@ class Product
         $count = 0;
         $websiteIds = $product->getWebsiteIds();
         foreach ($websiteIds as $websiteId) {
-            $website = $this->_storeManager->getWebsite(
+            $website = $this->storeManager->getWebsite(
                 $websiteId
             );
             $this->websites[$count]['Id'] = $website->getId();
@@ -215,7 +221,10 @@ class Product
                     $sOptions[$count]['sku'] = $selection->getSku();
                     $sOptions[$count]['id'] = $selection->getProductId();
                     $sOptions[$count]['price'] = (float)number_format(
-                        $selection->getPrice(), 2, '.', ''
+                        $selection->getPrice(),
+                        2,
+                        '.',
+                        ''
                     );
                     ++$count;
                 }
@@ -238,7 +247,10 @@ class Product
                     $options[$count]['option'] = $attribute['default_label'];
                     if (isset($attribute['pricing_value'])) {
                         $options[$count]['price'] = (float)number_format(
-                            $attribute['pricing_value'], 2, '.', ''
+                            $attribute['pricing_value'],
+                            2,
+                            '.',
+                            ''
                         );
                     }
                     ++$count;
@@ -247,8 +259,14 @@ class Product
             }
         }
 
-        unset($this->_itemFactory, $this->_mediaConfigFactory, $this->_visibilityFactory,
-            $this->_statusFactory, $this->_helper, $this->_storeManager);
+        unset(
+            $this->itemFactory,
+            $this->mediaConfigFactory,
+            $this->visibilityFactory,
+            $this->statusFactory,
+            $this->helper,
+            $this->storeManager
+        );
 
         return $this;
     }

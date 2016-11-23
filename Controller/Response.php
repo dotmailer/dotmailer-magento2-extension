@@ -7,7 +7,7 @@ class Response extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * Response constructor.
@@ -18,19 +18,18 @@ class Response extends \Magento\Framework\App\Action\Action
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Action\Context $context
-
     ) {
-        $this->_helper = $data;
+        $this->helper = $data;
         parent::__construct($context);
     }
 
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function authenticate()
+    public function authenticate()
     {
         //authenticate ip address
-        $authIp = $this->_helper->authIpAddress();
+        $authIp = $this->helper->authIpAddress();
         if (!$authIp) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('You are not authorised to view content of this page.')
@@ -38,7 +37,7 @@ class Response extends \Magento\Framework\App\Action\Action
         }
 
         //authenticate
-        $auth = $this->_helper->auth($this->getRequest()->getParam('code'));
+        $auth = $this->helper->auth($this->getRequest()->getParam('code'));
         if (!$auth) {
             $this->sendResponse();
 
@@ -46,14 +45,17 @@ class Response extends \Magento\Framework\App\Action\Action
         }
     }
 
+    /**
+     *
+     */
     public function execute()
     {
     }
 
     /**
-     * Send empty response. 
+     *
      */
-    protected function sendResponse()
+    public function sendResponse()
     {
         try {
             $this->getResponse()
@@ -61,12 +63,13 @@ class Response extends \Magento\Framework\App\Action\Action
                 ->setHeader('Pragma', 'public', true)
                 ->setHeader(
                     'Cache-Control',
-                    'must-revalidate, post-check=0, pre-check=0', true
+                    'must-revalidate, post-check=0, pre-check=0',
+                    true
                 )
                 ->setHeader('Content-type', 'text/html; charset=UTF-8', true);
             $this->getResponse()->sendHeaders();
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
     }
 
@@ -76,7 +79,7 @@ class Response extends \Magento\Framework\App\Action\Action
      * @param      $output
      * @param bool $flag
      */
-    protected function checkContentNotEmpty($output, $flag = true)
+    public function checkContentNotEmpty($output, $flag = true)
     {
         try {
             if (strlen($output) < 3 && $flag == false) {
@@ -85,7 +88,7 @@ class Response extends \Magento\Framework\App\Action\Action
                 $this->sendResponse();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
     }
 }

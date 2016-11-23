@@ -13,9 +13,11 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
      * @param int $customerGroupId
      * @param string $couponCode
      * @param string|null $now
-     * @param \Magento\Quote\Model\Quote\Address $address allow extensions to further filter out rules based on quote address
+     * @param \Magento\Quote\Model\Quote\Address $address allow extensions to further
+     *                                                    filter out rules based on quote address
      * @use $this->addWebsiteGroupDateFilter()
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     *
      * @return $this
      */
     public function setValidationFilter(
@@ -26,7 +28,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
         \Magento\Quote\Model\Quote\Address $address = null
     ) {
         if (!$this->getFlag('validation_filter')) {
-            if (is_null($now)) {
+            if ($now === null) {
                 $now = $this->_date->date()->format('Y-m-d');
             }
 
@@ -38,7 +40,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
             $select = $this->getSelect();
 
             $connection = $this->getConnection();
-            if (strlen($couponCode)) {
+            if (! empty($couponCode)) {
                 $select->joinLeft(
                     ['rule_coupons' => $this->getTable('salesrule_coupon')],
                     $connection->quoteInto(
@@ -88,7 +90,6 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
                         OR
                          (rule_coupons.expiration_date IS NOT NULL) AND
                          (rule_coupons.expiration_date >= ?) ', $now);
-
             } else {
                 $this->addFieldToFilter(
                     'main_table.coupon_type',
@@ -96,10 +97,10 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
                 );
             }
 
-            $select->where('
-                         (main_table.to_date IS NULL) OR
-                         (main_table.to_date >= ?)
-                       ', $now);
+            $select->where(
+                '(main_table.to_date IS NULL) OR (main_table.to_date >= ?)',
+                $now
+            );
 
             $this->setOrder('sort_order', self::SORT_ORDER_ASC);
             $this->setFlag('validation_filter', true);
@@ -122,7 +123,7 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
     public function addWebsiteGroupDateFilter($websiteId, $customerGroupId, $now = null)
     {
         if (!$this->getFlag('website_group_date_filter')) {
-            if (is_null($now)) {
+            if ($now === null) {
                 $now = $this->_date->date()->format('Y-m-d');
             }
 
@@ -143,7 +144,8 @@ class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
                     (int)$customerGroupId
                 ),
                 []
-            )->where('from_date is null or from_date <= ?', $now);
+            )
+                ->where('from_date is null or from_date <= ?', $now);
 
             $this->addIsActiveFilter();
 

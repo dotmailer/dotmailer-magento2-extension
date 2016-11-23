@@ -7,47 +7,47 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $_scopeConfig;
+    public $scopeConfig;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Magento\Store\Model\App\EmulationFactory
      */
-    protected $_emulationFactory;
+    public $emulationFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
-    protected $_emailOrderFactory;
+    public $emailOrderFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
-    protected $_automationFactory;
+    public $automationFactory;
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
-    protected $_orderCollectionFactory;
+    public $orderCollectionFactory;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * SaveStatusSmsAutomation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory     $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\OrderFactory          $emailOrderFactory
-     * @param \Magento\Framework\Registry                        $registry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface         $storeManagerInterface
-     * @param \Magento\Store\Model\App\EmulationFactory          $emulationFactory
+     * @param \Dotdigitalgroup\Email\Model\AutomationFactory             $automationFactory
+     * @param \Dotdigitalgroup\Email\Model\OrderFactory                  $emailOrderFactory
+     * @param \Magento\Framework\Registry                                $registry
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface         $scopeConfig
+     * @param \Magento\Store\Model\StoreManagerInterface                 $storeManagerInterface
+     * @param \Magento\Store\Model\App\EmulationFactory                  $emulationFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Helper\Data                         $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -59,14 +59,14 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_automationFactory = $automationFactory;
-        $this->_emailOrderFactory = $emailOrderFactory;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_storeManager = $storeManagerInterface;
-        $this->_registry = $registry;
-        $this->_emulationFactory = $emulationFactory;
-        $this->_orderCollectionFactory = $orderCollectionFactory;
-        $this->_helper = $data;
+        $this->automationFactory      = $automationFactory;
+        $this->emailOrderFactory      = $emailOrderFactory;
+        $this->scopeConfig            = $scopeConfig;
+        $this->storeManager           = $storeManagerInterface;
+        $this->registry               = $registry;
+        $this->emulationFactory       = $emulationFactory;
+        $this->orderCollectionFactory = $orderCollectionFactory;
+        $this->helper                 = $data;
     }
 
     /**
@@ -84,15 +84,15 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             $order = $observer->getEvent()->getOrder();
             $status = $order->getStatus();
             $storeId = $order->getStoreId();
-            $store = $this->_storeManager->getStore($storeId);
+            $store = $this->storeManager->getStore($storeId);
             $storeName = $store->getName();
             $websiteId = $store->getWebsiteId();
             $customerEmail = $order->getCustomerEmail();
             // start app emulation
-            $appEmulation = $this->_emulationFactory->create();
+            $appEmulation = $this->emulationFactory->create();
             $initialEnvironmentInfo
                           = $appEmulation->startEnvironmentEmulation($storeId);
-            $emailOrder = $this->_emailOrderFactory->create()
+            $emailOrder = $this->emailOrderFactory->create()
                 ->loadByOrderId($order->getEntityId(), $order->getQuoteId());
             //reimport email order
             $emailOrder->setUpdatedAt($order->getUpdatedAt())
@@ -114,7 +114,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 
             // check for order status change
             $statusBefore
-                = $this->_registry->registry('sales_order_status_before');
+                = $this->registry->registry('sales_order_status_before');
             if ($status != $statusBefore) {
                 //If order status has changed and order is already imported then set modified to 1
                 if ($emailOrder->getEmailImported()
@@ -127,17 +127,21 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             $emailOrder->save();
 
+            //@codingStandardsIgnoreStart
             //Status check automation enrolment
             $configStatusAutomationMap = unserialize(
-                $this->_scopeConfig->getValue(
+                $this->scopeConfig->getValue(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                    $order->getStore()));
+                    $order->getStore()
+                )
+            );
+            //@codingStandardsIgnoreEnd
             if (!empty($configStatusAutomationMap)) {
                 foreach ($configStatusAutomationMap as $configMap) {
                     if ($configMap['status'] == $status) {
                         //send to automation queue
-                        $this->_doAutomationEnrolment(
+                        $this->doAutomationEnrolment(
                             [
                                 'programId' => $configMap['automation'],
                                 'automationType' => 'order_automation_' . $status,
@@ -152,16 +156,17 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             }
             //If customer's first order
             if ($order->getCustomerId()) {
-                $orders = $this->_orderCollectionFactory->create()
+                $orders = $this->orderCollectionFactory->create()
                     ->addFieldToFilter('customer_id', $order->getCustomerId());
                 if ($orders->getSize() == 1) {
                     $automationTypeNewOrder
                         = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
-                    $programIdNewOrder = $this->_helper->getAutomationIdByType(
-                        'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER', $order->getWebsiteId()
+                    $programIdNewOrder = $this->helper->getAutomationIdByType(
+                        'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
+                        $order->getWebsiteId()
                     );
                     //send to automation queue
-                    $this->_doAutomationEnrolment(
+                    $this->doAutomationEnrolment(
                         [
                             'programId' => $programIdNewOrder,
                             'automationType' => $automationTypeNewOrder,
@@ -174,7 +179,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                 }
             }
             //admin oder when editing the first one is canceled
-            $this->_registry->unregister('sales_order_status_before');
+            $this->registry->unregister('sales_order_status_before');
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
@@ -187,16 +192,16 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      *
      * @param $data
      */
-    private function _doAutomationEnrolment($data)
+    public function doAutomationEnrolment($data)
     {
         //the program is not mapped
-        if (!$data['programId']) {
-            $this->_helper->log(
+        if (! $data['programId']) {
+            $this->helper->log(
                 'automation type : ' . $data['automationType'] . ' program id not found'
             );
         } else {
             try {
-                $this->_automationFactory->create()
+                $this->automationFactory->create()
                     ->setEmail($data['email'])
                     ->setAutomationType($data['automationType'])
                     ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
@@ -206,7 +211,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                     ->setProgramId($data['programId'])
                     ->save();
             } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, []);
+                $this->helper->debug((string)$e, []);
             }
         }
     }

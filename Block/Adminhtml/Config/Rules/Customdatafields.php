@@ -4,22 +4,30 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules;
 
 class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
-    protected $_getAttributeRenderer;
 
-    protected $_getConditionsRenderer;
 
-    protected $_getValueRenderer;
+    protected $getAttributeRenderer;
 
-    protected $_condition;
-    protected $_value;
+    protected $getConditionsRenderer;
+
+    protected $getValueRenderer;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
+     */
+    protected $condition;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
+     */
+    protected $value;
 
     /**
      * Customdatafields constructor.
      *
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition ,
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $value
-     * @param array $data
+     * @param \Magento\Backend\Block\Template\Context                       $context
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $value
+     * @param array                                                         $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
@@ -27,19 +35,19 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $value,
         $data = []
     ) {
-        $this->_condition = $condition;
-        $this->_value = $value;
+        $this->condition = $condition;
+        $this->value     = $value;
         $this->_addAfter = false;
 
         $this->_addButtonLabel = __('Add New Condition');
         parent::__construct($context, $data);
     }
 
-    protected function _prepareToRender()
+    public function _prepareToRender()
     {
-        $this->_getConditionsRenderer = null;
-        $this->_getAttributeRenderer = null;
-        $this->_getValueRenderer = null;
+        $this->getConditionsRenderer = null;
+        $this->getAttributeRenderer  = null;
+        $this->getValueRenderer      = null;
         $this->addColumn(
             'attribute',
             [
@@ -87,7 +95,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
                 ->setOptions(
-                    $this->_condition->toOptionArray()
+                    $this->condition->toOptionArray()
                 )
                 ->toHtml();
         } elseif ($columnName == 'cvalue') {
@@ -96,7 +104,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
                 ->setOptions(
-                    $this->_value->toOptionArray()
+                    $this->value->toOptionArray()
                 )
                 ->toHtml();
         }
@@ -107,7 +115,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * @param \Magento\Framework\DataObject $row
      */
-    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
+    public function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
         $options = [];
 
@@ -132,10 +140,10 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @return mixed
      */
-    protected function _getAttributeRenderer()
+    public function _getAttributeRenderer()
     {
-        if (!$this->_getAttributeRenderer) {
-            $this->_getAttributeRenderer = $this->getLayout()
+        if (!$this->getAttributeRenderer) {
+            $this->getAttributeRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
                     '',
@@ -143,7 +151,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                 );
         }
 
-        return $this->_getAttributeRenderer;
+        return $this->getAttributeRenderer;
     }
 
     /**
@@ -151,10 +159,10 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @return mixed
      */
-    protected function _getConditionsRenderer()
+    public function _getConditionsRenderer()
     {
-        if (!$this->_getConditionsRenderer) {
-            $this->_getConditionsRenderer = $this->getLayout()
+        if (!$this->getConditionsRenderer) {
+            $this->getConditionsRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
                     '',
@@ -162,7 +170,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                 );
         }
 
-        return $this->_getConditionsRenderer;
+        return $this->getConditionsRenderer;
     }
 
     /**
@@ -170,10 +178,10 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @return mixed
      */
-    protected function _getValueRenderer()
+    public function _getValueRenderer()
     {
-        if (!$this->_getValueRenderer) {
-            $this->_getValueRenderer = $this->getLayout()
+        if (!$this->getValueRenderer) {
+            $this->getValueRenderer = $this->getLayout()
                 ->createBlock(
                     'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
                     '',
@@ -181,7 +189,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                 );
         }
 
-        return $this->_getValueRenderer;
+        return $this->getValueRenderer;
     }
 
     /**
@@ -226,8 +234,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
                     function doUpdate(item){
                         var url = '" . $this->getUrl(
-                'dotdigitalgroup_email/rules/ajax'
-            ) . "';
+            'dotdigitalgroup_email/rules/ajax'
+        ) . "';
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
                         var value = item.up(1).down().next(1);
@@ -258,8 +266,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
                     function doUpdateWithValues(item){
                         var url = '" . $this->getUrl(
-                'dotdigitalgroup_email/rules/selected'
-            ) . "';
+            'dotdigitalgroup_email/rules/selected'
+        ) . "';
                         var arrayKey = item.up(1).readAttribute('id');
                         var cond = item.up(1).down().next();
                         var condName = cond.down().readAttribute('name');
@@ -294,8 +302,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
                     function doUpdateForCondition(item){
                         var url = '" . $this->getUrl(
-                'dotdigitalgroup_email/rules/value'
-            ) . "';
+            'dotdigitalgroup_email/rules/value'
+        ) . "';
                         var attribute = item.up(1).down();
                         var attributeValue = attribute.down().value;
                         var value = item.up().next();

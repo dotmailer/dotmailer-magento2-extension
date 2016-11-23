@@ -3,15 +3,17 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Rules;
 
 class Collection extends
-    \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+ \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
      * Initialize resource collection.
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\Rules',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Rules');
+        $this->_init(
+            'Dotdigitalgroup\Email\Model\Rules',
+            'Dotdigitalgroup\Email\Model\ResourceModel\Rules'
+        );
     }
 
     /**

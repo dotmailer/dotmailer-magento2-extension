@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional;
 
-class Port
+class Port implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Options getter.

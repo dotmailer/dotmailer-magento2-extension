@@ -7,7 +7,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    protected $_localeDate;
+    public $localeDate;
 
     /**
      * Importer constructor.
@@ -19,7 +19,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
-        $this->_localeDate = $localeDate;
+        $this->localeDate = $localeDate;
         parent::__construct($context);
     }
 
@@ -42,7 +42,8 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $conn = $this->getConnection();
-            $num = $conn->update($this->getTable('email_importer'),
+            $num = $conn->update(
+                $this->getTable('email_importer'),
                 ['import_status' => 0],
                 ['id IN(?)' => $ids]
             );
@@ -64,7 +65,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $interval = new \DateInterval('P30D');
-            $date = $this->_localeDate->date()->sub($interval)->format('Y-m-d H:i:s');
+            $date = $this->localeDate->date()->sub($interval)->format('Y-m-d H:i:s');
             $conn = $this->getConnection();
             $num = $conn->delete(
                 $tableName,

@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_dataHelper;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $dataHelper;
 
     /**
      * Recentlyviewed constructor.
@@ -16,7 +20,7 @@ class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context
     ) {
-        $this->_dataHelper = $dataHelper;
+        $this->dataHelper = $dataHelper;
 
         parent::__construct($context);
     }
@@ -26,17 +30,17 @@ class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //generate base url for dynamic content
-        $baseUrl = $this->_dataHelper->generateDynamicUrl();
+        $baseUrl = $this->dataHelper->generateDynamicUrl();
 
         //config passcode
-        $passcode = $this->_dataHelper->getPasscode();
-        $customerId = $this->_dataHelper->getMappedCustomerId();
+        $passcode = $this->dataHelper->getPasscode();
+        $customerId = $this->dataHelper->getMappedCustomerId();
 
-        if (!strlen($passcode)) {
+        if (empty($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
         if (!$customerId) {
@@ -44,8 +48,12 @@ class Recentlyviewed extends \Magento\Config\Block\System\Config\Form\Field
         }
         //dynamic content url
         $text
-            = sprintf('%sconnector/report/recentlyviewed/code/%s/customer_id/@%s@',
-            $baseUrl, $passcode, $customerId);
+            = sprintf(
+                '%sconnector/report/recentlyviewed/code/%s/customer_id/@%s@',
+                $baseUrl,
+                $passcode,
+                $customerId
+            );
         $element->setData('value', $text);
 
         return parent::_getElementHtml($element);

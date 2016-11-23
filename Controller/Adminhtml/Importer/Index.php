@@ -10,7 +10,7 @@ class Index extends \Magento\Backend\App\Action
     /**
      * @var PageFactory
      */
-    protected $resultPageFactory;
+    public $resultPageFactory;
 
     /**
      * @param Context $context
@@ -41,11 +41,16 @@ class Index extends \Magento\Backend\App\Action
      */
     public function execute()
     {
+        //Call page factory to render layout and page content
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
+        //Set the menu which will be active for this page
         $resultPage->setActiveMenu('Dotdigitalgroup_Email::importer');
-        $resultPage->addBreadcrumb(__('Importer'), __('Importer '));
-        $resultPage->getConfig()->getTitle()->prepend(__('Importer Report'));
+        //Set the header title of grid
+        $resultPage->getConfig()->getTitle()->prepend(__('Import Report'));
+
+        $resultPage->addBreadcrumb(__('Report'), __('Report'));
+        $resultPage->addBreadcrumb(__('Importer'), __('Importer'));
 
         return $resultPage;
     }

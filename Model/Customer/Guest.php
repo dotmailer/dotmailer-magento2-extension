@@ -7,27 +7,27 @@ class Guest
     /**
      * @var int
      */
-    protected $_countGuests = 0;
+    public $countGuests = 0;
     /**
      * @var
      */
-    protected $_start;
+    public $start;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    protected $_file;
+    public $file;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * Guest constructor.
@@ -43,10 +43,10 @@ class Guest
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper
     ) {
-        $this->_importerFactory = $importerFactory;
-        $this->_contactFactory = $contactFactory;
-        $this->_helper = $helper;
-        $this->_file = $file;
+        $this->importerFactory = $importerFactory;
+        $this->contactFactory  = $contactFactory;
+        $this->helper          = $helper;
+        $this->file            = $file;
     }
 
     /**
@@ -54,30 +54,28 @@ class Guest
      */
     public function sync()
     {
-        $this->_start = microtime(true);
-        $websites = $this->_helper->getWebsites();
-        $started = false;
+        $this->start = microtime(true);
+        $websites    = $this->helper->getWebsites();
+        $started     = false;
 
         foreach ($websites as $website) {
-
             //check if the guest is mapped and enabled
-            $addresbook = $this->_helper->getGuestAddressBook($website);
-            $guestSyncEnabled = $this->_helper->isGuestSyncEnabled($website);
-            $apiEnabled = $this->_helper->isEnabled($website);
+            $addresbook = $this->helper->getGuestAddressBook($website);
+            $guestSyncEnabled = $this->helper->isGuestSyncEnabled($website);
+            $apiEnabled = $this->helper->isEnabled($website);
             if ($addresbook && $guestSyncEnabled && $apiEnabled) {
-
                 //sync guests for website
                 $this->exportGuestPerWebsite($website);
 
-                if ($this->_countGuests && !$started) {
-                    $this->_helper->log('----------- Start guest sync ----------');
+                if ($this->countGuests && !$started) {
+                    $this->helper->log('----------- Start guest sync ----------');
                     $started = true;
                 }
             }
         }
-        if ($this->_countGuests) {
-            $this->_helper->log('---- End Guest total time for guest sync : '
-                . gmdate('H:i:s', microtime(true) - $this->_start));
+        if ($this->countGuests) {
+            $this->helper->log('---- End Guest total time for guest sync : '
+                . gmdate('H:i:s', microtime(true) - $this->start));
         }
     }
 
@@ -90,16 +88,18 @@ class Guest
      */
     public function exportGuestPerWebsite($website)
     {
-        $guests = $this->_contactFactory->create()
+        $guests = $this->contactFactory->create()
             ->getGuests($website);
         //found some guests
         if ($guests->getSize()) {
             $guestFilename = strtolower($website->getCode() . '_guest_'
                 . date('d_m_Y_Hi') . '.csv');
-            $this->_helper->log('Guest file: ' . $guestFilename);
-            $storeName = $this->_helper->getMappedStoreName($website);
-            $this->_file->outputCSV($this->_file->getFilePath($guestFilename),
-                ['Email', 'emailType', $storeName]);
+            $this->helper->log('Guest file: ' . $guestFilename);
+            $storeName = $this->helper->getMappedStoreName($website);
+            $this->file->outputCSV(
+                $this->file->getFilePath($guestFilename),
+                ['Email', 'emailType', $storeName]
+            );
 
             foreach ($guests as $guest) {
                 $email = $guest->getEmail();
@@ -110,16 +110,18 @@ class Guest
                     //@codingStandardsIgnoreEnd
                     $storeName = $website->getName();
                     // save data for guests
-                    $this->_file->outputCSV($this->_file->getFilePath($guestFilename),
-                        [$email, 'Html', $storeName]);
-                    ++$this->_countGuests;
+                    $this->file->outputCSV(
+                        $this->file->getFilePath($guestFilename),
+                        [$email, 'Html', $storeName]
+                    );
+                    ++$this->countGuests;
                 } catch (\Exception $e) {
                     throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
                 }
             }
-            if ($this->_countGuests) {
+            if ($this->countGuests) {
                 //register in queue with importer
-                $this->_importerFactory->create()
+                $this->importerFactory->create()
                     ->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_GUEST,
                         '',

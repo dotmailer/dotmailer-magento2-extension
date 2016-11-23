@@ -7,15 +7,15 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
-    protected $_dateTime;
+    public $dateTime;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
 
     /**
      * Automation constructor.
@@ -39,11 +39,15 @@ class Automation extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_dateTime = $dateTime;
-        $this->_helper = $helper;
-        $this->_storeManager = $storeManagerInterface;
+        $this->dateTime     = $dateTime;
+        $this->helper       = $helper;
+        $this->storeManager = $storeManagerInterface;
         parent::__construct(
-            $context, $registry, $resource, $resourceCollection, $data
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
         );
     }
 
@@ -67,9 +71,9 @@ class Automation extends \Magento\Framework\Model\AbstractModel
         //@codingStandardsIgnoreEnd
         parent::beforeSave();
         if ($this->isObjectNew()) {
-            $this->setCreatedAt($this->_dateTime->formatDate(true));
+            $this->setCreatedAt($this->dateTime->formatDate(true));
         }
-        $this->setUpdatedAt($this->_dateTime->formatDate(true));
+        $this->setUpdatedAt($this->dateTime->formatDate(true));
 
         return $this;
     }
@@ -84,16 +88,20 @@ class Automation extends \Magento\Framework\Model\AbstractModel
         $email = $customer->getEmail();
         $websiteId = $customer->getWebsiteId();
         $customerId = $customer->getId();
-        $store = $this->_storeManager->getStore($customer->getStoreId());
+        $store = $this->storeManager->getStore($customer->getStoreId());
         $storeName = $store->getName();
         try {
             //Api is enabled
-            $apiEnabled = $this->_helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
+            $apiEnabled = $this->helper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
+                $websiteId
+            );
 
             //Automation enrolment
-            $programId = $this->_helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER, $websiteId);
+            $programId = $this->helper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER,
+                $websiteId
+            );
 
             //new contact program mapped
             if ($programId && $apiEnabled) {
@@ -108,7 +116,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
                 $this->save();
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
     }
 }

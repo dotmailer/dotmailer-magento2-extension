@@ -47,25 +47,33 @@ class Review
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
+
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     */
+    public $localeDate;
 
     /**
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
-        $this->_helper = $data;
-        $this->_storeManager = $storeManagerInterface;
+        $this->helper       = $data;
+        $this->storeManager = $storeManagerInterface;
+        $this->localeDate   = $localeDate;
     }
 
     /**
@@ -141,9 +149,7 @@ class Review
      */
     public function setReviewDate($date)
     {
-        $createdAt = new \Zend_Date($date, \Zend_Date::ISO_8601);
-
-        $this->reviewDate = $createdAt->toString(\Zend_Date::ISO_8601);
+        $this->reviewDate = $this->localeDate->date($date)->format(\Zend_Date::ISO_8601);
 
         return $this;
     }
@@ -176,7 +182,7 @@ class Review
      */
     public function setReviewData(\Magento\Review\Model\Review $review)
     {
-        $store = $this->_storeManager->getStore($review->getStoreId());
+        $store = $this->storeManager->getStore($review->getStoreId());
         $websiteName = $store->getWebsite()->getName();
         $storeName = $store->getName();
         $this->setId($review->getReviewId())
@@ -297,15 +303,8 @@ class Review
     public function __sleep()
     {
         $properties = array_keys(get_object_vars($this));
-        $properties = array_diff($properties, ['_storeManager', '_helper']);
+        $properties = array_diff($properties, ['_storeManager', '_helper', '_localeDate']);
 
         return $properties;
-    }
-
-    /**
-     * Init not serializable fields.
-     */
-    public function __wakeup()
-    {
     }
 }

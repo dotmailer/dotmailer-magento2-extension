@@ -7,22 +7,22 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
     /**
      * @var null
      */
-    protected $_options = null;
+    public $options = null;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
 
     /**
      * Configuration structure.
      *
      * @var \Magento\Config\Model\Config\Structure
      */
-    protected $_configStructure;
+    public $configStructure;
 
     /**
      * Addressbooks constructor.
@@ -35,11 +35,10 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Config\Model\Config\Structure $configStructure
-
     ) {
-        $this->_registry = $registry;
-        $this->_helper = $data;
-        $this->_configStructure = $configStructure;
+        $this->registry        = $registry;
+        $this->helper          = $data;
+        $this->configStructure = $configStructure;
     }
 
     /**
@@ -53,18 +52,18 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
         // Add a "Do Not Map" Option
         $fields[] = ['value' => 0, 'label' => '-- Please Select --'];
 
-        $apiEnabled = $this->_helper->isEnabled($this->_helper->getWebsite());
+        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsite());
         if ($apiEnabled) {
-            $savedAddressbooks = $this->_registry->registry('addressbooks');
+            $savedAddressbooks = $this->registry->registry('addressbooks');
 
             if ($savedAddressbooks) {
                 $addressBooks = $savedAddressbooks;
             } else {
-                $client = $this->_helper->getWebsiteApiClient();
+                $client = $this->helper->getWebsiteApiClient();
                 //make an api call an register the addressbooks
                 $addressBooks = $client->getAddressBooks();
                 if ($addressBooks) {
-                    $this->_registry->register('addressbooks', $addressBooks);
+                    $this->registry->register('addressbooks', $addressBooks);
                 }
             }
 

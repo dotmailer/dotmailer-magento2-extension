@@ -35,11 +35,11 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var array
      */
-    protected $_reasons
+    public $reasons
         = [
             'Globally Suppressed',
             'Blocked',
@@ -56,7 +56,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * @var array
      */
-    protected $importStatuses
+    public $importStatuses
         = [
             'RejectedByWatchdog',
             'InvalidFileFormat',
@@ -69,43 +69,43 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * @var
      */
-    protected $_bulkPriority;
+    public $bulkPriority;
     /**
      * @var
      */
-    protected $_singlePriority;
+    public $singlePriority;
     /**
      * @var
      */
-    protected $_totalItems;
+    public $totalItems;
     /**
      * @var
      */
-    protected $_bulkSyncLimit;
+    public $bulkSyncLimit;
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
-    protected $_dateTime;
+    public $dateTime;
     /**
      * @var \Magento\Framework\Filesystem\Io\File
      */
-    protected $_file;
+    public $file;
     /**
      * @var ResourceModel\Contact
      */
-    protected $_contact;
+    public $contact;
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    public $objectManager;
     /**
      * @var \Magento\Framework\App\Filesystem\DirectoryList
      */
-    protected $_directoryList;
+    public $directoryList;
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    protected $_fileHelper;
+    public $fileHelper;
 
     /**
      * Importer constructor.
@@ -137,13 +137,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_file = $file;
-        $this->_helper = $helper;
-        $this->_directoryList = $directoryList;
-        $this->_objectManager = $objectManager;
-        $this->_contact = $contact;
-        $this->_dateTime = $dateTime;
-        $this->_fileHelper = $fileHelper;
+        $this->file          = $file;
+        $this->helper        = $helper;
+        $this->directoryList = $directoryList;
+        $this->objectManager = $objectManager;
+        $this->contact       = $contact;
+        $this->dateTime      = $dateTime;
+        $this->fileHelper    = $fileHelper;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -165,9 +165,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         parent::beforeSave();
         //@codingStandardsIgnoreEnd
         if ($this->isObjectNew()) {
-            $this->setCreatedAt($this->_dateTime->formatDate(true));
+            $this->setCreatedAt($this->dateTime->formatDate(true));
         }
-        $this->setUpdatedAt($this->_dateTime->formatDate(true));
+        $this->setUpdatedAt($this->dateTime->formatDate(true));
 
         return $this;
     }
@@ -207,7 +207,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
             return true;
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return false;
@@ -219,10 +219,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     public function processQueue()
     {
         //Set items to 0
-        $this->_totalItems = 0;
+        $this->totalItems = 0;
 
         //Set bulk sync limit
-        $this->_bulkSyncLimit = 5;
+        $this->bulkSyncLimit = 5;
 
         //Set priority
         $this->_setPriority();
@@ -231,35 +231,35 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $this->_checkImportStatus();
 
         //Bulk priority. Process group 1 first
-        foreach ($this->_bulkPriority as $bulk) {
-            if ($this->_totalItems < $bulk['limit']) {
+        foreach ($this->bulkPriority as $bulk) {
+            if ($this->totalItems < $bulk['limit']) {
                 $collection = $this->_getQueue(
                     $bulk['type'],
                     $bulk['mode'],
-                    $bulk['limit'] - $this->_totalItems
+                    $bulk['limit'] - $this->totalItems
                 );
                 if ($collection->getSize()) {
-                    $this->_totalItems += $collection->getSize();
-                    $bulkModel = $this->_objectManager->create($bulk['model']);
+                    $this->totalItems += $collection->getSize();
+                    $bulkModel = $this->objectManager->create($bulk['model']);
                     $bulkModel->sync($collection);
                 }
             }
         }
 
         //reset total items to 0
-        $this->_totalItems = 0;
+        $this->totalItems = 0;
 
         //Single/Update priority.
-        foreach ($this->_singlePriority as $single) {
-            if ($this->_totalItems < $single['limit']) {
+        foreach ($this->singlePriority as $single) {
+            if ($this->totalItems < $single['limit']) {
                 $collection = $this->_getQueue(
                     $single['type'],
                     $single['mode'],
-                    $single['limit'] - $this->_totalItems
+                    $single['limit'] - $this->totalItems
                 );
                 if ($collection->getSize()) {
-                    $this->_totalItems += $collection->getSize();
-                    $singleModel = $this->_objectManager->create(
+                    $this->totalItems += $collection->getSize();
+                    $singleModel = $this->objectManager->create(
                         $single['model']
                     );
                     $singleModel->sync($collection);
@@ -271,7 +271,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Set importing priority.
      */
-    protected function _setPriority()
+    public function _setPriority()
     {
         /*
          * Bulk
@@ -281,7 +281,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             'model' => '',
             'mode' => self::MODE_BULK,
             'type' => '',
-            'limit' => $this->_bulkSyncLimit,
+            'limit' => $this->bulkSyncLimit,
         ];
 
         //Contact Bulk
@@ -375,13 +375,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         ];
 
         //Bulk Priority
-        $this->_bulkPriority = [
+        $this->bulkPriority = [
             $contact,
             $order,
             $other,
         ];
 
-        $this->_singlePriority = [
+        $this->singlePriority = [
             $subscriberResubscribe,
             $subscriberUpdate,
             $emailChange,
@@ -395,22 +395,20 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Check importing status for pending import.
      */
-    protected function _checkImportStatus()
+    public function _checkImportStatus()
     {
-        $this->_helper->allowResourceFullExecution();
-        if ($items = $this->_getImportingItems($this->_bulkSyncLimit)) {
+        if ($items = $this->_getImportingItems($this->bulkSyncLimit)) {
             foreach ($items as $item) {
                 $websiteId = $item->getWebsiteId();
                 $client = false;
-                if ($this->_helper->isEnabled($websiteId)) {
-                    $client = $this->_helper->getWebsiteApiClient(
+                if ($this->helper->isEnabled($websiteId)) {
+                    $client = $this->helper->getWebsiteApiClient(
                         $websiteId
                     );
                 }
                 if ($client) {
                     try {
-                        if (
-                            $item->getImportType() == self::IMPORT_TYPE_CONTACT
+                        if ($item->getImportType() == self::IMPORT_TYPE_CONTACT
                             or
                             $item->getImportType()
                             == self::IMPORT_TYPE_SUBSCRIBERS
@@ -424,8 +422,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                         } else {
                             $response
                                 = $client->getContactsTransactionalDataImportByImportId(
-                                $item->getImportId()
-                            );
+                                    $item->getImportId()
+                                );
                         }
                     } catch (\Exception $e) {
                         //@codingStandardsIgnoreStart
@@ -454,7 +452,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             ) {
                                 //if file
                                 if ($file = $item->getImportFile()) {
-                                    $this->_fileHelper->archiveCSV($file);
+                                    $this->fileHelper->archiveCSV($file);
                                 }
 
                                 if ($item->getImportId()) {
@@ -475,7 +473,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             //@codingStandardsIgnoreEnd
                         } else {
                             //Not finished
-                            $this->_totalItems += 1;
+                            $this->totalItems += 1;
                         }
                     }
                 }
@@ -490,7 +488,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return $this|bool
      */
-    protected function _getImportingItems($limit)
+    public function _getImportingItems($limit)
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('import_status', ['eq' => self::IMPORTING])
@@ -513,24 +511,24 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _processContactImportReportFaults($id, $websiteId)
+    public function _processContactImportReportFaults($id, $websiteId)
     {
-        $client = $this->_helper->getWebsiteApiClient($websiteId);
+        $client = $this->helper->getWebsiteApiClient($websiteId);
         $response = $client->getContactImportReportFaults($id);
 
         if ($response) {
             $data = $this->_removeUtf8Bom($response);
-            $fileName = $this->_directoryList->getPath('var')
+            $fileName = $this->directoryList->getPath('var')
                 . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
-            $this->_file->open();
-            $check = $this->_file->write($fileName, $data);
+            $this->file->open();
+            $check = $this->file->write($fileName, $data);
 
             if ($check) {
                 $csvArray = $this->_csvToArray($fileName);
-                $this->_file->rm($fileName);
-                $this->_contact->unsubscribe($csvArray);
+                $this->file->rm($fileName);
+                $this->contact->unsubscribe($csvArray);
             } else {
-                $this->_helper->log(
+                $this->helper->log(
                     '_processContactImportReportFaults: cannot save data to CSV file.'
                 );
             }
@@ -544,7 +542,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return mixed
      */
-    protected function _removeUtf8Bom($text)
+    public function _removeUtf8Bom($text)
     {
         $bom = pack('H*', 'EFBBBF');
         $text = preg_replace("/^$bom/", '', $text);
@@ -559,7 +557,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return array|bool
      */
-    protected function _csvToArray($filename)
+    public function _csvToArray($filename)
     {
         //@codingStandardsIgnoreStart
         if (!file_exists($filename) || !is_readable($filename)) {
@@ -582,7 +580,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
         $contacts = [];
         foreach ($data as $item) {
-            if (in_array($item['Reason'], $this->_reasons)) {
+            if (in_array($item['Reason'], $this->reasons)) {
                 $contacts[] = $item['email'];
             }
         }
@@ -599,7 +597,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
      */
-    protected function _getQueue($importType, $importMode, $limit)
+    public function _getQueue($importType, $importMode, $limit)
     {
         $collection = $this->getCollection();
 
@@ -615,13 +613,15 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             $collection->addFieldToFilter('import_type', $condition);
         } else {
             $collection->addFieldToFilter(
-                'import_type', ['eq' => $importType]
+                'import_type',
+                ['eq' => $importType]
             );
         }
 
         $collection->addFieldToFilter('import_mode', ['eq' => $importMode])
             ->addFieldToFilter(
-                'import_status', ['eq' => self::NOT_IMPORTED]
+                'import_status',
+                ['eq' => self::NOT_IMPORTED]
             )
             ->setPageSize($limit)
             ->setCurPage(1);

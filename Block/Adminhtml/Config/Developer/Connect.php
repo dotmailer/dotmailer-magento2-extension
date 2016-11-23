@@ -8,33 +8,34 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @var string
      */
-    protected $_buttonLabel = 'Connect';
+    public $buttonLabel = 'Connect';
 
     /**
      * @var \Magento\Backend\Model\Auth
      */
-    protected $_auth;
+    public $auth;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
 
     /**
      * @var \Magento\Backend\Model\Auth\Session
      */
-    protected $_sessionModel;
+    public $sessionModel;
 
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
-    protected $_configHelper;
+    public $configHelper;
 
     /**
      * Connect constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data      $helper
+     * @param \Dotdigitalgroup\Email\Helper\Config    $configHelper
      * @param \Magento\Backend\Model\Auth             $auth
      * @param \Magento\Backend\Block\Template\Context $context
      * @param array                                   $data
@@ -43,15 +44,12 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         \Magento\Backend\Model\Auth $auth,
-        \Magento\Backend\Model\Auth\Session $sessionModel,
         \Magento\Backend\Block\Template\Context $context,
         $data = []
     ) {
-        $this->_helper = $helper;
-        $this->_configHelper = $configHelper;
-        $this->_sessionModel = $sessionModel;
-
-        $this->_auth = $auth;
+        $this->helper       = $helper;
+        $this->configHelper = $configHelper;
+        $this->auth         = $auth;
 
         parent::__construct($context, $data);
     }
@@ -63,7 +61,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function setButtonLabel($buttonLabel)
     {
-        $this->_buttonLabel = $buttonLabel;
+        $this->buttonLabel = $buttonLabel;
 
         return $this;
     }
@@ -76,18 +74,17 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      * @return string
      * @codingStandardsIgnoreStart
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
         $url = $this->getAuthoriseUrl();
-        $ssl = $this->_checkForSecureUrl();
         $disabled = false;
         //disable for ssl missing
-        if (!$ssl) {
+        if (! $this->_isSecureUrl()) {
             $disabled = true;
         }
 
-        $adminUser = $this->_auth->getUser();
+        $adminUser = $this->auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
 
         $title = ($refreshToken) ? __('Disconnect') : __('Connect');
@@ -107,20 +104,20 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Check the base url is using ssl.
-     * @return $this|bool
+     * @return bool
      */
-    protected function _checkForSecureUrl()
+    public function _isSecureUrl()
     {
         $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
-            \Magento\Framework\UrlInterface::URL_TYPE_WEB, true
+            \Magento\Framework\UrlInterface::URL_TYPE_WEB,
+            true
         );
 
         if (!preg_match('/https/', $baseUrl)) {
             return false;
         }
 
-        return $this;
+        return true;
     }
 
     /**
@@ -138,7 +135,8 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         $redirectUri = $this->getRedirectUri();
         $redirectUri .= 'connector/email/callback';
 
-        $adminUser = $this->_sessionModel->getUser();
+        $adminUser = $this->auth->getUser();
+
         //query params
         $params = [
             'redirect_uri' => $redirectUri,
@@ -147,7 +145,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
             'response_type' => 'code',
         ];
 
-        $authorizeBaseUrl = $this->_configHelper
+        $authorizeBaseUrl = $this->configHelper
             ->getAuthorizeLink();
         $url = $authorizeBaseUrl . http_build_query($params)
             . '&client_id=' . $clientId;

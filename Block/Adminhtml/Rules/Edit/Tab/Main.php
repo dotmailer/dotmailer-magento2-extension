@@ -2,13 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-class Main extends \Magento\Backend\Block\Widget\Form\Generic
-    implements \Magento\Backend\Block\Widget\Tab\TabInterface
+class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**
      * @var \Magento\Store\Model\System\Store
      */
-    protected $_systemStore;
+    public $systemStore;
 
     /**
      * Main constructor.
@@ -26,7 +25,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
         \Magento\Store\Model\System\Store $systemStore,
         array $data = []
     ) {
-        $this->_systemStore = $systemStore;
+        $this->systemStore = $systemStore;
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
@@ -75,14 +74,15 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _prepareForm()
+    public function _prepareForm()
     {
         $model = $this->_coreRegistry->registry('current_ddg_rule');
 
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
 
-        $fieldset = $form->addFieldset('base_fieldset',
+        $fieldset = $form->addFieldset(
+            'base_fieldset',
             ['legend' => __('Rule Information')]
         );
 
@@ -127,8 +127,11 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
 
         if ($this->_storeManager->isSingleStoreMode()) {
             $websiteId = $this->_storeManager->getStore(true)->getWebsiteId();
-            $fieldset->addField('website_ids', 'hidden',
-                ['name' => 'website_ids[]', 'value' => $websiteId]);
+            $fieldset->addField(
+                'website_ids',
+                'hidden',
+                ['name' => 'website_ids[]', 'value' => $websiteId]
+            );
             $model->setWebsiteIds($websiteId);
         } else {
             $field = $fieldset->addField(
@@ -139,7 +142,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic
                     'label' => __('Websites'),
                     'title' => __('Websites'),
                     'required' => true,
-                    'values' => $this->_systemStore->getWebsiteValuesForForm(),
+                    'values' => $this->systemStore->getWebsiteValuesForForm(),
                 ]
             );
             $renderer = $this->getLayout()->createBlock(

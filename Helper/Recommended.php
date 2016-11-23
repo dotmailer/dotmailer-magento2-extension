@@ -33,23 +33,27 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var \Magento\Framework\App\Helper\Context
      */
-    protected $_context;
+    public $context;
     /**
      * @var Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var
      */
-    protected $_backendConfig;
+    public $backendConfig;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    protected $_adapter;
+    public $adapter;
+    /**
+     * @var \Zend_Date
+     */
+    public $date;
 
     /**
      * Recommended constructor.
@@ -58,17 +62,20 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Zend_Date $date
      */
     public function __construct(
         \Magento\Framework\App\ResourceConnection $adapter,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Zend_Date $date
     ) {
-        $this->_adapter = $adapter;
-        $this->_helper = $data;
-        $this->_context = $context;
-        $this->_storeManager = $storeManager;
+        $this->adapter      = $adapter;
+        $this->helper       = $data;
+        $this->context      = $context;
+        $this->storeManager = $storeManager;
+        $this->date         = $date;
 
         parent::__construct($context);
     }
@@ -80,7 +87,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getDisplayType()
     {
-        $mode = $this->_context->getRequest()->getActionName();
+        $mode = $this->context->getRequest()->getActionName();
 
         $type = '';
 
@@ -255,9 +262,10 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         );
         if ($fallbackIds) {
             return explode(
-                ',', $this->scopeConfig->getValue(
-                self::XML_PATH_FALLBACK_PRODUCTS_ITEMS
-            )
+                ',',
+                $this->scopeConfig->getValue(
+                    self::XML_PATH_FALLBACK_PRODUCTS_ITEMS
+                )
             );
         }
 
@@ -273,7 +281,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getTimeFromConfig($config)
     {
-        $now = new \Zend_Date();
+        $now = $this->date;
         $period = 'M';
 
         if ($config == 'mostviewed') {

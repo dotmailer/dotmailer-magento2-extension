@@ -7,27 +7,27 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    protected $_registry;
+    public $registry;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    protected $_customerFactory;
+    public $customerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    protected $_contactFactory;
+    public $contactFactory;
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
-    protected $_wishlist;
+    public $wishlist;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * CreateUpdateContact constructor.
@@ -47,12 +47,12 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
-        $this->_wishlist = $wishlist;
-        $this->_contactFactory = $contactFactory;
-        $this->_customerFactory = $customerFactory;
-        $this->_helper = $data;
-        $this->_registry = $registry;
-        $this->_importerFactory = $importerFactory;
+        $this->wishlist        = $wishlist;
+        $this->contactFactory  = $contactFactory;
+        $this->customerFactory = $customerFactory;
+        $this->helper          = $data;
+        $this->registry        = $registry;
+        $this->importerFactory = $importerFactory;
     }
 
     /**
@@ -73,18 +73,18 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 
         try {
             // fix for a multiple hit of the observer
-            $emailReg = $this->_registry->registry($email . '_customer_save');
+            $emailReg = $this->registry->registry($email . '_customer_save');
             if ($emailReg) {
                 return $this;
             }
-            $this->_registry->register($email . '_customer_save', $email);
-            $emailBefore = $this->_customerFactory->create()
+            $this->registry->register($email . '_customer_save', $email);
+            $emailBefore = $this->customerFactory->create()
                 ->load($customer->getId())->getEmail();
-            $contactModel = $this->_contactFactory->create()
+            $contactModel = $this->contactFactory->create()
                 ->loadByCustomerEmail($emailBefore, $websiteId);
             //email change detection
             if ($email != $emailBefore) {
-                $this->_helper->log('email change detected : ' . $email
+                $this->helper->log('email change detected : ' . $email
                     . ', after : ' . $emailBefore . ', website id : '
                     . $websiteId);
 
@@ -93,7 +93,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                     'email' => $email,
                     'isSubscribed' => $isSubscribed,
                 ];
-                $this->_importerFactory->registerQueue(
+                $this->importerFactory->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT_UPDATE,
                     $data,
                     \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_EMAIL_UPDATE,
@@ -107,7 +107,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 ->setCustomerId($customerId)
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return $this;

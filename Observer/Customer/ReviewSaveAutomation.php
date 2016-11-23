@@ -7,24 +7,24 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    protected $_customerFactory;
+    public $customerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ReviewFactory
      */
-    protected $_reviewFactory;
+    public $reviewFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
-    protected $_automationFactory;
+    public $automationFactory;
 
     /**
      * ReviewSaveAutomation constructor.
@@ -38,16 +38,15 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_reviewFactory = $reviewFactory;
-        $this->_automationFactory = $automationFactory;
-        $this->_customerFactory = $customerFactory;
-        $this->_helper = $data;
-        $this->_storeManager = $storeManagerInterface;
+        $this->reviewFactory     = $reviewFactory;
+        $this->automationFactory = $automationFactory;
+        $this->customerFactory   = $customerFactory;
+        $this->helper            = $data;
+        $this->storeManager      = $storeManagerInterface;
     }
 
     /**
@@ -66,23 +65,23 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             == \Magento\Review\Model\Review::STATUS_APPROVED
         ) {
             $customerId = $dataObject->getCustomerId();
-            $this->_helper->setConnectorContactToReImport($customerId);
+            $this->helper->setConnectorContactToReImport($customerId);
             //save review info in the table
-            $this->_registerReview($dataObject);
-            $store = $this->_storeManager->getStore($dataObject->getStoreId());
+            $this->registerReview($dataObject);
+            $store = $this->storeManager->getStore($dataObject->getStoreId());
             $storeName = $store->getName();
-            $website = $this->_storeManager->getStore($store)->getWebsite();
-            $customer = $this->_customerFactory->create()
+            $website = $this->storeManager->getStore($store)->getWebsite();
+            $customer = $this->customerFactory->create()
                 ->load($customerId);
             //if api is not enabled
-            if (!$this->_helper->isEnabled($website)) {
+            if (!$this->helper->isEnabled($website)) {
                 return $this;
             }
 
             $programId
-                = $this->_helper->getWebsiteConfig('connector_automation/visitor_automation/review_automation');
+                = $this->helper->getWebsiteConfig('connector_automation/visitor_automation/review_automation');
             if ($programId) {
-                $automation = $this->_automationFactory->create();
+                $automation = $this->automationFactory->create();
                 $automation->setEmail($customer->getEmail())
                     ->setAutomationType(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_REVIEW)
                     ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
@@ -102,16 +101,16 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
      *
      * @param $review
      */
-    protected function _registerReview($review)
+    public function registerReview($review)
     {
         try {
-            $this->_reviewFactory->create()
+            $this->reviewFactory->create()
                 ->setReviewId($review->getReviewId())
                 ->setCustomerId($review->getCustomerId())
                 ->setStoreId($review->getStoreId())
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
     }
 }

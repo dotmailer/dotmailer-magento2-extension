@@ -9,28 +9,24 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @var string
      */
-    protected $_vatButtonLabel = 'New Addressbook';
+    public $vatButtonLabel = 'New Addressbook';
 
     /**
-     * Set Validate VAT Button Label.
+     * @param $vatButtonLabel
      *
-     * @param string $vatButtonLabel
-     *
-     * @return \Magento\Customer\Block\Adminhtml\System\Config\Validatevat
+     * @return $this
      */
     public function setVatButtonLabel($vatButtonLabel)
     {
-        $this->_vatButtonLabel = $vatButtonLabel;
+        $this->vatButtonLabel = $vatButtonLabel;
 
         return $this;
     }
 
     /**
-     * Set template to itself.
-     *
-     * @return \Magento\Customer\Block\Adminhtml\System\Config\Validatevat
+     * @return $this
      */
-    protected function _prepareLayout()
+    public function _prepareLayout()
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
@@ -62,12 +58,12 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $originalData = $element->getOriginalData();
         $buttonLabel = !empty($originalData['button_label'])
-            ? $originalData['button_label'] : $this->_vatButtonLabel;
+            ? $originalData['button_label'] : $this->vatButtonLabel;
         $url = $this->_urlBuilder->getUrl(
             'dotdigitalgroup_email/addressbook/save'
         );

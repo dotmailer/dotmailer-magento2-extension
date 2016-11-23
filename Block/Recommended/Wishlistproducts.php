@@ -19,15 +19,15 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    protected $_customerFactory;
+    public $customerFactory;
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
-    protected $_wishlistFactory;
+    public $wishlistFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    protected $_productFactory;
+    public $productFactory;
 
     /**
      * Wishlistproducts constructor.
@@ -52,12 +52,12 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->helper = $helper;
-        $this->_customerFactory = $customerFactory;
+        $this->helper            = $helper;
+        $this->customerFactory   = $customerFactory;
         $this->recommnededHelper = $recommended;
-        $this->priceHelper = $priceHelper;
-        $this->_wishlistFactory = $wishlistFactory;
-        $this->_productFactory = $productFactory;
+        $this->priceHelper       = $priceHelper;
+        $this->wishlistFactory   = $wishlistFactory;
+        $this->productFactory    = $productFactory;
     }
 
     /**
@@ -65,10 +65,10 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    protected function _getWishlistItems()
+    public function _getWishlistItems()
     {
         $wishlist = $this->_getWishlist();
-        if ($wishlist && count($wishlist->getItemCollection())) {
+        if ($wishlist && ! empty($wishlist->getItemCollection())) {
             return $wishlist->getItemCollection();
         } else {
             return [];
@@ -80,20 +80,20 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array|\Magento\Framework\DataObject
      */
-    protected function _getWishlist()
+    public function _getWishlist()
     {
         $customerId = $this->getRequest()->getParam('customer_id');
         if (!$customerId) {
             return [];
         }
 
-        $customer = $this->_customerFactory->create()
+        $customer = $this->customerFactory->create()
             ->load($customerId);
         if (!$customer->getId()) {
             return [];
         }
 
-        $collection = $this->_wishlistFactory->create()
+        $collection = $this->wishlistFactory->create()
             ->getCollection()
             ->addFieldToFilter('customer_id', $customerId)
             ->setOrder('updated_at', 'DESC');
@@ -128,10 +128,10 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         //no product found to display
         if ($numItems == 0 || !$limit) {
             return [];
-        } elseif (count($items) > $limit) {
+        } elseif ($numItems > $limit) {
             $maxPerChild = 1;
         } else {
-            $maxPerChild = number_format($limit / count($items));
+            $maxPerChild = number_format($limit / $numItems);
         }
 
         $this->helper->log(
@@ -147,7 +147,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($product->getId()) {
                 //get single product for current mode
                 $recommendedProducts = $this->_getRecommendedProduct(
-                    $product, $mode
+                    $product,
+                    $mode
                 );
                 foreach ($recommendedProducts as $product) {
                     //check if still exists
@@ -160,7 +161,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
                         $productsToDisplay[$product->getId()] = $product;
                         $i++;
                         $productsToDisplayCounter++;
-
                     }
                 }
             }
@@ -174,7 +174,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         if ($productsToDisplayCounter < $limit) {
             $fallbackIds = $this->recommnededHelper->getFallbackIds();
 
-            $productCollection = $this->_productFactory->create()
+            $productCollection = $this->productFactory->create()
                 ->getCollection()
                 ->addIdFilter($fallbackIds)
                 ->addAttributeToSelect(
@@ -210,7 +210,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    protected function _getRecommendedProduct($productModel, $mode)
+    public function _getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = [];
@@ -224,7 +224,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             case 'crosssell':
                 $products = $productModel->getCrossSellProducts();
                 break;
-
         }
 
         return $products;

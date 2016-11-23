@@ -2,9 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Helper\Config;
+
 class Coupon extends \Magento\Framework\View\Element\Template
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -12,39 +13,45 @@ class Coupon extends \Magento\Framework\View\Element\Template
     /**
      * @var \Magento\SalesRule\Model\RuleFactory
      */
-    protected $_ruleFactory;
+    public $ruleFactory;
     /**
      * @var \Magento\SalesRule\Model\Coupon\MassgeneratorFactory
      */
-    protected $_massGeneratorFactory;
+    public $massGeneratorFactory;
     /**
      * @var \Magento\SalesRule\Model\CouponFactory
      */
-    protected $_couponFactory;
+    public $couponFactory;
+    /**
+     * @var \Magento\SalesRule\Model\ResourceModel\Coupon
+     */
+    public $coupon;
 
     /**
      * Coupon constructor.
      *
      * @param \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory
      * @param \Magento\SalesRule\Model\CouponFactory               $couponFactory
+     * @param \Magento\SalesRule\Model\ResourceModel\Coupon        $coupon
      * @param \Magento\Framework\View\Element\Template\Context     $context
      * @param \Dotdigitalgroup\Email\Helper\Data                   $helper
      * @param \Magento\SalesRule\Model\RuleFactory                 $ruleFactory
      * @param array                                                $data
      */
     public function __construct(
-
         \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory,
         \Magento\SalesRule\Model\CouponFactory $couponFactory,
+        \Magento\SalesRule\Model\ResourceModel\Coupon $coupon,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\SalesRule\Model\RuleFactory $ruleFactory,
         array $data = []
     ) {
-        $this->helper = $helper;
-        $this->_ruleFactory = $ruleFactory;
-        $this->_couponFactory = $couponFactory;
-        $this->_massGeneratorFactory = $massgeneratorFactory;
+        $this->helper               = $helper;
+        $this->ruleFactory          = $ruleFactory;
+        $this->coupon               = $coupon;
+        $this->couponFactory        = $couponFactory;
+        $this->massGeneratorFactory = $massgeneratorFactory;
 
         parent::__construct($context, $data);
     }
@@ -67,9 +74,9 @@ class Coupon extends \Magento\Framework\View\Element\Template
         $couponCodeId = $params['id'];
 
         if ($couponCodeId) {
-            $rule = $this->_ruleFactory->create()
+            $rule = $this->ruleFactory->create()
                 ->load($couponCodeId);
-            $generator = $this->_massGeneratorFactory->create();
+            $generator = $this->massGeneratorFactory->create();
             $generator->setFormat(
                 \Magento\SalesRule\Helper\Coupon::COUPON_FORMAT_ALPHANUMERIC
             );
@@ -88,28 +95,23 @@ class Coupon extends \Magento\Framework\View\Element\Template
             $coupon = $rule->acquireCoupon();
             $couponCode = $coupon->getCode();
             //save the type of coupon
-
-            $couponModel = $this->_couponFactory->create()
+            /** @var \Magento\SalesRule\Model\Coupon $couponModel */
+            $couponModel = $this->couponFactory->create()
                 ->loadByCode($couponCode);
             $couponModel->setType(
                 \Magento\SalesRule\Model\Rule::COUPON_TYPE_NO_COUPON
             )->setGeneratedByDotmailer(1);
 
-            if (isset($params['expire_days'])
-                && $params['expire_days'] != ''
-                && is_int($params['expire_days'])
-            ) {
-                $now = new \DateTime(
-                    'now', new \DateTimeZone('UTC')
-                );
-                $interval = new \DateInterval('P' . $params['expire_days'] . 'D');
-                $expirationDate = $now->add($interval);
-                $couponModel->setExpirationDate($expirationDate->format('Y-m-d H:i:s'));
+            if (is_numeric($params['expire_days'])) {
+                $expireDate = $this->_localeDate->date()
+                    ->add(new \DateInterval(sprintf('P%sD', $params['expire_days'])));
+
+                $couponModel->setExpirationDate($expireDate);
             } elseif ($rule->getToDate()) {
                 $couponModel->setExpirationDate($rule->getToDate());
             }
 
-            $couponModel->save();
+            $this->coupon->save($couponModel);
 
             return $couponCode;
         }
@@ -117,16 +119,14 @@ class Coupon extends \Magento\Framework\View\Element\Template
         return false;
     }
 
-
     /**
      * @return array
      */
     public function getStyle()
     {
         return explode(
-            ',', $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE
-        )
+            ',',
+            $this->helper->getWebsiteConfig(Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE)
         );
     }
 
@@ -138,7 +138,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
     public function getCouponColor()
     {
         return $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR
+            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR
         );
     }
 
@@ -150,7 +150,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
     public function getFontSize()
     {
         return $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE
+            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE
         );
     }
 
@@ -162,7 +162,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
     public function getFont()
     {
         return $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT
+            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT
         );
     }
 
@@ -174,7 +174,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
     public function getBackgroundColor()
     {
         return $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR
+            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR
         );
     }
 }

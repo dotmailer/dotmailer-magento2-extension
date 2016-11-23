@@ -14,7 +14,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
 
     /**
      * Transactional constructor.
@@ -26,7 +26,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_storeManager = $storeManager;
+        $this->storeManager = $storeManager;
 
         parent::__construct($context);
     }
@@ -38,7 +38,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isEnabled()
     {
-        $store = $this->_storeManager->getStore();
+        $store = $this->storeManager->getStore();
 
         return $this->scopeConfig->isSetFlag(self::XML_PATH_DDG_TRANSACTIONAL_ENABLED, 'store', $store);
     }
@@ -50,7 +50,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getSmtpHost()
     {
-        $store = $this->_storeManager->getStore();
+        $store = $this->storeManager->getStore();
 
         return $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_HOST, 'store', $store);
     }
@@ -62,7 +62,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getSmtpUsername()
     {
-        $store = $this->_storeManager->getStore();
+        $store = $this->storeManager->getStore();
 
         return $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_USERNAME, 'store', $store);
     }
@@ -74,7 +74,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getSmtpPassword()
     {
-        $store = $this->_storeManager->getStore();
+        $store = $this->storeManager->getStore();
 
         return $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_PASSWORD, 'store', $store);
     }
@@ -86,7 +86,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getSmtpPort()
     {
-        $store = $this->_storeManager->getStore();
+        $store = $this->storeManager->getStore();
 
         return $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_PORT, 'store', $store);
     }
@@ -98,7 +98,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isDebugEnabled()
     {
-        $store = $this->_storeManager->getStore();
+        $store = $this->storeManager->getStore();
 
         return $this->scopeConfig->isSetFlag(self::XML_PATH_DDG_TRANSACTIONAL_DEBUG, 'store', $store);
     }

@@ -7,32 +7,32 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    public $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
-    protected $_wishlistFactory;
+    public $wishlistFactory;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    protected $_customerFactory;
+    public $customerFactory;
     /**
      * @var
      */
-    protected $_importerFactory;
+    public $importerFactory;
 
     /**
      * RemoveWishlist constructor.
      *
-     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Magento\Customer\Model\CustomerFactory      $customerFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data           $data
+     * @param \Magento\Store\Model\StoreManagerInterface   $storeManagerInterface
      */
     public function __construct(
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -41,11 +41,11 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->_importerFactory = $importerFactory;
-        $this->_customerFactory = $customerFactory;
-        $this->_wishlistFactory = $wishlistFactory;
-        $this->_helper = $data;
-        $this->_storeManager = $storeManagerInterface;
+        $this->importerFactory = $importerFactory;
+        $this->customerFactory = $customerFactory;
+        $this->wishlistFactory = $wishlistFactory;
+        $this->helper          = $data;
+        $this->storeManager    = $storeManagerInterface;
     }
 
     /**
@@ -58,24 +58,24 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $object = $observer->getEvent()->getDataObject();
-        $customer = $this->_customerFactory->create()
+        $customer = $this->customerFactory->create()
             ->load($object->getCustomerId());
-        $website = $this->_storeManager->getStore($customer->getStoreId())
+        $website = $this->storeManager->getStore($customer->getStoreId())
             ->getWebsite();
 
         //sync enabled
-        $syncEnabled = $this->_helper->getWebsiteConfig(
+        $syncEnabled = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
             $website->getId()
         );
-        if ($this->_helper->isEnabled($website->getId()) && $syncEnabled) {
+        if ($this->helper->isEnabled($website->getId()) && $syncEnabled) {
             //Remove wishlist
             try {
-                $item = $this->_wishlistFactory->create()
+                $item = $this->wishlistFactory->create()
                     ->getWishlist($object->getWishlistId());
                 if (($item instanceof \Magento\Framework\DataObject) && $item->getId()) {
                     //register in queue with importer
-                    $this->_importerFactory->create()->registerQueue(
+                    $this->importerFactory->create()->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
                         [$item->getId()],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
@@ -84,7 +84,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
                     $item->delete();
                 }
             } catch (\Exception $e) {
-                $this->_helper->debug((string)$e, []);
+                $this->helper->debug((string)$e, []);
             }
         }
     }

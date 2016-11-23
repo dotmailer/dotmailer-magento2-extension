@@ -8,11 +8,11 @@ class Roi extends \Magento\Framework\View\Element\Template
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $helper;
+    public $helper;
     /**
      * @var \Magento\Checkout\Model\Session
      */
-    protected $session;
+    public $session;
 
     /**
      * Roi constructor.

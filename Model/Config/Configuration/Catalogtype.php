@@ -2,12 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Catalogtype
+class Catalogtype implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * @var \Magento\Catalog\Model\Product\Type
      */
-    protected $_productType;
+    public $productType;
 
     /**
      * Catalogtype constructor.
@@ -17,7 +17,7 @@ class Catalogtype
     public function __construct(
         \Magento\Catalog\Model\Product\Type $productType
     ) {
-        $this->_productType = $productType;
+        $this->productType = $productType;
     }
 
     /**
@@ -27,8 +27,7 @@ class Catalogtype
      */
     public function toOptionArray()
     {
-        $options
-            = $this->_productType->getAllOptions();
+        $options = $this->productType->getAllOptions();
         //Add default option to first key of array. First key has empty value and empty label.
         $options[0]['value'] = '0';
         $options[0]['label'] = '---- Default Option ----';

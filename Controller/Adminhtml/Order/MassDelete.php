@@ -9,29 +9,44 @@ class MassDelete extends OrderController
 {
 
     /**
-     * @var
+     * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
-    protected $messageManager;
+    public $order;
 
+    /**
+     * MassDelete constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context       $context
+     * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
+    ) {
+        $this->order = $orderFactory;
+
+        parent::__construct($context);
+    }
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     public function execute()
     {
-        $ids = $this->getRequest()->getParam('email_order_id');
+        $ids = $this->getRequest()->getParam('selected');
         if (!is_array($ids)) {
-            $this->messageManager->addError(__('Please select orders.'));
+            $this->messageManager->addErrorMessage(__('Please select orders.'));
         } else {
             try {
+                //@codingStandardsIgnoreStart
                 foreach ($ids as $id) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->_objectManager->create('Dotdigitalgroup\Email\Model\Order')->setEmailOrderId($id);
+                    $model = $this->order->create()
+                        ->setEmailOrderId($id);
                     $model->delete();
-                    //@codingStandardsIgnoreEnd
                 }
-                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($ids)));
+                //@codingStandardsIgnoreEnd
+                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
+                $this->messageManager->addErrorMessage($e->getMessage());
             }
         }
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */

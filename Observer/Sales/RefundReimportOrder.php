@@ -7,32 +7,28 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    protected $_registry;
+    public $helper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
-    protected $_emailOrderFactory;
+    public $emailOrderFactory;
 
     /**
      * RefundReimportOrder constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory
-     * @param \Magento\Framework\Registry $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Registry               $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data        $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_emailOrderFactory = $emailOrderFactory;
-        $this->_helper = $data;
-        $this->_registry = $registry;
+        $this->emailOrderFactory = $emailOrderFactory;
+        $this->helper            = $data;
+        $this->_registry         = $registry;
     }
 
     /**
@@ -52,10 +48,10 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
             /*
              * Reimport transactional data.
              */
-            $emailOrder = $this->_emailOrderFactory->create()
+            $emailOrder = $this->emailOrderFactory->create()
                 ->loadByOrderId($orderId, $quoteId, $storeId);
             if (!$emailOrder->getId()) {
-                $this->_helper->log('ERROR Creditmemmo Order not found :'
+                $this->helper->log('ERROR Creditmemmo Order not found :'
                     . $orderId . ', quote id : ' . $quoteId . ', store id '
                     . $storeId);
 
@@ -65,7 +61,7 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
             $emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
                 ->save();
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return $this;

@@ -7,7 +7,7 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
-    protected $_dateTime;
+    public $dateTime;
 
     /**
      * Wishlist constructor.
@@ -27,9 +27,13 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_dateTime = $dateTime;
+        $this->dateTime = $dateTime;
         parent::__construct(
-            $context, $registry, $resource, $resourceCollection, $data
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
         );
     }
 
@@ -75,9 +79,9 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
         //@codingStandardsIgnoreEnd
         parent::beforeSave();
         if ($this->isObjectNew()) {
-            $this->setCreatedAt($this->_dateTime->formatDate(true));
+            $this->setCreatedAt($this->dateTime->formatDate(true));
         }
-        $this->setUpdatedAt($this->_dateTime->formatDate(true));
+        $this->setUpdatedAt($this->dateTime->formatDate(true));
 
         return $this;
     }

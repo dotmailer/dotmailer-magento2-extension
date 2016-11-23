@@ -7,11 +7,11 @@ class Wishlistsync extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\Sync\WishlistFactory
      */
-    protected $_wishlistFactory;
+    public $wishlistFactory;
 
     /**
      * Wishlistsync constructor.
@@ -23,8 +23,8 @@ class Wishlistsync extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Sync\WishlistFactory $wishlistFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->_wishlistFactory = $wishlistFactory;
-        $this->messageManager = $context->getMessageManager();
+        $this->wishlistFactory = $wishlistFactory;
+        $this->messageManager  = $context->getMessageManager();
         parent::__construct($context);
     }
 
@@ -33,10 +33,10 @@ class Wishlistsync extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $result = $this->_wishlistFactory->create()
+        $result = $this->wishlistFactory->create()
             ->sync();
 
-        $this->messageManager->addSuccess($result['message']);
+        $this->messageManager->addSuccessMessage($result['message']);
 
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 

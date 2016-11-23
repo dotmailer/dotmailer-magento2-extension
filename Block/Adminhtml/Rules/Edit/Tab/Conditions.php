@@ -2,13 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
-    implements \Magento\Backend\Block\Widget\Tab\TabInterface
+class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
+    \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
-    protected $options;
+    public $options;
 
     /**
      * Conditions constructor.
@@ -75,13 +75,14 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _prepareForm()
+    public function _prepareForm()
     {
         $model = $this->_coreRegistry->registry('current_ddg_rule');
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('rule_');
 
-        $fieldset = $form->addFieldset('base_fieldset',
+        $fieldset = $form->addFieldset(
+            'base_fieldset',
             ['legend' => __('Exclusion Rule Conditions')]
         );
 
@@ -94,8 +95,9 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic
                 '1' => __('ALL'),
                 '2' => __('ANY'),
             ],
-            'after_element_html' => '<small>Choose ANY if using multi line conditions for same attribute.
-If multi line conditions for same attribute is used and ALL is chosen then multiple lines for same attribute will be ignored.</small>',
+            'after_element_html' => '<small>Choose ANY if using multi line conditions 
+for same attribute. If multi line conditions for same attribute is used and ALL is chosen 
+then multiple lines for same attribute will be ignored.</small>',
         ]);
 
         $field = $fieldset->addField('condition', 'select', [

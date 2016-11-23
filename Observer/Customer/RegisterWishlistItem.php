@@ -7,15 +7,15 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_helper;
+    public $helper;
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
-    protected $_wishlistFactory;
+    public $wishlistFactory;
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
-    protected $_wishlist;
+    public $wishlist;
 
     /**
      * RegisterWishlistItem constructor.
@@ -29,9 +29,9 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->_wishlist = $wishlist;
-        $this->_wishlistFactory = $wishlistFactory;
-        $this->_helper = $data;
+        $this->wishlist        = $wishlist;
+        $this->wishlistFactory = $wishlistFactory;
+        $this->helper          = $data;
     }
 
     /**
@@ -44,9 +44,9 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $object = $observer->getEvent()->getDataObject();
-        $wishlist = $this->_wishlist->create()
+        $wishlist = $this->wishlist->create()
             ->load($object->getWishlistId());
-        $emailWishlist = $this->_wishlistFactory->create();
+        $emailWishlist = $this->wishlistFactory->create();
         try {
             if ($object->getWishlistId()) {
                 $itemCount = count($wishlist->getItemCollection());
@@ -70,7 +70,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->_helper->debug((string)$e, []);
+            $this->helper->debug((string)$e, []);
         }
 
         return $this;

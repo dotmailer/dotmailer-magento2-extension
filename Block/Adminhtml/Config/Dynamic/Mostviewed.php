@@ -4,7 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
 class Mostviewed extends \Magento\Config\Block\System\Config\Form\Field
 {
-    protected $_dataHelper;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $dataHelper;
 
     /**
      * Mostviewed constructor.
@@ -16,7 +20,7 @@ class Mostviewed extends \Magento\Config\Block\System\Config\Form\Field
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context
     ) {
-        $this->_dataHelper = $dataHelper;
+        $this->dataHelper = $dataHelper;
 
         parent::__construct($context);
     }
@@ -26,20 +30,22 @@ class Mostviewed extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function _getElementHtml(
+    public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //base url for dynamic content
-        $baseUrl = $this->_dataHelper->generateDynamicUrl();
-        $passcode = $this->_dataHelper->getPasscode();
+        $baseUrl = $this->dataHelper->generateDynamicUrl();
+        $passcode = $this->dataHelper->getPasscode();
 
-        if (!strlen($passcode)) {
+        if (empty($passcode)) {
             $passcode = '[PLEASE SET UP A PASSCODE]';
         }
 
         //full url for dynamic content
         $text = sprintf(
-            '%sconnector/report/mostviewed/code/%s', $baseUrl, $passcode
+            '%sconnector/report/mostviewed/code/%s',
+            $baseUrl,
+            $passcode
         );
         $element->setData('value', $text);
 

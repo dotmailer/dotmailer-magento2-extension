@@ -23,10 +23,13 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $conn = $this->getConnection();
         try {
-            $num = $conn->update($this->getTable('email_contact'),
-                ['contact_id' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto('contact_id is ?',
-                    new \Zend_Db_Expr('not null'))
+            $num = $conn->update(
+                $this->getTable('email_contact'),
+                ['contact_id' => 'null'],
+                $conn->quoteInto(
+                    'contact_id is ?',
+                    'not null'
+                )
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
@@ -46,10 +49,13 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $conn = $this->getConnection();
-            $num = $conn->update($conn->getTableName('email_contact'),
-                ['email_imported' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto('email_imported is ?',
-                    new \Zend_Db_Expr('not null'))
+            $num = $conn->update(
+                $conn->getTableName('email_contact'),
+                ['email_imported' => 'null'],
+                $conn->quoteInto(
+                    'email_imported is ?',
+                    'not null'
+                )
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
@@ -72,9 +78,12 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $num = $conn->update(
                 $conn->getTableName('email_contact'),
-                ['subscriber_imported' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto('subscriber_imported is ?',
-                    new \Zend_Db_Expr('not null')));
+                ['subscriber_imported' => 'null'],
+                $conn->quoteInto(
+                    'subscriber_imported is ?',
+                    'not null'
+                )
+            );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
@@ -99,7 +108,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $write->update(
                 $this->getMainTable(),
                 [
-                    'is_subscriber' => new \Zend_Db_Expr('null'),
+                    'is_subscriber' => 'null',
                     'suppressed' => '1',
                 ],
                 "email IN ($emails)"
@@ -116,6 +125,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
     }
 
+    /**
+     * @param $data
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function insert($data)
     {
         if (!empty($data)) {
@@ -126,5 +140,23 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
             }
         }
+    }
+
+    /**
+     * Set suppressed for contact ids.
+     *
+     * @param array $suppressedContactIds
+     *
+     * @return int
+     */
+    public function setContactSuppressedForContactIds($suppressedContactIds)
+    {
+        $conn = $this->getConnection();
+
+        return $conn->update(
+            $this->getMainTable(),
+            ['suppressed' => 1],
+            ['id IN(?)' => $suppressedContactIds]
+        );
     }
 }

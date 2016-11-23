@@ -8,27 +8,25 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * @var string
      */
-    protected $_template = 'dashboard/information.phtml';
-
+    public $_template = 'dashboard/information.phtml';
 
     /**
      * Helper.
-     * 
+     *
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $data;
+    public $data;
 
     /**
      * Test class.
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
      */
-    protected $test;
+    public $test;
 
     /**
      * @var \Magento\Framework\App\ProductMetadata
      */
-    protected $productMetadata;
-
+    public $productMetadata;
 
     /**
      * Information constructor.
@@ -52,7 +50,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->data = $helper;
         parent::__construct($context, $backendHelper, $data);
     }
-
 
     /**
      * @return string
@@ -100,7 +97,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         return $productMetadata->getEdition();
     }
 
-
     /**
      * @return mixed
      */
@@ -108,7 +104,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     {
         return __('v. %1', $this->data->getConnectorVersion());
     }
-
 
     /**
      * Get the api creds are valid.

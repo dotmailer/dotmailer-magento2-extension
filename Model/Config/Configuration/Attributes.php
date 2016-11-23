@@ -2,12 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Attributes
+class Attributes implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $_dataHelper;
+    public $dataHelper;
 
     /**
      * Attributes constructor.
@@ -17,7 +17,7 @@ class Attributes
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $dataHelper
     ) {
-        $this->_dataHelper = $dataHelper;
+        $this->dataHelper = $dataHelper;
     }
 
     /**
@@ -27,7 +27,7 @@ class Attributes
      */
     public function toOptionArray()
     {
-        $fields = $this->_dataHelper->getOrderTableDescription();
+        $fields = $this->dataHelper->getOrderTableDescription();
 
         $customFields[] = [
             'label' => __('---- Default Option ----'),
