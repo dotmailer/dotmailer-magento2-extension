@@ -59,7 +59,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         return __('v. %1', PHP_VERSION);
     }
 
-
     /**
      * @return string
      */

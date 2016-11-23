@@ -7,7 +7,7 @@ class CustomerManagement
     /**
      * @var \Dotdigitalgroup\Email\Model\Automation
      */
-    protected $_automation;
+    public $automation;
 
     /**
      * NewAutomation constructor.
@@ -17,7 +17,7 @@ class CustomerManagement
     public function __construct(
         \Dotdigitalgroup\Email\Model\Automation $automation
     ) {
-        $this->_automation = $automation;
+        $this->automation = $automation;
     }
 
     /**
@@ -32,7 +32,7 @@ class CustomerManagement
     public function afterCreate(\Magento\Sales\Model\Order\CustomerManagement $subject, $customer)
     {
         //New Automation enrolment to queue
-        $this->_automation->newCustomerAutomation($customer);
+        $this->automation->newCustomerAutomation($customer);
         return $customer;
     }
     //codingStandardsIgnoreEnd

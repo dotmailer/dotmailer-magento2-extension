@@ -74,10 +74,12 @@ class Campaign
         foreach ($this->storeManager->getWebsites(true) as $website) {
             //check send status for processing
             $this->_checkSendStatus($website);
+            //@codingStandardsIgnoreStart
             //start send process
             $storeIds = $this->websiteFactory->create()
                 ->load($website->getId())
                 ->getStoreIds();
+            //@codingStandardsIgnoreEnd
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = [];
             foreach ($emailsToSend as $campaign) {
@@ -149,10 +151,12 @@ class Campaign
                             $campaignsToSend[$campaignId]['contacts'][] = $contactId;
                             $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
                         } else {
+                            //@codingStandardsIgnoreStart
                             //update the failed to send email message error message
                             $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
                                 ->setMessage('contact id returned is not numeric for email ' . $email)
                                 ->save();
+                            //@codingStandardsIgnoreEnd
                         }
                     } catch (\Exception $e) {
                         throw new \Magento\Framework\Exception\LocalizedException(
