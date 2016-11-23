@@ -196,7 +196,7 @@ class Order
         }
 
         if ($this->countOrders) {
-            $response['message'] = 'Number of updated orders : '
+            $response['message'] = 'Orders updated '
                 . $this->countOrders;
         }
 

@@ -5,13 +5,6 @@
     <preference for="Magento\Customer\Model\AccountManagement" type="Dotdigitalgroup\Email\Model\Customer"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Coupon" type="Dotdigitalgroup\Email\Model\SalesRule\Coupon"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Rule\Collection" type="Dotdigitalgroup\Email\Model\SalesRule\Collection"/>
-    <virtualType name="ContactGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
-        <arguments>
-            <argument name="collection" xsi:type="object" shared="false">Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
-            </argument>
-            <argument name="filterPool" xsi:type="object" shared="false">ContactGirdFilterPool</argument>
-        </arguments>
-    </virtualType>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
             <argument name="prices" xsi:type="array">
@@ -23,15 +16,15 @@
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="cron_report_grid_data_source" xsi:type="string">Magento\Cron\Model\ResourceModel\Schedule\Collection</item>
-                <item name="importer_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection</item>
-                <item name="automation_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection</item>
-                <item name="campaign_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection</item>
-                <item name="contact_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection</item>
-                <item name="catalog_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection</item>
-                <item name="order_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection</item>
-                <item name="review_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Review\Collection</item>
-                <item name="wishlist_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\Collection</item>
+                <item name="cron_report_grid_data_source" xsi:type="string">Magento\Cron\Ui\Model\ResourceModel\Schedule\Collection</item>
+                <item name="importer_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Importer\Collection</item>
+                <item name="automation_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Automation\Collection</item>
+                <item name="campaign_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Campaign\Collection</item>
+                <item name="contact_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Contact\Collection</item>
+                <item name="catalog_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Catalog\Collection</item>
+                <item name="order_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Order\Collection</item>
+                <item name="review_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Review\Collection</item>
+                <item name="wishlist_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Wishlist\Collection</item>
             </argument>
         </arguments>
     </type>

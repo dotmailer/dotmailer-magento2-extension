@@ -105,8 +105,8 @@ class Guest
                 $email = $guest->getEmail();
                 try {
                     //@codingStandardsIgnoreStart
-                    $guest->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED)
-                        ->save();
+                    $guest->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
+                    $guest->getResource()->save($guest);
                     //@codingStandardsIgnoreEnd
                     $storeName = $website->getName();
                     // save data for guests

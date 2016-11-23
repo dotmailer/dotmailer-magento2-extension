@@ -159,8 +159,8 @@ class Contact
                 }
                 // show message for any number of customers
                 if ($contactsUpdated) {
-                    $result['message'] .= '</br>' . $website->getName()
-                        . ', exported contacts : ' . $contactsUpdated;
+                    $result['message'] .=  $website->getName()
+                        . ', exported contacts ' . $contactsUpdated;
                 }
             }
         }
@@ -169,7 +169,7 @@ class Contact
             $message = 'Total time for sync : ' . gmdate(
                 'H:i:s',
                 microtime(true) - $this->start
-            ) . ', Total contacts : ' . $this->countCustomers;
+            ) . ', Total contacts  ' . $this->countCustomers;
             $this->helper->log($message);
             $message .= $result['message'];
             $result['message'] = $message;

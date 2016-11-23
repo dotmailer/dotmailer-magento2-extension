@@ -25,10 +25,10 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $num = $conn->update(
                 $conn->getTableName('email_review'),
-                ['review_imported' => 'null'],
+                ['review_imported' => new \Zend_Db_Expr('null')],
                 $conn->quoteInto(
                     'review_imported is ?',
-                    'not null'
+                    new \Zend_Db_Expr('not null')
                 )
             );
         } catch (\Exception $e) {

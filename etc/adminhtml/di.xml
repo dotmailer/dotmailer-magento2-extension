@@ -1,54 +1,54 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <virtualType name="Magento\Cron\Model\ResourceModel\Schedule\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Magento\Cron\Ui\Model\ResourceModel\Schedule\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">cron_schedule</argument>
             <argument name="resourceModel" xsi:type="string">Magento\Cron\Model\ResourceModel\Schedule</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Importer\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_importer</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Importer</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Automation\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_automation</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Automation</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Campaign\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_campaign</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Campaign</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Contact\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_contact</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Contact</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Catalog\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_catalog</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Catalog</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Order\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_order</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Order</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Review\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Review\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_review</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Review</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Wishlist\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_wishlist</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Wishlist</argument>
