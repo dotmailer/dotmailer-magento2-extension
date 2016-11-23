@@ -25,10 +25,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $num = $conn->update(
                 $this->getTable('email_contact'),
-                ['contact_id' => 'null'],
+                ['contact_id' => new \Zend_Db_Expr('null')],
                 $conn->quoteInto(
                     'contact_id is ?',
-                    'not null'
+                    new \Zend_Db_Expr('not null')
                 )
             );
         } catch (\Exception $e) {
@@ -51,10 +51,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $conn = $this->getConnection();
             $num = $conn->update(
                 $conn->getTableName('email_contact'),
-                ['email_imported' => 'null'],
+                ['email_imported' => new \Zend_Db_Expr('null')],
                 $conn->quoteInto(
                     'email_imported is ?',
-                    'not null'
+                    new \Zend_Db_Expr('not null')
                 )
             );
         } catch (\Exception $e) {
@@ -78,10 +78,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $num = $conn->update(
                 $conn->getTableName('email_contact'),
-                ['subscriber_imported' => 'null'],
+                ['subscriber_imported' => new \Zend_Db_Expr('null')],
                 $conn->quoteInto(
                     'subscriber_imported is ?',
-                    'not null'
+                    new \Zend_Db_Expr('not null')
                 )
             );
         } catch (\Exception $e) {
@@ -108,7 +108,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $write->update(
                 $this->getMainTable(),
                 [
-                    'is_subscriber' => 'null',
+                    'is_subscriber' => new \Zend_Db_Expr('null'),
                     'suppressed' => '1',
                 ],
                 "email IN ($emails)"

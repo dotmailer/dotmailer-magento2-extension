@@ -26,12 +26,12 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $num = $conn->update(
                 $conn->getTableName('email_order'),
                 [
-                    'email_imported' => 'null',
-                    'modified' => 'null',
+                    'email_imported' => new \Zend_Db_Expr('null'),
+                    'modified' => new \Zend_Db_Expr('null'),
                 ],
                 $conn->quoteInto(
                     'email_imported is ?',
-                    'not null'
+                    new \Zend_Db_Expr('not null')
                 )
             );
         } catch (\Exception $e) {

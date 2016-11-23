@@ -38,7 +38,7 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
         $result = $this->contactFactory->create()
             ->deleteContactIds();
 
-        $this->messageManager->addSuccessMessage('Number Of Contacts Id Removed: ' . $result);
+        $this->messageManager->addSuccessMessage('Contact id\'s reseted ' . $result);
 
         $this->_redirect($redirectUrl);
     }
