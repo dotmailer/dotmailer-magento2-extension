@@ -165,8 +165,13 @@ class Wishlist
     public function __sleep()
     {
         $properties = array_keys(get_object_vars($this));
-        $properties = array_diff($properties, ['_localeDate']);
+        $properties = array_diff($properties, ['localeDate']);
 
         return $properties;
+    }
+
+    public function getData()
+    {
+        return get_object_vars($this);
     }
 }

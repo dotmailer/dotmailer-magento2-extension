@@ -73,10 +73,7 @@ class Product
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
-    /**
-     * @var
-     */
-    public $scopeConfig;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -290,16 +287,13 @@ class Product
         $properties = array_diff(
             $properties,
             [
-                '_storeManager',
-                '_scopeConfig',
-                '_objectManager',
-                '_storeManager',
-                '_datetime',
-                '_helper',
-                '_customerFactory',
-                '_productFactory',
-                '_attributeCollection',
-                '_setFactory',
+                'storeManager',
+                'helper',
+                'itemFactory',
+                'mediaConfigFactory',
+                'visibilityFactory',
+                'statusFactory',
+                'storeManager'
             ]
         );
 

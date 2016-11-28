@@ -586,7 +586,7 @@ class Order
         $properties = array_diff(
             $properties,
             [
-                'storeManager',
+                '_storeManager',
                 'localeDate',
                 'helper',
                 'customerFactory',
