@@ -593,8 +593,10 @@ class Order
                 'productFactory',
                 'attributeCollection',
                 'setFactory',
+                'attributeSet'
             ]
         );
+
         if (! $this->couponCode) {
             $properties = array_diff($properties, ['couponCode']);
         }
