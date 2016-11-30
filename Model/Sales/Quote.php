@@ -69,10 +69,6 @@ class Quote
      */
     public $rulesFactory;
     /**
-     * @var \Magento\Framework\Intl\DateTimeFactory
-     */
-    public $dateTime;
-    /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     public $timeZone;
@@ -86,7 +82,6 @@ class Quote
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
-     * @param \Magento\Framework\Intl\DateTimeFactory $dateTimeFactory
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
@@ -97,7 +92,6 @@ class Quote
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory,
-        \Magento\Framework\Intl\DateTimeFactory $dateTimeFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     ) {
         $this->rulesFactory = $rulesFactory;
@@ -107,7 +101,6 @@ class Quote
         $this->storeManager = $storeManager;
         $this->quoteCollection = $collectionFactory;
         $this->scopeConfig = $scopeConfig;
-        $this->dateTime = $dateTimeFactory;
         $this->timeZone = $timezone;
     }
 
@@ -150,10 +143,7 @@ class Quote
                             );
                         }
 
-                        $fromTime = $this->dateTime->create(
-                            'now',
-                            $this->timeZone->getDefaultTimezone()
-                        );
+                        $fromTime = $this->timeZone->scopeDate($storeId, 'now');
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
                         $fromTime->sub(
@@ -266,10 +256,7 @@ class Quote
                             );
                         }
 
-                        $fromTime = $this->dateTime->create(
-                            'now',
-                            $this->timeZone->getDefaultTimezone()
-                        );
+                        $fromTime = $this->timeZone->scopeDate($storeId, 'now');
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
                         $fromTime->sub(
@@ -479,10 +466,7 @@ class Quote
             return false;
         }
 
-        $fromTime = $this->dateTime->create(
-            'now',
-            $this->timeZone->getDefaultTimezone()
-        );
+        $fromTime = $this->timeZone->scopeDate($storeId, 'now');
         $toTime = clone $fromTime;
         $interval = \DateInterval::createFromDateString(
             $cartLimit . ' hours'
