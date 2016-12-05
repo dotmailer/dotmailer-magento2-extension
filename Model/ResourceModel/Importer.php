@@ -64,7 +64,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function cleanup($tableName)
     {
         try {
-            $interval = new \DateInterval('P30D');
+            $interval = \DateInterval::createFromDateString('30 day');
             $date = $this->localeDate->date()->sub($interval)->format('Y-m-d H:i:s');
             $conn = $this->getConnection();
             $num = $conn->delete(

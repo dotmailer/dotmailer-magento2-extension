@@ -104,7 +104,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
 
             if (is_numeric($params['expire_days'])) {
                 $expireDate = $this->_localeDate->date()
-                    ->add(new \DateInterval(sprintf('P%sD', $params['expire_days'])));
+                    ->add(\DateInterval::createFromDateString(sprintf('P%sD', $params['expire_days'])));
 
                 $couponModel->setExpirationDate($expireDate);
             } elseif ($rule->getToDate()) {
