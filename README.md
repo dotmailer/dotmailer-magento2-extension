@@ -1,6 +1,6 @@
  # dotmailer for Magento2
 
-[![Software License][ico-license]](LICENSE.md)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 [![Build Status](https://travis-ci.org/dotmailer/dotmailer-magento2-extension.svg?branch=master)](dotmailer/dotmailer-magento2-extension)
 
 
@@ -30,4 +30,3 @@ Full support documentation and setup guides available here - https://support.dot
  - Allow to include Order multiselect attributes. 
  
   
-[ico-license]: https://img.shields.io/github/license/PartBerlin/AdvLayNav.svg?style=flat-square
