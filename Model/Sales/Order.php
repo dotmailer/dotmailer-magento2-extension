@@ -52,10 +52,7 @@ class Order
      * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
      */
     public $quoteCollection;
-    /**
-     * @var \Zend_Date
-     */
-    public $date;
+
     /**
      * Order constructor.
      *
@@ -67,7 +64,6 @@ class Order
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime $datetime
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Zend_Date $date
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
@@ -77,8 +73,7 @@ class Order
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime $datetime,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Zend_Date $date
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->quoteCollection    = $quoteCollection;
         $this->rulesFactory       = $rulesFactory;
@@ -88,7 +83,6 @@ class Order
         $this->helper             = $helper;
         $this->dateTime           = $datetime;
         $this->storeManager       = $storeManagerInterface;
-        $this->date               = $date;
     }
 
     /**
@@ -182,7 +176,9 @@ class Order
                     'order_increment_id'
                 );
 
-                $fromTime = $this->date;
+                //@codingStandardsIgnoreStart
+                $fromTime = new \Zend_Date();
+                //@codingStandardsIgnoreEnd
                 $fromTime->subDay($delayInDays);
                 $toTime = clone $fromTime;
                 $to = $toTime->toString('YYYY-MM-dd HH:mm:ss');
