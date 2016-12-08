@@ -77,7 +77,7 @@
             var id = element.attr("id");
             var value = element.val();
             doYourThing(id, value);
-            $(element).on("change keyup blur input", function () {
+            $j(element).on("change keyup blur input", function () {
                 id = element.attr("id");
                 value = element.val();
                 doYourThing(id, value);
@@ -87,7 +87,7 @@
             var id = element.attr("id");
             var value = element.val();
             doYourThing(id, value);
-            $(element).on("change", function () {
+            $j(element).on("change", function () {
                 id = element.attr("id");
                 value = element.val();
                 doYourThing(id, value);
