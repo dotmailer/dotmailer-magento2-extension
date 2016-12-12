@@ -1430,4 +1430,46 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $executedAt;
     }
+
+    /**
+     * Get website datafields for subscriber
+     *
+     * @param $website
+     * @return array
+     */
+    public function getWebsiteSalesDataFields($website)
+    {
+        $subscriberDataFileds = [
+            'website_name' => '',
+            'store_name' => '',
+            'number_of_orders' => '',
+            'average_order_value' => '',
+            'total_spend' => '',
+            'last_order_date' => '',
+            'last_increment_id' => '',
+            'most_pur_category' => '',
+            'most_pur_brand' => '',
+            'most_freq_pur_day' => '',
+            'most_freq_pur_mon' => '',
+            'first_category_pur' => '',
+            'last_category_pur' => '',
+            'first_brand_pur' => '',
+            'last_brand_pur' => ''
+        ];
+
+        $store = $website->getDefaultStore();
+        $mappedData = $this->scopeConfig->getValue(
+            'connector_data_mapping/customer_data',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store->getId()
+        );
+
+        $mappedData = array_intersect_key($mappedData, $subscriberDataFileds);
+        foreach ($mappedData as $key => $value) {
+            if (!$value) {
+                unset($mappedData[$key]);
+            }
+        }
+        return $mappedData;
+    }
 }

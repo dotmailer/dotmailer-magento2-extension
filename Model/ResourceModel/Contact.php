@@ -159,4 +159,20 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ['id IN(?)' => $suppressedContactIds]
         );
     }
+
+    /**
+     * Update subscriber imported
+     *
+     * @param $subscribers
+     */
+    public function updateSubscribers($subscribers)
+    {
+        $write = $this->getConnection();
+        $ids = implode(', ', $subscribers);
+        $write->update(
+            $this->getMainTable(),
+            ['subscriber_imported' => 1],
+            "email_contact_id IN ($ids)"
+        );
+    }
 }
