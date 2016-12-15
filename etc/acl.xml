@@ -21,6 +21,7 @@
                         <resource id="Dotdigitalgroup_Email::cron" title="Dotmailer Cron" sortOrder="100"/>
                         <resource id="Dotdigitalgroup_Email::dashboard" title="Dotmailer Dashboard" sortOrder="110"/>
                         <resource id="Dotdigitalgroup_Email::automation_enrollment" title="Dotmailer Enrollment Automation" sortOrder="120"/>
+                        <resource id="Dotdigitalgroup_Email::logviewer" title="Dotmailer Log Viewer" sortOrder="130"/>
                     </resource>
                 </resource>
                 <resource id="Magento_Backend::stores">
