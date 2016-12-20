@@ -99,7 +99,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             if ($configCartUrl) {
                 $url = $configCartUrl;
             } else {
-                $url = $customerSession->getCustomer()->getStore()->getUrl(
+                $url = $this->quote->getStore()->getUrl(
                     'checkout/cart'
                 );
             }
