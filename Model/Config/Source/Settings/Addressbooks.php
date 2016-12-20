@@ -59,7 +59,7 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
             if ($savedAddressbooks) {
                 $addressBooks = $savedAddressbooks;
             } else {
-                $client = $this->helper->getWebsiteApiClient();
+                $client = $this->helper->getWebsiteApiClient($this->helper->getWebsite());
                 //make an api call an register the addressbooks
                 $addressBooks = $client->getAddressBooks();
                 if ($addressBooks) {
