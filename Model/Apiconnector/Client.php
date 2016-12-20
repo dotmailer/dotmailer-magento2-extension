@@ -755,19 +755,21 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param        $data
      * @param string $collectionName
+     * @param boolean $catalogCheck
      *
      * @return null
      * @throws \Exception
      */
     public function postContactsTransactionalData(
         $data,
-        $collectionName = 'Orders'
+        $collectionName = 'Orders',
+        $catalogCheck = false
     ) {
         $order = $this->getContactsTransactionalDataByKey(
             $collectionName,
             $data->id
         );
-        if (isset($order->message)
+        if (!isset($order->key) || isset($order->message)
             && $order->message == self::API_ERROR_TRANS_NOT_EXISTS
         ) {
             $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA
@@ -776,11 +778,19 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA
                 . $collectionName . '/' . $order->key;
         }
-        $apiData = [
-            'Key' => $data->id,
-            'ContactIdentifier' => $data->email,
-            'Json' => json_encode($data->expose()),
-        ];
+        if ($catalogCheck) {
+            $apiData = [
+                'Key' => $data->id,
+                'ContactIdentifier' => 'account',
+                'Json' => json_encode($data->expose()),
+            ];
+        } else {
+            $apiData = [
+                'Key' => $data->id,
+                'ContactIdentifier' => $data->email,
+                'Json' => json_encode($data->expose()),
+            ];
+        }
 
         $this->setUrl($url)
             ->setVerb('POST')
