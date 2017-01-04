@@ -21,7 +21,15 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
         $this->setElement($element);
         $header = $this->_getHeaderHtml($element);
 
-        $elements = $this->_getChildrenElementsHtml($element);
+        $elements = '';
+        foreach ($element->getElements() as $field) {
+            if ($field instanceof \Magento\Framework\Data\Form\Element\Fieldset) {
+                $elements .= '<tr id="row_' . $field->getHtmlId() . '">'
+                    . '<td colspan="4">' . $field->toHtml() . '</td></tr>';
+            } else {
+                $elements .= $field->toHtml();
+            }
+        }
 
         $footer = $this->_getFooterHtml($element);
 
