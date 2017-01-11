@@ -483,10 +483,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $apiPassword = $this->getApiPassword($website);
         }
         //@codingStandardsIgnoreStart
+        /** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
         $client = $this->objectManager->create(
-            'Dotdigitalgroup\Email\Model\Apiconnector\Client',
-            ['username' => $apiUsername, 'password' => $apiPassword]
+            'Dotdigitalgroup\Email\Model\Apiconnector\Client'
         );
+        $client->setApiUsername($apiUsername)
+            ->setApiPassword($apiPassword);
         //@codingStandardsIgnoreEnd
 
         return $client;

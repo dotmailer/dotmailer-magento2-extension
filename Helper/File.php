@@ -240,4 +240,56 @@ class File
             array_map($classFunc, glob($path . '/*')) == @rmdir($path);
         //@codingStandardsIgnoreEnd
     }
+
+    /**
+     * Get log file content.
+     *
+     * @param string $filename
+     *
+     * @return string
+     */
+    public function getLogFileContent($filename = 'connector')
+    {
+        switch ($filename) {
+            case "connector":
+                $filename = 'connector.log';
+                break;
+            case "system":
+                $filename = 'system.log';
+                break;
+            case "exception":
+                $filename = 'exception.log';
+                break;
+            case "debug":
+                $filename = 'debug.log';
+                break;
+            default:
+                return "Log file is not valid. Log file name is " . $filename;
+        }
+        $pathLogfile = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR
+            . $filename;
+        //tail the length file content
+        $lengthBefore = 500000;
+        try {
+            //@codingStandardsIgnoreStart
+            $handle = fopen($pathLogfile, 'r');
+            fseek($handle, -$lengthBefore, SEEK_END);
+            if (!$handle) {
+                return "Log file is not readable or does not exist at this moment. File path is "
+                . $pathLogfile;
+            }
+            //@codingStandardsIgnoreStart
+            $contents = fread($handle, filesize($pathLogfile));
+            if (!$contents) {
+                return "Log file is not readable or does not exist at this moment. File path is "
+                . $pathLogfile;
+            }
+            fclose($handle);
+            //@codingStandardsIgnoreEnd
+            return $contents;
+        } catch (\Exception $e) {
+            return "Log file is not readable or does not exist at this moment. File path is "
+            . $pathLogfile;
+        }
+    }
 }

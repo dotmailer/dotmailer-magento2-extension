@@ -40,6 +40,11 @@
             <argument name="date" xsi:type="object">dotdigitalgroupZendDate</argument>
         </arguments>
     </type>
+    <type name="Dotdigitalgroup\Email\Helper\Recommended">
+        <arguments>
+            <argument name="date" xsi:type="object">dotdigitalgroupZendDate</argument>
+        </arguments>
+    </type>
     <virtualType name="dotdigitalgroupZendMailTransportSendmail" type="Zend_Mail_Transport_Sendmail">
         <arguments>
             <argument name="parameters" xsi:type="null"/>
