@@ -214,7 +214,7 @@ class Catalog
                 foreach ($products as $product) {
                     $connProduct = $this->connectorProductFactory->create()
                         ->setProduct($product);
-                    $connectorProducts[] = $connProduct;
+                    $connectorProducts[] = $connProduct->expose();
                 }
             }
         } catch (\Exception $e) {
@@ -247,7 +247,7 @@ class Catalog
                 $this->importerFactory->create()
                     ->registerQueue(
                         $collectionName,
-                        $connectorProduct,
+                        $connectorProduct->expose(),
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
                         $websiteId
                     );

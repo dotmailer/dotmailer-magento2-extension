@@ -726,10 +726,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ) {
         $orders = [];
         foreach ($transactionalData as $one) {
-            if (isset($one->email)) {
+            if (isset($one['email'])) {
                 $orders[] = [
-                    'Key' => $one->id,
-                    'ContactIdentifier' => $one->email,
+                    'Key' => $one['id'],
+                    'ContactIdentifier' => $one['email'],
                     'Json' => json_encode($one),
                 ];
             }
@@ -765,7 +765,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ) {
         $order = $this->getContactsTransactionalDataByKey(
             $collectionName,
-            $data->id
+            $data['id']
         );
         if (!isset($order->key) || isset($order->message)
             && $order->message == self::API_ERROR_TRANS_NOT_EXISTS
@@ -777,9 +777,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 . $collectionName . '/' . $order->key;
         }
         $apiData = [
-            'Key' => $data->id,
-            'ContactIdentifier' => $data->email,
-            'Json' => json_encode($data->expose()),
+            'Key' => $data['id'],
+            'ContactIdentifier' => $data['email'],
+            'Json' => json_encode($data),
         ];
 
         $this->setUrl($url)
@@ -812,7 +812,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ) {
         $item = $this->getContactsTransactionalDataByKey(
             $collectionName,
-            $data->id
+            $data['id']
         );
         if (!isset($item->key) || isset($item->message)
             && $item->message == self::API_ERROR_TRANS_NOT_EXISTS
@@ -824,9 +824,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 . $collectionName . '/' . $item->key;
         }
         $apiData = [
-            'Key' => $data->id,
+            'Key' => $data['id'],
             'ContactIdentifier' => 'account',
-            'Json' => json_encode($data->expose()),
+            'Json' => json_encode($data),
         ];
 
         $this->setUrl($url)
@@ -1245,11 +1245,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ) {
         $orders = [];
         foreach ($transactionalData as $one) {
-            if (isset($one->id)) {
+            if (isset($one['id'])) {
                 $orders[] = [
-                    'Key' => $one->id,
+                    'Key' => $one['id'],
                     'ContactIdentifier' => 'account',
-                    'Json' => json_encode($one->expose()),
+                    'Json' => json_encode($one),
                 ];
             }
         }
