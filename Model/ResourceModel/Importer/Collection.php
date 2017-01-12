@@ -5,6 +5,9 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 class Collection extends
  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
+
+    protected $_idFieldName = 'id';
+
     /**
      * Initialize resource collection.
      */
