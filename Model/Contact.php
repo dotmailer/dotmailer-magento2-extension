@@ -113,8 +113,11 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      *
      * @return $this
      */
-    public function getSubscribersToImport(\Magento\Store\Model\Website $website, $limit = 1000)
-    {
+    public function getSubscribersToImport(
+        \Magento\Store\Model\Website $website,
+        $limit = 1000,
+        $isCustomerCheck = true
+    ) {
         $storeIds = $website->getStoreIds();
         $collection = $this->getCollection()
             ->addFieldToFilter('is_subscriber', ['notnull' => true])
@@ -122,8 +125,28 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             ->addFieldToFilter('subscriber_imported', ['null' => true])
             ->addFieldToFilter('store_id', ['in' => $storeIds]);
 
+        if ($isCustomerCheck) {
+            $collection->addFieldToFilter('customer_id', ['neq' => 0]);
+        } else {
+            $collection->addFieldToFilter('customer_id', ['eq' => 0]);
+        }
+
         $collection->getSelect()->limit($limit);
 
+        return $collection;
+    }
+
+    /**
+     * Contact subscribers to import for website.
+     *
+     * @param $emails
+     *
+     * @return $this
+     */
+    public function getSubscribersToImportFromEmails($emails)
+    {
+        $collection = $this->getCollection()
+            ->addFieldToFilter('email', ['in' => $emails]);
         return $collection;
     }
 

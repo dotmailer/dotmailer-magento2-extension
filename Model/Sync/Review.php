@@ -237,7 +237,7 @@ class Review
                             $ratingItem->getRatingCode(), $rating
                         );
                     }
-                    $this->reviews[$website->getId()][] = $connectorReview;
+                    $this->reviews[$website->getId()][] = $connectorReview->expose();
                     $this->reviewIds[]                  = $mageReview->getReviewId();
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);

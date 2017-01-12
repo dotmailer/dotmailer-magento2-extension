@@ -88,7 +88,7 @@ class Order
         $this->helper             = $helper;
         $this->dateTime           = $datetime;
         $this->storeManager       = $storeManagerInterface;
-        $this->date               = $date;
+        $this->date = $date;
     }
 
     /**

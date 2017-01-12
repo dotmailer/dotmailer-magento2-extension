@@ -294,7 +294,10 @@ class Review
      */
     public function expose()
     {
-        return get_object_vars($this);
+        return array_diff_key(
+            get_object_vars($this),
+            array_flip(['storeManager', 'helper', 'localeDate'])
+        );
     }
 
     /**
@@ -303,7 +306,7 @@ class Review
     public function __sleep()
     {
         $properties = array_keys(get_object_vars($this));
-        $properties = array_diff($properties, ['_storeManager', '_helper', '_localeDate']);
+        $properties = array_diff($properties, ['storeManager', 'helper', 'localeDate']);
 
         return $properties;
     }

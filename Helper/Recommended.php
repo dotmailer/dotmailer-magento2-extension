@@ -75,7 +75,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         $this->helper       = $data;
         $this->context      = $context;
         $this->storeManager = $storeManager;
-        $this->date         = $date;
+        $this->date = $date;
 
         parent::__construct($context);
     }

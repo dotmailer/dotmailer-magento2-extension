@@ -5,29 +5,36 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Importer;
 use Dotdigitalgroup\Email\Controller\Adminhtml\Importer as ImporterController;
 use Magento\Framework\Controller\ResultFactory;
 
+use Magento\Ui\Component\MassAction\Filter;
+
+
 class MassDelete extends ImporterController
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    public $collectionFactory;
 
     /**
      * @var object
      */
     public $messageManager;
+    public $filter;
 
     /**
      * MassDelete constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param Filter $filter
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory $collectionFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+        Filter $filter,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory $collectionFactory
     ) {
-        $this->importerFactory = $importerFactory;
+        $this->filter = $filter;
+        $this->collectionFactory = $collectionFactory;
         parent::__construct($context);
     }
 
@@ -36,27 +43,18 @@ class MassDelete extends ImporterController
      */
     public function execute()
     {
-        $searchIds = $this->getRequest()->getParam('selected');
-        if (!is_array($searchIds)) {
-            $this->messageManager->addError(__('Please select importer.'));
-        } else {
-            try {
-                foreach ($searchIds as $searchId) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->importerFactory->create()
-                        ->setId($searchId);
-                    $model->delete();
-                    //@codingStandardsIgnoreEnd
-                }
-                $this->messageManager->addSuccess(__('Total of %1 record(s) were deleted.', count($searchIds)));
-            } catch (\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
-            }
+        $collection = $this->filter->getCollection($this->collectionFactory->create());
+        $collectionSize = $collection->getSize();
+
+        foreach ($collection as $item) {
+            $item->delete();
         }
+
+        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
+
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setPath('*/*/');
 
-        return $resultRedirect;
+        return $resultRedirect->setPath('*/*/');
     }
 }

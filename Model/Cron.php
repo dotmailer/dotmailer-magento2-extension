@@ -201,9 +201,11 @@ class Cron
     public function reviewSync()
     {
         //find orders to review and register campaign
-        $this->orderFactory->create()->createReviewCampaigns();
+        $this->orderFactory->create()
+            ->createReviewCampaigns();
         //sync reviews
-        $result = $this->reviewFactory->create()->sync();
+        $result = $this->reviewFactory->create()
+            ->sync();
 
         return $result;
     }

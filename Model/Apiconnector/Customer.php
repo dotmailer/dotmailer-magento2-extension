@@ -226,8 +226,8 @@ class Customer
     {
         if ($this->reviewCollection->getSize()) {
             //@codingStandardsIgnoreStart
-            $createdAt = $this->reviewCollection->getSelect()
-                ->limit(1)
+            $this->reviewCollection->getSelect()->limit(1);
+            $createdAt = $this->reviewCollection
                 ->getFirstItem()
                 ->getCreatedAt();
             //@codingStandardsIgnoreEnd

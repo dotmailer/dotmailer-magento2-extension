@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
+use Magento\TestFramework\Event\Magento;
+
 class Getbasket extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -17,7 +19,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     public $checkoutSession;
     /**
-     * @var
+     * @var \Magento\Quote\Model\Quote
      */
     public $quote;
 
@@ -66,9 +68,9 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         $this->quote = $quoteModel;
 
         if ($quoteModel->getCustomerId()) {
-            $this->_handleCustomerBasket();
+            return $this->_handleCustomerBasket();
         } else {
-            $this->_handleGuestBasket();
+            return $this->_handleGuestBasket();
         }
     }
 
@@ -77,13 +79,16 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     public function _handleCustomerBasket()
     {
+        /** @var \Magento\Customer\Model\Session $customerSession */
         $customerSession = $this->sessionFactory->create();
         $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL
         );
 
         //if customer is logged in then redirect to cart
-        if ($customerSession->isLoggedIn()) {
+        if ($customerSession->isLoggedIn()
+            && $customerSession->getCustomerId() == $this->quote->getCustomerId())
+        {
             $checkoutSession = $this->checkoutSession->create();
             if ($checkoutSession->getQuote()
                 && $checkoutSession->getQuote()->hasItems()
@@ -92,14 +97,12 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                 if ($this->quote->getId() != $quote->getId()) {
                     $this->_checkMissingAndAdd();
                 }
-            } else {
-                $this->_loadAndReplace();
             }
 
             if ($configCartUrl) {
                 $url = $configCartUrl;
             } else {
-                $url = $customerSession->getCustomer()->getStore()->getUrl(
+                $url = $this->quote->getStore()->getUrl(
                     'checkout/cart'
                 );
             }
@@ -135,6 +138,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     public function _checkMissingAndAdd()
     {
+        /** @var \Magento\Checkout\Model\Session $checkoutSession */
         $checkoutSession = $this->checkoutSession->create();
         $currentQuote = $checkoutSession->getQuote();
 
@@ -145,27 +149,14 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             foreach ($currentSessionItems as $currentSessionItem) {
                 $currentItemIds[] = $currentSessionItem->getId();
             }
+            /** @var \Magento\Quote\Model\Quote\Item $item */
             foreach ($this->quote->getAllItems() as $item) {
                 if (!in_array($item->getId(), $currentItemIds)) {
                     $currentQuote->addItem($item);
                 }
             }
             $currentQuote->collectTotals()->save();
-        } else {
-            $this->_loadAndReplace();
         }
-    }
-
-    /**
-     * Load quote and replace in session.
-     */
-    public function _loadAndReplace()
-    {
-        $checkoutSession = $this->checkoutSession->create();
-        $quote = $this->quoteFactory->create()
-            ->load($this->quote->getId());
-        $quote->setIsActive(true)->save();
-        $checkoutSession->replaceQuote($quote);
     }
 
     /**
@@ -173,16 +164,6 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     public function _handleGuestBasket()
     {
-        $checkoutSession = $this->checkoutSession->create();
-
-        if ($checkoutSession->getQuote()
-            && $checkoutSession->getQuote()->hasItems()
-        ) {
-            $this->_checkMissingAndAdd();
-        } else {
-            $this->_loadAndReplace();
-        }
-
         $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL
         );

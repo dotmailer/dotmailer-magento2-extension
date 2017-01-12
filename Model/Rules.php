@@ -347,7 +347,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 );
             }
         }
-
         return $this->_processProductAttributes($collection);
     }
 
@@ -390,14 +389,14 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             if ($cond == 'null') {
                 if ($value == '1') {
                     if (isset($fieldsConditions[$attribute])) {
-                        $multiFieldsConditions[$attribute]
+                        $multiFieldsConditions[$attribute][]
                             = ['notnull' => true];
                         continue;
                     }
                     $fieldsConditions[$attribute] = ['notnull' => true];
                 } elseif ($value == '0') {
                     if (isset($fieldsConditions[$attribute])) {
-                        $multiFieldsConditions[$attribute]
+                        $multiFieldsConditions[$attribute][]
                             = [$cond => true];
                         continue;
                     }
@@ -408,7 +407,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                     $value = '%' . $value . '%';
                 }
                 if (isset($fieldsConditions[$attribute])) {
-                    $multiFieldsConditions[$attribute]
+                    $multiFieldsConditions[$attribute][]
                         = [$this->conditionMap[$cond] => $value];
                     continue;
                 }
@@ -421,17 +420,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             $column = [];
             $cond = [];
             foreach ($fieldsConditions as $key => $fieldsCondition) {
-                $exp = new \Zend_Db_Expr($key);
-                $column[] = $exp->__toString();
+                $column[] = (string)$key;
                 $cond[] = $fieldsCondition;
-            }
-            if (!empty($multiFieldsConditions)) {
-                foreach ($multiFieldsConditions as $key => $multiFieldsCondition) {
-                    if (in_array($key, $column)) {
-                        $exp = new \Zend_Db_Expr($key);
-                        $column[] = $exp->__toString();
+                if (!empty($multiFieldsConditions[$key])) {
+                    foreach ($multiFieldsConditions[$key] as $multiFieldsCondition) {
+                        $column[] = (string)$key;
                         $cond[] = $multiFieldsCondition;
-                        continue;
                     }
                 }
             }
@@ -440,7 +434,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 $cond
             );
         }
-
         return $this->_processProductAttributes($collection);
     }
 

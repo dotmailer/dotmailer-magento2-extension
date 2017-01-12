@@ -433,7 +433,19 @@ class Order
      */
     public function expose()
     {
-        return get_object_vars($this);
+        return array_diff_key(
+            get_object_vars($this),
+            array_flip([
+                '_storeManager',
+                'localeDate',
+                'helper',
+                'customerFactory',
+                'productFactory',
+                'attributeCollection',
+                'setFactory',
+                'attributeSet'
+            ])
+        );
     }
 
     /**
@@ -586,15 +598,17 @@ class Order
         $properties = array_diff(
             $properties,
             [
-                'storeManager',
+                '_storeManager',
                 'localeDate',
                 'helper',
                 'customerFactory',
                 'productFactory',
                 'attributeCollection',
                 'setFactory',
+                'attributeSet'
             ]
         );
+
         if (! $this->couponCode) {
             $properties = array_diff($properties, ['couponCode']);
         }

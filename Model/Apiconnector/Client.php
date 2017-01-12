@@ -726,10 +726,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ) {
         $orders = [];
         foreach ($transactionalData as $one) {
-            if (isset($one->email)) {
+            if (isset($one['email'])) {
                 $orders[] = [
-                    'Key' => $one->id,
-                    'ContactIdentifier' => $one->email,
+                    'Key' => $one['id'],
+                    'ContactIdentifier' => $one['email'],
                     'Json' => json_encode($one),
                 ];
             }
@@ -765,9 +765,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ) {
         $order = $this->getContactsTransactionalDataByKey(
             $collectionName,
-            $data->id
+            $data['id']
         );
-        if (isset($order->message)
+        if (!isset($order->key) || isset($order->message)
             && $order->message == self::API_ERROR_TRANS_NOT_EXISTS
         ) {
             $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA
@@ -777,9 +777,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 . $collectionName . '/' . $order->key;
         }
         $apiData = [
-            'Key' => $data->id,
-            'ContactIdentifier' => $data->email,
-            'Json' => json_encode($data->expose()),
+            'Key' => $data['id'],
+            'ContactIdentifier' => $data['email'],
+            'Json' => json_encode($data),
         ];
 
         $this->setUrl($url)
@@ -792,6 +792,53 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 . $response->message;
             $this->helper->debug('postContactsTransactionalData', [$message]);
             $this->helper->debug('postContactsTransactionalData', $apiData);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Adds a single piece of transactional data to account.
+     *
+     * @param        $data
+     * @param string $collectionName
+     *
+     * @return null
+     * @throws \Exception
+     */
+    public function postAccountTransactionalData(
+        $data,
+        $collectionName
+    ) {
+        $item = $this->getContactsTransactionalDataByKey(
+            $collectionName,
+            $data['id']
+        );
+        if (!isset($item->key) || isset($item->message)
+            && $item->message == self::API_ERROR_TRANS_NOT_EXISTS
+        ) {
+            $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA
+                . $collectionName;
+        } else {
+            $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA
+                . $collectionName . '/' . $item->key;
+        }
+        $apiData = [
+            'Key' => $data['id'],
+            'ContactIdentifier' => 'account',
+            'Json' => json_encode($data),
+        ];
+
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($apiData);
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = 'POST ACCOUNT TRANSACTIONAL DATA  '
+                . $response->message;
+            $this->helper->debug('postAccountTransactionalData', [$message]);
+            $this->helper->debug('postAccountTransactionalData', $apiData);
         }
 
         return $response;
@@ -1198,11 +1245,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ) {
         $orders = [];
         foreach ($transactionalData as $one) {
-            if (isset($one->id)) {
+            if (isset($one['id'])) {
                 $orders[] = [
-                    'Key' => $one->id,
+                    'Key' => $one['id'],
                     'ContactIdentifier' => 'account',
-                    'Json' => json_encode($one->expose()),
+                    'Json' => json_encode($one),
                 ];
             }
         }
