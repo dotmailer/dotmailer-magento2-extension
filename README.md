@@ -22,7 +22,8 @@ Full support documentation and setup guides available here - https://support.dot
  - Go to cart button should redirect to quote's store.
  - Get addressBooks using the website level creds.
  - DI when initializing Zend_Mail_Transport_Sendmail.
- - Fix js for the dotmailer configuration page. 
+ - Fix js for the dotmailer configuration page.
+ - Unserialize error for orders sync. 
  
 ######Security
  - Remove modification for guest quote items.
