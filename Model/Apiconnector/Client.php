@@ -755,15 +755,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param        $data
      * @param string $collectionName
-     * @param boolean $catalogCheck
      *
      * @return null
      * @throws \Exception
      */
     public function postContactsTransactionalData(
         $data,
-        $collectionName = 'Orders',
-        $catalogCheck = false
+        $collectionName = 'Orders'
     ) {
         $order = $this->getContactsTransactionalDataByKey(
             $collectionName,
@@ -778,19 +776,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA
                 . $collectionName . '/' . $order->key;
         }
-        if ($catalogCheck) {
-            $apiData = [
-                'Key' => $data->id,
-                'ContactIdentifier' => 'account',
-                'Json' => json_encode($data->expose()),
-            ];
-        } else {
-            $apiData = [
-                'Key' => $data->id,
-                'ContactIdentifier' => $data->email,
-                'Json' => json_encode($data->expose()),
-            ];
-        }
+        $apiData = [
+            'Key' => $data->id,
+            'ContactIdentifier' => $data->email,
+            'Json' => json_encode($data->expose()),
+        ];
 
         $this->setUrl($url)
             ->setVerb('POST')
@@ -802,6 +792,53 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 . $response->message;
             $this->helper->debug('postContactsTransactionalData', [$message]);
             $this->helper->debug('postContactsTransactionalData', $apiData);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Adds a single piece of transactional data to account.
+     *
+     * @param        $data
+     * @param string $collectionName
+     *
+     * @return null
+     * @throws \Exception
+     */
+    public function postAccountTransactionalData(
+        $data,
+        $collectionName
+    ) {
+        $item = $this->getContactsTransactionalDataByKey(
+            $collectionName,
+            $data->id
+        );
+        if (!isset($item->key) || isset($item->message)
+            && $item->message == self::API_ERROR_TRANS_NOT_EXISTS
+        ) {
+            $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA
+                . $collectionName;
+        } else {
+            $url = $this->apiEndpoint . self::REST_TRANSACTIONAL_DATA
+                . $collectionName . '/' . $item->key;
+        }
+        $apiData = [
+            'Key' => $data->id,
+            'ContactIdentifier' => 'account',
+            'Json' => json_encode($data->expose()),
+        ];
+
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($apiData);
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = 'POST ACCOUNT TRANSACTIONAL DATA  '
+                . $response->message;
+            $this->helper->debug('postAccountTransactionalData', [$message]);
+            $this->helper->debug('postAccountTransactionalData', $apiData);
         }
 
         return $response;
