@@ -275,7 +275,18 @@ class Product
      */
     public function expose()
     {
-        return get_object_vars($this);
+        return array_diff_key(
+            get_object_vars($this),
+            array_flip([
+                'storeManager',
+                'helper',
+                'itemFactory',
+                'mediaConfigFactory',
+                'visibilityFactory',
+                'statusFactory',
+                'storeManager'
+            ])
+        );
     }
 
     /**

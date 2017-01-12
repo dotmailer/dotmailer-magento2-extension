@@ -206,7 +206,7 @@ class Wishlist
                         ++$this->countWishlists;
                     }
                     //set wishlists for later use
-                    $this->wishlists[$website->getId()][] = $connectorWishlist;
+                    $this->wishlists[$website->getId()][] = $connectorWishlist->expose();
                 }
             }
         }
@@ -289,7 +289,7 @@ class Wishlist
                 $check = $this->importerFactory->create()
                     ->registerQueue(
                         Importer::IMPORT_TYPE_WISHLIST,
-                        $connectorWishlist,
+                        $connectorWishlist->expose(),
                         Importer::MODE_SINGLE,
                         $website->getId()
                     );
@@ -302,7 +302,7 @@ class Wishlist
                     ->registerQueue(
                         Importer::IMPORT_TYPE_WISHLIST,
                         [$wishlist->getId()],
-                        Importer::MODE_SINGLE,
+                        Importer::MODE_SINGLE_DELETE,
                         $website->getId()
                     );
                 if ($check) {

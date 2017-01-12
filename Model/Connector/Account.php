@@ -213,7 +213,7 @@ class Account
     public function setOrders($orders)
     {
         foreach ($orders as $order) {
-            $this->orders[$order->id] = $order;
+            $this->orders[$order->id] = $order->expose();
         }
     }
 

@@ -116,12 +116,12 @@ class Subscriber
         foreach ($websites as $website) {
             //if subscriber is enabled and mapped
             $apiEnabled = $this->helper->isEnabled($website->getid());
-            $subscriberEnaled
+            $subscriberEnabled
                 = $this->helper->isSubscriberSyncEnabled($website->getid());
             $addressBook
-                        = $this->helper->getSubscriberAddressBook($website->getId());
+                = $this->helper->getSubscriberAddressBook($website->getId());
             //enabled and mapped
-            if ($apiEnabled && $addressBook && $subscriberEnaled) {
+            if ($apiEnabled && $addressBook && $subscriberEnabled) {
                 //ready to start sync
                 $numUpdated = $this->exportSubscribersPerWebsite($website);
 
@@ -166,11 +166,12 @@ class Subscriber
         $emailsNotInSales = array_diff($subscribersGuestEmails, $existInSales);
         $customerSubscribers = $subscribersAreCustomers->getColumnValues('email');
         $emailsWithNoSaleData = array_merge($emailsNotInSales, $customerSubscribers);
-        //Subscriber that are customer or/and the one that
-        //do not exist in sales order table
-        $subscribersWithNoSaleData = $emailContactModel
-            ->getSubscribersToImportFromEmails($emailsWithNoSaleData);
-        if (!empty($subscribersWithNoSaleData)) {
+
+        if (!empty($emailsWithNoSaleData)) {
+            //Subscriber that are customer or/and the one that
+            //do not exist in sales order table
+            $subscribersWithNoSaleData = $emailContactModel
+                ->getSubscribersToImportFromEmails($emailsWithNoSaleData);
             $updated += $this->exportSubscribers(
                 $website,
                 $subscribersWithNoSaleData
