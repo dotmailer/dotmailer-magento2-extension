@@ -1,15 +1,43 @@
- # dotmailer for Magento2
-
+ dotmailer for Magento 2
+ ======
+ 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 [![Build Status](https://travis-ci.org/dotmailer/dotmailer-magento2-extension.svg?branch=master)](dotmailer/dotmailer-magento2-extension)
 
+## Description
 
 Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
 
-#V2.1.4
-###### Features
+##V2.1.5
 
-#V2.1.0
+######Features
+ - Admin Log file viewer.
+ - Subsribers now have datafields.
+ 
+######Bug fixes
+ - ACL for reports menu items.
+ - API creds always for default level.
+ - Compatibility _getChildrenElementsHtml with 2.1.3.
+ - Unrecognized getFirstItem for last review date.
+ - Go to cart button should redirect to quote's store.
+ - Get addressBooks using the website level creds.
+ - DI when initializing Zend_Mail_Transport_Sendmail.
+ - Fix js for the dotmailer configuration page. 
+ 
+######Security
+ - Remove modification for guest quote items.
+ 
+######Improvements 
+ - Now can be added multiple dimention condition for Rules.
+
+##V2.1.4
+
+###### Bugs fixes
+ - InvalidContactIdentifier for single orders.
+ - Compatibility with catalogStaging for enterprise.
+ - Fix admin configuration fancybox error.
+
+##V2.1.0
 ###### Features
  - Compatible with Magento 2.1 version.
  - Coupon EDC expiration date. You can set the expiration date for coupon included into the URL
@@ -28,5 +56,3 @@ Full support documentation and setup guides available here - https://support.dot
 
 ###### Improvements
  - Allow to include Order multiselect attributes. 
- 
-  
