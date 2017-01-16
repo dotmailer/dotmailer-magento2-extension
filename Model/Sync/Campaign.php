@@ -147,6 +147,15 @@ class Campaign
                                         $data
                                     );
                                 }
+                            } elseif (strpos($campaign->getEventName(), 'Abandoned Cart') !== false) {
+                                if ($quoteId = $campaign->getQuoteId()) {
+                                    //api - set the last quote id for customer
+                                    $this->helper->updateLastQuoteId(
+                                        $quoteId,
+                                        $email,
+                                        $websiteId
+                                    );
+                                }
                             }
                             $campaignsToSend[$campaignId]['contacts'][] = $contactId;
                             $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();

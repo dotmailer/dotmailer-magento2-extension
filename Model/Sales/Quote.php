@@ -178,12 +178,6 @@ class Quote
                             $email = $quote->getCustomerEmail();
                             $websiteId = $store->getWebsiteId();
                             $quoteId = $quote->getId();
-                            //api - set the last quote id for customer
-                            $this->helper->updateLastQuoteId(
-                                $quoteId,
-                                $email,
-                                $websiteId
-                            );
 
                             $items = $quote->getAllItems();
                             $mostExpensiveItem = false;
@@ -289,12 +283,7 @@ class Quote
                             $email = $quote->getCustomerEmail();
                             $websiteId = $store->getWebsiteId();
                             $quoteId = $quote->getId();
-                            // upate last quote id for the contact
-                            $this->helper->updateLastQuoteId(
-                                $quoteId,
-                                $email,
-                                $websiteId
-                            );
+                            
                             // update abandoned product name for contact
                             $items = $quote->getAllItems();
                             $mostExpensiveItem = false;
