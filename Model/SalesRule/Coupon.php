@@ -69,7 +69,7 @@ class Coupon extends \Magento\SalesRule\Model\ResourceModel\Coupon
             $this->getConnection()->update(
                 $this->getTable('salesrule_coupon'),
                 $dotmailerUpdateArray,
-                ['rule_id = ?' => $rule->getId(), 'generated_by_dotmailer is 1']
+                ['rule_id = ?' => $rule->getId(), 'generated_by_dotmailer = 1']
             );
         }
 
