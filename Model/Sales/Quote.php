@@ -472,7 +472,6 @@ class Quote
 
         //total campaigns sent for this interval of time
         $campaignLimit = $this->campaignCollection->create()
-            ->getCollection()
             ->addFieldToFilter('email', $email)
             ->addFieldToFilter('event_name', 'Lost Basket')
             ->addFieldToFilter('sent_at', $updated)
