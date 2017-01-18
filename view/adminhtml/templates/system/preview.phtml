@@ -5,7 +5,7 @@
         </div>
         <div id="connector_configuration_dynamic_content_style_doc-preview"
              style="width: 200px; height: auto; border: solid 1px black; padding-top: 50px; padding-bottom: 50px;">
-            <a href="<?php echo $block->getBaseUrl() ?>" title="Sample Image">
+            <a href="<?php echo $block->getBaseUrl() ?>" title="Sample Image" target="_blank">
                 <img src="<?php echo $block->getImagePlaceholder() ?>"
                      width="85" height="85" alt="Sample Image"
                      style="display: block; margin-left: auto; margin-right: auto; "/>
@@ -17,7 +17,7 @@
                 <?php echo $block->getCurrencySymbol() . "99.99"; ?>
             </div>
             <div align="center">
-                <a id="connector_configuration_dynamic_content_style_link-preview"
+                <a id="connector_configuration_dynamic_content_style_link-preview" target="_blank"
                    href="<?php echo $block->getBaseUrl(); ?>">View Now</a>
             </div>
         </div>
@@ -36,22 +36,16 @@
         'jquery',
         'domReady!'
     ], function ($j) {
-        var s = $j("#ddg-edc-preview");
-        var pos = s.position();
-        var max = $j("#connector_configuration_dynamic_content_style_coupon_font_style").position().top - 350;
-        $j(window).scroll(function () {
-            var windowpos = $j(window).scrollTop();
-            if (windowpos >= pos.top && windowpos < max) {
-                s.attr("style", ""); //kill absolute positioning
-                s.css({position: "fixed", top: "80px", left: $j(document).innerWidth() - 250});
-            } else if (windowpos >= max) {
-                s.css({position: "absolute", top: max + "px", left: $j(document).innerWidth() - 250});
-            } else {
-                s.css({position: "absolute", top: pos.top + "px", left: $j(document).innerWidth() - 250});
-            }
+        var left = $j("#connector_configuration_dynamic_content_style_dynamic_styling");
+        var top = $j("#connector_configuration_dynamic_content_style");
+        $j("#ddg-edc-preview").css({
+            position: "absolute",
+            left: left.position().left + left.outerWidth() + 20,
+            top: top.position().top + 15
         });
         $j(window).resize(function () {
-            $j("#ddg-edc-preview").css({left: $j(document).innerWidth() - 250});
+            left = $j("#connector_configuration_dynamic_content_style_dynamic_styling");
+            $j("#ddg-edc-preview").css({left: left.position().left + left.outerWidth() + 20});
         });
         var elementsA = [
             $j("#connector_configuration_dynamic_content_style_font_color"),
