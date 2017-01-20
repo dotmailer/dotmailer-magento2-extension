@@ -13,15 +13,29 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Reset the email order for reimport.
+     * Reset the email order for re-import.
+     *
+     * @param null $from
+     * @param null $to
      *
      * @return int
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function resetOrders()
+    public function resetOrders($from = null, $to = null)
     {
         $conn = $this->getConnection();
+        if ($from && $to) {
+            $where = array(
+                'updated_at >= ?' => $from . ' 00:00:00',
+                'updated_at <= ?' => $to . ' 23:59:59',
+                'email_imported is ?' => new \Zend_Db_Expr('not null')
+            );
+        } else {
+            $where = $conn->quoteInto(
+                'email_imported is ?', new \Zend_Db_Expr('not null')
+            );
+        }
         try {
             $num = $conn->update(
                 $conn->getTableName('email_order'),
@@ -29,10 +43,7 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     'email_imported' => new \Zend_Db_Expr('null'),
                     'modified' => new \Zend_Db_Expr('null'),
                 ],
-                $conn->quoteInto(
-                    'email_imported is ?',
-                    new \Zend_Db_Expr('not null')
-                )
+                $where
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

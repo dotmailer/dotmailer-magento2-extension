@@ -13,19 +13,26 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
     public $wishlistFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $helper;
 
     /**
      * Wishlistsreset constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory
      * @param \Magento\Backend\App\Action\Context                        $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory,
-        \Magento\Backend\App\Action\Context $context
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->wishlistFactory = $wishlistFactory;
         $this->messageManager  = $context->getMessageManager();
+        $this->helper = $data;
         parent::__construct($context);
     }
 
@@ -34,13 +41,29 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $this->wishlistFactory->create()
-            ->resetWishlists();
+        $params = $this->getRequest()->getParams();
+        if ($params['refresh_data_from'] && $params['refresh_data_to']) {
+            $error = $this->helper->validateDateRange(
+                $params['refresh_data_from'],
+                $params['refresh_data_to']
+            );
+            if (is_string($error)) {
+                $this->messageManager->addErrorMessage($error);
+            } else {
+                $this->wishlistFactory->create()
+                    ->resetWishlists($params['refresh_data_from'], $params['refresh_data_to']);
+                $this->messageManager->addSuccessMessage(__('Done.'));
+            }
+        } else {
+            $this->wishlistFactory->create()
+                ->resetWishlists();
+            $this->messageManager->addSuccessMessage(__('Done.'));
+        }
 
-        $this->messageManager->addSuccessMessage(__('Done.'));
-
-        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
-
+        $redirectUrl = $this->getUrl(
+            'adminhtml/system_config/edit',
+            ['section' => 'connector_developer_settings']
+        );
         $this->_redirect($redirectUrl);
     }
 }

@@ -1434,6 +1434,13 @@
                     <label>Reset Sync Options</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
+                <field id="reimport_dates" translate="label" sortOrder="145" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Date Range</label>
+                    <comment>
+                        <![CDATA[If any of the data range is not selected then full data refresh will be done. This Date Range does not apply on Customer and Subscribers refresh.]]></comment>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Daterange</frontend_model>
+                </field>
                 <field id="reset_customers" translate="label" sortOrder="150" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Customers</label>

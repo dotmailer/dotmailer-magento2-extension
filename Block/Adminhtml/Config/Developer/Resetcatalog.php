@@ -33,11 +33,19 @@ class Resetcatalog extends \Magento\Config\Block\System\Config\Form\Field
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
-        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/catalogreset');
+        $query = [
+            '_query' => array(
+                'refresh_data_from' => '',
+                'refresh_data_to' => '',
+                'tmp' => ''
+            )
+        ];
+        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/catalogreset', $query);
 
         return $this->getLayout()
             ->createBlock('Magento\Backend\Block\Widget\Button')
             ->setType('button')
+            ->setId($element->getId())
             ->setLabel(__($this->buttonLabel))
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();

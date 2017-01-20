@@ -12,19 +12,26 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
     public $catalogFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $helper;
 
     /**
      * Catalogreset constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
      * @param \Magento\Backend\App\Action\Context                       $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
-        \Magento\Backend\App\Action\Context $context
+        \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->catalogFactory = $catalogFactory;
         $this->messageManager = $context->getMessageManager();
+        $this->helper = $data;
         parent::__construct($context);
     }
 
@@ -33,16 +40,29 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $this->catalogFactory->create()
-            ->resetCatalog();
-
-        $this->messageManager->addSuccessMessage(__('Done.'));
+        $params = $this->getRequest()->getParams();
+        if ($params['refresh_data_from'] && $params['refresh_data_to']) {
+            $error = $this->helper->validateDateRange(
+                $params['refresh_data_from'],
+                $params['refresh_data_to']
+            );
+            if (is_string($error)) {
+                $this->messageManager->addErrorMessage($error);
+            } else {
+                $this->catalogFactory->create()
+                    ->resetCatalog($params['refresh_data_from'], $params['refresh_data_to']);
+                $this->messageManager->addSuccessMessage(__('Done.'));
+            }
+        } else {
+            $this->catalogFactory->create()
+                ->resetCatalog();
+            $this->messageManager->addSuccessMessage(__('Done.'));
+        }
 
         $redirectUrl = $this->getUrl(
             'adminhtml/system_config/edit',
             ['section' => 'connector_developer_settings']
         );
-
         $this->_redirect($redirectUrl);
     }
 }
