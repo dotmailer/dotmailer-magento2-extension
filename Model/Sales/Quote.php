@@ -143,7 +143,7 @@ class Quote
                             );
                         }
 
-                        $fromTime = $this->timeZone->scopeDate($storeId, 'now');
+                        $fromTime = $this->timeZone->scopeDate($storeId, 'now', true);
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
                         $fromTime->sub(
@@ -256,7 +256,7 @@ class Quote
                             );
                         }
 
-                        $fromTime = $this->timeZone->scopeDate($storeId, 'now');
+                        $fromTime = $this->timeZone->scopeDate($storeId, 'now', true);
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
                         $fromTime->sub(
