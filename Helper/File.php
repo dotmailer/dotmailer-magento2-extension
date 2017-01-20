@@ -280,7 +280,7 @@ class File
             }
             //@codingStandardsIgnoreStart
             $contents = fread($handle, filesize($pathLogfile));
-            if (!$contents) {
+            if ($contents === false) {
                 return "Log file is not readable or does not exist at this moment. File path is "
                 . $pathLogfile;
             }
