@@ -311,7 +311,7 @@ class Account
     public function setOrdersForSingleSync($orders)
     {
         foreach ($orders as $order) {
-            $this->ordersForSingleSync[$order->id] = $order;
+            $this->ordersForSingleSync[$order->id] = $order->expose();
         }
     }
 
