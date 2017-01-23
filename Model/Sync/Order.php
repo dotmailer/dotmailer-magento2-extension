@@ -70,10 +70,6 @@ class Order
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     public $importerFactory;
-    /**
-     * @var array
-     */
-    public $guests = [];
 
     /**
      * Order constructor.
@@ -185,14 +181,6 @@ class Order
                 }
             }
             unset($this->accounts[$account->getApiUsername()]);
-        }
-
-        /**
-         * Add guest to contacts table.
-         */
-        if (!empty($this->guests)) {
-            $this->contactFactory->create()
-                ->insert($this->guests);
         }
 
         if ($this->countOrders) {
@@ -310,22 +298,6 @@ class Order
                 ->addFieldToFilter('entity_id', ['in' => $orderIds]);
 
             foreach ($salesOrderCollection as $order) {
-                $storeId   = $order->getStoreId();
-                $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-                /**
-                 * Add guest to contacts table.
-                 */
-                if ($order->getCustomerIsGuest()
-                    && $order->getCustomerEmail()
-                ) {
-                    //add guest to the list
-                    $this->guests[] = [
-                        'email' => $order->getCustomerEmail(),
-                        'website_id' => $websiteId,
-                        'store_id' => $storeId,
-                        'is_guest' => 1
-                    ];
-                }
                 if ($order->getId()) {
                     $connectorOrder = $this->connectorOrderFactory->create();
                     $connectorOrder->setOrderData($order);
