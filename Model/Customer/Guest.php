@@ -33,6 +33,10 @@ class Guest
      */
     public $salesOrderFactory;
     /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    public $storeManager;
+    /**
      * @var array
      */
     public $guests = [];
@@ -45,19 +49,22 @@ class Guest
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Sales\Model\OrderFactory $salesOrderFactory
+        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->importerFactory = $importerFactory;
-        $this->contactFactory  = $contactFactory;
-        $this->helper          = $helper;
-        $this->file            = $file;
+        $this->contactFactory = $contactFactory;
+        $this->helper = $helper;
+        $this->file = $file;
         $this->salesOrderFactory = $salesOrderFactory;
+        $this->storeManager = $storeManagerInterface;
     }
 
     /**
@@ -108,6 +115,8 @@ class Guest
             ->addFieldToFilter('customer_is_guest', ['eq' => 1])
             ->addFieldToFilter('customer_email', ['notnull' => true])
             ->addFieldToFilter('customer_email', ['nin' => $contacts]);
+        //group by email and store
+        $salesOrderCollection->getSelect()->group(['customer_email', 'store_id']);
 
         foreach ($salesOrderCollection as $order) {
             $storeId = $order->getStoreId();
