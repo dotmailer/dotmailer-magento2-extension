@@ -40,4 +40,33 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         return $num;
     }
+
+
+    /**
+     * Mark the connector orders to be imported.
+     *
+     * @param $ids
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function setImported($ids)
+    {
+        if (empty($ids))
+            return ;
+        try {
+            $connection = $this->getConnection();
+            $tableName = $connection->getTableName('email_order');
+            $ids = implode(', ', $ids);
+            $connection->update(
+                $tableName,
+                [
+                    'modified' => new \Zend_Db_Expr('null'),
+                    'email_imported' => '1',
+                    'updated_at' => gmdate('Y-m-d H:i:s')
+                ],
+                "order_id IN ($ids)"
+            );
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+        }
+    }
 }
