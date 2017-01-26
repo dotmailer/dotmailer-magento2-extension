@@ -113,12 +113,15 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 
 
     /**
-     * @magentoDataFixture Dotdigitalgroup/Email/_files/email_two_orders_same_guest.php
+     * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
     public function test_guests_order_not_creating_duplicates_contact()
     {
+        $this->createNewEmailOrder();
+        $this->prepareSync();
+
         $this->_orderSync->sync();
 
         $this->assertEquals('1', count($this->_orderSync->guests));
