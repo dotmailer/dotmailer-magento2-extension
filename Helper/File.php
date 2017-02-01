@@ -271,6 +271,7 @@ class File
         //tail the length file content
         $lengthBefore = 500000;
         try {
+            $contents = '';
             //@codingStandardsIgnoreStart
             $handle = fopen($pathLogfile, 'r');
             fseek($handle, -$lengthBefore, SEEK_END);
@@ -278,18 +279,20 @@ class File
                 return "Log file is not readable or does not exist at this moment. File path is "
                 . $pathLogfile;
             }
-            //@codingStandardsIgnoreStart
-            $contents = fread($handle, filesize($pathLogfile));
-            if ($contents === false) {
-                return "Log file is not readable or does not exist at this moment. File path is "
-                . $pathLogfile;
+
+            if (filesize($pathLogfile) > 0) {
+                //@codingStandardsIgnoreStart
+                $contents = fread($handle, filesize($pathLogfile));
+                if ($contents === false) {
+                    return "Log file is not readable or does not exist at this moment. File path is "
+                        . $pathLogfile;
+                }
+                fclose($handle);
+                //@codingStandardsIgnoreEnd
             }
-            fclose($handle);
-            //@codingStandardsIgnoreEnd
             return $contents;
         } catch (\Exception $e) {
-            return "Log file is not readable or does not exist at this moment. File path is "
-            . $pathLogfile;
+            return $e->getMessage() . $pathLogfile;
         }
     }
 }
