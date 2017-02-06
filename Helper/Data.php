@@ -42,16 +42,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $store;
 
     /**
-     * @var \Zend\Log\Logger
-     */
-    public $connectorLogger;
-
-    /**
-     * @var
-     */
-    public $logFileName = 'connector.log';
-
-    /**
      * @var \Magento\Framework\Module\ModuleListInterface
      */
     public $moduleInterface;
@@ -65,6 +55,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Cron\Model\ScheduleFactory
      */
     public $schelduleFactory;
+    /**
+     * @var File
+     */
+    private $fileHelper;
 
     /**
      * Data constructor.
@@ -84,6 +78,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
@@ -94,12 +89,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Cron\Model\ScheduleFactory $schedule,
         \Magento\Store\Model\Store $store
     ) {
-        //@codingStandardsIgnoreStart
-        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/' . $this->logFileName);
-        $logger = new \Zend\Log\Logger();
-        //@codingStandardsIgnoreEnd
-        $logger->addWriter($writer);
-        $this->connectorLogger  = $logger;
+
         $this->adapter          = $adapter;
         $this->schelduleFactory = $schedule;
         $this->productMetadata  = $productMetadata;
@@ -112,6 +102,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->store            = $store;
 
         parent::__construct($context);
+        $this->fileHelper = $fileHelper;
     }
 
     /**
@@ -340,35 +331,32 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Log data into system.log file.
-     *
+     * Log data into the connector file.
      * @param $data
      */
     public function log($data)
     {
-        $this->connectorLogger->info($data);
+        $this->fileHelper->info($data);
     }
 
     /**
-     * Log data into debug.log file.
      *
-     * @param string $title
-     * @param array|Traversable $context
+     * @param string $message
+     * @param mixed $extra
      */
-    public function debug($title, $context)
+    public function debug($message, $extra)
     {
-        $this->connectorLogger->debug($title, $context);
+        $this->fileHelper->debug($message, $extra);
     }
 
     /**
-     * Log data into the exception log file.
      *
-     * @param $title
-     * @param $error
+     * @param $message
+     * @param $extra
      */
-    public function error($title, $error)
+    public function error($message, $extra)
     {
-        $this->connectorLogger->debug($title, $error);
+        $this->debug($message, $extra);
     }
 
     /**
