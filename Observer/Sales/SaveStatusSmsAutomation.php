@@ -109,6 +109,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             if (!$store->getWebsite()
                 ->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED)
             ) {
+                $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
                 return $this;
             }
 
