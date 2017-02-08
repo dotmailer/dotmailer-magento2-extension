@@ -35,9 +35,9 @@ class Resetorders extends \Magento\Config\Block\System\Config\Form\Field
         //@codingStandardsIgnoreEnd
         $query = [
             '_query' => array(
-                'refresh_data_from' => '',
-                'refresh_data_to' => '',
-                'tmp' => ''
+                'from' => '',
+                'to' => '',
+                'tp' => ''
             )
         ];
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/ordersreset', $query);

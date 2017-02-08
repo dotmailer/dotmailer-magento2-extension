@@ -14,13 +14,13 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
                 "<p style='width:45px !important; margin: 0 !important; display: inline-block; font-weight:bold;'>"
                 . ucfirst($range) . ":
                     </p>
-                    <input id='refresh_data_" . $range . "' name='refresh_data_" . $range . "'data-ui-id='' 
+                    <input id='" . $range . "' name='" . $range . "'data-ui-id='' 
                         value='' class='input-text admin__control-text' type='text' />
                 </div>" .
                 '<script type="text/javascript">
                 require(["jquery", "jquery/ui"], function () {
                 jQuery(document).ready(function () {
-                    var el = jQuery("#refresh_data_' . $range . '");
+                    var el = jQuery("#' . $range . '");
                     el.datepicker({dateFormat:"yy-mm-dd"});
                     el.addClass("datepicker");
                 });
@@ -45,7 +45,7 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
                             }
                         }
                         
-                        var elmToObserve = ['refresh_data_from', 'refresh_data_to'];
+                        var elmToObserve = ['from', 'to'];
                         var elmToChange = 
                             [
                                 '#connector_developer_settings_sync_settings_reset_orders', 
