@@ -109,6 +109,8 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      */
     public function test_singe_order_type_is_array()
     {
+        $this->createModifiedEmailOrder();
+        $this->prep();
         $item = $this->importerCollection->getFirstItem();
 
         $this->assertInternalType('array', unserialize($item->getImportData()), 'Import data is not of array type');
