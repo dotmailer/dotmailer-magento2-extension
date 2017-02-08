@@ -72,10 +72,6 @@ class Quote
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     public $timeZone;
-    /**
-     * @var
-     */
-    public $countStores;
 
     /**
      * Quote constructor.
@@ -120,7 +116,6 @@ class Quote
          * Save lost baskets to be send in Send table.
          */
         $stores = $this->helper->getStores();
-        $this->countStores = count($stores);
 
         foreach ($stores as $store) {
             $storeId = $store->getId();

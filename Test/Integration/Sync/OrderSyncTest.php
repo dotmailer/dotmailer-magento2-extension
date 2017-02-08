@@ -224,30 +224,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 
     }
 
-    private function createWebsitesAndStore()
-    {
-        $objectManager = ObjectManager::getInstance();
-        $website = $objectManager->create('Magento\Store\Model\Website');
-        $website->setData(['code' => 'test', 'name' => 'Test Website', 'default_group_id' => '1', 'is_default' => '0']);
-        $website->save();
-        /** @var $store \Magento\Store\Model\Store */
-        $store = $objectManager->create('Magento\Store\Model\Store');
-        $store->setData([
-            'code' => 'test',
-            'website_id' => $website->getId(),
-            'group_id' => '1',
-            'name' => 'Test Store',
-            'sort_order' => '0',
-            'is_active' => '1'
-        ]);
-        $store->save();
-
-        return $website;
-    }
-
     public function createNewEmailOrder()
     {
-
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
         $order = $objectManager->create('Magento\Sales\Model\ResourceModel\Order\Collection');
