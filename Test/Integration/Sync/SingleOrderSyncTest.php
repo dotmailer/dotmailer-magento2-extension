@@ -73,7 +73,6 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      */
     public function test_importer_collection_count_is_one()
     {
-        $this->truncateTables();
         $this->createModifiedEmailOrder();
         $this->prep();
         $this->assertEquals(1, $this->importerCollection->getSize(), 'Item count is not one');
@@ -86,7 +85,6 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      */
     public function test_single_order_is_type_order_and_mode_single()
     {
-        $this->truncateTables();
         $this->createModifiedEmailOrder();
         $this->prep();
 
@@ -114,17 +112,6 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
         $item = $this->importerCollection->getFirstItem();
 
         $this->assertInternalType('array', unserialize($item->getImportData()), 'Import data is not of array type');
-    }
-
-    public function truncateTables()
-    {
-        /** @var \Dotdigitalgroup\Email\Model\Order $emailOrder */
-        $emailOrder = $this->objectManager->create('Dotdigitalgroup\Email\Model\Order');
-        $emailOrder->getResource()->getConnection()->truncateTable($emailOrder->getResource()->getMainTable());
-
-        /** @var \Dotdigitalgroup\Email\Model\Importer $importer */
-        $importer = $this->objectManager->create('Dotdigitalgroup\Email\Model\Importer');
-        $importer->getResource()->getConnection()->truncateTable($importer->getResource()->getMainTable());
     }
 
     public function createModifiedEmailOrder()
