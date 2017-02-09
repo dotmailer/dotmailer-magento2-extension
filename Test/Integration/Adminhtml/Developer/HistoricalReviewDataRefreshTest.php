@@ -2,14 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
-class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
+class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
-    public $model = 'Dotdigitalgroup\Email\Model\Order';
-    public $url = 'backend/dotdigitalgroup_email/run/ordersreset';
+    public $model = 'Dotdigitalgroup\Email\Model\Review';
+    public $url = 'backend/dotdigitalgroup_email/run/reviewsreset';
 
     public function setUp()
     {
@@ -27,50 +27,45 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
         $this->dispatch($dispatchUrl);
     }
 
-    public function test_order_reset_successful_given_date_range()
+    public function test_review_reset_successful_given_date_range()
     {
         $this->emptyTable();
 
         $data = [
-            'order_id' => '1',
-            'order_status' => 'pending',
-            'quote_id' => '1',
+            'review_id' => '1',
+            'customer_id' => '1',
             'store_id' => '1',
-            'email_imported' => '1',
+            'review_imported' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-
-        $this->assertEquals(1, $collection->getSize());
+        $collection->addFieldToFilter('review_imported', ['null' => true]);
 
         $this->runReset('2017-02-09', '2017-02-10', $this->url);
-
-        $collection->addFieldToFilter('email_imported', ['null' => true]);
 
         $this->assertEquals(1, $collection->getSize());
 
     }
 
-    public function test_order_reset_not_successful_wrong_date_range()
+    public function test_review_reset_not_successful_wrong_date_range()
     {
         $this->emptyTable();
 
         $data = [
-            'order_id' => '1',
-            'order_status' => 'pending',
-            'quote_id' => '1',
+            'review_id' => '1',
+            'customer_id' => '1',
             'store_id' => '1',
-            'email_imported' => '1',
+            'review_imported' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('email_imported', ['null' => true]);
+        $collection->addFieldToFilter('review_imported', ['null' => true]);
 
         $this->runReset('2017-02-09', '2017-01-10', $this->url);
 
@@ -78,23 +73,22 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
 
     }
 
-    public function test_order_reset_not_successful_invalid_date_range()
+    public function test_review_reset_not_successful_invalid_date_range()
     {
         $this->emptyTable();
 
         $data = [
-            'order_id' => '1',
-            'order_status' => 'pending',
-            'quote_id' => '1',
+            'review_id' => '1',
+            'customer_id' => '1',
             'store_id' => '1',
-            'email_imported' => '1',
+            'review_imported' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('email_imported', ['null' => true]);
+        $collection->addFieldToFilter('review_imported', ['null' => true]);
 
         $this->runReset('2017-02-09', '2017-01-10m', $this->url);
 
@@ -102,81 +96,78 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
 
     }
 
-    public function test_order_full_reset_successful_without_date_range()
+    public function test_review_full_reset_successful_without_date_range()
     {
         $this->emptyTable();
 
         $data = [
             [
-                'order_id' => '1',
-                'order_status' => 'pending',
-                'quote_id' => '1',
+                'review_id' => '1',
+                'customer_id' => '1',
                 'store_id' => '1',
-                'email_imported' => '1',
+                'review_imported' => '1',
                 'created_at' => '2017-02-09'
             ],
             [
-                'order_id' => '2',
-                'order_status' => 'pending',
-                'quote_id' => '2',
+                'review_id' => '2',
+                'customer_id' => '2',
                 'store_id' => '1',
-                'email_imported' => '1',
+                'review_imported' => '1',
                 'created_at' => '2017-02-11'
             ]
         ];
+
         foreach ($data as $item) {
             $this->createEmailData($item);
         }
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('email_imported', ['null' => true]);
+        $collection->addFieldToFilter('review_imported', ['null' => true]);
 
         $this->runReset('', '', $this->url);
 
         $this->assertEquals(2, $collection->getSize());
     }
 
-    public function test_order_full_reset_success_with_from_date_only()
+    public function test_review_full_reset_success_with_from_date_only()
     {
         $this->emptyTable();
 
         $data = [
-            'order_id' => '1',
-            'order_status' => 'pending',
-            'quote_id' => '1',
+            'review_id' => '1',
+            'customer_id' => '1',
             'store_id' => '1',
-            'email_imported' => '1',
+            'review_imported' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('email_imported', ['null' => true]);
+        $collection->addFieldToFilter('review_imported', ['null' => true]);
 
         $this->runReset('2017-02-10', '', $this->url);
 
         $this->assertEquals(1, $collection->getSize());
     }
 
-    public function test_order_full_reset_success_with_to_date_only()
+    public function test_review_full_reset_success_with_to_date_only()
     {
         $this->emptyTable();
 
         $data = [
-            'order_id' => '1',
-            'order_status' => 'pending',
-            'quote_id' => '1',
+            'review_id' => '1',
+            'customer_id' => '1',
             'store_id' => '1',
-            'email_imported' => '1',
+            'review_imported' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('email_imported', ['null' => true]);
+        $collection->addFieldToFilter('review_imported', ['null' => true]);
 
         $this->runReset('', '2017-02-10', $this->url);
 
