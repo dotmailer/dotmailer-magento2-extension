@@ -13,8 +13,16 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
     public function setUp()
     {
-        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         parent::setUp();
+
+        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
+        $this->uri = $this->url;
+        $this->resource = 'Dotdigitalgroup_Email::config';
+        $params = [
+            'from' => '',
+            'to' => ''
+        ];
+        $this->getRequest()->setParams($params);
     }
 
     public function runReset($from, $to, $dispatchUrl)
@@ -65,6 +73,11 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
         $this->runReset('2017-02-09', '2017-01-10', $this->url);
 
+        $this->assertSessionMessages(
+            $this->equalTo(['To Date cannot be earlier then From Date.']),
+            \Magento\Framework\Message\MessageInterface::TYPE_ERROR
+        );
+
         $this->assertEquals(0, $collection->getSize());
 
     }
@@ -84,7 +97,12 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
             ->getCollection();
         $collection->addFieldToFilter('imported', ['null' => true]);
 
-        $this->runReset('2017-02-09', '2017-01-10m', $this->url);
+        $this->runReset('2017-02-09', 'not valid', $this->url);
+
+        $this->assertSessionMessages(
+            $this->equalTo(['From or To date is not a valid date.']),
+            \Magento\Framework\Message\MessageInterface::TYPE_ERROR
+        );
 
         $this->assertEquals(0, $collection->getSize());
 

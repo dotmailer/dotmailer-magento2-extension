@@ -65,4 +65,12 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
         );
         $this->_redirect($redirectUrl);
     }
+
+    /**
+     * @return bool
+     */
+    public function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
+    }
 }
