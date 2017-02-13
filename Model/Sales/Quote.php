@@ -72,6 +72,7 @@ class Quote
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     public $timeZone;
+
     /**
      * Quote constructor.
      *
@@ -115,234 +116,17 @@ class Quote
          * Save lost baskets to be send in Send table.
          */
         $stores = $this->helper->getStores();
+
         foreach ($stores as $store) {
             $storeId = $store->getId();
+
             if ($mode == 'all' || $mode == 'customers') {
-                /*
-                 * Customers campaigns
-                 */
-                foreach ($this->lostBasketCustomers as $num) {
-                    //customer enabled
-                    if ($this->isLostBasketCustomerEnabled($num, $storeId)) {
-                        //number of the campaign use minutes
-                        if ($num == 1) {
-                            $minutes = $this->getLostBasketCustomerInterval(
-                                $num,
-                                $storeId
-                            );
-                            $interval = \DateInterval::createFromDateString(
-                                $minutes . ' minutes'
-                            );
-                        } else {
-                            $hours = (int)$this->getLostBasketCustomerInterval(
-                                $num,
-                                $storeId
-                            );
-                            $interval = \DateInterval::createFromDateString(
-                                $hours . ' hours'
-                            );
-                        }
 
-                        $fromTime = $this->timeZone->scopeDate($storeId, 'now', true);
-                        $fromTime->sub($interval);
-                        $toTime = clone $fromTime;
-                        $fromTime->sub(
-                            \DateInterval::createFromDateString('5 minutes')
-                        );
-
-                        //format time
-                        $fromDate = $fromTime->format('Y-m-d H:i:s');
-                        $toDate = $toTime->format('Y-m-d H:i:s');
-
-                        //active quotes
-                        $quoteCollection = $this->getStoreQuotes(
-                            $fromDate,
-                            $toDate,
-                            $guest = false,
-                            $storeId
-                        );
-                        //found abandoned carts
-                        if ($quoteCollection->getSize()) {
-                            $this->helper->log(
-                                'Customer cart : ' . $num . ', from : '
-                                . $fromDate . ' ,to ' . $toDate
-                            );
-                        }
-
-                        //campaign id for customers
-                        $campaignId = $this->getLostBasketCustomerCampaignId(
-                            $num,
-                            $storeId
-                        );
-                        foreach ($quoteCollection as $quote) {
-                            $email = $quote->getCustomerEmail();
-                            $websiteId = $store->getWebsiteId();
-                            $quoteId = $quote->getId();
-                            //api - set the last quote id for customer
-                            $this->helper->updateLastQuoteId(
-                                $quoteId,
-                                $email,
-                                $websiteId
-                            );
-
-                            $items = $quote->getAllItems();
-                            $mostExpensiveItem = false;
-                            foreach ($items as $item) {
-                                if ($mostExpensiveItem == false) {
-                                    $mostExpensiveItem = $item;
-                                } elseif ($item->getPrice()
-                                    > $mostExpensiveItem->getPrice()
-                                ) {
-                                    $mostExpensiveItem = $item;
-                                }
-                            }
-                            //api-send the most expensive product for abandoned cart
-                            if ($mostExpensiveItem) {
-                                $this->helper->updateAbandonedProductName(
-                                    $mostExpensiveItem->getName(),
-                                    $email,
-                                    $websiteId
-                                );
-                            }
-
-                            //send email only if the interval limit passed, no emails during this interval
-                            $intervalLimit = $this->checkCustomerCartLimit(
-                                $email,
-                                $storeId
-                            );
-                            //no campign found for interval pass
-                            if (!$intervalLimit) {
-                                //save lost basket for sending
-                                //@codingStandardsIgnoreStart
-                                $this->campaignFactory->create()
-                                    ->setEmail($email)
-                                    ->setCustomerId($quote->getCustomerId())
-                                    ->setEventName('Lost Basket')
-                                    ->setQuoteId($quoteId)
-                                    ->setMessage('Abandoned Cart ' . $num)
-                                    ->setCampaignId($campaignId)
-                                    ->setStoreId($storeId)
-                                    ->setWebsiteId($websiteId)
-                                    ->setIsSent(null)
-                                    ->save();
-                                //@codingStandardsIgnoreEnd
-                            }
-                        }
-                    }
-                }
+                $this->searchForCustomerAbandonedCarts($storeId);
             }
             if ($mode == 'all' || $mode == 'guests') {
-                /*
-                 * Guests campaigns
-                 */
-                foreach ($this->lostBasketGuests as $num) {
-                    if ($this->isLostBasketGuestEnabled($num, $storeId)) {
-                        //for the  first cart which use the minutes
-                        if ($num == 1) {
-                            $minutes = $this->getLostBasketGuestIterval(
-                                $num,
-                                $storeId
-                            );
-                            $interval = \DateInterval::createFromDateString(
-                                $minutes . ' minutes'
-                            );
-                        } else {
-                            $hours = $this->getLostBasketGuestIterval(
-                                $num,
-                                $storeId
-                            );
-                            $interval = \DateInterval::createFromDateString(
-                                $hours . ' hours'
-                            );
-                        }
 
-                        $fromTime = $this->timeZone->scopeDate($storeId, 'now', true);
-                        $fromTime->sub($interval);
-                        $toTime = clone $fromTime;
-                        $fromTime->sub(
-                            \DateInterval::createFromDateString('5 minutes')
-                        );
-
-                        //format time
-                        $fromDate = $fromTime->format('Y-m-d H:i:s');
-                        $toDate = $toTime->format('Y-m-d H:i:s');
-
-                        //active guest quotes
-                        $quoteCollection = $this->getStoreQuotes(
-                            $fromDate,
-                            $toDate,
-                            $guest = true,
-                            $storeId
-                        );
-                        //log the time for carts found
-                        if ($quoteCollection->getSize()) {
-                            $this->helper->log(
-                                'Guest cart : ' . $num . ', from : ' . $fromDate
-                                . ' ,to : ' . $toDate
-                            );
-                        }
-                        $guestCampaignId = $this->getLostBasketGuestCampaignId(
-                            $num,
-                            $storeId
-                        );
-                        foreach ($quoteCollection as $quote) {
-                            $email = $quote->getCustomerEmail();
-                            $websiteId = $store->getWebsiteId();
-                            $quoteId = $quote->getId();
-                            //api - set the last quote id for customer
-                            $this->helper->updateLastQuoteId(
-                                $quoteId,
-                                $email,
-                                $websiteId
-                            );
-                            
-                            // update abandoned product name for contact
-                            $items = $quote->getAllItems();
-                            $mostExpensiveItem = false;
-                            foreach ($items as $item) {
-                                if ($mostExpensiveItem == false) {
-                                    $mostExpensiveItem = $item;
-                                } elseif ($item->getPrice()
-                                    > $mostExpensiveItem->getPrice()
-                                ) {
-                                    $mostExpensiveItem = $item;
-                                }
-                            }
-                            //api- set the most expensive product to datafield
-                            if ($mostExpensiveItem) {
-                                $this->helper->updateAbandonedProductName(
-                                    $mostExpensiveItem->getName(),
-                                    $email,
-                                    $websiteId
-                                );
-                            }
-
-                            //send email only if the interval limit passed, no emails during this interval
-                            $campignFound = $this->checkCustomerCartLimit(
-                                $email,
-                                $storeId
-                            );
-
-                            //no campign found for interval pass
-                            if (!$campignFound) {
-                                //save lost basket for sending
-                                //@codingStandardsIgnoreStart
-                                $this->campaignFactory->create()
-                                    ->setEmail($email)
-                                    ->setEventName('Lost Basket')
-                                    ->setQuoteId($quoteId)
-                                    ->setCheckoutMethod('Guest')
-                                    ->setMessage('Guest Abandoned Cart ' . $num)
-                                    ->setCampaignId($guestCampaignId)
-                                    ->setStoreId($storeId)
-                                    ->setWebsiteId($websiteId)
-                                    ->setIsSent(null)
-                                    ->save();
-                                //@codingStandardsIgnoreEnd
-                            }
-                        }
-                    }
-                }
+                $this->searchForGuestAbandonedCarts($storeId);
             }
         }
     }
@@ -385,20 +169,17 @@ class Quote
      *
      * @return $this
      */
-    public function getStoreQuotes(
-        $from = null,
-        $to = null,
-        $guest = false,
-        $storeId = 0
-    ) {
+    public function getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
+    {
         $updated = [
             'from' => $from,
             'to' => $to,
             'date' => true,
         ];
 
-        $salesCollection = $this->quoteCollection->create()
-            ->addFieldToFilter('is_active', 1)
+        $salesCollection = $this->quoteCollection->create();
+
+        $salesCollection->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('items_count', ['gt' => 0])
             ->addFieldToFilter('customer_email', ['neq' => ''])
             ->addFieldToFilter('store_id', $storeId)
@@ -467,15 +248,13 @@ class Quote
             return false;
         }
 
-        $fromTime = $this->timeZone->scopeDate($storeId, 'now');
+        $fromTime = $this->timeZone->scopeDate($storeId, 'now', true);
         $toTime = clone $fromTime;
-        $interval = \DateInterval::createFromDateString(
-            $cartLimit . ' hours'
-        );
+        $interval = \DateInterval::createFromDateString($cartLimit . ' hours');
         $fromTime->sub($interval);
 
-        $fromDate = $fromTime->getTimestamp();
-        $toDate = $toTime->getTimestamp();
+        $fromDate   = $fromTime->getTimestamp();
+        $toDate     = $toTime->getTimestamp();
         $updated = [
             'from' => $fromDate,
             'to' => $toDate,
@@ -484,6 +263,7 @@ class Quote
 
         //total campaigns sent for this interval of time
         $campaignLimit = $this->campaignCollection->create()
+            ->getCollection()
             ->addFieldToFilter('email', $email)
             ->addFieldToFilter('event_name', 'Lost Basket')
             ->addFieldToFilter('sent_at', $updated)
@@ -518,7 +298,7 @@ class Quote
      *
      * @return mixed
      */
-    public function getLostBasketGuestIterval($num, $storeId)
+    public function getLostBasketSendAfterForGuest($num, $storeId)
     {
         return $this->scopeConfig->getValue(
             constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_' . $num),
@@ -540,5 +320,226 @@ class Quote
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
+    }
+
+    /**
+     * @param $storeId
+     */
+    protected function searchForGuestAbandonedCarts($storeId)
+    {
+        /*
+         * Guests campaigns
+         */
+        foreach ($this->lostBasketGuests as $num) {
+            if ($this->isLostBasketGuestEnabled($num, $storeId)) {
+
+                $sendAfter = $this->getSendAfterIntervalForGuest($storeId, $num);
+                $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
+                $fromTime->sub($sendAfter);
+                $toTime = clone $fromTime;
+                $fromTime->sub(\DateInterval::createFromDateString('5 minutes'));
+
+                //format time
+                $fromDate   = $fromTime->format('Y-m-d H:i:s');
+                $toDate     = $toTime->format('Y-m-d H:i:s');
+
+                //active guest quotes
+                $quoteCollection = $this->getStoreQuotes(
+                    $fromDate,
+                    $toDate,
+                    $guest = true,
+                    $storeId
+                );
+                //log the time for carts found
+                if ($quoteCollection->getSize()) {
+                    $this->helper->log('Found guest cart : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate);
+                }
+                $guestCampaignId = $this->getLostBasketGuestCampaignId(
+                    $num,
+                    $storeId
+                );
+                foreach ($quoteCollection as $quote) {
+                    $email = $quote->getCustomerEmail();
+                    $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+                    $quoteId = $quote->getId();
+                    // upate last quote id for the contact
+                    $this->helper->updateLastQuoteId(
+                        $quoteId,
+                        $email,
+                        $websiteId
+                    );
+                    // update abandoned product name for contact
+                    $items = $quote->getAllItems();
+                    $mostExpensiveItem = false;
+                    foreach ($items as $item) {
+                        if ($mostExpensiveItem == false) {
+                            $mostExpensiveItem = $item;
+                        } elseif ($item->getPrice()
+                            > $mostExpensiveItem->getPrice()
+                        ) {
+                            $mostExpensiveItem = $item;
+                        }
+                    }
+                    //api- set the most expensive product to datafield
+                    if ($mostExpensiveItem) {
+                        $this->helper->updateAbandonedProductName(
+                            $mostExpensiveItem->getName(),
+                            $email,
+                            $websiteId
+                        );
+                    }
+
+                    //send email only if the interval limit passed, no emails during this interval
+                    $campignFound = $this->checkCustomerCartLimit(
+                        $email,
+                        $storeId
+                    );
+
+                    //no campign found for interval pass
+                    if (!$campignFound) {
+                        //save lost basket for sending
+                        //@codingStandardsIgnoreStart
+                        $this->campaignFactory->create()
+                            ->setEmail($email)
+                            ->setEventName('Lost Basket')
+                            ->setQuoteId($quoteId)
+                            ->setCheckoutMethod('Guest')
+                            ->setMessage('Guest Abandoned Cart ' . $num)
+                            ->setCampaignId($guestCampaignId)
+                            ->setStoreId($storeId)
+                            ->setWebsiteId($websiteId)
+                            ->setIsSent(null)
+                            ->save();
+                        //@codingStandardsIgnoreEnd
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $storeId
+     */
+    protected function searchForCustomerAbandonedCarts($storeId)
+    {
+        /*
+         * Customers campaigns
+         */
+        foreach ($this->lostBasketCustomers as $num) {
+            //customer enabled
+            if ($this->isLostBasketCustomerEnabled($num, $storeId)) {
+                //hit the first AC using minutes
+                if ($num == 1) {
+                    $minutes = $this->getLostBasketCustomerInterval($num, $storeId);
+                    $interval = \DateInterval::createFromDateString($minutes . ' minutes');
+                } else {
+                    $hours = (int)$this->getLostBasketCustomerInterval($num, $storeId);
+                    $interval = \DateInterval::createFromDateString($hours . ' hours');
+                }
+                $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
+                $fromTime->sub($interval);
+                $toTime = clone $fromTime;
+                $fromTime->sub(\DateInterval::createFromDateString('5 minutes'));
+
+                //format time
+                $fromDate = $fromTime->format('Y-m-d H:i:s');
+                $toDate = $toTime->format('Y-m-d H:i:s');
+
+                //active quotes
+                $quoteCollection = $this->getStoreQuotes(
+                    $fromDate,
+                    $toDate,
+                    $guest = false,
+                    $storeId
+                );
+                //found abandoned carts
+                if ($quoteCollection->getSize()) {
+                    $this->helper->log(
+                        'Customer cart : ' . $num . ', from : '
+                        . $fromDate . ' ,to ' . $toDate
+                    );
+                }
+
+                //campaign id for customers
+                $campaignId = $this->getLostBasketCustomerCampaignId(
+                    $num,
+                    $storeId
+                );
+                foreach ($quoteCollection as $quote) {
+                    $email = $quote->getCustomerEmail();
+                    $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+
+                    $quoteId = $quote->getId();
+                    //api - set the last quote id for customer
+                    $this->helper->updateLastQuoteId(
+                        $quoteId,
+                        $email,
+                        $websiteId
+                    );
+
+                    $items = $quote->getAllItems();
+                    $mostExpensiveItem = false;
+                    foreach ($items as $item) {
+                        if ($mostExpensiveItem == false) {
+                            $mostExpensiveItem = $item;
+                        } elseif ($item->getPrice()
+                            > $mostExpensiveItem->getPrice()
+                        ) {
+                            $mostExpensiveItem = $item;
+                        }
+                    }
+                    //api-send the most expensive product for abandoned cart
+                    if ($mostExpensiveItem) {
+                        $this->helper->updateAbandonedProductName(
+                            $mostExpensiveItem->getName(),
+                            $email,
+                            $websiteId
+                        );
+                    }
+
+                    //send email only if the interval limit passed, no emails during this interval
+                    $intervalLimit = $this->checkCustomerCartLimit(
+                        $email,
+                        $storeId
+                    );
+                    //no campign found for interval pass
+                    if (!$intervalLimit) {
+                        //save lost basket for sending
+                        //@codingStandardsIgnoreStart
+                        $this->campaignFactory->create()
+                            ->setEmail($email)
+                            ->setCustomerId($quote->getCustomerId())
+                            ->setEventName('Lost Basket')
+                            ->setQuoteId($quoteId)
+                            ->setMessage('Abandoned Cart ' . $num)
+                            ->setCampaignId($campaignId)
+                            ->setStoreId($storeId)
+                            ->setWebsiteId($websiteId)
+                            ->setIsSent(null)
+                            ->save();
+                        //@codingStandardsIgnoreEnd
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $storeId
+     * @param $num
+     * @return \DateInterval
+     */
+    protected function getSendAfterIntervalForGuest($storeId, $num)
+    {
+        $timeInterval = $this->getLostBasketSendAfterForGuest($num, $storeId);
+
+        //for the  first cart which use the minutes
+        if ($num == 1) {
+            $interval = \DateInterval::createFromDateString($timeInterval . ' minutes');
+        } else {
+            $interval = \DateInterval::createFromDateString($timeInterval . ' hours');
+        }
+
+        return $interval;
     }
 }

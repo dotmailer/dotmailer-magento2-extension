@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Magento\TestFramework\ObjectManager;
+
 class LogFileReadTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -11,47 +13,54 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
+    public $fileHelper;
+    /**
+     * @var \Magento\TestFramework\ObjectManager
+     */
+    public $objectManager;
+    /**
+     * @var  \Dotdigitalgroup\Email\Helper\Data
+     */
     public $helper;
+
 
     public function setup()
     {
+        $this->objectManager = ObjectManager::getInstance();
         /** @var \Dotdigitalgroup\Email\Helper\File $helper */
-        $this->helper = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->get('Dotdigitalgroup\Email\Helper\File');
+        $this->fileHelper = $this->objectManager->get(\Dotdigitalgroup\Email\Helper\File::class);
+        $this->helper = $this->objectManager->get(\Dotdigitalgroup\Email\Helper\Data::class);
+    }
 
-        $filename = 'connector';
-        $this->pathLogfile = $this->helper->directoryList->getPath('var') . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR
-            . $filename . '.log';
+    public function test_file_exists_and_content_contains_message()
+    {
+
+        $this->helper->log('logged message data');
+
+        $content = $this->fileHelper->getLogFileContent();
+
+        $this->assertContains('logged message', $content);
+
+    }
+
+    public function test_debug_log_contains_data_message()
+    {
+        $this->helper->debug('Dummy Title', ['mesage dummy text']);
+
+        $this->assertContains('dummy text', $this->fileHelper->getLogFileContent());
     }
 
     public function test_empty_log_file_returns_no_error()
     {
-        /**
-         * Create empty file.
-         */
-        //@codingStandardsIgnoreStart
-        $handle = fopen($this->pathLogfile, 'w');
-        fwrite($handle, '');
-        fclose($handle);
-        //@codingStandardsIgnoreEnd
-
-        $content = $this->helper->getLogFileContent('connector');
-
+        $content = $this->fileHelper->getLogFileContent();
         $this->assertNotContains('Log file is not readable or does not exist at this moment', $content);
     }
 
     public function test_log_file_with_data_returns_no_error()
     {
-        /**
-         * Create empty file.
-         */
-        //@codingStandardsIgnoreStart
-        $handle = fopen($this->pathLogfile, 'w');
-        fwrite($handle, 'SOME TEXT DATA');
-        fclose($handle);
-        //@codingStandardsIgnoreEnd
+        $this->helper->log('SOME TEXT DATA');
 
-        $content = $this->helper->getLogFileContent('connector');
+        $content = $this->fileHelper->getLogFileContent();
 
         $this->assertNotContains('Log file is not readable or does not exist at this moment', $content);
     }
@@ -61,10 +70,9 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
         /**
          * Remove file
          */
-        //@codingStandardsIgnoreStart
         unlink($this->pathLogfile);
-        //@codingStandardsIgnoreEnd
-        $content = $this->helper->getLogFileContent('connector');
+
+        $content = $this->fileHelper->getLogFileContent();
         $this->assertContains('failed to open stream: No such file ', $content);
     }
 }

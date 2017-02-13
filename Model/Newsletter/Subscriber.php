@@ -197,19 +197,22 @@ class Subscriber
     }
 
     /**
+     * Get the store id from newsletter_subscriber, return default if not found.
+     *
      * @param $email
      * @param $subscribers
      *
-     * @return bool
+     * @return int
      */
     public function getStoreIdForSubscriber($email, $subscribers)
     {
+        $defaultStore = 1;
         foreach ($subscribers as $subscriber) {
             if ($subscriber['subscriber_email'] == $email) {
                 return $subscriber['store_id'];
             }
         }
-        return false;
+        return $defaultStore;
     }
 
     /**

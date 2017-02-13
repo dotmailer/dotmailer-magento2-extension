@@ -109,6 +109,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             if (!$store->getWebsite()
                 ->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED)
             ) {
+                $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
                 return $this;
             }
 
@@ -165,17 +166,19 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                         'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
                         $order->getWebsiteId()
                     );
-                    //send to automation queue
-                    $this->doAutomationEnrolment(
-                        [
-                            'programId' => $programIdNewOrder,
-                            'automationType' => $automationTypeNewOrder,
-                            'email' => $customerEmail,
-                            'order_id' => $order->getId(),
-                            'website_id' => $websiteId,
-                            'store_name' => $storeName
-                        ]
-                    );
+                    if ($programIdNewOrder) {
+                        //send to automation queue
+                        $this->doAutomationEnrolment(
+                            [
+                                'programId' => $programIdNewOrder,
+                                'automationType' => $automationTypeNewOrder,
+                                'email' => $customerEmail,
+                                'order_id' => $order->getId(),
+                                'website_id' => $websiteId,
+                                'store_name' => $storeName
+                            ]
+                        );
+                    }
                 }
             }
             //admin oder when editing the first one is canceled
