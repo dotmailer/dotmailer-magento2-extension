@@ -143,7 +143,7 @@ class Quote
                             );
                         }
 
-                        $fromTime = $this->timeZone->scopeDate($storeId, 'now');
+                        $fromTime = $this->timeZone->scopeDate($storeId, 'now', true);
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
                         $fromTime->sub(
@@ -256,7 +256,7 @@ class Quote
                             );
                         }
 
-                        $fromTime = $this->timeZone->scopeDate($storeId, 'now');
+                        $fromTime = $this->timeZone->scopeDate($storeId, 'now', true);
                         $fromTime->sub($interval);
                         $toTime = clone $fromTime;
                         $fromTime->sub(
@@ -289,12 +289,13 @@ class Quote
                             $email = $quote->getCustomerEmail();
                             $websiteId = $store->getWebsiteId();
                             $quoteId = $quote->getId();
-                            // upate last quote id for the contact
+                            //api - set the last quote id for customer
                             $this->helper->updateLastQuoteId(
                                 $quoteId,
                                 $email,
                                 $websiteId
                             );
+                            
                             // update abandoned product name for contact
                             $items = $quote->getAllItems();
                             $mostExpensiveItem = false;
@@ -483,7 +484,6 @@ class Quote
 
         //total campaigns sent for this interval of time
         $campaignLimit = $this->campaignCollection->create()
-            ->getCollection()
             ->addFieldToFilter('email', $email)
             ->addFieldToFilter('event_name', 'Lost Basket')
             ->addFieldToFilter('sent_at', $updated)

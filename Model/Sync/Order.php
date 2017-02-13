@@ -66,10 +66,6 @@ class Order
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     public $importerFactory;
-    /**
-     * @var array
-     */
-    public $guests = [];
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory
@@ -159,15 +155,6 @@ class Order
                 ->setImported($this->orderIds);
 
             unset($this->accounts[$account->getApiUsername()]);
-        }
-
-        /**
-         * Add guest to contacts table.
-         */
-        if (! empty($this->guests)) {
-
-            $this->contactResourceFactory->create()
-                ->insert($this->guests);
         }
 
         if ($this->countOrders) {
@@ -297,15 +284,6 @@ class Order
         $salesOrderCollection = $orderModel->getSalesOrdersWithIds($orderIds);
 
         foreach ($salesOrderCollection as $order) {
-
-            $storeId = $order->getStoreId();
-            $store = $this->storeManager->getStore($storeId);
-            $websiteId = $store->getWebsiteId();
-            /**
-             * Add guest to contacts table.
-             */
-            $this->exportGuests($order, $websiteId, $storeId);
-
             if ($order->getId()) {
                 $connectorOrder = $this->connectorOrderFactory->create();
                 $connectorOrder->setOrderData($order);
@@ -315,24 +293,6 @@ class Order
             $this->orderIds[] = $order->getId();
         }
         return $orders;
-    }
-
-    /**
-     * @param $order
-     * @param $websiteId
-     * @param $storeId
-     */
-    protected function exportGuests($order, $websiteId, $storeId)
-    {
-        if ($order->getCustomerIsGuest() && $order->getCustomerEmail()) {
-            //add guest to the list
-            $this->guests[] = [
-                'email' => $order->getCustomerEmail(),
-                'website_id' => $websiteId,
-                'store_id' => $storeId,
-                'is_guest' => '1'
-            ];
-        }
     }
 
     /**
