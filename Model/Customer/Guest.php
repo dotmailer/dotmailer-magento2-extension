@@ -28,6 +28,18 @@ class Guest
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     public $importerFactory;
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
+    public $salesOrderFactory;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    public $storeManager;
+    /**
+     * @var array
+     */
+    public $guests = [];
 
     /**
      * Guest constructor.
@@ -36,17 +48,23 @@ class Guest
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
-        \Dotdigitalgroup\Email\Helper\Data $helper
+        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->importerFactory = $importerFactory;
-        $this->contactFactory  = $contactFactory;
-        $this->helper          = $helper;
-        $this->file            = $file;
+        $this->contactFactory = $contactFactory;
+        $this->helper = $helper;
+        $this->file = $file;
+        $this->salesOrderFactory = $salesOrderFactory;
+        $this->storeManager = $storeManagerInterface;
     }
 
     /**
@@ -54,6 +72,9 @@ class Guest
      */
     public function sync()
     {
+        //Find and create guest
+        $this->findAndCreateGuest();
+
         $this->start = microtime(true);
         $websites    = $this->helper->getWebsites();
         $started     = false;
@@ -76,6 +97,47 @@ class Guest
         if ($this->countGuests) {
             $this->helper->log('---- End Guest total time for guest sync : '
                 . gmdate('H:i:s', microtime(true) - $this->start));
+        }
+    }
+
+    /**
+     * Find and create guests
+     */
+    public function findAndCreateGuest()
+    {
+        $contacts = $this->contactFactory->create()
+            ->getCollection()
+            ->getColumnValues('email');
+
+        //get the order collection
+        $salesOrderCollection = $this->salesOrderFactory->create()
+            ->getCollection()
+            ->addFieldToFilter('customer_is_guest', ['eq' => 1])
+            ->addFieldToFilter('customer_email', ['notnull' => true])
+            ->addFieldToFilter('customer_email', ['nin' => $contacts]);
+        //group by email and store
+        $salesOrderCollection->getSelect()->group(['customer_email', 'store_id']);
+
+        foreach ($salesOrderCollection as $order) {
+            $storeId = $order->getStoreId();
+            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+
+            //add guest to the list
+            $this->guests[] = [
+                'email' => $order->getCustomerEmail(),
+                'website_id' => $websiteId,
+                'store_id' => $storeId,
+                'is_guest' => 1
+            ];
+        }
+
+        /**
+         * Add guest to contacts table.
+         */
+        if (!empty($this->guests)) {
+            $this->contactFactory->create()
+                ->getResource()
+                ->insert($this->guests);
         }
     }
 

@@ -1462,4 +1462,35 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         return $mappedData;
     }
+
+    /**
+     * Validate date range
+     *
+     * @param $dateFrom
+     * @param $dateTo
+     * @return bool|string
+     */
+    public function validateDateRange($dateFrom, $dateTo)
+    {
+        if (!$this->validateDate($dateFrom) || !$this->validateDate($dateTo)) {
+            return 'From or To date is not a valid date.';
+        }
+        if (strtotime($dateFrom) > strtotime($dateTo)) {
+            return 'To Date cannot be earlier then From Date.';
+        }
+        return false;
+    }
+
+    /**
+     * @param $date
+     * @return bool|\DateTime|false
+     */
+    public function validateDate($date)
+    {
+        try {
+            return date_create($date);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 }
