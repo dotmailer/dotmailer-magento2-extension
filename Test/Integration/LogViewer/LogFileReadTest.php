@@ -9,7 +9,7 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    public $pathLogfile;
+    public $pathLogfile = '';
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
@@ -64,15 +64,5 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotContains('Log file is not readable or does not exist at this moment', $content);
     }
-
-    public function test_log_file_not_exit_returns_error()
-    {
-        /**
-         * Remove file
-         */
-        unlink($this->pathLogfile);
-
-        $content = $this->fileHelper->getLogFileContent();
-        $this->assertContains('failed to open stream: No such file ', $content);
-    }
+    
 }
