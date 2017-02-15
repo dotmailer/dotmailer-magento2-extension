@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 {
     /**
@@ -84,7 +85,16 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
                 foreach ($isValid->properties as $property) {
                     if ($property->name == 'ApiEndpoint' && ! empty($property->value)
                     ) {
-                        $this->saveApiEndpoint($property->value);
+                        if ($this->context->getRequest()->getParam('website')) {
+                            $website = $this->helper->getWebsite();
+                            $this->saveApiEndpoint(
+                                $property->value,
+                                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                                $website->getId()
+                            );
+                        } else {
+                            $this->saveApiEndpoint($property->value);
+                        }
                         break;
                     }
                 }
@@ -101,13 +111,17 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     /**
      * Save api endpoint into config.
      *
-     * @param string $apiEndpoint
+     * @param $apiEndpoint
+     * @param string $scope
+     * @param int $scopeId
      */
-    public function saveApiEndpoint($apiEndpoint)
+    public function saveApiEndpoint($apiEndpoint, $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeId = 0)
     {
         $this->writer->save(
             \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
-            $apiEndpoint
+            $apiEndpoint,
+            $scope,
+            $scopeId
         );
     }
 }

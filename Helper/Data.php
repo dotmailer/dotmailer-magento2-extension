@@ -58,7 +58,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var File
      */
-    private $fileHelper;
+    public $fileHelper;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    public $registry;
 
     /**
      * Data constructor.
@@ -74,6 +78,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\Module\ModuleListInterface $moduleListInterface
      * @param \Magento\Cron\Model\ScheduleFactory           $schedule
      * @param \Magento\Store\Model\Store                    $store
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -87,7 +92,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Framework\Module\ModuleListInterface $moduleListInterface,
         \Magento\Cron\Model\ScheduleFactory $schedule,
-        \Magento\Store\Model\Store $store
+        \Magento\Store\Model\Store $store,
+        \Magento\Framework\Registry $registry
     ) {
 
         $this->adapter          = $adapter;
@@ -100,6 +106,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->customerFactory  = $customerFactory;
         $this->moduleInterface  = $moduleListInterface;
         $this->store            = $store;
+        $this->registry = $registry;
 
         parent::__construct($context);
         $this->fileHelper = $fileHelper;
@@ -470,6 +477,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $apiUsername = $this->getApiUsername($website);
             $apiPassword = $this->getApiPassword($website);
         }
+
+        //Register website
+        if ($this->registry->registry('connector-website-id')) {
+            $this->registry->unregister('connector-website-id');
+        }
+        $this->registry->register('connector-website-id', $website);
+
         //@codingStandardsIgnoreStart
         /** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
         $client = $this->objectManager->create(
@@ -636,16 +650,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get website config.
      *
-     * @param     $path
+     * @param $path
      * @param int $website
+     * @param string $scope
      *
      * @return mixed
      */
-    public function getWebsiteConfig($path, $website = 0)
+    public function getWebsiteConfig($path, $website = 0, $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE)
     {
         return $this->scopeConfig->getValue(
             $path,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $scope,
             $website
         );
     }

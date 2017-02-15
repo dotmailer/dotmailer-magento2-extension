@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 {
     const APICONNECTOR_VERSION = 'V2';
@@ -74,6 +75,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
     public $writer;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    public $registry;
 
     /**
      * Client constructor.
@@ -81,16 +86,19 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Magento\Framework\App\Config\Storage\Writer $writer
+        \Magento\Framework\App\Config\Storage\Writer $writer,
+        \Magento\Framework\Registry $registry
     ) {
         $this->helper     = $data;
         $this->fileHelper = $fileHelper;
         $this->writer     = $writer;
-        $this->_checkApiEndPoint();
+        $this->registry = $registry;
+        $this->checkApiEndPoint();
 
         parent::__construct(0, $this->helper);
     }
@@ -118,10 +126,28 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _checkApiEndPoint()
+    public function checkApiEndPoint()
     {
-        $apiEndpoint
-            = $this->helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT);
+        //Get website id for config save
+        $websiteFromRegistry = $this->registry->registry('connector-website-id');
+        if ($websiteFromRegistry != null) {
+            $websiteId = $websiteFromRegistry;
+        } else {
+            $websiteId = $this->helper->getWebsite()->getId();
+        }
+
+        if ($websiteId > 0) {
+            $apiEndpoint = $this->helper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+                $websiteId
+            );
+        } else {
+            $apiEndpoint = $this->helper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+                $websiteId,
+                ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+            );
+        }
 
         if (!$apiEndpoint) {
             if (!$this->getApiUsername() && !$this->getApiPassword()) {
@@ -135,7 +161,16 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 foreach ($accountInfo->properties as $property) {
                     if ($property->name == 'ApiEndpoint' && ! empty($property->value)) {
                         $apiEndpoint = $property->value;
-                        $this->_saveApiEndpoint($property->value);
+                        if ($websiteId > 0) {
+                            $this->saveApiEndpoint(
+                                $property->value,
+                                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                                $websiteId
+                            );
+                        } else {
+                            $this->saveApiEndpoint($property->value);
+                        }
+
                         break;
                     }
                 }
@@ -153,15 +188,19 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Save into config api endpoint.
+     * Save api endpoint into config.
      *
      * @param $apiEndpoint
+     * @param string $scope
+     * @param int $scopeId
      */
-    public function _saveApiEndpoint($apiEndpoint)
+    public function saveApiEndpoint($apiEndpoint, $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeId = 0)
     {
         $this->writer->save(
             \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
-            $apiEndpoint
+            $apiEndpoint,
+            $scope,
+            $scopeId
         );
     }
 
@@ -1128,7 +1167,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $this->helper->debug(
                 'deleteContactsTransactionalData',
                 ['DELETE CONTACTS TRANSACTIONAL DATA : ' . $url
-                . ' ' . $response->message]
+                    . ' ' . $response->message]
             );
         }
 
