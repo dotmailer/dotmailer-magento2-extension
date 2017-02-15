@@ -57,7 +57,7 @@ class Review extends \Magento\Framework\Model\AbstractModel
     {
         //@codingStandardsIgnoreEnd
         parent::beforeSave();
-        if ($this->isObjectNew()) {
+        if ($this->isObjectNew() && !$this->getCreatedAt()) {
             $this->setCreatedAt($this->dateTime->formatDate(true));
         }
         $this->setUpdatedAt($this->dateTime->formatDate(true));
