@@ -77,10 +77,11 @@ class TrailAccountSetupStepsTest extends \PHPUnit_Framework_TestCase
      */
     public function apiDetailsDataProvider()
     {
+        //Enter real api username and password before running this test
         return [
             [
-                'apiuser-debb7563798a@apiconnector.com',
-                'Magento2015!!'
+                'ENTER-API-USERNAME',
+                'ENTER-API-PASSWORD'
             ]
         ];
     }
