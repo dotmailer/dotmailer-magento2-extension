@@ -114,21 +114,27 @@
                 </item>
             </argument>
         </selectionsColumn>
+        <column name="email">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Email</item>
+                </item>
+            </argument>
+        </column>
+        <column name="program_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Program Id</item>
+                </item>
+            </argument>
+        </column>
         <column name="automation_type">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Automation Type</item>
-                </item>
-            </argument>
-        </column>
-        <column name="store_name">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">Store Name</item>
                 </item>
             </argument>
         </column>
@@ -144,30 +150,12 @@
                 </item>
             </argument>
         </column>
-        <column name="email">
+        <column name="message">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">Email</item>
-                </item>
-            </argument>
-        </column>
-        <column name="type_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">Type Id</item>
-                </item>
-            </argument>
-        </column>
-        <column name="program_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">Program Id</item>
+                    <item name="sortOrder" xsi:type="number">100</item>
+                    <item name="label" xsi:type="string" translate="true">Message</item>
                 </item>
             </argument>
         </column>
@@ -179,19 +167,16 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="dataType" xsi:type="string">select</item>
                     <item name="editor" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
                     <item name="sortOrder" xsi:type="number">90</item>
                     <item name="label" xsi:type="string" translate="true">Website</item>
                 </item>
             </argument>
         </column>
-        <column name="message">
+        <column name="store_name">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="sortOrder" xsi:type="number">100</item>
-                    <item name="label" xsi:type="string" translate="true">Message</item>
+                    <item name="label" xsi:type="string" translate="true">Store Name</item>
                 </item>
             </argument>
         </column>
@@ -202,6 +187,7 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
                     <item name="dataType" xsi:type="string">date</item>
                     <item name="sortOrder" xsi:type="number">110</item>
+                    <item name="sorting" xsi:type="string">desc</item>
                     <item name="label" xsi:type="string" translate="true">Created At</item>
                 </item>
             </argument>
@@ -213,7 +199,6 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
                     <item name="dataType" xsi:type="string">date</item>
                     <item name="sortOrder" xsi:type="number">120</item>
-                    <item name="sorting" xsi:type="string">desc</item>
                     <item name="label" xsi:type="string" translate="true">Updated At</item>
                 </item>
             </argument>

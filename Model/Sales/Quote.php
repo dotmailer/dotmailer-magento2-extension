@@ -198,7 +198,7 @@ class Quote
             ->addFieldToFilter('items_count', ['gt' => 0])
             ->addFieldToFilter('customer_email', ['neq' => ''])
             ->addFieldToFilter('store_id', $storeId)
-            ->addFieldToFilter('main_table.updated_at', $updated);;
+            ->addFieldToFilter('main_table.updated_at', $updated);
         //guests
         if ($guest) {
             $salesCollection->addFieldToFilter('main_table.customer_id', ['null' => true]);
