@@ -178,7 +178,7 @@ class Campaign
                         //update  the failed to send email message
                         $this->campaignResourceModel->setMessage($data['ids'], $response->message);
                     } elseif (isset($response->id)) {
-                        $this->campaignResourceModel->setProcessing($campaignId, $response->id);
+                        $this->campaignResourceModel->setProcessing($data['ids'], $response->id);
                     } else {
                         //update  the failed to send email message
                         $this->campaignResourceModel->setMessage($data['ids'], 'No send id returned.');
