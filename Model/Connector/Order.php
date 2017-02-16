@@ -19,23 +19,23 @@ class Order
     /**
      * @var int
      */
-    public $quote_id;
+    public $quoteId;
     /**
      * @var string
      */
-    public $store_name;
+    public $storeName;
     /**
      * @var string
      */
-    public $purchase_date;
+    public $purchaseDate;
     /**
      * @var array
      */
-    public $delivery_address = [];
+    public $deliveryAddress = [];
     /**
      * @var array
      */
-    public $billing_address = [];
+    public $billingAddress = [];
     /**
      * @var array
      */
@@ -43,15 +43,15 @@ class Order
     /**
      * @var float
      */
-    public $order_subtotal;
+    public $orderSubtotal;
     /**
      * @var float
      */
-    public $discount_ammount;
+    public $discountAmount;
     /**
      * @var float
      */
-    public $order_total;
+    public $orderTotal;
     /**
      * Payment name.
      *
@@ -61,11 +61,11 @@ class Order
     /**
      * @var string
      */
-    public $delivery_method;
+    public $deliveryMethod;
     /**
      * @var float
      */
-    public $delivery_total;
+    public $deliveryTotal;
     /**
      * @var string
      */
@@ -83,7 +83,7 @@ class Order
     /**
      * @var string
      */
-    public $order_status;
+    public $orderStatus;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
@@ -151,13 +151,13 @@ class Order
     public function setOrderData($orderData)
     {
         $this->id = $orderData->getIncrementId();
-        $this->quote_id = $orderData->getQuoteId();
+        $this->quoteId = $orderData->getQuoteId();
         $this->email = $orderData->getCustomerEmail();
-        $this->store_name = $orderData->getStoreName();
+        $this->storeName = $orderData->getStoreName();
 
-        $this->purchase_date = $this->localeDate->date($orderData->getCreatedAt())->format(\Zend_Date::ISO_8601);
-        $this->delivery_method = $orderData->getShippingDescription();
-        $this->delivery_total = (float)number_format(
+        $this->purchaseDate = $this->localeDate->date($orderData->getCreatedAt())->format(\Zend_Date::ISO_8601);
+        $this->deliveryMethod = $orderData->getShippingDescription();
+        $this->deliveryTotal = (float)number_format(
             $orderData->getShippingAmount(),
             2,
             '.',
@@ -179,8 +179,8 @@ class Order
 
         $customAttributes
             = $this->helper->getConfigSelectedCustomOrderAttributes(
-                $website
-            );
+            $website
+        );
 
         if ($customAttributes) {
             $fields = $this->helper->getOrderTableDescription();
@@ -204,7 +204,7 @@ class Order
          */
         if ($orderData->getBillingAddress()) {
             $billingData = $orderData->getBillingAddress()->getData();
-            $this->billing_address = [
+            $this->billingAddress = [
                 'billing_address_1' => $this->_getStreet(
                     $billingData['street'],
                     1
@@ -225,7 +225,7 @@ class Order
         if ($orderData->getShippingAddress()) {
             $shippingData = $orderData->getShippingAddress()->getData();
 
-            $this->delivery_address = [
+            $this->deliveryAddress = [
                 'delivery_address_1' => $this->_getStreet(
                     $shippingData['street'],
                     1
@@ -384,13 +384,13 @@ class Order
             }
         }
 
-        $this->order_subtotal = (float)number_format(
+        $this->orderSubtotal = (float)number_format(
             $orderData->getData('subtotal'),
             2,
             '.',
             ''
         );
-        $this->discount_ammount = (float)number_format(
+        $this->discountAmount = (float)number_format(
             $orderData->getData('discount_amount'),
             2,
             '.',
@@ -399,8 +399,8 @@ class Order
         $orderTotal = abs(
             $orderData->getData('grand_total') - $orderData->getTotalRefunded()
         );
-        $this->order_total = (float)number_format($orderTotal, 2, '.', '');
-        $this->order_status = $orderData->getStatus();
+        $this->orderTotal = (float)number_format($orderTotal, 2, '.', '');
+        $this->orderStatus = $orderData->getStatus();
 
         unset($this->_storeManager);
 

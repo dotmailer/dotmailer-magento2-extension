@@ -57,7 +57,7 @@ class Product
     /**
      * @var string
      */
-    public $short_description = '';
+    public $shortDescription = '';
 
     /**
      * @var float
