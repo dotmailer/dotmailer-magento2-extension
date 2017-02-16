@@ -121,61 +121,11 @@
                 </item>
             </argument>
         </selectionsColumn>
-        <column name="is_guest">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Guest</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">Guest</item>
-                </item>
-            </argument>
-        </column>
         <column name="contact_id">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Contact Id</item>
-                </item>
-            </argument>
-        </column>
-        <column name="customer_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">Customer Id</item>
-                </item>
-            </argument>
-        </column>
-        <column name="website_id">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Magento\Store\Model\ResourceModel\Website\Collection</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">Website</item>
-                </item>
-            </argument>
-        </column>
-        <column name="store_id">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Magento\Store\Model\ResourceModel\Store\Collection</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="sortOrder" xsi:type="number">90</item>
-                    <item name="label" xsi:type="string" translate="true">Store</item>
                 </item>
             </argument>
         </column>
@@ -183,8 +133,15 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Email</item>
+                </item>
+            </argument>
+        </column>
+        <column name="customer_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Customer Id</item>
                 </item>
             </argument>
         </column>
@@ -196,7 +153,6 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="dataType" xsi:type="string">select</item>
                     <item name="editor" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Subscriber</item>
                 </item>
             </argument>
@@ -204,27 +160,37 @@
         <column name="subscriber_status">
             <argument name="data" xsi:type="array">
                 <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Status</item>
-                    <item name="config" xsi:type="array">
+                <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">select</item>
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="dataType" xsi:type="string">select</item>
                     <item name="editor" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Status</item>
+                </item>
+            </argument>
+        </column>
+        <column name="is_guest">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Guest</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="editor" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Guest</item>
                 </item>
             </argument>
         </column>
         <column name="email_imported">
             <argument name="data" xsi:type="array">
                 <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported</item>
-                    <item name="config" xsi:type="array">
-                        <item name="filter" xsi:type="string">select</item>
-                        <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                        <item name="dataType" xsi:type="string">select</item>
-                        <item name="editor" xsi:type="string">select</item>
-                        <item name="sorting" xsi:type="string">asc</item>
-                        <item name="label" xsi:type="string" translate="true">Imported</item>
-                    </item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="editor" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Imported</item>
+                </item>
             </argument>
         </column>
         <column name="subscriber_imported">
@@ -235,7 +201,6 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="dataType" xsi:type="string">select</item>
                     <item name="editor" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Subscriber Imported</item>
                 </item>
             </argument>
@@ -248,8 +213,32 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="dataType" xsi:type="string">select</item>
                     <item name="editor" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Suppressed</item>
+                </item>
+            </argument>
+        </column>
+        <column name="website_id">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Magento\Store\Model\ResourceModel\Website\Collection</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="editor" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Website</item>
+                </item>
+            </argument>
+        </column>
+        <column name="store_id">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Magento\Store\Model\ResourceModel\Store\Collection</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="editor" xsi:type="string">select</item>
+                    <item name="sortOrder" xsi:type="number">90</item>
+                    <item name="label" xsi:type="string" translate="true">Store</item>
                 </item>
             </argument>
         </column>
