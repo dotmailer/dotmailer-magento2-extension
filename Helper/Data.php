@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -17,10 +18,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     public $storeManager;
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    public $objectManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
@@ -60,9 +57,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public $fileHelper;
     /**
-     * @var \Magento\Framework\Registry
+     * @var \Magento\Framework\App\Config\Storage\Writer
      */
-    public $registry;
+    public $writer;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
+     */
+    public $clientFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\ConfigFactory ConfigFactory
+     */
+    public $configHelperFactory;
 
     /**
      * Data constructor.
@@ -72,13 +77,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Config\Model\ResourceModel\Config    $resourceConfig
      * @param \Magento\Framework\App\ResourceConnection     $adapter
      * @param \Magento\Framework\App\Helper\Context         $context
-     * @param \Magento\Framework\ObjectManagerInterface     $objectManager
      * @param \Magento\Store\Model\StoreManagerInterface    $storeManager
      * @param \Magento\Customer\Model\CustomerFactory       $customerFactory
      * @param \Magento\Framework\Module\ModuleListInterface $moduleListInterface
      * @param \Magento\Cron\Model\ScheduleFactory           $schedule
      * @param \Magento\Store\Model\Store                    $store
-     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\App\Config\Storage\Writer $writer
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
+     * @param \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -87,13 +93,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Framework\Module\ModuleListInterface $moduleListInterface,
         \Magento\Cron\Model\ScheduleFactory $schedule,
         \Magento\Store\Model\Store $store,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\App\Config\Storage\Writer $writer,
+        \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
+        \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory
     ) {
 
         $this->adapter          = $adapter;
@@ -102,11 +109,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->contactFactory   = $contactFactory;
         $this->resourceConfig   = $resourceConfig;
         $this->storeManager     = $storeManager;
-        $this->objectManager    = $objectManager;
         $this->customerFactory  = $customerFactory;
         $this->moduleInterface  = $moduleListInterface;
         $this->store            = $store;
-        $this->registry = $registry;
+        $this->writer = $writer;
+        $this->clientFactory = $clientFactory;
+        $this->configHelperFactory = $configHelperFactory;
 
         parent::__construct($context);
         $this->fileHelper = $fileHelper;
@@ -466,6 +474,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $username
      * @param string $password
      *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     *
      * @return \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
     public function getWebsiteApiClient($website = 0, $username = '', $password = '')
@@ -478,22 +488,93 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $apiPassword = $this->getApiPassword($website);
         }
 
-        //Register website
-        if ($this->registry->registry('connector-website-id')) {
-            $this->registry->unregister('connector-website-id');
-        }
-        $this->registry->register('connector-website-id', $website);
-
-        //@codingStandardsIgnoreStart
-        /** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
-        $client = $this->objectManager->create(
-            'Dotdigitalgroup\Email\Model\Apiconnector\Client'
-        );
+        $client = $this->clientFactory->create();
         $client->setApiUsername($apiUsername)
             ->setApiPassword($apiPassword);
-        //@codingStandardsIgnoreEnd
+
+        $websiteId = $this->storeManager->getWebsite($website)->getId();
+        //Get from DB
+        $apiEndpoint = $this->getApiEndPointFromDb($websiteId);
+
+        //Nothing from DB then fetch from api
+        if (!$apiEndpoint) {
+            $apiEndpoint = $this->getApiEndPointFromApi($client);
+            //Save it in DB
+            if ($apiEndpoint) {
+                $this->saveApiEndpoint($apiEndpoint, $websiteId);
+            }
+        }
+
+        //Set api end point
+        $client->setApiEndpoint($apiEndpoint);
 
         return $client;
+    }
+
+    /**
+     * Get api end point from api
+     *
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @return mixed
+     */
+    public function getApiEndPointFromApi($client)
+    {
+        $accountInfo = $client->getAccountInfo();
+        $apiEndpoint = false;
+        if (is_object($accountInfo) && !isset($accountInfo->message)) {
+            //save endpoint for account
+            foreach ($accountInfo->properties as $property) {
+                if ($property->name == 'ApiEndpoint' && !empty($property->value)) {
+                    $apiEndpoint = $property->value;
+                    break;
+                }
+            }
+        }
+        return $apiEndpoint;
+    }
+
+    /**
+     * Get api end point for given website
+     *
+     * @param $websiteId
+     * @return mixed
+     */
+    public function getApiEndPointFromDb($websiteId)
+    {
+        if ($websiteId > 0) {
+            $apiEndpoint = $this->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+                $websiteId
+            );
+        } else {
+            $apiEndpoint = $this->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+                $websiteId,
+                ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+            );
+        }
+        return $apiEndpoint;
+    }
+
+    /**
+     * Save api endpoint into config.
+     *
+     * @param $apiEndpoint
+     * @param $websiteId
+     */
+    public function saveApiEndpoint($apiEndpoint, $websiteId)
+    {
+        if ($websiteId > 0) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
+        } else {
+            $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+        }
+        $this->writer->save(
+            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+            $apiEndpoint,
+            $scope,
+            $websiteId
+        );
     }
 
     /**
@@ -618,11 +699,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getRedirectUri()
     {
-        //@codingStandardsIgnoreStart
-        //Circular dependency when using di
-        $callback = $this->objectManager->create('Dotdigitalgroup\Email\Helper\Config')
+        $callback = $this->configHelperFactory->create()
             ->getCallbackUrl();
-        //@codingStandardsIgnoreEnd
 
         return $callback;
     }

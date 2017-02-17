@@ -81,24 +81,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
             $this->helper->log('----VALIDATING ACCOUNT---');
             $isValid = $this->test->validate($apiUsername, $apiPassword);
             if ($isValid) {
-                //save endpoint for account
-                foreach ($isValid->properties as $property) {
-                    if ($property->name == 'ApiEndpoint' && ! empty($property->value)
-                    ) {
-                        if ($this->context->getRequest()->getParam('website')) {
-                            $website = $this->helper->getWebsite();
-                            $this->saveApiEndpoint(
-                                $property->value,
-                                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-                                $website->getId()
-                            );
-                        } else {
-                            $this->saveApiEndpoint($property->value);
-                        }
-                        break;
-                    }
-                }
-
                 $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));
             } else {
                 $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
@@ -106,22 +88,5 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         }
 
         return $this;
-    }
-
-    /**
-     * Save api endpoint into config.
-     *
-     * @param $apiEndpoint
-     * @param string $scope
-     * @param int $scopeId
-     */
-    public function saveApiEndpoint($apiEndpoint, $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeId = 0)
-    {
-        $this->writer->save(
-            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
-            $apiEndpoint,
-            $scope,
-            $scopeId
-        );
     }
 }
