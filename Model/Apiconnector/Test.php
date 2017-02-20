@@ -34,7 +34,8 @@ class Test
             return false;
         }
 
-        $client = $this->helper->getWebsiteApiClient();
+        $website = $this->helper->getWebsite();
+        $client = $this->helper->getWebsiteApiClient($website);
         if ($apiUsername && $apiPassword) {
             $client->setApiUsername($apiUsername)
                 ->setApiPassword($apiPassword);
