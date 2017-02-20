@@ -15,8 +15,7 @@ class TrialAccountCreationTest extends \Magento\TestFramework\TestCase\AbstractC
 {
     public function setup()
     {
-        /** @var ObjectManager $objectManager */
-        $this->_objectManager = ObjectManager::getInstance();
+        parent::setup();
         $this->removeData();
     }
 
