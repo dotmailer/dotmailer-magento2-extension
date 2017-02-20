@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 
 
 use Magento\TestFramework\ObjectManager;
+use Dotdigitalgroup\Email\Helper\Config;
 
 /**
  * Class TrailAccountCreationTest
@@ -12,12 +13,26 @@ use Magento\TestFramework\ObjectManager;
  */
 class TrialAccountCreationTest extends \Magento\TestFramework\TestCase\AbstractController
 {
-    /**
-     * Object Manager
-     *
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    public $objectManager;
+    public function setup()
+    {
+        /** @var ObjectManager $objectManager */
+        $this->_objectManager = ObjectManager::getInstance();
+        $this->removeData();
+    }
+
+    public function tearDown()
+    {
+        $this->removeData();
+    }
+
+    public function removeData()
+    {
+        /** @var \Magento\Config\Model\ResourceModel\Config $config */
+        $config = $this->_objectManager->create('Magento\Config\Model\ResourceModel\Config');
+        $config->deleteConfig(Config::XML_PATH_CONNECTOR_API_ENABLED, 'default', 0);
+        $config->deleteConfig(Config::XML_PATH_CONNECTOR_API_USERNAME, 'default', 0);
+        $config->deleteConfig(Config::XML_PATH_CONNECTOR_API_PASSWORD, 'default', 0);
+    }
 
     /**
      * @param $apiUser
@@ -26,12 +41,9 @@ class TrialAccountCreationTest extends \Magento\TestFramework\TestCase\AbstractC
      */
     public function test_trial_account_created_successfully($apiUser, $apiPass)
     {
-        /** @var ObjectManager $objectManager */
-        $objectManager = ObjectManager::getInstance();
-
         $mockRemoteAddress = $this->getMock('Magento\Framework\HTTP\PhpEnvironment\RemoteAddress', [], [], '', false);
         $mockRemoteAddress->method('getRemoteAddress')->willReturn('104.40.179.234');
-        $objectManager->addSharedInstance($mockRemoteAddress, \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress::class);
+        $this->_objectManager->addSharedInstance($mockRemoteAddress, \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress::class);
 
         //minimum params required to create kick start callback url to create trial
         $params = [
@@ -45,7 +57,7 @@ class TrialAccountCreationTest extends \Magento\TestFramework\TestCase\AbstractC
         $this->assertContains(
             'Congratulations your dotmailer account is now ready',
             $this->getResponse()->getBody(),
-            'Trial Account creation faileds'
+            'Trial Account creation failed'
         );
     }
 
