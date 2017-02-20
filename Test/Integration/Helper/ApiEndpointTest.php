@@ -9,35 +9,52 @@ use Magento\TestFramework\ObjectManager;
  *
  * @package Dotdigitalgroup\Email\Helper
  * @magentoDBIsolation enabled
- * @magentoAppArea frontend
  */
 class ApiEndpointTest extends \PHPUnit_Framework_TestCase
 {
+    public function setup()
+    {
+        $this->removeData();
+    }
+
+    public function tearDown()
+    {
+        $this->removeData();
+    }
+
+    public function removeData()
+    {
+        /** @var ObjectManager $objectManager */
+        $objectManager = ObjectManager::getInstance();
+
+        /** @var \Magento\Config\Model\ResourceModel\Config $config */
+        $config = $objectManager->create('Magento\Config\Model\ResourceModel\Config');
+        $data = $this->dataProvider();
+
+        foreach ($data as $item) {
+            $config->deleteConfig(Config::PATH_FOR_API_ENDPOINT, $item[2], $item[0]);
+        }
+    }
+
     /**
      * @param $website
-     * @param $username
-     * @param $password
-     * @param $scope
+     * @param $endPoint
      *
      * @dataProvider dataProvider
      */
-    public function test_fetching_api_endpoint_successful($website, $username, $password, $scope)
+    public function test_fetching_api_endpoint_successful($website, $endPoint)
     {
         /** @var ObjectManager $objectManager */
         $objectManager = ObjectManager::getInstance();
 
         $property = new \stdClass();
         $property->name = 'ApiEndpoint';
-        $property->value = 'https://dummy.com';
+        $property->value = $endPoint;
 
         $accountInfo = new \stdClass();
         $accountInfo->properties = [$property];
 
         $mockClient = $this->getMock(\Dotdigitalgroup\Email\Model\Apiconnector\Client::class, [], [], '', false);
-        $mockClient->method('setApiUsername')
-            ->willReturn($mockClient);
-        $mockClient->method('setApiPassword')
-            ->willReturn($mockClient);
         $mockClient->method('getAccountInfo')
             ->willReturn($accountInfo);
 
@@ -62,10 +79,10 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
             $mockClientFactory,
             $objectManager->create('\Dotdigitalgroup\Email\Helper\ConfigFactory')
         );
-        $helper->getWebsiteApiClient($website, $username, $password);
+        $apiEndpoint = $helper->getApiEndpoint($website, $mockClient);
         $this->assertEquals(
-            'https://dummy.com',
-            $helper->getWebsiteConfig(\Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT, $website, $scope)
+            $endPoint,
+            $apiEndpoint
         );
     }
 
@@ -78,14 +95,12 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 0,
-                'DUMMY-USERNAME',
-                'DUMMY-PASSWORD',
+                'https://r1.dummy.com',
                 'default'
             ],
             [
                 1,
-                'DUMMY-USERNAME',
-                'DUMMY-PASSWORD',
+                'https://r1.dummy.com',
                 'website'
             ]
         ];

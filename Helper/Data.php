@@ -493,6 +493,26 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setApiPassword($apiPassword);
 
         $websiteId = $this->storeManager->getWebsite($website)->getId();
+        //Get api endpoint
+        $apiEndpoint = $this->getApiEndpoint($websiteId, $client);
+
+        //Set api endpoint on client
+        if ($apiEndpoint) {
+            $client->setApiEndpoint($apiEndpoint);
+        }
+
+        return $client;
+    }
+
+    /**
+     * Get Api endPoint
+     *
+     * @param $websiteId
+     * @param $client
+     * @return mixed
+     */
+    public function getApiEndpoint($websiteId, $client)
+    {
         //Get from DB
         $apiEndpoint = $this->getApiEndPointFromDb($websiteId);
 
@@ -504,11 +524,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $this->saveApiEndpoint($apiEndpoint, $websiteId);
             }
         }
-
-        //Set api end point
-        $client->setApiEndpoint($apiEndpoint);
-
-        return $client;
+        return $apiEndpoint;
     }
 
     /**
