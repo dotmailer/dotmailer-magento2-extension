@@ -154,7 +154,7 @@ class Campaign
                             //@codingStandardsIgnoreStart
                             //update the failed to send email message error message
                             $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                                ->setMessage('Send not permitted. Contact is suppressed.  ' . $email)
+                                ->setMessage('Send not permitted. Contact is suppressed.')
                                 ->save();
                             //@codingStandardsIgnoreEnd
                         }
