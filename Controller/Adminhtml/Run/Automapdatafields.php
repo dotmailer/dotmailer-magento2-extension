@@ -46,7 +46,13 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
         if ($this->data->isEnabled()) {
             $client = $this->data->getWebsiteApiClient($website);
         }
-        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
+        $redirectUrl = $this->getUrl(
+            'adminhtml/system_config/edit',
+            [
+                'section' => 'connector_developer_settings',
+                'website' => $website
+            ]
+        );
 
         if (!$client) {
             $this->messageManager->addNoticeMessage('Please enable api first.');
