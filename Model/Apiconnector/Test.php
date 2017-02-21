@@ -8,6 +8,10 @@ class Test
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+    /**
+     * @var \Magento\Framework\App\Config\ReinitableConfigInterface
+     */
+    public $config;
 
     /**
      * Test constructor.
@@ -15,9 +19,11 @@ class Test
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Magento\Framework\App\Config\ReinitableConfigInterface $config
     ) {
         $this->helper = $data;
+        $this->config = $config;
     }
 
     /**
@@ -30,6 +36,9 @@ class Test
      */
     public function validate($apiUsername, $apiPassword)
     {
+        //Clear config cache
+        $this->config->reinit();
+
         if (!$this->helper->isEnabled()) {
             return false;
         }
