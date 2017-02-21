@@ -154,7 +154,7 @@ class Campaign
                             //@codingStandardsIgnoreStart
                             //update the failed to send email message error message
                             $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                                ->setMessage('contact id returned is not numeric for email ' . $email)
+                                ->setMessage('Send not permitted. Contact is suppressed.')
                                 ->save();
                             //@codingStandardsIgnoreEnd
                         }
@@ -178,7 +178,7 @@ class Campaign
                         //update  the failed to send email message
                         $this->campaignResourceModel->setMessage($data['ids'], $response->message);
                     } elseif (isset($response->id)) {
-                        $this->campaignResourceModel->setProcessing($campaignId, $response->id);
+                        $this->campaignResourceModel->setProcessing($data['ids'], $response->id);
                     } else {
                         //update  the failed to send email message
                         $this->campaignResourceModel->setMessage($data['ids'], 'No send id returned.');

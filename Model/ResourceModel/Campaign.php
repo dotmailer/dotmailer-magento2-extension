@@ -96,13 +96,14 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set processing
      *
-     * @param $campaignId
+     * @param $ids
      * @param $sendId
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setProcessing($campaignId, $sendId)
+    public function setProcessing($ids, $sendId)
     {
         try {
+            $ids = implode("','", $ids);
             $bind = [
                 'send_status' => \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
                 'send_id' => $sendId
@@ -111,7 +112,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $conn->update(
                 $this->getMainTable(),
                 $bind,
-                ['campaign_id = ?' => $campaignId]
+                ["id in ('$ids')"]
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

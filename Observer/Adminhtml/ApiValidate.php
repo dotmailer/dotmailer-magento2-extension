@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 {
     /**
@@ -80,15 +81,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
             $this->helper->log('----VALIDATING ACCOUNT---');
             $isValid = $this->test->validate($apiUsername, $apiPassword);
             if ($isValid) {
-                //save endpoint for account
-                foreach ($isValid->properties as $property) {
-                    if ($property->name == 'ApiEndpoint' && ! empty($property->value)
-                    ) {
-                        $this->saveApiEndpoint($property->value);
-                        break;
-                    }
-                }
-
+                $this->saveApiEndpoint($apiUsername, $apiPassword);
                 $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));
             } else {
                 $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
@@ -99,15 +92,20 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * Save api endpoint into config.
+     * Save api endpoint
      *
-     * @param string $apiEndpoint
+     * @param $apiUsername
+     * @param $apiPassword
      */
-    public function saveApiEndpoint($apiEndpoint)
+    public function saveApiEndpoint($apiUsername, $apiPassword)
     {
-        $this->writer->save(
-            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
-            $apiEndpoint
-        );
+        $website = $this->helper->getWebsite();
+        $client = $this->helper->getWebsiteApiClient($website);
+        $client->setApiUsername($apiUsername)
+            ->setApiPassword($apiPassword);
+        $apiEndpoint = $this->helper->getApiEndPointFromApi($client);
+        if ($apiEndpoint) {
+            $this->helper->saveApiEndpoint($apiEndpoint, $website->getId());
+        }
     }
 }

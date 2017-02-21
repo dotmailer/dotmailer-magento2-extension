@@ -2,9 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
-
 class Accountcallback extends \Magento\Framework\App\Action\Action
 {
 
@@ -16,10 +13,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Json\Helper\Data
      */
     public $jsonHelper;
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
-     */
-    public $dataField;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -35,13 +28,13 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         '104.40.187.26'
     ];
     /**
+     * @var \Dotdigitalgroup\Email\Model\Trial\TrialSetup
+     */
+    public $trialSetup;
+    /**
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
     public $remoteAddress;
-    /**
-     * @var \Magento\Framework\App\Config\ReinitableConfigInterface
-     */
-    public $config;
 
     /**
      * Accountcallback constructor.
@@ -50,25 +43,22 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
      * @param \Magento\Framework\Json\Helper\Data                     $jsonHelper
      * @param \Magento\Store\Model\StoreManagerInterface              $storeManager
-     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield        $dataField
-     * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress    $remoteAddress
+     * @param \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
-        \Magento\Framework\App\Config\ReinitableConfigInterface $config,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
+        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
+        \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup
     ) {
         $this->helper        = $helper;
         $this->jsonHelper    = $jsonHelper;
-        $this->dataField     = $dataField;
         $this->storeManager  = $storeManager;
         $this->remoteAddress = $remoteAddress;
-        $this->config        = $config;
+        $this->trialSetup = $trialSetup;
 
         parent::__construct($context);
     }
@@ -82,23 +72,28 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
 
         //if ip is not in range or any of the required params not set send error response
         if (!in_array($this->remoteAddress->getRemoteAddress(), $this->ipRange) or
-            !isset($params['accountId']) or !isset($params['apiUser']) or !isset($params['pass'])
+            !isset($params['apiUser']) or !isset($params['pass'])
         ) {
             $this->sendAjaxResponse(true, $this->_getErrorHtml());
         }
 
         //if no value to any of the required params send error response
-        if (empty($params['accountId']) or empty($params['apiUser']) or empty($params['pass'])) {
+        if (empty($params['apiUser']) or empty($params['pass'])) {
             $this->sendAjaxResponse(true, $this->_getErrorHtml());
         }
 
-        $apiConfigStatus = $this->saveApiCreds($params['apiUser'], $params['pass']);
-        $dataFieldsStatus = $this->setupDataFields($params['apiUser'], $params['pass']);
-        $addressBookStatus = $this->createAddressBooks($params['apiUser'], $params['pass']);
-        $syncStatus = $this->enableSyncForTrial();
+        //Save api end point
         if (isset($params['apiEndpoint'])) {
-            $this->saveApiEndPoint($params['apiEndpoint']);
+            $this->trialSetup->saveApiEndPoint($params['apiEndpoint']);
+        } else { //Save empty value to endpoint. New endpoint will be fetched when first api call made.
+            $this->trialSetup->saveApiEndPoint('');
         }
+
+        $apiConfigStatus = $this->trialSetup->saveApiCreds($params['apiUser'], $params['pass']);
+        $dataFieldsStatus = $this->trialSetup->setupDataFields($params['apiUser'], $params['pass']);
+        $addressBookStatus = $this->trialSetup->createAddressBooks($params['apiUser'], $params['pass']);
+        $syncStatus = $this->trialSetup->enableSyncForTrial();
+
         if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
             $this->sendAjaxResponse(false, $this->_getSuccessHtml());
         } else {
@@ -157,199 +152,5 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
                     Contact support@dotmailer.com</a>
                 </div>
             </div>";
-    }
-
-    /**
-     * Save api credentioals.
-     *
-     * @param $apiUser
-     * @param $apiPass
-     *
-     * @return bool
-     */
-    public function saveApiCreds($apiUser, $apiPass)
-    {
-        $this->helper->saveConfigData(
-            Config::XML_PATH_CONNECTOR_API_ENABLED,
-            '1',
-            'default',
-            0
-        );
-        $this->helper->saveConfigData(
-            Config::XML_PATH_CONNECTOR_API_USERNAME,
-            $apiUser,
-            'default',
-            0
-        );
-        $this->helper->saveConfigData(
-            Config::XML_PATH_CONNECTOR_API_PASSWORD,
-            $apiPass,
-            'default',
-            0
-        );
-
-        //Clear config cache
-        $this->config->reinit();
-
-        return true;
-    }
-
-    /**
-     * Setup data fields.
-     *
-     * @param $username
-     * @param $password
-     *
-     * @return bool
-     */
-    public function setupDataFields($username, $password)
-    {
-        $error = false;
-        $apiModel = false;
-        if ($this->helper->isEnabled()) {
-            $apiModel = $this->helper->getWebsiteApiClient(0, $username, $password);
-        }
-        if (!$apiModel) {
-            $error = true;
-            $this->helper->log('setupDataFields client is not enabled');
-        } else {
-            $dataFields = $this->dataField->getContactDatafields();
-            foreach ($dataFields as $key => $dataField) {
-                $response = $apiModel->postDataFields($dataField);
-                //ignore existing datafields message
-                if (isset($response->message) &&
-                    $response->message != Client::API_ERROR_DATAFIELD_EXISTS
-                ) {
-                    $error = true;
-                } else {
-                    //map the successfully created data field
-                    $this->helper->saveConfigData(
-                        'connector_data_mapping/customer_data/' . $key,
-                        strtoupper($dataField['name']),
-                        'default',
-                        0
-                    );
-                    $this->helper->log('successfully connected : ' . $dataField['name']);
-                }
-            }
-        }
-
-        return $error == true ? false : true;
-    }
-
-    /**
-     * Create certain address books.
-     *
-     * @param $username
-     * @param $password
-     *
-     * @return bool
-     */
-    public function createAddressBooks($username, $password)
-    {
-        $addressBooks = [
-            ['name' => 'Magento_Customers', 'visibility' => 'Private'],
-            ['name' => 'Magento_Subscribers', 'visibility' => 'Private'],
-            ['name' => 'Magento_Guests', 'visibility' => 'Private'],
-        ];
-        $addressBookMap = [
-            'Magento_Customers' => Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
-            'Magento_Subscribers' => Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
-            'Magento_Guests' => Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
-        ];
-        $error = false;
-        $client = false;
-        if ($this->helper->isEnabled()) {
-            $client = $this->helper->getWebsiteApiClient(0, $username, $password);
-        }
-        if (!$client) {
-            $error = true;
-            $this->helper->log('createAddressBooks client is not enabled');
-        } else {
-            foreach ($addressBooks as $addressBook) {
-                $addressBookName = $addressBook['name'];
-                $visibility = $addressBook['visibility'];
-                if (! empty($addressBookName)) {
-                    $response = $client->postAddressBooks($addressBookName, $visibility);
-                    if (isset($response->message)) {
-                        $error = true;
-                    } else {
-                        //map the successfully created address book
-                        $this->helper->saveConfigData($addressBookMap[$addressBookName], $response->id, 'default', 0);
-                        $this->helper->log('successfully connected address book : ' . $addressBookName);
-                    }
-                }
-            }
-        }
-
-        return $error == true ? false : true;
-    }
-
-    /**
-     * Enable certain syncs for newly created trial account.
-     *
-     * @return bool
-     */
-    public function enableSyncForTrial()
-    {
-        $this->helper->saveConfigData(
-            Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED,
-            '1',
-            'default',
-            0
-        );
-        $this->helper->saveConfigData(
-            Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED,
-            '1',
-            'default',
-            0
-        );
-        $this->helper->saveConfigData(
-            Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED,
-            '1',
-            'default',
-            0
-        );
-        $this->helper->saveConfigData(
-            Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-            '1',
-            'default',
-            0
-        );
-
-        return true;
-    }
-
-    /**
-     * Save api endpoint.
-     *
-     * @param $value
-     */
-    public function saveApiEndPoint($value)
-    {
-        $this->helper->saveConfigData(
-            Config::PATH_FOR_API_ENDPOINT,
-            $value,
-            'default',
-            0
-        );
-    }
-
-    /**
-     * Check if both frotnend and backend secure(HTTPS).
-     *
-     * @return bool
-     */
-    public function isFrontendAdminSecure()
-    {
-        $frontend = $this->storeManager->getStore()->isFrontUrlSecure();
-        $admin = $this->helper->getWebsiteConfig(\Magento\Store\Model\Store::XML_PATH_SECURE_IN_ADMINHTML);
-        $current = $this->storeManager->getStore()->isCurrentlySecure();
-
-        if ($frontend && $admin && $current) {
-            return true;
-        }
-
-        return false;
     }
 }
