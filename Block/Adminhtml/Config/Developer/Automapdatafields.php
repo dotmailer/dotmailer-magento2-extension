@@ -34,8 +34,8 @@ class Automapdatafields extends \Magento\Config\Block\System\Config\Form\Field
     {
         //@codingStandardsIgnoreEnd
         $website = $this->getRequest()->getParam('website', 0);
-        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/automapdatafields/website/'
-            . $website);
+        $params = ['website' => $website];
+        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/automapdatafields', $params);
 
         return $this->getLayout()
             ->createBlock('Magento\Backend\Block\Widget\Button')
