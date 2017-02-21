@@ -514,7 +514,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getApiEndpoint($websiteId, $client)
     {
         //Get from DB
-        $apiEndpoint = $this->getApiEndPointFromDb($websiteId);
+        $apiEndpoint = $this->getApiEndPointFromConfig($websiteId);
 
         //Nothing from DB then fetch from api
         if (!$apiEndpoint) {
@@ -555,7 +555,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $websiteId
      * @return mixed
      */
-    public function getApiEndPointFromDb($websiteId)
+    public function getApiEndPointFromConfig($websiteId)
     {
         if ($websiteId > 0) {
             $apiEndpoint = $this->getWebsiteConfig(
