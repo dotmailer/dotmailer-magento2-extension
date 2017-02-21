@@ -179,8 +179,8 @@ class Order
 
         $customAttributes
             = $this->helper->getConfigSelectedCustomOrderAttributes(
-                $website
-            );
+            $website
+        );
 
         if ($customAttributes) {
             $fields = $this->helper->getOrderTableDescription();

@@ -599,6 +599,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
+            unset($data['password']);
             $message = 'SENDING CAMPAIGN ' . $response->message;
             $this->helper->debug('postCampaignsSend', [$message]);
             $this->helper->debug('postCampaignsSend', $data);
