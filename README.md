@@ -8,6 +8,28 @@
 
 Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
 
+##V2.1.7
+
+######Features
+ - Api endpoints for different region accounts.
+ - Improved trail account creation process.
+ - Improved Guests finding(separated from the order sync).
+ 
+######Bug fixes
+ - Abandoned cart process throws error(collection).
+ - Single orders type inside importer.
+ - Abandoned carts timezone issue.
+ - Order sync can have duplicate emails for guests.
+ - Cannot automap(button) when using different websites.
+ - Failed send campaign in bulk containing duplicated contact_ids(dotmailer @AndrewGretton).
+ - Campaign report messages/sendId for suppresed/failed contacts.
+
+##V2.1.6
+
+######Bug fixes
+ - Syntax error or access violation while updating Coupon code.
+ - Stop emulation when api is disabled.  
+ 
 ##V2.1.5
 
 ######Features
@@ -22,7 +44,8 @@ Full support documentation and setup guides available here - https://support.dot
  - Go to cart button should redirect to quote's store.
  - Get addressBooks using the website level creds.
  - DI when initializing Zend_Mail_Transport_Sendmail.
- - Fix js for the dotmailer configuration page. 
+ - Fix js for the dotmailer configuration page.
+ - Unserialize error for orders sync. 
  
 ######Security
  - Remove modification for guest quote items.
