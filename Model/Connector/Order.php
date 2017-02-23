@@ -57,7 +57,7 @@ class Order
      *
      * @var string
      */
-    public $payment = '';
+    public $payment;
     /**
      * @var string
      */
@@ -144,7 +144,7 @@ class Order
     /**
      * Set the order data information.
      *
-     * @param \Magento\Sales\Model\Order $orderData
+     * @param $orderData
      *
      * @return $this
      */
@@ -166,9 +166,7 @@ class Order
         $this->currency = $orderData->getStoreCurrencyCode();
 
         if ($payment = $orderData->getPayment()) {
-            if ($payment->getMethod()) {
-                $this->payment = $payment->getMethodInstance()->getTitle();
-            }
+            $this->payment = $payment->getMethodInstance()->getTitle();
         }
         $this->couponCode = $orderData->getCouponCode();
 
