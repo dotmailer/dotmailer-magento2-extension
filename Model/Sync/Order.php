@@ -25,13 +25,9 @@ class Order
     public $countOrders = 0;
 
     /**
-     * @var
+     * @var array
      */
     public $orderIds;
-    /**
-     * @var
-     */
-    public $orderIdsForSingleSync;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -49,7 +45,7 @@ class Order
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
-    public $contactFactory;
+    public $contactResourceFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
@@ -70,44 +66,48 @@ class Order
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     public $importerFactory;
+
     /**
-     * @var array
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory
      */
-    public $guests = [];
+    public $orderResourceFactory;
 
     /**
      * Order constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
+     * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderResourceFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\App\ResourceConnection $resource
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
         \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory,
+        \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
+        \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderResourceFactory,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->importerFactory       = $importerFactory;
-        $this->connectorOrderFactory = $connectorOrderFactory;
-        $this->accountFactory        = $accountFactory;
-        $this->salesOrderFactory     = $salesOrderFactory;
         $this->orderFactory          = $orderFactory;
-        $this->contactFactory        = $contactFactory;
+        $this->accountFactory        = $accountFactory;
+        $this->connectorOrderFactory = $connectorOrderFactory;
+        $this->contactResourceFactory= $contactFactory;
+        $this->orderResourceFactory  = $orderResourceFactory;
         $this->helper                = $helper;
-        $this->storeManager          = $storeManagerInterface;
         $this->resource              = $resource;
+        $this->salesOrderFactory     = $salesOrderFactory;
+        $this->storeManager          = $storeManagerInterface;
     }
 
     /**
@@ -122,82 +122,42 @@ class Order
         $response = ['success' => true, 'message' => 'Done.'];
 
         // Initialise a return hash containing results of our sync attempt
-        $this->_searchAccounts();
+        $this->searchWebsiteAccounts();
 
         foreach ($this->accounts as $account) {
             $orders = $account->getOrders();
-            $orderIds = $account->getOrderIds();
             $ordersForSingleSync = $account->getOrdersForSingleSync();
-            $orderIdsForSingleSync = $account->getOrderIdsForSingleSync();
-            //@codingStandardsIgnoreStart
+            $numOrders = count($orders);
             $numOrdersForSingleSync = count($ordersForSingleSync);
             $website = $account->getWebsites();
-            $numOrders = count($orders);
-            //@codingStandardsIgnoreEnd
             $this->countOrders += $numOrders;
             $this->countOrders += $numOrdersForSingleSync;
-            //send transactional for any number of orders set
+            //create bulk
             if ($numOrders) {
-                $this->helper->log(
-                    '--------- Order sync ---------- : ' . $numOrders
-                );
+                $this->helper->log('--------- Order sync ---------- : ' . $numOrders);
                 //queue order into importer
-                $this->helper->error('orders', $orders);
-                try {
-                    $this->importerFactory->create()
-                        ->registerQueue(
-                            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
-                            $orders,
-                            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                            $website[0]
-                        );
-                } catch (\Exception $e) {
-                    $this->helper->debug((string)$e, []);
-                }
-
-                $this->_setImported($orderIds);
-
-                $this->helper->log('----------end order sync----------');
+                $this->importerFactory->create()
+                    ->registerQueue(
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
+                        $orders,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                        $website[0]
+                    );
             }
-
+            //create single
             if ($numOrdersForSingleSync) {
-                $error = false;
-                foreach ($ordersForSingleSync as $order) {
-                    $this->helper->log(
-                        '--------- register Order sync in single with importer ---------- : '
-                    );
-
-                    //register in queue with importer
-                    $this->importerFactory->create()
-                        ->registerQueue(
-                            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
-                            $order,
-                            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
-                            $website[0]
-                        );
-                    $this->helper->log(
-                        '----------end order sync in single----------'
-                    );
-                }
-                //if no error then set imported
-                if (!$error) {
-                    $this->_setImported($orderIdsForSingleSync, true);
-                }
+                $this->createSingleImports($ordersForSingleSync, $website);
             }
+
+            //mark the orders as imported
+            $this->orderResourceFactory->create()
+                ->setImported($this->orderIds);
+
             unset($this->accounts[$account->getApiUsername()]);
         }
 
-        /**
-         * Add guest to contacts table.
-         */
-        if (!empty($this->guests)) {
-            $this->contactFactory->create()
-                ->insert($this->guests);
-        }
-
         if ($this->countOrders) {
-            $response['message'] = 'Orders updated '
-                . $this->countOrders;
+            $response['message'] = 'Orders updated ' . $this->countOrders;
         }
 
         return $response;
@@ -208,20 +168,18 @@ class Order
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _searchAccounts()
+    public function searchWebsiteAccounts()
     {
-        $this->orderIds              = [];
-        $this->orderIdsForSingleSync = [];
-        $websites                    = $this->helper->getWebsites(true);
+        $websites = $this->helper->getWebsites(true);
         foreach ($websites as $website) {
             $apiEnabled = $this->helper->isEnabled($website);
             $storeIds = $website->getStoreIds();
             // api and order sync should be enabled, skip website with no store ids
-            if ($apiEnabled
-                && $this->helper->getWebsiteConfig(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-                    $website
-                ) && !empty($storeIds)
+            if ($apiEnabled && $this->helper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
+                $website
+            )
+                && !empty($storeIds)
             ) {
                 $this->apiUsername = $this->helper->getApiUsername($website);
                 $this->apiPassword = $this->helper->getApiPassword($website);
@@ -230,157 +188,131 @@ class Order
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
                     $website
                 );
-                if (!isset($this->accounts[$this->apiUsername])) {
-                    $account                            = $this->accountFactory->create()
-                        ->setApiUsername($this->apiUsername)
-                        ->setApiPassword($this->apiPassword);
+                //set account for later use
+                if (! isset($this->accounts[$this->apiUsername])) {
+                    $account = $this->accountFactory->create();
+                    $account->setApiUsername($this->apiUsername);
+                    $account->setApiPassword($this->apiPassword);
                     $this->accounts[$this->apiUsername] = $account;
                 }
-                $this->accounts[$this->apiUsername]->setOrders(
-                    $this->getConnectorOrders($website, $limit)
-                );
-                $this->accounts[$this->apiUsername]->setOrderIds(
-                    $this->orderIds
-                );
-                $this->accounts[$this->apiUsername]->setWebsites(
-                    $website->getId()
-                );
-                $this->accounts[$this->apiUsername]->setOrdersForSingleSync(
-                    $this->getConnectorOrders($website, $limit, true)
-                );
-                $this->accounts[$this->apiUsername]->setOrderIdsForSingleSync(
-                    $this->orderIdsForSingleSync
-                );
+                $pendingOrders = $this->getPendingConnectorOrders($website, $limit);
+                if (! empty($pendingOrders)) {
+                    $this->accounts[$this->apiUsername]->setOrders($pendingOrders);
+                }
+                $this->accounts[$this->apiUsername]->setWebsites($website->getId());
+                $modifiedOrders = $this->getModifiedOrders($website, $limit);
+                if (! empty($modifiedOrders)) {
+                    $this->accounts[$this->apiUsername]->setOrdersForSingleSync($modifiedOrders);
+                }
             }
         }
     }
 
     /**
-     * Get all orders to import.
-     *
-     * @param            $website
-     * @param int        $limit
-     * @param bool|false $modified
-     *
+     * @param $website
+     * @param int $limit
      * @return array
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getConnectorOrders(
-        $website,
-        $limit = 100,
-        $modified = false
-    ) {
+    public function getPendingConnectorOrders($website, $limit = 100)
+    {
         $orders = [];
         $storeIds = $website->getStoreIds();
+        /** @var \Dotdigitalgroup\Email\Model\Order $orderModel */
         $orderModel = $this->orderFactory->create();
-        if (empty($storeIds)) {
-            return [];
-        }
-
+        //get order statuses set in configuration section
         $orderStatuses = $this->helper->getConfigSelectedStatus($website);
 
-        //any statuses found
-        if ($orderStatuses) {
-            if ($modified) {
-                $orderCollection = $orderModel->getOrdersToImport(
-                    $storeIds,
-                    $limit,
-                    $orderStatuses,
-                    true
-                );
-            } else {
-                $orderCollection = $orderModel->getOrdersToImport(
-                    $storeIds,
-                    $limit,
-                    $orderStatuses
-                );
-            }
-        } else {
+        //no active store for website
+        if (empty($storeIds) || empty($orderStatuses)) {
             return [];
         }
 
-        try {
-            //email_order order ids
-            $orderIds = $orderCollection->getColumnValues('order_id');
+        //pending order from email_order
+        $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses);
 
-            //get the order collection
-            $salesOrderCollection = $this->salesOrderFactory->create()
-                ->getCollection()
-                ->addFieldToFilter('entity_id', ['in' => $orderIds]);
-
-            foreach ($salesOrderCollection as $order) {
-                $storeId   = $order->getStoreId();
-                $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-                /**
-                 * Add guest to contacts table.
-                 */
-                if ($order->getCustomerIsGuest()
-                    && $order->getCustomerEmail()
-                ) {
-                    //add guest to the list
-                    $this->guests[] = [
-                        'email' => $order->getCustomerEmail(),
-                        'website_id' => $websiteId,
-                        'store_id' => $storeId,
-                        'is_guest' => 1
-                    ];
-                }
-                if ($order->getId()) {
-                    $connectorOrder = $this->connectorOrderFactory->create();
-                    $connectorOrder->setOrderData($order);
-                    $orders[] = $connectorOrder;
-                }
-                if ($modified) {
-                    $this->orderIdsForSingleSync[] = $order->getId();
-                } else {
-                    $this->orderIds[] = $order->getId();
-                }
-            }
-        } catch (\Exception $e) {
-            $this->helper->debug((string)$e, []);
+        //no orders found
+        if (! $orderCollection->getSize()) {
+            return $orders;
         }
+
+        $orders = $this->mappOrderData($orderCollection, $orderModel, $orders);
 
         return $orders;
     }
 
     /**
-     * Set imported in bulk query.
-     *
-     * @param            $ids
-     * @param bool|false $modified
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param $website
+     * @param $limit
+     * @return array
      */
-    public function _setImported($ids, $modified = false)
+    protected function getModifiedOrders($website, $limit)
     {
-        try {
-            $coreResource = $this->resource;
-            $write = $coreResource->getConnection('core_write');
-            $tableName = $coreResource->getTableName('email_order');
-            $ids = implode(', ', $ids);
+        $orders =  [];
+        $storeIds = $website->getStoreIds();
+        /** @var \Dotdigitalgroup\Email\Model\Order $orderModel */
+        $orderModel = $this->orderFactory->create();
+        //get order statuses set in configuration section
+        $orderStatuses = $this->helper->getConfigSelectedStatus($website);
 
-            if ($modified) {
-                $write->update(
-                    $tableName,
-                    [
-                        'modified' => 'null',
-                        'updated_at' => gmdate('Y-m-d H:i:s')
-                    ],
-                    "order_id IN ($ids)"
-                );
-            } else {
-                $write->update(
-                    $tableName,
-                    [
-                        'email_imported' => 1,
-                        'updated_at' => gmdate('Y-m-d H:i:s')
-                    ],
-                    "order_id IN ($ids)"
-                );
+        //no active store for website
+        if (empty($storeIds) || empty($orderStatuses)) {
+            return [];
+        }
+
+        //pending order from email_order
+        $orderCollection = $orderModel->getModifiedOrdersToImport($storeIds, $limit, $orderStatuses);
+
+        //no orders found
+        if (! $orderCollection->getSize()) {
+            return $orders;
+        }
+
+        $orders = $this->mappOrderData($orderCollection, $orderModel, $orders);
+
+        return $orders;
+    }
+
+
+    /**
+     * @param $orderCollection
+     * @param $orderModel
+     * @param $orders
+     * @return array
+     */
+    protected function mappOrderData($orderCollection, $orderModel, $orders)
+    {
+        $orderIds = $orderCollection->getColumnValues('order_id');
+
+        //get the order collection
+        $salesOrderCollection = $orderModel->getSalesOrdersWithIds($orderIds);
+
+        foreach ($salesOrderCollection as $order) {
+            if ($order->getId()) {
+                $connectorOrder = $this->connectorOrderFactory->create();
+                $connectorOrder->setOrderData($order);
+                $orders[] = $connectorOrder;
             }
-        } catch (\Exception $e) {
-            $this->helper->debug((string)$e, []);
+
+            $this->orderIds[] = $order->getId();
+        }
+        return $orders;
+    }
+
+    /**
+     * @param $ordersForSingleSync
+     * @param $website
+     */
+    protected function createSingleImports($ordersForSingleSync, $website)
+    {
+        foreach ($ordersForSingleSync as $order) {
+            //register in queue with importer
+            $this->importerFactory->create()
+                ->registerQueue(
+                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
+                    $order,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
+                    $website[0]
+                );
         }
     }
 }

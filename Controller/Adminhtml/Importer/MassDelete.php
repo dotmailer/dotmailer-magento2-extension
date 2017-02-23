@@ -4,9 +4,7 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Importer;
 
 use Dotdigitalgroup\Email\Controller\Adminhtml\Importer as ImporterController;
 use Magento\Framework\Controller\ResultFactory;
-
 use Magento\Ui\Component\MassAction\Filter;
-
 
 class MassDelete extends ImporterController
 {
@@ -19,6 +17,10 @@ class MassDelete extends ImporterController
      * @var object
      */
     public $messageManager;
+
+    /**
+     * @var Filter
+     */
     public $filter;
 
     /**

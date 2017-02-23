@@ -6,6 +6,7 @@ class File
 {
     const FILE_FULL_ACCESS_PERMISSION = '777';
 
+
     /**
      * @var string
      */
@@ -27,30 +28,40 @@ class File
      * @var Data
      */
     public $helper;
+    /**
+     * @var string
+     */
+    public $logFileName = 'connector.log';
 
     /**
      * File constructor.
      *
-     * @param Data                                            $helper
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
-     * @param \Magento\Framework\Filesystem                   $filesystem
+     * @param \Magento\Framework\Filesystem $filesystem
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
         \Magento\Framework\Filesystem $filesystem
     ) {
-        $this->helper              = $helper;
         $this->directoryList       = $directoryList;
         $this->filesystem          = $filesystem;
-        $var                       = $directoryList->getPath('var');
-        $this->outputFolder        = $var . DIRECTORY_SEPARATOR . 'export'
-            . DIRECTORY_SEPARATOR . 'email';
-        $this->outputArchiveFolder = $this->outputFolder
-            . DIRECTORY_SEPARATOR . 'archive';
-
-        $this->delimiter = ','; // tab character
+        $varPath                   = $directoryList->getPath('var');
+        $this->outputFolder        = $varPath . DIRECTORY_SEPARATOR . 'export' . DIRECTORY_SEPARATOR . 'email';
+        $this->outputArchiveFolder = $this->outputFolder . DIRECTORY_SEPARATOR . 'archive';
+        // tab character
+        $this->delimiter = ',';
         $this->enclosure = '"';
+
+        //@codingStandardsIgnoreStart
+        $logDir = $directoryList->getPath('log');
+        if (! is_dir($logDir)) {
+            mkdir($directoryList->getPath('var')  . DIRECTORY_SEPARATOR . 'log');
+        }
+        $writer = new \Zend\Log\Writer\Stream($logDir . DIRECTORY_SEPARATOR .  $this->logFileName);
+        $logger = new \Zend\Log\Logger();
+        //@codingStandardsIgnoreEnd
+        $logger->addWriter($writer);
+        $this->connectorLogger  = $logger;
     }
 
     /**
@@ -266,11 +277,11 @@ class File
             default:
                 return "Log file is not valid. Log file name is " . $filename;
         }
-        $pathLogfile = $this->directoryList->getPath('var') . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR
-            . $filename;
+        $pathLogfile = $this->directoryList->getPath('log') . DIRECTORY_SEPARATOR . $filename;
         //tail the length file content
         $lengthBefore = 500000;
         try {
+            $contents = '';
             //@codingStandardsIgnoreStart
             $handle = fopen($pathLogfile, 'r');
             fseek($handle, -$lengthBefore, SEEK_END);
@@ -278,18 +289,38 @@ class File
                 return "Log file is not readable or does not exist at this moment. File path is "
                 . $pathLogfile;
             }
-            //@codingStandardsIgnoreStart
-            $contents = fread($handle, filesize($pathLogfile));
-            if (!$contents) {
-                return "Log file is not readable or does not exist at this moment. File path is "
-                . $pathLogfile;
+
+            if (filesize($pathLogfile) > 0) {
+                //@codingStandardsIgnoreStart
+                $contents = fread($handle, filesize($pathLogfile));
+                if ($contents === false) {
+                    return "Log file is not readable or does not exist at this moment. File path is "
+                        . $pathLogfile;
+                }
+                fclose($handle);
+                //@codingStandardsIgnoreEnd
             }
-            fclose($handle);
-            //@codingStandardsIgnoreEnd
             return $contents;
         } catch (\Exception $e) {
-            return "Log file is not readable or does not exist at this moment. File path is "
-            . $pathLogfile;
+            return $e->getMessage() . $pathLogfile;
         }
+    }
+
+
+    /**
+     * @param $data
+     */
+    public function info($data)
+    {
+        $this->connectorLogger->info($data);
+    }
+
+    /**
+     * @param string $message
+     * @param array|Traversable $extra
+     */
+    public function debug($message, $extra)
+    {
+        $this->connectorLogger->debug($message, $extra);
     }
 }

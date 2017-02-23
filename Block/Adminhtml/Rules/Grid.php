@@ -4,11 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
 
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    public $_objectManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory
      */
@@ -20,18 +15,15 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Backend\Helper\Data $backendHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $gridFactory
-     * @param \Magento\Framework\ObjectManagerInterface $objectManagerInterface
      * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $gridFactory,
-        \Magento\Framework\ObjectManagerInterface $objectManagerInterface,
         array $data = []
     ) {
         $this->rulesFactory   = $gridFactory;
-        $this->_objectManager = $objectManagerInterface;
         parent::__construct($context, $backendHelper, $data);
     }
 

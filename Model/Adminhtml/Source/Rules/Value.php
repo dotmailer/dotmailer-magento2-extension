@@ -8,6 +8,9 @@ class Value
      * @var
      */
     public $configFactory;
+    /**
+     * @var \Magento\Config\Model\Config\Source\Yesno
+     */
     public $yesno;
     /**
      * @var \Magento\Directory\Model\Config\Source\Country
@@ -28,7 +31,7 @@ class Value
     /**
      * @var \Magento\Customer\Model\Config\Source\Group
      */
-    public $group;
+    public $sourceGroup;
 
     /**
      * Value constructor.
@@ -56,7 +59,7 @@ class Value
         $this->allregion          = $allregion;
         $this->allShippingMethods = $allShippingMethods;
         $this->allPaymentMethods  = $allPaymentMethods;
-        $this->group              = $group;
+        $this->sourceGroup              = $group;
     }
 
     /**
@@ -125,7 +128,7 @@ class Value
                 break;
 
             case 'customer_group_id':
-                $options = $this->group->toOptionArray();
+                $options = $this->sourceGroup->toOptionArray();
                 break;
 
             default:

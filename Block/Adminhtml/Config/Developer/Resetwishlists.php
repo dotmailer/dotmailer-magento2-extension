@@ -33,15 +33,21 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
-        $url = $this->_urlBuilder->getUrl(
-            'dotdigitalgroup_email/run/wishlistsreset'
-        );
+        $query = [
+            '_query' => [
+                'from' => '',
+                'to' => '',
+                'tp' => ''
+            ]
+        ];
+        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/wishlistsreset', $query);
 
         return $this->getLayout()->createBlock(
             'Magento\Backend\Block\Widget\Button'
         )
             ->setType('button')
             ->setLabel(__($this->buttonLabel))
+            ->setId($element->getId())
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
     }

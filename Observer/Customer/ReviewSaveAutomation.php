@@ -101,7 +101,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
      *
      * @param $review
      */
-    public function registerReview($review)
+    protected function registerReview($review)
     {
         try {
             $this->reviewFactory->create()

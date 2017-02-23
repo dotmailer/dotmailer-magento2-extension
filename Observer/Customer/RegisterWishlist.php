@@ -90,7 +90,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function registerWishlist($wishlist)
+    protected function registerWishlist($wishlist)
     {
         try {
             $emailWishlist = $this->wishlistFactory->create();

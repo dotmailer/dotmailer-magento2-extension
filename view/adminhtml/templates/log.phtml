@@ -6,6 +6,9 @@
         <option value="exception">Magento Exception Log</option>
         <option value="debug">Magento Debug Log</option>
     </select>
+    <button id="connector-log-reloader" style="margin-left: 5px;">
+        <span>Reload</span>
+    </button>
 </div>
 <div style="padding-top: 25px;">
     <h3 id="connector-log-header" style="border-bottom: 4px solid #dfdfdf; color: #eb5e00;">
@@ -13,7 +16,7 @@
     </h3>
 </div>
 
-<div style="border: 4px solid #dfdfdf; overflow: scroll; height: 500px; padding: 5px;">
+<div style="border: 4px solid #dfdfdf; overflow: hidden; height: 510px; padding: 5px;">
     <div id="log_data"
          style="width:100%;height:500px;overflow:auto;margin:0px;padding:3px;background:black;color:#2EC029;
          font:normal 11px Lucida Console, Courier New, serif;">
@@ -35,7 +38,12 @@
             }
         }
 
+        //Observer select
         $('connector-log-selector').observe('change', function (event) {
+            doUpdate($('connector-log-selector').getValue());
+        });
+        //Observe button click for reload
+        $('connector-log-reloader').observe('click', function (event) {
             doUpdate($('connector-log-selector').getValue());
         });
         function doUpdate(log) {
@@ -50,6 +58,7 @@
                         var json = transport.responseJSON;
                         $('log_data').update(json.content);
                         $('connector-log-header').update(json.header);
+                        console_scroll();
                     }
                 });
         }
