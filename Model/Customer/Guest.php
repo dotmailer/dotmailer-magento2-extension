@@ -35,7 +35,7 @@ class Guest
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    public $websiteFactory;
     /**
      * @var array
      */
@@ -49,7 +49,7 @@ class Guest
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Store\Model\WebsiteFactory $websiteFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -57,14 +57,14 @@ class Guest
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\WebsiteFactory $websiteFactory
     ) {
         $this->importerFactory = $importerFactory;
         $this->contactFactory = $contactFactory;
         $this->helper = $helper;
         $this->file = $file;
         $this->salesOrderFactory = $salesOrderFactory;
-        $this->storeManager = $storeManagerInterface;
+        $this->websiteFactory = $websiteFactory;
     }
 
     /**
@@ -72,9 +72,6 @@ class Guest
      */
     public function sync()
     {
-        //Find and create guest
-        $this->findAndCreateGuest();
-
         $this->start = microtime(true);
         $websites    = $this->helper->getWebsites();
         $started     = false;
@@ -85,6 +82,9 @@ class Guest
             $guestSyncEnabled = $this->helper->isGuestSyncEnabled($website);
             $apiEnabled = $this->helper->isEnabled($website);
             if ($addresbook && $guestSyncEnabled && $apiEnabled) {
+                //Find and create guest
+                $this->findAndCreateGuest($website->getId());
+
                 //sync guests for website
                 $this->exportGuestPerWebsite($website);
 
@@ -102,31 +102,43 @@ class Guest
 
     /**
      * Find and create guests
+     *
+     * @param $websiteId
      */
-    public function findAndCreateGuest()
+    public function findAndCreateGuest($websiteId)
     {
+        $this->guests = [];
         $contacts = $this->contactFactory->create()
             ->getCollection()
             ->getColumnValues('email');
+
+        $storeIds = $this->websiteFactory->create()
+            ->load($websiteId)
+            ->getStoreIds();
 
         //get the order collection
         $salesOrderCollection = $this->salesOrderFactory->create()
             ->getCollection()
             ->addFieldToFilter('customer_is_guest', ['eq' => 1])
             ->addFieldToFilter('customer_email', ['notnull' => true])
-            ->addFieldToFilter('customer_email', ['nin' => $contacts]);
+            ->addFieldToFilter('store_id', ['in' => $storeIds]);
+
+        //Exclude existed contacts from collection
+        if (!empty($contacts)) {
+            $salesOrderCollection->addFieldToFilter('customer_email', ['nin' => $contacts]);
+        }
+
         //group by email and store
+        //@codingStandardsIgnoreStart
         $salesOrderCollection->getSelect()->group(['customer_email', 'store_id']);
+        //@codingStandardsIgnoreEnd
 
         foreach ($salesOrderCollection as $order) {
-            $storeId = $order->getStoreId();
-            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-
             //add guest to the list
             $this->guests[] = [
                 'email' => $order->getCustomerEmail(),
                 'website_id' => $websiteId,
-                'store_id' => $storeId,
+                'store_id' => $order->getStoreId(),
                 'is_guest' => 1
             ];
         }
