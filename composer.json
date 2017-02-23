@@ -2,14 +2,14 @@
   "name": "dotmailer/dotmailer-magento2-extension",
   "description": "dotmailer integration for magento 2",
   "type": "magento2-module",
-  "version": "1.1.7",
+  "version": "2.1.7",
   "license": [
     "OSL-3.0",
     "AFL-3.0"
   ],
   "require": {
     "php": "~5.5.0|~5.6.0|~7.0.0",
-    "magento/framework": "100.*.*"
+    "magento/framework": "100.*"
   },
   "authors": [
     {
@@ -19,6 +19,10 @@
     {
       "name": "Adeel Qamar",
       "email": "adeel.qamar@dotmailer.com"
+    },
+    {
+      "name": "Zygimantas",
+      "email": "zygimantas.simkus@dotmailer.com"
     }
   ],
   "autoload": {
