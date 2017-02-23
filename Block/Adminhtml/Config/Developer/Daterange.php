@@ -6,7 +6,7 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
 {
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        $ranges = array('from', 'to');
+        $ranges = ['from', 'to'];
         $dateElements = '';
         foreach ($ranges as $range) {
             $dateElements .=
@@ -26,7 +26,6 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
                 });
             });
             </script>';
-
         }
         return $dateElements;
     }

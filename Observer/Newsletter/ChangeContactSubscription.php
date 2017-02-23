@@ -148,7 +148,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function addSubscriberToAutomation($email, $subscriber, $websiteId)
+    protected function addSubscriberToAutomation($email, $subscriber, $websiteId)
     {
         $storeId = $subscriber->getStoreId();
         $store = $this->storeManager->getStore($storeId);

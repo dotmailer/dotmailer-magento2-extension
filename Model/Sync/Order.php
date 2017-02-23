@@ -125,7 +125,6 @@ class Order
         $this->searchWebsiteAccounts();
 
         foreach ($this->accounts as $account) {
-
             $orders = $account->getOrders();
             $ordersForSingleSync = $account->getOrdersForSingleSync();
             $numOrders = count($orders);
@@ -173,13 +172,13 @@ class Order
     {
         $websites = $this->helper->getWebsites(true);
         foreach ($websites as $website) {
-
             $apiEnabled = $this->helper->isEnabled($website);
             $storeIds = $website->getStoreIds();
             // api and order sync should be enabled, skip website with no store ids
             if ($apiEnabled && $this->helper->getWebsiteConfig(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-                    $website)
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
+                $website
+            )
                 && !empty($storeIds)
             ) {
                 $this->apiUsername = $this->helper->getApiUsername($website);
@@ -197,12 +196,14 @@ class Order
                     $this->accounts[$this->apiUsername] = $account;
                 }
                 $pendingOrders = $this->getPendingConnectorOrders($website, $limit);
-                if (! empty($pendingOrders))
+                if (! empty($pendingOrders)) {
                     $this->accounts[$this->apiUsername]->setOrders($pendingOrders);
+                }
                 $this->accounts[$this->apiUsername]->setWebsites($website->getId());
                 $modifiedOrders = $this->getModifiedOrders($website, $limit);
-                if (! empty($modifiedOrders))
+                if (! empty($modifiedOrders)) {
                     $this->accounts[$this->apiUsername]->setOrdersForSingleSync($modifiedOrders);
+                }
             }
         }
     }
@@ -230,8 +231,9 @@ class Order
         $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses);
 
         //no orders found
-        if (! $orderCollection->getSize())
+        if (! $orderCollection->getSize()) {
             return $orders;
+        }
 
         $orders = $this->mappOrderData($orderCollection, $orderModel, $orders);
 
@@ -261,8 +263,9 @@ class Order
         $orderCollection = $orderModel->getModifiedOrdersToImport($storeIds, $limit, $orderStatuses);
 
         //no orders found
-        if (! $orderCollection->getSize())
+        if (! $orderCollection->getSize()) {
             return $orders;
+        }
 
         $orders = $this->mappOrderData($orderCollection, $orderModel, $orders);
 
@@ -312,5 +315,4 @@ class Order
                 );
         }
     }
-
 }

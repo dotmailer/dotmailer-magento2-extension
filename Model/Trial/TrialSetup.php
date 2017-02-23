@@ -31,8 +31,8 @@ class TrialSetup
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
         \Magento\Framework\App\Config\ReinitableConfigInterface $config
-    )
-    {
+    ) {
+    
         $this->helper = $helper;
         $this->dataField = $dataField;
         $this->config = $config;

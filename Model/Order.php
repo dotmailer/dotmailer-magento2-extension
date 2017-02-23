@@ -40,12 +40,12 @@ class Order extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
-    )
-    {
+    ) {
+    
         $this->salesCollection = $salesCollection;
 
         parent::__construct(
-           $context,
+            $context,
             $registry,
             $resource,
             $resourceCollection,
@@ -177,6 +177,5 @@ class Order extends \Magento\Framework\Model\AbstractModel
     {
         return $this->salesCollection->create()
             ->addFieldToFilter('entity_id', ['in' => $orderIds]);
-
     }
 }

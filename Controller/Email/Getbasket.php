@@ -87,8 +87,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
         //if customer is logged in then redirect to cart
         if ($customerSession->isLoggedIn()
-            && $customerSession->getCustomerId() == $this->quote->getCustomerId())
-        {
+            && $customerSession->getCustomerId() == $this->quote->getCustomerId()) {
             $checkoutSession = $this->checkoutSession->create();
             if ($checkoutSession->getQuote()
                 && $checkoutSession->getQuote()->hasItems()

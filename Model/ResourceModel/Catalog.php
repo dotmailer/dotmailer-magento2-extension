@@ -26,14 +26,15 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $conn = $this->getConnection();
         if ($from && $to) {
-            $where = array(
+            $where = [
                 'created_at >= ?' => $from . ' 00:00:00',
                 'created_at <= ?' => $to . ' 23:59:59',
                 'imported is ?' => new \Zend_Db_Expr('not null')
-            );
+            ];
         } else {
             $where = $conn->quoteInto(
-                'imported is ?', new \Zend_Db_Expr('not null')
+                'imported is ?',
+                new \Zend_Db_Expr('not null')
             );
         }
         try {

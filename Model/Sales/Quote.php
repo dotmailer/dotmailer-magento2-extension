@@ -134,11 +134,9 @@ class Quote
             $storeId = $store->getId();
 
             if ($mode == 'all' || $mode == 'customers') {
-
                 $this->searchForCustomerAbandonedCarts($storeId);
             }
             if ($mode == 'all' || $mode == 'guests') {
-
                 $this->searchForGuestAbandonedCarts($storeId);
             }
         }
@@ -211,7 +209,9 @@ class Quote
         $ruleModel = $this->rulesFactory->create();
         $websiteId = $this->storeManager->getStore($storeId)
             ->getWebsiteId();
-        $salesCollection = $ruleModel->process($salesCollection, \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
+        $salesCollection = $ruleModel->process(
+            $salesCollection,
+            \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
             $websiteId
         );
 
@@ -337,7 +337,6 @@ class Quote
          */
         foreach ($this->lostBasketGuests as $num) {
             if ($this->isLostBasketGuestEnabled($num, $storeId)) {
-
                 $sendAfter = $this->getSendAfterIntervalForGuest($storeId, $num);
                 $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
                 $fromTime->sub($sendAfter);
@@ -371,7 +370,6 @@ class Quote
                     $items = $quote->getAllItems();
                     $mostExpensiveItem = false;
                     foreach ($items as $item) {
-
                         if ($mostExpensiveItem == false) {
                             $mostExpensiveItem = $item;
                         } elseif ($item->getPrice() > $mostExpensiveItem->getPrice()) {
@@ -455,7 +453,6 @@ class Quote
                     $items = $quote->getAllItems();
                     $mostExpensiveItem = false;
                     foreach ($items as $item) {
-
                         if ($mostExpensiveItem == false) {
                             $mostExpensiveItem = $item;
                         } elseif ($item->getPrice() > $mostExpensiveItem->getPrice()) {
@@ -468,8 +465,9 @@ class Quote
                     }
 
                     //send email only if the interval limit passed, no emails during this interval
-                    if ($this->isIntervalCampaignFound($email, $storeId))
+                    if ($this->isIntervalCampaignFound($email, $storeId)) {
                         return;
+                    }
 
                     //save lost basket for sending
                     //@codingStandardsIgnoreStart

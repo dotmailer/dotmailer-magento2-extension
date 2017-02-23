@@ -26,14 +26,15 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $conn = $this->getConnection('core_write');
         if ($from && $to) {
-            $where = array(
+            $where = [
                 'created_at >= ?' => $from . ' 00:00:00',
                 'created_at <= ?' => $to . ' 23:59:59',
                 'wishlist_imported is ?' => new \Zend_Db_Expr('not null')
-            );
+            ];
         } else {
             $where = $conn->quoteInto(
-                'wishlist_imported is ?', new \Zend_Db_Expr('not null')
+                'wishlist_imported is ?',
+                new \Zend_Db_Expr('not null')
             );
         }
         try {

@@ -46,7 +46,7 @@ class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
      * @param $collection
      * @param $column
      */
-    public function filterCallbackContact($collection, $column)
+    protected function filterCallbackContact($collection, $column)
     {
         $field = $column->getFilterIndex() ? $column->getFilterIndex()
             : $column->getIndex();

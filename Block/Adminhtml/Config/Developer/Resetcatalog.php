@@ -34,11 +34,11 @@ class Resetcatalog extends \Magento\Config\Block\System\Config\Form\Field
     {
         //@codingStandardsIgnoreEnd
         $query = [
-            '_query' => array(
+            '_query' => [
                 'from' => '',
                 'to' => '',
                 'tp' => ''
-            )
+            ]
         ];
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/catalogreset', $query);
 

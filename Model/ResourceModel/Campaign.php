@@ -28,8 +28,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         $connectionName = null
-    )
-    {
+    ) {
+    
         $this->datetime = $dateTime;
         parent::__construct(
             $context,
@@ -61,7 +61,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     'message' => $message,
                     'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
                     'sent_at' =>  $this->datetime->gmtDate()
-            ],
+                ],
                 ["$map in ('$ids')"]
             );
         } catch (\Exception $e) {

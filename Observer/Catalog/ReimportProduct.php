@@ -63,7 +63,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @return bool
      */
-    public function loadProduct($productId)
+    protected function loadProduct($productId)
     {
         $collection = $this->catalogCollection->create()
             ->addFieldToFilter('product_id', $productId)

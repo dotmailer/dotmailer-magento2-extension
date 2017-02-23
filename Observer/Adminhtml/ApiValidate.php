@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface;
 class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 {
     /**
@@ -97,7 +96,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      * @param $apiUsername
      * @param $apiPassword
      */
-    public function saveApiEndpoint($apiUsername, $apiPassword)
+    protected function saveApiEndpoint($apiUsername, $apiPassword)
     {
         $website = $this->helper->getWebsite();
         $client = $this->helper->getWebsiteApiClient($website);

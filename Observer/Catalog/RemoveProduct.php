@@ -86,7 +86,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @return bool
      */
-    public function loadProduct($productId)
+    protected function loadProduct($productId)
     {
         $collection = $this->catalogCollection->create()
             ->addFieldToFilter('product_id', $productId)
@@ -110,7 +110,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @param int $key
      */
-    public function deleteFromAccount($key)
+    protected function deleteFromAccount($key)
     {
         $apiEnabled = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED
