@@ -156,7 +156,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         return $conn->update(
             $this->getMainTable(),
             ['suppressed' => 1],
-            ['id IN(?)' => $suppressedContactIds]
+            ['email_contact_id IN(?)' => $suppressedContactIds]
         );
     }
 
