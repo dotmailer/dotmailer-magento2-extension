@@ -8,6 +8,11 @@
 
 Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
 
+##V2.1.8
+
+######Bug fixes
+ - Storename fix(#215)
+ 
 ##V2.1.7
 
 ######Features
