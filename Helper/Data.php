@@ -964,12 +964,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function updateDataFields($email, $website, $storeName)
     {
         $data = [];
-        if ($storeName = $website->getConfig(
+        if ($storeNameKey = $website->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME
         )
         ) {
             $data[] = [
-                'Key' => $storeName,
+                'Key' => $storeNameKey,
                 'Value' => $storeName,
             ];
         }
