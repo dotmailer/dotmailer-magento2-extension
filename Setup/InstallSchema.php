@@ -420,24 +420,25 @@ class InstallSchema implements InstallSchemaInterface
 
         //Update contacts with customers that are subscribers
         $select = $installer->getConnection()->select();
+        $select->from(
+            $installer->getTable('newsletter_subscriber'),
+            'customer_id'
+        )
+            ->where('subscriber_status = 1')
+            ->where('customer_id > 0');
+        $customerIds = $select->getConnection()->fetchCol($select);
 
-        //join
-        $select->joinLeft(
-            ['ns' => $installer->getTable('newsletter_subscriber')],
-            "dc.customer_id = ns.customer_id",
-            [
-                'is_subscriber' => new \Zend_Db_Expr('1'),
-                'subscriber_status' => new \Zend_Db_Expr('1')
-            ]
-        )->where('ns.subscriber_status =?', 1);
-
-        //update query from select
-        $updateSql = $select->crossUpdateFromSelect(
-            ['dc' => $installer->getTable('email_contact')]
-        );
-
-        //run query
-        $installer->getConnection()->query($updateSql);
+        if (!empty($customerIds)) {
+            $customerIds = implode(', ', $customerIds);
+            $installer->getConnection()->update(
+                $installer->getTable('email_contact'),
+                array(
+                    'is_subscriber' => new \Zend_Db_Expr('1'),
+                    'subscriber_status' => new \Zend_Db_Expr('1')
+                ),
+                "customer_id in ($customerIds)"
+            );
+        }
 
         //Insert and populate email order the table
         $select = $installer->getConnection()->select()
