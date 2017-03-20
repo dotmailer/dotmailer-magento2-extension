@@ -118,7 +118,7 @@ class Bulk
         if (!$curlError) {
             if (isset($result->message) && !isset($result->id)) {
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                    ->setImportId($result->message);
+                    ->setMessage($result->message);
 
                 $item->save();
             } elseif (isset($result->id) && !isset($result->message)) {
