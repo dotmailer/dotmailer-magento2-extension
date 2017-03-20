@@ -4,55 +4,59 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Order;
 
 use Dotdigitalgroup\Email\Controller\Adminhtml\Order as OrderController;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Ui\Component\MassAction\Filter;
 
 class MassDelete extends OrderController
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
+     */
+    public $collectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\OrderFactory
+     * @var object
      */
-    public $order;
+    public $messageManager;
+
+    /**
+     * @var Filter
+     */
+    public $filter;
 
     /**
      * MassDelete constructor.
      *
-     * @param \Magento\Backend\App\Action\Context       $context
-     * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param Filter $filter
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
+        Filter $filter,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
     ) {
-        $this->order = $orderFactory;
-
+        $this->filter = $filter;
+        $this->collectionFactory = $collectionFactory;
         parent::__construct($context);
     }
+
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     public function execute()
     {
-        $ids = $this->getRequest()->getParam('selected');
-        if (!is_array($ids)) {
-            $this->messageManager->addErrorMessage(__('Please select orders.'));
-        } else {
-            try {
-                //@codingStandardsIgnoreStart
-                foreach ($ids as $id) {
-                    $model = $this->order->create()
-                        ->setEmailOrderId($id);
-                    $model->delete();
-                }
-                //@codingStandardsIgnoreEnd
-                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
-            } catch (\Exception $e) {
-                $this->messageManager->addErrorMessage($e->getMessage());
-            }
+        $collection = $this->filter->getCollection($this->collectionFactory->create());
+        $collectionSize = $collection->getSize();
+
+        foreach ($collection as $item) {
+            $item->delete();
         }
+
+        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
+
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setPath('*/*/');
 
-        return $resultRedirect;
+        return $resultRedirect->setPath('*/*/');
     }
 }

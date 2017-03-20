@@ -273,7 +273,7 @@ class Contact
         $customerNum = count($customerIds);
         $this->helper->log(
             'Website : ' . $website->getName() . ', customers = ' . $customerNum .
-            'execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
+            ', execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
         );
 
         //file was created - continue for queue the export
