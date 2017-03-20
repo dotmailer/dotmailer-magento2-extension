@@ -70,6 +70,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         $websiteId = $customer->getWebsiteId();
         $customerId = $customer->getEntityId();
         $isSubscribed = $customer->getIsSubscribed();
+        $emailBefore = '';
 
         try {
             // fix for a multiple hit of the observer
@@ -78,12 +79,26 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 return $this;
             }
             $this->registry->register($email . '_customer_save', $email);
-            $emailBefore = $this->customerFactory->create()
-                ->load($customer->getId())->getEmail();
+
+            $isContactExist = $this->contactFactory->create()
+                ->loadByCustomerId($customerId);
+
+            if ($isContactExist->getId()) {
+                $emailBefore = $isContactExist->getEmail();
+            }
+
+            empty($emailBefore) ? $emailAddress = $email : $emailAddress = $emailBefore;
+
             $contactModel = $this->contactFactory->create()
-                ->loadByCustomerEmail($emailBefore, $websiteId);
+                ->loadByCustomerEmail($emailAddress, $websiteId);
+
             //email change detection
-            if ($email != $emailBefore) {
+            if ($emailBefore && $email != $emailBefore) {
+                //Reload contact model up update email
+                $contactModel = $this->contactFactory->create()
+                    ->loadByCustomerEmail($emailAddress, $websiteId);
+                $contactModel->setEmail($email);
+
                 $this->helper->log('email change detected : ' . $email
                     . ', after : ' . $emailBefore . ', website id : '
                     . $websiteId);
@@ -93,7 +108,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                     'email' => $email,
                     'isSubscribed' => $isSubscribed,
                 ];
-                $this->importerFactory->registerQueue(
+                $this->importerFactory->create()->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT_UPDATE,
                     $data,
                     \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_EMAIL_UPDATE,
