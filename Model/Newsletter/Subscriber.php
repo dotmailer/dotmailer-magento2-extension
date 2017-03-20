@@ -21,7 +21,7 @@ class Subscriber
      *
      * @var int
      */
-    public $countSubscriber = 0;
+    public $countSubscribers = 0;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
@@ -111,7 +111,6 @@ class Subscriber
         $response    = ['success' => true, 'message' => ''];
         $this->start = microtime(true);
         $websites    = $this->helper->getWebsites(true);
-        $started     = false;
 
         foreach ($websites as $website) {
             //if subscriber is enabled and mapped
@@ -125,16 +124,19 @@ class Subscriber
                 //ready to start sync
                 $numUpdated = $this->exportSubscribersPerWebsite($website);
 
-                if ($this->countSubscriber && !$started) {
-                    $this->helper->log('---------------------- Start subscriber sync -------------------');
-                    $started = true;
-                }
                 // show message for any number of customers
                 if ($numUpdated) {
-                    $response['message'] .= '</br>' . $website->getName()
-                        . ', updated subscribers = ' . $numUpdated;
+                    $response['message'] .= $website->getName() . ',  count = ' . $numUpdated;
                 }
             }
+        }
+        //sync proccessed
+        if ($this->countSubscribers) {
+            $message = 'Total time for Subscribers sync : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+                ', Total updated = ' . $this->countSubscribers;
+            $this->helper->log($message);
+            $message .= $response['message'];
+            $response['message'] = $message;
         }
 
         return $response;
@@ -177,7 +179,7 @@ class Subscriber
                 $subscribersWithNoSaleData
             );
             //add updated number for the website
-            $this->countSubscriber += $updated;
+            $this->countSubscribers += $updated;
         }
         //Subscriber that are guest and also
         //exist in sales order table
@@ -190,7 +192,7 @@ class Subscriber
                     $subscribersWithSaleData
                 );
                 //add updated number for the website
-                $this->countSubscriber += $updated;
+                $this->countSubscribers += $updated;
             }
         }
         return $updated;

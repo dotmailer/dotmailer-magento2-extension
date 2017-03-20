@@ -134,8 +134,6 @@ class Contact
         $result = ['success' => true, 'message' => ''];
         //starting time for sync
         $this->start = microtime(true);
-        //resourse allocation
-        $started = false;
         //export bulk contacts
         foreach ($this->helper->getWebsites() as $website) {
             $apiEnabled = $this->helper->isEnabled($website);
@@ -151,25 +149,17 @@ class Contact
                 //start log
                 $contactsUpdated = $this->exportCustomersForWebsite($website);
 
-                if ($this->countCustomers && !$started) {
-                    $this->helper->log(
-                        '---------- Start customer sync ----------'
-                    );
-                    $started = true;
-                }
                 // show message for any number of customers
                 if ($contactsUpdated) {
                     $result['message'] .=  $website->getName()
-                        . ', exported contacts ' . $contactsUpdated;
+                        . ', updated contacts ' . $contactsUpdated;
                 }
             }
         }
         //sync proccessed
         if ($this->countCustomers) {
-            $message = 'Total time for sync : ' . gmdate(
-                'H:i:s',
-                microtime(true) - $this->start
-            ) . ', Total contacts  ' . $this->countCustomers;
+            $message = 'Total time for Customer sync : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+                ', Total contacts = ' . $this->countCustomers;
             $this->helper->log($message);
             $message .= $result['message'];
             $result['message'] = $message;
@@ -282,14 +272,10 @@ class Contact
 
         $customerNum = count($customerIds);
         $this->helper->log(
-            'Website : ' . $website->getName() . ', customers = ' . $customerNum
+            'Website : ' . $website->getName() . ', customers = ' . $customerNum .
+            'execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
         );
-        $this->helper->log(
-            '---------------------------- execution time :' . gmdate(
-                'H:i:s',
-                microtime(true) - $this->start
-            )
-        );
+
         //file was created - continue for queue the export
         //@codingStandardsIgnoreStart
         if (is_file($this->file->getFilePath($customersFile))) {
