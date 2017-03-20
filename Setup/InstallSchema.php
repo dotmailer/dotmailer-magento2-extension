@@ -41,7 +41,7 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'email_contact_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, 10,
                 [
                     'primary' => true,
                     'identity' => true,
@@ -313,7 +313,7 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addColumn(
                 'message', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 255,
-                ['nullable' => false, 'default' => ''], 'Errror Message'
+                ['nullable' => false, 'default' => ''], 'Error Message'
             )
             ->addColumn(
                 'checkout_method', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
@@ -331,12 +331,12 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addColumn(
                 'send_id', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 255,
-                ['nullable' => false, 'default' => ''], 'send_id'
+                ['nullable' => false, 'default' => ''], 'Send Id'
             )
             ->addColumn(
                 'send_status', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                 null,
-                ['nullable' => false, 'default' => 0], 'send_status'
+                ['nullable' => false, 'default' => 0], 'Campaign send status'
             )
             ->addColumn(
                 'created_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
