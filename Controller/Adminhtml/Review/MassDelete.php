@@ -2,61 +2,69 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Review;
 
-use Magento\Backend\App\Action;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Ui\Component\MassAction\Filter;
 
-class MassDelete extends Action
+class MassDelete extends \Magento\Backend\App\Action
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
+     */
+    public $collectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ReviewFactory
+     * @var object
      */
-    public $review;
+    public $messageManager;
+
+    /**
+     * @var Filter
+     */
+    public $filter;
 
     /**
      * MassDelete constructor.
      *
-     * @param Action\Context                             $context
-     * @param \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param Filter $filter
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $collectionFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory
+        Filter $filter,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $collectionFactory
     ) {
-        $this->review = $reviewFactory;
-
+        $this->filter = $filter;
+        $this->collectionFactory = $collectionFactory;
         parent::__construct($context);
     }
+
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     public function execute()
     {
-        $searchIds = $this->getRequest()->getParam('selected');
-        if (!is_array($searchIds)) {
-            $this->messageManager->addErrorMessage(__('Please select reviews.'));
-        } else {
-            try {
-                foreach ($searchIds as $searchId) {
-                    //@codingStandardsIgnoreStart
-                    $model = $this->review->create()
-                        ->setId($searchId);
-                    $model->delete();
-                    //@codingStandardsIgnoreEnd
-                }
-                $this->messageManager->addSuccessMessage(
-                    __('Total of %1 record(s) were deleted.', count($searchIds))
-                );
-            } catch (\Exception $e) {
-                $this->messageManager->addErrorMessage($e->getMessage());
-            }
-        }
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-        $resultRedirect = $this->resultFactory->create(
-            ResultFactory::TYPE_REDIRECT
-        );
-        $resultRedirect->setPath('*/*/');
+        $collection = $this->filter->getCollection($this->collectionFactory->create());
+        $collectionSize = $collection->getSize();
 
-        return $resultRedirect;
+        foreach ($collection as $item) {
+            $item->delete();
+        }
+
+        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
+
+        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+
+        return $resultRedirect->setPath('*/*/');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::review');
     }
 }
+

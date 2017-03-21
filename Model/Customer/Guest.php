@@ -74,7 +74,6 @@ class Guest
     {
         $this->start = microtime(true);
         $websites    = $this->helper->getWebsites();
-        $started     = false;
 
         foreach ($websites as $website) {
             //check if the guest is mapped and enabled
@@ -87,16 +86,11 @@ class Guest
 
                 //sync guests for website
                 $this->exportGuestPerWebsite($website);
-
-                if ($this->countGuests && !$started) {
-                    $this->helper->log('----------- Start guest sync ----------');
-                    $started = true;
-                }
             }
         }
         if ($this->countGuests) {
-            $this->helper->log('---- End Guest total time for guest sync : '
-                . gmdate('H:i:s', microtime(true) - $this->start));
+            $this->helper->log('Total time for Guest sync : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+                ', Total synced = ' . $this->countGuests);
         }
     }
 

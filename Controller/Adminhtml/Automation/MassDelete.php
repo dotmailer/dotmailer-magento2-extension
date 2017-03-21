@@ -3,56 +3,67 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Automation;
 
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Ui\Component\MassAction\Filter;
 
 class MassDelete extends \Magento\Backend\App\Action
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
+     */
+    public $collectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     * @var object
      */
-    public $automation;
+    public $messageManager;
+
+    /**
+     * @var Filter
+     */
+    public $filter;
+
     /**
      * MassDelete constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automation
-     * @param \Magento\Backend\App\Action\Context            $context
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param Filter $filter
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $collectionFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\AutomationFactory $automation,
-        \Magento\Backend\App\Action\Context $context
+        \Magento\Backend\App\Action\Context $context,
+        Filter $filter,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $collectionFactory
     ) {
-    
-        $this->automation = $automation;
-
+        $this->filter = $filter;
+        $this->collectionFactory = $collectionFactory;
         parent::__construct($context);
     }
+
     /**
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     public function execute()
     {
-        $searchIds = $this->getRequest()->getParam('selected');
-        if (!is_array($searchIds)) {
-            $this->messageManager->addErrorMessage(__('Please select automation.'));
-        } else {
-            try {
-                //@codingStandardsIgnoreStart
-                foreach ($searchIds as $searchId) {
-                    $model = $this->automation
-                        ->create()
-                        ->setId($searchId);
-                    $model->delete();
-                }
-                //@codingStandardsIgnoreEnd
-                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($searchIds)));
-            } catch (\Exception $e) {
-                $this->messageManager->addErrorMessage($e->getMessage());
-            }
+        $collection = $this->filter->getCollection($this->collectionFactory->create());
+        $collectionSize = $collection->getSize();
+
+        foreach ($collection as $item) {
+            $item->delete();
         }
+
+        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
+
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setPath('*/*/');
 
-        return $resultRedirect;
+        return $resultRedirect->setPath('*/*/');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::automation');
     }
 }
