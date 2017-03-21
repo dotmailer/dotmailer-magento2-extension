@@ -170,7 +170,7 @@ class Order
      */
     public function searchWebsiteAccounts()
     {
-        $websites = $this->helper->getWebsites(true);
+        $websites = $this->helper->getWebsites();
         foreach ($websites as $website) {
             $apiEnabled = $this->helper->isEnabled($website);
             $storeIds = $website->getStoreIds();
