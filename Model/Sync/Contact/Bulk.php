@@ -20,6 +20,10 @@ class Bulk
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    public $datetime;
 
     /**
      * Bulk constructor.
@@ -27,15 +31,18 @@ class Bulk
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
     ) {
         $this->helper         = $helper;
         $this->fileHelper     = $fileHelper;
         $this->contactFactory = $contactFactory;
+        $this->datetime = $dateTime;
     }
 
     /**
@@ -111,7 +118,7 @@ class Bulk
         if (!$curlError) {
             if (isset($result->message) && !isset($result->id)) {
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                    ->setImportId($result->message);
+                    ->setMessage($result->message);
 
                 $item->save();
             } elseif (isset($result->id) && !isset($result->message)) {

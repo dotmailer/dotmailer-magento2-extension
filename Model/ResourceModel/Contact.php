@@ -5,11 +5,33 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
+    public $contactFactory;
+
+    /**
      * Initialize resource.
      */
     public function _construct()
     {
         $this->_init('email_contact', 'email_contact_id');
+    }
+
+    /**
+     * Contact constructor.
+     *
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param null $connectionName
+     */
+    public function __construct(
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        $connectionName = null
+    )
+    {
+        $this->contactFactory = $contactFactory;
+        parent::__construct($context, $connectionName);
     }
 
     /**
@@ -130,12 +152,20 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function insert($data)
+    public function insertGuest($data)
     {
-        if (!empty($data)) {
+        $contacts = array_keys($data);
+        $contactModel = $this->contactFactory->create();
+        $emailsExistInTable = $contactModel->getCollection()
+            ->addFieldToFilter('email', ['in' => $contacts])
+            ->getColumnValues('email');
+
+        $guests = array_diff_key($data, array_flip($emailsExistInTable));
+
+        if (!empty($guests)) {
             try {
                 $write = $this->getConnection();
-                $write->insertMultiple($this->getMainTable(), $data);
+                $write->insertMultiple($this->getMainTable(), $guests);
             } catch (\Exception $e) {
                 throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
             }

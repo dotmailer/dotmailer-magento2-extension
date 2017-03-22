@@ -143,7 +143,9 @@ class Wishlist
                 }
                 if (! empty($this->wishlists)) {
                     $message = 'Total time for wishlist bulk sync : ' .
-                        gmdate('H:i:s', microtime(true) - $this->start);
+                        gmdate('H:i:s', microtime(true) - $this->start .
+                            ', Total synced = ' . $this->countWishlists);
+
                     $this->helper->log($message);
                 }
 
@@ -235,9 +237,9 @@ class Wishlist
     /**
      * Export single wishilist for website.
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      */
-    public function exportWishlistForWebsiteInSingle(\Magento\Store\Model\Website $website)
+    public function exportWishlistForWebsiteInSingle(\Magento\Store\Api\Data\WebsiteInterface $website)
     {
         //transactional data limit
         $limit = $this->helper->getWebsiteConfig(
@@ -318,12 +320,11 @@ class Wishlist
     /**
      * Get wishlists marked as modified for website.
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      * @param int $limit
-     *
      * @return mixed
      */
-    public function getModifiedWishlistToImport(\Magento\Store\Model\Website $website, $limit = 100)
+    public function getModifiedWishlistToImport(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
     {
         $collection = $this->wishlistCollection->create()
             ->addFieldToFilter('wishlist_modified', 1)
