@@ -87,7 +87,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 $emailBefore = $isContactExist->getEmail();
             }
 
-            empty($emailBefore) ? $emailAddress = $email : $emailAddress = $emailBefore;
+            $emailAddress = empty($emailBefore) ? $email : $emailBefore;
 
             $contactModel = $this->contactFactory->create()
                 ->loadByCustomerEmail($emailAddress, $websiteId);
@@ -99,9 +99,9 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                     ->loadByCustomerEmail($emailAddress, $websiteId);
                 $contactModel->setEmail($email);
 
-                $this->helper->log('email change detected : ' . $email
-                    . ', after : ' . $emailBefore . ', website id : '
-                    . $websiteId);
+                $this->helper->log('email change detected from : ' . $emailBefore . ', to : ' . $email .
+                    ', website id : ' . $websiteId
+                );
 
                 $data = [
                     'emailBefore' => $emailBefore,
