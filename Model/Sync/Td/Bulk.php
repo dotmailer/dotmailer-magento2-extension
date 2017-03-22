@@ -26,6 +26,12 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
                             $item->getImportType()
                         );
                     } else {
+                        if ($item->getImportType() == \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS) {
+                            //Skip if one hour has not passed from created
+                            if ($this->getDateDifference($item->getCreatedAt()) < 3600) {
+                                continue;
+                            }
+                        }
                         $result = $this->client->postContactsTransactionalDataImport(
                             $importData,
                             $item->getImportType()
@@ -35,5 +41,17 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
                 }
             }
         }
+    }
+
+    /**
+     * Get difference between dates
+     *
+     * @param $created
+     * @return false|int
+     */
+    public function getDateDifference($created)
+    {
+        $now = $this->datetime->gmtDate();
+        return strtotime($now) - strtotime($created);
     }
 }
