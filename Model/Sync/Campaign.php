@@ -237,7 +237,7 @@ class Campaign
             $response = $client->getSendStatus($campaign->getSendId());
             if (isset($response->message)) {
                 //update  the failed to send email message
-                $this->campaignResourceModel->setMessage([$campaign->getSendId()], $response->message);
+                $this->campaignResourceModel->setMessageWithSendId($campaign->getSendId(), $response->message);
             } elseif ($response->status == 'Sent') {
                 $this->campaignResourceModel->setSent($campaign->getSendId());
             }
