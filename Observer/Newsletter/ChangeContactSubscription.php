@@ -103,17 +103,13 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 if ($contactEmail->getSuppressed()) {
                     return $this;
                 }
-                //update contact id for the subscriber
-                $contactId = $contactEmail->getContactId();
-                //get the contact id
-                if (!$contactId) {
-                    $this->importerFactory->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
-                        ['email' => $email, 'id' => $contactEmail->getId()],
-                        \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
-                        $websiteId
-                    );
-                }
+                //Add subscriber update to importer queue
+                $this->importerFactory->registerQueue(
+                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
+                    ['email' => $email, 'id' => $contactEmail->getId()],
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
+                    $websiteId
+                );
                 $contactEmail->setIsSubscriber(null)
                     ->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED);
             }
