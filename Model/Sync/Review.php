@@ -167,8 +167,8 @@ class Review
         }
 
         if ($this->countReviews) {
-            $message = 'Total time for Review sync : ' . gmdate('H:i:s', microtime(true) - $this->start) .
-                ', Total synced = ' . $this->countReviews;
+            $message = '----------- Review sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+                ', synced = ' . $this->countReviews;
             $this->helper->log($message);
             $response['message'] = $message;
         }

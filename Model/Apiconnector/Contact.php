@@ -158,7 +158,7 @@ class Contact
         }
         //sync proccessed
         if ($this->countCustomers) {
-            $message = 'Total time for Customer sync : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+            $message = '----------- Customer sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) .
                 ', Total contacts = ' . $this->countCustomers;
             $this->helper->log($message);
             $message .= $result['message'];

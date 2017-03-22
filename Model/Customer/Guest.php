@@ -68,8 +68,8 @@ class Guest
             }
         }
         if ($this->countGuests) {
-            $this->helper->log('Total time for Guest sync : ' . gmdate('H:i:s', microtime(true) - $this->start) .
-                ', Total synced = ' . $this->countGuests);
+            $this->helper->log('----------- Guest sync ----------- : ' .
+                gmdate('H:i:s', microtime(true) - $this->start) . ', Total synced = ' . $this->countGuests);
         }
     }
 
