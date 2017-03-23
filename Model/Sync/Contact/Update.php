@@ -116,6 +116,8 @@ class Update extends Delete
             }
         }
         //update suppress status for contact ids
-        $this->contactResource->setContactSuppressedForContactIds($this->suppressedContactIds);
+        if (!empty($this->suppressedContactIds)) {
+            $this->contactResource->setContactSuppressedForContactIds($this->suppressedContactIds);
+        }
     }
 }
