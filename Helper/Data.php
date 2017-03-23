@@ -462,6 +462,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (isset($response->id)) {
             $contact->setContactId($response->id)
                 ->save();
+        } else {
+            //curl operation timeout
+            return false;
         }
 
         return $response->id;

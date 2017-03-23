@@ -186,15 +186,11 @@ class Subscriber
         //subscriber that are guest and also exist in sales order table.
         $subscribersWithSaleData = [];
         if (! empty($existInSales)) {
-            $subscribersWithSaleData = $emailContactModel
-                ->getSubscribersToImportFromEmails($existInSales);
+            $subscribersWithSaleData = $emailContactModel->getSubscribersToImportFromEmails($existInSales);
         }
 
         if (! empty($subscribersWithSaleData)) {
-            $updated += $this->exportSubscribersWithSales(
-                $website,
-                $subscribersWithSaleData
-            );
+            $updated += $this->exportSubscribersWithSales($website, $subscribersWithSaleData);
             //add updated number for the website
             $this->countSubscribers += $updated;
 
@@ -228,19 +224,12 @@ class Subscriber
      * @param $subscribers
      * @return int
      */
-    public function exportSubscribers(
-        $website,
-        $subscribers
-    ) {
+    public function exportSubscribers($website, $subscribers)
+    {
         $updated = 0;
-        $subscribersFilename = strtolower(
-            $website->getCode() . '_subscribers_' . date('d_m_Y_Hi')
-            . '.csv'
-        );
+        $subscribersFilename = strtolower($website->getCode() . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
         //get mapped storename
-        $subscriberStorename = $this->helper->getMappedStoreName(
-            $website
-        );
+        $subscriberStorename = $this->helper->getMappedStoreName($website);
         //file headers
         $this->file->outputCSV(
             $this->file->getFilePath($subscribersFilename),
@@ -297,46 +286,43 @@ class Subscriber
         return $collection->getColumnValues('customer_email');
     }
 
-    public function exportSubscribersWithSales(
-        $website,
-        $subscribers
-    ) {
+    /**
+     * @param $website
+     * @param $subscribers
+     * @return int
+     */
+    public function exportSubscribersWithSales($website, $subscribers)
+    {
+        if (empty($susbcribers))
+            return 0;
         $updated = 0;
-        $subscriberIds = $headers = [];
-        $emailContactIdEmail = [];
+        $subscriberIds = $headers = $emailContactIdEmail = [];
+
         foreach ($subscribers as $emailContact) {
             $emailContactIdEmail[$emailContact->getId()] = $emailContact->getEmail();
         }
-        $subscribersFile = strtolower(
-            $website->getCode() . '_subscribers_with_sales_' . date('d_m_Y_Hi')
-            . '.csv'
-        );
+        $subscribersFile = strtolower($website->getCode() . '_subscribers_with_sales_' . date('d_m_Y_Hi') . '.csv');
         $this->helper->log('Subscriber file with sales : ' . $subscribersFile);
         //get subscriber emails
         $emails = $subscribers->getColumnValues('email');
 
         //subscriber collection
         $collection = $this->getCollection($emails, $website->getId());
-        $mappedHash = $this->helper->getWebsiteSalesDataFields(
-            $website
-        );
+        //no subscribers found
+        if ($collection->getSize() == 0)
+            return 0;
+        $mappedHash = $this->helper->getWebsiteSalesDataFields($website);
         $headers = $mappedHash;
         $headers[] = 'Email';
         $headers[] = 'EmailType';
-        $this->file->outputCSV(
-            $this->file->getFilePath($subscribersFile),
-            $headers
-        );
+        $this->file->outputCSV($this->file->getFilePath($subscribersFile), $headers);
         //subscriber data
         foreach ($collection as $subscriber) {
             $connectorSubscriber = $this->emailSubscriber->create();
             $connectorSubscriber->setMappingHash($mappedHash);
             $connectorSubscriber->setSubscriberData($subscriber);
             //count number of customers
-            $index = array_search(
-                $subscriber->getSubscriberEmail(),
-                $emailContactIdEmail
-            );
+            $index = array_search($subscriber->getSubscriberEmail(), $emailContactIdEmail);
             if ($index) {
                 $subscriberIds[] = $index;
             }
@@ -344,14 +330,12 @@ class Subscriber
             $connectorSubscriber->setData($subscriber->getSubscriberEmail());
             $connectorSubscriber->setData('Html');
             // save csv file data
-            $this->file->outputCSV(
-                $this->file->getFilePath($subscribersFile),
-                $connectorSubscriber->toCSVArray()
-            );
+            $this->file->outputCSV($this->file->getFilePath($subscribersFile), $connectorSubscriber->toCSVArray());
             //clear collection and free memory
             $subscriber->clearInstance();
             $updated++;
         }
+
         $subscriberNum = count($subscriberIds);
         //@codingStandardsIgnoreStart
         if (is_file($this->file->getFilePath($subscribersFile))) {
@@ -373,9 +357,15 @@ class Subscriber
                 }
             }
         }
+
         return $updated;
     }
 
+    /**
+     * @param $emails
+     * @param int $websiteId
+     * @return mixed
+     */
     public function getCollection($emails, $websiteId = 0)
     {
         $salesOrder = $this->resource->getTableName('sales_order');
@@ -418,7 +408,7 @@ class Subscriber
             )
             ->group('customer_email');
         //any order statuses selected
-        if (!empty($statuses)) {
+        if (! empty($statuses)) {
             $subselect->where('status in (?)', $statuses);
         }
 
@@ -574,9 +564,13 @@ class Subscriber
         return $collection;
     }
 
-    private function isRowIdExistsInCatalogProductEntityId()
+    /**
+     * @return bool
+     */
+    protected function isRowIdExistsInCatalogProductEntityId()
     {
         $connection = $this->resource->getConnection();
+
         return $connection->tableColumnExists(
             $this->resource->getTableName('catalog_product_entity_int'),
             'row_id'
