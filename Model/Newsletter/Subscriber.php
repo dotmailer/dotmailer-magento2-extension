@@ -162,7 +162,7 @@ class Subscriber
         //Guest Subscribers
         $subscribersAreGuest = $emailContactModel->getSubscribersToImport($website, $limit, false);
         $subscribersGuestEmails = $subscribersAreGuest->getColumnValues('email');
-        $existInSales = array();
+        $existInSales = [];
         if (! empty($subscribersGuestEmails)) {
             $existInSales = $this->checkInSales($subscribersGuestEmails);
         }
@@ -293,8 +293,6 @@ class Subscriber
      */
     public function exportSubscribersWithSales($website, $subscribers)
     {
-        if (empty($susbcribers))
-            return 0;
         $updated = 0;
         $subscriberIds = $headers = $emailContactIdEmail = [];
 
