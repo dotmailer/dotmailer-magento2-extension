@@ -28,6 +28,10 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     public $importerFactory;
+    /**
+     * @var \Magento\Newsletter\Model\SubscriberFactory
+     */
+    public $subscriberFactory;
 
     /**
      * CreateUpdateContact constructor.
@@ -45,7 +49,8 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
+        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
     ) {
         $this->wishlist        = $wishlist;
         $this->contactFactory  = $contactFactory;
@@ -53,6 +58,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         $this->helper          = $data;
         $this->registry        = $registry;
         $this->importerFactory = $importerFactory;
+        $this->subscriberFactory = $subscriberFactory;
     }
 
     /**
@@ -66,10 +72,13 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     {
         $customer = $observer->getEvent()->getCustomer();
 
-        $email = $customer->getEmail();
-        $websiteId = $customer->getWebsiteId();
+        $email      = $customer->getEmail();
+        $websiteId  = $customer->getWebsiteId();
         $customerId = $customer->getEntityId();
-        $isSubscribed = $customer->getIsSubscribed();
+        $subscriber = $this->subscriberFactory->create()
+            ->loadByCustomerId($customerId);
+        $isSubscribed = $subscriber->isSubscribed();
+
         $emailBefore = '';
 
         try {
