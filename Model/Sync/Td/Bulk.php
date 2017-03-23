@@ -5,6 +5,30 @@ namespace Dotdigitalgroup\Email\Model\Sync\Td;
 class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    public $datetime;
+
+    /**
+     * Bulk constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+    )
+    {
+        $this->datetime = $dateTime;
+        parent::__construct($helper, $fileHelper, $contactFactory);
+    }
+
+    /**
      * Sync.
      *
      * @param $collection

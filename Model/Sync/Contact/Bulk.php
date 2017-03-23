@@ -20,10 +20,6 @@ class Bulk
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
-     */
-    public $datetime;
 
     /**
      * Bulk constructor.
@@ -31,18 +27,15 @@ class Bulk
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
         $this->helper         = $helper;
         $this->fileHelper     = $fileHelper;
         $this->contactFactory = $contactFactory;
-        $this->datetime = $dateTime;
     }
 
     /**
