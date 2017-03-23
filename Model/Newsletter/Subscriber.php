@@ -132,8 +132,8 @@ class Subscriber
         }
         //sync proccessed
         if ($this->countSubscribers) {
-            $message = 'Total time for Subscribers sync : ' . gmdate('H:i:s', microtime(true) - $this->start) .
-                ', Total updated = ' . $this->countSubscribers;
+            $message = '----------- Subscribers sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+                ', updated = ' . $this->countSubscribers;
             $this->helper->log($message);
             $message .= $response['message'];
             $response['message'] = $message;

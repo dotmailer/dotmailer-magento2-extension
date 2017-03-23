@@ -267,8 +267,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $this->setUrl($url)
             ->setVerb('DELETE');
         $this->execute();
-        $this->helper->log('DELETE ADDRESSBOOK : ' . $addressBookId
-            . ', CONTACT : ' . $contactId);
+        $this->helper->log(sprintf('Delete-contact %s from addressbook %s', $contactId, $addressBookId));
     }
 
     /**
