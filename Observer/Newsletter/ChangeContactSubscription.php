@@ -118,6 +118,12 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                     ->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED);
             }
 
+            //update the contact
+            $contactEmail->setStoreId($storeId);
+
+            //update contact
+            $contactEmail->save();
+
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
             $emailReg = $this->registry->registry($email . '_subscriber_save');
             if ($emailReg) {
@@ -126,12 +132,6 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             $this->registry->register($email . '_subscriber_save', $email);
             //add subscriber to automation
             $this->addSubscriberToAutomation($email, $subscriber, $websiteId);
-
-            //update the contact
-            $contactEmail->setStoreId($storeId);
-
-            //update contact
-            $contactEmail->save();
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }
