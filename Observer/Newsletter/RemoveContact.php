@@ -39,7 +39,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         $this->contactFactory = $contactFactory;
         $this->helper = $data;
         $this->storeManager = $storeManagerInterface;
-        $this->importerFactory = $importerFactory->create();
+        $this->importerFactory = $importerFactory;
     }
 
     /**
@@ -63,7 +63,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         if ($apiEnabled) {
             try {
                 //register in queue with importer
-                $this->importerFactory->registerQueue(
+                $this->importerFactory->create()->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
                     $email,
                     \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_DELETE,
