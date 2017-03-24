@@ -3,16 +3,17 @@
  
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 
-##Description
+## Description
 
 Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
 
-##V2.2.0
-######Improvements
+## V2.2.0
+
+###### Improvements
  - Bulk order sync will have a delay(60min) before being imported.
  - Improve install script for customers that are subscribed.
 
-######Bug fixes
+###### Bug fixes
  - Subscribers with datafields issues.
  - Campaign bulk setProccessing array conversion.
  - Abandoned cart price fetch from quote.
@@ -40,17 +41,19 @@ Full support documentation and setup guides available here - https://support.dot
  - Duplicate guests email fix.
  - Importer with no website id for orders.
  
-##V2.1.8
-######Bug fixes
+## V2.1.8
+
+###### Bug fixes
   - Storename fix(#215)
 
-##V2.1.7
-######Features
+## V2.1.7
+
+###### Features
  - Api endpoints for different region accounts.
  - Improved trail account creation process.
  - Improved Guests finding(separated from the order sync).
  
-######Bug fixes
+###### Bug fixes
  - Abandoned cart process throws error(collection).
  - Single orders type inside importer.
  - Abandoned carts timezone issue.
@@ -59,13 +62,15 @@ Full support documentation and setup guides available here - https://support.dot
  - Failed send campaign in bulk containing duplicated contact_ids(dotmailer @AndrewGretton).
  - Campaign report messages/sendId for suppresed/failed contacts.
 
-##V2.1.6
-######Bug fixes
+## V2.1.6
+
+###### Bug fixes
  - Syntax error or access violation while updating Coupon code.
  - Stop emulation when api is disabled.  
  
-##V2.1.5
-######Features
+## V2.1.5
+
+###### Features
  - Admin Log file viewer.
  - Subsribers now have datafields.
  
@@ -80,19 +85,19 @@ Full support documentation and setup guides available here - https://support.dot
  - Fix js for the dotmailer configuration page.
  - Unserialize error for orders sync. 
  
-######Security
+###### Security
  - Remove modification for guest quote items.
  
-######Improvements 
+###### Improvements 
  - Now can be added multiple dimention condition for Rules.
 
-##V2.1.4
+## V2.1.4
 ###### Bugs fixes
  - InvalidContactIdentifier for single orders.
  - Compatibility with catalogStaging for enterprise.
  - Fix admin configuration fancybox error.
 
-##V2.1.0
+## V2.1.0
 ###### Features
  - Compatible with Magento 2.1 version.
  - Coupon EDC expiration date. You can set the expiration date for coupon included into the URL
