@@ -21,14 +21,13 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
                 $this->client = $this->helper->getWebsiteApiClient($websiteId);
 
                 if ($this->client) {
-
                     $apiContact = $this->client->postContacts($email);
                     //apicontact found and can be removed using the contact id!
                     if (! isset($apiContact->message) && isset($apiContact->id)) {
                         //will assume that the request is done
                         $this->client->deleteContact($apiContact->id);
-                        $this->_handleSingleItemAfterSync($item, $apiContact);
                     }
+                    $this->_handleSingleItemAfterSync($item, $apiContact);
                 }
             }
         }
