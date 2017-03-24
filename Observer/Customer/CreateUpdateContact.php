@@ -71,9 +71,14 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $customer = $observer->getEvent()->getCustomer();
+        $websiteId  = $customer->getWebsiteId();
+
+        //check if enabled
+        if (!$this->helper->isEnabled($websiteId)) {
+            return $this;
+        }
 
         $email      = $customer->getEmail();
-        $websiteId  = $customer->getWebsiteId();
         $customerId = $customer->getEntityId();
         $subscriber = $this->subscriberFactory->create()
             ->loadByCustomerId($customerId);
