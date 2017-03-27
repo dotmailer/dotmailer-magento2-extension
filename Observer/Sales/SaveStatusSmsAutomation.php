@@ -147,7 +147,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                                 'programId' => $configMap['automation'],
                                 'automationType' => 'order_automation_' . $status,
                                 'email' => $customerEmail,
-                                'order_id' => $order->getId(),
+                                'order_id' => $order->getIncrementId(),
                                 'website_id' => $websiteId,
                                 'store_name' => $storeName
                             ]
@@ -173,7 +173,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                                 'programId' => $programIdNewOrder,
                                 'automationType' => $automationTypeNewOrder,
                                 'email' => $customerEmail,
-                                'order_id' => $order->getId(),
+                                'order_id' => $order->getIncrementId(),
                                 'website_id' => $websiteId,
                                 'store_name' => $storeName
                             ]
