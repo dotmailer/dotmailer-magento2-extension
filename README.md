@@ -2,20 +2,58 @@
  ======
  
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
-[![Build Status](https://travis-ci.org/dotmailer/dotmailer-magento2-extension.svg?branch=master)](dotmailer/dotmailer-magento2-extension)
 
 ## Description
 
 Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
 
-##V2.1.7
+## V2.2.0
 
-######Features
+###### Improvements
+ - Bulk order sync will have a delay(60min) before being imported.
+ - Improve install script for customers that are subscribed.
+
+###### Bug fixes
+ - Subscribers with datafields issues.
+ - Campaign bulk setProccessing array conversion.
+ - Abandoned cart price fetch from quote.
+ - Send id is set for all failed campaign records.
+ - Abandoned cart with wrong email contact_id.
+ - Update Product/Orders transactional data schema.
+ - Trail account creation process refactoring and tests.
+ - Fix automap datafields for different websites.
+ - Api endpoint for multiple accounts. 
+ - Easy email capture not updating is_guest field.
+ - Abandoned carts time issue.
+ - Single orders inside importer will have full data object.
+ - Importer fix for delete contact type.
+ - Check for api enabled before creating contact.
+ - Subscriber guest is not triggered to be removed.
+ - Customer subscription when email is changed.
+ - Unsubscribe subscribers not getting removed from the address book.
+ - Contact subscription status not being changed.
+ - Massdelete action fro report tables when select all.
+ - Automation report table status not displayed.
+ - Importer status is saved in wrong column.
+ - Newsletter subscription with default option selected will make api call.
+ - Contact saving suppression is using wrong key.
+ - Revert guest finding feature.
+ - Duplicate guests email fix.
+ - Importer with no website id for orders.
+ 
+## V2.1.8
+
+###### Bug fixes
+  - Storename fix(#215)
+
+## V2.1.7
+
+###### Features
  - Api endpoints for different region accounts.
  - Improved trail account creation process.
  - Improved Guests finding(separated from the order sync).
  
-######Bug fixes
+###### Bug fixes
  - Abandoned cart process throws error(collection).
  - Single orders type inside importer.
  - Abandoned carts timezone issue.
@@ -24,15 +62,15 @@ Full support documentation and setup guides available here - https://support.dot
  - Failed send campaign in bulk containing duplicated contact_ids(dotmailer @AndrewGretton).
  - Campaign report messages/sendId for suppresed/failed contacts.
 
-##V2.1.6
+## V2.1.6
 
-######Bug fixes
+###### Bug fixes
  - Syntax error or access violation while updating Coupon code.
  - Stop emulation when api is disabled.  
  
-##V2.1.5
+## V2.1.5
 
-######Features
+###### Features
  - Admin Log file viewer.
  - Subsribers now have datafields.
  
@@ -47,20 +85,19 @@ Full support documentation and setup guides available here - https://support.dot
  - Fix js for the dotmailer configuration page.
  - Unserialize error for orders sync. 
  
-######Security
+###### Security
  - Remove modification for guest quote items.
  
-######Improvements 
+###### Improvements 
  - Now can be added multiple dimention condition for Rules.
 
-##V2.1.4
-
+## V2.1.4
 ###### Bugs fixes
  - InvalidContactIdentifier for single orders.
  - Compatibility with catalogStaging for enterprise.
  - Fix admin configuration fancybox error.
 
-##V2.1.0
+## V2.1.0
 ###### Features
  - Compatible with Magento 2.1 version.
  - Coupon EDC expiration date. You can set the expiration date for coupon included into the URL
