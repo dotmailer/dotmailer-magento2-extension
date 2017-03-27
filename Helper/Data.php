@@ -68,6 +68,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Dotdigitalgroup\Email\Helper\ConfigFactory ConfigFactory
      */
     public $configHelperFactory;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    public $datetime;
 
     /**
      * Data constructor.
@@ -85,6 +89,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -100,7 +105,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\Store $store,
         \Magento\Framework\App\Config\Storage\Writer $writer,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
-        \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory
+        \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
     ) {
 
         $this->adapter          = $adapter;
@@ -115,6 +121,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->writer = $writer;
         $this->clientFactory = $clientFactory;
         $this->configHelperFactory = $configHelperFactory;
+        $this->datetime = $dateTime;
 
         parent::__construct($context);
         $this->fileHelper = $fileHelper;
@@ -1604,5 +1611,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * Get difference between dates
+     *
+     * @param $created
+     * @return false|int
+     */
+    public function getDateDifference($created)
+    {
+        $now = $this->datetime->gmtDate();
+        return strtotime($now) - strtotime($created);
     }
 }
