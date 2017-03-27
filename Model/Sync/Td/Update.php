@@ -25,6 +25,12 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                             $item->getImportType()
                         );
                     } else {
+                        if ($item->getImportType() == \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS) {
+                            //Skip if one hour has not passed from created
+                            if ($this->helper->getDateDifference($item->getCreatedAt()) < 3600) {
+                                continue;
+                            }
+                        }
                         $result = $this->client->postContactsTransactionalData(
                             $importData,
                             $item->getImportType()

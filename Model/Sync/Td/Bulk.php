@@ -5,26 +5,18 @@ namespace Dotdigitalgroup\Email\Model\Sync\Td;
 class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
-     */
-    public $datetime;
-
-    /**
      * Bulk constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     )
     {
-        $this->datetime = $dateTime;
         parent::__construct($helper, $fileHelper, $contactFactory);
     }
 
@@ -52,7 +44,7 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
                     } else {
                         if ($item->getImportType() == \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS) {
                             //Skip if one hour has not passed from created
-                            if ($this->getDateDifference($item->getCreatedAt()) < 3600) {
+                            if ($this->helper->getDateDifference($item->getCreatedAt()) < 3600) {
                                 continue;
                             }
                         }
@@ -65,17 +57,5 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
                 }
             }
         }
-    }
-
-    /**
-     * Get difference between dates
-     *
-     * @param $created
-     * @return false|int
-     */
-    public function getDateDifference($created)
-    {
-        $now = $this->datetime->gmtDate();
-        return strtotime($now) - strtotime($created);
     }
 }
