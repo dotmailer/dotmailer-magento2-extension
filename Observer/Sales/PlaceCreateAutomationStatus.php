@@ -78,7 +78,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
                 ->setEmail($email)
                 ->setAutomationType($automationType)
                 ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
-                ->setTypeId($order->getId())
+                ->setTypeId($order->getIncrementId())
                 ->setWebsiteId($website->getId())
                 ->setStoreName($storeName)
                 ->setProgramId($programId)

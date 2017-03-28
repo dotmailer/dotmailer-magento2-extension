@@ -94,6 +94,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 
         $itemsData = [];
 
+        /** @var \Magento\Quote\Model\Quote\Item $quoteItem */
         foreach ($quoteItems as $quoteItem) {
             //skip configurable products
             if ($quoteItem->getParentItemId() != null) {
@@ -106,7 +107,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
                 ? 'In Stock'
                 : 'Out of stock';
             $total = $this->priceHelper->currency(
-                $quoteItem->getPrice()
+                $quoteItem->getBaseRowTotalInclTax()
             );
 
             $productUrl = $_product->getProductUrl();

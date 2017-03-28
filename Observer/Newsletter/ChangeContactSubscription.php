@@ -103,20 +103,22 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 if ($contactEmail->getSuppressed()) {
                     return $this;
                 }
-                //update contact id for the subscriber
-                $contactId = $contactEmail->getContactId();
-                //get the contact id
-                if (!$contactId) {
-                    $this->importerFactory->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
-                        ['email' => $email, 'id' => $contactEmail->getId()],
-                        \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
-                        $websiteId
-                    );
-                }
+                //Add subscriber update to importer queue
+                $this->importerFactory->registerQueue(
+                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
+                    ['email' => $email, 'id' => $contactEmail->getId()],
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
+                    $websiteId
+                );
                 $contactEmail->setIsSubscriber(null)
                     ->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED);
             }
+
+            //update the contact
+            $contactEmail->setStoreId($storeId);
+
+            //update contact
+            $contactEmail->save();
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
             $emailReg = $this->registry->registry($email . '_subscriber_save');
@@ -126,12 +128,6 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             $this->registry->register($email . '_subscriber_save', $email);
             //add subscriber to automation
             $this->addSubscriberToAutomation($email, $subscriber, $websiteId);
-
-            //update the contact
-            $contactEmail->setStoreId($storeId);
-
-            //update contact
-            $contactEmail->save();
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

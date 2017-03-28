@@ -283,14 +283,8 @@ class Automation
     public function updateDatafieldsByType($type, $email)
     {
         switch ($type) {
-            case self::AUTOMATION_TYPE_NEW_CUSTOMER:
-            case self::AUTOMATION_TYPE_NEW_SUBSCRIBER:
-            case self::AUTOMATION_TYPE_NEW_WISHLIST:
-                $this->_updateDefaultDatafields($email);
-                break;
             case self::AUTOMATION_TYPE_NEW_ORDER:
             case self::AUTOMATION_TYPE_NEW_GUEST_ORDER:
-            case self::AUTOMATION_TYPE_NEW_REVIEW:
             case self::ORDER_STATUS_AUTOMATION:
             case self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER:
                 $this->_updateNewOrderDatafields();
@@ -319,7 +313,8 @@ class Automation
     {
         $website = $this->storeManager->getWebsite($this->websiteId);
         $orderModel = $this->orderFactory->create()
-            ->load($this->typeId);
+            ->loadByIncrementId($this->typeId);
+
         //data fields
         if ($lastOrderId = $website->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID

@@ -134,8 +134,7 @@
                     style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$item['qty']; ?></td>
                 <td class="product-price"
                     style="padding: 5px; border-bottom: 1px solid #cbd3d4;">
-                    <?php echo $block->getLayout()->getBlock('ddg.product.price.render.default')
-                        ->render('final_price', $item['product'], []); ?>
+                    <?php echo $item['total']; ?>
                 </td>
             </tr>
         <?php endforeach; ?>

@@ -42,18 +42,12 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param $ids
      * @param $message
-     * @param $sendId
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setMessage($ids, $message, $sendId = false)
+    public function setMessage($ids, $message)
     {
         try {
-            $ids = implode("','", $ids);
-            if ($sendId) {
-                $map = 'send_id';
-            } else {
-                $map = 'id';
-            }
+            $ids = implode(", ", $ids);
             $conn = $this->getConnection();
             $conn->update(
                 $this->getMainTable(),
@@ -62,7 +56,32 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
                     'sent_at' =>  $this->datetime->gmtDate()
                 ],
-                ["$map in ('$ids')"]
+                "id in ($ids)"
+            );
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+        }
+    }
+
+    /**
+     * Set error message on given send id
+     *
+     * @param $sendId
+     * @param $message
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function setMessageWithSendId($sendId, $message)
+    {
+        try {
+            $conn = $this->getConnection();
+            $conn->update(
+                $this->getMainTable(),
+                [
+                    'message' => $message,
+                    'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
+                    'sent_at' => $this->datetime->gmtDate()
+                ],
+                ['send_id = ?' => $sendId]
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
@@ -103,7 +122,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function setProcessing($ids, $sendId)
     {
         try {
-            $ids = implode("','", $ids);
+            $ids = implode(', ', $ids);
             $bind = [
                 'send_status' => \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
                 'send_id' => $sendId
@@ -112,7 +131,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $conn->update(
                 $this->getMainTable(),
                 $bind,
-                ["id in ('$ids')"]
+                "id in ($ids)"
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

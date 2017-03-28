@@ -28,6 +28,10 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     public $importerFactory;
+    /**
+     * @var \Magento\Newsletter\Model\SubscriberFactory
+     */
+    public $subscriberFactory;
 
     /**
      * CreateUpdateContact constructor.
@@ -45,7 +49,8 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
+        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
     ) {
         $this->wishlist        = $wishlist;
         $this->contactFactory  = $contactFactory;
@@ -53,6 +58,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         $this->helper          = $data;
         $this->registry        = $registry;
         $this->importerFactory = $importerFactory;
+        $this->subscriberFactory = $subscriberFactory;
     }
 
     /**
@@ -65,11 +71,20 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $customer = $observer->getEvent()->getCustomer();
+        $websiteId  = $customer->getWebsiteId();
 
-        $email = $customer->getEmail();
-        $websiteId = $customer->getWebsiteId();
+        //check if enabled
+        if (!$this->helper->isEnabled($websiteId)) {
+            return $this;
+        }
+
+        $email      = $customer->getEmail();
         $customerId = $customer->getEntityId();
-        $isSubscribed = $customer->getIsSubscribed();
+        $subscriber = $this->subscriberFactory->create()
+            ->loadByCustomerId($customerId);
+        $isSubscribed = $subscriber->isSubscribed();
+
+        $emailBefore = '';
 
         try {
             // fix for a multiple hit of the observer
@@ -78,22 +93,35 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 return $this;
             }
             $this->registry->register($email . '_customer_save', $email);
-            $emailBefore = $this->customerFactory->create()
-                ->load($customer->getId())->getEmail();
+
+            $isContactExist = $this->contactFactory->create()
+                ->loadByCustomerId($customerId);
+
+            if ($isContactExist->getId()) {
+                $emailBefore = $isContactExist->getEmail();
+            }
+
+            $emailAddress = empty($emailBefore) ? $email : $emailBefore;
+
             $contactModel = $this->contactFactory->create()
-                ->loadByCustomerEmail($emailBefore, $websiteId);
+                ->loadByCustomerEmail($emailAddress, $websiteId);
+
             //email change detection
-            if ($email != $emailBefore) {
-                $this->helper->log('email change detected : ' . $email
-                    . ', after : ' . $emailBefore . ', website id : '
-                    . $websiteId);
+            if ($emailBefore && $email != $emailBefore) {
+                //Reload contact model up update email
+                $contactModel = $this->contactFactory->create()
+                    ->loadByCustomerEmail($emailAddress, $websiteId);
+                $contactModel->setEmail($email);
+
+                $this->helper->log('email change detected from : ' . $emailBefore . ', to : ' . $email .
+                    ', website id : ' . $websiteId);
 
                 $data = [
                     'emailBefore' => $emailBefore,
                     'email' => $email,
                     'isSubscribed' => $isSubscribed,
                 ];
-                $this->importerFactory->registerQueue(
+                $this->importerFactory->create()->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT_UPDATE,
                     $data,
                     \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_EMAIL_UPDATE,

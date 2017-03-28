@@ -48,4 +48,8 @@
     <event name="newsletter_subscriber_save_after">
         <observer name="dotdigitalgroup_change_contact_subscription" instance="Dotdigitalgroup\Email\Observer\Newsletter\ChangeContactSubscription"/>
     </event>
+    <event name="newsletter_subscriber_delete_after">
+        <observer name="dotdigitalgroup_subscriber_delete"
+                  instance="Dotdigitalgroup\Email\Observer\Newsletter\RemoveContact"/>
+    </event>
 </config>

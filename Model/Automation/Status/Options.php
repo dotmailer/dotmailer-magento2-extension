@@ -11,12 +11,12 @@ class Options implements \Magento\Framework\Data\OptionSourceInterface
     {
         $options = [
             [
-                'label' => 'pending',
-                'value' => 'Pending'
+                'label' => 'Pending',
+                'value' => 'pending'
             ],
             [
-                'label' => 'suppressed',
-                'value' => 'Suppressed'
+                'label' => 'Suppressed',
+                'value' => 'suppressed'
             ],[
                 'label' => 'Active',
                 'value' => 'Active'

@@ -5,11 +5,33 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
+    public $contactFactory;
+
+    /**
      * Initialize resource.
      */
     public function _construct()
     {
         $this->_init('email_contact', 'email_contact_id');
+    }
+
+    /**
+     * Contact constructor.
+     *
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param null $connectionName
+     */
+    public function __construct(
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        $connectionName = null
+    ) {
+    
+        $this->contactFactory = $contactFactory;
+        parent::__construct($context, $connectionName);
     }
 
     /**
@@ -92,20 +114,23 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Unsubscribe a contact.
+     * Unsubscribe a contact from email_contact/newsletter table.
      *
      * @param $data
-     *
+     * @return int
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function unsubscribe($data)
     {
+        if (empty($data)) {
+            return 0;
+        }
         $write = $this->getConnection();
         $emails = '"' . implode('","', $data) . '"';
 
         try {
             //un-subscribe from the email contact table.
-            $write->update(
+            $updated = $write->update(
                 $this->getMainTable(),
                 [
                     'is_subscriber' => new \Zend_Db_Expr('null'),
@@ -123,6 +148,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
+
+        return $updated;
     }
 
     /**
@@ -130,12 +157,20 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function insert($data)
+    public function insertGuest($data)
     {
-        if (!empty($data)) {
+        $contacts = array_keys($data);
+        $contactModel = $this->contactFactory->create();
+        $emailsExistInTable = $contactModel->getCollection()
+            ->addFieldToFilter('email', ['in' => $contacts])
+            ->getColumnValues('email');
+
+        $guests = array_diff_key($data, array_flip($emailsExistInTable));
+
+        if (! empty($guests)) {
             try {
                 $write = $this->getConnection();
-                $write->insertMultiple($this->getMainTable(), $data);
+                $write->insertMultiple($this->getMainTable(), $guests);
             } catch (\Exception $e) {
                 throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
             }
@@ -151,28 +186,36 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function setContactSuppressedForContactIds($suppressedContactIds)
     {
+        if (empty($suppressedContactIds)) {
+            return 0;
+        }
         $conn = $this->getConnection();
-
-        return $conn->update(
+        //update suppressed for contacts
+        $updated = $conn->update(
             $this->getMainTable(),
             ['suppressed' => 1],
-            ['id IN(?)' => $suppressedContactIds]
+            ['email_contact_id IN(?)' => $suppressedContactIds]
         );
+
+        return $updated;
     }
 
     /**
-     * Update subscriber imported
+     * Update subscriber imported.
      *
-     * @param $subscribers
+     * @param $ids array
+     * @return int
      */
-    public function updateSubscribers($subscribers)
+    public function updateSubscribers($ids)
     {
+        if (empty($ids)) {
+            return 0;
+        }
         $write = $this->getConnection();
-        $ids = implode(', ', $subscribers);
-        $write->update(
-            $this->getMainTable(),
-            ['subscriber_imported' => 1],
-            "email_contact_id IN ($ids)"
-        );
+        $ids = implode(', ', $ids);
+        //update subscribers imported
+        $updated = $write->update($this->getMainTable(), ['subscriber_imported' => 1], "email_contact_id IN ($ids)");
+
+        return $updated;
     }
 }

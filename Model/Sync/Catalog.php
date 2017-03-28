@@ -183,10 +183,8 @@ class Catalog
         }
 
         if ($this->countProducts) {
-            $message = 'Total time for sync : ' . gmdate(
-                'H:i:s',
-                microtime(true) - $this->start
-            ) . ', Total synced = ' . $this->countProducts;
+            $message = '----------- Catalog sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+                ', Total synced = ' . $this->countProducts;
             $this->helper->log($message);
             $response['message'] = $message;
         }

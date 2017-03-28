@@ -71,6 +71,10 @@ class Order
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory
      */
     public $orderResourceFactory;
+    /**
+     * @var array
+     */
+    public $guests = [];
 
     /**
      * Order constructor.
@@ -156,6 +160,14 @@ class Order
             unset($this->accounts[$account->getApiUsername()]);
         }
 
+        /**
+         * Add guest to contacts table.
+         */
+        if (!empty($this->guests)) {
+            $this->contactResourceFactory->create()
+                ->insertGuest($this->guests);
+        }
+
         if ($this->countOrders) {
             $response['message'] = 'Orders updated ' . $this->countOrders;
         }
@@ -170,7 +182,7 @@ class Order
      */
     public function searchWebsiteAccounts()
     {
-        $websites = $this->helper->getWebsites(true);
+        $websites = $this->helper->getWebsites();
         foreach ($websites as $website) {
             $apiEnabled = $this->helper->isEnabled($website);
             $storeIds = $website->getStoreIds();
@@ -288,6 +300,26 @@ class Order
 
         foreach ($salesOrderCollection as $order) {
             if ($order->getId()) {
+                $storeId = $order->getStoreId();
+                $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+
+                /**
+                 * Add guest to array to add to contacts table.
+                 */
+                if ($order->getCustomerIsGuest()
+                    && $order->getCustomerEmail()
+                ) {
+                    //add guest to the list
+                    if (!isset($this->guests[$order->getCustomerEmail()])) {
+                        $this->guests[$order->getCustomerEmail()] = [
+                            'email' => $order->getCustomerEmail(),
+                            'website_id' => $websiteId,
+                            'store_id' => $storeId,
+                            'is_guest' => 1
+                        ];
+                    }
+                }
+
                 $connectorOrder = $this->connectorOrderFactory->create();
                 $connectorOrder->setOrderData($order);
                 $orders[] = $connectorOrder;

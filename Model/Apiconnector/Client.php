@@ -218,9 +218,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         //@codingStandardsIgnoreEnd
 
         if (isset($result->message)) {
-            $message = 'POST ADDRESS BOOK ' . $addressBookId
-                . ', CONTACT IMPORT : ' . ' filename ' . $filename
-                . ' Username ' . $this->getApiUsername() . $result->message;
+            $message = 'postAddressBookContactsImport' . $addressBookId . ' file : ' . $filename
+                . ' ,user : ' . $this->getApiUsername() . '. ' .  $result->message;
             $this->helper->debug('postAddressBookContactsImport', [$message]);
         }
 
@@ -267,8 +266,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $this->setUrl($url)
             ->setVerb('DELETE');
         $this->execute();
-        $this->helper->log('DELETE ADDRESSBOOK : ' . $addressBookId
-            . ', CONTACT : ' . $contactId);
+        $this->helper->log(sprintf('Delete-contact %s from addressbook %s', $contactId, $addressBookId));
     }
 
     /**
@@ -630,8 +628,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'postContacts : ' . $email . ' , url ' . $url
-                . ', ' . $response->message;
+            $message = $email . ' , url ' . $url . ', ' . $response->message;
             $this->helper->debug('postContacts', [$message]);
         }
 
@@ -1353,7 +1350,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POST, count($params));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);

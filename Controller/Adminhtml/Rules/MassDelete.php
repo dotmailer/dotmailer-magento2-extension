@@ -3,27 +3,39 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Ui\Component\MassAction\Filter;
 
 class MassDelete extends \Magento\Backend\App\Action
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory
+     */
+    public $collectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
+     * @var object
      */
-    public $rules;
+    public $messageManager;
+
+    /**
+     * @var Filter
+     */
+    public $filter;
 
     /**
      * MassDelete constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rules
+     * @param Filter $filter
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $collectionFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rules
+        Filter $filter,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory $collectionFactory
     ) {
-
-        $this->rules = $rules;
+        $this->filter = $filter;
+        $this->collectionFactory = $collectionFactory;
         parent::__construct($context);
     }
 
@@ -32,22 +44,26 @@ class MassDelete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $ids = $this->getRequest()->getParam('id');
+        $collection = $this->filter->getCollection($this->collectionFactory->create());
+        $collectionSize = $collection->getSize();
 
-        if (!is_array($ids)) {
-            $this->messageManager->addErrorMessage(__('Please select rules.'));
-        } else {
-            try {
-                $num = $this->rules->massDelete($ids);
-                $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', $num));
-            } catch (\Exception $e) {
-                $this->messageManager->addErrorMessage($e->getMessage());
-            }
+        foreach ($collection as $item) {
+            $item->delete();
         }
+
+        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
+
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setPath('*/*/');
 
-        return $resultRedirect;
+        return $resultRedirect->setPath('*/*/');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::rules');
     }
 }
