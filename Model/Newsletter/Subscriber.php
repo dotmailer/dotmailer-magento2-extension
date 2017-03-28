@@ -193,7 +193,6 @@ class Subscriber
             $updated += $this->exportSubscribersWithSales($website, $subscribersWithSaleData);
             //add updated number for the website
             $this->countSubscribers += $updated;
-
         }
         return $updated;
     }
@@ -307,8 +306,9 @@ class Subscriber
         //subscriber collection
         $collection = $this->getCollection($emails, $website->getId());
         //no subscribers found
-        if ($collection->getSize() == 0)
+        if ($collection->getSize() == 0) {
             return 0;
+        }
         $mappedHash = $this->helper->getWebsiteSalesDataFields($website);
         $headers = $mappedHash;
         $headers[] = 'Email';
@@ -378,8 +378,7 @@ class Subscriber
                     'subscriber_email',
                     'store_id',
                     'subscriber_status'
-                ]
-            );
+                ]);
 
         //only when subscriber emails are set
         if (! empty($emails)) {

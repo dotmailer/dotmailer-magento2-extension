@@ -114,8 +114,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 $contactModel->setEmail($email);
 
                 $this->helper->log('email change detected from : ' . $emailBefore . ', to : ' . $email .
-                    ', website id : ' . $websiteId
-                );
+                    ', website id : ' . $websiteId);
 
                 $data = [
                     'emailBefore' => $emailBefore,
