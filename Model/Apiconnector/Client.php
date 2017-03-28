@@ -629,8 +629,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'postContacts : ' . $email . ' , url ' . $url
-                . ', ' . $response->message;
+            $message = $email . ' , url ' . $url . ', ' . $response->message;
             $this->helper->debug('postContacts', [$message]);
         }
 

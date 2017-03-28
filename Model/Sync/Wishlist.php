@@ -143,7 +143,7 @@ class Wishlist
                 }
                 if (! empty($this->wishlists)) {
                     $message = '----------- Wishlist bulk sync ----------- : ' .
-                        gmdate('H:i:s', microtime(true) - $this->start . ', Total synced = ' . $this->countWishlists);
+                        gmdate('H:i:s', microtime(true) - $this->start) . ', Total synced = ' . $this->countWishlists;
 
                     $this->helper->log($message);
                 }
