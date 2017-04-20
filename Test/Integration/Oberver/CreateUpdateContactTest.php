@@ -35,6 +35,10 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
 
     public function prepare($email, $fname, $lname, $pass)
     {
+        $helper = $this->getMock('Dotdigitalgroup\Email\Helper\Data', [], [], '', false);
+        $helper->method('isEnabled')->willReturn(true);
+        $this->objectManager->addSharedInstance($helper, \Dotdigitalgroup\Email\Helper\Data::class);
+
         /** @var \Magento\Store\Model\StoreManagerInterface $storeManager */
         $storeManager = $this->objectManager->create('\Magento\Store\Model\StoreManagerInterface');
         $store = $storeManager->getStore();
@@ -85,7 +89,7 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
      */
     public function dataProvider()
     {
-        $num = rand(5, 15);
+        $num = rand(500, 5000);
         return [
             [
                 'dummy' . $num . 'new@dotmailer.com',
