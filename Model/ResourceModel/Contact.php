@@ -28,8 +28,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         $connectionName = null
-    )
-    {
+    ) {
+    
         $this->contactFactory = $contactFactory;
         parent::__construct($context, $connectionName);
     }
@@ -122,8 +122,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function unsubscribe($data)
     {
-        if (empty($data))
+        if (empty($data)) {
             return 0;
+        }
         $write = $this->getConnection();
         $emails = '"' . implode('","', $data) . '"';
 
@@ -185,8 +186,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function setContactSuppressedForContactIds($suppressedContactIds)
     {
-        if (empty($suppressedContactIds))
+        if (empty($suppressedContactIds)) {
             return 0;
+        }
         $conn = $this->getConnection();
         //update suppressed for contacts
         $updated = $conn->update(
@@ -206,8 +208,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function updateSubscribers($ids)
     {
-        if (empty($ids))
+        if (empty($ids)) {
             return 0;
+        }
         $write = $this->getConnection();
         $ids = implode(', ', $ids);
         //update subscribers imported
