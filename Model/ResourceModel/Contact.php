@@ -122,8 +122,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function unsubscribe($data)
     {
-        if (empty($data))
+        if (empty($data)) {
             return 0;
+        }
         $write = $this->getConnection();
         $emails = '"' . implode('","', $data) . '"';
 
@@ -133,6 +134,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $this->getMainTable(),
                 [
                     'is_subscriber' => new \Zend_Db_Expr('null'),
+                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
                     'suppressed' => '1',
                 ],
                 "email IN ($emails)"
