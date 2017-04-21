@@ -4,7 +4,7 @@
 
     <script type="text/javascript">
         require(['jquery','domReady!'],function($){
-            $("body").on("blur","input[name=username]", function(){
+            $("body").on("blur","input[id=customer-email]", function(){
                 var email = $(this).val();
                 if(email && validateEmail(email)){
                     $.post("<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>", {email: email});
@@ -19,5 +19,5 @@
                 return false;
         }
     </script>
-    
+
 <?php endif; ?>
