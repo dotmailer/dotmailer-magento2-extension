@@ -589,7 +589,7 @@ class Subscriber
     public function unsubscribe()
     {
         $limit = 5;
-        $max_to_select = 1000;
+        $maxToSelect = 1000;
         $result['customers'] = 0;
         $date = $this->timezone->date()->sub(\DateInterval::createFromDateString('24 hours'));
         $suppressedEmails = [];
@@ -613,7 +613,7 @@ class Subscriber
 
             //there is a maximum of request we need to loop to get more suppressed contacts
             for ($i=0; $i<= $limit;$i++) {
-                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $max_to_select , $skip);
+                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect , $skip);
 
                 // skip no more contacts or the api request failed
                 if(empty($apiContacts) || isset($apiContacts->message)) {
