@@ -113,9 +113,12 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             'err' => $error,
             'message' => $msg,
         ];
-        $this->getResponse()->setBody(
-            $this->getRequest()->getParam('callback') . '(' . $this->jsonHelper->jsonEncode($message) . ')'
-        )->sendResponse();
+        $this->getResponse()
+            ->setHeader('Content-type', 'application/javascript', true)
+            ->setBody(
+                $this->getRequest()->getParam('callback') . '(' . $this->jsonHelper->jsonEncode($message) . ')'
+            )
+            ->sendResponse();
     }
 
     /**
