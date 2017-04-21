@@ -4,7 +4,7 @@
 
     <script type="text/javascript">
         require(['jquery','domReady!'],function($){
-            $('input[name=email]').each(function (index, element) {
+            $('input[id=newsletter]').each(function (index, element) {
                 // Observe onblur event on element
                 $(element).on('blur', function() {
                     var email = $(element).val();
