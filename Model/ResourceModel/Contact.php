@@ -134,6 +134,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $this->getMainTable(),
                 [
                     'is_subscriber' => new \Zend_Db_Expr('null'),
+                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
                     'suppressed' => '1',
                 ],
                 "email IN ($emails)"
