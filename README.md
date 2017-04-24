@@ -32,7 +32,7 @@ Full support documentation and setup guides available here - https://support.dot
  - Customer subscription when email is changed.
  - Unsubscribe subscribers not getting removed from the address book.
  - Contact subscription status not being changed.
- - Massdelete action fro report tables when select all.
+ - Massdelete action for report tables when select all.
  - Automation report table status not displayed.
  - Importer status is saved in wrong column.
  - Newsletter subscription with default option selected will make api call.

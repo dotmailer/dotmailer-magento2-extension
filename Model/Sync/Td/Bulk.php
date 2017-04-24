@@ -15,8 +15,8 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-    )
-    {
+    ) {
+    
         parent::__construct($helper, $fileHelper, $contactFactory);
     }
 

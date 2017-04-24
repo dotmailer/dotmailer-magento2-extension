@@ -144,11 +144,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
         $apiUsername = $this->getApiUsername($website);
         $apiPassword = $this->getApiPassword($website);
-        if (!$apiUsername || !$apiPassword || !$enabled) {
+        if (! $apiUsername || ! $apiPassword || ! $enabled) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * @param $storeId
+     * @return bool
+     */
+    public function isStoreEnabled($storeId)
+    {
+        return $this->scopeConfig->isSetFlag(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     /**
@@ -1168,16 +1181,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Get the config id by the automation type.
      *
      * @param string $automationType
-     * @param int $websiteId
+     * @param int $storeId
      *
      * @return mixed
      */
-    public function getAutomationIdByType($automationType, $websiteId = 0)
+    public function getAutomationIdByType($automationType, $storeId = 0)
     {
-        $path = constant(
-            EmailConfig::class . '::' . $automationType
+        $path = constant(EmailConfig::class . '::' . $automationType);
+
+        $automationCampaignId = $this->scopeConfig->getValue(
+            $path,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
         );
-        $automationCampaignId = $this->getWebsiteConfig($path, $websiteId);
 
         return $automationCampaignId;
     }
