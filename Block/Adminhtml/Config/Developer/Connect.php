@@ -131,7 +131,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         );
 
         //callback uri if not set custom
-        $redirectUri = $this->getRedirectUri();
+        $redirectUri = $this->helper->getRedirectUri();
         $redirectUri .= 'connector/email/callback';
 
         $adminUser = $this->auth->getUser();

@@ -123,8 +123,9 @@ class Books extends \Magento\Framework\View\Element\Template
         if (! empty($additionalFromConfig)) {
             $additionalFromConfig = explode(',', $additionalFromConfig);
             //unset the default option - for multi select
-            if ($additionalFromConfig[0] == '0')
+            if ($additionalFromConfig[0] == '0') {
                 unset($additionalFromConfig[0]);
+            }
 
             $this->getConnectorContact();
             if ($this->contactId) {
