@@ -12,7 +12,6 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
     public function sync($collection)
     {
         foreach ($collection as $item) {
-
             $websiteId = $item->getWebsiteId();
             //@codingStandardsIgnoreStart
             $email = unserialize($item->getImportData());

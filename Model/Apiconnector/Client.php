@@ -218,9 +218,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         //@codingStandardsIgnoreEnd
 
         if (isset($result->message)) {
-            $message = 'POST ADDRESS BOOK ' . $addressBookId
-                . ', CONTACT IMPORT : ' . ' filename ' . $filename
-                . ' Username ' . $this->getApiUsername() . $result->message;
+            $message = 'postAddressBookContactsImport' . $addressBookId . ' file : ' . $filename
+                . ' ,user : ' . $this->getApiUsername() . '. ' .  $result->message;
             $this->helper->debug('postAddressBookContactsImport', [$message]);
         }
 
