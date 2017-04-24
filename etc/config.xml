@@ -318,7 +318,7 @@
                 <test_connect></test_connect>
             </oauth>
             <ip_restriction>
-                <ip_addresses>104.208.235.109, 52.174.92.164, 104.210.118.87</ip_addresses>
+                <ip_addresses>104.208.235.109, 52.174.92.164, 104.210.118.87, 89.197.25.33</ip_addresses>
             </ip_restriction>
             <cron_schedules>
                 <importer>*/5 * * * *</importer>
