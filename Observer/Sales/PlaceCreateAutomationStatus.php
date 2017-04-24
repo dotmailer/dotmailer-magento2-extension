@@ -66,7 +66,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
         }
         $programId = $this->helper->getAutomationIdByType(
             $programType,
-            $order->getWebsiteId()
+            $order->getStoreId()
         );
 
         //the program is not mapped
