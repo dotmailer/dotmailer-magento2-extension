@@ -152,6 +152,9 @@ class Cron
         $subscriberModel = $this->subscriberFactory->create();
         $result = $subscriberModel->sync();
 
+        //un-subscribe suppressed contacts
+        $subscriberModel->unsubscribe();
+
         //sync guests
         $this->guestFactory->create()->sync();
 
