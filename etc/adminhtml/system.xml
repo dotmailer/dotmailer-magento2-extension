@@ -19,7 +19,7 @@
                 <attribute type="expanded">1</attribute>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enabled</label>
-                    <comment><![CDATA[Dont' have an API? click <a href="http://www.dotmailer.com/resources/dev-tools-guides/getting-started-with-the-dotmailer-api/">here</a> to know how to create new one.]]></comment>
+                    <comment><![CDATA[Dont' have an API? click <a href="https://developer.dotmailer.com/docs/getting-started-with-the-api/">here</a> to know how to create new one.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInStore="0" showInWebsite="1">
