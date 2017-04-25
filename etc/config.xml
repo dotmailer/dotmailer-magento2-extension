@@ -303,7 +303,7 @@
             </sync_settings>
             <debug>
                 <debug_enabled>1</debug_enabled>
-                <api_request_time_limit>10</api_request_time_limit>
+                <api_request_time_limit>60</api_request_time_limit>
             </debug>
             <feed_configuration>
                 <feed_enabled>1</feed_enabled>
