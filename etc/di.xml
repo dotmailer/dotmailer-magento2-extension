@@ -17,6 +17,7 @@
         <arguments>
             <argument name="collections" xsi:type="array">
                 <item name="cron_report_grid_data_source" xsi:type="string">Magento\Cron\Ui\Model\ResourceModel\Schedule\Collection</item>
+                <item name="rules_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Rules\Collection</item>
                 <item name="importer_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Importer\Collection</item>
                 <item name="automation_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Automation\Collection</item>
                 <item name="campaign_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Campaign\Collection</item>

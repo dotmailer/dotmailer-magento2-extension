@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 /**
  * Class CreateUpdateContactTest
  * @package Dotdigitalgroup\Email\Observer\Customer
- * @magentoDBIsolation enabled
+ * @magentoDBIsolation disabled
  */
 class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,20 +21,35 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
+    public $email;
+    public $customerModel;
+
+    public $customerId ;
+
 
     public function setup()
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
         $this->customerFactory = $this->objectManager->create('\Magento\Customer\Model\CustomerFactory');
         $this->contactFactory = $this->objectManager->create('\Dotdigitalgroup\Email\Model\ContactFactory');
+
+        $this->prepareCustomerData();
+
     }
 
     public function tearDown()
     {
+        $this->contactFactory->create()
+            ->loadByCustomerId($this->customerId)
+            ->delete();
+        $this->customerModel
+            ->delete();
+
     }
 
-    public function prepare($email, $fname, $lname, $pass)
+    public function prepareCustomerData()
     {
+
         $helper = $this->getMock('Dotdigitalgroup\Email\Helper\Data', [], [], '', false);
         $helper->method('isEnabled')->willReturn(true);
         $this->objectManager->addSharedInstance($helper, \Dotdigitalgroup\Email\Helper\Data::class);
@@ -43,60 +58,45 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $storeManager = $this->objectManager->create('\Magento\Store\Model\StoreManagerInterface');
         $store = $storeManager->getStore();
         $website = $store->getWebsite();
+        $num = rand(500, 5000);
+        $email = 'dummy' . $num . 'new@dotmailer.com';
 
-        /**
-         * @var \Dotdigitalgroup\Email\Model\ContactFactory
-         */
         $customerModel = $this->customerFactory->create();
         $customerModel->setStore($store);
         $customerModel->setWebsiteId($website->getId());
         $customerModel->setEmail($email);
-        $customerModel->setFirstname($fname);
-        $customerModel->setLastname($lname);
-        $customerModel->setPassword($pass);
+        $customerModel->setFirstname('Firstname');
+        $customerModel->setLastname('Lastname');
+        $customerModel->setPassword('dummypassword');
         $customerModel->save();
+        $this->customerId = $customerModel->getId();
 
-        return $customerModel;
+        $this->customerModel = $customerModel;
     }
 
-    /**
-     * Test contact created successfully
-     *
-     * @dataProvider dataProvider
-     *
-     * @param $email
-     * @param $fname
-     * @param $lname
-     * @param $pass
-     */
-    public function testContactCreatedAndUpdatedSuccessfully($email, $fname, $lname, $pass)
+    public function testContactCreatedSuccessfully()
     {
-        $customerModel = $this->prepare($email, $fname, $lname, $pass);
-        $contact = $this->contactFactory->create()->loadByCustomerId($customerModel->getId());
-        $this->assertEquals($email, $contact->getEmail(), 'Contact was not created');
-        unset($contact);
+        //save new customer which will trigger the observer and will create new contact
 
-
-        $email = str_replace('new', 'updated', $email);
-        $customerModel->setEmail($email)->save();
-        $contact = $this->contactFactory->create()->loadByCustomerId($customerModel->getId());
-        $this->assertEquals($email, $contact->getEmail(), 'Contact was not updated');
+        $contact = $this->contactFactory->create()
+            ->loadByCustomerId($this->customerModel->getId());
+        //check contact created after the customer was saved
+        $this->assertEquals($this->customerModel->getEmail(), $contact->getEmail(), 'Contact was not created');
     }
 
-    /**
-     *
-     * @return array
-     */
-    public function dataProvider()
+    public function test_contact_updated_successfully()
     {
-        $num = rand(500, 5000);
-        return [
-            [
-                'dummy' . $num . 'new@dotmailer.com',
-                'First Name',
-                'Last Name',
-                'pass123@'
-            ]
-        ];
+        //update the email and save contact
+        $updatedEmail = str_replace('new', 'updated', $this->email);
+        $customerModel = $this->customerModel
+            ->setEmail($updatedEmail)
+            ->save();
+
+        $contact = $this->contactFactory->create()
+            ->loadByCustomerId($customerModel->getId());
+
+        $this->assertEquals($updatedEmail, $contact->getEmail(), 'Contact was not updated');
     }
+
+
 }
