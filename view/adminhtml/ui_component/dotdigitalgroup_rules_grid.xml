@@ -183,7 +183,7 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
                     <item name="dataType" xsi:type="string">date</item>
                     <item name="sorting" xsi:type="string">desc</item>
-                    <item name="label" xsi:type="string" translate="true">Created Date</item>
+                    <item name="label" xsi:type="string" translate="true">Created At</item>
                 </item>
             </argument>
         </column>
@@ -193,9 +193,17 @@
                     <item name="filter" xsi:type="string">dateRange</item>
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
                     <item name="dataType" xsi:type="string">date</item>
-                    <item name="label" xsi:type="string" translate="true">Updated Date</item>
+                    <item name="label" xsi:type="string" translate="true">Updated At</item>
                 </item>
             </argument>
         </column>
+        <actionsColumn name="actions" class="Dotdigitalgroup\Email\Block\Adminhtml\Rules\Listing\Actions">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="indexField" xsi:type="string">id</item>
+                    <item name="editUrlPath" xsi:type="string">dotdigitalgroup_email/rules/edit</item>
+                </item>
+            </argument>
+        </actionsColumn>
     </columns>
 </listing>
