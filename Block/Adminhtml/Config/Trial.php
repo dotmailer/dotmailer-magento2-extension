@@ -85,13 +85,14 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
             require(['jquery', 'domReady'], function($){
                 $('.various').fancybox({
                     width	: 508,
-                    height	: 612,
+                    height	: 670,
                     scrolling   : 'no',
-                    fitToView	: false,
-                    autoSize	: false,
-                    closeClick	: false,
-                    openEffect	: 'none',
-                    closeEffect	: 'none'
+                    hideOnOverlayClick : false,
+                    helpers   : { 
+                        overlay : { 
+                            closeClick: false 
+                        } 
+                    }
                 });
                 
                 $(document).on('click', 'a.fancybox-close', function(){
