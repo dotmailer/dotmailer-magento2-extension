@@ -12,6 +12,12 @@
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Importer</argument>
         </arguments>
     </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Rules\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_rules</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Rules</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Automation\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_automation</argument>
@@ -27,7 +33,7 @@
     <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Contact\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_contact</argument>
-            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Contact</argument>
+            <argument name="resourceModel" xsi:type="string">\Dotdigitalgroup\Email\Model\ResourceModel\Contact</argument>
         </arguments>
     </virtualType>
     <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Catalog\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
