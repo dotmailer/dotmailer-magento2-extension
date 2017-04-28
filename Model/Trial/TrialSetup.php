@@ -92,15 +92,15 @@ class TrialSetup
             $error = true;
             $this->helper->log('setupDataFields client is not enabled');
         } else {
-            $dataFields = $this->dataField->getContactDatafields();
-            foreach ($dataFields as $key => $dataField) {
-                $response = $apiModel->postDataFields($dataField);
-                //ignore existing datafields message
-                if (isset($response->message) &&
-                    $response->message != Client::API_ERROR_DATAFIELD_EXISTS
-                ) {
-                    $error = true;
-                } else {
+            //validate account
+            $accountInfo = $apiModel->getAccountInfo();
+            if (isset($accountInfo->message)) {
+                $this->helper->log('setupDataFields ' . $accountInfo->message);
+                $error = true;
+            } else {
+                $dataFields = $this->dataField->getContactDatafields();
+                foreach ($dataFields as $key => $dataField) {
+                    $apiModel->postDataFields($dataField);
                     //map the successfully created data field
                     $this->helper->saveConfigData(
                         'connector_data_mapping/customer_data/' . $key,
@@ -108,7 +108,7 @@ class TrialSetup
                         'default',
                         0
                     );
-                    $this->helper->log('successfully connected : ' . $dataField['name']);
+                    $this->helper->log('setupDataFields successfully connected : ' . $dataField['name']);
                 }
             }
         }
@@ -140,24 +140,27 @@ class TrialSetup
             $error = true;
             $this->helper->log('createAddressBooks client is not enabled');
         } else {
-            foreach ($addressBooks as $addressBook) {
-                $addressBookName = $addressBook['name'];
-                $visibility = $addressBook['visibility'];
-                if (!empty($addressBookName)) {
-                    $response = $client->postAddressBooks($addressBookName, $visibility);
-                    if (isset($response->message) &&
-                        $response->message != Client::API_ERROR_ADDRESSBOOK_DUPLICATE
-                    ) {
-                        $error = true;
-                    } elseif (isset($response->id)) {
-                        $this->mapAddressBook($addressBookName, $response->id);
-                    } else { //Need to fetch addressbook id to map. Addressbook already exist.
-                        $response = $client->getAddressBooks();
-                        if (!isset($response->message)) {
-                            foreach ($response as $book) {
-                                if ($book->name == $addressBookName) {
-                                    $this->mapAddressBook($addressBookName, $book->id);
-                                    break;
+            //validate account
+            $accountInfo = $client->getAccountInfo();
+            if (isset($accountInfo->message)) {
+                $this->helper->log('createAddressBooks ' . $accountInfo->message);
+                $error = true;
+            } else {
+                foreach ($addressBooks as $addressBook) {
+                    $addressBookName = $addressBook['name'];
+                    $visibility = $addressBook['visibility'];
+                    if (!empty($addressBookName)) {
+                        $response = $client->postAddressBooks($addressBookName, $visibility);
+                        if (isset($response->id)) {
+                            $this->mapAddressBook($addressBookName, $response->id);
+                        } else { //Need to fetch addressbook id to map. Addressbook already exist.
+                            $response = $client->getAddressBooks();
+                            if (!isset($response->message)) {
+                                foreach ($response as $book) {
+                                    if ($book->name == $addressBookName) {
+                                        $this->mapAddressBook($addressBookName, $book->id);
+                                        break;
+                                    }
                                 }
                             }
                         }

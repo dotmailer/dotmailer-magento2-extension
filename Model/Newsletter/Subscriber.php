@@ -77,6 +77,11 @@ class Subscriber
      */
     public $emailContactResource;
 
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     */
+    public $timezone;
+
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
@@ -88,7 +93,8 @@ class Subscriber
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber,
-        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
+        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     ) {
         $this->importerFactory   = $importerFactory;
         $this->file              = $file;
@@ -101,6 +107,7 @@ class Subscriber
         $this->orderCollection = $orderCollection;
         $this->emailSubscriber = $emailSubscriber;
         $this->emailContactResource = $contactResource;
+        $this->timezone = $timezone;
     }
 
     /**
@@ -572,5 +579,61 @@ class Subscriber
             $this->resource->getTableName('catalog_product_entity_int'),
             'row_id'
         );
+    }
+
+    /**
+     * Un-subscribe suppressed contacts.
+     * @return mixed
+     */
+    public function unsubscribe()
+    {
+        $limit = 5;
+        $maxToSelect = 1000;
+        $result['customers'] = 0;
+        $date = $this->timezone->date()->sub(\DateInterval::createFromDateString('24 hours'));
+        $suppressedEmails = [];
+
+        // Datetime format string
+        $dateString = $date->format(\DateTime::W3C);
+
+        /**
+         * Sync all suppressed for each store
+         */
+        $websites = $this->helper->getWebsites(true);
+        foreach ($websites as $website) {
+            $client = $this->helper->getWebsiteApiClient($website);
+            $skip = $i = 0;
+            $contacts = [];
+
+            // Not enabled and valid credentials
+            if (! $client) {
+                continue;
+            }
+
+            //there is a maximum of request we need to loop to get more suppressed contacts
+            for ($i=0; $i<= $limit;$i++) {
+                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect , $skip);
+
+                // skip no more contacts or the api request failed
+                if(empty($apiContacts) || isset($apiContacts->message)) {
+                    break;
+                }
+                $contacts = array_merge($contacts, $apiContacts);
+                $skip += 1000;
+            }
+
+            // Contacts to un-subscribe
+            foreach ($contacts as $apiContact) {
+                if (isset($apiContact->suppressedContact)) {
+                    $suppressedContact = $apiContact->suppressedContact;
+                    $suppressedEmails[] = $suppressedContact->email;
+                }
+            }
+        }
+        //Mark suppressed contacts
+        if (! empty($suppressedEmails)) {
+            $this->emailContactResource->create()->unsubscribe($suppressedEmails);
+        }
+        return $result;
     }
 }

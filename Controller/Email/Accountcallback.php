@@ -18,16 +18,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      */
     public $storeManager;
     /**
-     * @var array
-     */
-    public $ipRange = [
-        '104.40.179.234',
-        '104.40.159.161',
-        '191.233.82.46',
-        '104.46.48.100',
-        '104.40.187.26'
-    ];
-    /**
      * @var \Dotdigitalgroup\Email\Model\Trial\TrialSetup
      */
     public $trialSetup;
@@ -70,34 +60,27 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     {
         $params = $this->getRequest()->getParams();
 
-        //if ip is not in range or any of the required params not set send error response
-        if (!in_array($this->remoteAddress->getRemoteAddress(), $this->ipRange) or
-            !isset($params['apiUser']) or !isset($params['pass'])
-        ) {
-            $this->sendAjaxResponse(true, $this->_getErrorHtml());
-        }
-
         //if no value to any of the required params send error response
         if (empty($params['apiUser']) or empty($params['pass'])) {
             $this->sendAjaxResponse(true, $this->_getErrorHtml());
-        }
-
-        //Save api end point
-        if (isset($params['apiEndpoint'])) {
-            $this->trialSetup->saveApiEndPoint($params['apiEndpoint']);
-        } else { //Save empty value to endpoint. New endpoint will be fetched when first api call made.
-            $this->trialSetup->saveApiEndPoint('');
-        }
-
-        $apiConfigStatus = $this->trialSetup->saveApiCreds($params['apiUser'], $params['pass']);
-        $dataFieldsStatus = $this->trialSetup->setupDataFields($params['apiUser'], $params['pass']);
-        $addressBookStatus = $this->trialSetup->createAddressBooks($params['apiUser'], $params['pass']);
-        $syncStatus = $this->trialSetup->enableSyncForTrial();
-
-        if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
-            $this->sendAjaxResponse(false, $this->_getSuccessHtml());
         } else {
-            $this->sendAjaxResponse(true, $this->_getErrorHtml());
+            //Save api end point
+            if (isset($params['apiEndpoint'])) {
+                $this->trialSetup->saveApiEndPoint($params['apiEndpoint']);
+            } else { //Save empty value to endpoint. New endpoint will be fetched when first api call made.
+                $this->trialSetup->saveApiEndPoint('');
+            }
+
+            $apiConfigStatus = $this->trialSetup->saveApiCreds($params['apiUser'], $params['pass']);
+            $dataFieldsStatus = $this->trialSetup->setupDataFields($params['apiUser'], $params['pass']);
+            $addressBookStatus = $this->trialSetup->createAddressBooks($params['apiUser'], $params['pass']);
+            $syncStatus = $this->trialSetup->enableSyncForTrial();
+
+            if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
+                $this->sendAjaxResponse(false, $this->_getSuccessHtml());
+            } else {
+                $this->sendAjaxResponse(true, $this->_getErrorHtml());
+            }
         }
     }
 
@@ -113,9 +96,12 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             'err' => $error,
             'message' => $msg,
         ];
-        $this->getResponse()->setBody(
-            $this->getRequest()->getParam('callback') . '(' . $this->jsonHelper->jsonEncode($message) . ')'
-        )->sendResponse();
+        $this->getResponse()
+            ->setHeader('Content-type', 'application/javascript', true)
+            ->setBody(
+                $this->getRequest()->getParam('callback') . '(' . $this->jsonHelper->jsonEncode($message) . ')'
+            )
+            ->sendResponse();
     }
 
     /**

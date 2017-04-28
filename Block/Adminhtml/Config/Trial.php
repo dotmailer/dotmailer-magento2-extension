@@ -23,6 +23,9 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
+    const TRIAL_EXTERNAL_URL = 'https://www.dotmailer.com/trial/';
+
     /**
      * Trial constructor.
      *
@@ -62,9 +65,9 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     {
         //@codingStandardsIgnoreEnd
         if (!$this->helper->isFrontEndAdminSecure()) {
-            $html = '<a class="various" href=' .
-                $this->getViewFileUrl('Dotdigitalgroup_Email::images/trialerror.png') .
-                '><img style="margin-bottom:15px;" src=' .
+            $html = '<a href=' .
+                self::TRIAL_EXTERNAL_URL .
+                ' target="_blank"><img style="margin-bottom:15px;" src=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
             $script = "
@@ -82,13 +85,14 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
             require(['jquery', 'domReady'], function($){
                 $('.various').fancybox({
                     width	: 508,
-                    height	: 612,
+                    height	: 670,
                     scrolling   : 'no',
-                    fitToView	: false,
-                    autoSize	: false,
-                    closeClick	: false,
-                    openEffect	: 'none',
-                    closeEffect	: 'none'
+                    hideOnOverlayClick : false,
+                    helpers   : { 
+                        overlay : { 
+                            closeClick: false 
+                        } 
+                    }
                 });
                 
                 $(document).on('click', 'a.fancybox-close', function(){

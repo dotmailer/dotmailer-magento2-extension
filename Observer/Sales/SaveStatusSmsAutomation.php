@@ -82,16 +82,15 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     {
         try {
             $order = $observer->getEvent()->getOrder();
-            $status = $order->getStatus();
-            $storeId = $order->getStoreId();
-            $store = $this->storeManager->getStore($storeId);
-            $storeName = $store->getName();
-            $websiteId = $store->getWebsiteId();
-            $customerEmail = $order->getCustomerEmail();
+            $status         = $order->getStatus();
+            $storeId        = $order->getStoreId();
+            $customerEmail  = $order->getCustomerEmail();
+            $store      = $this->storeManager->getStore($storeId);
+            $storeName  = $store->getName();
+            $websiteId  = $store->getWebsiteId();
             // start app emulation
             $appEmulation = $this->emulationFactory->create();
-            $initialEnvironmentInfo
-                          = $appEmulation->startEnvironmentEmulation($storeId);
+            $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
             $emailOrder = $this->emailOrderFactory->create()
                 ->loadByOrderId($order->getEntityId(), $order->getQuoteId());
             //reimport email order
@@ -99,28 +98,24 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                 ->setCreatedAt($order->getUpdatedAt())
                 ->setStoreId($storeId)
                 ->setOrderStatus($status);
-            if ($emailOrder->getEmailImported()
-                != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED
-            ) {
+
+            if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
                 $emailOrder->setEmailImported(null);
             }
 
-            //if api is not enabled
-            if (!$store->getWebsite()
-                ->getConfig(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED)
-            ) {
+            $isEnabled = $this->helper->isStoreEnabled($storeId);
+
+            //api not enabled, stop emulation and exit
+            if (! $isEnabled) {
                 $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
                 return $this;
             }
 
             // check for order status change
-            $statusBefore
-                = $this->registry->registry('sales_order_status_before');
+            $statusBefore = $this->registry->registry('sales_order_status_before');
             if ($status != $statusBefore) {
                 //If order status has changed and order is already imported then set modified to 1
-                if ($emailOrder->getEmailImported()
-                    == \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED
-                ) {
+                if ($emailOrder->getEmailImported() == \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
                     $emailOrder->setModified(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
                 }
             }
@@ -138,7 +133,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                 )
             );
             //@codingStandardsIgnoreEnd
-            if (!empty($configStatusAutomationMap)) {
+            if (! empty($configStatusAutomationMap)) {
                 foreach ($configStatusAutomationMap as $configMap) {
                     if ($configMap['status'] == $status) {
                         //send to automation queue
@@ -155,8 +150,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                     }
                 }
             }
-            //If customer's first order
-            if ($order->getCustomerId()) {
+            //If customer's first order, also order state is new
+            if ($order->getCustomerId() && $order->getState() == \Magento\Sales\Model\Order::STATE_NEW) {
                 $orders = $this->orderCollectionFactory->create()
                     ->addFieldToFilter('customer_id', $order->getCustomerId());
                 if ($orders->getSize() == 1) {
@@ -164,7 +159,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                         = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
                     $programIdNewOrder = $this->helper->getAutomationIdByType(
                         'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
-                        $order->getWebsiteId()
+                        $order->getStoreId()
                     );
                     if ($programIdNewOrder) {
                         //send to automation queue
@@ -191,18 +186,14 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     }
 
     /**
-     * save enrolment to queue for cron automation enrolment
+     * Save enrolment to queue for cron automation enrolment.
      *
      * @param $data
      */
     protected function doAutomationEnrolment($data)
     {
         //the program is not mapped
-        if (! $data['programId']) {
-            $this->helper->log(
-                'automation type : ' . $data['automationType'] . ' program id not found'
-            );
-        } else {
+        if ($data['programId']) {
             try {
                 $this->automationFactory->create()
                     ->setEmail($data['email'])
@@ -216,6 +207,11 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);
             }
+
+        } else {
+            $this->helper->log(
+                'automation type : ' . $data['automationType'] . ' program id not found'
+            );
         }
     }
 }
