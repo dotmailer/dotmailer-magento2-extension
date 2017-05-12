@@ -49,6 +49,6 @@ class Logviewer extends \Magento\Backend\Block\Widget\Container
      */
     public function getLogFileContent()
     {
-        return nl2br($this->_escaper->escapeHtml($this->file->getLogFileContent()));
+        return $this->file->getLogFileContent();
     }
 }

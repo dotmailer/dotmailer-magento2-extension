@@ -134,7 +134,7 @@
                     style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$item['qty']; ?></td>
                 <td class="product-price"
                     style="padding: 5px; border-bottom: 1px solid #cbd3d4;">
-                    <?php echo $item['total']; ?>
+                    <?php echo $block->escapeHtml($item['total']); ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -143,7 +143,8 @@
             <td class="hidemob" style="border: none;"></td>
             <td class="hidemob" style="border: none;"></td>
             <td class="other-text" style="padding: 5px;">
-                <?php echo 'Total: ' . $item['grandTotal']; ?>
+                <?php $total = 'Total: ' . $item['grandTotal']; ?>
+                <?php echo $block->escapeHtml($total); ?>
             </td>
         </tr>
     </table>

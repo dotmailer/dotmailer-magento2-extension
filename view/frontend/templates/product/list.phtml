@@ -91,8 +91,9 @@ $products = $block->getLoadedProductCollection();
         <div class="product-name" align="center"><b><?php echo $block->escapeHtml(substr($_product->getName(), 0,
                     40)); ?></b></div>
         <div class="product-price" align="center">
-            <?php echo ($block->getLayout()->getBlock('ddg.product.price.render.default')
-                ->render('final_price', $_product, [])); ?>
+            <?php $productPrice = $block->getLayout()->getBlock('ddg.product.price.render.default')
+                ->render('final_price', $_product, []) ?>
+            <?php echo $block->escapeHtml($productPrice); ?>
         </div>
         <div align="center">
             <a class="proudct-url" href="<?php echo $block->escapeHtml($_product->getProductUrl()); ?>">
