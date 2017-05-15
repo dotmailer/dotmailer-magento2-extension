@@ -134,7 +134,7 @@
                     style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$item['qty']; ?></td>
                 <td class="product-price"
                     style="padding: 5px; border-bottom: 1px solid #cbd3d4;">
-                    <?php echo $block->escapeHtml($item['total']); ?>
+                    <?php echo (float) $item['total']; ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -143,8 +143,11 @@
             <td class="hidemob" style="border: none;"></td>
             <td class="hidemob" style="border: none;"></td>
             <td class="other-text" style="padding: 5px;">
-                <?php $total = 'Total: ' . $item['grandTotal']; ?>
-                <?php echo $block->escapeHtml($total); ?>
+                <?php
+                $grandTotal = (float) $item['grandTotal'];
+                    $total = 'Total: ' . $grandTotal;
+                ?>
+                <?php echo $total; ?>
             </td>
         </tr>
     </table>
@@ -152,7 +155,7 @@
 
     if ($block->canShowUrl()) : ?>
         <p style="text-align: center">
-            <a href="<?php echo $block->escapeHtml($block->getUrlForLink()); ?>" class="product-url">
+            <a href="<?php echo $block->escapeUrl($block->getUrlForLink()); ?>" class="product-url">
                 <strong>
                     <?php
                     $link = ($block->takeMeToCartTextForUrl()) ? $block->takeMeToCartTextForUrl() : __('Take Me To My Basket');

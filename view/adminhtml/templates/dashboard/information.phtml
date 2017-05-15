@@ -2,7 +2,7 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @escapeNotVerified */ echo __('PHP Version')?>:
+                <?php /* @noEscape */ echo __('PHP Version')?>:
             </strong>
         </th>
         <td><div class="message-link"><?php echo $block->escapeHtml($this->getPhpVersion()) ?></td></div>
@@ -10,34 +10,34 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @escapeNotVerified */ echo __('PHP max execution time')?>:
+                <?php /* @noEscape */ echo __('PHP max execution time')?>:
             </strong>
         </th>
-        <td><?php /* @escapeNotVerified */ echo $block->getPhpMaxExecutionTime(); ?></td>
+        <td><?php /* @noEscape */ echo $block->getPhpMaxExecutionTime(); ?></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @escapeNotVerified */ echo __('Mode ')?>:
+                <?php /* @noEscape */ echo __('Mode ')?>:
             </strong>
         </th>
-        <td><?php /* @escapeNotVerified */ echo $block->getDeveloperMode()?></td>
+        <td><?php /* @noEscape */ echo $block->getDeveloperMode()?></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @escapeNotVerified */ echo __('Magento Version ')?>:
+                <?php /* @noEscape */ echo __('Magento Version ')?>:
             </strong>
         </th>
-        <td><?php /* @escapeNotVerified */ echo $block->getMagentoVersion()  .  '  ' . $block->getMagentoEdition()?></td>
+        <td><?php /* @noEscape */ echo $block->getMagentoVersion()  .  '  ' . $block->getMagentoEdition()?></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @escapeNotVerified */ echo __('Connector Version ')?>:
+                <?php /* @noEscape */ echo __('Connector Version ')?>:
             </strong>
         </th>
-        <td><?php /* @escapeNotVerified */ echo $block->getConnectorVersion()?></td>
+        <td><?php /* @noEscape */ echo $block->getConnectorVersion()?></td>
     </tr>
 
 </table>
