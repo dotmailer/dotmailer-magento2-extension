@@ -59,4 +59,15 @@ class MassDelete extends ImporterController
 
         return $resultRedirect->setPath('*/*/');
     }
+
+
+    /**
+     * Check the permission to run it.
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::importer');
+    }
 }
