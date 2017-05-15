@@ -28,6 +28,10 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Json\Encoder
      */
     public $jsonEncoder;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    public $escaper;
 
     /**
      * Ajax constructor.
@@ -38,6 +42,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
      * @param \Magento\Framework\Json\Encoder                               $jsonEncoder
      * @param \Magento\Framework\App\Response\Http                          $http
+     * @param \Magento\Framework\Escaper                                    $escaper
      */
     public function __construct(
         Context $context,
@@ -45,12 +50,14 @@ class Ajax extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
         \Magento\Framework\Json\Encoder $jsonEncoder,
-        \Magento\Framework\App\Response\Http $http
+        \Magento\Framework\App\Response\Http $http,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->ruleType = $ruleType;
         $this->ruleCondition = $ruleCondition;
         $this->ruleValue = $ruleValue;
         $this->jsonEncoder = $jsonEncoder;
+        $this->escaper = $escaper;
         parent::__construct($context);
         $this->http = $http;
     }
@@ -72,9 +79,15 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $attribute = $this->getRequest()->getParam('attribute');
-        $conditionName = $this->getRequest()->getParam('condition');
-        $valueName = $this->getRequest()->getParam('value');
+        $attribute = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('attribute')
+        );
+        $conditionName = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('condition')
+        );
+        $valueName = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('value')
+        );
         if ($attribute && $conditionName && $valueName) {
             $type = $this->ruleType->getInputType($attribute);
             $conditionOptions = $this->ruleCondition->getInputTypeOptions($type);

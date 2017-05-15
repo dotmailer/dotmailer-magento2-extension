@@ -34,7 +34,7 @@ class Resetsubscribers extends \Magento\Config\Block\System\Config\Form\Field
     {
         //@codingStandardsIgnoreEnd
 
-        $website = $this->getRequest()->getParam('website', 0);
+        $website = (int) $this->getRequest()->getParam('website', 0);
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/subscribersreset/website'
             . $website);
 

@@ -45,7 +45,9 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
      */
     public function _prepareRequestParams()
     {
-        $this->originalParams = $this->getRequest()->getParam('section');
+        $this->originalParams = $this->_escaper->escapeJs(
+            $this->getRequest()->getParam('section')
+        );
         
         $this->getRequest()->setParam('section', 'connector_developer_settings');
     }

@@ -85,6 +85,12 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        if (! $this->helper->isCodeValid($params)) {
+            $this->helper->log('Best sellers no valid code is set');
+            return [];
+        }
+
         //mode param grid/list
         $mode = $this->getRequest()->getActionName();
         //limit of the products to display

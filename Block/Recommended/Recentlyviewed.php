@@ -69,10 +69,17 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        //check for param code and id
+        if (! isset($params['customer_id']) || ! $this->helper->isCodeValid($params)) {
+            $this->helper->log('Recently viewed no id or valid code is set');
+            return [];
+        }
+
         $productsToDisplay = [];
         $mode = $this->getRequest()->getActionName();
-        $customerId = $this->getRequest()->getParam('customer_id');
-        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $customerId = (int) $params['customer_id'];
+        $limit = (int) $this->recommnededHelper->getDisplayLimitByMode($mode);
         //login customer to receive the recent products
         $session = $this->sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);

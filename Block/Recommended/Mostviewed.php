@@ -83,6 +83,12 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        if (! $this->helper->isCodeValid($params)) {
+            $this->helper->log('Most viewed no valid code is set');
+            return [];
+        }
+
         $productsToDisplay = [];
         $mode = $this->getRequest()->getActionName();
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
@@ -93,7 +99,8 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
             ->setPageSize($limit);
 
         //filter collection by category by category_id
-        if ($catId = $this->getRequest()->getParam('category_id')) {
+        $catId = (int) $this->getRequest()->getParam('category_id');
+        if ($catId) {
             $category = $this->categoryFactory->create()->load($catId);
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
@@ -110,7 +117,10 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         //filter collection by category by category_name
-        if ($catName = $this->getRequest()->getParam('category_name')) {
+        $catName = $this->escapeHtml(
+            $this->getRequest()->getParam('category_name')
+        );
+        if ($catName) {
             $category = $this->categoryFactory->create()
                 ->loadByAttribute('name', $catName);
             if ($category) {

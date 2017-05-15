@@ -1640,4 +1640,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $now = $this->datetime->gmtDate();
         return strtotime($now) - strtotime($created);
     }
+
+    /**
+     * Validate code
+     *
+     * @param array $params
+     * @return bool
+     */
+    public function isCodeValid($params)
+    {
+        if (! isset($params['code'])) {
+            return false;
+        }
+
+        $code = $params['code'];
+        $codeFromConfig = $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
+            $this->getWebsite()
+        );
+        return $codeFromConfig == $code;
+    }
 }

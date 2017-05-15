@@ -33,7 +33,7 @@ class Automapdatafields extends \Magento\Config\Block\System\Config\Form\Field
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
-        $website = $this->getRequest()->getParam('website', 0);
+        $website = (int) $this->getRequest()->getParam('website', 0);
         $params = ['website' => $website];
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/automapdatafields', $params);
 

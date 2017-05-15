@@ -1,8 +1,12 @@
-<?php
-$data = $block->getServiceScoreLogo();
-$vendorUrl = $data['vendorUrl'];
-$fullUrl = $data['fullUrl'];
-?>
-<a href="<?php echo $block->escapeXssInUrl($vendorUrl)?>" target='_blank'>
-    <img alt='Feefo logo' border='0' src="<?php echo $block->escapeXssInUrl($fullUrl)?>" title='See what our customers say about us'>
-</a>
+<?php $data = $block->getServiceScoreLogo(); ?>
+
+<?php if(! empty($data)): ?>
+    <?php
+        $vendorUrl = $data['vendorUrl'];
+        $fullUrl = $data['fullUrl'];
+    ?>
+
+    <a href="<?php echo $block->escapeXssInUrl($vendorUrl)?>" target='_blank'>
+        <img alt='Feefo logo' border='0' src="<?php echo $block->escapeXssInUrl($fullUrl)?>" title='See what our customers say about us'>
+    </a>
+<?php endif; ?>

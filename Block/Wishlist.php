@@ -67,8 +67,10 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function _getWishlist()
     {
-        $customerId = $this->getRequest()->getParam('customer_id');
-        if (!$customerId) {
+        $params = $this->getRequest()->getParams();
+        $customerId = (int) $params['customer_id'];
+        if (! $customerId || ! $this->helper->isCodeValid($params)) {
+            $this->helper->log('Wishlist no id or valid code is set');
             return false;
         }
 

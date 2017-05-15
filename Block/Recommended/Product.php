@@ -67,10 +67,17 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        //check for param code and id
+        if (! isset($params['order_id']) || ! $this->helper->isCodeValid($params)) {
+            $this->helper->log('Order recommendation no id or valid code is set');
+            return [];
+        }
+
         //products to be displayed for recommended pages
         $productsToDisplay = [];
         $productsToDisplayCounter = 0;
-        $orderId = $this->getRequest()->getParam('order_id');
+        $orderId = (int) $this->getRequest()->getParam('order_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
         $orderModel = $this->orderFactory->create()
