@@ -25,11 +25,12 @@ class Update extends Delete
         Contact $contactResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
         $this->contactResource = $contactResource;
 
-        parent::__construct($helper, $fileHelper, $contactFactory);
+        parent::__construct($helper, $serializer, $fileHelper, $contactFactory);
     }
 
     /**
