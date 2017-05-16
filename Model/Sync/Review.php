@@ -279,7 +279,7 @@ class Review
             $write->update(
                 $tableName,
                 ['review_imported' => 1, 'updated_at' => $nowDate],
-                "review_id IN ($ids)"
+                ["review_id IN (?)" => $ids]
             );
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
