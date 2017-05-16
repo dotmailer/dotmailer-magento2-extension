@@ -50,9 +50,8 @@ class Update extends Delete
             $websiteId = $item->getWebsiteId();
             if ($this->helper->isEnabled($websiteId)) {
                 $this->client = $this->helper->getWebsiteApiClient($websiteId);
-                //@codingStandardsIgnoreStart
-                $importData = unserialize($item->getImportData());
-                //@codingStandardsIgnoreEnd
+                $importData = $this->serializer->unserialize($item->getImportData());
+
                 $result = true;
 
                 if ($this->client) {

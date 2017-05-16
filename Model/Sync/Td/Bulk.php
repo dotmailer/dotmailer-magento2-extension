@@ -31,9 +31,7 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
             $websiteId = $item->getWebsiteId();
             if ($this->helper->isEnabled($websiteId)) {
                 $this->client = $this->helper->getWebsiteApiClient($websiteId);
-                //@codingStandardsIgnoreStart
-                $importData = unserialize($item->getImportData());
-                //@codingStandardsIgnoreEnd
+                $importData = $this->serializer->unserialize($item->getImportData());
 
                 if ($this->client) {
                     if (strpos($item->getImportType(), 'Catalog_') !== false) {

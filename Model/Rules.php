@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\Config\Json;
+
 class Rules extends \Magento\Framework\Model\AbstractModel
 {
     const ABANDONED = 1;
@@ -47,27 +49,34 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     public $coreResource;
 
     /**
+     * @var Json
+     */
+    public $serializer;
+
+    /**
      * Rules constructor.
-     *
-     * @param Adminhtml\Source\Rules\Type                                  $rulesType
-     * @param \Magento\Framework\Model\Context                             $context
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Eav\Model\Config                                    $config
-     * @param \Magento\Framework\App\ResourceConnection                    $resourceConnection
+     * @param Adminhtml\Source\Rules\Type $rulesType
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Eav\Model\Config $config
+     * @param Json $serializer
+     * @param \Magento\Framework\App\ResourceConnection $resourceConnection
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
-     * @param array                                                        $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $rulesType,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Eav\Model\Config $config,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->serializer = $serializer;
         $this->coreResource = $resourceConnection;
         $this->config       = $config;
         $this->rulesType    = $rulesType;
@@ -141,7 +150,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         } else {
             $this->setUpdatedAt(time());
         }
-        $this->setCondition(serialize($this->getCondition()));
+        $this->setCondition($this->serializer->serialize($this->getCondition()));
         $this->setWebsiteIds(implode(',', $this->getWebsiteIds()));
 
         return $this;
@@ -155,9 +164,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     public function _afterLoad()
     {
         parent::_afterLoad();
-        //@codingStandardsIgnoreStart
-        $this->setCondition(unserialize($this->getCondition()));
-        //@codingStandardsIgnoreEnd
+
+        $this->setCondition($this->serializer->unserialize($this->getCondition()));
+
         return $this;
     }
 
@@ -230,10 +239,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             return $collection;
         }
 
-        //@codingStandardsIgnoreStart
         //if rule has no conditions then return the collection untouched
-        $condition = unserialize($rule->getCondition());
-        //@codingStandardsIgnoreEnd
+        $condition = $this->serializer->unserialize($rule->getCondition());
+
         if (empty($condition)) {
             return $collection;
         }
