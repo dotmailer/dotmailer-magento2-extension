@@ -16,9 +16,7 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
             $websiteId = $item->getWebsiteId();
             if ($this->helper->isEnabled($websiteId)) {
                 $this->client = $this->helper->getWebsiteApiClient($websiteId);
-                //@codingStandardsIgnoreStart
-                $importData = unserialize($item->getImportData());
-                //@codingStandardsIgnoreEnd
+                $importData = $this->serializer->unserialize($item->getImportData());
 
                 if ($this->client) {
                     $key = $importData[0];
