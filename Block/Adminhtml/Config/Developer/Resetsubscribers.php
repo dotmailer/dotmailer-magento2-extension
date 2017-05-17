@@ -33,10 +33,7 @@ class Resetsubscribers extends \Magento\Config\Block\System\Config\Form\Field
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         //@codingStandardsIgnoreEnd
-
-        $website = (int) $this->getRequest()->getParam('website', 0);
-        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/subscribersreset/website'
-            . $website);
+        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/subscribersreset');
 
         return $this->getLayout()
             ->createBlock('Magento\Backend\Block\Widget\Button')

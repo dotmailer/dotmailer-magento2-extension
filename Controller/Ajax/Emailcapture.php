@@ -39,7 +39,6 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
             $email = $this->getRequest()->getParam('email');
             $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-            //regular expressions from http://regexlib.com.
             // Match formats joe@aol.com | joe@wrox.co.uk | joe@domain.info
             if (! preg_match('/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/', $email)) {
                 return null;
