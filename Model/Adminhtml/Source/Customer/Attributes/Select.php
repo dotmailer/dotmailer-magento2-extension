@@ -14,7 +14,7 @@ class Select
      *
      * @var \Magento\Framework\Escaper
      */
-    protected $_escaper;
+    private $escaper;
 
 
     /**
@@ -63,7 +63,7 @@ class Select
             if ($attribute->getFrontendLabel()) {
                 $code = $attribute->getAttributeCode();
                 //escape the label in case of quotes
-                $label = $this->_escaper->escapeQuote($attribute->getFrontendLabel());
+                $label = $this->escaper->escapeQuote($attribute->getFrontendLabel());
                 if (!in_array($code, $excluded)) {
                     $options[] = [
                         'value' => $attribute->getAttributeCode(),

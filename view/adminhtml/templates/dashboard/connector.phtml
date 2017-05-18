@@ -21,7 +21,7 @@
                 <?php /* @noEscape */ echo __('Dynamic content passcode')?>:
             </strong>
         </th>
-        <td><?php echo $block->escapeHtml($block->getDynamicContentPasscode())?></td>
+        <td><?php /* @noEscape */ echo $block->getDynamicContentPasscode()?></td>
     </tr>
     <tr>
         <th>
