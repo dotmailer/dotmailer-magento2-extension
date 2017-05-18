@@ -98,4 +98,5 @@ class Value extends \Magento\Backend\App\AbstractAction
 
         return $block->toHtml();
     }
+
 }
