@@ -79,7 +79,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     public function getServiceScoreLogo()
     {
         $params = $this->getRequest()->getParams();
-        if (! $this->helper->isCodeValid($params)) {
+        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
             $this->helper->log('Feefo no valid code is set');
             return [];
         }
@@ -107,7 +107,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $products = [];
         $params = $this->_request->getParams();
 
-        if (!isset($params['quote_id']) || !$this->helper->isCodeValid($params)) {
+        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
             $this->helper->log('Feefo no quote id or code is set');
 
             return $products;

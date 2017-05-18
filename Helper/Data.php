@@ -1650,16 +1650,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Validate code
      *
-     * @param array $params
+     * @param $code
      * @return bool
      */
-    public function isCodeValid($params)
+    public function isCodeValid($code)
     {
-        if (! isset($params['code'])) {
-            return false;
-        }
-
-        $code = $params['code'];
         $codeFromConfig = $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
             $this->getWebsite()

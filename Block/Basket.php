@@ -61,7 +61,11 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         $params = $this->getRequest()->getParams();
 
-        if (! isset($params['quote_id']) || ! $this->helper->isCodeValid($params)) {
+        if (! isset($params['quote_id']) ||
+            ! isset($params['code']) ||
+            ! $this->helper->isCodeValid($params['code'])
+        )
+        {
             $this->helper->log('Basket no quote id or valid code is set');
 
             return false;

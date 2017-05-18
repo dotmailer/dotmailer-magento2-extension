@@ -71,7 +71,11 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         $params = $this->getRequest()->getParams();
         //check for param code and id
-        if (! isset($params['customer_id']) || ! $this->helper->isCodeValid($params)) {
+        if (! isset($params['customer_id']) ||
+            ! isset($params['code']) ||
+            ! $this->helper->isCodeValid($params['code'])
+        )
+        {
             $this->helper->log('Recently viewed no id or valid code is set');
             return [];
         }

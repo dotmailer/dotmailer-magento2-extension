@@ -63,7 +63,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getOrder()
     {
         $params = $this->getRequest()->getParams();
-        if(! $this->helper->isCodeValid($params)) {
+        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
             $this->helper->log('Review no valid code is set');
             return false;
         }

@@ -58,7 +58,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getLoadedProductCollection()
     {
         $params = $this->getRequest()->getParams();
-        if (! $this->helper->isCodeValid($params)) {
+        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
             $this->helper->log('Product push no valid code is set');
             return [];
         }
