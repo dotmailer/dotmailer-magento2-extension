@@ -14,15 +14,11 @@
             <module name="Magento_CatalogRule" />
             <module name="Magento_Cron" />
             <module name="Magento_Customer" />
-            <module name="Magento_Sales" />
             <module name="Magento_Eav" />
             <module name="Magento_Catalog" />
             <module name="Magento_CatalogInventory" />
-            <module name="Magento_Newsletter" />
             <module name="Magento_SalesRule" />
             <module name="Magento_Quote" />
-            <module name="Magento_Review" />
-            <module name="Magento_Wishlist" />
             <module name="Magento_Directory" />
             <module name="Magento_Shipping" />
             <module name="Magento_Payment" />
