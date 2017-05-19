@@ -67,9 +67,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      */
     public function _isAllowed()
     {
-        return $this->_authorization->isAllowed(
-            'Dotdigitalgroup_Email::exclusion_rules'
-        );
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }
 
     /**
