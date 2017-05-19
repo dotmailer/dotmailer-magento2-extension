@@ -5,7 +5,7 @@
                 <?php /* @noEscape */ echo __('API valid')?>:
             </strong>
         </th>
-        <td><?php echo /* @noEscape */ $block->getApiValid() ?></td>
+        <td><?php echo $block->escapeHtml($block->getApiValid()) ?></td>
     </tr>
     <tr>
         <th>
@@ -13,7 +13,7 @@
                 <?php /* @noEscape */ echo __('Cron last execution')?>:
             </strong>
         </th>
-        <td><?php echo /* @noEscape */ $block->getCronLastExecution(); ?></td>
+        <td><?php echo $block->escapeHtml($block->getCronLastExecution()); ?></td>
     </tr>
     <tr>
         <th>
@@ -21,7 +21,7 @@
                 <?php /* @noEscape */ echo __('Dynamic content passcode')?>:
             </strong>
         </th>
-        <td><?php /* @noEscape */ echo $block->getDynamicContentPasscode()?></td>
+        <td><?php echo $block->escapeHtml($block->getDynamicContentPasscode()) ?></td>
     </tr>
     <tr>
         <th>
@@ -29,7 +29,7 @@
                 <?php /* @noEscape */ echo __('Abandoned Cart limit time')?>:
             </strong>
         </th>
-        <td><?php /* @noEscape */ echo $block->getAbandonedCartLimit()?></td>
+        <td><?php echo $block->escapeHtml($block->getAbandonedCartLimit()) ?></td>
     </tr>
 </table>
     

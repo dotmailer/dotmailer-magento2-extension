@@ -28,7 +28,7 @@ class Select
         \Magento\Framework\Escaper $escaper
     ) {
         $this->customerFactory = $customerFactory;
-        $this->_escaper = $escaper;
+        $this->escaper = $escaper;
     }
 
     /**

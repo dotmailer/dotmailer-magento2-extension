@@ -29,7 +29,7 @@
                 <?php /* @noEscape */ echo __('Magento Version ')?>:
             </strong>
         </th>
-        <td><?php /* @noEscape */ echo $block->getMagentoVersion()  .  '  ' . $block->getMagentoEdition()?></td>
+        <td><?php echo $block->escapeHtml($block->getMagentoVersion()  .  '  ' . $block->getMagentoEdition())?></td>
     </tr>
     <tr>
         <th>
@@ -37,7 +37,7 @@
                 <?php /* @noEscape */ echo __('Connector Version ')?>:
             </strong>
         </th>
-        <td><?php /* @noEscape */ echo $block->getConnectorVersion()?></td>
+        <td><?php echo $block->escapeHtml($block->getConnectorVersion()) ?></td>
     </tr>
 
 </table>
