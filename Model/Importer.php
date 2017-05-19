@@ -108,25 +108,31 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     public $fileHelper;
 
     /**
+     * @var Config\Json
+     */
+    public $serializer;
+
+    /**
      * Importer constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Helper\Data                           $helper
-     * @param ResourceModel\Contact                                        $contact
-     * @param \Dotdigitalgroup\Email\Helper\File                           $fileHelper
-     * @param \Magento\Framework\Model\Context                             $context
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Framework\App\Filesystem\DirectoryList              $directoryList
-     * @param \Magento\Framework\ObjectManagerInterface                    $objectManager
-     * @param \Magento\Framework\Filesystem\Io\File                        $file
-     * @param \Magento\Framework\Stdlib\DateTime                           $dateTime
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param ResourceModel\Contact $contact
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
+     * @param Config\Json $serializer
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Framework\Filesystem\Io\File $file
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
-     * @param array                                                        $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
@@ -144,7 +150,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $this->contact       = $contact;
         $this->dateTime      = $dateTime;
         $this->fileHelper    = $fileHelper;
-
+        $this->serializer    = $serializer;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -192,7 +198,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     ) {
         try {
             if (!empty($importData)) {
-                $importData = serialize($importData);
+                $importData = $this->serializer->serialize($importData);
             }
 
             if ($file) {

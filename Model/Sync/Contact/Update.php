@@ -25,11 +25,12 @@ class Update extends Delete
         Contact $contactResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
         $this->contactResource = $contactResource;
 
-        parent::__construct($helper, $fileHelper, $contactFactory);
+        parent::__construct($helper, $serializer, $fileHelper, $contactFactory);
     }
 
     /**
@@ -50,9 +51,8 @@ class Update extends Delete
             $websiteId = $item->getWebsiteId();
             if ($this->helper->isEnabled($websiteId)) {
                 $this->client = $this->helper->getWebsiteApiClient($websiteId);
-                //@codingStandardsIgnoreStart
-                $importData = unserialize($item->getImportData());
-                //@codingStandardsIgnoreEnd
+                $importData = $this->serializer->unserialize($item->getImportData());
+
                 $result = true;
 
                 if ($this->client) {
