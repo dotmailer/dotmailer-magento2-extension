@@ -93,7 +93,7 @@ $products = $block->getLoadedProductCollection();
         <div class="product-price" align="center">
             <?php $productPriceHtml = $block->getLayout()->getBlock('ddg.product.price.render.default')
                 ->render('final_price', $_product, []) ?>
-            <?php echo $productPriceHtml; ?>
+            <?php echo /* @noEscape */ $productPriceHtml; ?>
         </div>
         <div align="center">
             <a class="proudct-url" href="<?php echo $block->escapeHtml($_product->getProductUrl()); ?>">
