@@ -8,8 +8,32 @@
     "AFL-3.0"
   ],
   "require": {
-    "php": "~5.5.0|~5.6.0|~7.0.0",
-    "magento/framework": "100.*"
+    "php": "~5.6.0|~7.2.0",
+    "magento/framework":"100.*",
+    "magento/newsletter":"100.*",
+    "magento/review":"100.*",
+    "magento/sales":"100.*",
+    "magento/wishlist":"100.*",
+    "magento/store":"100.*",
+    "magento/config":"100.*",
+    "magento/backend":"100.*",
+    "magento/checkout":"100.*",
+    "magento/ui":"100.*",
+    "magento/catalogRule":"100.*",
+    "magento/cron":"100.*",
+    "magento/customer":"100.*",
+    "magento/eav":"100.*",
+    "magento/catalog":"100.*",
+    "magento/catalogInventory":"100.*",
+    "magento/salesRule":"100.*",
+    "magento/quote":"100.*",
+    "magento/directory":"100.*",
+    "magento/shipping":"100.*",
+    "magento/payment":"100.*",
+    "magento/user":"100.*",
+    "magento/reports":"100.*",
+    "magento/theme":"100.*"
+    
   },
   "authors": [
     {
