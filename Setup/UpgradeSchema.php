@@ -2,15 +2,33 @@
 
 namespace Dotdigitalgroup\Email\Setup;
 
+use Magento\Framework\DB\DataConverter\SerializedToJson;
+use Magento\Framework\DB\FieldDataConverterFactory;
+use Magento\Framework\DB\Select\QueryModifierFactory;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\DB\Query\Generator;
 
 /**
  * @codeCoverageIgnore
  */
 class UpgradeSchema implements UpgradeSchemaInterface
 {
+
+    public $fieldDataConverterFactory;
+    public $queryModifierFactory;
+    public $queryGenerator;
+
+    public function __construct(
+        FieldDataConverterFactory $fieldDataConverterFactory,
+        QueryModifierFactory $queryModifierFactory,
+        Generator $queryGenerator
+    ) {
+        $this->fieldDataConverterFactory = $fieldDataConverterFactory;
+        $this->queryModifierFactory = $queryModifierFactory;
+        $this->queryGenerator = $queryGenerator;
+    }
     /**
      * {@inheritdoc}
      */
@@ -91,6 +109,102 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
         }
+
+        if (version_compare($context->getVersion(), '2.2.1', '<')) {
+            //modify the condition column name for the email_rules table - reserved name for mysql
+            $rulesTable = $setup->getTable('email_rules');
+
+            if ($connection->tableColumnExists($rulesTable, 'condition')) {
+                $connection->changeColumn(
+                    $rulesTable,
+                    'condition',
+                    'conditions',
+                    [
+                        'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BLOB,
+                        'nullable' => false,
+                        'comment' => 'Rule Conditions'
+                    ]
+                );
+            }
+            $this->convertDataForConfig($setup);
+            $this->convertDataForImporter($setup);
+            $this->convertDataForRules($setup);
+        }
+
         $setup->endSetup();
+    }
+
+    /**
+     * @param $setup
+     */
+    private function convertDataForConfig($setup)
+    {
+        //use Magento\Framework\DB\DataConverter\SerializedToJson;
+        $fieldDataConverter = $this->fieldDataConverterFactory->create(SerializedToJson::class);
+        //select the config options to convert json
+        $queryModifier = $this->queryModifierFactory->create(
+            'in',
+            [
+                'values' => [
+                    'path' => [
+                        'connector_automation/order_status_automation/program',
+                        'connector_data_mapping/customer_data/custom_attributes',
+                    ]
+                ]
+            ]
+        );
+        //destination for the value
+        $fieldDataConverter->convert(
+            $setup->getConnection(),
+            $setup->getTable('core_config_data'),
+            'config_id',
+            'value',
+            $queryModifier
+        );
+    }
+
+    /**
+     * @param $setup
+     */
+    private function convertDataForRules($setup)
+    {
+        //use Magento\Framework\DB\DataConverter\SerializedToJson;
+        $fieldDataConverter = $this->fieldDataConverterFactory->create(SerializedToJson::class);
+        //destination for the value
+        $fieldDataConverter->convert(
+            $setup->getConnection(),
+            $setup->getTable('email_rules'),
+            'id',
+            'conditions'
+        );
+    }
+
+    /**
+     * @param $setup
+     */
+    private function convertDataForImporter($setup)
+    {
+        //use Magento\Framework\DB\DataConverter\SerializedToJson;
+        $fieldDataConverter = $this->fieldDataConverterFactory->create(SerializedToJson::class);
+        //select the config options to convert json
+        $queryModifier = $this->queryModifierFactory->create(
+            'in',
+            [
+                'values' => [
+                    'import_type' => [
+                        'Catalog_Default',
+                        'Orders',
+                    ]
+                ]
+            ]
+        );
+        //destination for the value
+        $fieldDataConverter->convert(
+            $setup->getConnection(),
+            $setup->getTable('email_importer'),
+            'id',
+            'import_data',
+            $queryModifier
+        );
     }
 }
