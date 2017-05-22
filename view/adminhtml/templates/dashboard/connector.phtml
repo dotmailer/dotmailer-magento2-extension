@@ -2,23 +2,23 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @noEscape */ echo __('API valid')?>:
+                <?php  echo $block->escapeHtml(__('API valid')) ?>:
             </strong>
         </th>
-        <td><?php echo $block->escapeHtml($block->getApiValid()) ?></td>
+        <td><?php /* @noEscape */ echo $block->getApiValid() ?></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @noEscape */ echo __('Cron last execution')?>:
+                <?php  echo $block->escapeHtml(__('Cron last execution')) ?>:
             </strong>
         </th>
-        <td><?php echo $block->escapeHtml($block->getCronLastExecution()); ?></td>
+        <td><?php /* @noEscape */ echo $block->getCronLastExecution(); ?></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @noEscape */ echo __('Dynamic content passcode')?>:
+                <?php  echo $block->escapeHtml(__('Dynamic content passcode')) ?>:
             </strong>
         </th>
         <td><?php echo $block->escapeHtml($block->getDynamicContentPasscode()) ?></td>
@@ -26,7 +26,7 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php /* @noEscape */ echo __('Abandoned Cart limit time')?>:
+                <?php  echo $block->escapeHtml(__('Abandoned Cart limit time')) ?>:
             </strong>
         </th>
         <td><?php echo $block->escapeHtml($block->getAbandonedCartLimit()) ?></td>
