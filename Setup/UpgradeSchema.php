@@ -8,7 +8,6 @@ use Magento\Framework\DB\Select\QueryModifierFactory;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Magento\Framework\DB\Query\Generator;
 
 /**
  * @codeCoverageIgnore
@@ -16,18 +15,26 @@ use Magento\Framework\DB\Query\Generator;
 class UpgradeSchema implements UpgradeSchemaInterface
 {
 
+    /**
+     * @var FieldDataConverterFactory
+     */
     public $fieldDataConverterFactory;
+    /**
+     * @var QueryModifierFactory
+     */
     public $queryModifierFactory;
-    public $queryGenerator;
 
+    /**
+     * UpgradeSchema constructor.
+     * @param FieldDataConverterFactory $fieldDataConverterFactory
+     * @param QueryModifierFactory $queryModifierFactory
+     */
     public function __construct(
         FieldDataConverterFactory $fieldDataConverterFactory,
-        QueryModifierFactory $queryModifierFactory,
-        Generator $queryGenerator
+        QueryModifierFactory $queryModifierFactory
     ) {
         $this->fieldDataConverterFactory = $fieldDataConverterFactory;
         $this->queryModifierFactory = $queryModifierFactory;
-        $this->queryGenerator = $queryGenerator;
     }
     /**
      * {@inheritdoc}
