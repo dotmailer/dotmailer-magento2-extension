@@ -34,6 +34,6 @@
 <div class="actions actions-create-datafield">
 	<div id="validation_result" class="message-validation hidden"></div>
 	<button class="action-create-datafield" type="button" id="<?php echo $block->getHtmlId() ?>">
-		<span><?php /* @noEscape */ echo __($block->getButtonLabel()) ?></span>
+		<span><?php echo $block->escapeHtml(__($block->getButtonLabel())) ?></span>
 	</button>
 </div>

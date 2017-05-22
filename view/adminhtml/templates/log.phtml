@@ -1,18 +1,18 @@
 <div class="switcher">
-    <label style="font-weight: bold; padding-right: 10px;" for="connector-log-selector"><?php /* @noEscape */ echo __('Select Log File:'); ?></label>
+    <label style="font-weight: bold; padding-right: 10px;" for="connector-log-selector"><?php echo $block->escapeHtml(__('Select Log File:')); ?></label>
     <select id="connector-log-selector" style="width: 20em">
-        <option value="connector"><?php /* @noEscape */ echo __('Marketing Automation Log'); ?></option>
-        <option value="system"><?php /* @noEscape */ echo __('Magento System Log'); ?></option>
-        <option value="exception"><?php /* @noEscape */ echo __('Magento Exception Log'); ?></option>
-        <option value="debug"><?php /* @noEscape */ echo __('Magento Debug Log'); ?></option>
+        <option value="connector"><?php echo $block->escapeHtml(__('Marketing Automation Log')); ?></option>
+        <option value="system"><?php echo $block->escapeHtml(__('Magento System Log')); ?></option>
+        <option value="exception"><?php echo $block->escapeHtml(__('Magento Exception Log')); ?></option>
+        <option value="debug"><?php echo $block->escapeHtml(__('Magento Debug Log')); ?></option>
     </select>
     <button id="connector-log-reloader" style="margin-left: 5px;">
-        <span><?php /* @noEscape */ echo __('Reload'); ?></span>
+        <span><?php echo $block->escapeHtml(__('Reload')); ?></span>
     </button>
 </div>
 <div style="padding-top: 25px;">
     <h3 id="connector-log-header" style="border-bottom: 4px solid #dfdfdf; color: #eb5e00;">
-        <?php /* @noEscape */ echo __('Marketing Automation Log'); ?>
+        <?php echo $block->escapeHtml(__('Marketing Automation Log')); ?>
     </h3>
 </div>
 
