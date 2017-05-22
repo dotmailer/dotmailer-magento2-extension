@@ -13,7 +13,7 @@
                 <?php  echo $block->escapeHtml(__('PHP max execution time')) ?>:
             </strong>
         </th>
-        <td><?php  echo $block->getPhpMaxExecutionTime(); ?></td>
+        <td><?php  echo $block->escapeHtml($block->getPhpMaxExecutionTime()); ?></td>
     </tr>
     <tr>
         <th>
@@ -21,7 +21,7 @@
                 <?php  echo $block->escapeHtml(__('Mode ')) ?>:
             </strong>
         </th>
-        <td><?php  echo $block->getDeveloperMode()?></td>
+        <td><?php  echo $block->escapeHtml($block->getDeveloperMode()) ?></td>
     </tr>
     <tr>
         <th>
