@@ -98,7 +98,7 @@ $priceHelper = $block->priceHelper;
                     if ($urlText = $block->getTextForUrl($_product->getStoreId()))
                         echo $block->escapeHtml($urlText);
                     else
-                        echo __('View Now');
+                        echo $block->escapeHtml(__('View Now'));
                     ?>
                 </a>
             </div>
