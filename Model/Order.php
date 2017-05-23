@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Order extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_ORDER_NOT_IMPORTED = null;

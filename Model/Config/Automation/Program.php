@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Automation;
 
+/**
+ * Class Program
+ * @package Dotdigitalgroup\Email\Model\Config\Automation
+ */
 class Program implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

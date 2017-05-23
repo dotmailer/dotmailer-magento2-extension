@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class HistoricalCatalogDataRefreshTest
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
@@ -25,6 +29,11 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->getRequest()->setParams($params);
     }
 
+    /**
+     * @param $from
+     * @param $to
+     * @param $dispatchUrl
+     */
     public function runReset($from, $to, $dispatchUrl)
     {
         $params = [
@@ -178,6 +187,9 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->assertEquals(1, $collection->getSize());
     }
 
+    /**
+     * @param $data
+     */
     public function createEmailData($data)
     {
         $emailModel = $this->objectManager->create($this->model);

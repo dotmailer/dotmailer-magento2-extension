@@ -6,6 +6,10 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Class Index
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Campaign
+ */
 class Index extends \Magento\Backend\App\Action
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+/**
+ * Class File
+ * @package Dotdigitalgroup\Email\Helper
+ */
 class File
 {
     const FILE_FULL_ACCESS_PERMISSION = '777';

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo;
 
+/**
+ * Class Score
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo
+ */
 class Score extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**

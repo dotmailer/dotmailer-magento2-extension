@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+/**
+ * Class Importer
+ * @package Dotdigitalgroup\Email\Model\ResourceModel
+ */
 class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 
+/**
+ * Class Grid
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist
+ */
 class Grid extends Index
 {
     /**

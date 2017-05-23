@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 
+/**
+ * Class Collection
+ * @package Dotdigitalgroup\Email\Model\ResourceModel\Automation
+ */
 class Collection extends
  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {

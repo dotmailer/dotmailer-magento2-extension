@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Connector;
 
+/**
+ * Class Ajaxvalidation
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Connector
+ */
 class Ajaxvalidation extends \Magento\Backend\App\Action
 {
     /**

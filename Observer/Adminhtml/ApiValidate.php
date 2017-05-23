@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
+/**
+ * Class ApiValidate
+ * @package Dotdigitalgroup\Email\Observer\Adminhtml
+ */
 class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 {
     /**

@@ -59,6 +59,10 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $automation->getSize(), 'duplicate automation for first order');
     }
 
+    /**
+     * @param $order
+     * @return mixed
+     */
     public function createInvoice($order)
     {
         $orderService = \Magento\TestFramework\ObjectManager::getInstance()->create(

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+/**
+ * Class Edc
+ * @package Dotdigitalgroup\Email\Block
+ */
 class Edc extends \Magento\Framework\View\Element\Template
 {
 

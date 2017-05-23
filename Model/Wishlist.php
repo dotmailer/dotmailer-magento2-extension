@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Wishlist
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Wishlist extends \Magento\Framework\Model\AbstractModel
 {
     /**

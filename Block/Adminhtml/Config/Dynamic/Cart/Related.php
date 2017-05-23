@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart;
 
+/**
+ * Class Related
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart
+ */
 class Related extends \Magento\Config\Block\System\Config\Form\Field
 {
 

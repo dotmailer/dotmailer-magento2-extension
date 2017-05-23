@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Rules
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Rules extends \Magento\Framework\Model\AbstractModel
 {
     const ABANDONED = 1;

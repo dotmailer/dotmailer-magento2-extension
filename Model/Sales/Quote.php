@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+/**
+ * Class Quote
+ * @package Dotdigitalgroup\Email\Model\Sales
+ */
 class Quote
 {
     //customer

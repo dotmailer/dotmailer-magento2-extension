@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 
+/**
+ * Class Index
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Studio
+ */
 class Index extends \Magento\Backend\App\AbstractAction
 {
     /**

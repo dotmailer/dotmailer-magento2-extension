@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
+/**
+ * Class Productpush
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic
+ */
 class Productpush extends \Magento\Config\Block\System\Config\Form\Field
 {
 

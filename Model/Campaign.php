@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Campaign
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Campaign extends \Magento\Framework\Model\AbstractModel
 {
     //xml path configuration

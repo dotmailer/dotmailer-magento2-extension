@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist;
 
+/**
+ * Class Content
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist
+ */
 class Content extends \Magento\Config\Block\System\Config\Form\Field
 {
 

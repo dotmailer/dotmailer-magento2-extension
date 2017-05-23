@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Report;
 
+/**
+ * Class Catalog
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Report
+ */
 class Catalog extends \Magento\Config\Block\System\Config\Form\Field
 {
 

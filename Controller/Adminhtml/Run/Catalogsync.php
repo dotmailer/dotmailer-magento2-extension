@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Catalogsync
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Catalogsync extends \Magento\Backend\App\AbstractAction
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Automation;
 
+/**
+ * Class Delay
+ * @package Dotdigitalgroup\Email\Model\Config\Automation
+ */
 class Delay implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

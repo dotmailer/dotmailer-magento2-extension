@@ -2,8 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Controller\Report;
 
+/**
+ * Class Bestsellers
+ * @package Dotdigitalgroup\Email\Controller\Report
+ */
 class Bestsellers extends \Dotdigitalgroup\Email\Controller\Response
 {
+    /**
+     *
+     */
     public function execute()
     {
 

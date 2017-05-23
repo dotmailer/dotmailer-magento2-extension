@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Importer;
 use Dotdigitalgroup\Email\Controller\Adminhtml\Importer as ImporterController;
 use Magento\Framework\Controller\ResultFactory;
 
+/**
+ * Class MassResend
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Importer
+ */
 class MassResend extends ImporterController
 {
     /**

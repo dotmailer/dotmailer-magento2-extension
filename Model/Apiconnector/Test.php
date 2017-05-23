@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Test
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 class Test
 {
     /**

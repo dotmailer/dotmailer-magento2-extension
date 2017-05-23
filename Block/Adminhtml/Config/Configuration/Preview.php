@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration;
 
+/**
+ * Class Preview
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration
+ */
 class Preview extends \Magento\Backend\Block\Template
 {
 

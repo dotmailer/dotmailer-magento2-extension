@@ -2,8 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Observer\Html;
 
+/**
+ * Class BeforeBlockToHtml
+ * @package Dotdigitalgroup\Email\Observer\Html
+ */
 class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
 {
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $grid = $observer->getBlock();

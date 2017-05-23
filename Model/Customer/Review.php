@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+/**
+ * Class Review
+ * @package Dotdigitalgroup\Email\Model\Customer
+ */
 class Review
 {
     /**

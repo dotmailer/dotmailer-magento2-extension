@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Connector;
 
+/**
+ * Class Ajaxlogcontent
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Connector
+ */
 class Ajaxlogcontent extends \Magento\Backend\App\Action
 {
     /**

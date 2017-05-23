@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration;
 
+/**
+ * Class Colorpicker
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration
+ */
 class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
 {
     public $text;

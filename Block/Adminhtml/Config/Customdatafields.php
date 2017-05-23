@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+/**
+ * Class Customdatafields
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config
+ */
 class Customdatafields extends
  \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {

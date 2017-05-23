@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
+/**
+ * Class MassDelete
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist
+ */
 class MassDelete extends \Magento\Backend\App\Action
 {
     /**

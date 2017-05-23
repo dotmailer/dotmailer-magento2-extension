@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Customer\Account;
 
+/**
+ * Class Books
+ * @package Dotdigitalgroup\Email\Block\Customer\Account
+ */
 class Books extends \Magento\Framework\View\Element\Template
 {
     /**

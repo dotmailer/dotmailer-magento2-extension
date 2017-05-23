@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Resetsubscribers
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Resetsubscribers extends \Magento\Config\Block\System\Config\Form\Field
 {
 

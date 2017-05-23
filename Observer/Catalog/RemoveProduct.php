@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
+/**
+ * Class RemoveProduct
+ * @package Dotdigitalgroup\Email\Observer\Catalog
+ */
 class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
 {
     /**

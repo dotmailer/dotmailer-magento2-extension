@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Class Datafield
+ * @package Dotdigitalgroup\Email\Model\Connector
+ */
 class Datafield
 {
     /**

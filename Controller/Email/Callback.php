@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
+/**
+ * Class Callback
+ * @package Dotdigitalgroup\Email\Controller\Email
+ */
 class Callback extends \Magento\Framework\App\Action\Action
 {
     /**

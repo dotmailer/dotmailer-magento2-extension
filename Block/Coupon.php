@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Block;
 
 use Dotdigitalgroup\Email\Helper\Config;
 
+/**
+ * Class Coupon
+ * @package Dotdigitalgroup\Email\Block
+ */
 class Coupon extends \Magento\Framework\View\Element\Template
 {
     /**

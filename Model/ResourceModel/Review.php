@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+/**
+ * Class Review
+ * @package Dotdigitalgroup\Email\Model\ResourceModel
+ */
 class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Developer;
 
+/**
+ * Class Cronexpressionsone
+ * @package Dotdigitalgroup\Email\Model\Config\Developer
+ */
 class Cronexpressionsone implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

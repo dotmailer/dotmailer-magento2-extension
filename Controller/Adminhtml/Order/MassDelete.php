@@ -6,6 +6,10 @@ use Dotdigitalgroup\Email\Controller\Adminhtml\Order as OrderController;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
+/**
+ * Class MassDelete
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Order
+ */
 class MassDelete extends OrderController
 {
     /**

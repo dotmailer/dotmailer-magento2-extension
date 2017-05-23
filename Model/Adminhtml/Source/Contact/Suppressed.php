@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact;
 
+/**
+ * Class Suppressed
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact
+ */
 class Suppressed implements \Magento\Framework\Data\OptionSourceInterface
 {
 

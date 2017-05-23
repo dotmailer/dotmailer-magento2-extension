@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact;
 
+/**
+ * Class Imported
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact
+ */
 class Imported implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

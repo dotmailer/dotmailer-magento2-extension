@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 use Magento\Store\Model\Store;
 
+/**
+ * Class Bestsellers
+ * @package Dotdigitalgroup\Email\Block\Recommended
+ */
 class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**

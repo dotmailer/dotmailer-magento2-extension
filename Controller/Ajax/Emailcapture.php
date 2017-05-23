@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Ajax;
 
+/**
+ * Class Emailcapture
+ * @package Dotdigitalgroup\Email\Controller\Ajax
+ */
 class Emailcapture extends \Magento\Framework\App\Action\Action
 {
     /**

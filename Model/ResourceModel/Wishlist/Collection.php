@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Wishlist;
 
+/**
+ * Class Collection
+ * @package Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
+ */
 class Collection extends
  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {

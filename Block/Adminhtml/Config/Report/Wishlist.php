@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Report;
 
+/**
+ * Class Wishlist
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Report
+ */
 class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
 {
 

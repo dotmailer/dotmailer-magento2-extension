@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Dashboard;
 
 use Magento\Framework\Controller\ResultFactory;
 
+/**
+ * Class MassDelete
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Dashboard
+ */
 class MassDelete extends \Magento\Backend\App\Action
 {
 

@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Model\Trial;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 
+/**
+ * Class TrialSetup
+ * @package Dotdigitalgroup\Email\Model\Trial
+ */
 class TrialSetup
 {
     /**

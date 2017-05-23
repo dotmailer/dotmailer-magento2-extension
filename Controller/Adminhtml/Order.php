@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
 use Magento\Backend\App\Action;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml
+ */
 abstract class Order extends Action
 {
     /**

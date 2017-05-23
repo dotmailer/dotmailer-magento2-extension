@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+/**
+ * Class Guest
+ * @package Dotdigitalgroup\Email\Model\Customer
+ */
 class Guest
 {
     /**

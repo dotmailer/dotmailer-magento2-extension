@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+/**
+ * Class Createaddressbook
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config
+ */
 class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**

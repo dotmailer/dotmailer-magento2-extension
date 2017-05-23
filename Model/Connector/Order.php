@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Model\Connector
+ */
 class Order
 {
     /**

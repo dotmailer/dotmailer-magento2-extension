@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Class CreateUpdateContact
+ * @package Dotdigitalgroup\Email\Observer\Customer
+ */
 class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 {
     /**

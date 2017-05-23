@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+/**
+ * Class SaveStatusSmsAutomation
+ * @package Dotdigitalgroup\Email\Observer\Sales
+ */
 class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterface
 {
     /**

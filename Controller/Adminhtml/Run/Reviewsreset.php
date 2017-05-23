@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Reviewsreset
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Reviewsreset extends \Magento\Backend\App\AbstractAction
 {
     /**

@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Importer;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
+/**
+ * Class Index
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Importer
+ */
 class Index extends \Magento\Backend\App\Action
 {
     /**

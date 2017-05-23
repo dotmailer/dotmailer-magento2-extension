@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 
+/**
+ * Class Collection
+ * @package Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+ */
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     protected $_idFieldName = 'id';

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Wishlistsreset
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Wishlistsreset extends \Magento\Backend\App\AbstractAction
 {
     /**

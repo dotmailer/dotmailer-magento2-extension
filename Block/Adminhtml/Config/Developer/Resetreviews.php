@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Resetreviews
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Resetreviews extends \Magento\Config\Block\System\Config\Form\Field
 {
 

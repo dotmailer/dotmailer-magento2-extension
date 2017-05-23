@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Automation
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Automation extends \Magento\Framework\Model\AbstractModel
 {
     /**

@@ -10,6 +10,10 @@ use Magento\Framework\Data\Form\FormKey\Validator as FromKeyValidator;
 use Magento\Store\Model\Store;
 use Magento\TestFramework\ObjectManager;
 
+/**
+ * Class NewsletterTest
+ * @package Dotdigitalgroup\Email\Controller\Customer
+ */
 class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
 {
     public function testConnectorContactIdNotSetCausesRedirect()

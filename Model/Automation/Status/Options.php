@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Automation\Status;
 
+/**
+ * Class Options
+ * @package Dotdigitalgroup\Email\Model\Automation\Status
+ */
 class Options implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

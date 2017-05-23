@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Model\Sales
+ */
 class Order
 {
     /**

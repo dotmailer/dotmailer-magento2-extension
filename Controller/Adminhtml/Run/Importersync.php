@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Importersync
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Importersync extends \Magento\Backend\App\AbstractAction
 {
     /**

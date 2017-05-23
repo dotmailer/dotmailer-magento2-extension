@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
+/**
+ * Class ReimportProduct
+ * @package Dotdigitalgroup\Email\Observer\Catalog
+ */
 class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
 {
     /**

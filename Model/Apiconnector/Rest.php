@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Rest
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 abstract class Rest
 {
     /**

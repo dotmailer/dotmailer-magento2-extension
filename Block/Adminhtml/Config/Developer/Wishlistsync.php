@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Wishlistsync
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Wishlistsync extends \Magento\Config\Block\System\Config\Form\Field
 {
 

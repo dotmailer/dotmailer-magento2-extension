@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Helper;
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 
+/**
+ * Class Data
+ * @package Dotdigitalgroup\Email\Helper
+ */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 

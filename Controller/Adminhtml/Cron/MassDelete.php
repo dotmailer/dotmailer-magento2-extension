@@ -6,6 +6,10 @@ use Dotdigitalgroup\Email\Controller\Adminhtml\Importer as ImporterController;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
+/**
+ * Class MassDelete
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Cron
+ */
 class MassDelete extends \Magento\Backend\App\Action
 {
     /**

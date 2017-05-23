@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Class Mostviewed
+ * @package Dotdigitalgroup\Email\Block\Recommended
+ */
 class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**

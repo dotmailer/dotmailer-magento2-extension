@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
+/**
+ * Class Catalogvisibility
+ * @package Dotdigitalgroup\Email\Model\Config\Configuration
+ */
 class Catalogvisibility implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
+/**
+ * Class Abandoned
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic
+ */
 class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
 {
 

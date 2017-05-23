@@ -7,6 +7,10 @@ use XSLTProcessor;
 
 const FEEFO_URL = 'http://www.feefo.com/feefo/xmlfeed.jsp?';
 
+/**
+ * Class Feefo
+ * @package Dotdigitalgroup\Email\Block
+ */
 class Feefo extends \Magento\Framework\View\Element\Template
 {
 

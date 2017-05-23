@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
+/**
+ * Class Basket
+ * @package Dotdigitalgroup\Email\Controller\Email
+ */
 class Basket extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**

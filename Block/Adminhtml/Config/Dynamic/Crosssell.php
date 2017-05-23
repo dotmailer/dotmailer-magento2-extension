@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
+/**
+ * Class Crosssell
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic
+ */
 class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 {
 

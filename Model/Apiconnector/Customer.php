@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Customer
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 class Customer
 {
     /**
@@ -628,6 +632,11 @@ class Customer
         return '';
     }
 
+    /**
+     * @param $street
+     * @param $line
+     * @return string
+     */
     public function _getStreet($street, $line)
     {
         $street = explode("\n", $street);
@@ -638,6 +647,9 @@ class Customer
         return '';
     }
 
+    /**
+     * @return string
+     */
     public function _getWebsiteName()
     {
         $websiteId = $this->customer->getWebsiteId();
@@ -649,6 +661,9 @@ class Customer
         return '';
     }
 
+    /**
+     * @return string
+     */
     public function _getStoreName()
     {
         $storeId = $this->customer->getStoreId();
@@ -681,6 +696,9 @@ class Customer
         return $this->mappingHash;
     }
 
+    /**
+     * @return string
+     */
     public function _getCustomerGroup()
     {
         $groupId = $this->customer->getGroupId();
@@ -707,6 +725,10 @@ class Customer
         return $this;
     }
 
+    /**
+     * @param $string
+     * @return int
+     */
     public function cleanString($string)
     {
         $cleanedString = preg_replace('/[^0-9]/', '', $string);
@@ -903,6 +925,10 @@ class Customer
         return $this->_getBrandValue($id);
     }
 
+    /**
+     * @param $id
+     * @return string
+     */
     public function _getBrandValue($id)
     {
         //attribute mapped from the config

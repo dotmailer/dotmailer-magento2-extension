@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Report;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Report
+ */
 class Order extends \Magento\Config\Block\System\Config\Form\Field
 {
 

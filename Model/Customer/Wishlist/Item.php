@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer\Wishlist;
 
+/**
+ * Class Item
+ * @package Dotdigitalgroup\Email\Model\Customer\Wishlist
+ */
 class Item
 {
     /**

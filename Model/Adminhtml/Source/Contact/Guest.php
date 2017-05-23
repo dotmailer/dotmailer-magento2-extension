@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact;
 
+/**
+ * Class Guest
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact
+ */
 class Guest implements \Magento\Framework\Data\OptionSourceInterface
 {
 

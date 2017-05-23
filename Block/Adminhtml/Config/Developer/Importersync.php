@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Importersync
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Importersync extends \Magento\Config\Block\System\Config\Form\Field
 {
 

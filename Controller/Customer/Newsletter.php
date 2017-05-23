@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Customer;
 
+/**
+ * Class Newsletter
+ * @package Dotdigitalgroup\Email\Controller\Customer
+ */
 class Newsletter extends \Magento\Framework\App\Action\Action
 {
     /**

@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 
+/**
+ * Class Studio
+ * @package Dotdigitalgroup\Email\Block\Adminhtml
+ */
 class Studio extends \Magento\Backend\Block\Widget\Form
 {
 

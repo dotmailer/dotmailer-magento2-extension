@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Contact
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Contact extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_CONTACT_IMPORTED = 1;

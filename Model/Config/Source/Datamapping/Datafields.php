@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 
+/**
+ * Class Datafields
+ * @package Dotdigitalgroup\Email\Model\Config\Source\Datamapping
+ */
 class Datafields implements \Magento\Framework\Option\ArrayInterface
 {
     /**

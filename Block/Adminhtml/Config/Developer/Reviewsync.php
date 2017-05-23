@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Reviewsync
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Reviewsync extends \Magento\Config\Block\System\Config\Form\Field
 {
 

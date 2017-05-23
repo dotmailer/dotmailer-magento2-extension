@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Contact
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 class Contact
 {
     /**
@@ -773,6 +777,9 @@ class Contact
         return $customerCollection;
     }
 
+    /**
+     * @return bool
+     */
     private function isRowIdExistsInCatalogProductEntityId()
     {
 

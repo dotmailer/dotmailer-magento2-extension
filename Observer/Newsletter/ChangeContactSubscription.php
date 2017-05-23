@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
+/**
+ * Class ChangeContactSubscription
+ * @package Dotdigitalgroup\Email\Observer\Newsletter
+ */
 class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInterface
 {
     /**

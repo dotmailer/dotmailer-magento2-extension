@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Catalog
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Catalog extends \Magento\Framework\Model\AbstractModel
 {
     /**

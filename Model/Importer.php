@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Importer
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Importer extends \Magento\Framework\Model\AbstractModel
 {
     const NOT_IMPORTED = 0;

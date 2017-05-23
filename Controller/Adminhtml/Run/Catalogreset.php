@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Catalogreset
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Catalogreset extends \Magento\Backend\App\AbstractAction
 {
     /**

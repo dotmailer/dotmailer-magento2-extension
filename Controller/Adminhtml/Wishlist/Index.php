@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 
+/**
+ * Class Index
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist
+ */
 class Index extends \Magento\Backend\App\Action
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Class RegisterWishlist
+ * @package Dotdigitalgroup\Email\Observer\Customer
+ */
 class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
 {
     /**

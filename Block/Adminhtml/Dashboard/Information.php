@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Dashboard;
 
+/**
+ * Class Information
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Dashboard
+ */
 class Information extends \Magento\Backend\Block\Widget\Grid\Extended
 {
 

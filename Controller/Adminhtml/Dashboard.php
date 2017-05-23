@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
+/**
+ * Class Dashboard
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml
+ */
 class Dashboard extends \Magento\Backend\App\Action
 {
     /**

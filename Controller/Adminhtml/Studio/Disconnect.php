@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 
+/**
+ * Class Disconnect
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Studio
+ */
 class Disconnect extends \Magento\Backend\App\AbstractAction
 {
     /**

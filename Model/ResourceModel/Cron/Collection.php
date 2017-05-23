@@ -3,6 +3,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Cron;
 
+/**
+ * Class Collection
+ * @package Dotdigitalgroup\Email\Model\ResourceModel\Cron
+ */
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     protected $_idFieldName = 'schedule_id';

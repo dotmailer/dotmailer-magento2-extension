@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
+/**
+ * Class Automation
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml
+ */
 abstract class Automation extends \Magento\Backend\App\Action
 {
     /**

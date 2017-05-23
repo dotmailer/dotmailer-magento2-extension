@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Ordersync
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Ordersync extends \Magento\Backend\App\AbstractAction
 {
     /**

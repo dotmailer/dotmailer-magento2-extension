@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
+/**
+ * Class Type
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules
+ */
 class Type
 {
     /**

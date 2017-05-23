@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Wishlistsync
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Wishlistsync extends \Magento\Backend\App\AbstractAction
 {
     /**

@@ -161,6 +161,10 @@ class RunTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @param $time
+     * @return Quote
+     */
     protected function createQuoteForCustomer($time)
     {
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
@@ -259,7 +263,10 @@ class RunTest extends \PHPUnit_Framework_TestCase
         return $quote;
     }
 
-    private function assertCollectionContains( $expected)
+    /**
+     * @param $expected
+     */
+    private function assertCollectionContains($expected)
     {
         $message = sprintf('The quote with ID "%s" is not contained in the quote collection', $expected->getId());
         $this->assertContains($expected->getId(), $this->quoteCollection->getAllIds(), $message);

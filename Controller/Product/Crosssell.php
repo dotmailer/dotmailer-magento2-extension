@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Product;
 
+/**
+ * Class Crosssell
+ * @package Dotdigitalgroup\Email\Controller\Product
+ */
 class Crosssell extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**

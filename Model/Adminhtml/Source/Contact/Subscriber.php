@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact;
 
+/**
+ * Class Subscriber
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact
+ */
 class Subscriber implements \Magento\Framework\Data\OptionSourceInterface
 {
 

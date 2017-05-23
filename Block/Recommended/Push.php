@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Class Push
+ * @package Dotdigitalgroup\Email\Block\Recommended
+ */
 class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**

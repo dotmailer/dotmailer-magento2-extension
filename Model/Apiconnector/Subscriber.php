@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Subscriber
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 class Subscriber
 {
     /**
@@ -59,6 +63,10 @@ class Subscriber
         $this->subscriberData[] = $data;
     }
 
+    /**
+     * @param $subscriber
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function setSubscriberData($subscriber)
     {
         $this->subscriber = $subscriber;
@@ -359,6 +367,10 @@ class Subscriber
         return $this->_getBrandValue($id);
     }
 
+    /**
+     * @param $id
+     * @return string
+     */
     public function _getBrandValue($id)
     {
         //attribute mapped from the config

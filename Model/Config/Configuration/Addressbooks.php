@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
+/**
+ * Class Addressbooks
+ * @package Dotdigitalgroup\Email\Model\Config\Configuration
+ */
 class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

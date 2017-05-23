@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+/**
+ * Class Basket
+ * @package Dotdigitalgroup\Email\Block
+ */
 class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 

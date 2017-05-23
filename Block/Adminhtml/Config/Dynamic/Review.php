@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
+/**
+ * Class Review
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic
+ */
 class Review extends \Magento\Config\Block\System\Config\Form\Field
 {
 

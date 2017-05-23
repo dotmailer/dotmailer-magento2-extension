@@ -8,6 +8,10 @@ use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 
 
+/**
+ * Class Actions
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Rules\Listing
+ */
 class Actions extends Column
 {
     /**

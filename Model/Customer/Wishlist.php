@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+/**
+ * Class Wishlist
+ * @package Dotdigitalgroup\Email\Model\Customer
+ */
 class Wishlist
 {
     /**
@@ -173,6 +177,9 @@ class Wishlist
         return $properties;
     }
 
+    /**
+     * @return array
+     */
     public function getData()
     {
         return get_object_vars($this);

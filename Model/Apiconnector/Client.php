@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Client
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 {
     const APICONNECTOR_VERSION = 'V2';
@@ -105,11 +109,18 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             self::API_ERROR_ADDRESSBOOK_NOT_FOUND,
         ];
 
+    /**
+     * @param $apiEndpoint
+     */
     public function setApiEndpoint($apiEndpoint)
     {
         $this->apiEndpoint = $apiEndpoint;
     }
 
+    /**
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getApiEndpoint()
     {
         if (!isset($this->apiEndpoint)) {

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Resetcustomers
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Resetcustomers extends \Magento\Config\Block\System\Config\Form\Field
 {
 

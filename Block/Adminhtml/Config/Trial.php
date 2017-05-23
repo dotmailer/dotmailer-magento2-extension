@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+/**
+ * Class Trial
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config
+ */
 class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
     /**

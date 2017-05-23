@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit;
 
+/**
+ * Class Tabs
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit
+ */
 class Tabs extends \Magento\Backend\Block\Widget\Tabs
 {
     /**

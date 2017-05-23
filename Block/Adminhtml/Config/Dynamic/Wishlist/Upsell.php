@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist;
 
+/**
+ * Class Upsell
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist
+ */
 class Upsell extends \Magento\Config\Block\System\Config\Form\Field
 {
 

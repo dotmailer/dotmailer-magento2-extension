@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional;
 
+/**
+ * Class Port
+ * @package Dotdigitalgroup\Email\Model\Config\Source\Transactional
+ */
 class Port implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

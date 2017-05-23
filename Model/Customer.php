@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Customer
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Customer extends \Magento\Customer\Model\AccountManagement
 {
 

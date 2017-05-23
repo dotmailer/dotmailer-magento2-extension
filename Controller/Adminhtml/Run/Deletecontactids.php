@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Deletecontactids
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Deletecontactids extends \Magento\Backend\App\AbstractAction
 {
     /**

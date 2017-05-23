@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 
+/**
+ * Class Collection
+ * @package Dotdigitalgroup\Email\Model\ResourceModel\Contact
+ */
 class Collection extends
  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {

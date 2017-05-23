@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo;
 
+/**
+ * Class Reviews
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo
+ */
 class Reviews extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**

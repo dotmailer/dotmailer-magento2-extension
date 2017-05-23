@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
+/**
+ * Class Campaigns
+ * @package Dotdigitalgroup\Email\Model\Config\Source\Carts
+ */
 class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
