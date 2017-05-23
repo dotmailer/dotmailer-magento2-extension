@@ -1123,7 +1123,7 @@ class InstallSchema implements InstallSchemaInterface
                     'is_subscriber' => new \Zend_Db_Expr('1'),
                     'subscriber_status' => new \Zend_Db_Expr('1')
                 ),
-                "customer_id in ($customerIds)"
+                ["customer_id in (?)" => $customerIds]
             );
         }
 
