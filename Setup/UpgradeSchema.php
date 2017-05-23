@@ -2,9 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Setup;
 
-use Magento\Framework\DB\DataConverter\SerializedToJson;
-use Magento\Framework\DB\FieldDataConverterFactory;
-use Magento\Framework\DB\Select\QueryModifierFactory;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
@@ -16,25 +13,18 @@ class UpgradeSchema implements UpgradeSchemaInterface
 {
 
     /**
-     * @var FieldDataConverterFactory
+     * @var \Dotdigitalgroup\Email\Model\Config\Json
      */
-    public $fieldDataConverterFactory;
-    /**
-     * @var QueryModifierFactory
-     */
-    public $queryModifierFactory;
+    public $json;
 
     /**
      * UpgradeSchema constructor.
-     * @param FieldDataConverterFactory $fieldDataConverterFactory
-     * @param QueryModifierFactory $queryModifierFactory
+     * @param \Dotdigitalgroup\Email\Model\Config\Json $json
      */
     public function __construct(
-        FieldDataConverterFactory $fieldDataConverterFactory,
-        QueryModifierFactory $queryModifierFactory
+        \Dotdigitalgroup\Email\Model\Config\Json $json
     ) {
-        $this->fieldDataConverterFactory = $fieldDataConverterFactory;
-        $this->queryModifierFactory = $queryModifierFactory;
+        $this->json = $json;
     }
     /**
      * {@inheritdoc}
@@ -117,6 +107,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
         }
 
+        //replace serialize with json_encode
         if (version_compare($context->getVersion(), '2.2.1', '<')) {
             //modify the condition column name for the email_rules table - reserved name for mysql
             $rulesTable = $setup->getTable('email_rules');
@@ -133,9 +124,18 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     ]
                 );
             }
-            $this->convertDataForConfig($setup);
-            $this->convertDataForImporter($setup);
-            $this->convertDataForRules($setup);
+            /**
+             * Core config data.
+             */
+            $this->convertDataForConfig($setup, $connection);
+            /**
+             * Importer data.
+             */
+            $this->convertDataForImporter($setup, $connection);
+            /**
+             * Rules conditions.
+             */
+            $this->convertDataForRules($setup, $connection);
         }
 
         $setup->endSetup();
@@ -144,74 +144,87 @@ class UpgradeSchema implements UpgradeSchemaInterface
     /**
      * @param $setup
      */
-    private function convertDataForConfig($setup)
+    private function convertDataForConfig(SchemaSetupInterface $setup, $connection)
     {
-        //use Magento\Framework\DB\DataConverter\SerializedToJson;
-        $fieldDataConverter = $this->fieldDataConverterFactory->create(SerializedToJson::class);
-        //select the config options to convert json
-        $queryModifier = $this->queryModifierFactory->create(
-            'in',
-            [
-                'values' => [
-                    'path' => [
-                        'connector_automation/order_status_automation/program',
-                        'connector_data_mapping/customer_data/custom_attributes',
-                    ]
-                ]
-            ]
+        $configTable = $setup->getTable('core_config_data');
+        //customer and order custom attributes from config
+        $select = $connection->select()->from(
+            $configTable
+        )->where(
+            'path IN (?)',
+            ['connector_automation/order_status_automation/program', 'connector_data_mapping/customer_data/custom_attributes']
         );
-        //destination for the value
-        $fieldDataConverter->convert(
-            $setup->getConnection(),
-            $setup->getTable('core_config_data'),
-            'config_id',
-            'value',
-            $queryModifier
-        );
+        $rows = $setup->getConnection()->fetchAssoc($select);
+
+        $serializedRows = array_filter($rows, function ($row) {
+            return $this->isSerialized($row['value']);
+        });
+
+        foreach ($serializedRows as $id => $serializedRow) {
+            $convertedValue = $this->json->serialize(unserialize($serializedRow['value']));
+            $bind = ['value' => $convertedValue];
+            $where = [$connection->quoteIdentifier('config_id') . '=?' => $id];
+            $connection->update($configTable, $bind, $where);
+        }
     }
 
     /**
      * @param $setup
      */
-    private function convertDataForRules($setup)
+    private function convertDataForRules(SchemaSetupInterface $setup, $connection)
     {
-        //use Magento\Framework\DB\DataConverter\SerializedToJson;
-        $fieldDataConverter = $this->fieldDataConverterFactory->create(SerializedToJson::class);
-        //destination for the value
-        $fieldDataConverter->convert(
-            $setup->getConnection(),
-            $setup->getTable('email_rules'),
-            'id',
-            'conditions'
-        );
+        $rulesTable = $setup->getTable('email_rules');
+        //rules data
+        $select = $connection->select()->from($rulesTable);
+        $rows = $setup->getConnection()->fetchAssoc($select);
+
+        $serializedRows = array_filter($rows, function ($row) {
+            return $this->isSerialized($row['conditions']);
+        });
+
+        foreach ($serializedRows as $id => $serializedRow) {
+            $convertedValue = $this->json->serialize(unserialize($serializedRow['conditions']));
+            $bind = ['conditions' => $convertedValue];
+            $where = [$connection->quoteIdentifier('id') . '=?' => $id];
+            $connection->update($rulesTable, $bind, $where);
+        }
     }
 
     /**
      * @param $setup
      */
-    private function convertDataForImporter($setup)
+    private function convertDataForImporter(SchemaSetupInterface $setup, $connection)
     {
-        //use Magento\Framework\DB\DataConverter\SerializedToJson;
-        $fieldDataConverter = $this->fieldDataConverterFactory->create(SerializedToJson::class);
-        //select the config options to convert json
-        $queryModifier = $this->queryModifierFactory->create(
-            'in',
-            [
-                'values' => [
-                    'import_type' => [
-                        'Catalog_Default',
-                        'Orders',
-                    ]
-                ]
-            ]
-        );
-        //destination for the value
-        $fieldDataConverter->convert(
-            $setup->getConnection(),
-            $setup->getTable('email_importer'),
-            'id',
-            'import_data',
-            $queryModifier
-        );
+        $importerTable = $setup->getTable('email_importer');
+        //imports that are not imported and has TD data
+        $select = $connection->select()
+            ->from($importerTable)
+            ->where('import_status =?', 0)
+            ->where('import_type IN (?)', ['Catalog_Default', 'Orders' ])
+        ;
+        $rows = $setup->getConnection()->fetchAssoc($select);
+
+        $serializedRows = array_filter($rows, function ($row) {
+            return $this->isSerialized($row['import_data']);
+        });
+
+        foreach ($serializedRows as $id => $serializedRow) {
+            $convertedValue = $this->json->serialize(unserialize($serializedRow['import_data']));
+            $bind = ['import_data' => $convertedValue];
+            $where = [$connection->quoteIdentifier('id') . '=?' => $id];
+            $connection->update($importerTable, $bind, $where);
+        }
     }
+
+    /**
+     * Check if value is a serialized string
+     *
+     * @param string $value
+     * @return boolean
+     */
+    private function isSerialized($value)
+    {
+        return (boolean) preg_match('/^((s|i|d|b|a|O|C):|N;)/', $value);
+    }
+
 }
