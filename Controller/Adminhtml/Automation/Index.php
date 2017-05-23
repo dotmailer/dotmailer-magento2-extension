@@ -10,7 +10,7 @@ class Index extends \Magento\Backend\App\AbstractAction
     /**
      * @var PageFactory
      */
-    public $resultPageFactory;
+    private $resultPageFactory;
 
     /**
      * Index constructor.

@@ -7,51 +7,51 @@ abstract class Rest
     /**
      * @var null
      */
-    public $url;
+    private $url;
     /**
      * @var string
      */
-    public $verb;
+    private $verb;
     /**
      * @var null
      */
-    public $requestBody;
+    private $requestBody;
     /**
      * @var int
      */
-    public $requestLength;
+    private $requestLength;
     /**
      * @var string
      */
-    public $apiUsername;
+    private $apiUsername;
     /**
      * @var string
      */
-    public $apiPassword;
+    private $apiPassword;
     /**
      * @var string
      */
-    public $acceptType;
+    private $acceptType;
     /**
      * @var null
      */
-    public $responseBody;
+    private $responseBody;
     /**
      * @var null
      */
-    public $responseInfo;
+    private $responseInfo;
     /**
      * @var
      */
-    public $curlError;
+    private $curlError;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var bool
      */
-    public $isNotJson = false;
+    private $isNotJson = false;
 
     /**
      * Rest constructor.
@@ -84,7 +84,7 @@ abstract class Rest
      *
      * @return string
      */
-    public function prettyPrint($json)
+    private function prettyPrint($json)
     {
         $result = '';
         $level = 0;
@@ -268,7 +268,7 @@ abstract class Rest
      *
      * @param $ch
      */
-    public function executeGet($ch)
+    private function executeGet($ch)
     {
         $this->doExecute($ch);
     }
@@ -278,7 +278,7 @@ abstract class Rest
      *
      * @param $ch
      */
-    public function executePost($ch)
+    private function executePost($ch)
     {
         if (!is_string($this->requestBody)) {
             $this->buildPostBody();
@@ -309,7 +309,7 @@ abstract class Rest
      *
      * @param $ch
      */
-    public function executePut($ch)
+    private function executePut($ch)
     {
         if (!is_string($this->requestBody)) {
             $this->buildPostBody();
@@ -336,7 +336,7 @@ abstract class Rest
      *
      * @param $ch
      */
-    public function executeDelete($ch)
+    private function executeDelete($ch)
     {
         //@codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
@@ -349,7 +349,7 @@ abstract class Rest
      *
      * @param $ch
      */
-    public function doExecute(&$ch)
+    private function doExecute(&$ch)
     {
         //@codingStandardsIgnoreStart
         $this->setCurlOpts($ch);
@@ -377,7 +377,7 @@ abstract class Rest
      *
      * @param $ch
      */
-    public function setCurlOpts(&$ch)
+    private function setCurlOpts(&$ch)
     {
         //@codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
@@ -399,7 +399,7 @@ abstract class Rest
      *
      * @param $ch
      */
-    public function setAuth(&$ch)
+    private function setAuth(&$ch)
     {
         //@codingStandardsIgnoreStart
         if ($this->apiUsername !== null && $this->apiPassword !== null) {
@@ -493,7 +493,7 @@ abstract class Rest
     /**
      * Get response info.
      */
-    public function getResponseInfo()
+    private function getResponseInfo()
     {
         return $this->responseInfo;
     }

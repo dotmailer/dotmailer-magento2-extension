@@ -7,16 +7,16 @@ class Transport extends \Zend_Mail_Transport_Smtp implements \Magento\Framework\
     /**
      * @var \Magento\Framework\Mail\MessageInterface
      */
-    public $message;
+    private $message;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Transactional
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Zend_Mail_Transport_Sendmail
      */
-    public $sendMail;
+    private $sendMail;
 
     /**
      * Transport constructor.

@@ -266,12 +266,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';
 
-    public $storeManager;
+    private $storeManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * Config constructor.
@@ -317,7 +317,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function isAuthorizeCustomDomain($website = 0)
+    private function isAuthorizeCustomDomain($website = 0)
     {
         $website = $this->storeManager->getWebsite($website);
         $customDomain = $website->getConfig(
@@ -334,7 +334,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getRegionAuthorize($website)
+    private function getRegionAuthorize($website)
     {
         $website = $this->storeManager->getWebsite($website);
 

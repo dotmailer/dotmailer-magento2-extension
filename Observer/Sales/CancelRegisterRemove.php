@@ -7,15 +7,15 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * CancelRegisterRemove constructor.

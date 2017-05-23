@@ -7,7 +7,7 @@ class Orderstatus implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Magento\Sales\Model\Config\Source\Order\Status
      */
-    public $status;
+    private $status;
 
     /**
      * Orderstatus constructor.

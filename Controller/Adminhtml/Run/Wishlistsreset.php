@@ -7,16 +7,16 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    protected $messageManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
-    public $wishlistFactory;
+    private $wishlistFactory;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * Wishlistsreset constructor.
@@ -70,7 +70,7 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
     /**
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }

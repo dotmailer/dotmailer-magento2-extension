@@ -7,23 +7,23 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
-    public $wishlistFactory;
+    private $wishlistFactory;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    public $customerFactory;
+    private $customerFactory;
     /**
      * @var
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * RemoveWishlist constructor.

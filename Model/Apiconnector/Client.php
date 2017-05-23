@@ -47,29 +47,29 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    public $fileHelper;
+    private $fileHelper;
     /**
      * @var
      */
-    public $filename;
+    private $filename;
 
     /**
      * @var int
      */
-    public $limit = 10;
+    private $limit = 10;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var
      */
-    public $client;
+    private $client;
     /**
      * @var
      */
-    public $apiEndpoint;
+    private $apiEndpoint;
 
     /**
      * Client constructor.

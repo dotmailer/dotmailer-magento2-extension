@@ -11,17 +11,17 @@ class MassDelete extends OrderController
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
-    public $collectionFactory;
+    private $collectionFactory;
 
     /**
      * @var object
      */
-    public $messageManager;
+    protected $messageManager;
 
     /**
      * @var Filter
      */
-    public $filter;
+    private $filter;
 
     /**
      * MassDelete constructor.

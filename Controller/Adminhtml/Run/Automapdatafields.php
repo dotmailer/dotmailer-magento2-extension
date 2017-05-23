@@ -7,15 +7,15 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    protected $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $data;
+    private $data;
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
      */
-    public $datafield;
+    private $datafield;
 
     /**
      * Automapdatafields constructor.
@@ -99,7 +99,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     /**
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }

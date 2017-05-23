@@ -7,27 +7,27 @@ class Guest
     /**
      * @var int
      */
-    public $countGuests = 0;
+    private $countGuests = 0;
     /**
      * @var
      */
-    public $start;
+    private $start;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    public $file;
+    private $file;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * Guest constructor.

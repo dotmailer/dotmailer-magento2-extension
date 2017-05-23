@@ -7,11 +7,11 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
 
     /**
      * Campaigns constructor.

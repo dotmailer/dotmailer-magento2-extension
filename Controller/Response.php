@@ -7,7 +7,7 @@ class Response extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * Response constructor.

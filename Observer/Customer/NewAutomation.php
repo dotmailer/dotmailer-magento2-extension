@@ -7,7 +7,7 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Model\Automation
      */
-    public $automation;
+    private $automation;
 
     /**
      * NewAutomation constructor.

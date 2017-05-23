@@ -7,68 +7,68 @@ class Contact
     /**
      * @var
      */
-    public $start;
+    private $start;
     /**
      * @var int
      */
-    public $countCustomers = 0;
+    private $countCustomers = 0;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    private $messageManager;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    public $scopeConfig;
+    private $scopeConfig;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var
      */
-    public $contactCollection;
+    private $contactCollection;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    public $resource;
-    /**
-     * @var76
-     */
-    public $subscriberFactory;
+    private $resource;
     /**
      * @var
      */
-    public $customerCollection;
+    private $subscriberFactory;
+    /**
+     * @var
+     */
+    private $customerCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Customer
      */
-    public $emailCustomer;
+    private $emailCustomer;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    public $file;
+    private $file;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
-    public $config;
+    private $config;
 
     /**
      * Contact constructor.
@@ -236,7 +236,7 @@ class Contact
          */
 
         //customer collection
-        $customerCollection = $this->_getCustomerCollection(
+        $customerCollection = $this->getCustomerCollection(
             $customerIds,
             $website->getId()
         );
@@ -379,7 +379,7 @@ class Contact
         /*
          * END HEADERS.
          */
-        $customerCollection = $this->_getCustomerCollection(
+        $customerCollection = $this->getCustomerCollection(
             [$customerId],
             $website->getId()
         );
@@ -466,7 +466,7 @@ class Contact
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getCustomerCollection($customerIds, $websiteId = 0)
+    private function getCustomerCollection($customerIds, $websiteId = 0)
     {
         $customerCollection = $this->customerCollection->create()
             ->addAttributeToSelect('*')

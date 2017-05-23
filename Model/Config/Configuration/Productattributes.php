@@ -7,7 +7,7 @@ class Productattributes implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection
      */
-    public $attributes;
+    private $attributes;
 
     /**
      * Productattributes constructor.

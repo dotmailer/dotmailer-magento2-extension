@@ -7,15 +7,15 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * Addressbooks constructor.

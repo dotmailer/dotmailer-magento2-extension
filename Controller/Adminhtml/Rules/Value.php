@@ -7,16 +7,16 @@ class Value extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\App\Response\Http
      */
-    public $http;
+    private $http;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
-    public $ruleValue;
+    private $ruleValue;
     /**
      * @var \Magento\Framework\Json\Encoder
      */
-    public $jsonEncoder;
+    private $jsonEncoder;
 
     /**
      * Value constructor.
@@ -43,7 +43,7 @@ class Value extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }
@@ -86,7 +86,7 @@ class Value extends \Magento\Backend\App\AbstractAction
      *
      * @return string
      */
-    public function getOptionHtml($title, $name, $options)
+    private function getOptionHtml($title, $name, $options)
     {
         $block = $this->_view->getLayout()->createBlock('Magento\Framework\View\Element\Html\Select');
         $block->setOptions($options)

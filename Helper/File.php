@@ -10,28 +10,28 @@ class File
     /**
      * @var string
      */
-    public $outputFolder;
+    private $outputFolder;
     /**
      * @var string
      */
-    public $outputArchiveFolder;
+    private $outputArchiveFolder;
 
     /**
      * @var string
      */
-    public $delimiter;
+    private $delimiter;
     /**
      * @var string
      */
-    public $enclosure;
+    private $enclosure;
     /**
      * @var Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var string
      */
-    public $logFileName = 'connector.log';
+    private $logFileName = 'connector.log';
 
     /**
      * File constructor.
@@ -67,7 +67,7 @@ class File
     /**
      * @return string
      */
-    public function getOutputFolder()
+    private function getOutputFolder()
     {
         $this->pathExists($this->outputFolder);
 
@@ -77,7 +77,7 @@ class File
     /**
      * @return string
      */
-    public function getArchiveFolder()
+    private function getArchiveFolder()
     {
         $this->pathExists($this->outputArchiveFolder);
 
@@ -117,7 +117,7 @@ class File
      * @param $destFolder
      * @param $filename
      */
-    public function moveFile($sourceFolder, $destFolder, $filename)
+    private function moveFile($sourceFolder, $destFolder, $filename)
     {
         // generate the full file paths
         $sourceFilepath = $sourceFolder . DIRECTORY_SEPARATOR . $filename;
@@ -176,7 +176,7 @@ class File
      *
      * @param $path
      */
-    public function pathExists($path)
+    private function pathExists($path)
     {
         //@codingStandardsIgnoreStart
         if (!is_dir($path)) {
@@ -196,7 +196,7 @@ class File
      *
      * @return string
      */
-    public function arrayToCsv(
+    private function arrayToCsv(
         array &$fields,
         $delimiter,
         $enclosure,

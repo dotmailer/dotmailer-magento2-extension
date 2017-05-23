@@ -7,15 +7,15 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Dotdigitalgroup\Email\Model\CatalogFactory
      */
-    public $catalogFactory;
+    private $catalogFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
-    public $catalogCollection;
+    private $catalogCollection;
 
     /**
      * ReimportProduct constructor.

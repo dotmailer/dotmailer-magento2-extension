@@ -9,25 +9,25 @@ class Ajax extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\App\Response\Http
      */
-    public $http;
+    private $http;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
-    public $ruleType;
+    private $ruleType;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
      */
-    public $ruleCondition;
+    private $ruleCondition;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
-    public $ruleValue;
+    private $ruleValue;
 
     /**
      * @var \Magento\Framework\Json\Encoder
      */
-    public $jsonEncoder;
+    private $jsonEncoder;
 
     /**
      * Ajax constructor.
@@ -60,7 +60,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }
@@ -111,7 +111,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      *
      * @return string
      */
-    public function _getOptionHtml($title, $name, $options)
+    private function _getOptionHtml($title, $name, $options)
     {
         $block = $this->_view->getLayout()->createBlock(
             'Magento\Framework\View\Element\Html\Select'

@@ -7,27 +7,27 @@ class Subscriber
     /**
      * @var \Magento\Newsletter\Model\Subscriber
      */
-    public $subscriber;
+    private $subscriber;
     /**
      * @var []
      */
-    public $subscriberData;
+    private $subscriberData;
     /**
      * @var []
      */
-    public $mappingHash;
+    private $mappingHash;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
-    public $categoryFactory;
+    private $categoryFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    public $productFactory;
+    private $productFactory;
 
     /**
      * Subscriber constructor.

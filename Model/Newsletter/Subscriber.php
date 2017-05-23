@@ -14,73 +14,73 @@ class Subscriber
     /**
      * @var
      */
-    public $start;
+    private $start;
 
     /**
      * Global number of subscriber updated.
      *
      * @var int
      */
-    public $countSubscribers = 0;
+    private $countSubscribers = 0;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    public $file;
+    private $file;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory
      */
-    public $subscriberFactory;
+    private $subscriberFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
-    public $orderCollection;
+    private $orderCollection;
 
     /**
      * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
      */
-    public $subscribersCollection;
+    private $subscribersCollection;
 
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    public $resource;
+    private $resource;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory
      */
-    public $emailSubscriber;
+    private $emailSubscriber;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
-    public $emailContactResource;
+    private $emailContactResource;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    public $timezone;
+    private $timezone;
 
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,

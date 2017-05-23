@@ -28,32 +28,32 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var array
      */
-    public $periods = ['week', 'month', 'year'];
+    private $periods = ['week', 'month', 'year'];
 
     /**
      * @var \Magento\Framework\App\Helper\Context
      */
-    public $context;
+    private $context;
     /**
      * @var Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var
      */
-    public $backendConfig;
+    private $backendConfig;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    public $adapter;
+    private $adapter;
     /**
      * @var \Zend_Date
      */
-    public $date;
+    private $date;
 
     /**
      * Recommended constructor.
@@ -122,7 +122,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getRelatedProductsType()
+    private function getRelatedProductsType()
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_RELATED_PRODUCTS_TYPE
@@ -134,7 +134,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getUpsellProductsType()
+    private function getUpsellProductsType()
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_UPSELL_PRODUCTS_TYPE
@@ -146,7 +146,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getCrosssellProductsType()
+    private function getCrosssellProductsType()
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_CROSSSELL_PRODUCTS_TYPE
@@ -158,7 +158,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getBestSellerProductsType()
+    private function getBestSellerProductsType()
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_BESTSELLER_PRODUCT_TYPE
@@ -170,7 +170,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getMostViewedProductsType()
+    private function getMostViewedProductsType()
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_MOSTVIEWED_PRODUCT_TYPE
@@ -182,7 +182,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getRecentlyviewedProductsType()
+    private function getRecentlyviewedProductsType()
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE
@@ -194,7 +194,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getProductpushProductsType()
+    private function getProductpushProductsType()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_PRODUCTPUSH_TYPE);
     }

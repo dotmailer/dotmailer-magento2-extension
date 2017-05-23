@@ -7,15 +7,15 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
-    public $automationFactory;
+    private $automationFactory;
 
     /**
      * PlaceCreateAutomationStatus constructor.

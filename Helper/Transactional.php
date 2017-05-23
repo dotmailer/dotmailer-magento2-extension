@@ -14,7 +14,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * Transactional constructor.
@@ -60,7 +60,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getSmtpUsername()
+    private function getSmtpUsername()
     {
         $store = $this->storeManager->getStore();
 
@@ -72,7 +72,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getSmtpPassword()
+    private function getSmtpPassword()
     {
         $store = $this->storeManager->getStore();
 
@@ -84,7 +84,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function getSmtpPort()
+    private function getSmtpPort()
     {
         $store = $this->storeManager->getStore();
 
@@ -96,7 +96,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function isDebugEnabled()
+    private function isDebugEnabled()
     {
         $store = $this->storeManager->getStore();
 

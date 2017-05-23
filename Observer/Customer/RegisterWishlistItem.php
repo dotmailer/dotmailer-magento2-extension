@@ -7,15 +7,15 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
-    public $wishlistFactory;
+    private $wishlistFactory;
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
-    public $wishlist;
+    private $wishlist;
 
     /**
      * RegisterWishlistItem constructor.

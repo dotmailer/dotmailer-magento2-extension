@@ -7,16 +7,16 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * RemoveContact constructor.

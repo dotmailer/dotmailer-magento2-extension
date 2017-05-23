@@ -7,7 +7,7 @@ class Select
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    public $customerFactory;
+    private $customerFactory;
 
     /**
      * Select constructor.

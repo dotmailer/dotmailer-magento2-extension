@@ -7,19 +7,19 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $connectorCatalogFactory;
+    private $connectorCatalogFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
-    public $connectorContactFactory;
+    private $connectorContactFactory;
 
     /**
      * ResetCatalogContactImport constructor.

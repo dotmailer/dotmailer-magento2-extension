@@ -7,7 +7,7 @@ class Catalogvisibility implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Magento\Catalog\Model\Product\Visibility
      */
-    public $productVisibility;
+    private $productVisibility;
 
     /**
      * Catalogvisibility constructor.

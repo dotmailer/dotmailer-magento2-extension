@@ -7,31 +7,31 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    public $customerFactory;
+    private $customerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
-    public $wishlist;
+    private $wishlist;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory
      */
-    public $subscriberFactory;
+    private $subscriberFactory;
 
     /**
      * CreateUpdateContact constructor.
