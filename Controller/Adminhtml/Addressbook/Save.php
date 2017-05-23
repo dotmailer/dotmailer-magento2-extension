@@ -53,4 +53,15 @@ class Save extends \Magento\Backend\App\AbstractAction
             }
         }
     }
+
+
+    /**
+     * Check the permission to run it.
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
+    }
 }

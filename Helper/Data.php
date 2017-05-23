@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
+use Dotdigitalgroup\Email\Model\Config\Json;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
@@ -78,6 +79,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $datetime;
 
     /**
+     * @var Json
+     */
+    public $serializer;
+
+    /**
      * Data constructor.
      *
      * @param \Magento\Framework\App\ProductMetadata        $productMetadata
@@ -110,9 +116,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Config\Storage\Writer $writer,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
+        \Dotdigitalgroup\Email\Model\Config\Json $serilizer,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
     ) {
-
+        $this->serializer       = $serilizer;
         $this->adapter          = $adapter;
         $this->schelduleFactory = $schedule;
         $this->productMetadata  = $productMetadata;
@@ -730,9 +737,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!$attr) {
             return [];
         }
-        //@codingStandardsIgnoreStart
-        return unserialize($attr);
-        //@codingStandardsIgnoreEnd
+
+        return $this->serializer->unserialize($attr);
     }
 
     /**

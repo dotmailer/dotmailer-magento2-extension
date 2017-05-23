@@ -53,7 +53,6 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      * @param \Dotdigitalgroup\Email\Helper\Config        $configFactory
      * @param \Dotdigitalgroup\Email\Helper\Data          $dataHelper
      * @param \Magento\Backend\Block\Template\Context     $context
-     * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param Client                                      $client
      */
     public function __construct(
@@ -61,14 +60,12 @@ class Studio extends \Magento\Backend\Block\Widget\Form
         \Dotdigitalgroup\Email\Helper\Config $configFactory,
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Message\ManagerInterface $messageManager,
         Client $client
     ) {
         $this->client         = $client;
         $this->auth           = $auth;
         $this->helper         = $dataHelper;
         $this->configFactory  = $configFactory;
-        $this->messageManager = $messageManager;
 
         parent::__construct($context, []);
     }
@@ -146,7 +143,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     public function getLoginUserHtml()
     {
         // authorize or create token.
-        $token = $this->generatetokenAction();
+        $token = $this->generateToken();
         $baseUrl = $this->configFactory
             ->getLogUserUrl();
 
@@ -160,7 +157,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      *
      * @return string
      */
-    public function generatetokenAction()
+    public function generateToken()
     {
         $adminUser = $this->auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
@@ -176,9 +173,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
                 $adminUser->setRefreshToken($token)
                     ->save();
             }
+
             return $token;
-        } else {
-            $this->messageManager->addNoticeMessage('Please Connect To Access The Page.');
         }
     }
 

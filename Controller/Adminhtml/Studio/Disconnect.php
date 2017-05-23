@@ -27,4 +27,14 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
 
         $this->_redirect('*/system_config/*');
     }
+
+    /**
+     * Check the permission to run it.
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::studio');
+    }
 }

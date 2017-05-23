@@ -68,4 +68,13 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
         ];
         $this->getResponse()->representJson($this->jsonHelper->jsonEncode($response));
     }
+
+
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
+    }
 }

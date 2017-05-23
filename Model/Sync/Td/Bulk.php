@@ -9,22 +9,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Td;
 class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
     /**
-     * Bulk constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     */
-    public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-    ) {
-    
-        parent::__construct($helper, $fileHelper, $contactFactory);
-    }
-
-    /**
      * Sync.
      *
      * @param $collection
@@ -35,9 +19,7 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
             $websiteId = $item->getWebsiteId();
             if ($this->helper->isEnabled($websiteId)) {
                 $this->client = $this->helper->getWebsiteApiClient($websiteId);
-                //@codingStandardsIgnoreStart
-                $importData = unserialize($item->getImportData());
-                //@codingStandardsIgnoreEnd
+                $importData = $this->serializer->unserialize($item->getImportData());
 
                 if ($this->client) {
                     if (strpos($item->getImportType(), 'Catalog_') !== false) {

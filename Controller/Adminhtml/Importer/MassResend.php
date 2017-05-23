@@ -56,4 +56,15 @@ class MassResend extends ImporterController
 
         return $resultRedirect;
     }
+
+
+    /**
+     * Check the permission to run it.
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::importer');
+    }
 }

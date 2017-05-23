@@ -42,27 +42,34 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     public $helper;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Config\Json
+     */
+    public $serializer;
+
+    /**
      * SaveStatusSmsAutomation constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory             $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\OrderFactory                  $emailOrderFactory
-     * @param \Magento\Framework\Registry                                $registry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface         $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface                 $storeManagerInterface
-     * @param \Magento\Store\Model\App\EmulationFactory                  $emulationFactory
+     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
+     * @param \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory
+     * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                         $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
         \Magento\Framework\Registry $registry,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
+        $this->serializer = $serializer;
         $this->automationFactory      = $automationFactory;
         $this->emailOrderFactory      = $emailOrderFactory;
         $this->scopeConfig            = $scopeConfig;
@@ -127,16 +134,16 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             $emailOrder->save();
 
-            //@codingStandardsIgnoreStart
+
             //Status check automation enrolment
-            $configStatusAutomationMap = unserialize(
+            $configStatusAutomationMap = $this->serializer->unserialize(
                 $this->scopeConfig->getValue(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                     $order->getStore()
                 )
             );
-            //@codingStandardsIgnoreEnd
+
             if (! empty($configStatusAutomationMap)) {
                 foreach ($configStatusAutomationMap as $configMap) {
                     if ($configMap['status'] == $status) {
