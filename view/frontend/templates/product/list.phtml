@@ -6,7 +6,7 @@ $products = $block->getLoadedProductCollection();
 
 <?php if (!empty($products)): ?>
     <?php
-    $dynamicStyle = $this->helper->getDynamicStyles();
+    $dynamicStyle = $block->helper->getDynamicStyles();
     ?>
     <style>
         .product-name{
@@ -76,7 +76,7 @@ $products = $block->getLoadedProductCollection();
 
 <?php foreach ($products as $key => $_product) :?>
     <?php if ($i == 0) : ?>
-        <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12';><tr>
+        <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12px';><tr>
     <?php endif;?>
     <?php if($mode == 'list'):?>
         </tr><tr>

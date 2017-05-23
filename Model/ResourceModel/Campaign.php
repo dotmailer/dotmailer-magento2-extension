@@ -56,7 +56,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
                     'sent_at' =>  $this->datetime->gmtDate()
                 ],
-                "id in ($ids)"
+                ["id in (?)" => $ids]
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
@@ -131,7 +131,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $conn->update(
                 $this->getMainTable(),
                 $bind,
-                "id in ($ids)"
+                ["id in (?)" => $ids]
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

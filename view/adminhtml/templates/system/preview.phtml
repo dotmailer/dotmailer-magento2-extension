@@ -1,7 +1,7 @@
 <div id="ddg-edc-preview">
     <div style="width: 200px; height: auto; float: right">
         <div align="center" style="font-weight: bold; padding: 3px; font-size: 12px;">
-            PRODUCT STYLING PREVIEW
+            <?php echo $block->escapeHtml(__('PRODUCT STYLING PREVIEW')); ?>
         </div>
         <div id="connector_configuration_dynamic_content_style_doc-preview"
              style="width: 200px; height: auto; border: solid 1px black; padding-top: 50px; padding-bottom: 50px;">
@@ -11,7 +11,7 @@
                      style="display: block; margin-left: auto; margin-right: auto; "/>
             </a>
             <div id="connector_configuration_dynamic_content_style_name-preview" align="center">
-                Product Name
+                <?php echo $block->escapeHtml(__('Product Name')); ?>
             </div>
             <div id="connector_configuration_dynamic_content_style_price-preview" align="center">
                 <?php $price = $block->getCurrencySymbol() . "99.99";?>
@@ -23,11 +23,11 @@
             </div>
         </div>
         <div align="center" style="margin-top: 20px; font-weight: bold; padding: 3px; font-size: 12px;">
-            COUPON STYLING PREVIEW
+            <?php echo $block->escapeHtml(__('COUPON STYLING PREVIEW')); ?>
         </div>
         <div id="connector_configuration_dynamic_content_style_coupon-preview" align="center"
              style="width: 200px; height: auto; border: solid 1px black; padding-top: 10px; padding-bottom: 10px;">
-            DOT-XXX-XXX-XXX
+            <?php echo $block->escapeHtml(__('DOT-XXX-XXX-XXX')); ?>
         </div>
     </div>
 </div>

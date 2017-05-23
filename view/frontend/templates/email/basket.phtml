@@ -143,7 +143,7 @@
             <td class="hidemob" style="border: none;"></td>
             <td class="hidemob" style="border: none;"></td>
             <td class="other-text" style="padding: 5px;">
-                <?php /* @noEscape */ echo 'Total: ' . $item['grandTotal']; ?>
+                <?php echo $block->escapeHtml(__('Total: ')) . $item['grandTotal']; ?>
             </td>
         </tr>
     </table>
