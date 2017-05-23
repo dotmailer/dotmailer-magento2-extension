@@ -20,9 +20,10 @@ class Update extends Delete
     /**
      * Update constructor.
      *
-     * @param Contact                                     $contactResource
-     * @param \Dotdigitalgroup\Email\Helper\Data          $helper
-     * @param \Dotdigitalgroup\Email\Helper\File          $fileHelper
+     * @param Contact $contactResource
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
+     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      */
     public function __construct(

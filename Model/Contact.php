@@ -115,6 +115,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Store\Model\Website $website
      * @param int $limit
      *
+     * @param bool $isCustomerCheck
      * @return $this
      */
     public function getSubscribersToImport(

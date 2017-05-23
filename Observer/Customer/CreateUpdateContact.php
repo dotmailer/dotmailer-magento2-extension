@@ -46,6 +46,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      */
     public function __construct(
         \Magento\Wishlist\Model\WishlistFactory $wishlist,

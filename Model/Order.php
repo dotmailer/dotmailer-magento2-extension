@@ -30,7 +30,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Order constructor.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection $salesCollection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|\Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesCollection
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
@@ -120,7 +120,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
      * @param $storeIds
      * @param $limit
      * @param $orderStatuses
-     * @return
+     * @return $this
      */
     public function getOrdersToImport($storeIds, $limit, $orderStatuses)
     {
@@ -139,7 +139,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
      * @param $storeIds
      * @param $limit
      * @param $orderStatuses
-     * @return
+     * @return $this
      */
     public function getModifiedOrdersToImport($storeIds, $limit, $orderStatuses)
     {
@@ -159,8 +159,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
      *
      * @param array $storeIds
      * @param int $limit
-     *
-     * @return
+     * @return $this
      */
     public function getAllSentOrders($storeIds, $limit)
     {

@@ -36,10 +36,11 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      * Information constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
-     * @param \Magento\Backend\Block\Template\Context        $context
-     * @param \Magento\Backend\Helper\Data                   $backendHelper
-     * @param \Dotdigitalgroup\Email\Helper\Data             $helper
-     * @param array                                          $data
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data $backendHelper
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\App\ProductMetadataFactory $productMetadata
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,

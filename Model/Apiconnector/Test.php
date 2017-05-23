@@ -21,6 +21,7 @@ class Test
      * Test constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,

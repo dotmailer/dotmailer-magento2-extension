@@ -46,13 +46,15 @@ class Feefo extends \Magento\Framework\View\Element\Template
     /**
      * Feefo constructor.
      *
-     * @param \Magento\Catalog\Model\ProductFactory            $productFactory
-     * @param \Magento\Quote\Model\QuoteFactory                $quoteFactory
-     * @param \Magento\Sales\Model\OrderFactory                $orderFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data               $helper
-     * @param \Magento\Framework\Pricing\Helper\Data           $priceHelper
+     * @param XSLTProcessor $processor
+     * @param DOMDocument $document
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param array                                            $data
+     * @param array $data
      */
     public function __construct(
         XSLTProcessor $processor,
