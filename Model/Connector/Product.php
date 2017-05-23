@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
-use Magento\TestFramework\Event\Magento;
-
 class Product
 {
     /**
