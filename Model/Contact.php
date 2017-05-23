@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Contact
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Contact extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_CONTACT_IMPORTED = 1;
@@ -111,6 +115,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Store\Model\Website $website
      * @param int $limit
      *
+     * @param bool $isCustomerCheck
      * @return $this
      */
     public function getSubscribersToImport(

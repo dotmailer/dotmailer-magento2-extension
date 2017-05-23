@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
+/**
+ * Class Logviewer
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml
+ */
 class Logviewer extends \Magento\Backend\App\Action
 {
     /**

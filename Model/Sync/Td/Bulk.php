@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
+/**
+ * Class Bulk
+ * @package Dotdigitalgroup\Email\Model\Sync\Td
+ */
 class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
     /**

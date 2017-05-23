@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact;
 
+/**
+ * Class Status
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact
+ */
 class Status implements \Magento\Framework\Data\OptionSourceInterface
 {
 

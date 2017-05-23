@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Settings;
 
+/**
+ * Class Addressbooks
+ * @package Dotdigitalgroup\Email\Model\Config\Source\Settings
+ */
 class Addressbooks implements \Magento\Framework\Option\ArrayInterface
 {
     /**

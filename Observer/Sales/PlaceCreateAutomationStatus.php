@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+/**
+ * Class PlaceCreateAutomationStatus
+ * @package Dotdigitalgroup\Email\Observer\Sales
+ */
 class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverInterface
 {
     /**

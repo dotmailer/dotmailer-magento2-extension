@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
+/**
+ * Class Intervalminute
+ * @package Dotdigitalgroup\Email\Model\Config\Source\Carts
+ */
 class Intervalminute implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

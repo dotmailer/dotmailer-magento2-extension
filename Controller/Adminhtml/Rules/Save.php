@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
+/**
+ * Class Save
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Rules
+ */
 class Save extends \Magento\Backend\App\AbstractAction
 {
     /**

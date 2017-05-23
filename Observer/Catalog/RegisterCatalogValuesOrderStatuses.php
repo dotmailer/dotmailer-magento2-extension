@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
+/**
+ * Class RegisterCatalogValuesOrderStatuses
+ * @package Dotdigitalgroup\Email\Observer\Catalog
+ */
 class RegisterCatalogValuesOrderStatuses implements \Magento\Framework\Event\ObserverInterface
 {
     /**

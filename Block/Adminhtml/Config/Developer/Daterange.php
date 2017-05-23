@@ -2,8 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Daterange
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Daterange extends \Magento\Config\Block\System\Config\Form\Field
 {
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $ranges = ['from', 'to'];

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Customersreset
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Customersreset extends \Magento\Backend\App\AbstractAction
 {
     /**

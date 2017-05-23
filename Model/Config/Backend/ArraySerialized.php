@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Backend;
 
+/**
+ * Class ArraySerialized
+ * @package Dotdigitalgroup\Email\Model\Config\Backend
+ */
 class ArraySerialized extends \Dotdigitalgroup\Email\Model\Config\Backend\Serialized
 {
     /**

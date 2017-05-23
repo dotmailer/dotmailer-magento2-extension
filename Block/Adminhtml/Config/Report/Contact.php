@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Report;
 
+/**
+ * Class Contact
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Report
+ */
 class Contact extends \Magento\Config\Block\System\Config\Form\Field
 {
 

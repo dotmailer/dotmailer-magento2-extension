@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+/**
+ * Class Campaign
+ * @package Dotdigitalgroup\Email\Model\ResourceModel
+ */
 class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

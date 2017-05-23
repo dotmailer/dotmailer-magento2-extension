@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class HistoricalWishlistDataRefreshTest
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
@@ -25,6 +29,11 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->getRequest()->setParams($params);
     }
 
+    /**
+     * @param $from
+     * @param $to
+     * @param $dispatchUrl
+     */
     public function runReset($from, $to, $dispatchUrl)
     {
         $params = [
@@ -199,6 +208,9 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->assertEquals(1, $collection->getSize());
     }
 
+    /**
+     * @param $data
+     */
     public function createEmailData($data)
     {
         $emailModel = $this->objectManager->create($this->model);

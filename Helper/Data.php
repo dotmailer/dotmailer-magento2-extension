@@ -6,6 +6,10 @@ use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Model\Config\Json;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 
+/**
+ * Class Data
+ * @package Dotdigitalgroup\Email\Helper
+ */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
@@ -82,19 +86,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Data constructor.
      *
-     * @param \Magento\Framework\App\ProductMetadata        $productMetadata
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory   $contactFactory
-     * @param \Magento\Config\Model\ResourceModel\Config    $resourceConfig
-     * @param \Magento\Framework\App\ResourceConnection     $adapter
-     * @param \Magento\Framework\App\Helper\Context         $context
-     * @param \Magento\Store\Model\StoreManagerInterface    $storeManager
-     * @param \Magento\Customer\Model\CustomerFactory       $customerFactory
+     * @param \Magento\Framework\App\ProductMetadata $productMetadata
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param File $fileHelper
+     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
+     * @param \Magento\Framework\App\ResourceConnection $adapter
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Magento\Framework\Module\ModuleListInterface $moduleListInterface
-     * @param \Magento\Cron\Model\ScheduleFactory           $schedule
-     * @param \Magento\Store\Model\Store                    $store
+     * @param \Magento\Cron\Model\ScheduleFactory $schedule
+     * @param \Magento\Store\Model\Store $store
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory
+     * @param Json $serilizer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      */
     public function __construct(

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Product;
 
+/**
+ * Class Push
+ * @package Dotdigitalgroup\Email\Controller\Product
+ */
 class Push extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**

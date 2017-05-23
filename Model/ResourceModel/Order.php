@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Model\ResourceModel
+ */
 class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

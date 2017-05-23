@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
+/**
+ * Class Bestsellers
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic
+ */
 class Bestsellers extends \Magento\Config\Block\System\Config\Form\Field
 {
 

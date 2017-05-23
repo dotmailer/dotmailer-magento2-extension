@@ -50,6 +50,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $quoteAddress;
     }
 
+    /**
+     * @return \Magento\Customer\Api\Data\CustomerInterface
+     */
     private function getCustomer()
     {
         /** @var CustomerRepositoryInterface $customerRepository */
@@ -57,6 +60,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $customerRepository->getById(1);
     }
 
+    /**
+     * @return Product
+     */
     private function getProduct()
     {
         /** @var ProductResource $resourceModel */
@@ -67,6 +73,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $product;
     }
 
+    /**
+     * @return Quote
+     */
     private function createQuote()
     {
         /** @var Quote $quote */
@@ -83,6 +92,10 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $quote;
     }
 
+    /**
+     * @param $paymentCode
+     * @return Quote
+     */
     private function createQuoteWithPayment($paymentCode)
     {
         $quote = $this->createQuote();
@@ -95,6 +108,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $quote;
     }
 
+    /**
+     * @return Quote
+     */
     public function createQuoteWithoutPayment()
     {
         $quote = $this->createQuote();
@@ -162,6 +178,10 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $rulesResource->save($rule);
     }
 
+    /**
+     * @param Rules $rule
+     * @return array|mixed
+     */
     private function getWebsiteIdsFromRule(Rules $rule)
     {
         $websiteIds = $rule->getData('website_ids');
@@ -192,12 +212,18 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $this->currentWebsiteId = $storeManager->getStore()->getWebsiteId();
     }
 
+    /**
+     * @param Quote $expected
+     */
     private function assertQuoteCollectionContains(Quote $expected)
     {
         $message = sprintf('The quote with ID "%s" is not contained in the quote collection', $expected->getId());
         $this->assertContains($expected->getId(), $this->quoteCollection->getAllIds(), $message);
     }
 
+    /**
+     * @param Quote $expected
+     */
     private function assertQuoteCollectionNotContains(Quote $expected)
     {
         $message = sprintf(
@@ -261,6 +287,10 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $this->assertQuoteCollectionContains($quoteToBeIncluded2);
     }
 
+    /**
+     * @param $subtotal
+     * @return Quote
+     */
     private function createQuoteWithSubtotal($subtotal)
     {
         $quote = $this->createQuote();

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Product;
 
+/**
+ * Class Related
+ * @package Dotdigitalgroup\Email\Controller\Product
+ */
 class Related extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**

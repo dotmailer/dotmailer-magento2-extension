@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Automapdatafields
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Automapdatafields extends \Magento\Config\Block\System\Config\Form\Field
 {
 

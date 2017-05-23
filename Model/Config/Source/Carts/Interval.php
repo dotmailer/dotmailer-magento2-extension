@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 
+/**
+ * Class Interval
+ * @package Dotdigitalgroup\Email\Model\Config\Source\Carts
+ */
 class Interval implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

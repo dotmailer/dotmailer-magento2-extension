@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Model\Connector
+ */
 class Order
 {
     /**
@@ -550,6 +554,7 @@ class Order
     /**
      * Get options for the item.
      *
+     * @param $orderItem
      * @return array
      */
     public function _getOrderItemOptions($orderItem)

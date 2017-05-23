@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
+/**
+ * Class Conditions
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab
+ */
 class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
     \Magento\Backend\Block\Widget\Tab\TabInterface
 {

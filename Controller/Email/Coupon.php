@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
+/**
+ * Class Coupon
+ * @package Dotdigitalgroup\Email\Controller\Email
+ */
 class Coupon extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**

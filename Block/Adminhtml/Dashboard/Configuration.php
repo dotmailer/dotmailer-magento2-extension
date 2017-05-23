@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Dashboard;
 
+/**
+ * Class Configuration
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Dashboard
+ */
 class Configuration extends \Magento\Config\Block\System\Config\Edit
 {
 

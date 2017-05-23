@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Review
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Review extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_REVIEW_IMPORTED = 1;

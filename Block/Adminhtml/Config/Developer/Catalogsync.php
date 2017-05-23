@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Catalogsync
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Catalogsync extends \Magento\Config\Block\System\Config\Form\Field
 {
 

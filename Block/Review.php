@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+/**
+ * Class Review
+ * @package Dotdigitalgroup\Email\Block
+ */
 class Review extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**

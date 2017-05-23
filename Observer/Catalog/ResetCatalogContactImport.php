@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
+/**
+ * Class ResetCatalogContactImport
+ * @package Dotdigitalgroup\Email\Observer\Catalog
+ */
 class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInterface
 {
     /**

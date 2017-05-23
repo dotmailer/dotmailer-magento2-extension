@@ -6,6 +6,10 @@ use Magento\Framework\App\ObjectManager;
 use Dotdigitalgroup\Email\Model\Config\Json;
 
 
+/**
+ * Class Serialized
+ * @package Dotdigitalgroup\Email\Model\Config\Backend
+ */
 class Serialized extends \Magento\Framework\App\Config\Value
 {
     /**

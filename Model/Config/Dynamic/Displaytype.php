@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Dynamic;
 
+/**
+ * Class Displaytype
+ * @package Dotdigitalgroup\Email\Model\Config\Dynamic
+ */
 class Displaytype implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

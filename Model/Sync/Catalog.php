@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+/**
+ * Class Catalog
+ * @package Dotdigitalgroup\Email\Model\Sync
+ */
 class Catalog
 {
     /**

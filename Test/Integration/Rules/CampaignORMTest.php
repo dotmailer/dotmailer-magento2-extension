@@ -6,6 +6,10 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection as CampaignCol
 use Magento\Framework\App\ResourceConnection;
 use Magento\TestFramework\ObjectManager;
 
+/**
+ * Class CampaignORMTest
+ * @package Dotdigitalgroup\Email\Model
+ */
 class CampaignORMTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -31,6 +35,10 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
         return $model;
     }
 
+    /**
+     * @param Campaign $campaign
+     * @param CampaignCollection $collection
+     */
     private function assertCollectionContains(Campaign $campaign, CampaignCollection $collection)
     {
         $message = sprintf('Expected campaign with ID "%s" not found in collection', $campaign->getId());

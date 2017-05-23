@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+/**
+ * Class Roi
+ * @package Dotdigitalgroup\Email\Block
+ */
 class Roi extends \Magento\Framework\View\Element\Template
 {
 

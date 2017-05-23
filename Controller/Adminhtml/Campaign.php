@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
+/**
+ * Class Campaign
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml
+ */
 abstract class Campaign extends \Magento\Backend\App\Action
 {
     /**

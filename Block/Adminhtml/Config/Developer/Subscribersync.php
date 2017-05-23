@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Subscribersync
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Subscribersync extends \Magento\Config\Block\System\Config\Form\Field
 {
 

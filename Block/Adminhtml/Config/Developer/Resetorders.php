@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Resetorders
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Resetorders extends \Magento\Config\Block\System\Config\Form\Field
 {
 

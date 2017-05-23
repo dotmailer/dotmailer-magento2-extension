@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Feefo;
 
+/**
+ * Class Reviews
+ * @package Dotdigitalgroup\Email\Controller\Feefo
+ */
 class Reviews extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**

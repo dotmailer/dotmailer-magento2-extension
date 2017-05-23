@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+/**
+ * Class RefundReimportOrder
+ * @package Dotdigitalgroup\Email\Observer\Sales
+ */
 class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
 {
     /**

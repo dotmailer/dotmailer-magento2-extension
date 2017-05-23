@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Class ReviewSaveAutomation
+ * @package Dotdigitalgroup\Email\Observer\Customer
+ */
 class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
 {
     /**

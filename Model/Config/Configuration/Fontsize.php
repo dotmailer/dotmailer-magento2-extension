@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
+/**
+ * Class Fontsize
+ * @package Dotdigitalgroup\Email\Model\Config\Configuration
+ */
 class Fontsize implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

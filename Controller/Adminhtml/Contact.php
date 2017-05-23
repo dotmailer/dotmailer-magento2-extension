@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
+/**
+ * Class Contact
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml
+ */
 class Contact extends \Magento\Backend\App\Action
 {
     /**

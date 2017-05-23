@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Class Quoteproducts
+ * @package Dotdigitalgroup\Email\Block\Recommended
+ */
 class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**

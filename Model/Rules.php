@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Model\Config\Json;
 
+/**
+ * Class Rules
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Rules extends \Magento\Framework\Model\AbstractModel
 {
     const ABANDONED = 1;

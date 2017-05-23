@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
+/**
+ * Class Cartlimit
+ * @package Dotdigitalgroup\Email\Model\Config\Configuration
+ */
 class Cartlimit implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

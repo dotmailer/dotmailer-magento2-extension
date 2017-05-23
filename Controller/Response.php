@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller;
 
+/**
+ * Class Response
+ * @package Dotdigitalgroup\Email\Controller
+ */
 class Response extends \Magento\Framework\App\Action\Action
 {
     /**

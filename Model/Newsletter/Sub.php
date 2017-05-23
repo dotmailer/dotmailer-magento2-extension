@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
+/**
+ * Class Sub
+ * @package Dotdigitalgroup\Email\Model\Newsletter
+ */
 class Sub extends \Magento\Newsletter\Model\Subscriber
 {
     /**

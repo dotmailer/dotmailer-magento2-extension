@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer;
 
+/**
+ * Class Imported
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer
+ */
 class Imported extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractRenderer
 {
     /**

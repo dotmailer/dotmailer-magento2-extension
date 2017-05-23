@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Addressbook;
 
+/**
+ * Class Save
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Addressbook
+ */
 class Save extends \Magento\Backend\App\AbstractAction
 {
     /**

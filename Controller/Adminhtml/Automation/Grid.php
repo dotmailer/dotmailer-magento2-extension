@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Automation;
 
+/**
+ * Class Grid
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Automation
+ */
 class Grid extends Index
 {
     /**

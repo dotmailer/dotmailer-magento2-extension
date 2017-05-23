@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
+/**
+ * Class Fontpicker
+ * @package Dotdigitalgroup\Email\Model\Config\Configuration
+ */
 class Fontpicker implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

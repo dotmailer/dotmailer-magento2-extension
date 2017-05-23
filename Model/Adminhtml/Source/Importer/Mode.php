@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer;
 
+/**
+ * Class Mode
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Importer
+ */
 class Mode implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
@@ -29,6 +33,9 @@ class Mode implements \Magento\Framework\Data\OptionSourceInterface
         ];
     }
 
+    /**
+     * @return array
+     */
     public function toOptionArray()
     {
 

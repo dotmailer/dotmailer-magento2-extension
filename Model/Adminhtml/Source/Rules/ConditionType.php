@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
+/**
+ * Class ConditionType
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules
+ */
 class ConditionType implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

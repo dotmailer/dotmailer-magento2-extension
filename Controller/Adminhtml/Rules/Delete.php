@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
+/**
+ * Class Delete
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Rules
+ */
 class Delete extends \Magento\Backend\App\AbstractAction
 {
     /**

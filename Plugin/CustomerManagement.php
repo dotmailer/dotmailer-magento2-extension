@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
+/**
+ * Class CustomerManagement
+ * @package Dotdigitalgroup\Email\Plugin
+ */
 class CustomerManagement
 {
     /**

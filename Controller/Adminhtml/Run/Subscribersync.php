@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Subscribersync
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Subscribersync extends \Magento\Backend\App\AbstractAction
 {
     /**

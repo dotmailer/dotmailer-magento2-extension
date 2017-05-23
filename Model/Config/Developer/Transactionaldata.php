@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Developer;
 
+/**
+ * Class Transactionaldata
+ * @package Dotdigitalgroup\Email\Model\Config\Developer
+ */
 class Transactionaldata implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

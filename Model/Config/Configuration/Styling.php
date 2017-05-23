@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
+/**
+ * Class Styling
+ * @package Dotdigitalgroup\Email\Model\Config\Configuration
+ */
 class Styling implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

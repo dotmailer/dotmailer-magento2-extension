@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Class RemoveContact
+ * @package Dotdigitalgroup\Email\Observer\Customer
+ */
 class RemoveContact implements \Magento\Framework\Event\ObserverInterface
 {
     /**

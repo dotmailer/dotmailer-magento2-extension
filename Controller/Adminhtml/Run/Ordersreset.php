@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Ordersreset
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Ordersreset extends \Magento\Backend\App\AbstractAction
 {
     /**

@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Model\SalesRule;
 
 use Magento\Framework\Stdlib\DateTime;
 
+/**
+ * Class Coupon
+ * @package Dotdigitalgroup\Email\Model\SalesRule
+ */
 class Coupon extends \Magento\SalesRule\Model\ResourceModel\Coupon
 {
 

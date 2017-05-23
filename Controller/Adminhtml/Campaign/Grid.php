@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Campaign;
 
+/**
+ * Class Grid
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Campaign
+ */
 class Grid extends Index
 {
     /**

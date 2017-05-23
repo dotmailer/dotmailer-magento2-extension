@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Wishlist;
 
+/**
+ * Class Upsell
+ * @package Dotdigitalgroup\Email\Controller\Wishlist
+ */
 class Upsell extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**

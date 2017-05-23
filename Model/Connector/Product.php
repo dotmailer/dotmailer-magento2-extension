@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Class Product
+ * @package Dotdigitalgroup\Email\Model\Connector
+ */
 class Product
 {
     /**

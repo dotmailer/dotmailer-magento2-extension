@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
+/**
+ * Class Publicdatafields
+ * @package Dotdigitalgroup\Email\Model\Config\Configuration
+ */
 class Publicdatafields implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

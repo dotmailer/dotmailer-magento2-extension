@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Automapdatafields
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Automapdatafields extends \Magento\Backend\App\AbstractAction
 {
     /**

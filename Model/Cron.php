@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Cron
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Cron
 {
     /**

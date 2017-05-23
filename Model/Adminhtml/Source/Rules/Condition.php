@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
+/**
+ * Class Condition
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules
+ */
 class Condition
 {
     /**

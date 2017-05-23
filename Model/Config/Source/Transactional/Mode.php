@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional;
 
+/**
+ * Class Mode
+ * @package Dotdigitalgroup\Email\Model\Config\Source\Transactional
+ */
 class Mode implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

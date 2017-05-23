@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Reviewsync
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Reviewsync extends \Magento\Backend\App\AbstractAction
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Class Wishlistproducts
+ * @package Dotdigitalgroup\Email\Block\Recommended
+ */
 class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**

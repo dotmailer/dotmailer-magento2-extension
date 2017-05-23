@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\SalesRule;
 
+/**
+ * Class Collection
+ * @package Dotdigitalgroup\Email\Model\SalesRule
+ */
 class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
 {
     /**

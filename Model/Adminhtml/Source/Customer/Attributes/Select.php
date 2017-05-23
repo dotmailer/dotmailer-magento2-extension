@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes;
 
+/**
+ * Class Select
+ * @package Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes
+ */
 class Select
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit;
 
+/**
+ * Class Form
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit
+ */
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
 

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+/**
+ * Class Rules
+ * @package Dotdigitalgroup\Email\Model\ResourceModel
+ */
 class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Wishlist;
 
+/**
+ * Class Crosssell
+ * @package Dotdigitalgroup\Email\Controller\Wishlist
+ */
 class Crosssell extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**

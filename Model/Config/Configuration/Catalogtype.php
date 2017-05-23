@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
+/**
+ * Class Catalogtype
+ * @package Dotdigitalgroup\Email\Model\Config\Configuration
+ */
 class Catalogtype implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

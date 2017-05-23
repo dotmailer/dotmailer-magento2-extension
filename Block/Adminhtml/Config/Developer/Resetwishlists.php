@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Resetwishlists
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
 {
 

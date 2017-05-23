@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
+/**
+ * Class Catalog
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml
+ */
 abstract class Catalog extends \Magento\Backend\App\Action
 {
     /**

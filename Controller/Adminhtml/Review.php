@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
 use Magento\Backend\App\Action;
 
+/**
+ * Class Review
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml
+ */
 abstract class Review extends Action
 {
     /**

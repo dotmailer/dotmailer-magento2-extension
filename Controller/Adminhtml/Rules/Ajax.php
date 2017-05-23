@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
 use Magento\Backend\App\Action\Context;
 
+/**
+ * Class Ajax
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Rules
+ */
 class Ajax extends \Magento\Backend\App\AbstractAction
 {
     /**

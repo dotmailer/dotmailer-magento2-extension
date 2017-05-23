@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Model\Sync
+ */
 class Order
 {
     /**

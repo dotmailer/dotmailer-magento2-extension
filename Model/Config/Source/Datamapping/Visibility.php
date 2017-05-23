@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 
+/**
+ * Class Visibility
+ * @package Dotdigitalgroup\Email\Model\Config\Source\Datamapping
+ */
 class Visibility implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**

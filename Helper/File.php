@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+/**
+ * Class File
+ * @package Dotdigitalgroup\Email\Helper
+ */
 class File
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
+/**
+ * Class Deletecontactids
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer
+ */
 class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
 {
 
