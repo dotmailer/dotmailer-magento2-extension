@@ -4,9 +4,6 @@ namespace Dotdigitalgroup\Email\Helper;
 
 class File
 {
-    const FILE_FULL_ACCESS_PERMISSION = '777';
-
-
     /**
      * @var string
      */
@@ -180,7 +177,7 @@ class File
     {
         //@codingStandardsIgnoreStart
         if (!is_dir($path)) {
-            mkdir($path, 0777, true);
+            mkdir($path);
         }
         //@codingStandardsIgnoreEnd
     }
