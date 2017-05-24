@@ -1,5 +1,5 @@
 <?php if($block->helper('Dotdigitalgroup\Email\Helper\Data')->isMailCheckEnabledForCurrentStore()): ?>
-    <script type="text/javascript">
+    <script>
         require(['jquery','domReady!'],function($){
             // Go through all input type email fields
             $(document).on("blur",'input[type=email]', function(){

@@ -81,7 +81,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
                 $this->_getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
-            $script = "<script type='text/javascript'>
+            $script = "<script>
             require(['jquery', 'domReady'], function($){
                 $('.various').fancybox({
                     width	: 508,
