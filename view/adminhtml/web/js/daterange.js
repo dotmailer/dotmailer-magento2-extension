@@ -1,4 +1,5 @@
 require(['jquery'], function (j) {
+    "use strict";
     j(document).ready(function () {
 
         /**
@@ -9,7 +10,6 @@ require(['jquery'], function (j) {
          * @returns {string}
          */
         function updateUrlParameter(uri, key, value) {
-            "use strict";
             var re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i'),
                 separator = uri.indexOf('?') !== -1 ? '&' : '?';
 
@@ -23,22 +23,10 @@ require(['jquery'], function (j) {
         }
 
         /**
-         * Observe change on given element
-         * @param value
-         */
-        function observeChange(value) {
-            "use strict";
-            j('#' + value).change(function () {
-                changeUrls(value);
-            });
-        }
-
-        /**
          * Change urls
          * @param value
          */
         function changeUrls(value) {
-            "use strict";
             var elmToChange =
                 [
                     '#connector_developer_settings_sync_settings_reset_orders',
@@ -52,6 +40,16 @@ require(['jquery'], function (j) {
                     updatedUrl = updateUrlParameter(str, value, encodeURIComponent(j('#' + value).val()));
 
                 j(v).attr('onclick', updatedUrl);
+            });
+        }
+
+        /**
+         * Observe change on given element
+         * @param value
+         */
+        function observeChange(value) {
+            j('#' + value).change(function () {
+                changeUrls(value);
             });
         }
 
