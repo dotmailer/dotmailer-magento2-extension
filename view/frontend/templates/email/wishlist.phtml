@@ -5,7 +5,7 @@ $items = $block->getWishlistItems();
 $priceHelper = $block->priceHelper;
 ?>
 <?php if($items): ?>
-    <?php $dynamicStyle = $this->helper->getDynamicStyles(); ?>
+    <?php $dynamicStyle = $block->helper->getDynamicStyles(); ?>
     <style>
         .product-name{
             color: <?php echo $block->escapeHtml($dynamicStyle['nameColor']);?>;
@@ -74,7 +74,7 @@ $priceHelper = $block->priceHelper;
     <?php foreach ($items as $item) :?>
         <?php $_product = $item->getProduct(); ?>
         <?php if ($i == 0) : ?>
-            <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12;'><tr>
+            <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12px;'><tr>
         <?php endif;?>
         <?php if($mode == 'list'):?>
             </tr><tr>
@@ -97,8 +97,8 @@ $priceHelper = $block->priceHelper;
                     <?php
                     if ($urlText = $block->getTextForUrl($_product->getStoreId()))
                         echo $block->escapeHtml($urlText);
-                        else
-                            echo 'View Now';
+                    else
+                        echo $block->escapeHtml(__('View Now'));
                     ?>
                 </a>
             </div>

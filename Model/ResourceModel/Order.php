@@ -76,7 +76,7 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     'email_imported' => '1',
                     'updated_at' => gmdate('Y-m-d H:i:s')
                 ],
-                "order_id IN ($ids)"
+                ["order_id IN (?)" => $ids]
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));

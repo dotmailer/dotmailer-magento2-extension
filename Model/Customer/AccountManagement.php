@@ -1,8 +1,8 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model;
+namespace Dotdigitalgroup\Email\Model\Customer;
 
-class Customer extends \Magento\Customer\Model\AccountManagement
+class AccountManagement extends \Magento\Customer\Model\AccountManagement
 {
 
     /**
@@ -89,43 +89,12 @@ class Customer extends \Magento\Customer\Model\AccountManagement
     }
 
     /**
-     * Send email with new account related information
-     *
-     * @param \Magento\Customer\Api\Data\CustomerInterface $customer
-     * @param string $type
-     * @param string $backUrl
-     * @param string $storeId
-     * @param string $sendemailStoreId
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @deprecated
-     */
-    public function sendNewAccountEmail(
-        $customer,
-        $type = self::NEW_ACCOUNT_EMAIL_REGISTERED,
-        $backUrl = '',
-        $storeId = '0',
-        $sendemailStoreId = null
-    ) {
-        if ($this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
-            'store',
-            $storeId
-        )
-        ) {
-            return $this;
-        } else {
-            return parent::sendNewAccountEmail($customer, $type, $backUrl, $storeId, $sendemailStoreId);
-        }
-    }
-
-    /**
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @param string                                       $redirectUrl
      *
      * @return $this
      */
-    public function sendEmailConfirmation(\Magento\Customer\Api\Data\CustomerInterface $customer, $redirectUrl)
+    protected function sendEmailConfirmation(\Magento\Customer\Api\Data\CustomerInterface $customer, $redirectUrl)
     {
         $storeId = $this->getWebsiteStoreId($customer);
         if ($this->scopeConfig->isSetFlag(
@@ -136,7 +105,7 @@ class Customer extends \Magento\Customer\Model\AccountManagement
         ) {
             return $this;
         } else {
-            parent::sendEmailConfirmation($customer, $redirectUrl);
+            return parent::sendEmailConfirmation($customer, $redirectUrl);
         }
     }
 }

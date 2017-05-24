@@ -25,6 +25,10 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
     public $customerModel;
 
     public $customerId ;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    private $helper;
 
 
     public function setup()
@@ -32,39 +36,28 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
         $this->customerFactory = $this->objectManager->create('\Magento\Customer\Model\CustomerFactory');
         $this->contactFactory = $this->objectManager->create('\Dotdigitalgroup\Email\Model\ContactFactory');
+        $this->helper = $this->objectManager->create('\Dotdigitalgroup\Email\Helper\Data');
 
         $this->prepareCustomerData();
 
     }
 
-    public function tearDown()
-    {
-        $this->contactFactory->create()
-            ->loadByCustomerId($this->customerId)
-            ->delete();
-        $this->customerModel
-            ->delete();
-
-    }
-
     public function prepareCustomerData()
     {
-
-        $helper = $this->getMock('Dotdigitalgroup\Email\Helper\Data', [], [], '', false);
-        $helper->method('isEnabled')->willReturn(true);
-        $this->objectManager->addSharedInstance($helper, \Dotdigitalgroup\Email\Helper\Data::class);
-
         /** @var \Magento\Store\Model\StoreManagerInterface $storeManager */
         $storeManager = $this->objectManager->create('\Magento\Store\Model\StoreManagerInterface');
         $store = $storeManager->getStore();
         $website = $store->getWebsite();
         $num = rand(500, 5000);
-        $email = 'dummy' . $num . 'new@dotmailer.com';
+        $this->email = 'dummy' . $num . 'new@dotmailer.com';
+
+        $this->setupConfig('website', $website->getId());
+        $this->setupConfig('default', 0);
 
         $customerModel = $this->customerFactory->create();
         $customerModel->setStore($store);
         $customerModel->setWebsiteId($website->getId());
-        $customerModel->setEmail($email);
+        $customerModel->setEmail($this->email);
         $customerModel->setFirstname('Firstname');
         $customerModel->setLastname('Lastname');
         $customerModel->setPassword('dummypassword');
@@ -98,5 +91,25 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($updatedEmail, $contact->getEmail(), 'Contact was not updated');
     }
 
-
+    private function setupConfig($scope, $scopeId)
+    {
+        $this->helper->saveConfigData(
+            'connector_api_credentials/api/enabled',
+            1,
+            $scope,
+            $scopeId
+        );
+        $this->helper->saveConfigData(
+            'connector_api_credentials/api/username',
+            'dummy',
+            $scope,
+            $scopeId
+        );
+        $this->helper->saveConfigData(
+            'connector_api_credentials/api/password',
+            'dummy',
+            $scope,
+            $scopeId
+        );
+    }
 }
