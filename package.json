@@ -1,0 +1,46 @@
+{
+  "name": "dotmailer-magento2-extension",
+  "version": "2.2.0",
+  "description": "dotmailer integration for Magento v2",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-plugin-node": "^4.2.2",
+    "eslint-plugin-import": "^2.2.0"
+  },
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint -c ./dev/tests/static/testsuite/Magento/Test/Js/_files/eslint/.eslintrc ./**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotmailer/dotmailer-magento2-extension.git"
+  },
+  "keywords": [
+    "dotmailer",
+    "email",
+    "marketing",
+    "magento",
+    "connector",
+    "integration"
+  ],
+  "authors": [
+    {
+      "name": "Calin Diacon",
+      "email": "calin.diacon@dotmailer.com"
+    },
+    {
+      "name": "Adeel Qamar",
+      "email": "adeel.qamar@dotmailer.com"
+    },
+    {
+      "name": "Zygimantas",
+      "email": "zygimantas.simkus@dotmailer.com"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dotmailer/dotmailer-magento2-extension/issues"
+  },
+  "homepage": "https://github.com/dotmailer/dotmailer-magento2-extension#readme"
+}
