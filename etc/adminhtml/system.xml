@@ -305,7 +305,7 @@
                 <field id="custom_attributes" translate="label" sortOrder="550" showInDefault="1" showInWebsite="1"
                        showInStore="0">
                     <label></label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
                 </field>
@@ -626,7 +626,7 @@
                 <field id="program" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1"
                        showInStore="0">
                     <label>Customer</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Customdatafields</frontend_model>
                 </field>

@@ -100,23 +100,30 @@ class Automation
     public $orderFactory;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Config\Json
+     */
+    public $serializer;
+
+    /**
      * Automation constructor.
-     *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory
-     * @param \Magento\Framework\App\ResourceConnection                               $resource
-     * @param \Dotdigitalgroup\Email\Helper\Data                                      $helper
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface                    $localeDate
-     * @param \Magento\Store\Model\StoreManagerInterface                              $storeManagerInterface
-     * @param \Magento\Sales\Model\OrderFactory                                       $orderFactory
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory,
         \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Sales\Model\OrderFactory $orderFactory
     ) {
+        $this->serializer = $serializer;
         $this->automationFactory = $automationFactory;
         $this->helper            = $helper;
         $this->storeManager      = $storeManagerInterface;
@@ -154,10 +161,9 @@ class Automation
             $websites = $this->helper->getWebsites(true);
             foreach ($websites as $website) {
                 if (strpos($type, self::ORDER_STATUS_AUTOMATION) !== false) {
-                    //@codingStandardsIgnoreStart
-                    $configValue
-                        = unserialize($this->helper->getWebsiteConfig($config, $website));
-                    //@codingStandardsIgnoreEnd
+
+                    $configValue = $this->serializer->unserialize($this->helper->getWebsiteConfig($config, $website));
+
                     if (is_array($configValue) && !empty($configValue)) {
                         foreach ($configValue as $one) {
                             if (strpos($type, $one['status']) !== false) {
