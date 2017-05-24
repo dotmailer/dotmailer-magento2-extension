@@ -55,7 +55,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
         $this->ruleCondition = $ruleCondition;
         $this->ruleValue = $ruleValue;
         $this->jsonEncoder = $jsonEncoder;
-        
+
         parent::__construct($context);
         $this->http = $http;
     }
