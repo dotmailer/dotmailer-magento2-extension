@@ -10,14 +10,25 @@ class Select
     public $customerFactory;
 
     /**
+     * Escaper
+     *
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
+
+
+    /**
      * Select constructor.
      *
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
-        \Magento\Customer\Model\CustomerFactory $customerFactory
+        \Magento\Customer\Model\CustomerFactory $customerFactory,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->customerFactory = $customerFactory;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -52,9 +63,7 @@ class Select
             if ($attribute->getFrontendLabel()) {
                 $code = $attribute->getAttributeCode();
                 //escape the label in case of quotes
-                //@codingStandardsIgnoreStart
-                $label = addslashes($attribute->getFrontendLabel());
-                //@codingStandardsIgnoreEnd
+                $label = $this->escaper->escapeQuote($attribute->getFrontendLabel());
                 if (!in_array($code, $excluded)) {
                     $options[] = [
                         'value' => $attribute->getAttributeCode(),

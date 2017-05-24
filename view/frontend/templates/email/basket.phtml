@@ -131,10 +131,10 @@
                         . '</a></br>'
                         //. $block->escapeHtml($item['inStock']); ?></td>
                 <td class="product-price quantity"
-                    style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$item['qty']; ?></td>
+                    style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int) $item['qty']; ?></td>
                 <td class="product-price"
                     style="padding: 5px; border-bottom: 1px solid #cbd3d4;">
-                    <?php echo $item['total']; ?>
+                    <?php /* @noEscape */ echo $item['total']; ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -151,7 +151,7 @@
 
     if ($block->canShowUrl()) : ?>
         <p style="text-align: center">
-            <a href="<?php echo $block->escapeHtml($block->getUrlForLink()); ?>" class="product-url">
+            <a href="<?php echo $block->escapeUrl($block->getUrlForLink()); ?>" class="product-url">
                 <strong>
                     <?php
                     $link = ($block->takeMeToCartTextForUrl()) ? $block->takeMeToCartTextForUrl() : __('Take Me To My Basket');

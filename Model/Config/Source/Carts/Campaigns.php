@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
+     * Escaper
+     *
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
@@ -18,11 +25,14 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
      *
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Magento\Framework\Escaper $escaper
     ) {
+        $this->escaper = $escaper;
         $this->registry = $registry;
         $this->helper   = $data;
     }
@@ -60,7 +70,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
                         //@codingStandardsIgnoreStart
                         $fields[] = [
                             'value' => $campaign->id,
-                            'label' => addslashes($campaign->name),
+                            'label' => $this->escaper->escapeQuote($campaign->name),
                         ];
                         //@codingStandardsIgnoreEnd
                     }
