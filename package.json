@@ -38,7 +38,7 @@
       "email": "zygimantas.simkus@dotmailer.com"
     }
   ],
-  "license": "(OSL-3.0 OR AFL-3.0)",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/dotmailer/dotmailer-magento2-extension/issues"
   },
