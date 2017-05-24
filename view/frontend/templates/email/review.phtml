@@ -89,8 +89,8 @@ $website = $block->getWebsite();
             <div class="product-name" align="center"><b><?php echo substr($block->escapeHtml($item->getName()), 0,
                         40); ?></b></div>
             <div align="center">
-                <a class="proudct-url" href="<?php echo $block->escapeHtml($block->getReviewItemUrl($item->getId())) .
-                    $helper->getReviewReminderAnchor($website); ?>"><?php echo $block->escapeHtml(__('Leave a review')); ?>
+                <?php $url = $block->getReviewItemUrl($item->getId()) . $helper->getReviewReminderAnchor($website); ?>
+                <a class="proudct-url" href="<?php echo $block->escapeUrl($url); ?>"><?php echo $block->escapeHtml(__('Leave a review')); ?>
                 </a>
             </div>
         </td>

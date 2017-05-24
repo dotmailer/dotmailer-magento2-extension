@@ -137,14 +137,14 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
                     'suppressed' => '1',
                 ],
-                "email IN ($emails)"
+                ["email IN (?)" => $emails]
             );
 
             // un-subscribe newsletter subscribers
             $write->update(
                 $this->getTable('newsletter_subscriber'),
                 ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
-                "subscriber_email IN ($emails)"
+                ["subscriber_email IN (?)" => $emails]
             );
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
@@ -215,7 +215,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $write = $this->getConnection();
         $ids = implode(', ', $ids);
         //update subscribers imported
-        $updated = $write->update($this->getMainTable(), ['subscriber_imported' => 1], "email_contact_id IN ($ids)");
+        $updated = $write->update(
+            $this->getMainTable(),
+            ['subscriber_imported' => 1],
+            ["email_contact_id IN (?)" => $ids]
+        );
 
         return $updated;
     }

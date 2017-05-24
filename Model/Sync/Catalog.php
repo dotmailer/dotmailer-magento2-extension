@@ -355,7 +355,7 @@ class Catalog
                     'modified' => 'null',
                     'updated_at' => gmdate('Y-m-d H:i:s'),
                     ],
-                    "product_id IN ($ids)"
+                    ["product_id IN (?)" => $ids]
                 );
             } else {
                 $write->update(
@@ -366,7 +366,7 @@ class Catalog
                         'Y-m-d H:i:s'
                     ),
                     ],
-                    "product_id IN ($ids)"
+                    ["product_id IN (?)" => $ids]
                 );
             }
         } catch (\Exception $e) {
