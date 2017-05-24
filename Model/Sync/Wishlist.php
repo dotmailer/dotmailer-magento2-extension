@@ -357,13 +357,13 @@ class Wishlist
                         'wishlist_modified' => 'null',
                         'updated_at' => $now,
                     ],
-                    "wishlist_id IN ($ids)"
+                    ["wishlist_id IN (?)" => $ids]
                 );
             } else {
                 $write->update(
                     $tableName,
                     ['wishlist_imported' => 1, 'updated_at' => $now],
-                    "wishlist_id IN ($ids)"
+                    ["wishlist_id IN (?)" => $ids]
                 );
             }
         } catch (\Exception $e) {
