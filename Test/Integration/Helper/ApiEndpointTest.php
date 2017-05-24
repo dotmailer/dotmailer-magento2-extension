@@ -77,7 +77,8 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
             $objectManager->create('\Magento\Store\Model\Store'),
             $objectManager->create('\Magento\Framework\App\Config\Storage\Writer'),
             $mockClientFactory,
-            $objectManager->create('\Dotdigitalgroup\Email\Helper\ConfigFactory')
+            $objectManager->create('\Dotdigitalgroup\Email\Helper\ConfigFactory'),
+            $objectManager->create('\Magento\Framework\Stdlib\DateTime\DateTime')
         );
         $apiEndpoint = $helper->getApiEndpoint($website, $mockClient);
         $this->assertEquals(
