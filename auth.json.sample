@@ -1,8 +1,0 @@
-{
-  "http-basic": {
-    "repo.magento.com": {
-      "username": "Public-key from Magento marketplace goes here",
-      "password": "Private-key from Magento marketplace goes here"
-    }
-  }
-}
