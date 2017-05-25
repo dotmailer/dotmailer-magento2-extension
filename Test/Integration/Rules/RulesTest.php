@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Rules;
 
+use Dotdigitalgroup\Email\Model\Config\Json;
 use Dotdigitalgroup\Email\Model\ResourceModel\Rules as RulesResource;
 use Dotdigitalgroup\Email\Model\Rules;
 use Magento\Catalog\Model\Product;
@@ -17,12 +18,13 @@ use Magento\TestFramework\ObjectManager;
 /**
  * @magentoDataFixture Magento/Customer/_files/customer.php
  * @magentoDataFixture Magento/Customer/_files/customer_address.php
- * @magentoDataFixture Magento/Catalog/_files/products.php
+ * magentoDataFixture Magento/Catalog/_files/products.php
  */
 class RulesTest extends \PHPUnit_Framework_TestCase
 {
     const RULE_OPERATOR_AND = 1;
     const RULE_OPERATOR_OR = 2;
+    public $serializer;
 
     /**
      * @var QuoteCollection
@@ -87,6 +89,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
     {
         $quote = $this->createQuote();
         $quote->getPayment()->setMethod($paymentCode);
+        $quote->setPaymentMethod($paymentCode);
+        $quote->getPayment()->setQuote($quote);
+        $quote->getPayment()->importData(['method' => $paymentCode]);
 
         /** @var QuoteResource $quoteResource */
         $quoteResource = ObjectManager::getInstance()->create(QuoteResource::class);
@@ -135,6 +140,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
     private function createAbandonedCartRuleWithCondition($attribute, $condition, $value, $operator)
     {
         $rule = $this->createAbandonedCartRuleWithOperator($operator);
+
         $this->addConditionToRule($rule, $attribute, $condition, $value);
 
         return $rule;
@@ -154,8 +160,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
             'conditions' => $condition,
             'cvalue'     => $value,
         ];
-        $rule->setData('condition', $conditions);
+
         $rule->setData('website_ids', $this->getWebsiteIdsFromRule($rule));
+        $rule->setData('condition', $conditions);
 
         /** @var RulesResource $rulesResource */
         $rulesResource = ObjectManager::getInstance()->get(RulesResource::class);
@@ -176,10 +183,12 @@ class RulesTest extends \PHPUnit_Framework_TestCase
      */
     private function getConditionsFromRule(Rules $rule)
     {
-        $conditions = $rule->getData('condition') ? $rule->getData('condition') : [];
+        $serializer = ObjectManager::getInstance()->create(Json::class);
+        $conditions = $rule->getData('conditions') ? $rule->getData('conditions') : [];
         if (is_string($conditions)) {
-            $conditions = unserialize($conditions);
+            $conditions = $serializer->unserialize($conditions);
         }
+
         return $conditions;
     }
 
@@ -209,7 +218,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
     public function testExcludeByPaymentMethodOnORCondition()
     {
-        $this->markTestSkipped();
+        $this->markTestIncomplete('payment method is not saving');
         $quoteToBeExcluded = $this->createQuoteWithPayment('paypal');
         $quoteToBeIncluded1 = $this->createQuoteWithPayment('foo');
         $quoteToBeIncluded2 = $this->createQuoteWithoutPayment();
@@ -226,7 +235,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
     public function testExcludeByPaymentMethodOnANDCondition()
     {
-        $this->markTestSkipped();
+        $this->markTestIncomplete('payment method is not saving');
         $quoteToBeExcluded = $this->createQuoteWithPayment('paypal');
         $quoteToBeIncluded1 = $this->createQuoteWithPayment('foo');
         $quoteToBeIncluded2 = $this->createQuoteWithoutPayment();
@@ -243,11 +252,12 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
     public function testExcludeByTwoPaymentMethodsOnANDCondition()
     {
-        $this->markTestSkipped();
+        $this->markTestIncomplete('payment method is not saving');
         $quoteToBeExcluded1 = $this->createQuoteWithPayment('paypal');
         $quoteToBeExcluded2 = $this->createQuoteWithPayment('checkmo');
         $quoteToBeIncluded1 = $this->createQuoteWithPayment('foo');
         $quoteToBeIncluded2 = $this->createQuoteWithoutPayment();
+
         $rule = $this->createAbandonedCartRuleWithCondition('method', 'eq', 'paypal', self::RULE_OPERATOR_AND);
         $this->addConditionToRule($rule, 'method', 'eq', 'checkmo');
 
@@ -263,8 +273,8 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
     private function createQuoteWithSubtotal($subtotal)
     {
+        /** @var \Magento\Quote\Model\Quote $quote */
         $quote = $this->createQuote();
-
         $quote->setSubtotal($subtotal);
         $quoteResource = ObjectManager::getInstance()->create(QuoteResource::class);
         $quoteResource->save($quote);
@@ -286,7 +296,6 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         /** @var Rules $ruleService */
         $ruleService = ObjectManager::getInstance()->create(Rules::class);
         $ruleService->process($this->quoteCollection, Rules::ABANDONED, $this->currentWebsiteId);
-
 
         $this->assertQuoteCollectionNotContains($quote);
         $this->assertQuoteCollectionNotContains($quote1);
