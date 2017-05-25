@@ -32,7 +32,7 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
      */
     public function test_first_customer_automation()
     {
-        $customer = $this->objectManager->create(\Magento\Customer\Model\Customer::class);
+        $this->objectManager->create(\Magento\Customer\Model\Customer::class);
 
         $order = $this->objectManager->create(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId($this->orderIncrementId);
