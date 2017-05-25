@@ -150,7 +150,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         } else {
             $this->setUpdatedAt(time());
         }
-        $this->setCondition($this->serializer->serialize($this->getCondition()));
+        $this->setConditions($this->serializer->serialize($this->getCondition()));
         $this->setWebsiteIds(implode(',', $this->getWebsiteIds()));
 
         return $this;
@@ -165,7 +165,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     {
         parent::_afterLoad();
 
-        $this->setCondition($this->serializer->unserialize($this->getCondition()));
+        $this->setCondition($this->serializer->unserialize($this->getConditions()));
 
         return $this;
     }
@@ -240,7 +240,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         }
 
         //if rule has no conditions then return the collection untouched
-        $condition = $this->serializer->unserialize($rule->getCondition());
+        $condition = $this->serializer->unserialize($rule->getConditions());
 
         if (empty($condition)) {
             return $collection;
