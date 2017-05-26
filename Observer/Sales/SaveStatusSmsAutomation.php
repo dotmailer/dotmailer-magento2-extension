@@ -119,44 +119,14 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             }
 
             // check for order status change
-            $statusBefore = $this->registry->registry('sales_order_status_before');
-            if ($status != $statusBefore) {
-                //If order status has changed and order is already imported then set modified to 1
-                if ($emailOrder->getEmailImported() == \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
-                    $emailOrder->setModified(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
-                }
-            }
+            $this->handleOrderStatusChange($status, $emailOrder);
+
             // set back the current store
             $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             $emailOrder->save();
 
+            $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName);
 
-            //Status check automation enrolment
-            $configStatusAutomationMap = $this->serializer->unserialize(
-                $this->scopeConfig->getValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                    $order->getStore()
-                )
-            );
-
-            if (! empty($configStatusAutomationMap)) {
-                foreach ($configStatusAutomationMap as $configMap) {
-                    if ($configMap['status'] == $status) {
-                        //send to automation queue
-                        $this->doAutomationEnrolment(
-                            [
-                                'programId' => $configMap['automation'],
-                                'automationType' => 'order_automation_' . $status,
-                                'email' => $customerEmail,
-                                'order_id' => $order->getIncrementId(),
-                                'website_id' => $websiteId,
-                                'store_name' => $storeName
-                            ]
-                        );
-                    }
-                }
-            }
             //If customer's first order, also order state is new
             if ($order->getCustomerId() && $order->getState() == \Magento\Sales\Model\Order::STATE_NEW) {
                 $orders = $this->orderCollectionFactory->create()
@@ -219,6 +189,57 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             $this->helper->log(
                 'automation type : ' . $data['automationType'] . ' program id not found'
             );
+        }
+    }
+
+    /**
+     * @param $status
+     * @param $emailOrder
+     */
+    public function handleOrderStatusChange($status, $emailOrder)
+    {
+        $statusBefore = $this->registry->registry('sales_order_status_before');
+        if ($status != $statusBefore) {
+            //If order status has changed and order is already imported then set modified to 1
+            if ($emailOrder->getEmailImported() == \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
+                $emailOrder->setModified(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
+            }
+        }
+    }
+
+    /**
+     * @param $order
+     * @param $status
+     * @param $customerEmail
+     * @param $websiteId
+     * @param $storeName
+     */
+    public function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName)
+    {
+        $configStatusAutomationMap = $this->serializer->unserialize(
+            $this->scopeConfig->getValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $order->getStore()
+            )
+        );
+
+        if (!empty($configStatusAutomationMap)) {
+            foreach ($configStatusAutomationMap as $configMap) {
+                if ($configMap['status'] == $status) {
+                    //send to automation queue
+                    $this->doAutomationEnrolment(
+                        [
+                            'programId' => $configMap['automation'],
+                            'automationType' => 'order_automation_' . $status,
+                            'email' => $customerEmail,
+                            'order_id' => $order->getIncrementId(),
+                            'website_id' => $websiteId,
+                            'store_name' => $storeName
+                        ]
+                    );
+                }
+            }
         }
     }
 }
