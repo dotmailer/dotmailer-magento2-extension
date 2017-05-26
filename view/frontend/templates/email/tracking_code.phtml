@@ -1,14 +1,12 @@
 <?php $helper = $this->helper('Dotdigitalgroup\Email\Helper\Data'); ?>
 
-<?php if ($helper->isPageTrackingEnabled()) : ?>
-    <script type="text/javascript">
-        (function(){
-            var connector = document.createElement('script');
-            connector.type = 'text/javascript';
-            connector.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 't.trackedlink.net/_dmpt.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(connector, s);
-        })();
-    </script>
-<?php endif;
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "trackingCode": {
+                "isEnabled": "<?php echo (boolean) $helper->isPageTrackingEnabled(); ?>"
+            }
+        }
+    }
+</script>
 

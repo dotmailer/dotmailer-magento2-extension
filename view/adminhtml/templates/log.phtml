@@ -25,43 +25,12 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    require([
-        'prototype'
-    ], function () {
-        console_scroll();
-        function console_scroll() {
-            dh = $("log_data").scrollHeight
-            ch = $("log_data").clientHeight
-            if (dh > ch) {
-                moveme = dh - ch
-                $("log_data").scrollTop = moveme;
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Dotdigitalgroup_Email/js/logUpdater":{
+                "url":"<?php echo $block->escapeUrl($block->getUrl('dotdigitalgroup_email/connector/ajaxlogcontent')) ?>"
             }
         }
-
-        //Observer select
-        $('connector-log-selector').observe('change', function (event) {
-            doUpdate($('connector-log-selector').getValue());
-        });
-        //Observe button click for reload
-        $('connector-log-reloader').observe('click', function (event) {
-            doUpdate($('connector-log-selector').getValue());
-        });
-        function doUpdate(log) {
-            var url = '<?php echo $block->escapeUrl($block->getUrl('dotdigitalgroup_email/connector/ajaxlogcontent')) ?>';
-            new Ajax.Request(url,
-                {
-                    method: 'post',
-                    parameters: {
-                        log: log
-                    },
-                    onSuccess: function (transport) {
-                        var json = transport.responseJSON;
-                        $('log_data').update(json.content);
-                        $('connector-log-header').update(json.header);
-                        console_scroll();
-                    }
-                });
-        }
-    });
+    }
 </script>
