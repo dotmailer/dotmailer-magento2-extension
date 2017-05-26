@@ -194,6 +194,25 @@ class Product
             ++$count;
         }
 
+        $this->processProductOptions($product);
+
+        unset(
+            $this->itemFactory,
+            $this->mediaConfigFactory,
+            $this->visibilityFactory,
+            $this->statusFactory,
+            $this->helper,
+            $this->storeManager
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param $product
+     */
+    private function processProductOptions($product)
+    {
         //bundle product options
         if ($product->getTypeId()
             == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
@@ -255,17 +274,6 @@ class Product
                 $this->$label = $options;
             }
         }
-
-        unset(
-            $this->itemFactory,
-            $this->mediaConfigFactory,
-            $this->visibilityFactory,
-            $this->statusFactory,
-            $this->helper,
-            $this->storeManager
-        );
-
-        return $this;
     }
 
     /**

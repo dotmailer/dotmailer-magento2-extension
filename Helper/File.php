@@ -213,7 +213,7 @@ class File
             // Enclose fields containing $delimiter, $enclosure or whitespace
             if ($encloseAll
                 || preg_match(
-                    "/(?:${delimiterEsc}|${enclosureEsc}|\s)/",
+                    "/(?:$delimiterEsc|$enclosureEsc|\s)/",
                     $field
                 )
             ) {

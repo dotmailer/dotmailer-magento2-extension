@@ -437,52 +437,64 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             ->setImportStatus(self::FAILED)
                             ->save();
                         continue;
+                        //@codingStandardsIgnoreEnd
                     }
 
-                    if ($response) {
-                        if ($response->status == 'Finished') {
-                            $now = gmdate('Y-m-d H:i:s');
+                    $this->processResponse($response, $item, $websiteId);
+                }
+            }
+        }
+    }
 
-                            $item->setImportStatus(self::IMPORTED)
-                                ->setImportFinished($now)
-                                ->setMessage('')
-                                ->save();
-                            if (
-                                $item->getImportType()
-                                == self::IMPORT_TYPE_CONTACT or
-                                $item->getImportType()
-                                == self::IMPORT_TYPE_SUBSCRIBERS or
-                                $item->getImportType()
-                                == self::IMPORT_TYPE_GUEST
+    /**
+     * @param $response
+     * @param $item
+     * @param $websiteId
+     */
+    private function processResponse($response, $item, $websiteId)
+    {
+        if ($response) {
+            //@codingStandardsIgnoreStart
+            if ($response->status == 'Finished') {
+                $now = gmdate('Y-m-d H:i:s');
 
-                            ) {
-                                //if file
-                                if ($file = $item->getImportFile()) {
-                                    $this->fileHelper->archiveCSV($file);
-                                }
+                $item->setImportStatus(self::IMPORTED)
+                    ->setImportFinished($now)
+                    ->setMessage('')
+                    ->save();
+                if (
+                    $item->getImportType()
+                    == self::IMPORT_TYPE_CONTACT or
+                    $item->getImportType()
+                    == self::IMPORT_TYPE_SUBSCRIBERS or
+                    $item->getImportType()
+                    == self::IMPORT_TYPE_GUEST
 
-                                if ($item->getImportId()) {
-                                    $this->_processContactImportReportFaults(
-                                        $item->getImportId(), $websiteId
-                                    );
-                                }
-                            }
-                        } elseif (in_array(
-                            $response->status, $this->importStatuses
-                        )) {
-                            $item->setImportStatus(self::FAILED)
-                                ->setMessage(
-                                    'Import failed with status '
-                                    . $response->status
-                                )
-                                ->save();
-                            //@codingStandardsIgnoreEnd
-                        } else {
-                            //Not finished
-                            $this->totalItems += 1;
-                        }
+                ) {
+                    //if file
+                    if ($file = $item->getImportFile()) {
+                        $this->fileHelper->archiveCSV($file);
+                    }
+
+                    if ($item->getImportId()) {
+                        $this->_processContactImportReportFaults(
+                            $item->getImportId(), $websiteId
+                        );
                     }
                 }
+            } elseif (in_array(
+                $response->status, $this->importStatuses
+            )) {
+                $item->setImportStatus(self::FAILED)
+                    ->setMessage(
+                        'Import failed with status '
+                        . $response->status
+                    )
+                    ->save();
+                //@codingStandardsIgnoreEnd
+            } else {
+                //Not finished
+                $this->totalItems += 1;
             }
         }
     }

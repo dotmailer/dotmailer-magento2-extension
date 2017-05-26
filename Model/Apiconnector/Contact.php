@@ -240,6 +240,83 @@ class Contact
             $customerIds,
             $website->getId()
         );
+
+        $customerNum = $this->getNumberOfCustomers(
+            $website,
+            $customerCollection,
+            $mappedHash,
+            $customAttributes,
+            $customersFile,
+            $customerIds
+        );
+
+        //file was created - continue to queue the export
+        $this->enqueueForExport($website, $customersFile, $customerNum, $customerIds, $connection);
+
+        $this->countCustomers += $customerNum;
+
+        return $customerNum;
+    }
+
+    /**
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * @param $customersFile
+     * @param $customerNum
+     * @param $customerIds
+     *
+     * @param $connection
+     */
+    private function enqueueForExport(
+        \Magento\Store\Api\Data\WebsiteInterface $website,
+        $customersFile,
+        $customerNum,
+        $customerIds,
+        $connection
+    ) {
+        //@codingStandardsIgnoreStart
+        if (is_file($this->file->getFilePath($customersFile))) {
+            //@codingStandardsIgnoreEnd
+            if ($customerNum > 0) {
+                //register in queue with importer
+                $this->importerFactory->create()
+                    ->registerQueue(
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
+                        '',
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                        $website->getId(),
+                        $customersFile
+                    );
+                //set imported
+
+                $tableName = $this->resource->getTableName('email_contact');
+                $ids = implode(', ', $customerIds);
+                $connection->update(
+                    $tableName,
+                    ['email_imported' => 1],
+                    ["customer_id IN (?)" => $ids]
+                );
+            }
+        }
+    }
+
+    /**
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * @param $customerCollection
+     * @param $mappedHash
+     * @param $customAttributes
+     * @param $customersFile
+     * @param $customerIds
+     *
+     * @return int
+     */
+    private function getNumberOfCustomers(
+        \Magento\Store\Api\Data\WebsiteInterface $website,
+        $customerCollection,
+        $mappedHash,
+        $customAttributes,
+        $customersFile,
+        $customerIds
+    ) {
         $countIds = [];
         foreach ($customerCollection as $customer) {
             $connectorCustomer = $this->emailCustomer->create();
@@ -275,35 +352,6 @@ class Contact
             'Website : ' . $website->getName() . ', customers = ' . $customerNum .
             ', execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
         );
-
-        //file was created - continue for queue the export
-        //@codingStandardsIgnoreStart
-        if (is_file($this->file->getFilePath($customersFile))) {
-            //@codingStandardsIgnoreEnd
-            if ($customerNum > 0) {
-                //register in queue with importer
-                $this->importerFactory->create()
-                    ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
-                        '',
-                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                        $website->getId(),
-                        $customersFile
-                    );
-                //set imported
-
-                $tableName = $this->resource->getTableName('email_contact');
-                $ids = implode(', ', $customerIds);
-                $connection->update(
-                    $tableName,
-                    ['email_imported' => 1],
-                    ["customer_id IN (?)" => $ids]
-                );
-            }
-        }
-
-        $this->countCustomers += $customerNum;
-
         return $customerNum;
     }
 
@@ -384,6 +432,41 @@ class Contact
             $website->getId()
         );
 
+        $updated = $this->processCustomerCollection(
+            $customerCollection,
+            $websiteId,
+            mappedHash,
+            $customers,
+            $customAttributes,
+            $customersFile,
+            $updated
+        );
+
+        $this->importContacts($customersFile, $updated, $website, $client);
+
+        return $contact->getEmail();
+    }
+
+    /**
+     * @param $customerCollection
+     * @param $websiteId
+     * @param $mappedHash
+     * @param $customers
+     * @param $customAttributes
+     * @param $customersFile
+     * @param $updated
+     *
+     * @return mixed
+     */
+    private function processCustomerCollection(
+        $customerCollection,
+        $websiteId,
+        $mappedHash,
+        $customers,
+        $customAttributes,
+        $customersFile,
+        $updated
+    ) {
         foreach ($customerCollection as $customer) {
             $contactModel = $this->contactFactory->create()
                 ->loadByCustomerEmail($customer->getEmail(), $websiteId);
@@ -428,11 +511,24 @@ class Contact
                 $contactModel->setIsSubscriber('1')
                     ->setSubscriberStatus($subscriber->getSubscriberStatus());
             }
+
             //@codingStandardsIgnoreStart
             $contactModel->getResource()->save($contactModel);
+            //@codingStandardsIgnoreEnd
             ++$updated;
         }
+        return $updated;
+    }
 
+    /**
+     * @param $customersFile
+     * @param $updated
+     * @param $website
+     * @param $client
+     */
+    private function importContacts($customersFile, $updated, $website, $client)
+    {
+        //@codingStandardsIgnoreStart
         if (is_file($this->file->getFilePath($customersFile))) {
             //@codingStandardsIgnoreEnd
             //import contacts
@@ -452,8 +548,6 @@ class Contact
                 );
             }
         }
-
-        return $contact->getEmail();
     }
 
     /**

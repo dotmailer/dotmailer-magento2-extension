@@ -333,29 +333,40 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 continue;
             }
 
-            if ($cond == 'null') {
-                if ($value == '1') {
-                    $collection->addFieldToFilter(
-                        $attribute,
-                        ['notnull' => true]
-                    );
-                } elseif ($value == '0') {
-                    $collection->addFieldToFilter(
-                        $attribute,
-                        [$cond => true]
-                    );
-                }
-            } else {
-                if ($cond == 'like' or $cond == 'nlike') {
-                    $value = '%' . $value . '%';
-                }
-                $collection->addFieldToFilter(
-                    $attribute,
-                    [$this->conditionMap[$cond] => $value]
-                );
-            }
+            $this->processProcessAndCombinationCondition($collection, $cond, $value, $attribute);
         }
         return $this->_processProductAttributes($collection);
+    }
+
+    /**
+     * @param $collection
+     * @param $cond
+     * @param $value
+     * @param $attribute
+     */
+    private function processProcessAndCombinationCondition($collection, $cond, $value, $attribute)
+    {
+        if ($cond == 'null') {
+            if ($value == '1') {
+                $collection->addFieldToFilter(
+                    $attribute,
+                    ['notnull' => true]
+                );
+            } elseif ($value == '0') {
+                $collection->addFieldToFilter(
+                    $attribute,
+                    [$cond => true]
+                );
+            }
+        } else {
+            if ($cond == 'like' or $cond == 'nlike') {
+                $value = '%' . $value . '%';
+            }
+            $collection->addFieldToFilter(
+                $attribute,
+                [$this->conditionMap[$cond] => $value]
+            );
+        }
     }
 
     /**

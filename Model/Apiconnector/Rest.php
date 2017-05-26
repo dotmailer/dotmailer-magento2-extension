@@ -228,6 +228,13 @@ abstract class Rest
         /*
          * check and debug api request total time
          */
+        $this->processDebugApi();
+
+        return $this->responseBody;
+    }
+
+    private function processDebugApi()
+    {
         if ($this->helper->isDebugEnabled()) {
             $info = $this->getResponseInfo();
             //the response info data is set
@@ -245,8 +252,6 @@ abstract class Rest
                 }
             }
         }
-
-        return $this->responseBody;
     }
 
     /**
@@ -547,7 +552,7 @@ abstract class Rest
     }
 
     /**
-     * @return bool
+     * @return var
      */
     public function getCurlError()
     {
