@@ -1659,6 +1659,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
             $this->getWebsite()
         );
-        return $codeFromConfig == $code;
+        return $codeFromConfig === $code;
     }
 }

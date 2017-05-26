@@ -66,7 +66,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
             ! $this->helper->isCodeValid($params['code'])
         )
         {
-            $this->helper->log('Basket no quote id or valid code is set');
+            $this->helper->log('Abandoned cart not found or invalid code');
 
             return false;
         }

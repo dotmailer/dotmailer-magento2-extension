@@ -45,7 +45,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
      */
     public function _prepareRequestParams()
     {
-        $this->originalParams = $this->_escaper->escapeJs(
+        $this->originalParams = $this->_escaper->escapeHtml(
             $this->getRequest()->getParam('section')
         );
         
