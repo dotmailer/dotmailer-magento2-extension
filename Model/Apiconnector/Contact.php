@@ -297,7 +297,7 @@ class Contact
                 $connection->update(
                     $tableName,
                     ['email_imported' => 1],
-                    ["customer_id IN (?) => $ids"]
+                    ["customer_id IN (?)" => $ids]
                 );
             }
         }

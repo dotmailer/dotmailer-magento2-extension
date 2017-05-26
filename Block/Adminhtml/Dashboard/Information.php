@@ -64,7 +64,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getPhpMaxExecutionTime()
     {
-        return ini_get('max_execution_time') . ' sec.';
+        return $this->escapeHtml(ini_get('max_execution_time') . ' sec.');
     }
 
     /**
@@ -72,18 +72,18 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getDeveloperMode()
     {
-        return $this->_appState->getMode();
+        return $this->escapeHtml($this->_appState->getMode());
     }
 
     /**
      * Mgento version
-     * @return \Magento\Framework\Phrase
+     * @return \Magento\Framework\Phrase | string
      */
     public function getMagentoVersion()
     {
         $productMetadata = $this->productMetadata;
 
-        return __('ver. %1', $productMetadata->getVersion());
+        return $this->escapeHtml(__('ver. %1', $productMetadata->getVersion()));
     }
 
     /**
@@ -101,7 +101,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getConnectorVersion()
     {
-        return __('v. %1', $this->data->getConnectorVersion());
+        return $this->escapeHtml(__('v. %1', $this->data->getConnectorVersion()));
     }
 
     /**
@@ -127,7 +127,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     public function getCronLastExecution()
     {
 
-        $date = $this->data->getDateLastCronRun('ddg_automation_importer');
+        $date = $this->escapeHtml($this->data->getDateLastCronRun('ddg_automation_importer'));
 
         if (! $date) {
             $date = '<span class="message message-error">No cron found</span>';
@@ -153,7 +153,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     public function getAbandonedCartLimit()
     {
         return ($this->data->getAbandonedCartLimit())?
-            '<span class="message message-warning">' . $this->data->getAbandonedCartLimit().
+            '<span class="message message-warning">' . $this->escapeHtml($this->data->getAbandonedCartLimit()).
             ' h</span>' : 'No limit';
     }
 }

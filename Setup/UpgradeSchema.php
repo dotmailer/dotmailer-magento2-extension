@@ -11,6 +11,21 @@ use Magento\Framework\Setup\SchemaSetupInterface;
  */
 class UpgradeSchema implements UpgradeSchemaInterface
 {
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Config\Json
+     */
+    public $json;
+
+    /**
+     * UpgradeSchema constructor.
+     * @param \Dotdigitalgroup\Email\Model\Config\Json $json
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Model\Config\Json $json
+    ) {
+        $this->json = $json;
+    }
     /**
      * {@inheritdoc}
      */
@@ -91,6 +106,125 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
         }
+
+        //replace serialize with json_encode
+        if (version_compare($context->getVersion(), '2.2.1', '<')) {
+            //modify the condition column name for the email_rules table - reserved name for mysql
+            $rulesTable = $setup->getTable('email_rules');
+
+            if ($connection->tableColumnExists($rulesTable, 'condition')) {
+                $connection->changeColumn(
+                    $rulesTable,
+                    'condition',
+                    'conditions',
+                    [
+                        'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BLOB,
+                        'nullable' => false,
+                        'comment' => 'Rule Conditions'
+                    ]
+                );
+            }
+            /**
+             * Core config data.
+             */
+            $this->convertDataForConfig($setup, $connection);
+            /**
+             * Importer data.
+             */
+            $this->convertDataForImporter($setup, $connection);
+            /**
+             * Rules conditions.
+             */
+            $this->convertDataForRules($setup, $connection);
+        }
+
         $setup->endSetup();
     }
+
+    /**
+     * @param $setup
+     */
+    private function convertDataForConfig(SchemaSetupInterface $setup, $connection)
+    {
+        $configTable = $setup->getTable('core_config_data');
+        //customer and order custom attributes from config
+        $select = $connection->select()->from(
+            $configTable
+        )->where(
+            'path IN (?)',
+            ['connector_automation/order_status_automation/program', 'connector_data_mapping/customer_data/custom_attributes']
+        );
+        $rows = $setup->getConnection()->fetchAssoc($select);
+
+        $serializedRows = array_filter($rows, function ($row) {
+            return $this->isSerialized($row['value']);
+        });
+
+        foreach ($serializedRows as $id => $serializedRow) {
+            $convertedValue = $this->json->serialize(unserialize($serializedRow['value']));
+            $bind = ['value' => $convertedValue];
+            $where = [$connection->quoteIdentifier('config_id') . '=?' => $id];
+            $connection->update($configTable, $bind, $where);
+        }
+    }
+
+    /**
+     * @param $setup
+     */
+    private function convertDataForRules(SchemaSetupInterface $setup, $connection)
+    {
+        $rulesTable = $setup->getTable('email_rules');
+        //rules data
+        $select = $connection->select()->from($rulesTable);
+        $rows = $setup->getConnection()->fetchAssoc($select);
+
+        $serializedRows = array_filter($rows, function ($row) {
+            return $this->isSerialized($row['conditions']);
+        });
+
+        foreach ($serializedRows as $id => $serializedRow) {
+            $convertedValue = $this->json->serialize(unserialize($serializedRow['conditions']));
+            $bind = ['conditions' => $convertedValue];
+            $where = [$connection->quoteIdentifier('id') . '=?' => $id];
+            $connection->update($rulesTable, $bind, $where);
+        }
+    }
+
+    /**
+     * @param $setup
+     */
+    private function convertDataForImporter(SchemaSetupInterface $setup, $connection)
+    {
+        $importerTable = $setup->getTable('email_importer');
+        //imports that are not imported and has TD data
+        $select = $connection->select()
+            ->from($importerTable)
+            ->where('import_status =?', 0)
+            ->where('import_type IN (?)', ['Catalog_Default', 'Orders' ])
+        ;
+        $rows = $setup->getConnection()->fetchAssoc($select);
+
+        $serializedRows = array_filter($rows, function ($row) {
+            return $this->isSerialized($row['import_data']);
+        });
+
+        foreach ($serializedRows as $id => $serializedRow) {
+            $convertedValue = $this->json->serialize(unserialize($serializedRow['import_data']));
+            $bind = ['import_data' => $convertedValue];
+            $where = [$connection->quoteIdentifier('id') . '=?' => $id];
+            $connection->update($importerTable, $bind, $where);
+        }
+    }
+
+    /**
+     * Check if value is a serialized string
+     *
+     * @param string $value
+     * @return boolean
+     */
+    private function isSerialized($value)
+    {
+        return (boolean) preg_match('/^((s|i|d|b|a|O|C):|N;)/', $value);
+    }
+
 }

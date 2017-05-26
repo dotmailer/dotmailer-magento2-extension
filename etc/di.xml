@@ -2,7 +2,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\Mail\Transport" type="Dotdigitalgroup\Email\Model\Mail\Transport"/>
     <preference for="Magento\Newsletter\Model\Subscriber" type="Dotdigitalgroup\Email\Model\Newsletter\Sub"/>
-    <preference for="Magento\Customer\Model\AccountManagement" type="Dotdigitalgroup\Email\Model\Customer"/>
+    <preference for="Magento\Customer\Model\AccountManagement" type="Dotdigitalgroup\Email\Model\Customer\AccountManagement"/>
+    <preference for="Magento\Customer\Model\Customer" type="Dotdigitalgroup\Email\Model\Customer\Customer"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Coupon" type="Dotdigitalgroup\Email\Model\SalesRule\Coupon"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Rule\Collection" type="Dotdigitalgroup\Email\Model\SalesRule\Collection"/>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">

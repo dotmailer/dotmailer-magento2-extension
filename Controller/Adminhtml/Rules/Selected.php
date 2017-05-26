@@ -62,7 +62,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
         $this->ruleValue = $ruleValue;
         $this->jsonEncoder = $jsonEncoder;
         $this->escaper = $escaper;
-        
+
         parent::__construct($context);
         $this->http = $http;
     }
