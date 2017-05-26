@@ -4,7 +4,7 @@
     $items = $order->getAllItems();
     $total = number_format($order->getBaseGrandTotal(), 2, '.', ',');
 ?>
-    <script type="text/javascript">
+    <script>
         require(['domReady!'],function(){
             <?php foreach ($items as $item):?>
             <?php if ($item->getParentItemId() != null) {

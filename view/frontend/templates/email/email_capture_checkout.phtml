@@ -2,7 +2,7 @@
 
 <?php if ($helper->isEasyEmailCaptureEnabled()) : ?>
 
-    <script type="text/javascript">
+    <script>
         require(['jquery','domReady!'],function($){
             $("body").on("blur","input[id=customer-email]", function(){
                 var email = $(this).val();
