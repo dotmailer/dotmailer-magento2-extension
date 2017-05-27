@@ -48,7 +48,6 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
         $this->originalParams = $this->_escaper->escapeHtml(
             $this->getRequest()->getParam('section')
         );
-        
         $this->getRequest()->setParam('section', 'connector_developer_settings');
     }
 

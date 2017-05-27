@@ -16,7 +16,6 @@ class Select
      */
     private $escaper;
 
-
     /**
      * Select constructor.
      *

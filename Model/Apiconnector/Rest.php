@@ -55,13 +55,12 @@ abstract class Rest
 
     /**
      * Rest constructor.
-     *
-     * @param int                                $website
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param int $website
      */
     public function __construct(
-        $website = 0,
-        \Dotdigitalgroup\Email\Helper\Data $data
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        $website = 0
     ) {
         $this->helper        = $data;
         $this->url           = null;

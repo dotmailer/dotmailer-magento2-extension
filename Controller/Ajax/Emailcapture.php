@@ -37,9 +37,7 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     {
         if ($this->getRequest()->getParam('email') && $quote = $this->checkoutSession->getQuote()) {
             $email = $this->getRequest()->getParam('email');
-            $email = filter_var($email, FILTER_SANITIZE_EMAIL);
-
-            if (! $email) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return null;
             }
 
