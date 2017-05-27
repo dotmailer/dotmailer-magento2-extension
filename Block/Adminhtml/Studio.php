@@ -106,7 +106,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      */
     public function getWebsiteId()
     {
-        return $this->getRequest()->getParam('website');
+        return (int) $this->getRequest()->getParam('website');
     }
 
     /**
@@ -117,7 +117,7 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      */
     public function getStoreId()
     {
-        return $this->getRequest()->getParam('store');
+        return (int) $this->getRequest()->getParam('store');
     }
 
     /**

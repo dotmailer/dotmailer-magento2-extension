@@ -17,6 +17,10 @@ class Value extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Json\Encoder
      */
     public $jsonEncoder;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    public $escaper;
 
     /**
      * Value constructor.
@@ -25,16 +29,19 @@ class Value extends \Magento\Backend\App\AbstractAction
      * @param \Magento\Framework\Json\Encoder                           $jsonEncoder
      * @param \Magento\Backend\App\Action\Context                       $context
      * @param \Magento\Framework\App\Response\Http                      $http
+     * @param \Magento\Framework\Escaper                                $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
         \Magento\Framework\Json\Encoder $jsonEncoder,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\App\Response\Http $http
+        \Magento\Framework\App\Response\Http $http,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->jsonEncoder = $jsonEncoder;
         $this->ruleValue = $ruleValue;
         $this->http = $http;
+        $this->escaper = $escaper;
         parent::__construct($context);
     }
 
@@ -54,9 +61,15 @@ class Value extends \Magento\Backend\App\AbstractAction
     public function execute()
     {
         $response = [];
-        $valueName = $this->getRequest()->getParam('value');
-        $conditionValue = $this->getRequest()->getParam('condValue');
-        $attributeValue = $this->getRequest()->getParam('attributeValue');
+        $valueName = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('value')
+        );
+        $conditionValue = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('condValue')
+        );
+        $attributeValue = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('attributeValue')
+        );
 
         if ($valueName && $attributeValue && $conditionValue) {
             if ($conditionValue == 'null') {

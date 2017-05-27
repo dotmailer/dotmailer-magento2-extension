@@ -39,7 +39,7 @@ class Save extends \Magento\Backend\App\AbstractAction
         $default = $this->getRequest()->getParam('default');
         $visibility = $this->getRequest()->getParam('visibility');
 
-        $website = $this->getRequest()->getParam('website', 0);
+        $website = (int) $this->getRequest()->getParam('website', 0);
 
         $client = $this->dataHelper->getWebsiteApiClient($website);
 
@@ -48,7 +48,7 @@ class Save extends \Magento\Backend\App\AbstractAction
             if (isset($response->message)) {
                 $this->messageManager->addErrorMessage($response->message);
             } else {
-                $this->messageManager->addSuccessMessage('Datafield : ' . $datafield . ' created.');
+                $this->messageManager->addSuccessMessage('Datafield successfully created.');
             }
         }
     }

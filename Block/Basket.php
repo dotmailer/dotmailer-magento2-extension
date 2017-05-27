@@ -61,12 +61,16 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         $params = $this->getRequest()->getParams();
 
-        if (!isset($params['quote_id']) || !isset($params['code'])) {
-            $this->helper->log('Basket no quote id or code is set');
+        if (! isset($params['quote_id']) ||
+            ! isset($params['code']) ||
+            ! $this->helper->isCodeValid($params['code'])
+        )
+        {
+            $this->helper->log('Abandoned cart not found or invalid code');
 
             return false;
         }
-        $quoteId = $params['quote_id'];
+        $quoteId = (int) $params['quote_id'];
         $quoteModel = $this->quoteFactory->create()
             ->loadByIdWithoutStore($quoteId);
 
