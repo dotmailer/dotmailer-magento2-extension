@@ -50,6 +50,7 @@ class File
         $this->enclosure = '"';
 
         //@codingStandardsIgnoreStart
+        umask(022);
         $logDir = $directoryList->getPath('log');
         if (! is_dir($logDir)) {
             mkdir($directoryList->getPath('var')  . DIRECTORY_SEPARATOR . 'log');
