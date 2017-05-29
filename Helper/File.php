@@ -178,7 +178,7 @@ class File
     {
         //@codingStandardsIgnoreStart
         if (!is_dir($path)) {
-            mkdir($path);
+            mkdir($path, 750, true);
         }
         //@codingStandardsIgnoreEnd
     }
