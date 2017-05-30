@@ -171,20 +171,20 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get product collection from ids
      *
-     * @param $productSkus
+     * @param $productsSku
      * @param $limit
      * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
-    public function getProductCollectionFromSku($productSkus, $limit = false)
+    public function getProductsCollectionFromSku($productsSku, $limit = false)
     {
         $productCollection = [];
 
-        if (! empty($productSkus)) {
+        if (! empty($productsSku)) {
             $productCollection = $this->productFactory->create()
                 ->getCollection()
                 ->addAttributeToSelect(
                     ['product_url', 'name', 'store_id', 'small_image', 'price']
-                )->addFieldToFilter('sku', ['in' => $productSkus]);
+                )->addFieldToFilter('sku', ['in' => $productsSku]);
 
             if($limit) {
                 $productCollection->getSelect()->limit($limit);
@@ -237,9 +237,9 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ->limit($limit);
 
         $reportProductCollection->setStoreIds([$storeId]);
-        $productSkus = $reportProductCollection->getColumnValues('sku');
+        $productsSku = $reportProductCollection->getColumnValues('sku');
 
-        return $this->getProductCollectionFromSku($productSkus);
+        return $this->getProductsCollectionFromSku($productsSku);
     }
 
     /**
