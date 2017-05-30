@@ -1,35 +1,16 @@
-<script>
-
-	require(['prototype', 'domReady!'], function(){
-
-//<![CDATA[
-
-		$('sync_settings_dynamic_addressbook_addressbook_button').on('click', function () {
-
-			var addressbook_name  	= $('sync_settings_dynamic_addressbook_addressbook_name').value;
-			var addressbook_visiblity  	= $('sync_settings_dynamic_addressbook_visibility').value;
-
-			params = {
-				name : addressbook_name,
-				visiblity : addressbook_visiblity
-			}
-			if(addressbook_name && addressbook_visiblity) {
-
-				new Ajax.Request('<?php echo $block->escapeHtml($block->getAjaxUrl()) ?>', {
-					parameters: params,
-					onComplete: function(transport) {
-						window.location.reload();
-					}
-				});
-			}
-		});
-//]]
-	});
-
-</script>
 <div class="actions actions-create-addressbook">
 	<div id="validation_result" class="message-validation hidden"></div>
 	<button class="action-create-addressbook" type="button" id="<?php echo $block->getHtmlId() ?>">
 		<span><?php echo $block->escapeHtml(__($block->getButtonLabel())) ?></span>
 	</button>
 </div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Dotdigitalgroup_Email/js/addressBook":{
+                "url":"<?php echo $block->escapeUrl($block->getAjaxUrl()) ?>"
+            }
+        }
+    }
+</script>

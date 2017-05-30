@@ -44,8 +44,33 @@ class Roi extends \Magento\Framework\View\Element\Template
     /**
      * @return \Magento\Sales\Model\Order
      */
-    public function getOrder()
+    private function getOrder()
     {
         return $this->session->getLastRealOrder();
+    }
+
+    /**
+     * Get order total
+     * @return string
+     */
+    public function getTotal()
+    {
+        return number_format($this->getOrder()->getBaseGrandTotal(), 2, '.', ',');
+    }
+
+    /**
+     * Get product names
+     * @return string
+     */
+    public function getProductNames()
+    {
+        $items = $this->getOrder()->getAllItems();
+        $productNames = [];
+        foreach ($items as $item) {
+            if ($item->getParentItemId() === null) {
+                $productNames[] = str_replace('"', ' ', $item->getName());
+            }
+        }
+        return json_encode($productNames);
     }
 }
