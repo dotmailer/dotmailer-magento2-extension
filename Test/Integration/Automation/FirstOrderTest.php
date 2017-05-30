@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Test\Integration\Automation;
 
-use Magento\TestFramework\ObjectManager;
-
 /**
  * Class FirstOrderTest
  * @package Dotdigitalgroup\Email\Test\Integration\Automation

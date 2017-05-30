@@ -220,7 +220,7 @@ class TrialSetup
      * @param $addressBooks
      * @return bool
      */
-    public function validateAccountAndCreateAddressbooks($client, $addressBooks)
+    private function validateAccountAndCreateAddressbooks($client, $addressBooks)
     {
         //validate account
         $accountInfo = $client->getAccountInfo();

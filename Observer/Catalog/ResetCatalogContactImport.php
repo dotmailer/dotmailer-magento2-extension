@@ -63,9 +63,8 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
-     * @return array
      */
-    public function resetConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
+    private function resetConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
     {
         if (!$this->registry->registry('core_config_data_save_after_done')) {
             if ($groups = $observer->getEvent()->getConfigData()
@@ -93,7 +92,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
     /**
      * @param \Magento\Framework\Event\Observer $observer
      */
-    public function resetAllContactsInConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
+    private function resetAllContactsInConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
     {
         if (!$this->registry->registry('core_config_data_save_after_done_status')) {
             if ($groups = $observer->getEvent()->getConfigData()

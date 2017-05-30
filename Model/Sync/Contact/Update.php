@@ -87,7 +87,7 @@ class Update extends Delete
      * @param $websiteId
      * @return mixed
      */
-    public function syncItemContactEmailUpdateMode($importData, $websiteId)
+    private function syncItemContactEmailUpdateMode($importData, $websiteId)
     {
         $emailBefore = $importData['emailBefore'];
         $email = $importData['email'];
@@ -120,7 +120,7 @@ class Update extends Delete
      * @param $importData
      * @return mixed
      */
-    public function syncItemSubscriberResubscribedMode($importData)
+    private function syncItemSubscriberResubscribedMode($importData)
     {
         $email = $importData['email'];
         $apiContact = $this->client->postContacts($email);
@@ -141,7 +141,7 @@ class Update extends Delete
      * @param $websiteId
      * @return mixed
      */
-    public function syncItemSubscriberUpdateMode($importData, $websiteId)
+    private function syncItemSubscriberUpdateMode($importData, $websiteId)
     {
         $email = $importData['email'];
         $id = $importData['id'];
