@@ -4,7 +4,7 @@
     {
         "*": {
             "trackingCode": {
-                "isEnabled": "<?php echo (boolean) $helper->isPageTrackingEnabled(); ?>"
+                "isEnabled": "<?php /* @noEscape */ echo $helper->isPageTrackingEnabled(); ?>"
             }
         }
     }

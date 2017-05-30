@@ -31,7 +31,7 @@ require(['jquery'], function ($j) {
      * @param id
      * @param value
      */
-    function doYourThing(id, value) {
+    function updateStyle(id, value) {
         var link = $j("#" + "connector_configuration_dynamic_content_style_link-preview");
         var name = $j("#" + "connector_configuration_dynamic_content_style_name-preview");
         var doc = $j("#" + "connector_configuration_dynamic_content_style_doc-preview");
@@ -150,22 +150,22 @@ require(['jquery'], function ($j) {
             var id = element.attr("id");
             var value = element.val();
 
-            doYourThing(id, value);
+            updateStyle(id, value);
             $j(element).on("change keyup blur input", function () {
                 id = element.attr("id");
                 value = element.val();
-                doYourThing(id, value);
+                updateStyle(id, value);
             });
         });
         $j.each(elementsB, function (index, element) {
             var id = element.attr("id");
             var value = element.val();
 
-            doYourThing(id, value);
+            updateStyle(id, value);
             $j(element).on("change", function () {
                 id = element.attr("id");
                 value = element.val();
-                doYourThing(id, value);
+                updateStyle(id, value);
             });
         });
     }
