@@ -1,18 +1,13 @@
-<?php if ($block->isRoiTrackingEnabled()):
-    $order = $block->getOrder();
-    $orderId = $order->getId();
-    $items = $order->getAllItems();
-    $total = number_format($order->getBaseGrandTotal(), 2, '.', ',');
-?>
-    <script>
-        require(['domReady!'],function(){
-            <?php foreach ($items as $item):?>
-            <?php if ($item->getParentItemId() != null) {
-            continue;
-        }?>
-            _dmTrack("product", "<?php echo $block->escapeHtml(str_replace('"', ' ', $item->getName()))?>");
-            <?php endforeach;?>
-            _dmTrack("CheckOutAmount", "<?php echo $block->escapeHtml($total);?>");
-        });
-    </script>
-<?php endif;
+<?php $isEnabled = $block->isRoiTrackingEnabled() ?>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Dotdigitalgroup_Email/js/roiCode": {
+                "isEnabled": "<?php echo (boolean) $isEnabled ?>",
+                "total": "<?php echo $block->getTotal();?>",
+                "items": <?php echo $block->getProductNames();?>
+            }
+        }
+    }
+</script>
