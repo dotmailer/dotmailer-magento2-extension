@@ -67,10 +67,21 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        //check for param code and id
+        if (! isset($params['order_id']) ||
+            ! isset($params['code']) ||
+            ! $this->helper->isCodeValid($params['code'])
+        )
+        {
+            $this->helper->log('Product recommendation for this order not found or invalid code');
+            return [];
+        }
+
         //products to be displayed for recommended pages
         $productsToDisplay = [];
         $productsToDisplayCounter = 0;
-        $orderId = $this->getRequest()->getParam('order_id');
+        $orderId = (int) $this->getRequest()->getParam('order_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
         $orderModel = $this->orderFactory->create()
@@ -212,21 +223,5 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         return $store->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
-    }
-
-    /**
-     * Price html block.
-     *
-     * @param $product
-     *
-     * @return string
-     */
-    public function getPriceHtml($product)
-    {
-        $this->setTemplate('Magento_Catalog::product/price/amount/default.phtml');
-
-        $this->setProduct($product);
-
-        return $this->toHtml();
     }
 }

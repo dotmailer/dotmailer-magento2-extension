@@ -53,10 +53,16 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Get the products to display for table.
      *
-     * @return $this
+     * @return mixed
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
+            $this->helper->log('Product push no valid code is set');
+            return [];
+        }
+
         $mode = $this->getRequest()->getActionName();
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $productIds = $this->recommnededHelper->getProductPushIds();

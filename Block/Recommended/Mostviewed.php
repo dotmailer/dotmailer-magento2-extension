@@ -54,6 +54,12 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
+            $this->helper->log('Most viewed no valid code is set');
+            return [];
+        }
+
         $productsToDisplay = [];
         $mode = $this->getRequest()->getActionName();
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);

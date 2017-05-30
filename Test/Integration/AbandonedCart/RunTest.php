@@ -72,8 +72,7 @@ class RunTest extends \PHPUnit_Framework_TestCase
      */
     public function test_can_find_customer_abandoned_carts()
     {
-        $quote = $this->createQuoteForCustomer($time = '15');
-        $email = $quote->getCustomerEmail();
+        $quote = $this->createQuoteForCustomer('15');
         /** @var \Dotdigitalgroup\Email\Model\Sales\Quote  $quote */
         $customerQuote = $this->objectManager->create('Dotdigitalgroup\Email\Model\Sales\Quote')
             ->proccessAbandonedCarts('customers');
@@ -164,8 +163,6 @@ class RunTest extends \PHPUnit_Framework_TestCase
     protected function createQuoteForCustomer($time)
     {
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-        /** @var $repository \Magento\Customer\Api\CustomerRepositoryInterface */
-        $repository = $objectManager->create('Magento\Customer\Api\CustomerRepositoryInterface');
         $customer = $objectManager->create('Magento\Customer\Model\Customer');
 
         /** @var \Magento\Customer\Model\Customer $customer */

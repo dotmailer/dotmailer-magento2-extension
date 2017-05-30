@@ -19,5 +19,4 @@ class ArraySerialized extends \Dotdigitalgroup\Email\Model\Config\Backend\Serial
 
         return parent::beforeSave();
     }
-
 }

@@ -73,6 +73,12 @@ class Feefo extends \Magento\Framework\View\Element\Template
      */
     public function getServiceScoreLogo()
     {
+        $params = $this->getRequest()->getParams();
+        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
+            $this->helper->log('Feefo no valid code is set');
+            return [];
+        }
+
         $url = 'http://www.feefo.com/feefo/feefologo.jsp?logon=';
         $logon = $this->helper->getFeefoLogon();
         $template = '';
@@ -93,7 +99,17 @@ class Feefo extends \Magento\Framework\View\Element\Template
      */
     public function getQuoteProducts()
     {
-        $quoteId = $this->_request->getParam('quote_id');
+        $products = [];
+        $params = $this->_request->getParams();
+
+        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
+            $this->helper->log('Feefo no quote id or code is set');
+
+            return $products;
+        }
+
+        $quoteId = (int) $params['quote_id'];
+
         return $this->reviewFactory->create()->getQuoteProducts($quoteId);
     }
 

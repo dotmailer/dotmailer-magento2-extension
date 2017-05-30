@@ -265,16 +265,6 @@
                 <datafield_default></datafield_default>
                 <datafield_access></datafield_access>
             </dynamic_datafield>
-            <sweet_tooth>
-                <active>0</active>
-                <reward_point_balance></reward_point_balance>
-                <reward_point_pending></reward_point_pending>
-                <reward_point_pending_time></reward_point_pending_time>
-                <reward_point_on_hold></reward_point_on_hold>
-                <reward_point_expiration></reward_point_expiration>
-                <reward_point_last_earn></reward_point_last_earn>
-                <reward_point_last_spent></reward_point_last_spent>
-            </sweet_tooth>
         </connector_data_mapping>
         <connector_roi_tracking>
             <page_tracking>

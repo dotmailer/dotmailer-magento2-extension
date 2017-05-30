@@ -208,7 +208,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     public function _toHtml()
     {
         $script
-            = "<script type=\"text/javascript\">
+            = "<script>
                 require([
                     'prototype',
                     'domReady!'

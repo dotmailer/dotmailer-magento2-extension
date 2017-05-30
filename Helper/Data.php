@@ -1644,6 +1644,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getDateDifference($created)
     {
         $now = $this->datetime->gmtDate();
+
         return strtotime($now) - strtotime($created);
+    }
+
+    /**
+     * Validate code
+     *
+     * @param $code
+     * @return bool
+     */
+    public function isCodeValid($code)
+    {
+        $codeFromConfig = $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
+            $this->getWebsite()
+        );
+
+        return $codeFromConfig === $code;
     }
 }

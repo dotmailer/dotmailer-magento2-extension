@@ -82,7 +82,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function _getWishlist()
     {
-        $customerId = $this->getRequest()->getParam('customer_id');
+        $customerId = (int) $this->getRequest()->getParam('customer_id');
         if (!$customerId) {
             return [];
         }
@@ -104,13 +104,24 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        //check for param code and id
+        if (! isset($params['customer_id']) ||
+            ! isset($params['code']) ||
+            ! $this->helper->isCodeValid($params['code'])
+        )
+        {
+            $this->helper->log('Wishlist no id or valid code is set');
+            return [];
+        }
+
         //products to be display for recommended pages
         $productsToDisplay = [];
         $productsToDisplayCounter = 0;
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
         //number of product items to be displayed
-        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $limit = (int) $this->recommnededHelper->getDisplayLimitByMode($mode);
         $items = $this->_getWishlistItems();
         $numItems = count($items);
 

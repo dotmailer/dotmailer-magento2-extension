@@ -124,7 +124,7 @@ class Product
     /**
      * Set the product data.
      *
-     * @param $product
+     * @param \Magento\Catalog\Model\Product $product
      *
      * @return $this
      */
@@ -231,7 +231,7 @@ class Product
 
         //configurable product options
         if ($product->getTypeId() == 'configurable') {
-            $productAttributeOptions = $product->getTypeInstance(true)
+            $productAttributeOptions = $product->getTypeInstance()
                 ->getConfigurableAttributesAsArray($product);
 
             foreach ($productAttributeOptions as $productAttribute) {

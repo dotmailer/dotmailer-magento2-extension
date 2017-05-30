@@ -17,7 +17,7 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
                     <input id='" . $range . "' name='" . $range . "'data-ui-id='' 
                         value='' class='input-text admin__control-text' type='text' />
                 </div>" .
-                '<script type="text/javascript">
+                '<script>
                 require(["jquery", "jquery/ui"], function () {
                 jQuery(document).ready(function () {
                     var el = jQuery("#' . $range . '");

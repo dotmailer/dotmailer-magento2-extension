@@ -29,6 +29,10 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @var
      */
     public $jsonEncoder;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    public $escaper;
 
     /**
      * Selected constructor.
@@ -40,6 +44,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
      * @param \Magento\Framework\Json\Encoder                               $jsonEncoder
      * @param \Magento\Framework\App\Response\Http                          $http
+     * @param \Magento\Framework\Escaper                                    $escaper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -48,13 +53,15 @@ class Selected extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
         \Magento\Framework\Json\Encoder $jsonEncoder,
-        \Magento\Framework\App\Response\Http $http
+        \Magento\Framework\App\Response\Http $http,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->rulesFactory = $rulesFactory;
         $this->ruleType = $ruleType;
         $this->ruleCondition = $ruleCondition;
         $this->ruleValue = $ruleValue;
         $this->jsonEncoder = $jsonEncoder;
+        $this->escaper = $escaper;
 
         parent::__construct($context);
         $this->http = $http;
@@ -77,11 +84,21 @@ class Selected extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $id = $this->getRequest()->getParam('ruleid');
-        $attribute = $this->getRequest()->getParam('attribute');
-        $arrayKey = $this->getRequest()->getParam('arraykey');
-        $conditionName = $this->getRequest()->getParam('condition');
-        $valueName = $this->getRequest()->getParam('value');
+        $id = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('ruleid')
+        );
+        $attribute = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('attribute')
+        );
+        $arrayKey = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('arraykey')
+        );
+        $conditionName = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('condition')
+        );
+        $valueName = $this->escaper->escapeJs(
+            $this->getRequest()->getParam('value')
+        );
 
         if ($arrayKey && $id && $attribute && $conditionName && $valueName) {
             $rule = $this->rulesFactory->create()

@@ -161,7 +161,6 @@ class Automation
             $websites = $this->helper->getWebsites(true);
             foreach ($websites as $website) {
                 if (strpos($type, self::ORDER_STATUS_AUTOMATION) !== false) {
-
                     $configValue = $this->serializer->unserialize($this->helper->getWebsiteConfig($config, $website));
 
                     if (is_array($configValue) && !empty($configValue)) {
