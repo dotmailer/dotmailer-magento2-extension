@@ -175,7 +175,7 @@ class Catalog
      * @param      $store
      * @param bool $modified
      *
-     * @return bool
+     * @return mixed
      */
     public function _getProductsToExport($store, $modified = false)
     {
