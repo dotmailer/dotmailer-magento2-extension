@@ -11,5 +11,4 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->_init('email_rules', 'id');
     }
-
 }

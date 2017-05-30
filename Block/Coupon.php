@@ -65,13 +65,17 @@ class Coupon extends \Magento\Framework\View\Element\Template
     {
         $params = $this->getRequest()->getParams();
         //check for param code and id
-        if (!isset($params['id']) || !isset($params['code'])) {
-            $this->helper->log('Coupon no id or code is set');
+        if (! isset($params['quote_id']) ||
+            ! isset($params['code']) ||
+            ! $this->helper->isCodeValid($params['code'])
+        )
+        {
+            $this->helper->log('Coupon no id or valid code is set');
 
             return false;
         }
         //coupon rule id
-        $couponCodeId = $params['id'];
+        $couponCodeId = (int) $params['id'];
 
         if ($couponCodeId) {
             $rule = $this->ruleFactory->create()

@@ -60,10 +60,21 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getLoadedProductCollection()
     {
+        $params = $this->getRequest()->getParams();
+        //check for param code and id
+        if (! isset($params['quote_id']) ||
+            ! isset($params['code']) ||
+            ! $this->helper->isCodeValid($params['code'])
+        )
+        {
+            $this->helper->log('Quote recommendation no id or valid code is set');
+            return [];
+        }
+
         //products to be diplayd for recommended pages
         $productsToDisplay = [];
         $productsToDisplayCounter = 0;
-        $quoteId = $this->getRequest()->getParam('quote_id');
+        $quoteId = (int) $this->getRequest()->getParam('quote_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
         $quoteModel = $this->quoteFactory->create()

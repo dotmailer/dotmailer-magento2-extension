@@ -19,7 +19,6 @@ class Status implements \Magento\Framework\Data\OptionSourceInterface
         ];
     }
 
-
     /**
      * @return array
      */

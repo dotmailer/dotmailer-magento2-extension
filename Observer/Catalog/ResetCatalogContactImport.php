@@ -51,53 +51,69 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         try {
-            if (!$this->registry->registry('core_config_data_save_after_done')) {
-                if ($groups = $observer->getEvent()->getConfigData()
-                    ->getGroups()
-                ) {
-                    if (isset($groups['catalog_sync']['fields']['catalog_values']['value'])) {
-                        $configAfter
-                            = $groups['catalog_sync']['fields']['catalog_values']['value'];
-                        $configBefore
-                            = $this->registry->registry('core_config_data_save_before');
-                        if ($configAfter != $configBefore) {
-                            //reset catalog to re-import
-                            $this->connectorCatalogFactory->create()
-                                ->reset();
-                        }
-                        $this->registry->register(
-                            'core_config_data_save_after_done',
-                            true
-                        );
-                    }
-                }
-            }
+            $this->resetConnectorCatalogFactoryIfRequired($observer);
 
-            if (!$this->registry->registry('core_config_data_save_after_done_status')) {
-                if ($groups = $observer->getEvent()->getConfigData()
-                    ->getGroups()
-                ) {
-                    if (isset($groups['data_fields']['fields']['order_statuses']['value'])) {
-                        $configAfter
-                            = $groups['data_fields']['fields']['order_statuses']['value'];
-                        $configBefore
-                            = $this->registry->registry('core_config_data_save_before_status');
-                        if ($configAfter != $configBefore) {
-                            //reset all contacts
-                            $this->connectorContactFactory->create()
-                                ->resetAllContacts();
-                        }
-                        $this->registry->register(
-                            'core_config_data_save_after_done_status',
-                            true
-                        );
-                    }
-                }
-            }
+            $this->resetAllContactsInConnectorCatalogFactoryIfRequired($observer);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }
 
         return $this;
+    }
+
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     */
+    private function resetConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
+    {
+        if (!$this->registry->registry('core_config_data_save_after_done')) {
+            if ($groups = $observer->getEvent()->getConfigData()
+                ->getGroups()
+            ) {
+                if (isset($groups['catalog_sync']['fields']['catalog_values']['value'])) {
+                    $configAfter
+                        = $groups['catalog_sync']['fields']['catalog_values']['value'];
+                    $configBefore
+                        = $this->registry->registry('core_config_data_save_before');
+                    if ($configAfter != $configBefore) {
+                        //reset catalog to re-import
+                        $this->connectorCatalogFactory->create()
+                            ->reset();
+                    }
+                    $this->registry->register(
+                        'core_config_data_save_after_done',
+                        true
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     */
+    private function resetAllContactsInConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
+    {
+        if (!$this->registry->registry('core_config_data_save_after_done_status')) {
+            if ($groups = $observer->getEvent()->getConfigData()
+                ->getGroups()
+            ) {
+                if (isset($groups['data_fields']['fields']['order_statuses']['value'])) {
+                    $configAfter
+                        = $groups['data_fields']['fields']['order_statuses']['value'];
+                    $configBefore
+                        = $this->registry->registry('core_config_data_save_before_status');
+                    if ($configAfter != $configBefore) {
+                        //reset all contacts
+                        $this->connectorContactFactory->create()
+                            ->resetAllContacts();
+                    }
+                    $this->registry->register(
+                        'core_config_data_save_after_done_status',
+                        true
+                    );
+                }
+            }
+        }
     }
 }

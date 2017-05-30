@@ -140,33 +140,8 @@ class TrialSetup
             $error = true;
             $this->helper->log('createAddressBooks client is not enabled');
         } else {
-            //validate account
-            $accountInfo = $client->getAccountInfo();
-            if (isset($accountInfo->message)) {
-                $this->helper->log('createAddressBooks ' . $accountInfo->message);
-                $error = true;
-            } else {
-                foreach ($addressBooks as $addressBook) {
-                    $addressBookName = $addressBook['name'];
-                    $visibility = $addressBook['visibility'];
-                    if (!empty($addressBookName)) {
-                        $response = $client->postAddressBooks($addressBookName, $visibility);
-                        if (isset($response->id)) {
-                            $this->mapAddressBook($addressBookName, $response->id);
-                        } else { //Need to fetch addressbook id to map. Addressbook already exist.
-                            $response = $client->getAddressBooks();
-                            if (!isset($response->message)) {
-                                foreach ($response as $book) {
-                                    if ($book->name == $addressBookName) {
-                                        $this->mapAddressBook($addressBookName, $book->id);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            $error = $this->validateAccountAndCreateAddressbooks($client, $addressBooks);
+
         }
 
         return $error == true ? false : true;
@@ -238,5 +213,42 @@ class TrialSetup
             'default',
             0
         );
+    }
+
+    /**
+     * @param $client
+     * @param $addressBooks
+     * @return bool
+     */
+    private function validateAccountAndCreateAddressbooks($client, $addressBooks)
+    {
+        //validate account
+        $accountInfo = $client->getAccountInfo();
+        if (isset($accountInfo->message)) {
+            $this->helper->log('createAddressBooks ' . $accountInfo->message);
+            $error = true;
+        } else {
+            foreach ($addressBooks as $addressBook) {
+                $addressBookName = $addressBook['name'];
+                $visibility = $addressBook['visibility'];
+                if (!empty($addressBookName)) {
+                    $response = $client->postAddressBooks($addressBookName, $visibility);
+                    if (isset($response->id)) {
+                        $this->mapAddressBook($addressBookName, $response->id);
+                    } else { //Need to fetch addressbook id to map. Addressbook already exist.
+                        $response = $client->getAddressBooks();
+                        if (!isset($response->message)) {
+                            foreach ($response as $book) {
+                                if ($book->name == $addressBookName) {
+                                    $this->mapAddressBook($addressBookName, $book->id);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $error;
     }
 }

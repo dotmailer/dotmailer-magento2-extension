@@ -141,7 +141,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 
         $this->_orderSync->sync();
         $guests = $this->_orderSync->guests;
-        $this->assertArrayHasKey('is_guest', $guests[0]);
+        $this->assertArrayHasKey('is_guest', $guests[key($guests)]);
     }
 
     /**

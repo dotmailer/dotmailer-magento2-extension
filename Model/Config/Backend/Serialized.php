@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Backend;
 use Magento\Framework\App\ObjectManager;
 use Dotdigitalgroup\Email\Model\Config\Json;
 
-
 class Serialized extends \Magento\Framework\App\Config\Value
 {
     /**

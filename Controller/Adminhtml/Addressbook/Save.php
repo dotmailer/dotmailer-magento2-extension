@@ -35,7 +35,7 @@ class Save extends \Magento\Backend\App\AbstractAction
     {
         $addressBookName = $this->getRequest()->getParam('name');
         $visibility = $this->getRequest()->getParam('visibility');
-        $website = $this->getRequest()->getParam('website', 0);
+        $website = (int) $this->getRequest()->getParam('website', 0);
 
         if ($this->helperData->isEnabled($website)) {
             $client = $this->helperData->getWebsiteApiClient($website);
@@ -44,7 +44,7 @@ class Save extends \Magento\Backend\App\AbstractAction
                 if (isset($response->message)) {
                     $this->messageManager->addErrorMessage($response->message);
                 } else {
-                    $this->messageManager->addSuccessMessage('Address book : ' . $addressBookName . ' created.');
+                    $this->messageManager->addSuccessMessage('Address book successfully created.');
                 }
             }
         }
