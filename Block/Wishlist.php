@@ -85,7 +85,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         return $this->wishlistFactory->create()
-            ->getWishlistFromCustomerId($customerId);
+            ->getWishlistsForCustomer($customerId);
     }
 
     /**

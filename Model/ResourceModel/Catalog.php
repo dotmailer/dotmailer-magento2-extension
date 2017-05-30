@@ -37,6 +37,18 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->_init('email_catalog', 'id');
     }
 
+    /**
+     * Catalog constructor.
+     *
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
+     * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Reports\Block\Product\Viewed $viewed
+     * @param \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory
+     * @param null $connectionName
+     */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -167,7 +179,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $productCollection = [];
 
-        if (! empty($ids)) {
+        if (! empty($productSkus)) {
             $productCollection = $this->productFactory->create()
                 ->getCollection()
                 ->addAttributeToSelect(
