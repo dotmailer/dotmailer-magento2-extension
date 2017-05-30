@@ -228,20 +228,4 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
     }
-
-    /**
-     * Price html block.
-     *
-     * @param $product
-     *
-     * @return string
-     */
-    public function getPriceHtml($product)
-    {
-        $this->setTemplate('Magento_Catalog::product/price/amount/default.phtml');
-
-        $this->setProduct($product);
-
-        return $this->toHtml();
-    }
 }
