@@ -5,11 +5,248 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
+    private $productFactory;
+    /**
+     * @var \Magento\Catalog\Model\CategoryFactory
+     */
+    private $categoryFactory;
+    /**
+     * @var \Magento\Reports\Model\ResourceModel\Product\CollectionFactory
+     */
+    private $reportProductCollection;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    private $helper;
+    /**
+     * @var \Magento\Reports\Block\Product\Viewed
+     */
+    public $viewed;
+    /**
+     * @var \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory
+     */
+    public $productSoldFactory;
+
+    /**
      * Initialize resource.
      */
     public function _construct()
     {
         $this->_init('email_catalog', 'id');
+    }
+
+    public function __construct(
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Catalog\Model\CategoryFactory $categoryFactory,
+        \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection,
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Reports\Block\Product\Viewed $viewed,
+        \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
+        $connectionName = null
+    )
+    {
+        $this->helper                   = $helper;
+        $this->productFactory           = $productFactory;
+        $this->categoryFactory          = $categoryFactory;
+        $this->reportProductCollection  = $reportProductCollection;
+        $this->viewed                   = $viewed;
+        $this->productSoldFactory       = $productSoldFactory;
+        parent::__construct(
+            $context,
+            $connectionName
+        );
+    }
+
+    /**
+     * Get most viewed product collection
+     *
+     * @param $from
+     * @param $to
+     * @param $limit
+     * @param $catId
+     * @param $catName
+     * @return mixed
+     */
+    public function getMostViewedProductCollection($from, $to, $limit, $catId, $catName)
+    {
+        $reportProductCollection = $this->reportProductCollection->create()
+            ->addViewsCount($from, $to)
+            ->setPageSize($limit);
+
+        //filter collection by category by category_id
+        if ($catId) {
+            $category = $this->categoryFactory->create()->load($catId);
+            if ($category->getId()) {
+                $reportProductCollection->getSelect()
+                    ->joinLeft(
+                        ['ccpi' => $this->_resources->getTableName('catalog_category_product_index')],
+                        'e.entity_id = ccpi.product_id',
+                        ['category_id']
+                    )
+                    ->where('ccpi.category_id =?', $catId);
+            } else {
+                $this->helper->log('Most viewed. Category id ' . $catId
+                    . ' is invalid. It does not exist.');
+            }
+        }
+
+        //filter collection by category by category_name
+        if ($catName) {
+            $category = $this->categoryFactory->create()
+                ->loadByAttribute('name', $catName);
+            if ($category->getId()) {
+                $reportProductCollection->getSelect()
+                    ->joinLeft(
+                        ['ccpi' => $this->_resources->getTableName('catalog_category_product_index')],
+                        'e.entity_id  = ccpi.product_id',
+                        ['category_id']
+                    )
+                    ->where('ccpi.category_id =?', $category->getId());
+            } else {
+                $this->helper->log('Most viewed. Category name ' . $catName
+                    . ' is invalid. It does not exist.');
+            }
+        }
+
+        return $reportProductCollection;
+    }
+
+    /**
+     * Get recently viewed
+     *
+     * @param $limit
+     * @return array
+     */
+    public function getRecentlyViewed($limit)
+    {
+        $collection = $this->viewed;
+        $productItems = $collection->getItemsCollection()
+            ->setPageSize($limit);
+
+        return $productItems->getColumnValues('product_id');
+    }
+
+    /**
+     * Get product collection from ids
+     *
+     * @param $ids
+     * @param $limit
+     * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
+    public function getProductCollectionFromIds($ids, $limit = false)
+    {
+        $productCollection = [];
+
+        if (! empty($ids)) {
+            $productCollection = $this->productFactory->create()
+                ->getCollection()
+                ->addIdFilter($ids)
+                ->addAttributeToSelect(
+                    ['product_url', 'name', 'store_id', 'small_image', 'price']
+                );
+
+            if($limit) {
+                $productCollection->getSelect()->limit($limit);
+            }
+        }
+
+        return $productCollection;
+    }
+
+    /**
+     * Get product collection from ids
+     *
+     * @param $productSkus
+     * @param $limit
+     * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
+    public function getProductCollectionFromSku($productSkus, $limit = false)
+    {
+        $productCollection = [];
+
+        if (! empty($ids)) {
+            $productCollection = $this->productFactory->create()
+                ->getCollection()
+                ->addAttributeToSelect(
+                    ['product_url', 'name', 'store_id', 'small_image', 'price']
+                )->addFieldToFilter('sku', ['in' => $productSkus]);
+
+            if($limit) {
+                $productCollection->getSelect()->limit($limit);
+            }
+        }
+
+        return $productCollection;
+    }
+
+    /**
+     * Get bestseller collection
+     *
+     * @param $from
+     * @param $to
+     * @param $limit
+     * @param $storeId
+     * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
+    public function getBestsellerCollection($from, $to, $limit, $storeId)
+    {
+        //create report collection
+        $reportProductCollection = $this->productSoldFactory->create();
+        $connection = $this->_resources->getConnection();
+        $orderTableAliasName = $connection->quoteIdentifier('order');
+        $fieldName = $orderTableAliasName . '.created_at';
+        $orderTableAliasName = $connection->quoteIdentifier('order');
+
+        $orderJoinCondition = [
+            $orderTableAliasName . '.entity_id = order_items.order_id',
+            $connection->quoteInto(
+                "{$orderTableAliasName}.state <> ?",
+                \Magento\Sales\Model\Order::STATE_CANCELED
+            ),
+        ];
+        $orderJoinCondition[] = $this->prepareBetweenSql($fieldName, $from, $to);
+
+        $reportProductCollection->getSelect()->reset()
+            ->from(
+                ['order_items' => $reportProductCollection->getTable('sales_order_item')],
+                ['ordered_qty' => 'SUM(order_items.qty_ordered)', 'order_items_name' => 'order_items.name']
+            )->joinInner(
+                ['order' => $reportProductCollection->getTable('sales_order')],
+                implode(' AND ', $orderJoinCondition),
+                []
+            )->columns(['sku'])
+            ->where('parent_item_id IS NULL')
+            ->group('order_items.product_id')
+            ->having('SUM(order_items.qty_ordered) > ?', 0)
+            ->order('ordered_qty DESC')
+            ->limit($limit);
+
+        $reportProductCollection->setStoreIds([$storeId]);
+        $productSkus = $reportProductCollection->getColumnValues('sku');
+
+        return $this->getProductCollectionFromSku($productSkus);
+    }
+
+    /**
+     * Prepare between sql.
+     *
+     * @param string $fieldName Field name with table suffix ('created_at' or 'main_table.created_at')
+     * @param string $from
+     * @param string $to
+     * @return string Formatted sql string
+     */
+    private function prepareBetweenSql($fieldName, $from, $to)
+    {
+        $connection = $this->_resources->getConnection();
+        return sprintf(
+            '(%s BETWEEN %s AND %s)',
+            $fieldName,
+            $connection->quote($from),
+            $connection->quote($to)
+        );
     }
 
     /**

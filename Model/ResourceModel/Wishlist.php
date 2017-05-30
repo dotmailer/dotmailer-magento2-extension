@@ -5,11 +5,36 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
+     * @var \Magento\Wishlist\Model\WishlistFactory
+     */
+    private $wishlistFactory;
+
+    /**
      * Initialize resource.
      */
     public function _construct()
     {
         $this->_init('email_wishlist', 'id');
+    }
+
+    /**
+     * Wishlist constructor.
+     *
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Magento\Wishlist\Model\WishlistFactory $wishlistFactory
+     * @param null $connectionName
+     */
+    public function __construct(
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
+        $connectionName = null
+    )
+    {
+        $this->wishlistFactory = $wishlistFactory;
+        parent::__construct(
+            $context,
+            $connectionName
+        );
     }
 
     /**
@@ -51,5 +76,28 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         return $num;
+    }
+
+    /**
+     * @param $customerId
+     * @return bool
+     */
+    public function getWishlistFromCustomerId($customerId)
+    {
+        if($customerId) {
+            $collection = $this->wishlistFactory->create()
+                ->getCollection()
+                ->addFieldToFilter('customer_id', $customerId)
+                ->setOrder('updated_at', 'DESC')
+                ->setPageSize(1);
+
+            if ($collection->getSize()) {
+                //@codingStandardsIgnoreStart
+                return $collection->getFirstItem();
+                //@codingStandardsIgnoreEnd
+            }
+        }
+
+        return false;
     }
 }

@@ -21,29 +21,29 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $customerFactory;
     /**
-     * @var \Magento\Wishlist\Model\WishlistFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
     public $wishlistFactory;
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $productFactory;
+    public $catalogFactory;
 
     /**
      * Wishlistproducts constructor.
      *
-     * @param \Magento\Catalog\Model\ProductFactory     $productFactory
-     * @param \Magento\Wishlist\Model\WishlistFactory   $wishlistFactory
-     * @param \Magento\Customer\Model\CustomerFactory   $customerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data        $helper
-     * @param \Magento\Framework\Pricing\Helper\Data    $priceHelper
-     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Magento\Catalog\Block\Product\Context    $context
-     * @param array                                     $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory     $catalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory    $wishlistFactory
+     * @param \Magento\Customer\Model\CustomerFactory                       $customerFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
+     * @param \Magento\Framework\Pricing\Helper\Data                        $priceHelper
+     * @param \Dotdigitalgroup\Email\Helper\Recommended                     $recommended
+     * @param \Magento\Catalog\Block\Product\Context                        $context
+     * @param array                                                         $data
      */
     public function __construct(
-        \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -57,7 +57,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
         $this->wishlistFactory   = $wishlistFactory;
-        $this->productFactory    = $productFactory;
+        $this->catalogFactory    = $catalogFactory;
     }
 
     /**
@@ -78,7 +78,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Get wishlist for customer.
      *
-     * @return array|\Magento\Framework\DataObject
+     * @return array|bool
      */
     public function _getWishlist()
     {
@@ -93,19 +93,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             return [];
         }
 
-        $collection = $this->wishlistFactory->create()
-            ->getCollection()
-            ->addFieldToFilter('customer_id', $customerId)
-            ->setOrder('updated_at', 'DESC');
-        $collection->getSelect()->limit(1);
-
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
-        } else {
-            return [];
-        }
+        return $this->wishlistFactory->create()
+            ->getWishlistFromCustomerId($customerId);
     }
 
     /**
@@ -174,12 +163,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         if ($productsToDisplayCounter < $limit) {
             $fallbackIds = $this->recommnededHelper->getFallbackIds();
 
-            $productCollection = $this->productFactory->create()
-                ->getCollection()
-                ->addIdFilter($fallbackIds)
-                ->addAttributeToSelect(
-                    ['product_url', 'name', 'store_id', 'small_image', 'price']
-                );
+            $productCollection = $this->catalogFactory->create()
+                ->getProductCollectionFromIds($fallbackIds);
 
             foreach ($productCollection as $product) {
                 if ($product->isSaleable()) {

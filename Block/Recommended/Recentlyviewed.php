@@ -12,11 +12,6 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
-
-    /**
-     * @var \Magento\Reports\Block\Product\Viewed
-     */
-    public $viewed;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
@@ -26,30 +21,28 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $sessionFactory;
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $productFactory;
+    public $catalogFactory;
 
     /**
      * Recentlyviewed constructor.
      *
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
      * @param \Magento\Customer\Model\SessionFactory $sessionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
      * @param \Magento\Catalog\Block\Product\Context $context
-     * @param \Magento\Reports\Block\Product\Viewed $viewed
      * @param array $data
      */
     public function __construct(
-        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
         \Magento\Customer\Model\SessionFactory $sessionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
-        \Magento\Reports\Block\Product\Viewed $viewed,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -58,8 +51,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
         $this->storeManager      = $this->_storeManager;
-        $this->productFactory    = $productFactory;
-        $this->viewed            = $viewed;
+        $this->catalogFactory    = $catalogFactory;
     }
 
     /**
@@ -73,19 +65,17 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $mode = $this->getRequest()->getActionName();
         $customerId = $this->getRequest()->getParam('customer_id');
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $catalogFactory = $this->catalogFactory->create();
+
         //login customer to receive the recent products
         $session = $this->sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
-        $collection = $this->viewed;
-        $productItems = $collection->getItemsCollection()
-            ->setPageSize($limit);
 
-        //get the product ids from items collection
-        $productIds = $productItems->getColumnValues('product_id');
+        $productIds = $catalogFactory->getRecentlyViewed($limit);
+
         //get product collection to check for salable
-        $productCollection = $this->productFactory->create()->getCollection()
-            ->addAttributeToSelect('*')
-            ->addFieldToFilter('entity_id', ['in' => $productIds]);
+        $productCollection = $catalogFactory->getProductCollectionFromIds($productIds);
+
         //show products only if is salable
         foreach ($productCollection as $product) {
             if ($product->isSalable()) {
@@ -95,7 +85,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->helper->log(
             'Recentlyviewed customer  : ' . $customerId . ', mode ' . $mode
             . ', limit : ' . $limit .
-            ', items found : ' . count($productItems) . ', is customer logged in : '
+            ', items found : ' . count($productIds) . ', is customer logged in : '
             . $isLoggedIn . ', products :' . count($productsToDisplay)
         );
 

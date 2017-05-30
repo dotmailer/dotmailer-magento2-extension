@@ -18,14 +18,14 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $customerFactory;
     /**
-     * @var \Magento\Wishlist\Model\WishlistFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
     public $wishlistFactory;
 
     /**
      * Wishlist constructor.
      *
-     * @param \Magento\Wishlist\Model\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Magento\Catalog\Block\Product\Context  $context
      * @param \Dotdigitalgroup\Email\Helper\Data      $helper
@@ -33,7 +33,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array                                   $data
      */
     public function __construct(
-        \Magento\Wishlist\Model\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -78,18 +78,8 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
             return false;
         }
 
-        $collection = $this->wishlistFactory->create()->getCollection()
-            ->addFieldToFilter('customer_id', $customerId)
-            ->setOrder('updated_at', 'DESC')
-            ->setPageSize(1);
-
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
-        } else {
-            return false;
-        }
+        return $this->wishlistFactory->create()
+            ->getWishlistFromCustomerId($customerId);
     }
 
     /**
