@@ -69,7 +69,6 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         /**
          * Customer mock.
          */
-        $customerMethods = array_merge(get_class_methods(Customer::class));
         $mockCustomer = $this->getMockBuilder(Customer::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -77,7 +76,6 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         /**
          * Store mock.
          */
-        $storeMethods = array_merge(get_class_methods(Store::class), ['getWebsite']);
         $mockStore = $this->getMockBuilder(Store::class)
             ->disableOriginalConstructor()
             ->getMock();

@@ -89,97 +89,7 @@ class Catalog
         $catalogSyncEnabled = $this->helper->isCatalogSyncEnabled();
         //api and catalog sync enabled
         if ($enabled && $catalogSyncEnabled) {
-            try {
-                //remove product with product id set and no product
-                $write = $this->resource->getConnection('core_write');
-                $catalogTable = $this->resource->getTableName('email_catalog');
-                $select = $write->select();
-                $select->reset()
-                    ->from(
-                        ['c' => $catalogTable],
-                        ['c.product_id']
-                    )
-                    ->joinLeft(
-                        [
-                            'e' => $this->resource->getTableName(
-                                'catalog_product_entity'
-                            ),
-                        ],
-                        'c.product_id = e.entity_id'
-                    )
-                    ->where('e.entity_id is NULL');
-                //delete sql statement
-                $deleteSql = $select->deleteFromSelect('c');
-                //run query
-                $write->query($deleteSql);
-                $scope = $this->scopeConfig->getValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES
-                );
-                //if only to pull default value
-                if ($scope == 1) {
-                    $products = $this->_exportCatalog(
-                        \Magento\Store\Model\Store::DEFAULT_STORE_ID
-                    );
-
-                    if ($products) {
-                        //register in queue with importer
-                        $this->importerFactory->create()
-                            ->registerQueue(
-                                'Catalog_Default',
-                                $products,
-                                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                                \Magento\Store\Model\Store::DEFAULT_STORE_ID
-                            );
-
-                        //set imported
-                        $this->_setImported($this->productIds);
-
-                        //set number of product imported
-                        $this->countProducts += count($products);
-                    }
-                    //using single api
-                    $this->_exportInSingle(
-                        \Magento\Store\Model\Store::DEFAULT_STORE_ID,
-                        'Catalog_Default',
-                        \Magento\Store\Model\Store::DEFAULT_STORE_ID
-                    );
-                    //if to pull store values. will be pulled for each store
-                } elseif ($scope == 2) {
-                    $stores = $this->helper->getStores();
-
-                    foreach ($stores as $store) {
-                        $websiteCode = $store->getWebsite()->getCode();
-                        $storeCode = $store->getCode();
-                        $products = $this->_exportCatalog($store);
-                        if ($products) {
-                            //register in queue with importer
-                            $this->importerFactory->create()
-                                ->registerQueue(
-                                    'Catalog_' . $websiteCode . '_'
-                                    . $storeCode,
-                                    $products,
-                                    \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                                    $store->getWebsite()->getId()
-                                );
-                            //set imported
-                            $this->_setImported($this->productIds);
-
-                            //set number of product imported
-                            //@codingStandardsIgnoreStart
-                            $this->countProducts += count($products);
-                            //@codingStandardsIgnoreEnd
-                        }
-                        //using single api
-                        $this->_exportInSingle(
-                            $store,
-                            'Catalog_' . $websiteCode . '_' . $storeCode,
-                            $store->getWebsite()->getId()
-                        );
-                    }
-                }
-            } catch (\Exception $e) {
-                $this->helper->debug((string)$e, []);
-            }
+            $this->syncCatalog();
         }
 
         if ($this->countProducts) {
@@ -368,6 +278,101 @@ class Catalog
                     ],
                     ["product_id IN (?)" => $ids]
                 );
+            }
+        } catch (\Exception $e) {
+            $this->helper->debug((string)$e, []);
+        }
+    }
+
+    public function syncCatalog()
+    {
+        try {
+            //remove product with product id set and no product
+            $write = $this->resource->getConnection('core_write');
+            $catalogTable = $this->resource->getTableName('email_catalog');
+            $select = $write->select();
+            $select->reset()
+                ->from(
+                    ['c' => $catalogTable],
+                    ['c.product_id']
+                )
+                ->joinLeft(
+                    [
+                        'e' => $this->resource->getTableName(
+                            'catalog_product_entity'
+                        ),
+                    ],
+                    'c.product_id = e.entity_id'
+                )
+                ->where('e.entity_id is NULL');
+            //delete sql statement
+            $deleteSql = $select->deleteFromSelect('c');
+            //run query
+            $write->query($deleteSql);
+            $scope = $this->scopeConfig->getValue(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES
+            );
+            //if only to pull default value
+            if ($scope == 1) {
+                $products = $this->_exportCatalog(
+                    \Magento\Store\Model\Store::DEFAULT_STORE_ID
+                );
+
+                if ($products) {
+                    //register in queue with importer
+                    $this->importerFactory->create()
+                        ->registerQueue(
+                            'Catalog_Default',
+                            $products,
+                            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                            \Magento\Store\Model\Store::DEFAULT_STORE_ID
+                        );
+
+                    //set imported
+                    $this->_setImported($this->productIds);
+
+                    //set number of product imported
+                    $this->countProducts += count($products);
+                }
+                //using single api
+                $this->_exportInSingle(
+                    \Magento\Store\Model\Store::DEFAULT_STORE_ID,
+                    'Catalog_Default',
+                    \Magento\Store\Model\Store::DEFAULT_STORE_ID
+                );
+                //if to pull store values. will be pulled for each store
+            } elseif ($scope == 2) {
+                $stores = $this->helper->getStores();
+
+                foreach ($stores as $store) {
+                    $websiteCode = $store->getWebsite()->getCode();
+                    $storeCode = $store->getCode();
+                    $products = $this->_exportCatalog($store);
+                    if ($products) {
+                        //register in queue with importer
+                        $this->importerFactory->create()
+                            ->registerQueue(
+                                'Catalog_' . $websiteCode . '_'
+                                . $storeCode,
+                                $products,
+                                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                                $store->getWebsite()->getId()
+                            );
+                        //set imported
+                        $this->_setImported($this->productIds);
+
+                        //set number of product imported
+                        //@codingStandardsIgnoreStart
+                        $this->countProducts += count($products);
+                        //@codingStandardsIgnoreEnd
+                    }
+                    //using single api
+                    $this->_exportInSingle(
+                        $store,
+                        'Catalog_' . $websiteCode . '_' . $storeCode,
+                        $store->getWebsite()->getId()
+                    );
+                }
             }
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
