@@ -270,55 +270,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Gets a report with statistics about what was successfully imported, and what was unable to be imported.
-     *
-     * @param string|int $importId
-     *
-     * @return mixed
-     */
-    public function getContactsImportReport($importId)
-    {
-        $url = $this->getApiEndpoint() . self::REST_CONTACTS_IMPORT . $importId
-            . '/report';
-        $this->setUrl($url)
-            ->setVerb('GET');
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = 'GET CONTACTS IMPORT REPORT  . ' . $url . ' message : '
-                . $response->message;
-            $this->helper->debug('getContactsImportReport', [$message]);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Gets a contact by email address.
-     *
-     * @param string $email
-     *
-     * @return mixed
-     */
-    public function getContactByEmail($email)
-    {
-        $url = $this->getApiEndpoint() . self::REST_CONTACTS . $email;
-        $this->setUrl($url)
-            ->setVerb('GET');
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = 'GET CONTACT BY email : ' . $email . ' '
-                . $response->message;
-            $this->helper->debug('getContactByEmail', [$message]);
-        }
-
-        return $response;
-    }
-
-    /**
      * Get all address books.
      *
      * @throws \Exception
@@ -334,30 +285,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $message = 'GET ALL ADDRESS BOOKS : ' . $url . ', '
                 . $response->message;
             $this->helper->debug('getAddressBooks', [$message]);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Gets an address book by ID.
-     *
-     * @param $id
-     *
-     * @return null
-     * @throws \Exception
-     */
-    public function getAddressBookById($id)
-    {
-        $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS . $id;
-        $this->setUrl($url)
-            ->setVerb('GET');
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = 'GET ADDRESS BOOK BY ID ' . $id . ', ' . $response->message;
-            $this->helper->debug('getAddressBookById', [$message]);
         }
 
         return $response;
@@ -477,32 +404,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         if (isset($response->message)) {
             $message = 'GET ALL DATAFIELDS ' . $response->message;
             $this->helper->debug('getDataFields', [$message]);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Updates a contact.
-     *
-     * @param string|int $contactId
-     * @param $data
-     *
-     * @return object
-     */
-    public function updateContact($contactId, $data)
-    {
-        $url = $this->getApiEndpoint() . self::REST_CONTACTS . $contactId;
-        $this->setUrl($url)
-            ->setVerb('PUT')
-            ->buildPostBody($data);
-
-        $response = $this->execute();
-        if (isset($response->message)) {
-            $message = 'ERROR : UPDATE SINGLE CONTACT : ' . $url . ' message : '
-                . $response->message;
-            $this->helper->debug('updateContact', [$message]);
-            $this->helper->debug('updateContact', $data);
         }
 
         return $response;
@@ -819,27 +720,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Deletes all transactional data for a contact.
-     *
-     * @param        $email
-     * @param string $collectionName
-     *
-     * @return null
-     * @throws \Exception
-     */
-    public function deleteContactTransactionalData(
-        $email,
-        $collectionName = 'Orders'
-    ) {
-        $url = $this->getApiEndpoint() . '/v2/contacts/' . $email
-            . '/transactional-data/' . $collectionName;
-        $this->setUrl($url)
-            ->setVerb('DELETE');
-
-        return $this->execute();
-    }
-
-    /**
      * Gets a summary of information about the current status of the account.
      *
      * @throws \Exception
@@ -855,107 +735,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $message = 'GET ACCOUNT INFO for api user : '
                 . $this->getApiUsername() . ' ' . $response->message;
             $this->helper->debug('getAccountInfo', [$message]);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Deletes multiple contacts from an address book.
-     *
-     * @param string $addressBookId
-     * @param $contactIds
-     *
-     * @return object
-     */
-    public function deleteAddressBookContactsInbulk($addressBookId, $contactIds)
-    {
-        $url = $this->getApiEndpoint() . '/v2/address-books/' . $addressBookId
-            . '/contacts/inbulk';
-        $data = ['ContactIds' => [$contactIds[0]]];
-        $this->setUrl($url)
-            ->setVerb('DELETE')
-            ->buildPostBody($data);
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = 'deleteAddressBookContactsInbulk ' . $response->message
-                . ' address book ' . $addressBookId;
-            $this->helper->debug('deleteAddressBookContactsInbulk', [$message]);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Resubscribes a previously unsubscribed contact.
-     *
-     * @param $apiContact
-     *
-     * @throws \Exception
-     */
-    public function postContactsResubscribe($apiContact)
-    {
-        $url = $this->getApiEndpoint() . self::REST_CONTACTS_RESUBSCRIBE;
-        $data = [
-            'UnsubscribedContact' => $apiContact,
-        ];
-        $this->setUrl($url)
-            ->setVerb('POST')
-            ->buildPostBody($data);
-
-        $response = $this->execute();
-        if (isset($response->message)) {
-            $message = 'Resubscribe : ' . $url . ', message :'
-                . $response->message;
-            $this->helper->debug('postContactsResubscribe', [$message]);
-            $this->helper->debug('postContactsResubscriber', $data);
-        }
-    }
-
-    /**
-     * Gets all custom from addresses which can be used in a campaign.
-     *
-     * @throws \Exception
-     */
-    public function getCustomFromAddresses()
-    {
-        $url = $this->getApiEndpoint() . self::REST_CAMPAIGN_FROM_ADDRESS_LIST;
-        $this->setUrl($url)
-            ->setVerb('GET');
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = 'GET CampaignFromAddressList ' . $response->message
-                . ' api user : ' . $this->getApiUsername();
-            $this->helper->debug('getCustomFromAddresses', [$message]);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Creates a campaign.
-     *
-     * @param $data
-     *
-     * @return null
-     * @throws \Exception
-     */
-    public function postCampaign($data)
-    {
-        $url = $this->getApiEndpoint() . self::REST_CREATE_CAMPAIGN;
-        $this->setUrl($url)
-            ->setVerb('POST')
-            ->buildPostBody($data);
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = $response->message;
-            $this->helper->debug('postCampaign', [$message]);
         }
 
         return $response;
@@ -1027,32 +806,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         if (isset($response->message)) {
             $message = 'Get program by id  ' . $id . ', ' . $response->message;
             $this->helper->debug('getProgramById', [$message]);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Gets a summary of reporting information for a specified campaign.
-     *
-     * @param $campaignId
-     *
-     * @return null
-     * @throws \Exception
-     */
-    public function getCampaignSummary($campaignId)
-    {
-        $url = $this->getApiEndpoint() . '/v2/campaigns/' . $campaignId
-            . '/summary';
-        $this->setUrl($url)
-            ->setVerb('GET');
-
-        $response = $this->execute();
-
-        if (isset($response->message)) {
-            $message = 'Get Campaign Summary ' . $response->message
-                . '  ,url : ' . $url;
-            $this->helper->debug('title', [$message]);
         }
 
         return $response;
