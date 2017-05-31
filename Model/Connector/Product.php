@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Transactional data for catalog products to sync.
+ */
 class Product
 {
     /**

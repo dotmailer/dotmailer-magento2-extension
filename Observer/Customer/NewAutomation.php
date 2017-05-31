@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Register new customer automation.
+ */
 class NewAutomation implements \Magento\Framework\Event\ObserverInterface
 {
     /**

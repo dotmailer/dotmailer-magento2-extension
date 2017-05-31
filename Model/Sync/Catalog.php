@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+/**
+ * Sync account TD for catalog.
+ */
 class Catalog
 {
     /**

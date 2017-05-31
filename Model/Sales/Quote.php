@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+/**
+ * Customer and guest Abandoned Carts.
+ */
 class Quote
 {
     //customer

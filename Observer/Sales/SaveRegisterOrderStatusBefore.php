@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+/**
+ * Save original order status.
+ */
 class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\ObserverInterface
 {
     /**
