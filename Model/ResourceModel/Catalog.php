@@ -175,7 +175,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param $limit
      * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
-    public function getProductsCollectionFromSku($productsSku, $limit = false)
+    public function getProductsCollectionBySku($productsSku, $limit = false)
     {
         $productCollection = [];
 
@@ -239,7 +239,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $reportProductCollection->setStoreIds([$storeId]);
         $productsSku = $reportProductCollection->getColumnValues('sku');
 
-        return $this->getProductsCollectionFromSku($productsSku);
+        return $this->getProductsCollectionBySku($productsSku);
     }
 
     /**
