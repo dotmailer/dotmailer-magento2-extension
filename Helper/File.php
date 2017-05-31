@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+/**
+ * Creates the csv files in export folder and move to archive when it's complete.
+ * Log info and debug to a custom log file connector.log
+ */
 class File
 {
     /**

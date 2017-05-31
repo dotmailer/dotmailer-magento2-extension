@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Register new wishlist items automation.
+ */
 class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
 {
     /**

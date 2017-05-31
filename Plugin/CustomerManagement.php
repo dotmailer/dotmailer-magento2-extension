@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
+/**
+ * New customer automation plugin.
+ */
 class CustomerManagement
 {
     /**

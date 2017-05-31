@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * manages the sync of dotmailer Contact.
+ */
 class Contact
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+/**
+ * Handle the email confirmation.
+ *
+ */
 class AccountManagement extends \Magento\Customer\Model\AccountManagement
 {
 

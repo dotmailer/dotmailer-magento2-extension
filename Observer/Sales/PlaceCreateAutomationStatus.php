@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+/**
+ * Customer and guest new order automation.
+ */
 class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverInterface
 {
     /**

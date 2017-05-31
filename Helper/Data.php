@@ -6,6 +6,9 @@ use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Model\Config\Json;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 
+/**
+ * General most used helper to work with config data, saving updating and generating.
+ */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 

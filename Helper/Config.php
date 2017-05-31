@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+/**
+ * Store for core config data path. Keep the configuration path in one place for settings.
+ */
 class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Dotdigitalgroup_Email';

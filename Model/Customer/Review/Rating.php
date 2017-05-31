@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer\Review;
 
+/**
+ * Customer review rating data.
+ *
+ */
 class Rating
 {
     /**

@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Removes the contact if the customer is deleted.
+ */
 class RemoveContact implements \Magento\Framework\Event\ObserverInterface
 {
     /**
