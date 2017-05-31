@@ -21,9 +21,9 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $orderFactory;
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $productFactory;
+    public $catalogFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
      */
@@ -32,19 +32,19 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product constructor.
      *
-     * @param \Magento\Sales\Model\OrderFactory                       $orderFactory
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
-     * @param \Magento\Catalog\Model\ProductFactory                   $productFactory
-     * @param \Dotdigitalgroup\Email\Helper\Recommended               $recommended
-     * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
-     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context                  $context
-     * @param array                                                   $data
+     * @param \Magento\Sales\Model\OrderFactory                             $orderFactory
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory       $clientFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory     $catalogFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended                     $recommended
+     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
+     * @param \Magento\Framework\Pricing\Helper\Data                        $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context                        $context
+     * @param array                                                         $data
      */
     public function __construct(
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -55,7 +55,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->orderFactory      = $orderFactory;
         $this->clientFactory     = $clientFactory;
         $this->recommendedHelper = $recommended;
-        $this->productFactory    = $productFactory;
+        $this->catalogFactory    = $catalogFactory;
         $this->helper            = $helper;
         $this->priceHelper       = $priceHelper;
     }
@@ -139,12 +139,8 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         if ($productsToDisplayCounter < $limit) {
             $fallbackIds = $this->recommendedHelper->getFallbackIds();
 
-            $productCollection = $this->productFactory->create()
-                ->getCollection()
-                ->addIdFilter($fallbackIds)
-                ->addAttributeToSelect(
-                    ['product_url', 'name', 'store_id', 'small_image', 'price']
-                );
+            $productCollection = $this->catalogFactory->create()
+                ->getProductCollectionFromIds($fallbackIds);
 
             foreach ($productCollection as $product) {
                 if ($product->isSaleable()) {

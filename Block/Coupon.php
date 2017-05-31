@@ -11,48 +11,26 @@ class Coupon extends \Magento\Framework\View\Element\Template
      */
     public $helper;
     /**
-     * @var \Magento\SalesRule\Model\RuleFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CampaignFactory
      */
-    public $ruleFactory;
-    /**
-     * @var \Magento\SalesRule\Model\Coupon\MassgeneratorFactory
-     */
-    public $massGeneratorFactory;
-    /**
-     * @var \Magento\SalesRule\Model\CouponFactory
-     */
-    public $couponFactory;
-    /**
-     * @var \Magento\SalesRule\Model\ResourceModel\Coupon
-     */
-    public $coupon;
+    private $campaignFactory;
 
     /**
      * Coupon constructor.
      *
-     * @param \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory
-     * @param \Magento\SalesRule\Model\CouponFactory               $couponFactory
-     * @param \Magento\SalesRule\Model\ResourceModel\Coupon        $coupon
-     * @param \Magento\Framework\View\Element\Template\Context     $context
-     * @param \Dotdigitalgroup\Email\Helper\Data                   $helper
-     * @param \Magento\SalesRule\Model\RuleFactory                 $ruleFactory
-     * @param array                                                $data
+     * @param \Magento\Framework\View\Element\Template\Context              $context
+     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CampaignFactory    $campaignFactory
+     * @param array                                                         $data
      */
     public function __construct(
-        \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory,
-        \Magento\SalesRule\Model\CouponFactory $couponFactory,
-        \Magento\SalesRule\Model\ResourceModel\Coupon $coupon,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\SalesRule\Model\RuleFactory $ruleFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CampaignFactory $campaignFactory,
         array $data = []
     ) {
-        $this->helper               = $helper;
-        $this->ruleFactory          = $ruleFactory;
-        $this->coupon               = $coupon;
-        $this->couponFactory        = $couponFactory;
-        $this->massGeneratorFactory = $massgeneratorFactory;
-
+        $this->helper = $helper;
+        $this->campaignFactory = $campaignFactory;
         parent::__construct($context, $data);
     }
 
@@ -74,53 +52,17 @@ class Coupon extends \Magento\Framework\View\Element\Template
 
             return false;
         }
-        //coupon rule id
-        $couponCodeId = (int) $params['id'];
 
-        if ($couponCodeId) {
-            $rule = $this->ruleFactory->create()
-                ->load($couponCodeId);
-            $generator = $this->massGeneratorFactory->create();
-            $generator->setFormat(
-                \Magento\SalesRule\Helper\Coupon::COUPON_FORMAT_ALPHANUMERIC
-            );
-            $generator->setRuleId($couponCodeId);
-            $generator->setUsesPerCoupon(1);
-            $generator->setDash(3);
-            $generator->setLength(9);
-            $generator->setPrefix('DOT-');
-            $generator->setSuffix('');
-            //set the generation settings
-            $rule->setCouponCodeGenerator($generator);
-            $rule->setCouponType(
-                \Magento\SalesRule\Model\Rule::COUPON_TYPE_AUTO
-            );
-            //generate the coupon
-            $coupon = $rule->acquireCoupon();
-            $couponCode = $coupon->getCode();
-            //save the type of coupon
-            /** @var \Magento\SalesRule\Model\Coupon $couponModel */
-            $couponModel = $this->couponFactory->create()
-                ->loadByCode($couponCode);
-            $couponModel->setType(
-                \Magento\SalesRule\Model\Rule::COUPON_TYPE_NO_COUPON
-            )->setGeneratedByDotmailer(1);
+        $couponCodeId = $params['id'];
+        $expireDate = false;
 
-            if (is_numeric($params['expire_days'])) {
-                $expireDate = $this->_localeDate->date()
-                    ->add(\DateInterval::createFromDateString(sprintf('P%sDay', $params['expire_days'])));
-
-                $couponModel->setExpirationDate($expireDate);
-            } elseif ($rule->getToDate()) {
-                $couponModel->setExpirationDate($rule->getToDate());
-            }
-
-            $this->coupon->save($couponModel);
-
-            return $couponCode;
+        if (is_numeric($params['expire_days'])) {
+            $expireDate = $this->_localeDate->date()
+                ->add(\DateInterval::createFromDateString(sprintf('P%sDay', $params['expire_days'])));
         }
 
-        return false;
+        return $this->campaignFactory->create()
+            ->generateCoupon($couponCodeId, $expireDate);
     }
 
     /**
