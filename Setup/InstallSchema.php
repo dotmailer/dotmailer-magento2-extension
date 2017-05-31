@@ -12,7 +12,6 @@ use Magento\Framework\App\ObjectManager;
  */
 class InstallSchema implements InstallSchemaInterface
 {
-
     /**
      * {@inheritdoc}
      * @codingStandardsIgnoreStart
@@ -24,9 +23,66 @@ class InstallSchema implements InstallSchemaInterface
         $installer = $setup;
         $installer->startSetup();
 
-        /*
-         * Create contact table.
-         */
+        $this->createContactTable($installer);
+        $this->createOrderTable($installer);
+        $this->createCampaignTable($installer);
+        $this->createReviewTable($installer);
+        $this->createWishlistTable($installer);
+        $this->createQuoteTable($installer);
+        $this->createCatalogTable($installer);
+        $this->createRuleTable($installer);
+        $this->createImporterTable($installer);
+        $this->createAutomationTable($installer);
+        $this->populateEmailContactTable($installer);
+        $this->updateContactsWithCustomersThatAreSubscribers($installer);
+        $this->populateEmailOrderTable($installer);
+        $this->populateEmailReviewTable($installer);
+        $this->populateEmailWishlistTable($installer);
+        $this->populateEmailQuoteTable($installer);
+        $this->populateEmailCatalogTable($installer);
+        $this->addColumnToAdminUserTable($installer);
+
+        $configModel = $this->saveValuesToConfig();
+        $this->saveAllOrderStatusesAsString($configModel);
+        $this->saveAllProductTypesAsString($configModel);
+        $this->saveAllProductVisibilitiesAsString($configModel);
+
+        $installer->endSetup();
+        // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * @param $installer
+     */
+    private function createContactTable($installer)
+    {
+        $this->dropContactTableIfExists($installer);
+
+        $contactTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_contact'));
+
+        $this->addColumnsToContactTable($contactTable);
+        $this->addIndexesToContactTable($installer, $contactTable);
+
+        $contactTable->addForeignKey(
+            $installer->getFkName(
+                'email_contact', 'website_id', 'store_website', 'website_id'
+            ),
+            'website_id',
+            $installer->getTable('store_website'),
+            'website_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+
+        $contactTable->setComment('Connector Contacts');
+        $installer->getConnection()->createTable($contactTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropContactTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_contact')
         )
@@ -35,19 +91,22 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_contact')
             );
         }
+    }
 
-        $contactTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_contact')
-        )
-            ->addColumn(
-                'email_contact_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, 10,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    /**
+     * @param $contactTable
+     */
+    private function addColumnsToContactTable($contactTable)
+    {
+        $contactTable->addColumn(
+            'email_contact_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, 10,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'is_guest', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
@@ -97,10 +156,18 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'suppressed', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                 null, ['unsigned' => true, 'nullable' => true], 'Is Suppressed'
-            )
-            ->addIndex(
-                $installer->getIdxName('email_contact', ['email_contact_id']),
-                ['email_contact_id']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $contactTable
+     */
+    private function addIndexesToContactTable($installer, $contactTable)
+    {
+        $contactTable->addIndex(
+            $installer->getIdxName('email_contact', ['email_contact_id']),
+            ['email_contact_id']
             )
             ->addIndex(
                 $installer->getIdxName('email_contact', ['is_guest']),
@@ -142,22 +209,42 @@ class InstallSchema implements InstallSchemaInterface
             ->addIndex(
                 $installer->getIdxName('email_contact', ['contact_id']),
                 ['contact_id']
-            )
-            ->addForeignKey(
-                $installer->getFkName(
-                    'email_contact', 'website_id', 'store_website', 'website_id'
-                ),
-                'website_id',
-                $installer->getTable('store_website'),
-                'website_id',
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-            )
-            ->setComment('Connector Contacts');
-        $installer->getConnection()->createTable($contactTable);
+            );
+    }
 
-        /*
-         * Create order table.
-         */
+    /**
+     * @param $installer
+     */
+    private function createOrderTable($installer)
+    {
+        $this->dropOrderTableIfExists($installer);
+
+        $orderTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_order'));
+
+        $this->addColumnsToOrderTable($orderTable);
+        $this->addIndexesToOrderTable($installer, $orderTable);
+
+        $orderTable->addForeignKey(
+            $installer->getFkName(
+                $installer->getTable('email_order'), 'store_id',
+                'core/store', 'store_id'
+            ),
+            'store_id',
+            $installer->getTable('store'), 'store_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+
+        $orderTable->setComment('Transactional Order Data');
+        $installer->getConnection()->createTable($orderTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropOrderTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_order')
         )
@@ -166,18 +253,22 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_order')
             );
         }
-        $orderTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_order')
-        )
-            ->addColumn(
-                'email_order_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    }
+
+    /**
+     * @param $orderTable
+     */
+    private function addColumnsToOrderTable($orderTable)
+    {
+        $orderTable->addColumn(
+            'email_order_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'order_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
@@ -213,11 +304,19 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 null, [], 'Update Time'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_order'), ['store_id']
-                ), ['store_id']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $orderTable
+     */
+    private function addIndexesToOrderTable($installer, $orderTable)
+    {
+        $orderTable->addIndex(
+            $installer->getIdxName(
+                $installer->getTable('email_order'), ['store_id']
+            ), ['store_id']
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -248,23 +347,42 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getIdxName(
                     $installer->getTable('email_order'), ['created_at']
                 ), ['created_at']
-            )
-            ->addForeignKey(
-                $installer->getFkName(
-                    $installer->getTable('email_order'), 'store_id',
-                    'core/store', 'store_id'
-                ),
-                'store_id',
-                $installer->getTable('store'), 'store_id',
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-            )
-            ->setComment('Transactional Order Data');
-        $installer->getConnection()->createTable($orderTable);
+            );
+    }
 
-        /*
-         * Create campaign table.
-         */
+    /**
+     * @param $installer
+     */
+    private function createCampaignTable($installer)
+    {
+        $this->dropCampaignTableIfExists($installer);
+
+        $campaignTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_campaign'));
+
+        $this->addColumnsToCampaignTable($campaignTable);
+        $this->addIndexesTocampaignTable($installer, $campaignTable);
+
+        $campaignTable->addForeignKey(
+            $installer->getFkName(
+                $installer->getTable('email_campaign'), 'store_id',
+                'core/store', 'store_id'
+            ),
+            'store_id',
+            $installer->getTable('store'), 'store_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+
+        $campaignTable->setComment('Connector Campaigns');
+        $installer->getConnection()->createTable($campaignTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropCampaignTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_campaign')
         )
@@ -273,18 +391,21 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_campaign')
             );
         }
+    }
 
-        $campaignTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_campaign')
-        )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    /**
+     * @param $campaignTable
+     */
+    private function addColumnsToCampaignTable($campaignTable)
+    {
+        $campaignTable->addColumn(
+            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'campaign_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
@@ -345,11 +466,19 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 null, [], 'Update Time'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_campaign'), ['store_id']
-                ), ['store_id']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $campaignTable
+     */
+    private function addIndexesTocampaignTable($installer, $campaignTable)
+    {
+        $campaignTable->addIndex(
+            $installer->getIdxName(
+                $installer->getTable('email_campaign'), ['store_id']
+            ), ['store_id']
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -405,23 +534,31 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getIdxName(
                     $installer->getTable('email_campaign'), ['customer_id']
                 ), ['customer_id']
-            )
-            ->addForeignKey(
-                $installer->getFkName(
-                    $installer->getTable('email_campaign'), 'store_id',
-                    'core/store', 'store_id'
-                ),
-                'store_id',
-                $installer->getTable('store'), 'store_id',
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-            )
-            ->setComment('Connector Campaigns');
-        $installer->getConnection()->createTable($campaignTable);
+            );
+    }
 
-        /*
-         * Create review table
-         */
+    /**
+     * @param $installer
+     */
+    private function createReviewTable($installer)
+    {
+        $this->dropReviewTableIfExists($installer);
+
+        $reviewTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_review'));
+
+        $this->addColumnsToReviewTable($reviewTable);
+        $this->addIndexesToReviewTable($installer, $reviewTable);
+
+        $reviewTable->setComment('Connector Reviews');
+        $installer->getConnection()->createTable($reviewTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropReviewTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_review')
         )
@@ -430,17 +567,21 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_review')
             );
         }
-        $reviewTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_review')
-        )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    }
+
+    /**
+     * @param $reviewTable
+     */
+    private function addColumnsToReviewTable($reviewTable)
+    {
+        $reviewTable->addColumn(
+            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'review_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
@@ -466,11 +607,19 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 null, [], 'Update Time'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_review'), ['review_id']
-                ), ['review_id']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $reviewTable
+     */
+    private function addIndexesToReviewTable($installer, $reviewTable)
+    {
+        $reviewTable->addIndex(
+            $installer->getIdxName(
+                $installer->getTable('email_review'), ['review_id']
+            ), ['review_id']
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -496,13 +645,32 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getIdxName(
                     $installer->getTable('email_review'), ['updated_at']
                 ), ['updated_at']
-            )
-            ->setComment('Connector Reviews');
-        $installer->getConnection()->createTable($reviewTable);
+            );
+    }
 
-        /*
-         * Create wishlist table.
-         */
+    /**
+     * @param $installer
+     */
+    private function createWishlistTable($installer)
+    {
+        $this->dropWishlistTableIfExists($installer);
+
+        $wishlistTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_wishlist')
+        );
+
+        $this->addColumnsToWishlistTable($wishlistTable);
+        $this->addIndexesToWishlistTable($installer, $wishlistTable);
+
+        $wishlistTable->setComment('Connector Wishlist');
+        $installer->getConnection()->createTable($wishlistTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropWishlistTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_wishlist')
         )
@@ -511,17 +679,21 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_wishlist')
             );
         }
-        $wishlistTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_wishlist')
-        )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    }
+
+    /**
+     * @param $wishlistTable
+     */
+    private function addColumnsToWishlistTable($wishlistTable)
+    {
+        $wishlistTable->addColumn(
+            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'wishlist_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
@@ -556,11 +728,19 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 null, [], 'Update Time'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_wishlist'), ['wishlist_id']
-                ), ['wishlist_id']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $wishlistTable
+     */
+    private function addIndexesToWishlistTable($installer, $wishlistTable)
+    {
+        $wishlistTable->addIndex(
+            $installer->getIdxName(
+                $installer->getTable('email_wishlist'), ['wishlist_id']
+            ), ['wishlist_id']
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -598,13 +778,31 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getIdxName(
                     $installer->getTable('email_wishlist'), ['store_id']
                 ), ['store_id']
-            )
-            ->setComment('Connector Wishlist');
-        $installer->getConnection()->createTable($wishlistTable);
+            );
+    }
 
-        /*
-         * Create quote table.
-         */
+    /**
+     * @param $installer
+     */
+    private function createQuoteTable($installer)
+    {
+        $this->dropQuoteTableIfExists($installer);
+
+        $quoteTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_quote'));
+
+        $this->addColumnsToQuoteTable($quoteTable);
+        $this->addIndexesToQuoteTable($installer, $quoteTable);
+
+        $quoteTable->setComment('Connector Quotes');
+        $installer->getConnection()->createTable($quoteTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropQuoteTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_quote')
         )
@@ -613,17 +811,21 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_quote')
             );
         }
-        $quoteTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_quote')
-        )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    }
+
+    /**
+     * @param $quoteTable
+     */
+    private function addColumnsToQuoteTable($quoteTable)
+    {
+        $quoteTable->addColumn(
+            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'quote_id', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 10,
@@ -652,11 +854,19 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 null, [], 'Update Time'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_quote'), ['quote_id']
-                ), ['quote_id']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $quoteTable
+     */
+    private function addIndexesToQuoteTable($installer, $quoteTable)
+    {
+        $quoteTable->addIndex(
+            $installer->getIdxName(
+                $installer->getTable('email_quote'), ['quote_id']
+            ), ['quote_id']
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -687,13 +897,31 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getIdxName(
                     $installer->getTable('email_quote'), ['created_at']
                 ), ['created_at']
-            )
-            ->setComment('Connector Quotes');
-        $installer->getConnection()->createTable($quoteTable);
+            );
+    }
 
-        /*
-         * Create catalog table.
-         */
+    /**
+     * @param $installer
+     */
+    private function createCatalogTable($installer)
+    {
+        $this->dropCatalogTableIfExists($installer);
+
+        $catalogTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_catalog'));
+
+        $this->addColumnsToCatalogTable($catalogTable);
+        $this->addIndexesToCatalogTable($installer, $catalogTable);
+
+        $catalogTable->setComment('Connector Catalog');
+        $installer->getConnection()->createTable($catalogTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropCatalogTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_catalog')
         )
@@ -702,18 +930,22 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_catalog')
             );
         }
-        $catalogTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_catalog')
+    }
+
+    /**
+     * @param $catalogTable
+     */
+    private function addColumnsToCatalogTable($catalogTable)
+    {
+        $catalogTable->addColumn(
+            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
         )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
-            )
             ->addColumn(
                 'product_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, 10,
                 ['unsigned' => true, 'nullable' => false], 'Product Id'
@@ -735,11 +967,19 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 null, [], 'Update Time'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_catalog'), ['product_id']
-                ), ['product_id']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $catalogTable
+     */
+    private function addIndexesToCatalogTable($installer, $catalogTable)
+    {
+        $catalogTable->addIndex(
+            $installer->getIdxName(
+                $installer->getTable('email_catalog'), ['product_id']
+            ), ['product_id']
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -760,13 +1000,30 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getIdxName(
                     $installer->getTable('email_catalog'), ['updated_at']
                 ), ['updated_at']
-            )
-            ->setComment('Connector Catalog');
-        $installer->getConnection()->createTable($catalogTable);
+            );
+    }
 
-        /*
-         * Create rules table.
-         */
+    /**
+     * @param $installer
+     */
+    private function createRuleTable($installer)
+    {
+        $this->dropRuleTableIfExists($installer);
+
+        $ruleTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_rules'));
+
+        $this->addColumnsToRulesTable($ruleTable);
+
+        $ruleTable->setComment('Connector Rules');
+        $installer->getConnection()->createTable($ruleTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropRuleTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_rules')
         )
@@ -775,17 +1032,21 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_rules')
             );
         }
-        $ruleTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_rules')
-        )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    }
+
+    /**
+     * @param $ruleTable
+     */
+    private function addColumnsToRulesTable($ruleTable)
+    {
+        $ruleTable->addColumn(
+            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'name', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 255,
@@ -818,13 +1079,32 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 null, [], 'Update Time'
-            )
-            ->setComment('Connector Rules');
-        $installer->getConnection()->createTable($ruleTable);
+            );
+    }
 
-        /*
-         * Create importer table.
-         */
+    /**
+     * @param $installer
+     */
+    private function createImporterTable($installer)
+    {
+        $this->dropImporterTableIfExists($installer);
+
+        $importerTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_importer')
+        );
+
+        $this->addColumnsToImporterTable($importerTable);
+        $this->addIndexesToImporterTable($installer, $importerTable);
+
+        $importerTable ->setComment('Email Importer');
+        $installer->getConnection()->createTable($importerTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropImporterTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_importer')
         )
@@ -833,17 +1113,21 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_importer')
             );
         }
-        $importerTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_importer')
-        )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    }
+
+    /**
+     * @param $importerTable
+     */
+    private function addColumnsToImporterTable($importerTable)
+    {
+        $importerTable->addColumn(
+            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'import_type', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 255,
@@ -894,11 +1178,19 @@ class InstallSchema implements InstallSchemaInterface
                 'import_finished',
                 \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP, null, [],
                 'Import Finished'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_importer'), ['import_type']
-                ), ['import_type']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $importerTable
+     */
+    private function addIndexesToImporterTable($installer, $importerTable)
+    {
+        $importerTable->addIndex(
+            $installer->getIdxName(
+                $installer->getTable('email_importer'), ['import_type']
+            ), ['import_type']
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -939,13 +1231,31 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getIdxName(
                     $installer->getTable('email_importer'), ['import_finished']
                 ), ['import_finished']
-            )
-            ->setComment('Email Importer');
-        $installer->getConnection()->createTable($importerTable);
+            );
+    }
 
-        /*
-         * Create automation table.
-         */
+    /**
+     * @param $installer
+     */
+    private function createAutomationTable($installer)
+    {
+        $this->dropAutomationTableIfExists($installer);
+
+        $automationTable = $installer->getConnection()->newTable(
+            $installer->getTable('email_automation'));
+
+        $this->addColumnsToAutomationTable($automationTable);
+        $this->addIndexesToAutomationTable($installer, $automationTable);
+
+        $automationTable->setComment('Automation Status');
+        $installer->getConnection()->createTable($automationTable);
+    }
+
+    /**
+     * @param $installer
+     */
+    private function dropAutomationTableIfExists($installer)
+    {
         if ($installer->getConnection()->isTableExists(
             $installer->getTable('email_automation')
         )
@@ -954,17 +1264,21 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getTable('email_automation')
             );
         }
-        $automationTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_automation')
-        )
-            ->addColumn(
-                'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ], 'Primary Key'
+    }
+
+    /**
+     * @param $automationTable
+     */
+    private function addColumnsToAutomationTable($automationTable)
+    {
+        $automationTable->addColumn(
+            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ], 'Primary Key'
             )
             ->addColumn(
                 'automation_type', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
@@ -1005,12 +1319,20 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn(
                 'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 null, [], 'Update Time'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_automation'),
-                    ['automation_type']
-                ), ['automation_type']
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $automationTable
+     */
+    private function addIndexesToAutomationTable($installer, $automationTable)
+    {
+        $automationTable->addIndex(
+            $installer->getIdxName(
+                $installer->getTable('email_automation'),
+                ['automation_type']
+            ), ['automation_type']
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -1053,13 +1375,14 @@ class InstallSchema implements InstallSchemaInterface
                     $installer->getTable('email_automation'),
                     ['website_id']
                 ), ['website_id']
-            )
-            ->setComment('Automation Status');
-        $installer->getConnection()->createTable($automationTable);
+            );
+    }
 
-        /**
-         * Populate email_contact table
-         */
+    /**
+     * @param $installer
+     */
+    private function populateEmailContactTable($installer)
+    {
         $select = $installer->getConnection()->select()
             ->from(
                 ['customer' => $installer->getTable('customer_entity')],
@@ -1104,7 +1427,13 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_contact'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
+    }
 
+    /**
+     * @param $installer
+     */
+    private function updateContactsWithCustomersThatAreSubscribers($installer)
+    {
         //Update contacts with customers that are subscribers
         $select = $installer->getConnection()->select();
         $select->from(
@@ -1126,10 +1455,13 @@ class InstallSchema implements InstallSchemaInterface
                 ["customer_id in (?)" => $customerIds]
             );
         }
+    }
 
-        /**
-         * Populate email_order table
-         */
+    /**
+     * @param $installer
+     */
+    private function populateEmailOrderTable($installer)
+    {
         $select = $installer->getConnection()->select()
             ->from(
                 $installer->getTable('sales_order'),
@@ -1154,10 +1486,13 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_order'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
+    }
 
-        /**
-         * Populate email_review table
-         */
+    /**
+     * @param $installer
+     */
+    private function populateEmailReviewTable($installer)
+    {
         $inCond = $installer->getConnection()->prepareSqlCondition(
             'review_detail.customer_id', ['notnull' => true]
         );
@@ -1188,10 +1523,13 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_review'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
+    }
 
-        /**
-         * Populate email_wishlist table
-         */
+    /**
+     * @param $installer
+     */
+    private function populateEmailWishlistTable($installer)
+    {
         $select = $installer->getConnection()->select()
             ->from(
                 ['wishlist' => $installer->getTable('wishlist')],
@@ -1221,10 +1559,13 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_wishlist'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
+    }
 
-        /**
-         * Populate email_quote table
-         */
+    /**
+     * @param $installer
+     */
+    private function populateEmailQuoteTable($installer)
+    {
         $select = $installer->getConnection()->select()
             ->from(
                 $installer->getTable('quote'),
@@ -1248,10 +1589,13 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_quote'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
+    }
 
-        /**
-         * Populate email_catalog table
-         */
+    /**
+     * @param $installer
+     */
+    private function populateEmailCatalogTable($installer)
+    {
         $select = $installer->getConnection()->select()
             ->from(
                 [
@@ -1269,10 +1613,13 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_catalog'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
+    }
 
-        /**
-         * Add column to admin_user table
-         */
+    /**
+     * @param $installer
+     */
+    private function addColumnToAdminUserTable($installer)
+    {
         $installer->getConnection()->addColumn(
             $installer->getTable('admin_user'), 'refresh_token', [
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
@@ -1282,15 +1629,24 @@ class InstallSchema implements InstallSchemaInterface
                 'comment' => 'Email connector refresh token',
             ]
         );
+    }
 
-        /**
-         * Save values to config
-         */
+    /**
+     * @return mixed
+     */
+    private function saveValuesToConfig()
+    {
         $configModel = ObjectManager::getInstance()->get(
             'Magento\Config\Model\ResourceModel\Config'
         );
+        return $configModel;
+    }
 
-        //Save all order statuses as string
+    /**
+     * @param $configModel
+     */
+    private function saveAllOrderStatusesAsString($configModel)
+    {
         $orderStatuses = ObjectManager::getInstance()->get(
             'Magento\Sales\Model\Config\Source\Order\Status'
         )->toOptionArray();
@@ -1304,10 +1660,15 @@ class InstallSchema implements InstallSchemaInterface
         $statusString = implode(',', $options);
         $configModel->saveConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,
-            $statusString, $scope = 'website', $scopeId = 0
+            $statusString, 'website', 0
         );
+    }
 
-        //Save all product types as string
+    /**
+     * @param $configModel
+     */
+    private function saveAllProductTypesAsString($configModel)
+    {
         $types = ObjectManager::getInstance()->create(
             'Magento\Catalog\Model\Product\Type'
         )->toOptionArray();
@@ -1318,10 +1679,15 @@ class InstallSchema implements InstallSchemaInterface
         $typeString = implode(',', $options);
         $configModel->saveConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE,
-            $typeString, $scope = 'website', $scopeId = '0'
+            $typeString, 'website', '0'
         );
+    }
 
-        //Save all product visibilities as string
+    /**
+     * @param $configModel
+     */
+    private function saveAllProductVisibilitiesAsString($configModel)
+    {
         $visibilities = ObjectManager::getInstance()->create(
             'Magento\Catalog\Model\Product\Visibility'
         )->toOptionArray();
@@ -1332,10 +1698,7 @@ class InstallSchema implements InstallSchemaInterface
         $visibilityString = implode(',', $options);
         $configModel->saveConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY,
-            $visibilityString, $scope = 'website', $scopeId = '0'
+            $visibilityString, 'website', '0'
         );
-
-        $installer->endSetup();
-        // @codingStandardsIgnoreEnd
     }
 }
