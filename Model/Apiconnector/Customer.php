@@ -64,16 +64,6 @@ class Customer
     public $reward;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
-     */
-    public $orderCollection;
-
-    /**
-     * @var
-     */
-    public $contactFactory;
-
-    /**
      * @var array
      */
     public $subscriberStatus
@@ -87,12 +77,10 @@ class Customer
     /**
      * Customer constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory                $contactFactory
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
      * @param \Magento\Framework\Stdlib\DateTime                         $dateTime
      * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
      * @param \Magento\Review\Model\ResourceModel\Review\Collection      $reviewCollection
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                         $helper
      * @param \Magento\Customer\Model\GroupFactory                       $groupFactory
      * @param \Magento\Newsletter\Model\SubscriberFactory                $subscriberFactory
@@ -100,12 +88,10 @@ class Customer
      * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Review\Model\ResourceModel\Review\Collection $reviewCollection,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\GroupFactory $groupFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
@@ -116,9 +102,7 @@ class Customer
         $this->_objectManager    = $objectManager;
         $this->helper            = $helper;
         $this->_store            = $storeManager;
-        $this->_contactFactory   = $contactFactory;
         $this->reviewCollection  = $reviewCollection;
-        $this->orderCollection   = $collectionFactory;
         $this->groupFactory      = $groupFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->categoryFactory   = $categoryFactory;
@@ -176,22 +160,6 @@ class Customer
     }
 
     /**
-     * @param string $email
-     */
-    public function setEmail($email)
-    {
-        $this->customerData['email'] = $email;
-    }
-
-    /**
-     * @param string $emailType
-     */
-    public function setEmailType($emailType)
-    {
-        $this->customerData['email_type'] = $emailType;
-    }
-
-    /**
      * Customer reviews.
      *
      * @return $this
@@ -208,36 +176,6 @@ class Customer
     }
 
     /**
-     * Number of reviews.
-     *
-     * @return int
-     */
-    public function getReviewCount()
-    {
-        return count($this->reviewCollection);
-    }
-
-    /**
-     * Last review date.
-     *
-     * @return string
-     */
-    public function getLastReviewDate()
-    {
-        if ($this->reviewCollection->getSize()) {
-            //@codingStandardsIgnoreStart
-            $this->reviewCollection->getSelect()->limit(1);
-            $createdAt = $this->reviewCollection
-                ->getFirstItem()
-                ->getCreatedAt();
-            //@codingStandardsIgnoreEnd
-            return $createdAt;
-        }
-
-        return '';
-    }
-
-    /**
      * Get customer id.
      *
      * @return mixed
@@ -248,449 +186,11 @@ class Customer
     }
 
     /**
-     * Get first name.
-     *
-     * @return mixed
-     */
-    public function getFirstname()
-    {
-        return $this->customer->getFirstname();
-    }
-
-    /**
-     * Get last name.
-     *
-     * @return mixed
-     */
-    public function getLastname()
-    {
-        return $this->customer->getLastname();
-    }
-
-    /**
-     * Get date of birth.
-     *
-     * @return mixed
-     */
-    public function getDob()
-    {
-        return $this->customer->getDob();
-    }
-
-    /**
-     * Get customer gender.
-     *
-     * @return bool|string
-     */
-    public function getGender()
-    {
-        return $this->_getCustomerGender();
-    }
-
-    /**
-     * Get customer prefix.
-     *
-     * @return mixed
-     */
-    public function getPrefix()
-    {
-        return $this->customer->getPrefix();
-    }
-
-    /**
-     * Get customer suffix.
-     *
-     * @return mixed
-     */
-    public function getSuffix()
-    {
-        return $this->customer->getSuffix();
-    }
-
-    /**
-     * Get website name.
-     *
-     * @return string
-     */
-    public function getWebsiteName()
-    {
-        return $this->_getWebsiteName();
-    }
-
-    /**
-     * Get store name.
-     *
-     * @return null|string
-     */
-    public function getStoreName()
-    {
-        return $this->_getStoreName();
-    }
-
-    /**
-     * Get customer created at date.
-     *
-     * @return mixed
-     */
-    public function getCreatedAt()
-    {
-        return $this->customer->getCreatedAt();
-    }
-
-    /**
-     * Get customer last logged in date.
-     *
-     * @return mixed
-     */
-    public function getLastLoggedDate()
-    {
-        return $this->customer->getLastLoggedDate();
-    }
-
-    /**
-     * Get cutomer group.
-     *
-     * @return string
-     */
-    public function getCustomerGroup()
-    {
-        return $this->_getCustomerGroup();
-    }
-
-    /**
-     * Get billing address line 1.
-     *
-     * @return string
-     */
-    public function getBillingAddress1()
-    {
-        return $this->_getStreet($this->customer->getBillingStreet(), 1);
-    }
-
-    /**
-     * Get billing address line 2.
-     *
-     * @return string
-     */
-    public function getBillingAddress2()
-    {
-        return $this->_getStreet($this->customer->getBillingStreet(), 2);
-    }
-
-    /**
-     * Get billing city.
-     *
-     * @return mixed
-     */
-    public function getBillingCity()
-    {
-        return $this->customer->getBillingCity();
-    }
-
-    /**
-     * Get billing country.
-     *
-     * @return mixed
-     */
-    public function getBillingCountry()
-    {
-        return $this->customer->getBillingCountryCode();
-    }
-
-    /**
-     * Get billing state.
-     *
-     * @return mixed
-     */
-    public function getBillingState()
-    {
-        return $this->customer->getBillingRegion();
-    }
-
-    /**
-     * Get billing postcode.
-     *
-     * @return mixed
-     */
-    public function getBillingPostcode()
-    {
-        return $this->customer->getBillingPostcode();
-    }
-
-    /**
-     * Get billing phone.
-     *
-     * @return mixed
-     */
-    public function getBillingTelephone()
-    {
-        return $this->customer->getBillingTelephone();
-    }
-
-    /**
-     * Get delivery address line 1.
-     *
-     * @return string
-     */
-    public function getDeliveryAddress1()
-    {
-        return $this->_getStreet($this->customer->getShippingStreet(), 1);
-    }
-
-    /**
-     * Get delivery addrss line 2.
-     *
-     * @return string
-     */
-    public function getDeliveryAddress2()
-    {
-        return $this->_getStreet($this->customer->getShippingStreet(), 2);
-    }
-
-    /**
-     * Get delivery city.
-     *
-     * @return mixed
-     */
-    public function getDeliveryCity()
-    {
-        return $this->customer->getShippingCity();
-    }
-
-    /**
-     * Get delivery country.
-     *
-     * @return mixed
-     */
-    public function getDeliveryCountry()
-    {
-        return $this->customer->getShippingCountryCode();
-    }
-
-    /**
-     * Get delivery state.
-     *
-     * @return mixed
-     */
-    public function getDeliveryState()
-    {
-        return $this->customer->getShippingRegion();
-    }
-
-    /**
-     * Get delivery postcode.
-     *
-     * @return mixed
-     */
-    public function getDeliveryPostcode()
-    {
-        return $this->customer->getShippingPostcode();
-    }
-
-    /**
-     * Get delivery phone.
-     *
-     * @return mixed
-     */
-    public function getDeliveryTelephone()
-    {
-        return $this->customer->getShippingTelephone();
-    }
-
-    /**
-     * Get numbser of orders.
-     *
-     * @return mixed
-     */
-    public function getNumberOfOrders()
-    {
-        return $this->customer->getNumberOfOrders();
-    }
-
-    /**
-     * Get average order value.
-     *
-     * @return mixed
-     */
-    public function getAverageOrderValue()
-    {
-        return $this->customer->getAverageOrderValue();
-    }
-
-    /**
-     * Get total spend.
-     *
-     * @return mixed
-     */
-    public function getTotalSpend()
-    {
-        return $this->customer->getTotalSpend();
-    }
-
-    /**
-     * Get last order date.
-     *
-     * @return mixed
-     */
-    public function getLastOrderDate()
-    {
-        return $this->customer->getLastOrderDate();
-    }
-
-    /**
-     * Get last order id.
-     *
-     * @return mixed
-     */
-    public function getLastOrderId()
-    {
-        return $this->customer->getLastOrderId();
-    }
-
-    /**
-     * Get last quote id.
-     *
-     * @return mixed
-     */
-    public function getLastQuoteId()
-    {
-        return $this->customer->getLastQuoteId();
-    }
-
-    /**
-     * Get cutomer id.
-     *
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->customer->getId();
-    }
-
-    /**
-     * Get customer title.
-     *
-     * @return mixed
-     */
-    public function getTitle()
-    {
-        return $this->customer->getPrefix();
-    }
-
-    /**
-     * Total value refunded for the customer.
-     *
-     * @return float|int
-     */
-    public function getTotalRefund()
-    {
-        //filter by customer id
-        $customerOrders = $this->orderCollection->create()
-            ->addAttributeToFilter('customer_id', $this->customer->getId());
-
-        $totalRefunded = 0;
-        //calculate total refunded
-        foreach ($customerOrders as $order) {
-            $refunded = $order->getTotalRefunded();
-            $totalRefunded += $refunded;
-        }
-
-        return $totalRefunded;
-    }
-
-    /**
-     * export to CSV.
-     *
-     * @return mixed
-     */
-    public function toCSVArray()
-    {
-        $result = $this->customerData;
-
-        return $result;
-    }
-
-    /**
-     * customer gender.
-     *
-     * @return bool|string
-     */
-    public function _getCustomerGender()
-    {
-        $genderId = $this->customer->getGender();
-        if (is_numeric($genderId)) {
-            $gender = $this->customer->getAttribute('gender')
-                ->getSource()->getOptionText($genderId);
-
-            return $gender;
-        }
-
-        return '';
-    }
-
-    public function _getStreet($street, $line)
-    {
-        $street = explode("\n", $street);
-        if (isset($street[$line - 1])) {
-            return $street[$line - 1];
-        }
-
-        return '';
-    }
-
-    public function _getWebsiteName()
-    {
-        $websiteId = $this->customer->getWebsiteId();
-        $website = $this->_store->getWebsite($websiteId);
-        if ($website) {
-            return $website->getName();
-        }
-
-        return '';
-    }
-
-    public function _getStoreName()
-    {
-        $storeId = $this->customer->getStoreId();
-        $store = $this->_store->getStore($storeId);
-
-        if ($store) {
-            return $store->getName();
-        }
-
-        return '';
-    }
-
-    /**
-     * @param $mapping_hash
-     *
-     * @return $this
-     */
-    public function setMappingHash($mapping_hash)
-    {
-        $this->mappingHash = $mapping_hash;
-
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     public function getMappingHash()
     {
         return $this->mappingHash;
-    }
-
-    public function _getCustomerGroup()
-    {
-        $groupId = $this->customer->getGroupId();
-        $groupModel = $this->groupFactory->create()
-            ->load($groupId);
-        if ($groupModel) {
-            return $groupModel->getCode();
-        }
-
-        return '';
     }
 
     /**
@@ -730,28 +230,6 @@ class Customer
         if ($subscriberModel->getCustomerId()) {
             return $this->subscriberStatus[$subscriberModel->getSubscriberStatus()];
         }
-    }
-
-    /**
-     * Customer segments id.
-     *
-     * @return string
-     */
-    public function getCustomerSegments()
-    {
-        //@codingStandardsIgnoreStart
-        $contactModel = $this->_contactFactory->create()
-            ->getCollection()
-            ->addFieldToFilter('customer_id', $this->getCustomerId())
-            ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
-            ->setPageSize(1)
-            ->getFirstItem();
-        //@codingStandardsIgnoreEnd
-        if ($contactModel) {
-            return $contactModel->getSegmentIds();
-        }
-
-        return '';
     }
 
     /**
