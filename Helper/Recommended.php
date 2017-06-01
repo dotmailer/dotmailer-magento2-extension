@@ -302,6 +302,8 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     private function processConfig($config)
     {
+        $period = null;
+
         if ($config == 'mostviewed') {
             $period = $this->scopeConfig->getValue(
                 self::XML_PATH_MOSTVIEWED_TIME_PERIOD
@@ -325,6 +327,8 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     private function processPeriod($period)
     {
+        $sub = null;
+
         if ($period == 'week' || $period == 'W') {
             $sub = \Zend_Date::WEEK;
         } elseif ($period == 'month' || $period == 'M') {
