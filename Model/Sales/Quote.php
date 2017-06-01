@@ -351,7 +351,7 @@ class Quote
                 $quoteCollection = $this->getStoreQuotes(
                     $fromDate,
                     $toDate,
-                    $guest = true,
+                    true,
                     $storeId
                 );
                 //log the time for carts found
@@ -377,9 +377,7 @@ class Quote
                         }
                     }
                     //api- set the most expensive product to datafield
-                    if ($mostExpensiveItem) {
-                        $this->helper->updateAbandonedProductName($mostExpensiveItem->getName(), $email, $websiteId);
-                    }
+                    $this->processMostExpensiveItem($mostExpensiveItem, $email, $websiteId);
 
                     //no emails during this period of time for a contact
                     if ($this->isIntervalCampaignFound($email, $storeId)) {
@@ -416,13 +414,8 @@ class Quote
             //customer enabled
             if ($this->isLostBasketCustomerEnabled($num, $storeId)) {
                 //hit the first AC using minutes
-                if ($num == 1) {
-                    $minutes = $this->getLostBasketCustomerInterval($num, $storeId);
-                    $interval = \DateInterval::createFromDateString($minutes . ' minutes');
-                } else {
-                    $hours = (int)$this->getLostBasketCustomerInterval($num, $storeId);
-                    $interval = \DateInterval::createFromDateString($hours . ' hours');
-                }
+                $interval = $this->getInterval($storeId, $num);
+
                 $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
                 $fromTime->sub($interval);
                 $toTime = clone $fromTime;
@@ -433,7 +426,7 @@ class Quote
                 $toDate = $toTime->format('Y-m-d H:i:s');
 
                 //active quotes
-                $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, $guest = false, $storeId);
+                $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, false, $storeId);
                 //found abandoned carts
                 if ($quoteCollection->getSize()) {
                     $this->helper->log('Customer cart : ' . $num . ', from : ' . $fromDate . ' ,to ' . $toDate);
@@ -460,9 +453,7 @@ class Quote
                         }
                     }
                     //api-send the most expensive product for abandoned cart
-                    if ($mostExpensiveItem) {
-                        $this->helper->updateAbandonedProductName($mostExpensiveItem->getName(), $email, $websiteId);
-                    }
+                    $this->processMostExpensiveItem($mostExpensiveItem, $email, $websiteId);
 
                     //send email only if the interval limit passed, no emails during this interval
                     if ($this->isIntervalCampaignFound($email, $storeId)) {
@@ -493,6 +484,37 @@ class Quote
     /**
      * @param $storeId
      * @param $num
+     *
+     * @return \DateInterval
+     */
+    private function getInterval($storeId, $num)
+    {
+        if ($num == 1) {
+            $minutes = $this->getLostBasketCustomerInterval($num, $storeId);
+            $interval = \DateInterval::createFromDateString($minutes . ' minutes');
+        } else {
+            $hours = (int)$this->getLostBasketCustomerInterval($num, $storeId);
+            $interval = \DateInterval::createFromDateString($hours . ' hours');
+        }
+        return $interval;
+    }
+
+    /**
+     * @param $mostExpensiveItem
+     * @param $email
+     * @param $websiteId
+     */
+    private function processMostExpensiveItem($mostExpensiveItem, $email, $websiteId)
+    {
+        if ($mostExpensiveItem) {
+            $this->helper->updateAbandonedProductName($mostExpensiveItem->getName(), $email, $websiteId);
+        }
+    }
+
+    /**
+     * @param $storeId
+     * @param $num
+     *
      * @return \DateInterval
      */
     protected function getSendAfterIntervalForGuest($storeId, $num)

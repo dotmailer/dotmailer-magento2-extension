@@ -78,81 +78,33 @@ class Newsletter extends \Magento\Framework\App\Action\Action
             $contact = $client->getContactById($customerId);
             if (isset($contact->id)) {
                 //contact address books
-                $bookError = false;
                 $addressBooks = $client->getContactAddressBooks(
                     $contact->id
                 );
                 $subscriberAddressBook = $this->helper->getSubscriberAddressBook(
                     $website
                 );
-                $processedAddressBooks = [];
-                if (is_array($addressBooks)) {
-                    foreach ($addressBooks as $addressBook) {
-                        if ($subscriberAddressBook != $addressBook->id) {
-                            $processedAddressBooks[$addressBook->id]
-                                = $addressBook->name;
-                        }
-                    }
-                }
+
+                $processedAddressBooks = $this->getProcessedAddressBooks($addressBooks, $subscriberAddressBook);
+
                 if (isset($additionalSubscriptions)) {
-                    foreach ($additionalSubscriptions as $additionalSubscription) {
-                        if (!isset($processedAddressBooks[$additionalSubscription])) {
-                            $bookResponse = $client->postAddressBookContacts(
-                                $additionalSubscription,
-                                $contact
-                            );
-                            if (isset($bookResponse->message)) {
-                                $bookError = true;
-                            }
-                        }
-                    }
-                    foreach ($processedAddressBooks as $bookId => $name) {
-                        if (!in_array($bookId, $additionalSubscriptions)) {
-                            $bookResponse = $client->deleteAddressBookContact(
-                                $bookId,
-                                $contact->id
-                            );
-                            if (isset($bookResponse->message)) {
-                                $bookError = true;
-                            }
-                        }
-                    }
+                    $bookError = $this->processAdditionalSubscriptions(
+                        $additionalSubscriptions,
+                        $processedAddressBooks,
+                        $client,
+                        $contact
+                    );
                 } else {
-                    foreach ($processedAddressBooks as $bookId => $name) {
-                        $bookResponse = $client->deleteAddressBookContact(
-                            $bookId,
-                            $contact->id
-                        );
-                        if (isset($bookResponse->message)) {
-                            $bookError = true;
-                        }
-                    }
+                    $bookError = $this->deleteAddressBookContacts(
+                        $processedAddressBooks,
+                        $client,
+                        $contact
+                    );
                 }
 
                 //contact data fields
-                $data = [];
-                $dataFields = $client->getDataFields();
-                $processedFields = [];
-                foreach ($dataFields as $dataField) {
-                    $processedFields[$dataField->name] = $dataField->type;
-                }
-                foreach ($paramDataFields as $key => $value) {
-                    if (isset($processedFields[$key]) && $value) {
-                        if ($processedFields[$key] == 'Numeric') {
-                            $paramDataFields[$key] = (int)$value;
-                        }
-                        if ($processedFields[$key] == 'String') {
-                            $paramDataFields[$key] = (string)$value;
-                        }
-                        if ($processedFields[$key] == 'Date') {
-                            $paramDataFields[$key] = $this->localeDate->date($value)->format(\Zend_Date::ISO_8601);
-                        }
-                        $data[] = [
-                            'Key' => $key,
-                            'Value' => $paramDataFields[$key],
-                        ];
-                    }
-                }
+                $data = $this->getContactDataFields($client, $paramDataFields);
+
                 $contactResponse = $client->updateContactDatafieldsByEmail(
                     $customerEmail,
                     $data
@@ -178,5 +130,117 @@ class Newsletter extends \Magento\Framework\App\Action\Action
             }
         }
         $this->_redirect('customer/account/');
+    }
+
+    /**
+     * @param $addressBooks
+     * @param $subscriberAddressBook
+     *
+     * @return array
+     */
+    private function getProcessedAddressBooks($addressBooks, $subscriberAddressBook)
+    {
+        $processedAddressBooks = [];
+        if (is_array($addressBooks)) {
+            foreach ($addressBooks as $addressBook) {
+                if ($subscriberAddressBook != $addressBook->id) {
+                    $processedAddressBooks[$addressBook->id]
+                        = $addressBook->name;
+                }
+            }
+        }
+        return $processedAddressBooks;
+    }
+
+    /**
+     * @param $additionalSubscriptions
+     * @param $processedAddressBooks
+     * @param $client
+     * @param $contact
+     *
+     * @return bool
+     */
+    private function processAdditionalSubscriptions($additionalSubscriptions, $processedAddressBooks, $client, $contact)
+    {
+        $bookError = false;
+
+        foreach ($additionalSubscriptions as $additionalSubscription) {
+            if (!isset($processedAddressBooks[$additionalSubscription])) {
+                $bookResponse = $client->postAddressBookContacts(
+                    $additionalSubscription,
+                    $contact
+                );
+                if (isset($bookResponse->message)) {
+                    $bookError = true;
+                }
+            }
+        }
+        foreach ($processedAddressBooks as $bookId) {
+            if (!in_array($bookId, $additionalSubscriptions)) {
+                $bookResponse = $client->deleteAddressBookContact(
+                    $bookId,
+                    $contact->id
+                );
+                if (isset($bookResponse->message)) {
+                    $bookError = true;
+                }
+            }
+        }
+        return $bookError;
+    }
+
+    /**
+     * @param $client
+     * @param $paramDataFields
+     *
+     * @return array
+     */
+    private function getContactDataFields($client, $paramDataFields)
+    {
+        $data = [];
+        $dataFields = $client->getDataFields();
+        $processedFields = [];
+        foreach ($dataFields as $dataField) {
+            $processedFields[$dataField->name] = $dataField->type;
+        }
+        foreach ($paramDataFields as $key => $value) {
+            if (isset($processedFields[$key]) && $value) {
+                if ($processedFields[$key] == 'Numeric') {
+                    $paramDataFields[$key] = (int)$value;
+                }
+                if ($processedFields[$key] == 'String') {
+                    $paramDataFields[$key] = (string)$value;
+                }
+                if ($processedFields[$key] == 'Date') {
+                    $paramDataFields[$key] = $this->localeDate->date($value)->format(\Zend_Date::ISO_8601);
+                }
+                $data[] = [
+                    'Key' => $key,
+                    'Value' => $paramDataFields[$key],
+                ];
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * @param $processedAddressBooks
+     * @param $client
+     * @param $contact
+     *
+     * @return bool
+     */
+    private function deleteAddressBookContacts($processedAddressBooks, $client, $contact)
+    {
+        foreach ($processedAddressBooks as $bookId) {
+            $bookResponse = $client->deleteAddressBookContact(
+                $bookId,
+                $contact->id
+            );
+            if (isset($bookResponse->message)) {
+                $bookError = true;
+            }
+        }
+        return $bookError;
     }
 }

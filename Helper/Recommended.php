@@ -284,6 +284,26 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         $now = $this->date;
         $period = 'M';
 
+        $period = $this->processConfig($config);
+
+        $sub = $this->processPeriod($period);
+
+        if (isset($sub)) {
+            $period = $now->sub(1, $sub);
+        }
+
+        return $period->toString(\Zend_Date::ISO_8601);
+    }
+
+    /**
+     * @param $config
+     *
+     * @return mixed
+     */
+    private function processConfig($config)
+    {
+        $period = null;
+
         if ($config == 'mostviewed') {
             $period = $this->scopeConfig->getValue(
                 self::XML_PATH_MOSTVIEWED_TIME_PERIOD
@@ -297,6 +317,17 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
                 self::XML_PATH_MOSTVIEWED_TIME_PERIOD
             );
         }
+        return $period;
+    }
+
+    /**
+     * @param $period
+     *
+     * @return mixed
+     */
+    private function processPeriod($period)
+    {
+        $sub = null;
 
         if ($period == 'week' || $period == 'W') {
             $sub = \Zend_Date::WEEK;
@@ -307,12 +338,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         } elseif ($period == 'D') {
             $sub = \Zend_Date::DAY;
         }
-
-        if (isset($sub)) {
-            $period = $now->sub(1, $sub);
-        }
-
-        return $period->toString(\Zend_Date::ISO_8601);
+        return $sub;
     }
 
     /**

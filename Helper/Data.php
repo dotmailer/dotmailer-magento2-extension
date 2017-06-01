@@ -1326,7 +1326,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getDynamicStyles()
     {
-        return $dynamicStyle = [
+        return [
             'nameStyle' => explode(
                 ',',
                 $this->_getConfigValue(
@@ -1539,7 +1539,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param $cronJob
      *
-     * @return bool
+     * @return DateTime
      */
     public function getDateLastCronRun($cronJob)
     {
@@ -1555,6 +1555,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if ($collection->getSize() == 0) {
             return false;
         }
+
         //@codingStandardsIgnoreStart
         $executedAt = $collection->getFirstItem()->getExecutedAt();
         //@codingStandardsIgnoreEnd

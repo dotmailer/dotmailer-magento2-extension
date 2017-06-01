@@ -79,8 +79,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         //products to be displayed for recommended pages
-        $productsToDisplay = [];
-        $productsToDisplayCounter = 0;
         $orderId = (int) $this->getRequest()->getParam('order_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
@@ -106,8 +104,39 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
             . $numItems . ', max per child : ' . $maxPerChild
         );
 
+        $productsToDisplayCounter = 0;
+        $productsToDisplay = $this->getProductsToDisplay(
+            $orderItems,
+            $mode,
+            $productsToDisplayCounter,
+            $limit,
+            $maxPerChild
+        );
+
+        //check for more space to fill up the table with fallback products
+        if ($productsToDisplayCounter < $limit) {
+            $productsToDisplay = $this->fillProductsToDisplay($productsToDisplay, $productsToDisplayCounter, $limit);
+        }
+
+        $this->helper->log('loaded product to display ' . count($productsToDisplay));
+
+        return $productsToDisplay;
+    }
+
+    /**
+     * @param $orderItems
+     * @param $mode
+     * @param $productsToDisplayCounter
+     * @param $limit
+     * @param $maxPerChild
+     *
+     * @return array
+     */
+    private function getProductsToDisplay($orderItems, $mode, &$productsToDisplayCounter, $limit, $maxPerChild)
+    {
+        $productsToDisplay = [];
+
         foreach ($orderItems as $item) {
-            $i = 0;
             //parent product
             $productModel = $item->getProduct();
             //check for product exists
@@ -115,19 +144,14 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
                 //get single product for current mode
                 $recommendedProducts
                     = $this->_getRecommendedProduct($productModel, $mode);
-                foreach ($recommendedProducts as $product) {
-                    //check if still exists
-                    if ($product->getId() && $productsToDisplayCounter < $limit
-                        && $i <= $maxPerChild
-                        && $product->isSaleable()
-                        && !$product->getParentId()
-                    ) {
-                        //we have a product to display
-                        $productsToDisplay[$product->getId()] = $product;
-                        $i++;
-                        $productsToDisplayCounter++;
-                    }
-                }
+
+                $this->addRecommendedProducts(
+                    $productsToDisplayCounter,
+                    $limit,
+                    $maxPerChild,
+                    $recommendedProducts,
+                    $productsToDisplay
+                );
             }
             //have reached the limit don't loop for more
             if ($productsToDisplayCounter == $limit) {
@@ -135,33 +159,69 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
             }
         }
 
-        //check for more space to fill up the table with fallback products
-        if ($productsToDisplayCounter < $limit) {
-            $fallbackIds = $this->recommendedHelper->getFallbackIds();
+        return $productsToDisplay;
+    }
 
-            $productCollection = $this->productFactory->create()
-                ->getCollection()
-                ->addIdFilter($fallbackIds)
-                ->addAttributeToSelect(
-                    ['product_url', 'name', 'store_id', 'small_image', 'price']
-                );
+    /**
+     * @param $productsToDisplayCounter
+     * @param $limit
+     * @param $maxPerChild
+     * @param $recommendedProducts
+     * @param $productsToDisplay
+     */
+    private function addRecommendedProducts(
+        &$productsToDisplayCounter,
+        $limit,
+        $maxPerChild,
+        $recommendedProducts,
+        &$productsToDisplay
+    ) {
+        $i = 0;
 
-            foreach ($productCollection as $product) {
-                if ($product->isSaleable()) {
-                    $productsToDisplay[$product->getId()] = $product;
-                }
-
-                //stop the limit was reached
-                //@codingStandardsIgnoreStart
-                if (count($productsToDisplay) == $limit) {
-                    break;
-                }
-                //@codingStandardsIgnoreEnd
+        foreach ($recommendedProducts as $product) {
+            //check if still exists
+            if ($product->getId() && $productsToDisplayCounter < $limit
+                && $i <= $maxPerChild
+                && $product->isSaleable()
+                && !$product->getParentId()
+            ) {
+                //we have a product to display
+                $productsToDisplay[$product->getId()] = $product;
+                $i++;
+                $productsToDisplayCounter++;
             }
         }
+    }
 
-        $this->helper->log('loaded product to display ' . count($productsToDisplay));
+    /**
+     * @param $productsToDisplay
+     * @param $productsToDisplayCounter
+     * @param $limit
+     *
+     * @return mixed
+     */
+    private function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
+    {
+        $fallbackIds = $this->recommendedHelper->getFallbackIds();
 
+        $productCollection = $this->productFactory->create()
+            ->getCollection()
+            ->addIdFilter($fallbackIds)
+            ->addAttributeToSelect(
+                ['product_url', 'name', 'store_id', 'small_image', 'price']
+            );
+
+        foreach ($productCollection as $product) {
+            if ($product->isSaleable()) {
+                $productsToDisplay[$product->getId()] = $product;
+                $productsToDisplayCounter++;
+            }
+
+            //the limit was reached
+            if ($productsToDisplayCounter == $limit) {
+                break;
+            }
+        }
         return $productsToDisplay;
     }
 

@@ -200,6 +200,51 @@ class Order
         /*
          * Billing address.
          */
+        $this->processBillingAddress($orderData);
+
+        /*
+         * Shipping address.
+         */
+        $this->processShippingAddress($orderData);
+
+        $syncCustomOption = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS,
+            $website
+        );
+
+        /*
+         * Order items.
+         */
+        $this->processOrderItems($orderData, $syncCustomOption);
+
+        $this->orderSubtotal = (float)number_format(
+            $orderData->getData('subtotal'),
+            2,
+            '.',
+            ''
+        );
+        $this->discountAmount = (float)number_format(
+            $orderData->getData('discount_amount'),
+            2,
+            '.',
+            ''
+        );
+        $orderTotal = abs(
+            $orderData->getData('grand_total') - $orderData->getTotalRefunded()
+        );
+        $this->orderTotal = (float)number_format($orderTotal, 2, '.', '');
+        $this->orderStatus = $orderData->getStatus();
+
+        unset($this->_storeManager);
+
+        return $this;
+    }
+
+    /**
+     * @param $orderData
+     */
+    private function processBillingAddress($orderData)
+    {
         if ($orderData->getBillingAddress()) {
             $billingData = $orderData->getBillingAddress()->getData();
             $this->billingAddress = [
@@ -217,9 +262,13 @@ class Order
                 'billing_postcode' => $billingData['postcode'],
             ];
         }
-        /*
-         * Shipping address.
-         */
+    }
+
+    /**
+     * @param $orderData
+     */
+    private function processShippingAddress($orderData)
+    {
         if ($orderData->getShippingAddress()) {
             $shippingData = $orderData->getShippingAddress()->getData();
 
@@ -238,15 +287,14 @@ class Order
                 'delivery_postcode' => $shippingData['postcode'],
             ];
         }
+    }
 
-        $syncCustomOption = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS,
-            $website
-        );
-
-        /*
-         * Order items.
-         */
+    /**
+     * @param $orderData
+     * @param $syncCustomOption
+     */
+    private function processOrderItems($orderData, $syncCustomOption)
+    {
         foreach ($orderData->getAllItems() as $productItem) {
             //product custom options
             $customOptions = [];
@@ -285,50 +333,12 @@ class Order
                         $productModel->getAttributeSetId()
                     );
 
-                    foreach ($configAttributes as $attributeCode) {
-                        //if config attribute is in attribute set
-                        if (in_array(
-                            $attributeCode,
-                            $attributesFromAttributeSet
-                        )) {
-                            //attribute input type
-                            $inputType = $productModel->getResource()
-                                ->getAttribute($attributeCode)
-                                ->getFrontend()
-                                ->getInputType();
-
-                            //fetch attribute value from product depending on input type
-                            switch ($inputType) {
-                                case 'multiselect':
-                                case 'select':
-                                case 'dropdown':
-                                    $value = $productModel->getAttributeText(
-                                        $attributeCode
-                                    );
-                                    break;
-                                case 'date':
-                                    $value = $this->localeDate->date($productModel->getData($attributeCode))
-                                        ->format(\Zend_Date::ISO_8601);
-                                    break;
-                                default:
-                                    $value = $productModel->getData(
-                                        $attributeCode
-                                    );
-                                    break;
-                            }
-
-                            if ($value && !is_array($value)) {
-                                // check limit on text and assign value to array
-
-                                $attributes[][$attributeCode]
-                                    = $this->_limitLength($value);
-                            } elseif (is_array($value)) {
-                                $value = implode($value, ', ');
-                                $attributes[][$attributeCode]
-                                    = $this->_limitLength($value);
-                            }
-                        }
-                    }
+                    $attributes = $this->processConfigAttributes(
+                        $configAttributes,
+                        $attributesFromAttributeSet,
+                        $productModel,
+                        $attributes
+                    );
                 }
 
                 $attributeSetName = $this->getAttributeSetName($productModel);
@@ -351,7 +361,7 @@ class Order
                     'attributes' => $attributes,
                     'custom-options' => $customOptions,
                 ];
-                if (! $customOptions) {
+                if (!$customOptions) {
                     unset($productData['custom-options']);
                 }
                 $this->products[] = $productData;
@@ -375,34 +385,82 @@ class Order
                     'attributes' => [],
                     'custom-options' => $customOptions,
                 ];
-                if (! $customOptions) {
+                if (!$customOptions) {
                     unset($productData['custom-options']);
                 }
                 $this->products[] = $productData;
             }
         }
+    }
 
-        $this->orderSubtotal = (float)number_format(
-            $orderData->getData('subtotal'),
-            2,
-            '.',
-            ''
-        );
-        $this->discountAmount = (float)number_format(
-            $orderData->getData('discount_amount'),
-            2,
-            '.',
-            ''
-        );
-        $orderTotal = abs(
-            $orderData->getData('grand_total') - $orderData->getTotalRefunded()
-        );
-        $this->orderTotal = (float)number_format($orderTotal, 2, '.', '');
-        $this->orderStatus = $orderData->getStatus();
+    /**
+     * @param $configAttributes
+     * @param $attributesFromAttributeSet
+     * @param $productModel
+     * @param $attributes
+     *
+     * @return array
+     */
+    private function processConfigAttributes($configAttributes, $attributesFromAttributeSet, $productModel, $attributes)
+    {
+        foreach ($configAttributes as $attributeCode) {
+            //if config attribute is in attribute set
+            if (in_array(
+                $attributeCode,
+                $attributesFromAttributeSet
+            )) {
+                //attribute input type
+                $inputType = $productModel->getResource()
+                    ->getAttribute($attributeCode)
+                    ->getFrontend()
+                    ->getInputType();
 
-        unset($this->_storeManager);
+                //fetch attribute value from product depending on input type
+                switch ($inputType) {
+                    case 'multiselect':
+                    case 'select':
+                    case 'dropdown':
+                        $value = $productModel->getAttributeText(
+                            $attributeCode
+                        );
+                        break;
+                    case 'date':
+                        $value = $this->localeDate->date($productModel->getData($attributeCode))
+                            ->format(\Zend_Date::ISO_8601);
+                        break;
+                    default:
+                        $value = $productModel->getData(
+                            $attributeCode
+                        );
+                        break;
+                }
 
-        return $this;
+                $attributes = $this->processAttributeValue($attributes, $value, $attributeCode);
+            }
+        }
+        return $attributes;
+    }
+
+    /**
+     * @param $attributes
+     * @param $value
+     * @param $attributeCode
+     *
+     * @return array
+     */
+    private function processAttributeValue($attributes, $value, $attributeCode)
+    {
+        if ($value && !is_array($value)) {
+            // check limit on text and assign value to array
+
+            $attributes[][$attributeCode]
+                = $this->_limitLength($value);
+        } elseif (is_array($value)) {
+            $value = implode($value, ', ');
+            $attributes[][$attributeCode]
+                = $this->_limitLength($value);
+        }
+        return $attributes;
     }
 
     /**
