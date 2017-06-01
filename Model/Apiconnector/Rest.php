@@ -552,7 +552,7 @@ abstract class Rest
     }
 
     /**
-     * @return var
+     * @return mixed
      */
     public function getCurlError()
     {
