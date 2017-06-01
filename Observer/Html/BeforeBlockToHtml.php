@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Html;
 
+/**
+ * Sales rule coupon new columns (expiration_data, generated_by_dotmailer).
+ */
 class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
 {
     public function execute(\Magento\Framework\Event\Observer $observer)

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Transactional data for orders, including mapped custom order attributes to sync.
+ *
+ */
 class Order
 {
     /**

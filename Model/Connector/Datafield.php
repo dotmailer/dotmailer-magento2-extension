@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Contact datafields information.
+ *
+ */
 class Datafield
 {
     /**

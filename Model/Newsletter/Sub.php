@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
+/**
+ * Newsletter susbcriber email depending on settings value.
+ */
 class Sub extends \Magento\Newsletter\Model\Subscriber
 {
     /**

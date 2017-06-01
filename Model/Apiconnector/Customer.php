@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * manages the Customer data as datafields for contact.
+ */
 class Customer
 {
     /**

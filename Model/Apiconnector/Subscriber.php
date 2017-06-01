@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * manages Subscriber data synced as contact.
+ */
 class Subscriber
 {
     /**

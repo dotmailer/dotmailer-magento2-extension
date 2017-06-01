@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
+/**
+ * Handle TD update data for importer.
+ */
 class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
     /**

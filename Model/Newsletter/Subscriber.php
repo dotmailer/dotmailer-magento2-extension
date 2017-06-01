@@ -4,6 +4,9 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * Sync subscribers.
+ */
 class Subscriber
 {
     const STATUS_SUBSCRIBED = 1;

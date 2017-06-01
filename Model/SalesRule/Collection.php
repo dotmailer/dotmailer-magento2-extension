@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\SalesRule;
 
+/**
+ * Sales rules for coupons using expiration date.
+ */
 class Collection extends \Magento\SalesRule\Model\ResourceModel\Rule\Collection
 {
     /**

@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * abstract Rest class to make cURL requests.
+ */
 abstract class Rest
 {
     /**
@@ -75,87 +78,6 @@ abstract class Rest
 
         if ($this->requestBody !== null) {
             $this->buildPostBody();
-        }
-    }
-
-    /**
-     * @param $json
-     *
-     * @return string
-     */
-    public function prettyPrint($json)
-    {
-        $result = '';
-        $level = 0;
-        $prevChar = '';
-        $inQuotes = false;
-        $endsLineLevel = null;
-        $jsonLength = strlen($json);
-
-        for ($i = 0; $i < $jsonLength; ++$i) {
-            $char = $json[$i];
-            $newLIneLevel = null;
-            $post = '';
-            if ($endsLineLevel !== null) {
-                $newLIneLevel = $endsLineLevel;
-                $endsLineLevel = null;
-            }
-            if ($char === '"' && $prevChar != '\\') {
-                $inQuotes = !$inQuotes;
-            } elseif (!$inQuotes) {
-                switch ($char) {
-                    case '}':
-                    case ']':
-                        $level--;
-                        $endsLineLevel = null;
-                        $newLIneLevel = $level;
-                        break;
-
-                    case '{':
-                    case '[':
-                        $level++;
-                        break;
-                    case ',':
-                        $endsLineLevel = $level;
-                        break;
-
-                    case ':':
-                        $post = ' ';
-                        break;
-
-                    case ' ':
-                    case "\t":
-                    case "\n":
-                    case "\r":
-                        $char = '';
-                        $endsLineLevel = $newLIneLevel;
-                        $newLIneLevel = null;
-                        break;
-                }
-            }
-            if ($newLIneLevel !== null) {
-                $result .= "\n" . str_repeat("\t", $newLIneLevel);
-            }
-            $result .= $char . $post;
-            $prevChar = $char;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns the object as JSON.
-     *
-     * @param bool $pretty
-     *
-     * @return string
-     */
-    public function toJSON($pretty = false)
-    {
-        if (!$pretty) {
-            return json_encode($this->expose());
-        } else {
-            return $this->prettyPrint(json_encode($this->expose()));
         }
     }
 

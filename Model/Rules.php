@@ -470,17 +470,49 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             return $collection;
         }
 
+        $this->processProductAttributesInCollection($collection);
+
+        return $collection;
+    }
+
+    /**
+     * Evaluate two values against condition.
+     *
+     * @param $varOne
+     * @param $op
+     * @param $varTwo
+     *
+     * @return bool
+     */
+    public function _evaluate($varOne, $op, $varTwo)
+    {
+        switch ($op) {
+            case 'eq':
+                return $varOne == $varTwo;
+            case 'neq':
+                return $varOne != $varTwo;
+            case 'gteq':
+                return $varOne >= $varTwo;
+            case 'lteq':
+                return $varOne <= $varTwo;
+            case 'gt':
+                return $varOne > $varTwo;
+            case 'lt':
+                return $varOne < $varTwo;
+        }
+    }
+
+    /**
+     * @param $collection
+     */
+    private function processProductAttributesInCollection($collection)
+    {
         foreach ($collection as $collectionItem) {
             $items = $collectionItem->getAllItems();
             foreach ($items as $item) {
-                //loaded product
-                $product = $item->getProduct();
 
-                //attributes array from loaded product
-                $attributes = $this->config->getEntityAttributeCodes(
-                    \Magento\Catalog\Model\Product::ENTITY,
-                    $product
-                );
+                $product = $item->getProduct();
+                $attributes = $this->getAttributesArrayFromLoadedProduct($product);
 
                 foreach ($this->productAttribute as $productAttribute) {
                     $attribute = $productAttribute['attribute'];
@@ -567,34 +599,19 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 }
             }
         }
-
-        return $collection;
     }
 
     /**
-     * Evaluate two values against condition.
-     *
-     * @param $varOne
-     * @param $op
-     * @param $varTwo
-     *
-     * @return bool
+     * @param $product
+     * @return mixed
      */
-    public function _evaluate($varOne, $op, $varTwo)
+    private function getAttributesArrayFromLoadedProduct($product)
     {
-        switch ($op) {
-            case 'eq':
-                return $varOne == $varTwo;
-            case 'neq':
-                return $varOne != $varTwo;
-            case 'gteq':
-                return $varOne >= $varTwo;
-            case 'lteq':
-                return $varOne <= $varTwo;
-            case 'gt':
-                return $varOne > $varTwo;
-            case 'lt':
-                return $varOne < $varTwo;
-        }
+//attributes array from loaded product
+        $attributes = $this->config->getEntityAttributeCodes(
+            \Magento\Catalog\Model\Product::ENTITY,
+            $product
+        );
+        return $attributes;
     }
 }

@@ -5,6 +5,9 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 
+/**
+ * Handle update data for importer.
+ */
 class Update extends Delete
 {
 

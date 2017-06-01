@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Wishlist single delete when item is removed from wishlist.
+ */
 class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
 {
     /**

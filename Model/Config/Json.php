@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Config;
 
 /**
- * Class for serializing data to json string and unserializing json string to data
+ * Class for serializing data to json string and unserializing json string to data.
  *
  */
 class Json

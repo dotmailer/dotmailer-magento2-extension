@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+/**
+ * Reset the contact import on order refund.
+ */
 class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
 {
     /**

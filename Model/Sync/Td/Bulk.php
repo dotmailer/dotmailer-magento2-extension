@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
+/**
+ * Handle TD bulk data for importer.
+ */
 class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
     /**

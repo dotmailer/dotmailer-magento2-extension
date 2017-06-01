@@ -21,25 +21,25 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $quoteFactory;
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $productFactory;
+    public $catalogFactory;
 
     /**
      * Quoteproducts constructor.
      *
-     * @param \Magento\Quote\Model\QuoteFactory         $quoteFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data        $helper
-     * @param \Magento\Catalog\Model\ProductFactory     $productFactory
-     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
-     * @param \Magento\Framework\Pricing\Helper\Data    $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context    $context
-     * @param array                                     $data
+     * @param \Magento\Quote\Model\QuoteFactory                             $quoteFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory     $catalogFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended                     $recommendedHelper
+     * @param \Magento\Framework\Pricing\Helper\Data                        $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context                        $context
+     * @param array                                                         $data
      */
     public function __construct(
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
@@ -47,7 +47,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     ) {
         parent::__construct($context, $data);
         $this->helper            = $helper;
-        $this->productFactory    = $productFactory;
+        $this->catalogFactory    = $catalogFactory;
         $this->quoteFactory      = $quoteFactory;
         $this->recommendedHelper = $recommendedHelper;
         $this->priceHelper       = $priceHelper;
@@ -197,12 +197,8 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         $fallbackIds = $this->recommendedHelper->getFallbackIds();
 
-        $productCollection = $this->productFactory->create()
-            ->getCollection()
-            ->addIdFilter($fallbackIds)
-            ->addAttributeToSelect(
-                ['product_url', 'name', 'store_id', 'small_image', 'price']
-            );
+            $productCollection = $this->catalogFactory->create()
+                ->getProductCollectionFromIds($fallbackIds);
 
         foreach ($productCollection as $product) {
             if ($product->isSaleable()) {

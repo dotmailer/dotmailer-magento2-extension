@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+/**
+ * Dynamic content configuration data and recommendation values.
+ */
 class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const XML_PATH_RELATED_PRODUCTS_TYPE = 'connector_dynamic_content/products/related_display_type';
