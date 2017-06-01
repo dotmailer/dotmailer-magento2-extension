@@ -137,4 +137,15 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
     }
+
+    /**
+     * Save item
+     *
+     * @param $item
+     * @return \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+     */
+    public function saveItem($item)
+    {
+        return parent::save($item);
+    }
 }

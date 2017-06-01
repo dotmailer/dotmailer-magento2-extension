@@ -17,4 +17,21 @@ class Collection extends
             'Dotdigitalgroup\Email\Model\ResourceModel\Review'
         );
     }
+
+    /**
+     * Get reviews for export.
+     *
+     * @param \Magento\Store\Model\Website $website
+     * @param int $limit
+     *
+     * @return $this
+     */
+    public function getReviewsToExportByWebsite(\Magento\Store\Model\Website $website, $limit = 100)
+    {
+        return $this->addFieldToFilter('review_imported', ['null' => 'true'])
+            ->addFieldToFilter(
+                'store_id', ['in' => $website->getStoreIds()]
+            )
+            ->setPageSize($limit);
+    }
 }

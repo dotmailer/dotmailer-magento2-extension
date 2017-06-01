@@ -79,7 +79,6 @@ class Automation
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     public $storeManager;
-
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
@@ -88,17 +87,18 @@ class Automation
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     public $localeDate;
-
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
      */
     public $automationFactory;
-
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\AutomationFactory
+     */
+    public $automationResourceFactory;
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     public $orderFactory;
-
     /**
      * @var \Dotdigitalgroup\Email\Model\Config\Json
      */
@@ -113,6 +113,7 @@ class Automation
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\AutomationFactory $automationResourceFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory,
@@ -121,7 +122,8 @@ class Automation
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Sales\Model\OrderFactory $orderFactory
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\AutomationFactory $automationResourceFactory
     ) {
         $this->serializer = $serializer;
         $this->automationFactory = $automationFactory;
@@ -130,6 +132,7 @@ class Automation
         $this->resource          = $resource;
         $this->localeDate        = $localeDate;
         $this->orderFactory      = $orderFactory;
+        $this->automationResourceFactory = $automationResourceFactory;
     }
 
     /**
@@ -139,22 +142,15 @@ class Automation
      */
     public function sync()
     {
-        $automationOrderStatusCollection = $this->automationFactory->create()
-            ->addFieldToFilter(
-                'enrolment_status',
-                self::AUTOMATION_STATUS_PENDING
-            );
-        $automationOrderStatusCollection
-            ->addFieldToFilter(
-                'automation_type',
-                ['like' => '%' . self::ORDER_STATUS_AUTOMATION . '%']
-            )->getSelect()->group('automation_type');
-        $statusTypes
-            = $automationOrderStatusCollection->getColumnValues('automation_type');
+
+        $statusTypes = $this->automationFactory->create()
+            ->getAutomationStatusType();
+
         foreach ($statusTypes as $type) {
             $this->automationTypes[$type]
                 = \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS;
         }
+
         //send the campaign by each types
         foreach ($this->automationTypes as $type => $config) {
             $contacts = [];
@@ -176,18 +172,11 @@ class Automation
                         = $this->helper->getWebsiteConfig($config, $website);
                 }
             }
+
             //get collection from type
-            $automationCollection = $this->automationFactory->create();
-            $automationCollection->addFieldToFilter(
-                'enrolment_status',
-                self::AUTOMATION_STATUS_PENDING
-            );
-            $automationCollection->addFieldToFilter(
-                'automation_type',
-                $type
-            );
-            //limit because of the each contact request to get the id
-            $automationCollection->getSelect()->limit($this->limit);
+            $automationCollection = $this->automationFactory->create()
+                ->getCollectionByType($type, $this->limit);
+
             foreach ($automationCollection as $automation) {
                 $type = $automation->getAutomationType();
                 //customerid, subscriberid, wishlistid..
@@ -214,10 +203,8 @@ class Automation
                     $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contactId;
                 } else {
                     // the contact is suppressed or the request failed
-                    //@codingStandardsIgnoreStart
-                    $automation->setEnrolmentStatus('Suppressed')
-                        ->save();
-                    //@codingStandardsIgnoreEnd
+                    $automation->setEnrolmentStatus('Suppressed');
+                    $automation->getResource()->save($automation);
                 }
             }
             foreach ($contacts as $websiteId => $websiteContacts) {
@@ -243,37 +230,21 @@ class Automation
                     ) {
                         $this->programStatus = 'Deactivated';
                     }
-                    //update contacts with the new status, and log the error message if failes
-                    $coreResource = $this->resource;
-                    $conn = $coreResource->getConnection('core_write');
-                    try {
-                        $contactIds = array_keys($contactsArray);
-                        $bind = [
-                            'enrolment_status' => $this->programStatus,
-                            'message' => $this->programMessage,
-                            'updated_at' => $this->localeDate->date(
-                                null,
-                                null,
-                                false
-                            )->format('Y-m-d H:i:s'),
-                        ];
-                        $where = ['id IN(?)' => $contactIds];
-                        $num = $conn->update(
-                            $coreResource->getTableName('email_automation'),
-                            $bind,
-                            $where
+                    //update contacts with the new status, and log the error message if fails
+                    $contactIds = array_keys($contactsArray);
+                    $updatedAt = $this->localeDate->date(
+                        null,
+                        null,
+                        false
+                    )->format('Y-m-d H:i:s');
+                    $this->automationResourceFactory->create()
+                        ->updateStatus(
+                            $contactIds,
+                            $this->programStatus,
+                            $this->programMessage,
+                            $updatedAt,
+                            $type
                         );
-                        //number of updated records
-                        if ($num) {
-                            $this->helper->log(
-                                'Automation type : ' . $type . ', updated : ' . $num
-                            );
-                        }
-                    } catch (\Exception $e) {
-                        throw new \Magento\Framework\Exception\LocalizedException(
-                            __($e->getMessage())
-                        );
-                    }
                 }
             }
         }

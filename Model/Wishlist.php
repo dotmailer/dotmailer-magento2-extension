@@ -55,17 +55,7 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
      */
     public function getWishlist($wishListId)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('wishlist_id', $wishListId)
-            ->setPageSize(1);
-
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
-        }
-
-        return false;
+        return $this->getCollection()->getWishlistById($wishListId);
     }
 
     /**

@@ -28,4 +28,54 @@ class Collection extends
 
         return $this;
     }
+
+    /**
+     * Check if rule already exist for website.
+     *
+     * @param      $websiteId
+     * @param      $type
+     * @param bool $ruleId
+     *
+     * @return bool
+     */
+    public function hasCollectionAnyItemsByWebsiteAndType($websiteId, $type, $ruleId = false)
+    {
+        $collection = $this->addFieldToFilter('type', ['eq' => $type])
+            ->addFieldToFilter('website_ids', ['finset' => $websiteId]);
+
+        if ($ruleId) {
+            $collection->addFieldToFilter('id', ['neq' => $ruleId]);
+        }
+        $collection->setPageSize(1);
+
+        if ($collection->getSize()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get rule for website.
+     *
+     * @param $type
+     * @param $websiteId
+     *
+     * @return array|\Magento\Framework\DataObject
+     */
+    public function getActiveRuleByWebsiteAndType($type, $websiteId)
+    {
+        $collection = $this->addFieldToFilter('type', ['eq' => $type])
+            ->addFieldToFilter('status', ['eq' => 1])
+            ->addFieldToFilter('website_ids', ['finset' => $websiteId])
+            ->setPageSize(1);
+
+        if ($collection->getSize()) {
+            //@codingStandardsIgnoreStart
+            return $collection->getFirstItem();
+            //@codingStandardsIgnoreEnd
+        }
+
+        return [];
+    }
 }

@@ -42,10 +42,6 @@ class Subscriber
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
-    /**
-     * @var \Magento\Newsletter\Model\SubscriberFactory
-     */
-    public $subscriberFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
@@ -53,14 +49,9 @@ class Subscriber
     public $importerFactory;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
     public $orderCollection;
-
-    /**
-     * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
-     */
-    public $subscribersCollection;
 
     /**
      * @var \Magento\Framework\App\ResourceConnection
@@ -82,16 +73,28 @@ class Subscriber
      */
     public $timezone;
 
+    /**
+     * Subscriber constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber,
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
@@ -99,11 +102,9 @@ class Subscriber
         $this->importerFactory   = $importerFactory;
         $this->file              = $file;
         $this->helper            = $helper;
-        $this->subscriberFactory = $subscriberFactory;
         $this->contactFactory    = $contactFactory;
         $this->storeManager      = $storeManager;
         $this->resource = $resource;
-        $this->subscribersCollection = $subscriberCollection;
         $this->orderCollection = $orderCollection;
         $this->emailSubscriber = $emailSubscriber;
         $this->emailContactResource = $contactResource;
@@ -139,7 +140,8 @@ class Subscriber
         }
         //sync proccessed
         if ($this->countSubscribers) {
-            $message = '----------- Subscribers sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+            $message = '----------- Subscribers sync ----------- : ' .
+                gmdate('H:i:s', microtime(true) - $this->start) .
                 ', updated = ' . $this->countSubscribers;
             $this->helper->log($message);
             $message .= $response['message'];
@@ -241,14 +243,12 @@ class Subscriber
             $this->file->getFilePath($subscribersFilename),
             ['Email', 'emailType', $subscriberStorename]
         );
-        $subscriberFactory = $this->subscriberFactory->create();
-        $subscribersData = $subscriberFactory->getCollection()
-            ->addFieldToFilter(
-                'subscriber_email',
-                ['in' => $subscribers->getColumnValues('email')]
-            )
-            ->addFieldToSelect(['subscriber_email', 'store_id'])
-            ->toArray();
+
+        $subscribersEmails = $subscribers->getColumnValues('email');
+        $contactFactory = $this->contactFactory->create();
+        $subscribersData = $contactFactory->getCollection()
+            ->getSubscriberDataByEmails($subscribersEmails);
+
         foreach ($subscribers as $subscriber) {
             $email = $subscriber->getEmail();
             $storeId = $this->getStoreIdForSubscriber(
@@ -261,9 +261,8 @@ class Subscriber
                 $this->file->getFilePath($subscribersFilename),
                 [$email, 'Html', $storeName]
             );
-            //@codingStandardsIgnoreStart
-            $subscriber->setSubscriberImported(1)->save();
-            //@codingStandardsIgnoreEnd
+            $subscriber->setSubscriberImported(1);
+            $subscriber->getResource()->save($subscriber);
             $updated++;
         }
         $this->helper->log('Subscriber filename: ' . $subscribersFilename);
@@ -287,9 +286,8 @@ class Subscriber
      */
     public function checkInSales($emails)
     {
-        $collection = $this->orderCollection->create()
-            ->addFieldToFilter('customer_email', ['in' => $emails]);
-        return $collection->getColumnValues('customer_email');
+        return $this->orderCollection->create()
+            ->checkInSales($emails);
     }
 
     /**
@@ -373,212 +371,14 @@ class Subscriber
      */
     public function getCollection($emails, $websiteId = 0)
     {
-        $salesOrder = $this->resource->getTableName('sales_order');
-        $salesOrderItem = $this->resource->getTableName('sales_order_item');
-        $catalogProductEntityInt = $this->resource->getTableName('catalog_product_entity_int');
-        $eavAttribute = $this->resource->getTableName('eav_attribute');
-        $eavAttributeOptionValue = $this->resource->getTableName('eav_attribute_option_value');
-        $catalogCategoryProductIndex = $this->resource->getTableName('catalog_category_product');
-
-        $collection = $this->subscribersCollection->create()
-            ->addFieldToSelect([
-                    'subscriber_email',
-                    'store_id',
-                    'subscriber_status'
-                ]);
-
-        //only when subscriber emails are set
-        if (! empty($emails)) {
-            $collection->addFieldToFilter('subscriber_email', $emails);
-        }
-
-        $alias = 'subselect';
         $statuses = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
             $websiteId
         );
         $statuses = explode(',', $statuses);
 
-        $connection = $this->resource->getConnection();
-        //@codingStandardsIgnoreStart
-        $subselect = $connection->select()
-            ->from(
-                $salesOrder, [
-                    'customer_email as s_customer_email',
-                    'sum(grand_total) as total_spend',
-                    'count(*) as number_of_orders',
-                    'avg(grand_total) as average_order_value',
-                ]
-            )
-            ->group('customer_email');
-        //any order statuses selected
-        if (! empty($statuses)) {
-            $subselect->where('status in (?)', $statuses);
-        }
-
-        $columns = [
-            'last_order_date' => new \Zend_Db_Expr(
-                "(
-                        SELECT created_at FROM $salesOrder 
-                        WHERE customer_email = main_table.subscriber_email 
-                        ORDER BY created_at DESC 
-                        LIMIT 1
-                )"
-            ),
-            'last_order_id' => new \Zend_Db_Expr(
-                "(
-                        SELECT entity_id FROM $salesOrder
-                        WHERE customer_email = main_table.subscriber_email 
-                        ORDER BY created_at DESC 
-                        LIMIT 1
-                )"
-            ),
-            'last_increment_id' => new \Zend_Db_Expr(
-                "(
-                        SELECT increment_id FROM $salesOrder
-                        WHERE customer_email = main_table.subscriber_email 
-                        ORDER BY created_at DESC 
-                        LIMIT 1
-                )"
-            ),
-            'first_category_id' => new \Zend_Db_Expr(
-                "(
-                        SELECT ccpi.category_id FROM $salesOrder as sfo
-                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                        WHERE sfo.customer_email = main_table.subscriber_email
-                        ORDER BY sfo.created_at ASC, sfoi.price DESC
-                        LIMIT 1
-                    )"
-            ),
-            'last_category_id' => new \Zend_Db_Expr(
-                "(
-                        SELECT ccpi.category_id FROM $salesOrder as sfo
-                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                        WHERE sfo.customer_email = main_table.subscriber_email
-                        ORDER BY sfo.created_at DESC, sfoi.price DESC
-                        LIMIT 1
-                    )"
-            ),
-            'product_id_for_first_brand' => new \Zend_Db_Expr(
-                "(
-                        SELECT sfoi.product_id FROM $salesOrder as sfo
-                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        WHERE sfo.customer_email = main_table.subscriber_email and sfoi.product_type = 'simple'
-                        ORDER BY sfo.created_at ASC, sfoi.price DESC
-                        LIMIT 1
-                    )"
-            ),
-            'product_id_for_last_brand' => new \Zend_Db_Expr(
-                "(
-                        SELECT sfoi.product_id FROM $salesOrder as sfo
-                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        WHERE sfo.customer_email = main_table.subscriber_email and sfoi.product_type = 'simple'
-                        ORDER BY sfo.created_at DESC, sfoi.price DESC
-                        LIMIT 1
-                    )"
-            ),
-            'week_day' => new \Zend_Db_Expr(
-                "(
-                        SELECT dayname(created_at) as week_day
-                        FROM $salesOrder
-                        WHERE customer_email = main_table.subscriber_email
-                        GROUP BY week_day
-                        HAVING COUNT(*) > 0
-                        ORDER BY (COUNT(*)) DESC
-                        LIMIT 1
-                    )"
-            ),
-            'month_day' => new \Zend_Db_Expr(
-                "(
-                        SELECT monthname(created_at) as month_day
-                        FROM $salesOrder
-                        WHERE customer_email = main_table.subscriber_email
-                        GROUP BY month_day
-                        HAVING COUNT(*) > 0
-                        ORDER BY (COUNT(*)) DESC
-                        LIMIT 1
-                    )"
-            ),
-            'most_category_id' => new \Zend_Db_Expr(
-                "(
-                        SELECT ccpi.category_id FROM $salesOrder as sfo
-                        LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        LEFT JOIN $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                        WHERE sfo.customer_email = main_table.subscriber_email AND ccpi.category_id is not null
-                        GROUP BY category_id
-                        HAVING COUNT(sfoi.product_id) > 0
-                        ORDER BY COUNT(sfoi.product_id) DESC
-                        LIMIT 1
-                    )"
-            )
-        ];
-
-        /**
-         * CatalogStaging fix.
-         * @todo this will fix https://github.com/magento/magento2/issues/6478
-         */
-        $rowIdExists = $this->isRowIdExistsInCatalogProductEntityId();
-
-        if ($rowIdExists) {
-            $mostData = new \Zend_Db_Expr(
-                "(
-                    SELECT eaov.value from $salesOrder sfo
-                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    LEFT JOIN $catalogProductEntityInt pei on pei.row_id = sfoi.product_id
-                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
-                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                    WHERE sfo.customer_email = main_table.subscriber_email AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
-                    GROUP BY eaov.value
-                    HAVING count(*) > 0
-                    ORDER BY count(*) DESC
-                    LIMIT 1
-                )"
-            );
-        } else {
-            $mostData = new \Zend_Db_Expr(
-                "(
-                    SELECT eaov.value from $salesOrder sfo
-                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
-                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
-                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                    WHERE sfo.customer_email = main_table.subscriber_email AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
-                    GROUP BY eaov.value
-                    HAVING count(*) > 0
-                    ORDER BY count(*) DESC
-                    LIMIT 1
-                )"
-            );
-
-        }
-
-        $columns['most_brand'] = $mostData;
-        $collection->getSelect()->columns(
-            $columns
-        );
-
-        $collection->getSelect()
-            ->joinLeft(
-                [$alias => $subselect],
-                "{$alias}.s_customer_email = main_table.subscriber_email"
-            );
-        //@codingStandardsIgnoreEnd
-        return $collection;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isRowIdExistsInCatalogProductEntityId()
-    {
-        $connection = $this->resource->getConnection();
-
-        return $connection->tableColumnExists(
-            $this->resource->getTableName('catalog_product_entity_int'),
-            'row_id'
-        );
+        return $this->emailContactResource->create()
+            ->getCollectionForSubscribersByEmails($emails, $websiteId, $statuses);
     }
 
     /**

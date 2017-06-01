@@ -53,9 +53,9 @@ class Quote
      */
     public $storeManager;
     /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
-    public $quoteCollection;
+    public $orderCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\CampaignFactory
      */
@@ -94,7 +94,7 @@ class Quote
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
@@ -104,7 +104,7 @@ class Quote
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $collectionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     ) {
         $this->rulesFactory = $rulesFactory;
@@ -112,7 +112,7 @@ class Quote
         $this->campaignCollection = $campaignCollection;
         $this->campaignFactory = $campaignFactory;
         $this->storeManager = $storeManager;
-        $this->quoteCollection = $collectionFactory;
+        $this->orderCollection = $collectionFactory;
         $this->scopeConfig = $scopeConfig;
         $this->timeZone = $timezone;
     }
@@ -190,20 +190,8 @@ class Quote
             'date' => true,
         ];
 
-        $salesCollection = $this->quoteCollection->create();
-
-        $salesCollection->addFieldToFilter('is_active', 1)
-            ->addFieldToFilter('items_count', ['gt' => 0])
-            ->addFieldToFilter('customer_email', ['neq' => ''])
-            ->addFieldToFilter('store_id', $storeId)
-            ->addFieldToFilter('main_table.updated_at', $updated);
-        //guests
-        if ($guest) {
-            $salesCollection->addFieldToFilter('main_table.customer_id', ['null' => true]);
-        } else {
-            //customers
-            $salesCollection->addFieldToFilter('main_table.customer_id', ['notnull' => true]);
-        }
+        $salesCollection = $this->orderCollection->create()
+            ->getStoreQuotes($storeId, $updated, $guest);
 
         //process rules on collection
         $ruleModel = $this->rulesFactory->create();
@@ -270,10 +258,8 @@ class Quote
 
         //total campaigns sent for this interval of time
         $campaignLimit = $this->campaignCollection->create()
-            ->addFieldToFilter('email', $email)
-            ->addFieldToFilter('event_name', 'Lost Basket')
-            ->addFieldToFilter('sent_at', $updated)
-            ->count();
+            ->getNumberOfCampaignsForContactByInterval($email, $updated);
+
         //found campaign
         if ($campaignLimit) {
             return true;
@@ -351,9 +337,10 @@ class Quote
                 $quoteCollection = $this->getStoreQuotes(
                     $fromDate,
                     $toDate,
-                    $guest = true,
+                    true,
                     $storeId
                 );
+
                 //log the time for carts found
                 if ($quoteCollection->getSize()) {
                     $this->helper->log('Found guest cart : ' . $num . ', from : ' . $fromDate . ' ,to : ' . $toDate);
@@ -385,8 +372,7 @@ class Quote
                     if ($this->isIntervalCampaignFound($email, $storeId)) {
                         return;
                     }
-                    //@codingStandardsIgnoreStart
-                    $this->campaignFactory->create()
+                    $item = $this->campaignFactory->create()
                         ->setEmail($email)
                         ->setEventName('Lost Basket')
                         ->setQuoteId($quoteId)
@@ -395,9 +381,9 @@ class Quote
                         ->setCampaignId($guestCampaignId)
                         ->setStoreId($storeId)
                         ->setWebsiteId($websiteId)
-                        ->setIsSent(null)
-                        ->save();
-                    //@codingStandardsIgnoreEnd
+                        ->setIsSent(null);
+
+                    $item->getResource()->saveItem($item);
                     $this->totalGuests++;
                 }
             }
@@ -433,7 +419,7 @@ class Quote
                 $toDate = $toTime->format('Y-m-d H:i:s');
 
                 //active quotes
-                $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, $guest = false, $storeId);
+                $quoteCollection = $this->getStoreQuotes($fromDate, $toDate,false, $storeId);
                 //found abandoned carts
                 if ($quoteCollection->getSize()) {
                     $this->helper->log('Customer cart : ' . $num . ', from : ' . $fromDate . ' ,to ' . $toDate);
@@ -470,8 +456,7 @@ class Quote
                     }
 
                     //save lost basket for sending
-                    //@codingStandardsIgnoreStart
-                    $this->campaignFactory->create()
+                    $item = $this->campaignFactory->create()
                         ->setEmail($email)
                         ->setCustomerId($quote->getCustomerId())
                         ->setEventName('Lost Basket')
@@ -480,9 +465,9 @@ class Quote
                         ->setCampaignId($campaignId)
                         ->setStoreId($storeId)
                         ->setWebsiteId($websiteId)
-                        ->setIsSent(null)
-                        ->save();
-                    //@codingStandardsIgnoreEnd
+                        ->setIsSent(null);
+
+                    $item->getResource()->saveItem($item);
 
                     $this->totalCustomers++;
                 }

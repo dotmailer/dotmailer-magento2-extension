@@ -113,7 +113,8 @@ class Automation extends \Magento\Framework\Model\AbstractModel
                     ->setWebsiteId($websiteId)
                     ->setStoreName($storeName)
                     ->setProgramId($programId);
-                $this->save();
+
+                $this->getResource()->save($this);
             }
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);

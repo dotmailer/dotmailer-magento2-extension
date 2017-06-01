@@ -208,8 +208,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             $this->setImportType($importType)
                 ->setImportData($importData)
                 ->setWebsiteId($websiteId)
-                ->setImportMode($importMode)
-                ->save();
+                ->setImportMode($importMode);
+
+            $this->getResource()->save($this);
 
             return true;
         } catch (\Exception $e) {
@@ -405,6 +406,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     {
         if ($items = $this->_getImportingItems($this->bulkSyncLimit)) {
             foreach ($items as $item) {
+                $itemToSave = false;
                 $websiteId = $item->getWebsiteId();
                 $client = false;
                 if ($this->helper->isEnabled($websiteId)) {
@@ -432,10 +434,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                                 );
                         }
                     } catch (\Exception $e) {
-                        //@codingStandardsIgnoreStart
                         $item->setMessage($e->getMessage())
-                            ->setImportStatus(self::FAILED)
-                            ->save();
+                            ->setImportStatus(self::FAILED);
+
+                        $itemToSave = $item;
                         continue;
                     }
 
@@ -445,8 +447,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
                             $item->setImportStatus(self::IMPORTED)
                                 ->setImportFinished($now)
-                                ->setMessage('')
-                                ->save();
+                                ->setMessage('');
+
+                            $itemToSave = $item;
                             if (
                                 $item->getImportType()
                                 == self::IMPORT_TYPE_CONTACT or
@@ -474,14 +477,17 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                                 ->setMessage(
                                     'Import failed with status '
                                     . $response->status
-                                )
-                                ->save();
-                            //@codingStandardsIgnoreEnd
+                                );
+
+                            $itemToSave = $item;
                         } else {
                             //Not finished
                             $this->totalItems += 1;
                         }
                     }
+                }
+                if ($itemToSave) {
+                    $this->getResource()->save($itemToSave);
                 }
             }
         }
@@ -492,21 +498,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @param $limit
      *
-     * @return $this|bool
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection|bool
      */
     public function _getImportingItems($limit)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('import_status', ['eq' => self::IMPORTING])
-            ->addFieldToFilter('import_id', ['neq' => ''])
-            ->setPageSize($limit)
-            ->setCurPage(1);
-
-        if ($collection->getSize()) {
-            return $collection;
-        }
-
-        return false;
+        return $this->getCollection()
+            ->getItemsWithImportingStatus($limit);
     }
 
     /**
@@ -605,33 +602,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     public function _getQueue($importType, $importMode, $limit)
     {
-        $collection = $this->getCollection();
-
-        if (is_array($importType)) {
-            $condition = [];
-            foreach ($importType as $type) {
-                if ($type == 'Catalog') {
-                    $condition[] = ['like' => $type . '%'];
-                } else {
-                    $condition[] = ['eq' => $type];
-                }
-            }
-            $collection->addFieldToFilter('import_type', $condition);
-        } else {
-            $collection->addFieldToFilter(
-                'import_type',
-                ['eq' => $importType]
-            );
-        }
-
-        $collection->addFieldToFilter('import_mode', ['eq' => $importMode])
-            ->addFieldToFilter(
-                'import_status',
-                ['eq' => self::NOT_IMPORTED]
-            )
-            ->setPageSize($limit)
-            ->setCurPage(1);
-
-        return $collection;
+        return $this->getCollection()
+            ->getQueueByTypeAndMode($importType, $importMode, $limit);
     }
 }

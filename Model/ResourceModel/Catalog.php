@@ -5,11 +5,30 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $helper;
+
+    /**
      * Initialize resource.
      */
     public function _construct()
     {
         $this->_init('email_catalog', 'id');
+    }
+
+    /**
+     * Catalog constructor.
+     *
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     */
+    public function __construct(
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Dotdigitalgroup\Email\Helper\Data $data
+    ) {
+        $this->helper = $data;
+        parent::__construct($context);
     }
 
     /**
@@ -51,5 +70,74 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         return $num;
+    }
+
+    /**
+     * Set imported in bulk query. If modified true then set modified to null in bulk query.
+     *
+     * @param      $ids
+     * @param bool $modified
+     */
+    public function setImportedByIds($ids, $modified = false)
+    {
+        try {
+            $coreResource = $this->getConnection();
+            $tableName = $coreResource->getTableName('email_catalog');
+            $ids = implode(', ', $ids);
+
+            if ($modified) {
+                $coreResource->update(
+                    $tableName,
+                    [
+                        'modified' => 'null',
+                        'updated_at' => gmdate('Y-m-d H:i:s'),
+                    ],
+                    ["product_id IN (?)" => $ids]
+                );
+            } else {
+                $coreResource->update(
+                    $tableName,
+                    [
+                        'imported' => '1',
+                        'updated_at' => gmdate(
+                            'Y-m-d H:i:s'
+                        ),
+                    ],
+                    ["product_id IN (?)" => $ids]
+                );
+            }
+        } catch (\Exception $e) {
+            $this->helper->debug((string)$e, []);
+        }
+    }
+
+    /**
+     * Remove product with product id set and no product
+     */
+    public function removeOrphanProducts()
+    {
+        $write = $this->getConnection();
+        $catalogTable = $write->getTableName('email_catalog');
+        $select = $write->select();
+        $select->reset()
+            ->from(
+                ['c' => $catalogTable],
+                ['c.product_id']
+            )
+            ->joinLeft(
+                [
+                    'e' => $write->getTableName(
+                        'catalog_product_entity'
+                    ),
+                ],
+                'c.product_id = e.entity_id'
+            )
+            ->where('e.entity_id is NULL');
+
+        //delete sql statement
+        $deleteSql = $select->deleteFromSelect('c');
+
+        //run query
+        $write->query($deleteSql);
     }
 }

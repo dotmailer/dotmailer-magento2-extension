@@ -92,19 +92,17 @@ class Campaign
                 }
                 //Only if valid client is returned
                 if ($client) {
-                    //@codingStandardsIgnoreStart
                     if (!$campaignId) {
                         $campaign->setMessage('Missing campaign id: ' . $campaignId)
-                            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                            ->save();
+                            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
+                        $this->campaignResourceModel->saveItem($campaign);
                         continue;
                     } elseif (!$email) {
                         $campaign->setMessage('Missing email')
-                            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                            ->save();
+                            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
+                        $this->campaignResourceModel->saveItem($campaign);
                         continue;
                     }
-                    //@codingStandardsIgnoreEnd
                     $campaignsToSend[$campaignId]['client'] = $client;
                     try {
                         $contactId = $this->helper->getContactId(
@@ -151,12 +149,10 @@ class Campaign
                             $campaignsToSend[$campaignId]['contacts'][] = $contactId;
                             $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
                         } else {
-                            //@codingStandardsIgnoreStart
                             //update the failed to send email message error message
                             $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                                ->setMessage('Send not permitted. Contact is suppressed.')
-                                ->save();
-                            //@codingStandardsIgnoreEnd
+                                ->setMessage('Send not permitted. Contact is suppressed.');
+                            $this->campaignResourceModel->saveItem($campaign);
                         }
                     } catch (\Exception $e) {
                         throw new \Magento\Framework\Exception\LocalizedException(
@@ -198,25 +194,8 @@ class Campaign
      */
     public function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
     {
-        $emailCollection = $this->campaignCollection->create()
-            ->addFieldToFilter('send_status', $sendStatus)
-            ->addFieldToFilter('campaign_id', ['notnull' => true])
-            ->addFieldToFilter('store_id', ['in' => $storeIds]);
-
-        //check for send id
-        if ($sendIdCheck) {
-            $emailCollection->addFieldToFilter('send_id', ['notnull' => true])
-                ->getSelect()
-                ->group('send_id');
-        } else {
-            $emailCollection->getSelect()
-                ->order('campaign_id');
-        }
-
-        $emailCollection->getSelect()
-            ->limit(self::SEND_EMAIL_CONTACT_LIMIT);
-
-        return $emailCollection;
+        return $this->campaignCollection->create()
+            ->getEmailCampaignsByStoreIds($storeIds, $sendStatus, $sendIdCheck);
     }
 
     /**

@@ -43,10 +43,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @var \Magento\Eav\Model\Config
      */
     public $config;
-    /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    public $coreResource;
 
     /**
      * @var Json
@@ -60,7 +56,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Eav\Model\Config $config
      * @param Json $serializer
-     * @param \Magento\Framework\App\ResourceConnection $resourceConnection
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
@@ -71,13 +66,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Registry $registry,
         \Magento\Eav\Model\Config $config,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
-        \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->serializer = $serializer;
-        $this->coreResource = $resourceConnection;
         $this->config       = $config;
         $this->rulesType    = $rulesType;
         parent::__construct(
@@ -181,20 +174,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     public function checkWebsiteBeforeSave($websiteId, $type, $ruleId = false)
     {
-        $collection = $this->getCollection();
-        $collection
-            ->addFieldToFilter('type', ['eq' => $type])
-            ->addFieldToFilter('website_ids', ['finset' => $websiteId]);
-        if ($ruleId) {
-            $collection->addFieldToFilter('id', ['neq' => $ruleId]);
-        }
-        $collection->setPageSize(1);
-
-        if ($collection->getSize()) {
-            return false;
-        }
-
-        return true;
+        return $this->getCollection()
+            ->hasCollectionAnyItemsByWebsiteAndType($websiteId, $type, $ruleId);
     }
 
     /**
@@ -207,19 +188,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     public function getActiveRuleForWebsite($type, $websiteId)
     {
-        $collection = $this->getCollection();
-        $collection
-            ->addFieldToFilter('type', ['eq' => $type])
-            ->addFieldToFilter('status', ['eq' => 1])
-            ->addFieldToFilter('website_ids', ['finset' => $websiteId])
-            ->setPageSize(1);
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
-        }
-
-        return [];
+        return $this->getCollection()
+            ->getActiveRuleByWebsiteAndType($type, $websiteId);
     }
 
     /**
@@ -247,33 +217,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         }
 
         //join tables to collection according to type
-        if ($type == self::ABANDONED) {
-            $collection->getSelect()
-                ->joinLeft(
-                    ['quote_address' => $this->coreResource->getTableName('quote_address')],
-                    'main_table.entity_id = quote_address.quote_id',
-                    ['shipping_method', 'country_id', 'city', 'region_id']
-                )->joinLeft(
-                    ['quote_payment' => $this->coreResource->getTableName('quote_payment')],
-                    'main_table.entity_id = quote_payment.quote_id',
-                    ['method']
-                )->where('address_type = ?', 'shipping');
-        } elseif ($type == self::REVIEW) {
-            $collection->getSelect()
-                ->join(
-                    ['order_address' => $this->coreResource->getTableName('sales_order_address')],
-                    'main_table.entity_id = order_address.parent_id',
-                    ['country_id', 'city', 'region_id']
-                )->join(
-                    ['order_payment' => $this->coreResource->getTableName('sales_order_payment')],
-                    'main_table.entity_id = order_payment.parent_id',
-                    ['method']
-                )->join(
-                    ['quote' => $this->coreResource->getTableName('quote')],
-                    'main_table.quote_id = quote.entity_id',
-                    ['items_qty']
-                )->where('order_address.address_type = ?', 'shipping');
-        }
+        $collection = $this->getResource()
+            ->joinTablesOnCollectionByType($condition, $type);
 
         //process rule on collection according to combination
         $combination = $rule->getCombination();

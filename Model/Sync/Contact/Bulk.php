@@ -152,8 +152,8 @@ class Bulk
         $curlError = $this->client->getCurlError();
         if ($curlError) {
             $item->setMessage($curlError)
-                ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                ->save();
+                ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED);
+            $item->getResource()->save($item);
 
             return true;
         }

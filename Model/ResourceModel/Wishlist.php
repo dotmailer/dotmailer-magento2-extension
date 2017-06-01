@@ -5,11 +5,37 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
+     * @var \Magento\Wishlist\Model\WishlistFactory
+     */
+    public $wishlist;
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $helper;
+
+    /**
      * Initialize resource.
      */
     public function _construct()
     {
         $this->_init('email_wishlist', 'id');
+    }
+
+    /**
+     * Wishlist constructor.
+     *
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     */
+    public function __construct(
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Magento\Wishlist\Model\WishlistFactory $wishlist,
+        \Dotdigitalgroup\Email\Helper\Data $data
+    ) {
+        $this->wishlist = $wishlist;
+        $this->helper = $data;
+        parent::__construct($context);
     }
 
     /**
@@ -24,7 +50,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function resetWishlists($from = null, $to = null)
     {
-        $conn = $this->getConnection('core_write');
+        $conn = $this->getConnection();
         if ($from && $to) {
             $where = [
                 'created_at >= ?' => $from . ' 00:00:00',
@@ -51,5 +77,60 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         return $num;
+    }
+
+    /**
+     * @param $ids
+     * @return mixed
+     */
+    public function getWishlistByIds($ids)
+    {
+        $collection = $this->wishlist->create()
+            ->getCollection()
+            ->addFieldToFilter('main_table.wishlist_id', ['in' => $ids])
+            ->addFieldToFilter('customer_id', ['notnull' => 'true']);
+
+        $collection->getSelect()
+            ->joinLeft(
+                ['c' => $this->getConnection()->getTableName('customer_entity')],
+                'c.entity_id = customer_id',
+                ['email', 'store_id']
+            );
+
+        return $collection;
+    }
+
+    /**
+     * @param $ids
+     * @param $updatedAt
+     * @param bool $modified
+     */
+    public function setImported($ids, $updatedAt, $modified = false)
+    {
+        try {
+            $coreResource = $this->getConnection();
+            $tableName = $coreResource->getTableName('email_wishlist');
+            $ids = implode(', ', $ids);
+
+            //mark imported modified wishlists
+            if ($modified) {
+                $coreResource->update(
+                    $tableName,
+                    [
+                        'wishlist_modified' => 'null',
+                        'updated_at' => $updatedAt,
+                    ],
+                    ["wishlist_id IN (?)" => $ids]
+                );
+            } else {
+                $coreResource->update(
+                    $tableName,
+                    ['wishlist_imported' => 1, 'updated_at' => $updatedAt],
+                    ["wishlist_id IN (?)" => $ids]
+                );
+            }
+        } catch (\Exception $e) {
+            $this->helper->debug((string)$e, []);
+        }
     }
 }

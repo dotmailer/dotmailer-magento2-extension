@@ -41,7 +41,7 @@ class Order
      */
     public $campaignCollection;
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
     public $orderCollection;
     /**
@@ -49,19 +49,14 @@ class Order
      */
     public $rulesFactory;
     /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
-     */
-    public $quoteCollection;
-    /**
      * @var \Zend_Date
      */
     public $date;
     /**
      * Order constructor.
      *
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -70,9 +65,8 @@ class Order
      * @param \Zend_Date $date
      */
     public function __construct(
-        \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -80,7 +74,6 @@ class Order
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Zend_Date $date
     ) {
-        $this->quoteCollection    = $quoteCollection;
         $this->rulesFactory       = $rulesFactory;
         $this->orderCollection    = $orderCollection;
         $this->campaignCollection = $campaignCollection;
@@ -92,9 +85,7 @@ class Order
     }
 
     /**
-     * Create review campaigns.
-     *
-     * @return bool
+     * Create review campaigns
      */
     public function createReviewCampaigns()
     {
@@ -136,9 +127,7 @@ class Order
                     if ($order->getCustomerId()) {
                         $emailCampaign->setCustomerId($order->getCustomerId());
                     }
-                    //@codingStandardsIgnoreStart
-                    $emailCampaign->getResource()->save($emailCampaign);
-                    //@codingStandardsIgnoreEnd
+                    $emailCampaign->getResource()->saveItem($emailCampaign);
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);
                 }
@@ -176,7 +165,7 @@ class Order
                 );
 
                 $campaignCollection = $this->campaignCollection->create()
-                    ->addFieldToFilter('event_name', 'Order Review');
+                    ->getCollectionByEvent('Order Review');
 
                 $campaignOrderIds = $campaignCollection->getColumnValues(
                     'order_increment_id'
@@ -192,22 +181,12 @@ class Order
                 $created = ['from' => $from, 'to' => $to, 'date' => true];
 
                 $collection = $this->orderCollection->create()
-                    ->addFieldToFilter(
-                        'main_table.status',
-                        $orderStatusFromConfig
-                    )
-                    ->addFieldToFilter('main_table.created_at', $created)
-                    ->addFieldToFilter(
-                        'main_table.store_id',
-                        ['in' => $storeIds]
+                    ->getSalesCollectionForReviews(
+                        $orderStatusFromConfig,
+                        $created,
+                        $storeIds,
+                        $campaignOrderIds
                     );
-
-                if (!empty($campaignOrderIds)) {
-                    $collection->addFieldToFilter(
-                        'main_table.increment_id',
-                        ['nin' => $campaignOrderIds]
-                    );
-                }
 
                 //process rules on collection
                 $collection = $this->rulesFactory->create()
@@ -237,19 +216,9 @@ class Order
         $storeIds = $this->storeManager->getWebsite(
             $customer->getWebsiteId()
         )->getStoreIds();
-        $collection = $this->orderCollection->create()
-            ->addFieldToFilter('customer_id', $customer->getId())
-            ->addFieldToFilter('store_id', ['in' => $storeIds])
-            ->setPageSize(1)
-            ->setOrder('entity_id');
 
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
-        } else {
-            return false;
-        }
+        return $this->orderCollection->create()
+            ->getCustomerLastOrderId($customer, $storeIds);
     }
 
     /**
@@ -265,18 +234,8 @@ class Order
         $storeIds = $this->storeManager->getWebsite(
             $customer->getWebsiteId()
         )->getStoreIds();
-        $collection = $this->quoteCollection->create()
-            ->addFieldToFilter('customer_id', $customer->getId())
-            ->addFieldToFilter('store_id', ['in' => $storeIds])
-            ->setPageSize(1)
-            ->setOrder('entity_id');
 
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
-        } else {
-            return false;
-        }
+        return $this->orderCollection->create()
+            ->getCustomerLastQuoteId($customer, $storeIds);
     }
 }
