@@ -42,8 +42,8 @@ class Subscriber
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
-        \Dotdigitalgroup\EMail\Model\Newsletter\SubscriberExporter $subscriberExporter,
-        \Dotdigitalgroup\EMail\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter
+        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberExporter $subscriberExporter,
+        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter
     ) {
         $this->helper            = $helper;
         $this->contactFactory    = $contactFactory;
