@@ -69,7 +69,8 @@ class Guest
         }
         if ($this->countGuests) {
             $this->helper->log('----------- Guest sync ----------- : ' .
-                gmdate('H:i:s', microtime(true) - $this->start) . ', Total synced = ' . $this->countGuests);
+                gmdate('H:i:s', microtime(true) - $this->start) .
+                ', Total synced = ' . $this->countGuests);
         }
     }
 
@@ -96,22 +97,7 @@ class Guest
             );
 
             foreach ($guests as $guest) {
-                $email = $guest->getEmail();
-                try {
-                    //@codingStandardsIgnoreStart
-                    $guest->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
-                    $guest->getResource()->save($guest);
-                    //@codingStandardsIgnoreEnd
-                    $storeName = $website->getName();
-                    // save data for guests
-                    $this->file->outputCSV(
-                        $this->file->getFilePath($guestFilename),
-                        [$email, 'Html', $storeName]
-                    );
-                    ++$this->countGuests;
-                } catch (\Exception $e) {
-                    throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-                }
+                $this->outputCsvToFile($guest, $website, $guestFilename);
             }
             if ($this->countGuests) {
                 //register in queue with importer
@@ -124,6 +110,32 @@ class Guest
                         $guestFilename
                     );
             }
+        }
+    }
+
+    /**
+     * Output
+     *
+     * @param $guest
+     * @param $website
+     * @param $guestFilename
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function outputCsvToFile($guest, $website, $guestFilename)
+    {
+        $email = $guest->getEmail();
+        try {
+            $guest->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
+            $guest->getResource()->save($guest);
+            $storeName = $website->getName();
+            // save data for guests
+            $this->file->outputCSV(
+                $this->file->getFilePath($guestFilename),
+                [$email, 'Html', $storeName]
+            );
+            ++$this->countGuests;
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
     }
 }
