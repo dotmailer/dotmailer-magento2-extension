@@ -17,20 +17,14 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $orderFactory;
     /**
-     * @var \Magento\Review\Model\ReviewFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
      */
     public $reviewFactory;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
-     */
-    public $productCollection;
-
-    /**
      * Order constructor.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection
-     * @param \Magento\Review\Model\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
@@ -38,15 +32,13 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $data
      */
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection,
-        \Magento\Review\Model\ReviewFactory $reviewFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
-        $this->productCollection = $productCollection;
         $this->reviewFactory     = $reviewFactory;
         $this->orderFactory      = $orderFactory;
         $this->helper            = $helper;
@@ -134,19 +126,8 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
 
         $customerId = $order->getCustomerId();
 
-        foreach ($items as $key => $item) {
-            $productId = $item->getProduct()->getId();
-
-            $collection = $this->reviewFactory->create()->getCollection()
-                ->addCustomerFilter($customerId)
-                ->addStoreFilter($order->getStoreId())
-                ->addFieldToFilter('main_table.entity_pk_value', $productId);
-
-            //remove item if customer has already placed review on this item
-            if ($collection->getSize()) {
-                unset($items[$key]);
-            }
-        }
+        $items = $this->reviewFactory->create()
+            ->filterItemsForReview($items, $customerId, $order);
 
         return $items;
     }
@@ -160,15 +141,9 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
         if (! $order) {
             return [];
         }
-        $items = $order->getAllVisibleItems();
-        $productIds = [];
-        //get the product ids for the collection
-        foreach ($items as $item) {
-            $productIds[] = $item->getProductId();
-        }
-        $items = $this->productCollection
-            ->addAttributeToSelect('*')
-            ->addFieldToFilter('entity_id', ['in' => $productIds]);
+
+        $items = $this->reviewFactory->create()
+            ->getProductCollection($order);
 
         return $items;
     }

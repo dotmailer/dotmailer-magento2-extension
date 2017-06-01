@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+/**
+ * Sync automation by type.
+ */
 class Automation
 {
     const AUTOMATION_TYPE_NEW_CUSTOMER = 'customer_automation';

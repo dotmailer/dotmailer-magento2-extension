@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+/**
+ * Order single delete.
+ */
 class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
 {
     /**

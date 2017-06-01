@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
+/**
+ * Remove contact single delete.
+ */
 class RemoveContact implements \Magento\Framework\Event\ObserverInterface
 {
     /**

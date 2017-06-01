@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer\Wishlist;
 
+/**
+ * Wishlist product item to sync.
+ *
+ */
 class Item
 {
     /**

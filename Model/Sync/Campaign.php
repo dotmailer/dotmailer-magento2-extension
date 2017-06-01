@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+/**
+ * Send email campaings.
+ */
 class Campaign
 {
     //single call contact limit

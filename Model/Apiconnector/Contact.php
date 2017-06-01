@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * manages the sync of dotmailer Contact.
+ */
 class Contact
 {
     /**
@@ -18,6 +21,26 @@ class Contact
      */
     public $helper;
     /**
+     * @var \Magento\Framework\Registry
+     */
+    public $registry;
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
+    public $messageManager;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    public $storeManager;
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    public $scopeConfig;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     */
+    public $contactFactory;
+    /**
      * @var
      */
     public $contactCollection;
@@ -25,6 +48,10 @@ class Contact
      * @var \Magento\Framework\App\ResourceConnection
      */
     public $resource;
+    /**
+     * @var76
+     */
+    public $subscriberFactory;
     /**
      * @var
      */
@@ -34,42 +61,69 @@ class Contact
      */
     public $emailCustomer;
     /**
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     */
+    public $importerFactory;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     public $file;
     /**
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport
+     * @var \Dotdigitalgroup\Email\Helper\Config
      */
-    public $contactImportQueueExport;
+    public $config;
 
     /**
      * Contact constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory
+     * @param \Magento\Framework\Registry                                      $registry
      * @param \Magento\Framework\App\ResourceConnection                        $resource
      * @param \Dotdigitalgroup\Email\Helper\File                               $file
      * @param \Dotdigitalgroup\Email\Helper\Data                               $helper
+     * @param \Dotdigitalgroup\Email\Helper\Config                             $config
+     * @param \Magento\Backend\App\Action\Context                              $context
+     * @param \Magento\Newsletter\Model\SubscriberFactory                      $subscriberFactory
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface               $scopeConfig
+     * @param \Magento\Store\Model\StoreManagerInterface                       $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory                      $contactFactory
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
+        \Magento\Framework\Registry $registry,
         \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\Config $config,
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
-        \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport $contactImportQueueExport
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
     ) {
+        $this->importerFactory = $importerFactory;
         $this->file            = $file;
+        $this->config          = $config;
         $this->helper          = $helper;
+        $this->registry        = $registry;
         $this->resource        = $resource;
+        $this->scopeConfig     = $scopeConfig;
+        $this->storeManager    = $storeManagerInterface;
+        $this->messageManager  = $context->getMessageManager();
         //email contact
         $this->emailCustomer      = $customerFactory;
+        $this->contactFactory     = $contactFactory;
         $this->customerCollection = $customerCollectionFactory;
         //email contact collection
         $this->contactCollection = $contactCollectionFactory;
-        $this->contactImportQueueExport = $contactImportQueueExport;
+        //newsletter subscriber
+        $this->subscriberFactory = $subscriberFactory;
     }
 
     /**
@@ -122,7 +176,7 @@ class Contact
      *
      * @return int
      */
-    private function exportCustomersForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website)
+    public function exportCustomersForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website)
     {
         $allMappedHash = [];
         //admin sync limit of batch size for contacts
@@ -138,7 +192,12 @@ class Contact
         $connection = $this->resource->getConnection();
 
         //contacts ready for website
-        $contacts = $this->getContactsReadyForWebsite($website, $syncLimit);
+        $contacts = $this->contactCollection->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter('email_imported', ['null' => true])
+            ->addFieldToFilter('customer_id', ['neq' => '0'])
+            ->addFieldToFilter('website_id', $website->getId())
+            ->setPageSize($syncLimit);
 
         // no contacts found
         if (!$contacts->getSize()) {
@@ -185,20 +244,313 @@ class Contact
             $website->getId()
         );
 
-        $this->saveCsvFileDataForCustomers($customerCollection, $mappedHash, $customAttributes, $customersFile);
+        $customerNum = $this->getNumberOfCustomers(
+            $website,
+            $customerCollection,
+            $mappedHash,
+            $customAttributes,
+            $customersFile,
+            $customerIds
+        );
+
+        //file was created - continue to queue the export
+        $this->enqueueForExport($website, $customersFile, $customerNum, $customerIds, $connection);
+
+        $this->countCustomers += $customerNum;
+
+        return $customerNum;
+    }
+
+    /**
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * @param $customersFile
+     * @param $customerNum
+     * @param $customerIds
+     *
+     * @param $connection
+     */
+    private function enqueueForExport(
+        \Magento\Store\Api\Data\WebsiteInterface $website,
+        $customersFile,
+        $customerNum,
+        $customerIds,
+        $connection
+    ) {
+        //@codingStandardsIgnoreStart
+        if (is_file($this->file->getFilePath($customersFile))) {
+            //@codingStandardsIgnoreEnd
+            if ($customerNum > 0) {
+                //register in queue with importer
+                $this->importerFactory->create()
+                    ->registerQueue(
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
+                        '',
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                        $website->getId(),
+                        $customersFile
+                    );
+                //set imported
+
+                $tableName = $this->resource->getTableName('email_contact');
+                $ids = implode(', ', $customerIds);
+                $connection->update(
+                    $tableName,
+                    ['email_imported' => 1],
+                    ["customer_id IN (?)" => $ids]
+                );
+            }
+        }
+    }
+
+    /**
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * @param $customerCollection
+     * @param $mappedHash
+     * @param $customAttributes
+     * @param $customersFile
+     * @param $customerIds
+     *
+     * @return int
+     */
+    private function getNumberOfCustomers(
+        \Magento\Store\Api\Data\WebsiteInterface $website,
+        $customerCollection,
+        $mappedHash,
+        $customAttributes,
+        $customersFile,
+        $customerIds
+    ) {
+        $countIds = [];
+        foreach ($customerCollection as $customer) {
+            $connectorCustomer = $this->emailCustomer->create();
+            $connectorCustomer->setMappingHash($mappedHash);
+            $connectorCustomer->setCustomerData($customer);
+            //count number of customers
+            $countIds[] = $customer->getId();
+
+            if ($connectorCustomer) {
+                foreach ($customAttributes as $data) {
+                    $attribute = $data['attribute'];
+                    $value = $customer->getData($attribute);
+                    $connectorCustomer->setData($value);
+                }
+            }
+
+            //contact email and email type
+            $connectorCustomer->setData($customer->getEmail());
+            $connectorCustomer->setData('Html');
+
+            // save csv file data for customers
+            $this->file->outputCSV(
+                $this->file->getFilePath($customersFile),
+                $connectorCustomer->toCSVArray()
+            );
+
+            //clear collection and free memory
+            $customer->clearInstance();
+        }
 
         $customerNum = count($customerIds);
         $this->helper->log(
             'Website : ' . $website->getName() . ', customers = ' . $customerNum .
             ', execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
         );
-
-        $this->contactImportQueueExport->queueExport($website, $customersFile, $customerNum, $customerIds, $connection);
-
-
-        $this->countCustomers += $customerNum;
-
         return $customerNum;
+    }
+
+    /**
+     * Sync a single contact.
+     *
+     * @param null $contactId
+     *
+     * @return mixed
+     */
+    public function syncContact($contactId = null)
+    {
+        if ($contactId) {
+            $contact = $this->contactFactory->create()
+                ->load($contactId);
+        } else {
+            $contact = $this->registry->registry('current_contact');
+        }
+        if (!$contact->getId()) {
+            $this->messageManager->addErrorMessage('No contact found!');
+
+            return false;
+        }
+
+        $websiteId = $contact->getWebsiteId();
+        $website = $this->storeManager->getWebsite($websiteId);
+        $updated = 0;
+        $customers = $headers = $allMappedHash = [];
+        $this->helper->log('---------- Start single customer sync ----------');
+        //skip if the mapping field is missing
+        if (!$this->helper->getCustomerAddressBook($website)) {
+            return false;
+        }
+        $customerId = $contact->getCustomerId();
+        if (!$customerId) {
+            $this->messageManager->addErrorMessage('Cannot manually sync guests!');
+
+            return false;
+        }
+
+        if (!$this->helper->isEnabled($websiteId)) {
+            $this->messageManager->addErrorMessage('Api is not enabled');
+            return false;
+        }
+
+        $client = $this->helper->getWebsiteApiClient($website);
+
+        //create customer filename
+        $customersFile = strtolower(
+            $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
+        );
+        $this->helper->log('Customers file : ' . $customersFile);
+
+        /*
+         * HEADERS.
+         */
+        $mappedHash = $this->helper->getWebsiteCustomerMappingDatafields(
+            $website
+        );
+        $headers = $mappedHash;
+        //custom customer attributes
+        $customAttributes = $this->helper->getCustomAttributes($website);
+        foreach ($customAttributes as $data) {
+            $headers[] = $data['datafield'];
+            $allMappedHash[$data['attribute']] = $data['datafield'];
+        }
+        $headers[] = 'Email';
+        $headers[] = 'EmailType';
+        $this->file->outputCSV(
+            $this->file->getFilePath($customersFile),
+            $headers
+        );
+        /*
+         * END HEADERS.
+         */
+        $customerCollection = $this->_getCustomerCollection(
+            [$customerId],
+            $website->getId()
+        );
+
+        $updated = $this->processCustomerCollection(
+            $customerCollection,
+            $websiteId,
+            mappedHash,
+            $customers,
+            $customAttributes,
+            $customersFile,
+            $updated
+        );
+
+        $this->importContacts($customersFile, $updated, $website, $client);
+
+        return $contact->getEmail();
+    }
+
+    /**
+     * @param $customerCollection
+     * @param $websiteId
+     * @param $mappedHash
+     * @param $customers
+     * @param $customAttributes
+     * @param $customersFile
+     * @param $updated
+     *
+     * @return mixed
+     */
+    private function processCustomerCollection(
+        $customerCollection,
+        $websiteId,
+        $mappedHash,
+        $customers,
+        $customAttributes,
+        $customersFile,
+        $updated
+    ) {
+        foreach ($customerCollection as $customer) {
+            $contactModel = $this->contactFactory->create()
+                ->loadByCustomerEmail($customer->getEmail(), $websiteId);
+            //contact with this email not found
+            if (!$contactModel->getId()) {
+                continue;
+            }
+            /*
+             * DATA.
+             */
+            $connectorCustomer = $this->emailCustomer->create()
+                ->setMappingHash($mappedHash)
+                ->setCustomerData($customer);
+
+            $customers[] = $connectorCustomer;
+            foreach ($customAttributes as $data) {
+                $attribute = $data['attribute'];
+                $value = $customer->getData($attribute);
+                $connectorCustomer->setData($value);
+            }
+            //contact email and email type
+            $connectorCustomer->setData($customer->getEmail());
+            $connectorCustomer->setData('Html');
+            // save csv file data for customers
+            $this->file->outputCSV(
+                $this->file->getFilePath($customersFile),
+                $connectorCustomer->toCSVArray()
+            );
+
+            /*
+             * END DATA.
+             */
+
+            //mark the contact as imported
+            $contactModel->setEmailImported(
+                \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED
+            );
+            $subscriber = $this->subscriberFactory->create()->loadByEmail(
+                $customer->getEmail()
+            );
+            if ($subscriber->isSubscribed()) {
+                $contactModel->setIsSubscriber('1')
+                    ->setSubscriberStatus($subscriber->getSubscriberStatus());
+            }
+
+            //@codingStandardsIgnoreStart
+            $contactModel->getResource()->save($contactModel);
+            //@codingStandardsIgnoreEnd
+            ++$updated;
+        }
+        return $updated;
+    }
+
+    /**
+     * @param $customersFile
+     * @param $updated
+     * @param $website
+     * @param $client
+     */
+    private function importContacts($customersFile, $updated, $website, $client)
+    {
+        //@codingStandardsIgnoreStart
+        if (is_file($this->file->getFilePath($customersFile))) {
+            //@codingStandardsIgnoreEnd
+            //import contacts
+            if ($updated > 0) {
+                //register in queue with importer
+                $this->importerFactory->create()
+                    ->registerQueue(
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT,
+                        '',
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                        $website->getId(),
+                        $customersFile
+                    );
+                $client->postAddressBookContactsImport(
+                    $customersFile,
+                    $this->helper->getCustomerAddressBook($website)
+                );
+            }
+        }
     }
 
     /**
@@ -211,9 +563,110 @@ class Contact
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function _getCustomerCollection($customerIds, $websiteId = 0)
+    public function _getCustomerCollection($customerIds, $websiteId = 0)
     {
-        $customerCollection = $this->buildCustomerCollection($customerIds);
+        $customerCollection = $this->customerCollection->create()
+            ->addAttributeToSelect('*')
+            ->addNameToSelect()
+            ->joinAttribute(
+                'billing_street',
+                'customer_address/street',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_city',
+                'customer_address/city',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_country_code',
+                'customer_address/country_id',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_postcode',
+                'customer_address/postcode',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_telephone',
+                'customer_address/telephone',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_region',
+                'customer_address/region',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_company',
+                'customer_address/company',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_street',
+                'customer_address/street',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_city',
+                'customer_address/city',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_country_code',
+                'customer_address/country_id',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_postcode',
+                'customer_address/postcode',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_telephone',
+                'customer_address/telephone',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_region',
+                'customer_address/region',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_company',
+                'customer_address/company',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->addAttributeToFilter('entity_id', ['in' => $customerIds]);
 
         $quote = $this->resource->getTableName(
             'quote'
@@ -276,43 +729,7 @@ class Contact
             $subselect->where('status in (?)', $statuses);
         }
 
-        $columnData = $this->buildColumnData($salesOrderGrid, $quote, $salesOrder, $salesOrderItem, $catalogCategoryProductIndex);
-        $mostData = $this->buildMostData($salesOrder, $salesOrderItem, $catalogProductEntityInt, $eavAttribute, $eavAttributeOptionValue);
-
-
-        $columnData['most_brand'] = $mostData;
-        $customerCollection->getSelect()->columns(
-            $columnData
-        );
-
-        $customerCollection->getSelect()
-            ->joinLeft(
-                [$alias => $subselect],
-                "{$alias}.s_customer_id = e.entity_id"
-            );
-        //@codingStandardsIgnoreEnd
-
-        return $customerCollection;
-    }
-
-    private function isRowIdExistsInCatalogProductEntityId()
-    {
-        $connection = $this->resource->getConnection();
-
-        return  $connection->tableColumnExists($this->resource->getTableName('catalog_product_entity_int'), 'row_id');
-    }
-
-    /**
-     * @param $salesOrderGrid
-     * @param $quote
-     * @param $salesOrder
-     * @param $salesOrderItem
-     * @param $catalogCategoryProductIndex
-     * @return array
-     */
-    private function buildColumnData($salesOrderGrid, $quote, $salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
-    {
-        $columnData = [
+        $columnData =  [
             'last_order_date' => new \Zend_Db_Expr(
                 "(SELECT created_at FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
             ),
@@ -398,19 +815,7 @@ class Contact
                     )"
             )
         ];
-        return $columnData;
-    }
 
-    /**
-     * @param $salesOrder
-     * @param $salesOrderItem
-     * @param $catalogProductEntityInt
-     * @param $eavAttribute
-     * @param $eavAttributeOptionValue
-     * @return \Zend_Db_Expr
-     */
-    private function buildMostData($salesOrder, $salesOrderItem, $catalogProductEntityInt, $eavAttribute, $eavAttributeOptionValue)
-    {
         /**
          * CatalogStaging fix.
          * @todo this will fix https://github.com/magento/magento2/issues/6478
@@ -449,192 +854,27 @@ class Contact
             );
 
         }
-        return $mostData;
-    }
 
-    /**
-     * @param $customerIds
-     * @return mixed
-     */
-    private function buildCustomerCollection($customerIds)
-    {
-        $customerCollection = $this->customerCollection->create()
-            ->addAttributeToSelect('*')
-            ->addNameToSelect();
+        $columnData['most_brand'] = $mostData;
+        $customerCollection->getSelect()->columns(
+            $columnData
+        );
 
-        $customerCollection = $this->addBillingJoinAttributesToCustomerCollection($customerCollection);
-        $customerCollection = $this->addShippingJoinAttributesToCustomerCollection($customerCollection);
+        $customerCollection->getSelect()
+            ->joinLeft(
+                [$alias => $subselect],
+                "{$alias}.s_customer_id = e.entity_id"
+            );
+        //@codingStandardsIgnoreEnd
 
-        $customerCollection = $customerCollection->addAttributeToFilter('entity_id', ['in' => $customerIds]);
         return $customerCollection;
     }
 
-    /**
-     * @param $customerCollection
-     * @param $mappedHash
-     * @param $customAttributes
-     * @param $customersFile
-     */
-    private function saveCsvFileDataForCustomers($customerCollection, $mappedHash, $customAttributes, $customersFile)
+    private function isRowIdExistsInCatalogProductEntityId()
     {
-        foreach ($customerCollection as $customer) {
-            $connectorCustomer = $this->emailCustomer->create();
-            $connectorCustomer->setMappingHash($mappedHash);
-            $connectorCustomer->setCustomerData($customer);
 
-            if ($connectorCustomer) {
-                foreach ($customAttributes as $data) {
-                    $attribute = $data['attribute'];
-                    $value = $customer->getData($attribute);
-                    $connectorCustomer->setData($value);
-                }
-            }
+        $connection = $this->resource->getConnection();
 
-            //contact email and email type
-            $connectorCustomer->setData($customer->getEmail());
-            $connectorCustomer->setData('Html');
-
-            // save csv file data for customers
-            $this->file->outputCSV(
-                $this->file->getFilePath($customersFile),
-                $connectorCustomer->toCSVArray()
-            );
-
-            //clear collection and free memory
-            $customer->clearInstance();
-        }
-    }
-
-    /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param $syncLimit
-     * @return mixed
-     */
-    private function getContactsReadyForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website, $syncLimit)
-    {
-        $contacts = $this->contactCollection->create()
-            ->addFieldToSelect('*')
-            ->addFieldToFilter('email_imported', ['null' => true])
-            ->addFieldToFilter('customer_id', ['neq' => '0'])
-            ->addFieldToFilter('website_id', $website->getId())
-            ->setPageSize($syncLimit);
-        return $contacts;
-    }
-
-    /**
-     * @param $customerCollection
-     * @return mixed
-     */
-    private function addShippingJoinAttributesToCustomerCollection($customerCollection)
-    {
-        $customerCollection = $customerCollection->joinAttribute(
-            'shipping_street',
-            'customer_address/street',
-            'default_shipping',
-            null,
-            'left'
-        )
-            ->joinAttribute(
-                'shipping_city',
-                'customer_address/city',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_country_code',
-                'customer_address/country_id',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_postcode',
-                'customer_address/postcode',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_telephone',
-                'customer_address/telephone',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_region',
-                'customer_address/region',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_company',
-                'customer_address/company',
-                'default_shipping',
-                null,
-                'left'
-            );
-        return $customerCollection;
-    }
-
-    /**
-     * @param $customerCollection
-     * @return mixed
-     */
-    private function addBillingJoinAttributesToCustomerCollection($customerCollection)
-    {
-        $customerCollection = $customerCollection
-            ->joinAttribute(
-                'billing_street',
-                'customer_address/street',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_city',
-                'customer_address/city',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_country_code',
-                'customer_address/country_id',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_postcode',
-                'customer_address/postcode',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_telephone',
-                'customer_address/telephone',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_region',
-                'customer_address/region',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_company',
-                'customer_address/company',
-                'default_billing',
-                null,
-                'left'
-            );
-        return $customerCollection;
+        return  $connection->tableColumnExists($this->resource->getTableName('catalog_product_entity_int'), 'row_id');
     }
 }

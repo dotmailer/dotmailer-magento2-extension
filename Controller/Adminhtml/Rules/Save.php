@@ -90,16 +90,7 @@ class Save extends \Magento\Backend\App\AbstractAction
                     );
                 }
 
-                foreach ($data as $key => $value) {
-                    if ($key != 'form_key') {
-                        if ($key == 'condition') {
-                            if (is_array($value)) {
-                                unset($value['__empty']);
-                            }
-                        }
-                        $ruleModel->setData($key, $value);
-                    }
-                }
+                $this->evaluateRequestParams($data, $ruleModel);
 
                 $this->_getSession()->setPageData($ruleModel->getData());
 
@@ -136,5 +127,23 @@ class Save extends \Magento\Backend\App\AbstractAction
             }
         }
         $this->_redirect('*/*/');
+    }
+
+    /**
+     * @param $data
+     * @param $ruleModel
+     */
+    private function evaluateRequestParams($data, $ruleModel)
+    {
+        foreach ($data as $key => $value) {
+            if ($key != 'form_key') {
+                if ($key == 'condition') {
+                    if (is_array($value)) {
+                        unset($value['__empty']);
+                    }
+                }
+                $ruleModel->setData($key, $value);
+            }
+        }
     }
 }

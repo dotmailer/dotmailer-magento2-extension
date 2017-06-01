@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * dotmailer REST V2 api client.
+ *
+ */
 class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 {
     const APICONNECTOR_VERSION = 'V2';

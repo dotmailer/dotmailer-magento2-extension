@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Holds Account information.
+ */
 class Account
 {
     /**

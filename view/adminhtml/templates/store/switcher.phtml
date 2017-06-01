@@ -124,93 +124,17 @@
         <?php //echo $block->getHintHtml() ?>
     </div>
 
-    <script>
-        require([
-            'jquery',
-            'Magento_Ui/js/modal/confirm'
-        ], function(jQuery, confirm){
-
-            (function($) {
-                var $storesList = $('[data-role=stores-list]');
-                $storesList.on('click', '[data-value]', function(event) {
-                    var val = $(event.target).data('value');
-                    var role = $(event.target).data('role');
-                    var switcher = $('[data-role='+role+']');
-
-                    event.preventDefault();
-
-                    if (!switcher.val() || val != switcher.val()) {
-                        switcher.val(val).trigger('change'); // Set the value & trigger event
-                    }
-                });
-            })(jQuery);
-
-            var scopeSwitcherHandler;
-
-            function switchScope(obj) {
-                var switcher = jQuery(obj);
-                var scopeId = switcher.val();
-                var scopeParams = '';
-                if (scopeId) {
-                    scopeParams = switcher.data('param') + '/' + scopeId + '/';
-                }
-
-                if (obj.switchParams) {
-                    scopeParams += obj.switchParams;
-                }
-
-                if ((typeof scopeSwitcherHandler) != 'undefined') {
-                    var switcherParams = {
-                        scopeId: scopeId,
-                        scopeParams: scopeParams,
-                        useConfirm: <?php echo (int)$block->getUseConfirm() ?>
-                    };
-                    scopeSwitcherHandler(switcherParams);
-                } else {
-
-                    <?php if ($block->getUseConfirm()): ?>
-
-                    confirm({
-                        content:  "<?php echo $block->escapeHtml(__('Please confirm scope switching. All data that hasn\'t been saved will be lost.')) ?>",
-                        actions: {
-                            confirm: function() {
-                                reload();
-                            },
-                            cancel: function() {
-                                obj.value = '<?php echo $block->escapeHtml($block->getStoreId()) ?>';
-                            }
-                        }
-                    });
-
-                    <?php else: ?>
-                    reload();
-                    <?php endif; ?>
-                }
-
-                function reload() {
-                    <?php if (!$block->isUsingIframe()): ?>
-                    var url = '<?php echo $block->escapeUrl($block->getSwitchUrl()) ?>' + scopeParams;
-                    setLocation(url);
-                    <?php else: ?>
-                    jQuery('#preview_selected_store').val(scopeId);
-                    jQuery('#preview_form').submit();
-
-                    jQuery('.store-switcher .dropdown-menu li a').each(function() {
-                        var $this = jQuery(this);
-
-                        if ($this.data('role') === 'store-view-id' && $this.data('value') == scopeId) {
-                            jQuery('#store-change-button').html($this.text());
-                        }
-                    });
-
-                    jQuery('#store-change-button').click();
-                    <?php endif; ?>
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Dotdigitalgroup_Email/js/switcher":{
+                    "getUseConfirm":"<?php echo (int)$block->getUseConfirm(); ?>",
+                    "getContent":"<?php echo $block->escapeHtml(__('Please confirm scope switching. All data that hasn\'t been saved will be lost.')) ?>",
+                    "objVal":"<?php echo $block->escapeHtml($block->getStoreId()) ?>",
+                    "isUsingIframe":"<?php echo $block->isUsingIframe(); ?>",
+                    "getSwitchUrl":"<?php echo $block->escapeUrl($block->getSwitchUrl()) ?>"
                 }
             }
-
-            window.scopeSwitcherHandler = scopeSwitcherHandler;
-            window.switchScope = switchScope;
-
-        });
+        }
     </script>
 <?php endif; ?>

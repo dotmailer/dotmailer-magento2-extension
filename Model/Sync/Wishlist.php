@@ -4,6 +4,9 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Dotdigitalgroup\Email\Model\Importer;
 
+/**
+ * Sync Wishlists.
+ */
 class Wishlist
 {
     /**

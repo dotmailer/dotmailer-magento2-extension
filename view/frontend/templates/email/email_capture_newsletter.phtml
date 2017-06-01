@@ -1,26 +1,13 @@
 <?php $helper = $this->helper('Dotdigitalgroup\Email\Helper\Data'); ?>
 
-<?php if ($helper->isEasyEmailCaptureForNewsletterEnabled()) : ?>
-
-    <script>
-        require(['jquery','domReady!'],function($){
-            $('input[id=newsletter]').each(function (index, element) {
-                // Observe onblur event on element
-                $(element).on('blur', function() {
-                    var email = $(element).val();
-                    if(email && validateEmail(email)){
-                        $.post("<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>", {email: email});
-                    }
-                });
-            });
-        });
-        function validateEmail(sEmail) {
-            var filter = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-            if (filter.test(sEmail))
-                return true;
-            else
-                return false;
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Dotdigitalgroup_Email/js/emailCapture":{
+            "isEnabled":"<?php echo (boolean) $helper->isEasyEmailCaptureForNewsletterEnabled(); ?>",
+            "type":"newsletter",
+            "url":"<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>"
         }
-    </script>
-
-<?php endif; ?>
+    }
+}
+</script>

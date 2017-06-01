@@ -80,7 +80,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
     /**
      * Execute method.
      *
-     * @return $this
+     * @return \Magento\Framework\App\Response\Http
      */
     public function execute()
     {
@@ -131,27 +131,41 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
             $elmType = $this->ruleValue->getValueElementType($attribute);
 
-            if ($elmType == 'select' or $selectedConditions == 'null') {
-                $isEmpty = false;
+            $this->evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $valueName, $response);
 
-                if ($selectedConditions == 'null') {
-                    $isEmpty = true;
-                }
-
-                $valueOptions = $this->ruleValue->getValueSelectOptions($attribute, $isEmpty);
-
-                $response['cvalue'] = str_replace(
-                    'value="' . $selectedValues . '"',
-                    'value="' . $selectedValues . '"' . 'selected="selected"',
-                    $this->getOptionHtml('cvalue', $valueName, $valueOptions)
-                );
-            } elseif ($elmType == 'text') {
-                $html = "<input style='width:160px' title='cvalue' name='$valueName' value='$selectedValues'/>";
-                $response['cvalue'] = $html;
-            }
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')
                 ->setBody($this->jsonEncoder->encode($response));
+        }
+    }
+
+    /**
+     * @param $elmType
+     * @param $selectedConditions
+     * @param $attribute
+     * @param $selectedValues
+     * @param $valueName
+     * @param $response
+     */
+    private function evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $valueName, &$response)
+    {
+        if ($elmType == 'select' or $selectedConditions == 'null') {
+            $isEmpty = false;
+
+            if ($selectedConditions == 'null') {
+                $isEmpty = true;
+            }
+
+            $valueOptions = $this->ruleValue->getValueSelectOptions($attribute, $isEmpty);
+
+            $response['cvalue'] = str_replace(
+                'value="' . $selectedValues . '"',
+                'value="' . $selectedValues . '"' . 'selected="selected"',
+                $this->getOptionHtml('cvalue', $valueName, $valueOptions)
+            );
+        } elseif ($elmType == 'text') {
+            $html = "<input style='width:160px' title='cvalue' name='$valueName' value='$selectedValues'/>";
+            $response['cvalue'] = $html;
         }
     }
 

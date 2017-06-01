@@ -1,0 +1,61 @@
+define(['jquery'],function($){
+    "use strict";
+
+    /**
+     * Email validation
+     * @param sEmail
+     * @returns {boolean}
+     */
+    function validateEmail(sEmail) {
+        var filter
+            = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+
+        return filter.test(sEmail);
+    }
+
+    /**
+     * Email capture for checkout
+     * @param url
+     */
+    function emailCaptureCheckout(url) {
+        $("body").on("blur","input[id=customer-email]", function(){
+            var email = $(this).val();
+
+            if(email && validateEmail(email)){
+                $.post(url, {email: email});
+            }
+        });
+    }
+
+    /**
+     * Email capture for newsletter field
+     * @param url
+     */
+    function emailCaptureNewsletter(url) {
+        $('input[id=newsletter]').each(function (index, element) {
+            // Observe onblur event on element
+            $(element).on('blur', function() {
+                var email = $(element).val();
+
+                if(email && validateEmail(email)){
+                    $.post(url, {email: email});
+                }
+            });
+        });
+    }
+
+    /**
+     * Exported/return email capture
+     * @param emailCapture
+     */
+    return function(emailCapture)
+    {
+        if(emailCapture.isEnabled && emailCapture.type === 'checkout') {
+            emailCaptureCheckout(emailCapture.url);
+        }
+
+        if(emailCapture.isEnabled && emailCapture.type === 'newsletter') {
+            emailCaptureNewsletter(emailCapture.url);
+        }
+    };
+});
