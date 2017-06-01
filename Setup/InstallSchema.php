@@ -52,17 +52,18 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createContactTable($installer)
     {
         $this->dropContactTableIfExists($installer);
 
         $contactTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_contact'));
+            $installer->getTable('email_contact')
+        );
 
-        $this->addColumnsToContactTable($contactTable);
-        $this->addIndexesToContactTable($installer, $contactTable);
+        $contactTable = $this->addColumnsToContactTable($contactTable);
+        $contactTable = $this->addIndexesToContactTable($installer, $contactTable);
 
         $contactTable->addForeignKey(
             $installer->getFkName(
@@ -95,10 +96,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $contactTable
+     * @return \Magento\Framework\DB\Ddl\Table
      */
     private function addColumnsToContactTable($contactTable)
     {
-        $contactTable->addColumn(
+        return $contactTable->addColumn(
             'email_contact_id',
             \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, 10,
             [
@@ -162,10 +164,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $contactTable
+     * @return \Magento\Framework\DB\Ddl\Table
      */
     private function addIndexesToContactTable($installer, $contactTable)
     {
-        $contactTable->addIndex(
+        return $contactTable->addIndex(
             $installer->getIdxName('email_contact', ['email_contact_id']),
             ['email_contact_id']
             )
@@ -222,8 +225,8 @@ class InstallSchema implements InstallSchemaInterface
         $orderTable = $installer->getConnection()->newTable(
             $installer->getTable('email_order'));
 
-        $this->addColumnsToOrderTable($orderTable);
-        $this->addIndexesToOrderTable($installer, $orderTable);
+        $orderTable = $this->addColumnsToOrderTable($orderTable);
+        $orderTable = $this->addIndexesToOrderTable($installer, $orderTable);
 
         $orderTable->addForeignKey(
             $installer->getFkName(
@@ -257,10 +260,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $orderTable
+     * @return mixed
      */
     private function addColumnsToOrderTable($orderTable)
     {
-        $orderTable->addColumn(
+        return $orderTable->addColumn(
             'email_order_id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
             null,
             [
@@ -310,10 +314,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $orderTable
+     * @return mixed
      */
     private function addIndexesToOrderTable($installer, $orderTable)
     {
-        $orderTable->addIndex(
+        return $orderTable->addIndex(
             $installer->getIdxName(
                 $installer->getTable('email_order'), ['store_id']
             ), ['store_id']
@@ -360,8 +365,8 @@ class InstallSchema implements InstallSchemaInterface
         $campaignTable = $installer->getConnection()->newTable(
             $installer->getTable('email_campaign'));
 
-        $this->addColumnsToCampaignTable($campaignTable);
-        $this->addIndexesTocampaignTable($installer, $campaignTable);
+        $campaignTable = $this->addColumnsToCampaignTable($campaignTable);
+        $campaignTable = $this->addIndexesToCampaignTable($installer, $campaignTable);
 
         $campaignTable->addForeignKey(
             $installer->getFkName(
@@ -395,10 +400,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $campaignTable
+     * @return mixed
      */
     private function addColumnsToCampaignTable($campaignTable)
     {
-        $campaignTable->addColumn(
+        return $campaignTable->addColumn(
             'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
             [
                 'primary' => true,
@@ -472,10 +478,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $campaignTable
+     * @return mixed
      */
-    private function addIndexesTocampaignTable($installer, $campaignTable)
+    private function addIndexesToCampaignTable($installer, $campaignTable)
     {
-        $campaignTable->addIndex(
+        return $campaignTable->addIndex(
             $installer->getIdxName(
                 $installer->getTable('email_campaign'), ['store_id']
             ), ['store_id']
@@ -547,8 +554,8 @@ class InstallSchema implements InstallSchemaInterface
         $reviewTable = $installer->getConnection()->newTable(
             $installer->getTable('email_review'));
 
-        $this->addColumnsToReviewTable($reviewTable);
-        $this->addIndexesToReviewTable($installer, $reviewTable);
+        $reviewTable = $this->addColumnsToReviewTable($reviewTable);
+        $reviewTable = $this->addIndexesToReviewTable($installer, $reviewTable);
 
         $reviewTable->setComment('Connector Reviews');
         $installer->getConnection()->createTable($reviewTable);
@@ -571,10 +578,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $reviewTable
+     * @return mixed
      */
     private function addColumnsToReviewTable($reviewTable)
     {
-        $reviewTable->addColumn(
+        return $reviewTable->addColumn(
             'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
             [
                 'primary' => true,
@@ -613,10 +621,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $reviewTable
+     * @return mixed
      */
     private function addIndexesToReviewTable($installer, $reviewTable)
     {
-        $reviewTable->addIndex(
+        return $reviewTable->addIndex(
             $installer->getIdxName(
                 $installer->getTable('email_review'), ['review_id']
             ), ['review_id']
@@ -659,8 +668,8 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_wishlist')
         );
 
-        $this->addColumnsToWishlistTable($wishlistTable);
-        $this->addIndexesToWishlistTable($installer, $wishlistTable);
+        $wishlistTable = $this->addColumnsToWishlistTable($wishlistTable);
+        $wishlistTable = $this->addIndexesToWishlistTable($installer, $wishlistTable);
 
         $wishlistTable->setComment('Connector Wishlist');
         $installer->getConnection()->createTable($wishlistTable);
@@ -683,10 +692,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $wishlistTable
+     * @return mixed
      */
     private function addColumnsToWishlistTable($wishlistTable)
     {
-        $wishlistTable->addColumn(
+        return $wishlistTable->addColumn(
             'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
             [
                 'primary' => true,
@@ -734,10 +744,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $wishlistTable
+     * @return mixed
      */
     private function addIndexesToWishlistTable($installer, $wishlistTable)
     {
-        $wishlistTable->addIndex(
+        return $wishlistTable->addIndex(
             $installer->getIdxName(
                 $installer->getTable('email_wishlist'), ['wishlist_id']
             ), ['wishlist_id']
@@ -791,8 +802,8 @@ class InstallSchema implements InstallSchemaInterface
         $quoteTable = $installer->getConnection()->newTable(
             $installer->getTable('email_quote'));
 
-        $this->addColumnsToQuoteTable($quoteTable);
-        $this->addIndexesToQuoteTable($installer, $quoteTable);
+        $quoteTable = $this->addColumnsToQuoteTable($quoteTable);
+        $quoteTable = $this->addIndexesToQuoteTable($installer, $quoteTable);
 
         $quoteTable->setComment('Connector Quotes');
         $installer->getConnection()->createTable($quoteTable);
@@ -815,10 +826,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $quoteTable
+     * @return mixed
      */
     private function addColumnsToQuoteTable($quoteTable)
     {
-        $quoteTable->addColumn(
+        return $quoteTable->addColumn(
             'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
             [
                 'primary' => true,
@@ -860,10 +872,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $quoteTable
+     * @return mixed
      */
     private function addIndexesToQuoteTable($installer, $quoteTable)
     {
-        $quoteTable->addIndex(
+        return $quoteTable->addIndex(
             $installer->getIdxName(
                 $installer->getTable('email_quote'), ['quote_id']
             ), ['quote_id']
@@ -910,8 +923,8 @@ class InstallSchema implements InstallSchemaInterface
         $catalogTable = $installer->getConnection()->newTable(
             $installer->getTable('email_catalog'));
 
-        $this->addColumnsToCatalogTable($catalogTable);
-        $this->addIndexesToCatalogTable($installer, $catalogTable);
+        $catalogTable = $this->addColumnsToCatalogTable($catalogTable);
+        $catalogTable = $this->addIndexesToCatalogTable($installer, $catalogTable);
 
         $catalogTable->setComment('Connector Catalog');
         $installer->getConnection()->createTable($catalogTable);
@@ -934,10 +947,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $catalogTable
+     * @return mixed
      */
     private function addColumnsToCatalogTable($catalogTable)
     {
-        $catalogTable->addColumn(
+        return $catalogTable->addColumn(
             'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
             [
                 'primary' => true,
@@ -973,10 +987,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $catalogTable
+     * @return mixed
      */
     private function addIndexesToCatalogTable($installer, $catalogTable)
     {
-        $catalogTable->addIndex(
+        return $catalogTable->addIndex(
             $installer->getIdxName(
                 $installer->getTable('email_catalog'), ['product_id']
             ), ['product_id']
@@ -1013,7 +1028,7 @@ class InstallSchema implements InstallSchemaInterface
         $ruleTable = $installer->getConnection()->newTable(
             $installer->getTable('email_rules'));
 
-        $this->addColumnsToRulesTable($ruleTable);
+        $ruleTable = $this->addColumnsToRulesTable($ruleTable);
 
         $ruleTable->setComment('Connector Rules');
         $installer->getConnection()->createTable($ruleTable);
@@ -1036,10 +1051,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $ruleTable
+     * @return mixed
      */
     private function addColumnsToRulesTable($ruleTable)
     {
-        $ruleTable->addColumn(
+        return $ruleTable->addColumn(
             'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
             [
                 'primary' => true,
@@ -1093,8 +1109,8 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getTable('email_importer')
         );
 
-        $this->addColumnsToImporterTable($importerTable);
-        $this->addIndexesToImporterTable($installer, $importerTable);
+        $importerTable = $this->addColumnsToImporterTable($importerTable);
+        $importerTable = $this->addIndexesToImporterTable($installer, $importerTable);
 
         $importerTable ->setComment('Email Importer');
         $installer->getConnection()->createTable($importerTable);
@@ -1117,10 +1133,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $importerTable
+     * @return mixed
      */
     private function addColumnsToImporterTable($importerTable)
     {
-        $importerTable->addColumn(
+        return $importerTable->addColumn(
             'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
             [
                 'primary' => true,
@@ -1184,10 +1201,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $importerTable
+     * @return mixed
      */
     private function addIndexesToImporterTable($installer, $importerTable)
     {
-        $importerTable->addIndex(
+        return $importerTable->addIndex(
             $installer->getIdxName(
                 $installer->getTable('email_importer'), ['import_type']
             ), ['import_type']
@@ -1244,8 +1262,8 @@ class InstallSchema implements InstallSchemaInterface
         $automationTable = $installer->getConnection()->newTable(
             $installer->getTable('email_automation'));
 
-        $this->addColumnsToAutomationTable($automationTable);
-        $this->addIndexesToAutomationTable($installer, $automationTable);
+        $automationTable = $this->addColumnsToAutomationTable($automationTable);
+        $automationTable = $this->addIndexesToAutomationTable($installer, $automationTable);
 
         $automationTable->setComment('Automation Status');
         $installer->getConnection()->createTable($automationTable);
@@ -1268,10 +1286,11 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param $automationTable
+     * @return mixed
      */
     private function addColumnsToAutomationTable($automationTable)
     {
-        $automationTable->addColumn(
+        return $automationTable->addColumn(
             'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
             [
                 'primary' => true,
@@ -1325,10 +1344,11 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      * @param $automationTable
+     * @return mixed
      */
     private function addIndexesToAutomationTable($installer, $automationTable)
     {
-        $automationTable->addIndex(
+        return $automationTable->addIndex(
             $installer->getIdxName(
                 $installer->getTable('email_automation'),
                 ['automation_type']
