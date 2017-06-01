@@ -2,7 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-
+/**
+ * Class ContactImportQueueExport
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 class ContactImportQueueExport
 {
     /**
@@ -40,11 +43,16 @@ class ContactImportQueueExport
      * @param $customersFile
      * @param $customerNum
      * @param $customerIds
+     *
      * @param $connection
      */
-    public function queueExport(\Magento\Store\Api\Data\WebsiteInterface $website, $customersFile, $customerNum, $customerIds, $connection)
-    {
-        //file was created - continue for queue the export
+    public function enqueueForExport(
+        \Magento\Store\Api\Data\WebsiteInterface $website,
+        $customersFile,
+        $customerNum,
+        $customerIds,
+        $connection
+    ) {
         //@codingStandardsIgnoreStart
         if (is_file($this->file->getFilePath($customersFile))) {
             //@codingStandardsIgnoreEnd
