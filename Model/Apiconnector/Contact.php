@@ -193,7 +193,7 @@ class Contact
             ', execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
         );
 
-        $this->queueExport($website, $customersFile, $customerNum, $customerIds, $connection);
+        $this->contactImportQueueExport->queueExport($website, $customersFile, $customerNum, $customerIds, $connection);
 
 
         $this->countCustomers += $customerNum;
