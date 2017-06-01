@@ -84,110 +84,8 @@ class Campaign
                 ->getStoreIds();
             //@codingStandardsIgnoreEnd
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
-            $campaignsToSend = [];
-            foreach ($emailsToSend as $campaign) {
-                $email = $campaign->getEmail();
-                $campaignId = $campaign->getCampaignId();
-                $websiteId = $website->getId();
-                $client = false;
-                if ($this->helper->isEnabled($websiteId)) {
-                    $client = $this->helper->getWebsiteApiClient($websiteId);
-                }
-                //Only if valid client is returned
-                if ($client) {
-                    //@codingStandardsIgnoreStart
-                    if (!$campaignId) {
-                        $campaign->setMessage('Missing campaign id: ' . $campaignId)
-                            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                            ->save();
-                        continue;
-                    } elseif (!$email) {
-                        $campaign->setMessage('Missing email')
-                            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                            ->save();
-                        continue;
-                    }
-                    //@codingStandardsIgnoreEnd
-                    $campaignsToSend[$campaignId]['client'] = $client;
-                    try {
-                        $contactId = $this->helper->getContactId(
-                            $campaign->getEmail(),
-                            $websiteId
-                        );
-                        if (is_numeric($contactId)) {
-                            //update data fields for order review camapigns
-                            if ($campaign->getEventName() == 'Order Review') {
-                                $order = $this->salesOrderFactory->create()->loadByIncrementId(
-                                    $campaign->getOrderIncrementId()
-                                );
-
-                                if ($lastOrderId = $this->helper->getWebsiteConfig(
-                                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID,
-                                    $websiteId
-                                )
-                                ) {
-                                    $data[] = [
-                                        'Key' => $lastOrderId,
-                                        'Value' => $order->getId(),
-                                    ];
-                                }
-                                if ($orderIncrementId = $this->helper->getWebsiteConfig(
-                                    \Dotdigitalgroup\Email\Helper\Config::
-                                    XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
-                                    $websiteId
-                                )
-                                ) {
-                                    $data[] = [
-                                        'Key' => $orderIncrementId,
-                                        'Value' => $order->getIncrementId(),
-                                    ];
-                                }
-
-                                if (!empty($data)) {
-                                    //update data fields
-                                    $client->updateContactDatafieldsByEmail(
-                                        $email,
-                                        $data
-                                    );
-                                }
-                            }
-                            $campaignsToSend[$campaignId]['contacts'][] = $contactId;
-                            $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
-                        } else {
-                            //@codingStandardsIgnoreStart
-                            //update the failed to send email message error message
-                            $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                                ->setMessage('Send not permitted. Contact is suppressed.')
-                                ->save();
-                            //@codingStandardsIgnoreEnd
-                        }
-                    } catch (\Exception $e) {
-                        throw new \Magento\Framework\Exception\LocalizedException(
-                            __($e->getMessage())
-                        );
-                    }
-                }
-            }
-            foreach ($campaignsToSend as $campaignId => $data) {
-                if (isset($data['contacts']) && isset($data['client'])) {
-                    $contacts = $data['contacts'];
-                    /** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
-                    $client = $data['client'];
-                    $response = $client->postCampaignsSend(
-                        $campaignId,
-                        $contacts
-                    );
-                    if (isset($response->message)) {
-                        //update  the failed to send email message
-                        $this->campaignResourceModel->setMessage($data['ids'], $response->message);
-                    } elseif (isset($response->id)) {
-                        $this->campaignResourceModel->setProcessing($data['ids'], $response->id);
-                    } else {
-                        //update  the failed to send email message
-                        $this->campaignResourceModel->setMessage($data['ids'], 'No send id returned.');
-                    }
-                }
-            }
+            $campaignsToSend = $this->getCampaignsToSend($emailsToSend, $website);
+            $this->sendCampaignsViaDotmailer($campaignsToSend);
         }
     }
 
@@ -244,6 +142,142 @@ class Campaign
             } elseif ($response->status == 'Sent') {
                 $this->campaignResourceModel->setSent($campaign->getSendId());
             }
+        }
+    }
+
+    /**
+     * @param $emailsToSend
+     * @param $website
+     * @param $campaignsToSend
+     * @param $data
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function getCampaignsToSend($emailsToSend, $website)
+    {
+        $campaignsToSend = [];
+        foreach ($emailsToSend as $campaign) {
+            $email = $campaign->getEmail();
+            $campaignId = $campaign->getCampaignId();
+            $websiteId = $website->getId();
+            $client = false;
+            if ($this->helper->isEnabled($websiteId)) {
+                $client = $this->helper->getWebsiteApiClient($websiteId);
+            }
+            //Only if valid client is returned
+            if ($client) {
+                //@codingStandardsIgnoreStart
+                if (!$campaignId) {
+                    $campaign->setMessage('Missing campaign id: ' . $campaignId)
+                        ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
+                        ->save();
+                    continue;
+                } elseif (!$email) {
+                    $campaign->setMessage('Missing email')
+                        ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
+                        ->save();
+                    continue;
+                }
+                //@codingStandardsIgnoreEnd
+                $campaignsToSend[$campaignId]['client'] = $client;
+                try {
+                    $contactId = $this->helper->getContactId(
+                        $campaign->getEmail(),
+                        $websiteId
+                    );
+                    if (is_numeric($contactId)) {
+                        //update data fields for order review camapigns
+                        if ($campaign->getEventName() == 'Order Review') {
+                            $this->updateDataFieldsForORderReviewCampaigns($campaign, $websiteId, $client, $email);
+                        }
+                        $campaignsToSend[$campaignId]['contacts'][] = $contactId;
+                        $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
+                    } else {
+                        //@codingStandardsIgnoreStart
+                        //update the failed to send email message error message
+                        $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
+                            ->setMessage('Send not permitted. Contact is suppressed.')
+                            ->save();
+                        //@codingStandardsIgnoreEnd
+                    }
+                } catch (\Exception $e) {
+                    throw new \Magento\Framework\Exception\LocalizedException(
+                        __($e->getMessage())
+                    );
+                }
+            }
+        }
+        return $campaignsToSend;
+    }
+
+    /**
+     * @param $campaignsToSend
+     * @return array
+     */
+    private function sendCampaignsViaDotmailer($campaignsToSend)
+    {
+        foreach ($campaignsToSend as $campaignId => $data) {
+            if (isset($data['contacts']) && isset($data['client'])) {
+                $contacts = $data['contacts'];
+                /** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
+                $client = $data['client'];
+                $response = $client->postCampaignsSend(
+                    $campaignId,
+                    $contacts
+                );
+                if (isset($response->message)) {
+                    //update  the failed to send email message
+                    $this->campaignResourceModel->setMessage($data['ids'], $response->message);
+                } elseif (isset($response->id)) {
+                    $this->campaignResourceModel->setProcessing($data['ids'], $response->id);
+                } else {
+                    //update  the failed to send email message
+                    $this->campaignResourceModel->setMessage($data['ids'], 'No send id returned.');
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $campaign
+     * @param $websiteId
+     * @param $client
+     * @param $email
+     */
+    private function updateDataFieldsForORderReviewCampaigns($campaign, $websiteId, $client, $email)
+    {
+        $order = $this->salesOrderFactory->create()->loadByIncrementId(
+            $campaign->getOrderIncrementId()
+        );
+
+        if ($lastOrderId = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID,
+            $websiteId
+        )
+        ) {
+            $data[] = [
+                'Key' => $lastOrderId,
+                'Value' => $order->getId(),
+            ];
+        }
+        if ($orderIncrementId = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::
+            XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
+            $websiteId
+        )
+        ) {
+            $data[] = [
+                'Key' => $orderIncrementId,
+                'Value' => $order->getIncrementId(),
+            ];
+        }
+
+        if (!empty($data)) {
+            //update data fields
+            $client->updateContactDatafieldsByEmail(
+                $email,
+                $data
+            );
         }
     }
 }
