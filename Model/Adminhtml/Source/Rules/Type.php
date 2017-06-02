@@ -56,8 +56,6 @@ class Type
                 );
                 return $this->processAttribute($attribute);
         }
-
-        return 'string';
     }
 
     /**
