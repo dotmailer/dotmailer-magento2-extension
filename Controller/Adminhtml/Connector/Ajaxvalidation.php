@@ -10,7 +10,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
     public $data;
 
     /**
-     * @var \Magento\Framework\Json\Helper\Data
+     * @var \Magento\Framework\Serialize\Serializer\Json
      */
     public $jsonHelper;
 
@@ -18,11 +18,12 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
      * Ajaxvalidation constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Serialize\Serializer\Json $jsonHelper
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,
+        \Magento\Framework\Serialize\Serializer\Json $jsonHelper,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->data = $data;
@@ -50,7 +51,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
                 $resonseData['message'] = 'Authorization has been denied for this request.';
             }
 
-            $this->getResponse()->representJson($this->jsonHelper->jsonEncode($resonseData));
+            $this->getResponse()->representJson($this->jsonHelper->serialize($resonseData));
         }
     }
 

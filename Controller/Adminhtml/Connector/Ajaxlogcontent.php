@@ -10,22 +10,23 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
     public $file;
 
     /**
-     * @var \Magento\Framework\Json\Helper\Data
+     * @var \Magento\Framework\Serialize\Serializer\Json
      */
     public $jsonHelper;
 
     public $escaper;
 
     /**
-     * Ajaxvalidation constructor.
+     * Ajaxlogcontent constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Magento\Framework\Serialize\Serializer\Json $jsonHelper
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\File $file,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,
+        \Magento\Framework\Serialize\Serializer\Json $jsonHelper,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Escaper $escaper
     ) {
@@ -62,7 +63,7 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
             'content' => $content,
             'header' => $header
         ];
-        $this->getResponse()->representJson($this->jsonHelper->jsonEncode($response));
+        $this->getResponse()->representJson($this->jsonHelper->serialize($response));
     }
 
 

@@ -26,7 +26,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      */
     public $ruleValue;
     /**
-     * @var
+     * @var \Magento\Framework\Serialize\Serializer\Json
      */
     public $jsonEncoder;
     /**
@@ -42,7 +42,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type      $ruleType
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
-     * @param \Magento\Framework\Json\Encoder                               $jsonEncoder
+     * @param \Magento\Framework\Serialize\Serializer\Json                  $jsonEncoder
      * @param \Magento\Framework\App\Response\Http                          $http
      * @param \Magento\Framework\Escaper                                    $escaper
      */
@@ -52,7 +52,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
-        \Magento\Framework\Json\Encoder $jsonEncoder,
+        \Magento\Framework\Serialize\Serializer\Json $jsonEncoder,
         \Magento\Framework\App\Response\Http $http,
         \Magento\Framework\Escaper $escaper
     ) {
@@ -135,7 +135,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')
-                ->setBody($this->jsonEncoder->encode($response));
+                ->setBody($this->jsonEncoder->serialize($response));
         }
 
         return $this;

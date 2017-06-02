@@ -552,11 +552,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     private function getAttributesArrayFromLoadedProduct($product)
     {
-//attributes array from loaded product
-        $attributes = $this->config->getEntityAttributeCodes(
+        //attributes array from loaded product
+        $attributes = $this->config->getEntityAttributes(
             \Magento\Catalog\Model\Product::ENTITY,
             $product
         );
-        return $attributes;
+        return array_keys($attributes);
     }
 }
