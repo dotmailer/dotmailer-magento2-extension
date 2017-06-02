@@ -976,7 +976,7 @@ class Customer
             $expiredAt = $this->reward->getExpirationDate();
 
             if ($expiredAt) {
-                $date = $this->dateTime->formatDate($expiredAt, 'short', true);
+                $date = $this->dateTime->formatDate($expiredAt, true);
             } else {
                 $date = '';
             }
