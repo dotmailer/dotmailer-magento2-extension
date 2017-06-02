@@ -78,8 +78,9 @@ class Campaign
             //check send status for processing
             $this->_checkSendStatus($website);
             //start send process
-            $storeIds = $this->websiteFactory->create()
-                ->load($website->getId())
+            $website = $this->websiteFactory->create();
+            $storeIds = $website->getResource()
+                ->load($website, $website->getId())
                 ->getStoreIds();
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = $this->getCampaignsToSend($emailsToSend, $website);
@@ -92,8 +93,9 @@ class Campaign
      */
     public function _checkSendStatus($website)
     {
-        $storeIds = $this->websiteFactory->create()
-            ->load($website->getId())
+        $website = $this->websiteFactory->create();
+        $storeIds = $website->getResource()
+            ->load($website, $website->getId())
             ->getStoreIds();
         $campaigns = $this->_getEmailCampaigns(
             $storeIds,

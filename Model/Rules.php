@@ -501,11 +501,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                             foreach ($exploded as $one) {
                                 $getter .= ucfirst($one);
                             }
-                            //@codingStandardsIgnoreStart
                             $attributeValue = call_user_func(
                                 [$product, $getter]
                             );
-                            //@codingStandardsIgnoreEnd
                             //if retrieved value is an array then loop through all array values.
                             // example can be categories
                             if (is_array($attributeValue)) {

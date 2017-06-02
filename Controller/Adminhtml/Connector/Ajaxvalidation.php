@@ -37,9 +37,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
     {
         $params = $this->getRequest()->getParams();
         $apiUsername = $params['api_username'];
-        //@codingStandardsIgnoreStart
         $apiPassword = base64_decode($params['api_password']);
-        //@codingStandardsIgnoreEnd
         //validate api, check against account info.
         if ($this->data->isEnabled()) {
             $client = $this->data->getWebsiteApiClient();

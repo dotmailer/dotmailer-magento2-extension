@@ -61,11 +61,9 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      *
      * @return $this
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @codingStandardsIgnoreStart
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        //@codingStandardsIgnoreEnd
         $groups = $this->context->getRequest()->getPost('groups');
 
         if (isset($groups['api']['fields']['username']['inherit'])

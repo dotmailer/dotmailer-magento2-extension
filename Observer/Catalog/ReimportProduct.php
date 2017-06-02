@@ -50,8 +50,8 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
 
             if ($item = $this->loadProduct($productId)) {
                 if ($item->getImported()) {
-                    $item->setModified(1)
-                        ->save();
+                    $item->setModified(1);
+                    $item->getResource()->save($item);
                 }
             }
         } catch (\Exception $e) {

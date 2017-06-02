@@ -29,11 +29,9 @@ class Subscribersync extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @codingStandardsIgnoreStart
      */
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        //@codingStandardsIgnoreEnd
         $url
             = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/subscribersync');
 

@@ -28,11 +28,9 @@ class Resetreviews extends \Magento\Config\Block\System\Config\Form\Field
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
-     * @codingStandardsIgnoreStart
      */
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        //@codingStandardsIgnoreEnd
         $query = [
             '_query' => [
                 'from' => '',

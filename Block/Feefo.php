@@ -138,7 +138,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
                 . '&mode=productonly';
             $doc = $this->domDocument;
             $xsl = $this->processor;
-            //@codingStandardsIgnoreStart
             if ($check) {
                 $doc->load($feefoDir . DIRECTORY_SEPARATOR . 'feedback.xsl');
             } else {
@@ -148,7 +147,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
             }
             $xsl->importStyleSheet($doc);
             $doc->loadXML(file_get_contents($url));
-            //@codingStandardsIgnoreEnd
             $productReview = $xsl->transformToXML($doc);
             if (strpos($productReview, '<td') !== false) {
                 $reviews[$name] = $xsl->transformToXML($doc);

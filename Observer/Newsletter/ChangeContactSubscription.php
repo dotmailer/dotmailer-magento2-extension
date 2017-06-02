@@ -121,7 +121,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             $contactEmail->setStoreId($storeId);
 
             //update contact
-            $contactEmail->save();
+            $contactEmail->getResource()->save($contactEmail);
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
             $emailReg = $this->registry->registry($email . '_subscriber_save');
@@ -160,7 +160,6 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             return;
         }
         try {
-            //@codingStandardsIgnoreStart
             //check the subscriber alredy exists
             $enrolmentCollection = $this->automationFactory->create()
                 ->getCollection()
@@ -172,7 +171,6 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 ->addFieldToFilter('website_id', $websiteId)
                 ->setPageSize(1);
             $enrolment = $enrolmentCollection->getFirstItem();
-            //@codingStandardsIgnoreEnd
             //add new subscriber to automation
             if (!$enrolment->getId()) {
                 //save subscriber to the queue
@@ -188,7 +186,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                     ->setWebsiteId($websiteId)
                     ->setStoreName($store->getName())
                     ->setProgramId($programId);
-                $automation->save();
+                $automation->getResource()->save($automation);
             }
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(

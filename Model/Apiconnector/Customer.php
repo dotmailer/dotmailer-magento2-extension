@@ -162,11 +162,9 @@ class Customer
                 $function .= ucfirst($one);
             }
             try {
-                //@codingStandardsIgnoreStart
                 $value = call_user_func(
                     ['self', $function]
                 );
-                //@codingStandardsIgnoreEnd
                 $this->customerData[$key] = $value;
             } catch (\Exception $e) {
                 throw new \Magento\Framework\Exception\LocalizedException(

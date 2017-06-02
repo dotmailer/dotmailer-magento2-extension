@@ -572,7 +572,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     public function _csvToArray($filename)
     {
-        //@codingStandardsIgnoreStart
         if (!file_exists($filename) || !is_readable($filename)) {
             return false;
         }
@@ -588,7 +587,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 }
             }
             fclose($handle);
-            //@codingStandardsIgnoreEnd
         }
 
         $contacts = [];

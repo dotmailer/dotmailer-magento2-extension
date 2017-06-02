@@ -73,11 +73,9 @@ class Subscriber
                 $function .= ucfirst($one);
             }
             try {
-                //@codingStandardsIgnoreStart
                 $value = call_user_func(
                     array('self', $function)
                 );
-                //@codingStandardsIgnoreEnd
                 $this->subscriberData[$key] = $value;
             } catch (\Exception $e) {
                 throw new \Magento\Framework\Exception\LocalizedException(

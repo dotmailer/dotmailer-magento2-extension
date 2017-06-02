@@ -91,7 +91,6 @@ class Callback extends \Magento\Framework\App\Action\Action
             //callback url
             $url = $this->config->getTokenUrl();
 
-            //@codingStandardsIgnoreStart
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -115,7 +114,6 @@ class Callback extends \Magento\Framework\App\Action\Action
                 $adminUser->setRefreshToken($response->refresh_token);
                 $adminUser->getResource()->save($adminUser);
             }
-            //@codingStandardsIgnoreEnd
         }
         //redirect to automation index page
         $this->_redirect($this->adminHelper->getUrl('dotdigitalgroup_email/studio'));

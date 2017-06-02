@@ -191,7 +191,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     {
         $url = $this->getApiEndpoint() . "/v2/address-books/{$addressBookId}/contacts/import";
 
-        //@codingStandardsIgnoreStart
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_USERPWD,
@@ -219,7 +218,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         // send contacts to address book
         $result = curl_exec($ch);
         $result = json_decode($result);
-        //@codingStandardsIgnoreEnd
 
         if (isset($result->message)) {
             $message = 'postAddressBookContactsImport' . $addressBookId . ' file : ' . $filename
@@ -1349,7 +1347,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getAccessToken($url, $params)
     {
-        //@codingStandardsIgnoreStart
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
@@ -1372,7 +1369,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         if (! isset($response->message) && isset($response->access_token)) {
             return $response->access_token;
         }
-        //@codingStandardsIgnoreEnd
         return $response;
     }
 }
