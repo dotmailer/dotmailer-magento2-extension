@@ -42,9 +42,7 @@ class Collection extends
             ->setPageSize(1);
 
         if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
         }
 
         return false;

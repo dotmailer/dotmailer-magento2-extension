@@ -53,7 +53,6 @@ class File
         $this->delimiter = ',';
         $this->enclosure = '"';
 
-        //@codingStandardsIgnoreStart
         umask(022);
         $logDir = $directoryList->getPath('log');
         if (! is_dir($logDir)) {
@@ -61,7 +60,6 @@ class File
         }
         $writer = new \Zend\Log\Writer\Stream($logDir . DIRECTORY_SEPARATOR .  $this->logFileName);
         $logger = new \Zend\Log\Logger();
-        //@codingStandardsIgnoreEnd
         $logger->addWriter($writer);
         $this->connectorLogger  = $logger;
     }
@@ -126,9 +124,7 @@ class File
         $destFilepath = $destFolder . DIRECTORY_SEPARATOR . $filename;
 
         // rename the file
-        //@codingStandardsIgnoreStart
         rename($sourceFilepath, $destFilepath);
-        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -141,7 +137,6 @@ class File
      */
     public function outputForceQuotesCSV($filepath, $csv)
     {
-        //@codingStandardsIgnoreStart
         $fqCsv = $this->arrayToCsv($csv, chr(9), '"', true, false);
         // Open for writing only; place the file pointer at the end of the file.
         // If the file does not exist, attempt to create it.
@@ -153,7 +148,6 @@ class File
             throw new \Exception('Problem writing CSV file');
         }
         fclose($fp);
-        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -166,11 +160,9 @@ class File
          * Open for writing only; place the file pointer at the end of the file.
          * If the file does not exist, attempt to create it.
          */
-        //@codingStandardsIgnoreStart
         $handle = fopen($filepath, 'a');
         fputcsv($handle, $csv, ',', '"');
         fclose($handle);
-        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -180,11 +172,9 @@ class File
      */
     public function pathExists($path)
     {
-        //@codingStandardsIgnoreStart
         if (!is_dir($path)) {
             mkdir($path, 750, true);
         }
-        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -245,13 +235,11 @@ class File
     public function deleteDir($path)
     {
         $classFunc = [__CLASS__, __FUNCTION__];
-        //@codingStandardsIgnoreStart
         return is_file($path)
             ?
             @unlink($path)
             :
             array_map($classFunc, glob($path . '/*')) == @rmdir($path);
-        //@codingStandardsIgnoreEnd
     }
 
     /**
@@ -284,7 +272,6 @@ class File
         $lengthBefore = 500000;
         try {
             $contents = '';
-            //@codingStandardsIgnoreStart
             $handle = fopen($pathLogfile, 'r');
             fseek($handle, -$lengthBefore, SEEK_END);
             if (!$handle) {
@@ -293,14 +280,12 @@ class File
             }
 
             if (filesize($pathLogfile) > 0) {
-                //@codingStandardsIgnoreStart
                 $contents = fread($handle, filesize($pathLogfile));
                 if ($contents === false) {
                     return "Log file is not readable or does not exist at this moment. File path is "
                         . $pathLogfile;
                 }
                 fclose($handle);
-                //@codingStandardsIgnoreEnd
             }
             return $contents;
         } catch (\Exception $e) {
@@ -318,8 +303,8 @@ class File
     }
 
     /**
-     * @param string $message
-     * @param array|Traversable $extra
+     * @param $message
+     * @param $extra
      */
     public function debug($message, $extra)
     {

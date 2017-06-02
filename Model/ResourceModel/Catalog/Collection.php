@@ -133,4 +133,23 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
         return false;
     }
+
+    /**
+     * Load product. return item otherwise create item.
+     *
+     * @param int $productId
+     *
+     * @return bool
+     */
+    protected function loadProductById($productId)
+    {
+        $collection = $this->addFieldToFilter('product_id', $productId)
+            ->setPageSize(1);
+
+        if ($collection->getSize()) {
+            return $collection->getFirstItem();
+        }
+
+        return false;
+    }
 }

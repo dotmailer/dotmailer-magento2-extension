@@ -90,7 +90,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         //filter collection by category by category_id
         if ($catId) {
-            $category = $this->categoryFactory->create()->load($catId);
+            $category = $this->categoryFactory->create();
+            $category = $category->getResource()->load($category, $catId);
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(

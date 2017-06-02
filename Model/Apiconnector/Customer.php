@@ -228,12 +228,10 @@ class Customer
     public function getLastReviewDate()
     {
         if ($this->reviewCollection->getSize()) {
-            //@codingStandardsIgnoreStart
             $this->reviewCollection->getSelect()->limit(1);
             $createdAt = $this->reviewCollection
                 ->getFirstItem()
                 ->getCreatedAt();
-            //@codingStandardsIgnoreEnd
             return $createdAt;
         }
 
@@ -687,8 +685,8 @@ class Customer
     public function _getCustomerGroup()
     {
         $groupId = $this->customer->getGroupId();
-        $groupModel = $this->groupFactory->create()
-            ->load($groupId);
+        $groupModel = $this->groupFactory->create();
+        $groupModel = $groupModel->getResource()->load($groupModel, $groupId);
         if ($groupModel) {
             return $groupModel->getCode();
         }
@@ -742,14 +740,12 @@ class Customer
      */
     public function getCustomerSegments()
     {
-        //@codingStandardsIgnoreStart
         $contactModel = $this->_contactFactory->create()
             ->getCollection()
             ->addFieldToFilter('customer_id', $this->getCustomerId())
             ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
             ->setPageSize(1)
             ->getFirstItem();
-        //@codingStandardsIgnoreEnd
         if ($contactModel) {
             return $contactModel->getSegmentIds();
         }
@@ -766,7 +762,6 @@ class Customer
     {
         //last used from the reward history based on the points delta used
         //enterprise module
-        //@codingStandardsIgnoreStart
         $lastUsed = $this->historyFactory->create()
             ->addCustomerFilter($this->customer->getId())
             ->addWebsiteFilter($this->customer->getWebsiteId())
@@ -775,7 +770,6 @@ class Customer
             ->setPageSize(1)
             ->getFirstItem()
             ->getCreatedAt();
-        //@codingStandardsIgnoreEnd
         //for any valid date
         if ($lastUsed) {
             return $this->helper->formatDate($lastUsed, 'short', true);
@@ -793,7 +787,8 @@ class Customer
     {
         $id = $this->customer->getMostCategoryId();
         if ($id) {
-            return $this->categoryFactory->create()->load($id)
+            $category = $this->categoryFactory->create();
+            return $category->getResource()->load($category, $id)
                 ->setStoreId($this->customer->getStoreId())
                 ->getName();
         }
@@ -855,7 +850,8 @@ class Customer
     {
         $id = $this->customer->getFirstCategoryId();
         if ($id) {
-            return $this->categoryFactory->create()->load($id)
+            $category = $this->categoryFactory->create();
+            return $category->getResource()->load($category, $id)
                 ->setStoreId($this->customer->getStoreId())
                 ->getName();
         }
@@ -873,9 +869,9 @@ class Customer
         $categoryId = $this->customer->getLastCategoryId();
         //customer last category id
         if ($categoryId) {
-            return $this->categoryFactory->create()
-                ->setStoreId($this->customer->getStoreId())
-                ->load($categoryId)
+            $category = $this->categoryFactory->create();;
+            return $category->setStoreId($this->customer->getStoreId())
+                ->getResource()->load($category, $categoryId)
                 ->getName();
         }
 
@@ -915,9 +911,9 @@ class Customer
         );
         //if the id and attribute found
         if ($id && $attribute) {
-            $brand = $this->productFactory->create()
-                ->setStoreId($this->customer->getStoreId())
-                ->load($id)
+            $brand = $this->productFactory->create();
+            $brand = $brand->setStoreId($this->customer->getStoreId())
+                ->getResource()->load($brand, $id)
                 ->getAttributeText($attribute);
             //check for brand text
             if ($brand) {
@@ -996,7 +992,6 @@ class Customer
      */
     public function _setReward()
     {
-        //@codingStandardsIgnoreStart
         if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')) {
             $enHelper = $this->_objectManager->create('Magento\Reward\Helper\Reward');
             $collection = $rewardModel->getCollection()
@@ -1010,7 +1005,6 @@ class Customer
             $item = $collection->setPageSize(1)
                 ->setCurPage(1)
                 ->getFirstItem();
-            //@codingStandardsIgnoreEnd
 
             $this->reward = $item;
         } else {

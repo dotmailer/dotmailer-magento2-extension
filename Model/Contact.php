@@ -63,7 +63,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      * @param string $email
      * @param int $websiteId
      *
-     * @return mixed
+     * @return $this
      */
     public function loadByCustomerEmail($email, $websiteId)
     {

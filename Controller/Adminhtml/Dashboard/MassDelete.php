@@ -41,7 +41,7 @@ class MassDelete extends \Magento\Backend\App\Action
                     //@codingStandardsIgnoreStart
                     $model = $this->schedule->create()
                         ->setId($id);
-                    $model->delete();
+                    $model->getResource()->delete($model);
                     //@codingStandardsIgnoreEnd
                 }
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));

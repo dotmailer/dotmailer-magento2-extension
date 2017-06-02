@@ -119,9 +119,7 @@ class Review
                     );
                 //if no error then set imported
                 $this->_setImported($this->reviewIds);
-                //@codingStandardsIgnoreStart
                 $this->countReviews += count($reviews);
-                //@codingStandardsIgnoreStop
             }
         }
 

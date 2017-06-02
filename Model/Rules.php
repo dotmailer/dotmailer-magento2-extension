@@ -131,13 +131,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
     /**
      * @return $this
-     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
 
         parent::beforeSave();
-        //@codingStandardsIgnoreEnd
         if ($this->isObjectNew()) {
             $this->setCreatedAt(time());
         } else {

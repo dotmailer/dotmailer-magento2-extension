@@ -238,9 +238,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 $contact->id
             );
             if (isset($bookResponse->message)) {
-                $bookError = true;
+                return true;
             }
         }
-        return $bookError;
+        return false;
     }
 }

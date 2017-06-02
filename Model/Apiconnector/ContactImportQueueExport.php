@@ -16,26 +16,19 @@ class ContactImportQueueExport
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     public $file;
-    /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    public $resource;
 
     /**
      * ContactImportQueueExport constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Framework\App\ResourceConnection                        $resource
      * @param \Dotdigitalgroup\Email\Helper\File                               $file
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\File $file
     ) {
         $this->importerFactory = $importerFactory;
         $this->file            = $file;
-        $this->resource        = $resource;
     }
 
     /**
@@ -43,19 +36,16 @@ class ContactImportQueueExport
      * @param $customersFile
      * @param $customerNum
      * @param $customerIds
-     *
-     * @param $connection
+     * @param $resource
      */
     public function enqueueForExport(
         \Magento\Store\Api\Data\WebsiteInterface $website,
         $customersFile,
         $customerNum,
         $customerIds,
-        $connection
+        $resource
     ) {
-        //@codingStandardsIgnoreStart
         if (is_file($this->file->getFilePath($customersFile))) {
-            //@codingStandardsIgnoreEnd
             if ($customerNum > 0) {
                 //register in queue with importer
                 $this->importerFactory->create()
@@ -66,15 +56,10 @@ class ContactImportQueueExport
                         $website->getId(),
                         $customersFile
                     );
-                //set imported
 
-                $tableName = $this->resource->getTableName('email_contact');
+                //set imported
                 $ids = implode(', ', $customerIds);
-                $connection->update(
-                    $tableName,
-                    ['email_imported' => 1],
-                    ["customer_id IN (?)" => $ids]
-                );
+                $resource->setImportedByIds($ids);
             }
         }
     }

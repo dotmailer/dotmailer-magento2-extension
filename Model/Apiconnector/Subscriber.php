@@ -254,7 +254,8 @@ class Subscriber
     {
         $id = $this->subscriber->getMostCategoryId();
         if ($id) {
-            return $this->categoryFactory->create()->load($id)
+            $category = $this->categoryFactory->create();
+            return $category->getResource()->load($category, $id)
                 ->setStoreId($this->subscriber->getStoreId())
                 ->getName();
         }
@@ -313,7 +314,9 @@ class Subscriber
     {
         $id = $this->subscriber->getFirstCategoryId();
         if ($id) {
-            return $this->categoryFactory->create()->load($id)
+            $category = $this->categoryFactory->create();
+            return $this->categoryFactory->create()
+                ->getResource()->load($category, $id)
                 ->setStoreId($this->subscriber->getStoreId())
                 ->getName();
         }
@@ -331,9 +334,10 @@ class Subscriber
         $categoryId = $this->subscriber->getLastCategoryId();
         //customer last category id
         if ($categoryId) {
+            $category = $this->categoryFactory->create();
             return $this->categoryFactory->create()
                 ->setStoreId($this->subscriber->getStoreId())
-                ->load($categoryId)
+                ->getResource()->load($category, $categoryId)
                 ->getName();
         }
 
@@ -373,9 +377,9 @@ class Subscriber
         );
         //if the id and attribute found
         if ($id && $attribute) {
-            $brand = $this->productFactory->create()
-                ->setStoreId($this->subscriber->getStoreId())
-                ->load($id)
+            $brand = $this->productFactory->create();
+            $brand = $brand->setStoreId($this->subscriber->getStoreId())
+                ->getResource()->load($brand, $id)
                 ->getAttributeText($attribute);
             //check for brand text
             if ($brand) {

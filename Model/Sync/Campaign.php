@@ -133,7 +133,6 @@ class Campaign
             }
             //Only if valid client is returned
             if ($client) {
-                //@codingStandardsIgnoreStart
                 if (!$campaignId) {
                     $campaign->setMessage('Missing campaign id: ' . $campaignId)
                         ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
@@ -145,7 +144,6 @@ class Campaign
                     $this->campaignResourceModel->saveItem($campaign);
                     continue;
                 }
-                //@codingStandardsIgnoreEnd
                 $campaignsToSend[$campaignId]['client'] = $client;
                 try {
                     $contactId = $this->helper->getContactId(
@@ -160,12 +158,10 @@ class Campaign
                         $campaignsToSend[$campaignId]['contacts'][] = $contactId;
                         $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
                     } else {
-                        //@codingStandardsIgnoreStart
                         //update the failed to send email message error message
                         $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
                             ->setMessage('Send not permitted. Contact is suppressed.');
                         $this->campaignResourceModel->saveItem($campaign);
-                        //@codingStandardsIgnoreEnd
                     }
                 } catch (\Exception $e) {
                     throw new \Magento\Framework\Exception\LocalizedException(

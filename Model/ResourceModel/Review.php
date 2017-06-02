@@ -233,9 +233,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             )
             ->setPage(1, 1);
 
-        //@codingStandardsIgnoreStart
         $product->getFirstItem();
-        //@codingStandardsIgnoreEnd
 
         return $product;
     }

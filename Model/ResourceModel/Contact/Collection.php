@@ -115,9 +115,7 @@ class Collection extends
             ->setPageSize(1);
 
         if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
             return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
         }
 
         return false;
@@ -289,5 +287,20 @@ class Collection extends
             ->addFieldToSelect(['subscriber_email', 'store_id']);
 
         return $subscribersData->toArray();
+    }
+
+    /**
+     * Get contacts ti import by website
+     *
+     * @param $websiteId
+     * @param $syncLimit
+     * @return $this
+     */
+    public function getContactsToImportByWebsite($websiteId, $syncLimit)
+    {
+        return $this->addFieldToSelect('*')
+            ->addFieldToFilter('customer_id', ['neq' => '0'])
+            ->addFieldToFilter('website_id', $websiteId)
+            ->setPageSize($syncLimit);
     }
 }

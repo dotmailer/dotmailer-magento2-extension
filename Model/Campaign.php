@@ -103,11 +103,9 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
      * Prepare data to be saved to database.
      *
      * @return $this
-     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
-        //@codingStandardsIgnoreEnd
         parent::beforeSave();
         if ($this->isObjectNew()) {
             $this->setCreatedAt($this->dateTime->formatDate(true));

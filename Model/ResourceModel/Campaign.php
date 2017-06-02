@@ -74,8 +74,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function generateCoupon($couponCodeId, $expireDate = false)
     {
         if ($couponCodeId) {
-            $rule = $this->ruleFactory->create()
-                ->load($couponCodeId);
+            $rule = $this->ruleFactory->create();
+            $rule = $rule->getResource()->load($rule, $couponCodeId);
 
             $generator = $this->massGeneratorFactory->create();
             $generator->setFormat(
