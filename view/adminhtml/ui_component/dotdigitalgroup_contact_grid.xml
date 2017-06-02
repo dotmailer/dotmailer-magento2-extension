@@ -217,7 +217,7 @@
                 </item>
             </argument>
         </column>
-        <column name="website_id">
+        <column name="website_id" class="Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer\Subscriber\Website">
             <argument name="data" xsi:type="array">
                 <item name="options" xsi:type="object">Magento\Store\Model\ResourceModel\Website\Collection</item>
                 <item name="config" xsi:type="array">
