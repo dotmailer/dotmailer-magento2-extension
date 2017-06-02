@@ -40,19 +40,37 @@ class Subscriber
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     public $timezone;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
+     */
+    private $emailContactResource;
 
+    /**
+     * Subscriber constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+     * @param SubscriberExporter $subscriberExporter
+     * @param SubscriberWithSalesExporter $subscriberWithSalesExporter
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberExporter $subscriberExporter,
-        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter
+        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     ) {
         $this->helper            = $helper;
         $this->contactFactory    = $contactFactory;
         $this->orderCollection   = $orderCollection;
         $this->subscriberExporter = $subscriberExporter;
         $this->subscriberWithSalesExporter = $subscriberWithSalesExporter;
+        $this->emailContactResource = $contactResourceFactory;
+        $this->timezone = $timezone;
     }
 
     /**
@@ -160,5 +178,61 @@ class Subscriber
         $collection = $this->orderCollection->create()
             ->addFieldToFilter('customer_email', ['in' => $emails]);
         return $collection->getColumnValues('customer_email');
+    }
+
+    /**
+     * Un-subscribe suppressed contacts.
+     * @return mixed
+     */
+    public function unsubscribe()
+    {
+        $limit = 5;
+        $maxToSelect = 1000;
+        $result['customers'] = 0;
+        $date = $this->timezone->date()->sub(\DateInterval::createFromDateString('24 hours'));
+        $suppressedEmails = [];
+
+        // Datetime format string
+        $dateString = $date->format(\DateTime::W3C);
+
+        /**
+         * Sync all suppressed for each store
+         */
+        $websites = $this->helper->getWebsites(true);
+        foreach ($websites as $website) {
+            $client = $this->helper->getWebsiteApiClient($website);
+            $skip = $i = 0;
+            $contacts = [];
+
+            // Not enabled and valid credentials
+            if (! $client) {
+                continue;
+            }
+
+            //there is a maximum of request we need to loop to get more suppressed contacts
+            for ($i=0; $i<= $limit;$i++) {
+                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect , $skip);
+
+                // skip no more contacts or the api request failed
+                if(empty($apiContacts) || isset($apiContacts->message)) {
+                    break;
+                }
+                $contacts = array_merge($contacts, $apiContacts);
+                $skip += 1000;
+            }
+
+            // Contacts to un-subscribe
+            foreach ($contacts as $apiContact) {
+                if (isset($apiContact->suppressedContact)) {
+                    $suppressedContact = $apiContact->suppressedContact;
+                    $suppressedEmails[] = $suppressedContact->email;
+                }
+            }
+        }
+        //Mark suppressed contacts
+        if (! empty($suppressedEmails)) {
+            $this->emailContactResource->create()->unsubscribe($suppressedEmails);
+        }
+        return $result;
     }
 }
