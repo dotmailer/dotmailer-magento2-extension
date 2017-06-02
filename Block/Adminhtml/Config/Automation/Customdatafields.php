@@ -12,6 +12,8 @@ class Customdatafields extends
     public $programFactory;
 
     public $elementFactory;
+    private $_getStatusRenderer;
+    private $_getAutomationRenderer;
 
     /**
      * Customdatafields constructor.

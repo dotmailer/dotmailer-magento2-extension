@@ -20,6 +20,10 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
      * @var \Magento\Config\Model\Config\Structure
      */
     public $configStructure;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    private $_storeManager;
 
     /**
      * Datafields constructor.

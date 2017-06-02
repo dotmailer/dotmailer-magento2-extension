@@ -17,6 +17,7 @@ class Logviewer extends \Magento\Backend\Block\Widget\Container
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     public $file;
+    private $_blockGroup;
 
     /**
      * Logviewer constructor.

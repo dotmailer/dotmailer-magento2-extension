@@ -16,6 +16,10 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
     public $emailOrderFactory;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    private $_registry;
 
     /**
      * RefundReimportOrder constructor.

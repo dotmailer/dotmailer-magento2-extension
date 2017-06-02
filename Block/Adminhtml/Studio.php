@@ -41,6 +41,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
      * @var Client
      */
     public $client;
+    private $_blockGroup;
+    private $_controller;
 
     /**
      * Studio constructor.

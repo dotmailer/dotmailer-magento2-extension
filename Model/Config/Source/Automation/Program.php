@@ -27,6 +27,10 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $_storeManager;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    private $_registry;
 
     /**
      * Program constructor.
