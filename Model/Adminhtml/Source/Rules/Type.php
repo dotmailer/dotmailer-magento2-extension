@@ -73,6 +73,8 @@ class Type
         if ($attribute->usesSource()) {
             return 'select';
         }
+
+        return false;
     }
 
     /**

@@ -233,6 +233,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         if ($combination == 2) {
             return $this->processOrCombination($collection, $condition, $type);
         }
+
+        return $collection;
     }
 
     /**
@@ -443,6 +445,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             case 'lt':
                 return $varOne < $varTwo;
         }
+
+        return false;
     }
 
     /**

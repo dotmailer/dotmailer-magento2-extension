@@ -172,6 +172,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
             return $token;
         }
+
+        return false;
     }
 
     /**

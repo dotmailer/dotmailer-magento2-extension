@@ -80,7 +80,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
     /**
      * Execute method.
      *
-     * @return \Magento\Framework\App\Response\Http
+     * @return mixed
      */
     public function execute()
     {
@@ -137,6 +137,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
             $this->http->setHeader('Content-Type', 'application/json')
                 ->setBody($this->jsonEncoder->encode($response));
         }
+
+        return $this;
     }
 
     /**

@@ -729,6 +729,8 @@ class Customer
         if ($subscriberModel->getCustomerId()) {
             return $this->subscriberStatus[$subscriberModel->getSubscriberStatus()];
         }
+
+        return false;
     }
 
     /**

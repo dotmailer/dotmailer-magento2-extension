@@ -129,7 +129,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 );
             }
         }
-        $this->_redirect('customer/account/');
+        return $this->_redirect('customer/account/');
     }
 
     /**

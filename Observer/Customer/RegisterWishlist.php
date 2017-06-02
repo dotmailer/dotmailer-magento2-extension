@@ -59,11 +59,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * If it's configured to capture on shipment - do this.
-     *
      * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -140,5 +136,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
         } catch (\Exception $e) {
             $this->helper->error((string)$e, []);
         }
+
+        return $this;
     }
 }
