@@ -9,7 +9,7 @@ use Magento\Ui\Component\MassAction\Filter;
 class MassDelete extends ImporterController
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory
      */
     public $collectionFactory;
 
