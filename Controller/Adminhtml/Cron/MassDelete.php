@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Cron;
 
-use Dotdigitalgroup\Email\Controller\Adminhtml\Importer as ImporterController;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 

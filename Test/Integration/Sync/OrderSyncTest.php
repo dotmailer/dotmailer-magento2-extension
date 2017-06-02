@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Customer;
 
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\TestFramework\ObjectManager;
 
 /**

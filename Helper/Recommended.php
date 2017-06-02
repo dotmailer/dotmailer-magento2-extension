@@ -285,8 +285,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     public function getTimeFromConfig($config)
     {
         $now = $this->date;
-        $period = 'M';
-
         $period = $this->processConfig($config);
 
         $sub = $this->processPeriod($period);

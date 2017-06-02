@@ -45,7 +45,7 @@ class Campaign
 
     /**
      * Campaign constructor.
-     * 
+     *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -95,8 +95,8 @@ class Campaign
      */
     public function _checkSendStatus($website)
     {
-        $website = $this->websiteFactory->create();
-        $storeIds = $website->getResource()
+        $websiteModel = $this->websiteFactory->create();
+        $storeIds = $websiteModel->getResource()
             ->load($website, $website->getId())
             ->getStoreIds();
         $campaigns = $this->_getEmailCampaigns(

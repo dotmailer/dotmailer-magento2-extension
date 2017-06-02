@@ -107,11 +107,11 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     protected function registerReview($review)
     {
         try {
-            $review = $this->reviewFactory->create();
-            $review->setReviewId($review->getReviewId())
+            $reviewModel = $this->reviewFactory->create();
+            $reviewModel->setReviewId($review->getReviewId())
                 ->setCustomerId($review->getCustomerId())
                 ->setStoreId($review->getStoreId());
-            $review->getResource()->save($review);
+            $reviewModel->getResource()->save($reviewModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

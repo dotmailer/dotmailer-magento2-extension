@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Trial;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 
 /**
  * Handle the trial account creation.

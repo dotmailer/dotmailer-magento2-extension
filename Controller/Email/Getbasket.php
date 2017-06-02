@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-use Magento\TestFramework\Event\Magento;
-
 class Getbasket extends \Magento\Framework\App\Action\Action
 {
     /**
