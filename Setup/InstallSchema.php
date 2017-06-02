@@ -14,7 +14,6 @@ class InstallSchema implements InstallSchemaInterface
 {
     /**
      * {@inheritdoc}
-     * @codingStandardsIgnoreStart
      */
     public function install(
         SchemaSetupInterface $setup,
@@ -48,7 +47,6 @@ class InstallSchema implements InstallSchemaInterface
         $this->saveAllProductVisibilitiesAsString($configModel);
 
         $installer->endSetup();
-        // @codingStandardsIgnoreEnd
     }
 
     /**

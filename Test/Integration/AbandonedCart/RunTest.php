@@ -38,8 +38,8 @@ class RunTest extends \PHPUnit_Framework_TestCase
         $quote = $this->objectManager->create('Magento\Quote\Model\Quote');
 
         foreach ($this->createdQuotes as $quoteId) {
-            $quote->load($quoteId);
-            $quote->delete();
+            $quote->getResource()->load($quote, $quoteId);
+            $quote->getResource()->delete($quote);
         }
     }
 

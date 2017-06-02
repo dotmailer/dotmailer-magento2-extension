@@ -154,7 +154,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                     $currentQuote->addItem($item);
                 }
             }
-            $currentQuote->collectTotals()->save();
+            $currentQuote->collectTotals();
+            $currentQuote->getResource()->save($currentQuote);
         }
     }
 

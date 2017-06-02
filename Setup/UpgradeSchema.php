@@ -38,60 +38,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $connection->dropTable($setup->getTable('email_quote'));
         }
         if (version_compare($context->getVersion(), '2.0.6', '<')) {
-            //modify email_campaign table
-            $campaignTable = $setup->getTable('email_campaign');
-
-            //add columns
-            $connection->addColumn(
-                $campaignTable,
-                'send_id',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    'nullable' => false,
-                    'default' => '',
-                    'comment' => 'Campaign Send Id'
-                ]
-            );
-            $connection->addColumn(
-                $campaignTable,
-                'send_status',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                    'nullable' => false,
-                    'default' => 0,
-                    'comment' => 'Send Status'
-                ]
-            );
-
-            if ($connection->tableColumnExists($campaignTable, 'is_sent')) {
-                //update table with historical send values
-                $select = $connection->select();
-
-                //join
-                $select->joinLeft(
-                    ['oc' => $campaignTable],
-                    "oc.id = nc.id",
-                    [
-                        'send_status' => new \Zend_Db_Expr(\Dotdigitalgroup\Email\Model\Campaign::SENT)
-                    ]
-                )->where('oc.is_sent =?', 1);
-
-                //update query from select
-                $updateSql = $select->crossUpdateFromSelect(['nc' => $campaignTable]);
-
-                //run query
-                $connection->query($updateSql);
-
-                //remove column
-                $connection->dropColumn($campaignTable, 'is_sent');
-            }
-
-            //add index
-            $connection->addIndex(
-                $campaignTable,
-                $setup->getIdxName($campaignTable, ['send_status']),
-                ['send_status']
-            );
+            $this->upgradeTwoOSix($connection, $setup);
         }
         if (version_compare($context->getVersion(), '2.1.0', '<')) {
             $couponTable = $setup->getTable('salesrule_coupon');
@@ -139,6 +86,68 @@ class UpgradeSchema implements UpgradeSchemaInterface
         }
 
         $setup->endSetup();
+    }
+
+    /***
+     * @param $connection
+     * @param $setup
+     */
+    private function upgradeTwoOSix($connection, $setup)
+    {
+        //modify email_campaign table
+        $campaignTable = $setup->getTable('email_campaign');
+
+        //add columns
+        $connection->addColumn(
+            $campaignTable,
+            'send_id',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'nullable' => false,
+                'default' => '',
+                'comment' => 'Campaign Send Id'
+            ]
+        );
+        $connection->addColumn(
+            $campaignTable,
+            'send_status',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                'nullable' => false,
+                'default' => 0,
+                'comment' => 'Send Status'
+            ]
+        );
+
+        if ($connection->tableColumnExists($campaignTable, 'is_sent')) {
+            //update table with historical send values
+            $select = $connection->select();
+
+            //join
+            $select->joinLeft(
+                ['oc' => $campaignTable],
+                "oc.id = nc.id",
+                [
+                    'send_status' => new \Zend_Db_Expr(\Dotdigitalgroup\Email\Model\Campaign::SENT)
+                ]
+            )->where('oc.is_sent =?', 1);
+
+            //update query from select
+            $updateSql = $select->crossUpdateFromSelect(['nc' => $campaignTable]);
+
+            //run query
+            $connection->query($updateSql);
+
+            //remove column
+            $connection->dropColumn($campaignTable, 'is_sent');
+        }
+
+        //add index
+        $connection->addIndex(
+            $campaignTable,
+            $setup->getIdxName($campaignTable, ['send_status']),
+            ['send_status']
+        );
     }
 
     /**

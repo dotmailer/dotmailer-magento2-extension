@@ -47,8 +47,8 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $object = $observer->getEvent()->getDataObject();
-        $wishlist = $this->wishlist->create()
-            ->load($object->getWishlistId());
+        $wishlist = $this->wishlist->create();
+        $wishlist = $wishlist->getResource()->load($wishlist, $object->getWishlistId());
         $emailWishlist = $this->wishlistFactory->create();
         try {
             if ($object->getWishlistId()) {
@@ -69,7 +69,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
                         $item->setWishlistModified(1);
                     }
 
-                    $item->save();
+                    $item->getResource()->save($item);
                 }
             }
         } catch (\Exception $e) {

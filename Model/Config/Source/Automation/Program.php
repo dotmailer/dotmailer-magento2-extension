@@ -23,6 +23,10 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Magento\Config\Model\Config\Structure
      */
     public $configStructure;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    private $_storeManager;
 
     /**
      * Program constructor.

@@ -41,11 +41,6 @@ class Order
      */
     public $storeManager;
     /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    public $resource;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
     public $contactResourceFactory;
@@ -89,7 +84,6 @@ class Order
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderResourceFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\App\ResourceConnection $resource
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
@@ -101,7 +95,6 @@ class Order
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderResourceFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
@@ -112,7 +105,6 @@ class Order
         $this->contactResourceFactory= $contactFactory;
         $this->orderResourceFactory  = $orderResourceFactory;
         $this->helper                = $helper;
-        $this->resource              = $resource;
         $this->salesOrderFactory     = $salesOrderFactory;
         $this->storeManager          = $storeManagerInterface;
     }

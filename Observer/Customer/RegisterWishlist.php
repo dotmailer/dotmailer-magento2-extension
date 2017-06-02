@@ -73,8 +73,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
         if (is_array($wishlist) && isset($wishlist['customer_id'])
             && isset($wishlist['wishlist_id'])
         ) {
-            $wishlistModel = $this->wishlist->create()
-                ->load($wishlist['wishlist_id']);
+            $wishlistModel = $this->wishlist->create();
+            $wishlistModel = $wishlistModel->getResource()->load($wishlistModel, $wishlist['wishlist_id']);
             $itemsCount = $wishlistModel->getItemsCount();
             //wishlist items found
             if ($itemsCount) {
@@ -101,14 +101,14 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
 
             //if wishlist exist not to save again
             if (!$emailWishlist->getWishlist($wishlist['wishlist_id'])) {
-                $customer->load($wishlist['customer_id']);
+                $customer = $customer->getResource()->load($customer, $wishlist['customer_id']);
                 $email = $customer->getEmail();
                 $wishlistId = $wishlist['wishlist_id'];
                 $websiteId = $customer->getWebsiteId();
                 $emailWishlist->setWishlistId($wishlistId)
                     ->setCustomerId($wishlist['customer_id'])
-                    ->setStoreId($customer->getStoreId())
-                    ->save();
+                    ->setStoreId($customer->getStoreId());
+                $emailWishlist->getResource()->save($emailWishlist);
 
                 $store
                            = $this->storeManager->getStore($customer->getStoreId());
@@ -134,7 +134,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                         ->setWebsiteId($websiteId)
                         ->setStoreName($storeName)
                         ->setProgramId($programId);
-                    $automation->save();
+                    $automation->getResource()->save($automation);
                 }
             }
         } catch (\Exception $e) {

@@ -61,8 +61,8 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
                 return $this;
             }
 
-            $emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
-                ->save();
+            $emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED);
+            $emailOrder->getResource()->save($emailOrder);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

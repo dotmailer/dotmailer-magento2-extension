@@ -87,8 +87,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             return [];
         }
 
-        $customer = $this->customerFactory->create()
-            ->load($customerId);
+        $customer = $this->customerFactory->create();
+        $customer = $customer->getResource()->load($customer, $customerId);
         if (!$customer->getId()) {
             return [];
         }

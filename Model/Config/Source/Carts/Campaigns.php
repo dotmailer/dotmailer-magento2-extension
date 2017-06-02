@@ -67,12 +67,10 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
                 //loop for all campaing options
                 foreach ($campaigns as $campaign) {
                     if (isset($campaign->name)) {
-                        //@codingStandardsIgnoreStart
                         $fields[] = [
                             'value' => $campaign->id,
                             'label' => $this->escaper->escapeQuote($campaign->name),
                         ];
-                        //@codingStandardsIgnoreEnd
                     }
                 }
             }

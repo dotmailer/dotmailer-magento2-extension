@@ -53,10 +53,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $customerFactory;
 
     /**
-     * @var \Magento\Cron\Model\ScheduleFactory
-     */
-    public $schelduleFactory;
-    /**
      * @var File
      */
     public $fileHelper;
@@ -85,19 +81,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Data constructor.
      *
-     * @param \Magento\Framework\App\ProductMetadata        $productMetadata
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory   $contactFactory
-     * @param \Magento\Config\Model\ResourceModel\Config    $resourceConfig
-     * @param \Magento\Framework\App\ResourceConnection     $adapter
-     * @param \Magento\Framework\App\Helper\Context         $context
-     * @param \Magento\Store\Model\StoreManagerInterface    $storeManager
-     * @param \Magento\Customer\Model\CustomerFactory       $customerFactory
+     * @param \Magento\Framework\App\ProductMetadata $productMetadata
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param File $fileHelper
+     * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
+     * @param \Magento\Framework\App\ResourceConnection $adapter
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Magento\Framework\Module\ModuleListInterface $moduleListInterface
-     * @param \Magento\Cron\Model\ScheduleFactory           $schedule
-     * @param \Magento\Store\Model\Store                    $store
+     * @param \Magento\Store\Model\Store $store
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
-     * @param \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory
+     * @param ConfigFactory $configHelperFactory
+     * @param Json $serilizer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      */
     public function __construct(
@@ -110,7 +107,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Framework\Module\ModuleListInterface $moduleListInterface,
-        \Magento\Cron\Model\ScheduleFactory $schedule,
         \Magento\Store\Model\Store $store,
         \Magento\Framework\App\Config\Storage\Writer $writer,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
@@ -120,7 +116,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     ) {
         $this->serializer       = $serilizer;
         $this->adapter          = $adapter;
-        $this->schelduleFactory = $schedule;
         $this->productMetadata  = $productMetadata;
         $this->contactFactory   = $contactFactory;
         $this->resourceConfig   = $resourceConfig;
@@ -485,13 +480,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if ($response->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
                 $contact->setSuppressed(1);
             }
-            $contact->save();
+            $contact->getResource()->save($contact);
             return false;
         }
         //save contact id
         if (isset($response->id)) {
-            $contact->setContactId($response->id)
-                ->save();
+            $contact->setContactId($response->id);
+            $contact->getResource()->save($contact);
         } else {
             //curl operation timeout
             return false;
@@ -822,8 +817,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $contactModel->loadByCustomerId($customerId)
             ->setEmailImported(
                 \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED
-            )
-            ->save();
+            );
+        $contactModel->getResource()->save($contactModel);
     }
 
     /**
@@ -859,12 +854,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->getCollection();
 
         //duplicate emails
-        //@codingStandardsIgnoreStart
         $customers->getSelect()
             ->columns(['emails' => 'COUNT(e.entity_id)'])
             ->group('email')
             ->having('emails > ?', 1);
-        //@codingStandardsIgnoreEnd
         return $customers;
     }
 
@@ -1541,29 +1534,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param $cronJob
-     *
-     * @return DateTime
+     * @return mixed
      */
     public function getDateLastCronRun($cronJob)
     {
-        $collection = $this->schelduleFactory->create()
-            ->getCollection()
-            ->addFieldToFilter('status', \Magento\Cron\Model\Schedule::STATUS_SUCCESS)
-            ->addFieldToFilter('job_code', $cronJob);
-        //limit and order the results
-        $collection->getSelect()
-            ->limit(1)
-            ->order('executed_at DESC');
-
-        if ($collection->getSize() == 0) {
-            return false;
-        }
-
-        //@codingStandardsIgnoreStart
-        $executedAt = $collection->getFirstItem()->getExecutedAt();
-        //@codingStandardsIgnoreEnd
-
-        return $executedAt;
+        return $this->contactFactory->create()
+            ->getResource()
+            ->getDateLastCronRun($cronJob);
     }
 
     /**

@@ -75,7 +75,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                     $this->deleteFromAccount($productId);
                 }
                 //delete from table
-                $item->delete();
+                $item->getResource()->delete($item);
             }
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
@@ -91,18 +91,15 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      */
     protected function loadProduct($productId)
     {
-        $collection = $this->catalogCollection->create()
-            ->addFieldToFilter('product_id', $productId)
-            ->setPageSize(1);
+        $item = $this->catalogCollection->create()
+            ->loadProductById($productId);
 
-        //@codingStandardsIgnoreStart
-        if ($collection->getSize()) {
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
+        if ($item) {
+            return $item;
         } else {
-            $this->catalogFactory->create()
-                ->setProductId($productId)
-                ->save();
+            $catalog = $this->catalogFactory->create();
+            $catalog->setProductId($productId);
+            $catalog->getResource()->save($catalog);
         }
 
         return false;

@@ -74,8 +74,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function generateCoupon($couponCodeId, $expireDate = false)
     {
         if ($couponCodeId) {
-            $rule = $this->ruleFactory->create()
-                ->load($couponCodeId);
+            $rule = $this->ruleFactory->create();
+            $rule = $rule->getResource()->load($rule, $couponCodeId);
 
             $generator = $this->massGeneratorFactory->create();
             $generator->setFormat(
@@ -219,5 +219,16 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
+    }
+
+    /**
+     * Save item
+     *
+     * @param $item
+     * @return \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+     */
+    public function saveItem($item)
+    {
+        return parent::save($item);
     }
 }

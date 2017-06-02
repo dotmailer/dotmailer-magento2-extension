@@ -122,13 +122,13 @@ class Bulk
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
                     ->setMessage($result->message);
 
-                $item->save();
+                $item->getResource()->save($item);
             } elseif (isset($result->id) && !isset($result->message)) {
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
                     ->setImportId($result->id)
                     ->setImportStarted(time())
-                    ->setMessage('')
-                    ->save();
+                    ->setMessage('');
+                $item->getResource()->save($item);
             } else {
                 $message = (isset($result->message)) ? $result->message : 'Error unknown';
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
@@ -139,7 +139,7 @@ class Bulk
                     $item->setImportId($result->id);
                 }
 
-                $item->save();
+                $item->getResource()->save($item);
             }
         }
     }
@@ -155,8 +155,8 @@ class Bulk
         $curlError = $this->client->getCurlError();
         if ($curlError) {
             $item->setMessage($curlError)
-                ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                ->save();
+                ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED);
+            $item->getResource()->save($item);
 
             return true;
         }

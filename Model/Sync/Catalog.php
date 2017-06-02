@@ -12,14 +12,9 @@ class Catalog
      */
     public $helper;
     /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    public $resource;
-    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     public $scopeConfig;
-
     /**
      * @var
      */
@@ -45,37 +40,34 @@ class Catalog
      */
     public $catalogCollectionFactory;
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $productCollection;
+    public $catalogResourceFactory;
 
     /**
      * Catalog constructor.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory  $productCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollection
      * @param \Dotdigitalgroup\Email\Model\Connector\ProductFactory           $connectorProductFactory
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Framework\App\ResourceConnection                       $resource
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                    $importerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                              $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory       $catalogResourceFactory
      */
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollection,
         \Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Framework\App\ResourceConnection $resource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogResourceFactory
     ) {
-        $this->productCollection        = $productCollection;
         $this->catalogCollectionFactory = $catalogCollection;
         $this->connectorProductFactory  = $connectorProductFactory;
         $this->importerFactory          = $importerFactory;
         $this->helper                   = $helper;
-        $this->resource                 = $resource;
         $this->scopeConfig              = $scopeConfig;
+        $this->catalogCollectionFactory = $catalogResourceFactory;
     }
 
     /**
@@ -96,7 +88,8 @@ class Catalog
         }
 
         if ($this->countProducts) {
-            $message = '----------- Catalog sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) .
+            $message = '----------- Catalog sync ----------- : ' .
+                gmdate('H:i:s', microtime(true) - $this->start) .
                 ', Total synced = ' . $this->countProducts;
             $this->helper->log($message);
             $response['message'] = $message;
@@ -185,66 +178,8 @@ class Catalog
         $limit = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
         );
-        $connectorCollection = $this->catalogCollectionFactory->create();
-
-        //for modified catalog
-        if ($modified) {
-            $connectorCollection->addFieldToFilter(
-                'modified',
-                ['eq' => '1']
-            );
-        } else {
-            $connectorCollection->addFieldToFilter(
-                'imported',
-                ['null' => 'true']
-            );
-        }
-        //set limit for collection
-        $connectorCollection->setPageSize($limit);
-        //check number of products
-        if ($connectorCollection->getSize()) {
-            $productIds = $connectorCollection->getColumnValues(
-                'product_id'
-            );
-            $productCollection = $this->productCollection->create()
-                ->addAttributeToSelect('*')
-                ->addStoreFilter($store)
-                ->addAttributeToFilter(
-                    'entity_id',
-                    ['in' => $productIds]
-                );
-
-            //visibility filter
-            if ($visibility = $this->helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY
-            )
-            ) {
-                $visibility = explode(',', $visibility);
-                $productCollection->addAttributeToFilter(
-                    'visibility',
-                    ['in' => $visibility]
-                );
-            }
-            //type filter
-            if ($type = $this->helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE
-            )
-            ) {
-                $type = explode(',', $type);
-                $productCollection->addAttributeToFilter(
-                    'type_id',
-                    ['in' => $type]
-                );
-            }
-
-            $productCollection->addWebsiteNamesToResult()
-                ->addCategoryIds()
-                ->addOptionsToResult();
-
-            return $productCollection;
-        }
-
-        return false;
+        return $this->catalogCollectionFactory->create()
+            ->getProductsToExportByStore($store, $limit, $modified);
     }
 
     /**
@@ -255,63 +190,17 @@ class Catalog
      */
     public function _setImported($ids, $modified = false)
     {
-        try {
-            $coreResource = $this->resource;
-            $write = $coreResource->getConnection('core_write');
-            $tableName = $coreResource->getTableName('email_catalog');
-            $ids = implode(', ', $ids);
-
-            if ($modified) {
-                $write->update(
-                    $tableName,
-                    [
-                    'modified' => 'null',
-                    'updated_at' => gmdate('Y-m-d H:i:s'),
-                    ],
-                    ["product_id IN (?)" => $ids]
-                );
-            } else {
-                $write->update(
-                    $tableName,
-                    [
-                    'imported' => '1',
-                    'updated_at' => gmdate(
-                        'Y-m-d H:i:s'
-                    ),
-                    ],
-                    ["product_id IN (?)" => $ids]
-                );
-            }
-        } catch (\Exception $e) {
-            $this->helper->debug((string)$e, []);
-        }
+        return $this->catalogResourceFactory->create()
+            ->setImportedByIds($ids, $modified);
     }
 
     public function syncCatalog()
     {
         try {
             //remove product with product id set and no product
-            $write = $this->resource->getConnection('core_write');
-            $catalogTable = $this->resource->getTableName('email_catalog');
-            $select = $write->select();
-            $select->reset()
-                ->from(
-                    ['c' => $catalogTable],
-                    ['c.product_id']
-                )
-                ->joinLeft(
-                    [
-                        'e' => $this->resource->getTableName(
-                            'catalog_product_entity'
-                        ),
-                    ],
-                    'c.product_id = e.entity_id'
-                )
-                ->where('e.entity_id is NULL');
-            //delete sql statement
-            $deleteSql = $select->deleteFromSelect('c');
-            //run query
-            $write->query($deleteSql);
+            $this->catalogResourceFactory->create()
+                ->removeOrphanProducts();
+
             $scope = $this->scopeConfig->getValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES
             );
@@ -365,9 +254,7 @@ class Catalog
                         $this->_setImported($this->productIds);
 
                         //set number of product imported
-                        //@codingStandardsIgnoreStart
                         $this->countProducts += count($products);
-                        //@codingStandardsIgnoreEnd
                     }
                     //using single api
                     $this->_exportInSingle(

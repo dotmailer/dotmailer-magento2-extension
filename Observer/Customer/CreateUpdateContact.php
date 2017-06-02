@@ -132,8 +132,8 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 $contactModel->setEmail($email);
             }
             $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
-                ->setCustomerId($customerId)
-                ->save();
+                ->setCustomerId($customerId);
+            $contactModel->getResource()->save($contactModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }
