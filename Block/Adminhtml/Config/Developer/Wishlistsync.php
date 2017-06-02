@@ -28,6 +28,7 @@ class Wishlistsync extends \Magento\Config\Block\System\Config\Form\Field
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @codingStandardsIgnoreStart
      */
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) {
