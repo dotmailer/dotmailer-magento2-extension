@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Td;
 
+/**
+ * Handle TD delete data for importer.
+ */
 class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
 {
     /**

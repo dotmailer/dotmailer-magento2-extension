@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+/**
+ * Creates the csv files in export folder and move to archive when it's complete.
+ * Log info and debug to a custom log file connector.log
+ */
 class File
 {
     /**
@@ -214,7 +218,7 @@ class File
             // Enclose fields containing $delimiter, $enclosure or whitespace
             if ($encloseAll
                 || preg_match(
-                    "/(?:${delimiterEsc}|${enclosureEsc}|\s)/",
+                    "/(?:$delimiterEsc|$enclosureEsc|\s)/",
                     $field
                 )
             ) {

@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+/**
+ * Sync automation by type.
+ */
 class Automation
 {
     const AUTOMATION_TYPE_NEW_CUSTOMER = 'customer_automation';
@@ -142,44 +145,17 @@ class Automation
      */
     public function sync()
     {
-
-        $statusTypes = $this->automationFactory->create()
-            ->getAutomationStatusType();
-
-        foreach ($statusTypes as $type) {
-            $this->automationTypes[$type]
-                = \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS;
-        }
+        $this->setupAutomationTypes();
 
         //send the campaign by each types
         foreach ($this->automationTypes as $type => $config) {
-            $contacts = [];
-            $websites = $this->helper->getWebsites(true);
-            foreach ($websites as $website) {
-                if (strpos($type, self::ORDER_STATUS_AUTOMATION) !== false) {
-                    $configValue = $this->serializer->unserialize($this->helper->getWebsiteConfig($config, $website));
-
-                    if (is_array($configValue) && !empty($configValue)) {
-                        foreach ($configValue as $one) {
-                            if (strpos($type, $one['status']) !== false) {
-                                $contacts[$website->getId()]['programId']
-                                    = $one['automation'];
-                            }
-                        }
-                    }
-                } else {
-                    $contacts[$website->getId()]['programId']
-                        = $this->helper->getWebsiteConfig($config, $website);
-                }
-            }
-
+            $contacts = $this->buildFirstDimensionOfContactsArray($type, $config);
             //get collection from type
             $automationCollection = $this->automationFactory->create()
                 ->getCollectionByType($type, $this->limit);
 
             foreach ($automationCollection as $automation) {
                 $type = $automation->getAutomationType();
-                //customerid, subscriberid, wishlistid..
                 $email = $automation->getEmail();
                 $this->typeId = $automation->getTypeId();
                 $this->websiteId = $automation->getWebsiteId();
@@ -211,25 +187,10 @@ class Automation
                 if (isset($websiteContacts['contacts'])) {
                     $this->programId = $websiteContacts['programId'];
                     $contactsArray = $websiteContacts['contacts'];
+
                     //only for subscribed contacts
-                    if (!empty($contactsArray) &&
-                        $this->_checkCampignEnrolmentActive($this->programId)
-                    ) {
-                        $result = $this->sendContactsToAutomation(
-                            array_values($contactsArray),
-                            $websiteId
-                        );
-                        //check for error message
-                        if (isset($result->message)) {
-                            $this->programStatus = 'Failed';
-                            $this->programMessage = $result->message;
-                        }
-                        //program is not active
-                    } elseif ($this->programMessage
-                        == 'Error: ERROR_PROGRAM_NOT_ACTIVE '
-                    ) {
-                        $this->programStatus = 'Deactivated';
-                    }
+                    $this->sendSubscribedContactsToAutomation($contactsArray, $websiteId);
+
                     //update contacts with the new status, and log the error message if fails
                     $contactIds = array_keys($contactsArray);
                     $updatedAt = $this->localeDate->date(
@@ -403,5 +364,75 @@ class Automation
         $result = $client->postProgramsEnrolments($data);
 
         return $result;
+    }
+
+    /**
+     * Setup automation types
+     */
+    private function setupAutomationTypes()
+    {
+        $statusTypes = $this->automationFactory->create()
+            ->getAutomationStatusType();
+
+        foreach ($statusTypes as $type) {
+            $this->automationTypes[$type]
+                = \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS;
+        }
+    }
+
+    /**
+     * @param $type
+     * @param $config
+     * @param $contacts
+     * @return mixed
+     */
+    private function buildFirstDimensionOfContactsArray($type, $config)
+    {
+        $contacts = [];
+        $websites = $this->helper->getWebsites(true);
+        foreach ($websites as $website) {
+            if (strpos($type, self::ORDER_STATUS_AUTOMATION) !== false) {
+                $configValue = $this->serializer->unserialize($this->helper->getWebsiteConfig($config, $website));
+
+                if (is_array($configValue) && !empty($configValue)) {
+                    foreach ($configValue as $one) {
+                        if (strpos($type, $one['status']) !== false) {
+                            $contacts[$website->getId()]['programId']
+                                = $one['automation'];
+                        }
+                    }
+                }
+            } else {
+                $contacts[$website->getId()]['programId']
+                    = $this->helper->getWebsiteConfig($config, $website);
+            }
+        }
+        return $contacts;
+    }
+
+    /**
+     * @param $contactsArray
+     * @param $websiteId
+     */
+    private function sendSubscribedContactsToAutomation($contactsArray, $websiteId)
+    {
+        if (!empty($contactsArray) &&
+            $this->_checkCampignEnrolmentActive($this->programId)
+        ) {
+            $result = $this->sendContactsToAutomation(
+                array_values($contactsArray),
+                $websiteId
+            );
+            //check for error message
+            if (isset($result->message)) {
+                $this->programStatus = 'Failed';
+                $this->programMessage = $result->message;
+            }
+            //program is not active
+        } elseif ($this->programMessage
+            == 'Error: ERROR_PROGRAM_NOT_ACTIVE '
+        ) {
+            $this->programStatus = 'Deactivated';
+        }
     }
 }

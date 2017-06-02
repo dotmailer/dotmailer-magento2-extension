@@ -80,6 +80,27 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * @param $customerId
+     * @return mixed
+     */
+    public function getWishlistsForCustomer($customerId)
+    {
+        if($customerId) {
+            $collection = $this->wishlist->create()
+                ->getCollection()
+                ->addFieldToFilter('customer_id', $customerId)
+                ->setOrder('updated_at', 'DESC')
+                ->setPageSize(1);
+
+            if ($collection->getSize()) {
+                return $collection->getFirstItem();
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param $ids
      * @return mixed
      */

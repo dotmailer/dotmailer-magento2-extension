@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
+/**
+ * Reset the contact import after changing the mapping.
+ */
 class ResetContactImport implements \Magento\Framework\Event\ObserverInterface
 {
     /**

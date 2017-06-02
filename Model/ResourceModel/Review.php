@@ -20,6 +20,18 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Magento\Review\Model\Rating\Option\Vote
      */
     public $vote;
+    /**
+     * @var \Magento\Quote\Model\QuoteFactory
+     */
+    private $quoteFactory;
+    /**
+     * @var \Magento\Review\Model\ReviewFactory
+     */
+    private $reviewFactory;
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
+    private $productCollection;
 
     /**
      * Initialize resource.
@@ -29,18 +41,41 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->_init('email_review', 'id');
     }
 
+    /**
+     * Review constructor.
+     *
+     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
+     * @param \Magento\Review\Model\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Review\Model\Rating\Option\Vote $vote
+     * @param null $connectionName
+     */
     public function __construct(
+        \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection,
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Review\Model\Rating\Option\Vote $vote
+        \Magento\Review\Model\Rating\Option\Vote $vote,
+        $connectionName = null
     ) {
         $this->helper = $data;
         $this->mageReviewCollection = $mageReviewCollection;
         $this->productFactory = $productFactory;
         $this->vote = $vote;
-        parent::__construct($context);
+        $this->quoteFactory = $quoteFactory;
+        $this->reviewFactory = $reviewFactory;
+        $this->productCollection = $productCollection;
+        parent::__construct(
+            $context,
+            $connectionName
+        );
     }
 
     /**
@@ -79,6 +114,59 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         return $num;
+    }
+
+    /**
+     * Filter items for review
+     *
+     * @param $items
+     * @param $customerId
+     * @param $order
+     * @return mixed
+     */
+    public function filterItemsForReview($items, $customerId, $order)
+    {
+        foreach ($items as $key => $item) {
+            $productId = $item->getProduct()->getId();
+
+            $collection = $this->reviewFactory->create()->getCollection()
+                ->addCustomerFilter($customerId)
+                ->addStoreFilter($order->getStoreId())
+                ->addFieldToFilter('main_table.entity_pk_value', $productId);
+
+            //remove item if customer has already placed review on this item
+            if ($collection->getSize()) {
+                unset($items[$key]);
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Get product collection from order
+     *
+     * @param $order
+     * @return array|\Magento\Framework\Data\Collection\AbstractDb
+     */
+    public function getProductCollection($order)
+    {
+        $productIds = [];
+        $products = [];
+        $items = $order->getAllVisibleItems();
+
+        //get the product ids for the collection
+        foreach ($items as $item) {
+            $productIds[] = $item->getProductId();
+        }
+
+        if (! empty($productIds)) {
+            $products = $this->productCollection
+                ->addAttributeToSelect('*')
+                ->addFieldToFilter('entity_id', ['in' => $productIds]);
+        }
+
+        return $products;
     }
 
     /**

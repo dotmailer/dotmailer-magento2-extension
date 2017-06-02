@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
+/**
+ * Validate api when saving creds in admin.
+ */
 class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 {
     /**

@@ -28,11 +28,11 @@ class Type
     }
 
     /**
-     * Get input type.
+     * Default options.
      *
      * @param string $attribute
      *
-     * @return string
+     * @return array
      */
     public function getInputType($attribute)
     {
@@ -54,15 +54,25 @@ class Type
                     'catalog_product',
                     $attribute
                 );
-                if ($attribute->getFrontend()->getInputType() == 'price') {
-                    return 'numeric';
-                }
-                if ($attribute->usesSource()) {
-                    return 'select';
-                }
+                return $this->processAttribute($attribute);
         }
 
         return 'string';
+    }
+
+    /**
+     * @param string $attribute
+     *
+     * @return string
+     */
+    private function processAttribute($attribute)
+    {
+        if ($attribute->getFrontend()->getInputType() == 'price') {
+            return 'numeric';
+        }
+        if ($attribute->usesSource()) {
+            return 'select';
+        }
     }
 
     /**

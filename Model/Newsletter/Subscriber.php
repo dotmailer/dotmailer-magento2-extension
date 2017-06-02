@@ -4,6 +4,9 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * Sync subscribers.
+ */
 class Subscriber
 {
     const STATUS_SUBSCRIBED = 1;
@@ -24,90 +27,49 @@ class Subscriber
     public $countSubscribers = 0;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\File
-     */
-    public $file;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    public $helper;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    public $storeManager;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
-     */
-    public $importerFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
+     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
     public $orderCollection;
-
-    /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    public $resource;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory
-     */
-    public $emailSubscriber;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
-     */
-    public $emailContactResource;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     public $timezone;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
+     */
+    private $emailContactResource;
 
     /**
      * Subscriber constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Framework\App\ResourceConnection $resource
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+     * @param SubscriberExporter $subscriberExporter
+     * @param SubscriberWithSalesExporter $subscriberWithSalesExporter
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\ResourceConnection $resource,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection,
-        \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber,
-        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
+        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberExporter $subscriberExporter,
+        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     ) {
-        $this->importerFactory   = $importerFactory;
-        $this->file              = $file;
         $this->helper            = $helper;
         $this->contactFactory    = $contactFactory;
-        $this->storeManager      = $storeManager;
-        $this->resource = $resource;
-        $this->orderCollection = $orderCollection;
-        $this->emailSubscriber = $emailSubscriber;
-        $this->emailContactResource = $contactResource;
+        $this->orderCollection   = $orderCollection;
+        $this->subscriberExporter = $subscriberExporter;
+        $this->subscriberWithSalesExporter = $subscriberWithSalesExporter;
+        $this->emailContactResource = $contactResourceFactory;
         $this->timezone = $timezone;
     }
 
@@ -140,8 +102,7 @@ class Subscriber
         }
         //sync proccessed
         if ($this->countSubscribers) {
-            $message = '----------- Subscribers sync ----------- : ' .
-                gmdate('H:i:s', microtime(true) - $this->start) .
+            $message = '----------- Subscribers sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) .
                 ', updated = ' . $this->countSubscribers;
             $this->helper->log($message);
             $message .= $response['message'];
@@ -185,7 +146,7 @@ class Subscriber
                 ->getSubscribersToImportFromEmails($emailsWithNoSaleData);
         }
         if (! empty($subscribersWithNoSaleData)) {
-            $updated += $this->exportSubscribers(
+            $updated += $this->subscriberExporter->exportSubscribers(
                 $website,
                 $subscribersWithNoSaleData
             );
@@ -199,82 +160,10 @@ class Subscriber
         }
 
         if (! empty($subscribersWithSaleData)) {
-            $updated += $this->exportSubscribersWithSales($website, $subscribersWithSaleData);
+            $updated += $this->subscriberWithSalesExporter->exportSubscribersWithSales($website, $subscribersWithSaleData);
             //add updated number for the website
             $this->countSubscribers += $updated;
         }
-        return $updated;
-    }
-
-    /**
-     * Get the store id from newsletter_subscriber, return default if not found.
-     *
-     * @param $email
-     * @param $subscribers
-     *
-     * @return int
-     */
-    public function getStoreIdForSubscriber($email, $subscribers)
-    {
-        $defaultStore = 1;
-        foreach ($subscribers as $subscriber) {
-            if ($subscriber['subscriber_email'] == $email) {
-                return $subscriber['store_id'];
-            }
-        }
-        return $defaultStore;
-    }
-
-    /**
-     * Export subscribers
-     *
-     * @param $website
-     * @param $subscribers
-     * @return int
-     */
-    public function exportSubscribers($website, $subscribers)
-    {
-        $updated = 0;
-        $subscribersFilename = strtolower($website->getCode() . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
-        //get mapped storename
-        $subscriberStorename = $this->helper->getMappedStoreName($website);
-        //file headers
-        $this->file->outputCSV(
-            $this->file->getFilePath($subscribersFilename),
-            ['Email', 'emailType', $subscriberStorename]
-        );
-
-        $subscribersEmails = $subscribers->getColumnValues('email');
-        $contactFactory = $this->contactFactory->create();
-        $subscribersData = $contactFactory->getCollection()
-            ->getSubscriberDataByEmails($subscribersEmails);
-
-        foreach ($subscribers as $subscriber) {
-            $email = $subscriber->getEmail();
-            $storeId = $this->getStoreIdForSubscriber(
-                $email,
-                $subscribersData['items']
-            );
-            $storeName = $this->storeManager->getStore($storeId)->getName();
-            // save data for subscribers
-            $this->file->outputCSV(
-                $this->file->getFilePath($subscribersFilename),
-                [$email, 'Html', $storeName]
-            );
-            $subscriber->setSubscriberImported(1);
-            $subscriber->getResource()->save($subscriber);
-            $updated++;
-        }
-        $this->helper->log('Subscriber filename: ' . $subscribersFilename);
-        //register in queue with importer
-        $this->importerFactory->create()
-            ->registerQueue(
-                \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBERS,
-                '',
-                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                $website->getId(),
-                $subscribersFilename
-            );
         return $updated;
     }
 
@@ -286,99 +175,9 @@ class Subscriber
      */
     public function checkInSales($emails)
     {
-        return $this->orderCollection->create()
-            ->checkInSales($emails);
-    }
-
-    /**
-     * @param $website
-     * @param $subscribers
-     * @return int
-     */
-    public function exportSubscribersWithSales($website, $subscribers)
-    {
-        $updated = 0;
-        $subscriberIds = $headers = $emailContactIdEmail = [];
-
-        foreach ($subscribers as $emailContact) {
-            $emailContactIdEmail[$emailContact->getId()] = $emailContact->getEmail();
-        }
-        $subscribersFile = strtolower($website->getCode() . '_subscribers_with_sales_' . date('d_m_Y_Hi') . '.csv');
-        $this->helper->log('Subscriber file with sales : ' . $subscribersFile);
-        //get subscriber emails
-        $emails = $subscribers->getColumnValues('email');
-
-        //subscriber collection
-        $collection = $this->getCollection($emails, $website->getId());
-        //no subscribers found
-        if ($collection->getSize() == 0) {
-            return 0;
-        }
-        $mappedHash = $this->helper->getWebsiteSalesDataFields($website);
-        $headers = $mappedHash;
-        $headers[] = 'Email';
-        $headers[] = 'EmailType';
-        $this->file->outputCSV($this->file->getFilePath($subscribersFile), $headers);
-        //subscriber data
-        foreach ($collection as $subscriber) {
-            $connectorSubscriber = $this->emailSubscriber->create();
-            $connectorSubscriber->setMappingHash($mappedHash);
-            $connectorSubscriber->setSubscriberData($subscriber);
-            //count number of customers
-            $index = array_search($subscriber->getSubscriberEmail(), $emailContactIdEmail);
-            if ($index) {
-                $subscriberIds[] = $index;
-            }
-            //contact email and email type
-            $connectorSubscriber->setData($subscriber->getSubscriberEmail());
-            $connectorSubscriber->setData('Html');
-            // save csv file data
-            $this->file->outputCSV($this->file->getFilePath($subscribersFile), $connectorSubscriber->toCSVArray());
-            //clear collection and free memory
-            $subscriber->clearInstance();
-            $updated++;
-        }
-
-        $subscriberNum = count($subscriberIds);
-        //@codingStandardsIgnoreStart
-        if (is_file($this->file->getFilePath($subscribersFile))) {
-            //@codingStandardsIgnoreEnd
-            if ($subscriberNum > 0) {
-                //register in queue with importer
-                $check = $this->importerFactory->create()
-                    ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBERS,
-                        '',
-                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                        $website->getId(),
-                        $subscribersFile
-                    );
-                //set imported
-                if ($check) {
-                    $this->emailContactResource->create()
-                        ->updateSubscribers($subscriberIds);
-                }
-            }
-        }
-
-        return $updated;
-    }
-
-    /**
-     * @param $emails
-     * @param int $websiteId
-     * @return mixed
-     */
-    public function getCollection($emails, $websiteId = 0)
-    {
-        $statuses = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
-            $websiteId
-        );
-        $statuses = explode(',', $statuses);
-
-        return $this->emailContactResource->create()
-            ->getCollectionForSubscribersByEmails($emails, $websiteId, $statuses);
+        $collection = $this->orderCollection->create()
+            ->addFieldToFilter('customer_email', ['in' => $emails]);
+        return $collection->getColumnValues('customer_email');
     }
 
     /**
@@ -411,11 +210,11 @@ class Subscriber
             }
 
             //there is a maximum of request we need to loop to get more suppressed contacts
-            for ($i=0; $i<= $limit; $i++) {
-                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect, $skip);
+            for ($i=0; $i<= $limit;$i++) {
+                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect , $skip);
 
                 // skip no more contacts or the api request failed
-                if (empty($apiContacts) || isset($apiContacts->message)) {
+                if(empty($apiContacts) || isset($apiContacts->message)) {
                     break;
                 }
                 $contacts = array_merge($contacts, $apiContacts);

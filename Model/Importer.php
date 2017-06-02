@@ -406,7 +406,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     {
         if ($items = $this->_getImportingItems($this->bulkSyncLimit)) {
             foreach ($items as $item) {
-                $itemToSave = false;
                 $websiteId = $item->getWebsiteId();
                 $client = false;
                 if ($this->helper->isEnabled($websiteId)) {
@@ -436,61 +435,74 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     } catch (\Exception $e) {
                         $item->setMessage($e->getMessage())
                             ->setImportStatus(self::FAILED);
-
-                        $itemToSave = $item;
+                        $this->saveItem($item);
                         continue;
                     }
 
-                    if ($response) {
-                        if ($response->status == 'Finished') {
-                            $now = gmdate('Y-m-d H:i:s');
-
-                            $item->setImportStatus(self::IMPORTED)
-                                ->setImportFinished($now)
-                                ->setMessage('');
-
-                            $itemToSave = $item;
-                            if (
-                                $item->getImportType()
-                                == self::IMPORT_TYPE_CONTACT or
-                                $item->getImportType()
-                                == self::IMPORT_TYPE_SUBSCRIBERS or
-                                $item->getImportType()
-                                == self::IMPORT_TYPE_GUEST
-
-                            ) {
-                                //if file
-                                if ($file = $item->getImportFile()) {
-                                    $this->fileHelper->archiveCSV($file);
-                                }
-
-                                if ($item->getImportId()) {
-                                    $this->_processContactImportReportFaults(
-                                        $item->getImportId(), $websiteId
-                                    );
-                                }
-                            }
-                        } elseif (in_array(
-                            $response->status, $this->importStatuses
-                        )) {
-                            $item->setImportStatus(self::FAILED)
-                                ->setMessage(
-                                    'Import failed with status '
-                                    . $response->status
-                                );
-
-                            $itemToSave = $item;
-                        } else {
-                            //Not finished
-                            $this->totalItems += 1;
-                        }
-                    }
-                }
-                if ($itemToSave) {
-                    $this->getResource()->save($itemToSave);
+                    $this->processResponse($response, $item, $websiteId);
                 }
             }
         }
+    }
+
+    /**
+     * @param $response
+     * @param $item
+     * @param $websiteId
+     */
+    private function processResponse($response, $item, $websiteId)
+    {
+        if ($response) {
+            if ($response->status == 'Finished') {
+                $now = gmdate('Y-m-d H:i:s');
+
+                $item->setImportStatus(self::IMPORTED)
+                    ->setImportFinished($now)
+                    ->setMessage('');
+                $this->saveItem($item);
+
+                if (
+                    $item->getImportType()
+                    == self::IMPORT_TYPE_CONTACT or
+                    $item->getImportType()
+                    == self::IMPORT_TYPE_SUBSCRIBERS or
+                    $item->getImportType()
+                    == self::IMPORT_TYPE_GUEST
+
+                ) {
+                    //if file
+                    if ($file = $item->getImportFile()) {
+                        $this->fileHelper->archiveCSV($file);
+                    }
+
+                    if ($item->getImportId()) {
+                        $this->_processContactImportReportFaults(
+                            $item->getImportId(), $websiteId
+                        );
+                    }
+                }
+            } elseif (in_array(
+                $response->status, $this->importStatuses
+            )) {
+                $item->setImportStatus(self::FAILED)
+                    ->setMessage(
+                        'Import failed with status '
+                        . $response->status
+                    );
+                $this->saveItem($item);
+            } else {
+                //Not finished
+                $this->totalItems += 1;
+            }
+        }
+    }
+
+    /**
+     * @param $itemToSave
+     */
+    private function saveItem($itemToSave)
+    {
+        $this->getResource()->save($itemToSave);
     }
 
     /**

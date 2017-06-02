@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+/**
+ * Handle new account email depending on config value.
+ *
+ */
 class Customer extends \Magento\Customer\Model\Customer
 {
     /**

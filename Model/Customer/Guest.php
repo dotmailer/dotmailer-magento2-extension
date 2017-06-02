@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+/**
+ * Guest sync cronjob.
+ */
 class Guest
 {
     /**

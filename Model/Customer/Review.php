@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+/**
+ * Transactional data for customer review.
+ */
 class Review
 {
     /**

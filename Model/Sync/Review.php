@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+/**
+ * Sync Reviews.
+ */
 class Review
 {
     /**

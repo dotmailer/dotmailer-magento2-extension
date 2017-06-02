@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+/**
+ * Creates and updates the contact for customer. Monitor the email change for customer.
+ */
 class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 {
     /**

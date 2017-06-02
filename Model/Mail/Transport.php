@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Mail;
 
+/**
+ * SMTP mail transport.
+ */
 class Transport extends \Zend_Mail_Transport_Smtp implements \Magento\Framework\Mail\TransportInterface
 {
     /**

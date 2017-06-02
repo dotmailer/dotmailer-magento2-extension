@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+/**
+ * Transactional emails configuration data values.
+ */
 class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const XML_PATH_DDG_TRANSACTIONAL_ENABLED = 'transactional_emails/ddg_transactional/enabled';
