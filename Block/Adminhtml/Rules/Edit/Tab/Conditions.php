@@ -71,7 +71,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
     }
 
     /**
-     * @return $this
+     * @return \Magento\Backend\Block\Widget\Form\Generic
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */

@@ -139,7 +139,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @param int $productId
      *
-     * @return bool
+     * @return mixed
      */
     protected function loadProductById($productId)
     {

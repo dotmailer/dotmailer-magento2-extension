@@ -94,8 +94,7 @@ class AccountManagement extends \Magento\Customer\Model\AccountManagement
 
     /**
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
-     * @param string                                       $redirectUrl
-     *
+     * @param string $redirectUrl
      * @return $this
      */
     protected function sendEmailConfirmation(\Magento\Customer\Api\Data\CustomerInterface $customer, $redirectUrl)

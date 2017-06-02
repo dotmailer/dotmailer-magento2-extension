@@ -32,7 +32,7 @@ class Type
      *
      * @param string $attribute
      *
-     * @return array
+     * @return mixed
      */
     public function getInputType($attribute)
     {

@@ -5,9 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Backend;
 class ArraySerialized extends \Dotdigitalgroup\Email\Model\Config\Backend\Serialized
 {
     /**
-     * Unset array element with '__empty' key
-     *
-     * @return $this
+     * @return \Dotdigitalgroup\Email\Model\Config\Backend\Serialized
      */
     public function beforeSave()
     {
