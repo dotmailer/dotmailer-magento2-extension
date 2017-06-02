@@ -39,11 +39,11 @@ class Contact
 
     /**
      * Contact constructor.
-     *
+     * 
      * @param CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\Contact $contact,
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param ContactImportQueueExport $contactImportQueueExport
      */
     public function __construct(

@@ -36,8 +36,9 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     /**
      * ApiValidate constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data           $data
-     * @param \Magento\Backend\App\Action\Context          $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
+     * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      */
     public function __construct(

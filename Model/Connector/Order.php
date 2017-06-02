@@ -610,8 +610,7 @@ class Order
     }
 
     /**
-     * Get options for the item.
-     *
+     * @param $orderItem
      * @return array
      */
     public function _getOrderItemOptions($orderItem)

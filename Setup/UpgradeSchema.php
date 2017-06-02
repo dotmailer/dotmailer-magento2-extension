@@ -151,7 +151,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
-     * @param $setup
+     * @param SchemaSetupInterface $setup
+     * @param $connection
      */
     private function convertDataForConfig(SchemaSetupInterface $setup, $connection)
     {
@@ -178,7 +179,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
-     * @param $setup
+     * @param SchemaSetupInterface $setup
+     * @param $connection
      */
     private function convertDataForRules(SchemaSetupInterface $setup, $connection)
     {
@@ -200,7 +202,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
-     * @param $setup
+     * @param SchemaSetupInterface $setup
+     * @param $connection
      */
     private function convertDataForImporter(SchemaSetupInterface $setup, $connection)
     {

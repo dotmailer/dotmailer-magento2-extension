@@ -164,6 +164,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
+     * @param int $withGuests
      */
     protected function prepareSync($withGuests = 0)
     {

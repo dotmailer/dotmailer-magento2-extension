@@ -58,6 +58,7 @@ class Subscriber
      * @param SubscriberExporter $subscriberExporter
      * @param SubscriberWithSalesExporter $subscriberWithSalesExporter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,

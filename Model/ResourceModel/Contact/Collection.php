@@ -126,7 +126,7 @@ class Collection extends
      *
      * @param \Magento\Store\Model\Website $website
      * @param int $limit
-     *
+     * @param bool $isCustomerCheck
      * @return $this
      */
     public function getSubscribersToImport(

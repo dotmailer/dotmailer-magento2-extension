@@ -383,7 +383,6 @@ class Automation
     /**
      * @param $type
      * @param $config
-     * @param $contacts
      * @return mixed
      */
     private function buildFirstDimensionOfContactsArray($type, $config)

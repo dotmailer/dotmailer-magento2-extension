@@ -168,6 +168,7 @@ class Review
     /**
      * Set product.
      *
+     * @param \Magento\Catalog\Model\Product $product
      * @return $this
      */
     public function setProduct(\Magento\Catalog\Model\Product $product)
@@ -181,6 +182,7 @@ class Review
     /**
      * Set review data.
      *
+     * @param \Magento\Review\Model\Review $review
      * @return $this
      */
     public function setReviewData(\Magento\Review\Model\Review $review)
