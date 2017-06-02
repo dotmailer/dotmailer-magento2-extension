@@ -82,7 +82,9 @@ class Update extends Delete
                 $result = $this->syncItemSubscriberUpdateMode($importData, $websiteId);
             }
 
-            $this->_handleSingleItemAfterSync($item, $result);
+            if (isset($result)) {
+                $this->_handleSingleItemAfterSync($item, $result);
+            }
         }
     }
 
@@ -135,9 +137,10 @@ class Update extends Delete
             == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED
         ) {
             $apiContact = $this->client->getContactByEmail($email);
-            $result = $this->client->postContactsResubscribe($apiContact);
+            return $this->client->postContactsResubscribe($apiContact);
         }
-        return $result;
+
+        return false;
     }
 
     /**
