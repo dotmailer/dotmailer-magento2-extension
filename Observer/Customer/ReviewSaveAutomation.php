@@ -75,7 +75,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             $storeName = $store->getName();
             $website = $this->storeManager->getStore($store)->getWebsite();
             $customer = $this->customerFactory->create();
-            $customer = $customer->getResource()->load($customer, $customerId);
+            $customer->getResource()->load($customer, $customerId);
             //if api is not enabled
             if (!$this->helper->isEnabled($website)) {
                 return $this;

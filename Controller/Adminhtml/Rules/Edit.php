@@ -59,7 +59,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
 
         $emailRules = $this->rules;
         if ($id) {
-            $emailRules = $emailRules->getResource()->load($emailRules, $id);
+            $emailRules->getResource()->load($emailRules, $id);
 
             if (!$emailRules->getId()) {
                 $this->messageManager->addErrorMessage(__('This rule no longer exists.'));

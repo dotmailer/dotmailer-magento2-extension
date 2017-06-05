@@ -79,7 +79,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 
         $customerId = (int) $params['customer_id'];
         $customer = $this->customerFactory->create();
-        $customer = $customer->getResource()->load($customer, $customerId);
+        $customer->getResource()->load($customer, $customerId);
         if (! $customer->getId()) {
             return false;
         }

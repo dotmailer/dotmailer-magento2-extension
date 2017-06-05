@@ -68,7 +68,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         $userId = $this->getRequest()->getParam('state');
         //load admin user
         $adminUser = $this->adminUser->create();
-        $adminUser = $adminUser->getResource()->load($adminUser, $userId);
+        $adminUser->getResource()->load($adminUser, $userId);
         //app code and admin user must be present
         if ($code && $adminUser->getId()) {
             $clientId = $this->scopeConfig->getValue(

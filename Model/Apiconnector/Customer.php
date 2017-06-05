@@ -684,7 +684,7 @@ class Customer
     {
         $groupId = $this->customer->getGroupId();
         $groupModel = $this->groupFactory->create();
-        $groupModel = $groupModel->getResource()->load($groupModel, $groupId);
+        $groupModel->getResource()->load($groupModel, $groupId);
         if ($groupModel) {
             return $groupModel->getCode();
         }
@@ -788,8 +788,8 @@ class Customer
         $id = $this->customer->getMostCategoryId();
         if ($id) {
             $category = $this->categoryFactory->create();
-            return $category->getResource()->load($category, $id)
-                ->setStoreId($this->customer->getStoreId())
+            $category->getResource()->load($category, $id);
+            return $category->setStoreId($this->customer->getStoreId())
                 ->getName();
         }
 
@@ -851,8 +851,8 @@ class Customer
         $id = $this->customer->getFirstCategoryId();
         if ($id) {
             $category = $this->categoryFactory->create();
-            return $category->getResource()->load($category, $id)
-                ->setStoreId($this->customer->getStoreId())
+            $category->getResource()->load($category, $id);
+            return $category->setStoreId($this->customer->getStoreId())
                 ->getName();
         }
 
@@ -870,9 +870,10 @@ class Customer
         //customer last category id
         if ($categoryId) {
             $category = $this->categoryFactory->create();
-            return $category->setStoreId($this->customer->getStoreId())
-                ->getResource()->load($category, $categoryId)
-                ->getName();
+            $category->setStoreId($this->customer->getStoreId());
+            $category->getResource()->load($category, $categoryId);
+
+            return $category->getName();
         }
 
         return '';
@@ -912,12 +913,13 @@ class Customer
         //if the id and attribute found
         if ($id && $attribute) {
             $brand = $this->productFactory->create();
-            $brand = $brand->setStoreId($this->customer->getStoreId())
-                ->getResource()->load($brand, $id)
-                ->getAttributeText($attribute);
+            $brand = $brand->setStoreId($this->customer->getStoreId());
+            $brand->getResource()->load($brand, $id);
+
+            $text = $brand->getAttributeText($attribute);
             //check for brand text
-            if ($brand) {
-                return $brand;
+            if ($text) {
+                return $text;
             }
         }
 

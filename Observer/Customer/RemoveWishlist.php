@@ -58,7 +58,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
     {
         $object = $observer->getEvent()->getDataObject();
         $customer = $this->customerFactory->create();
-        $customer = $customer->getResource()->load($customer, $object->getCustomerId());
+        $customer->getResource()->load($customer, $object->getCustomerId());
         $website = $this->storeManager->getStore($customer->getStoreId())
             ->getWebsite();
 

@@ -253,8 +253,9 @@ class Subscriber
         $id = $this->subscriber->getMostCategoryId();
         if ($id) {
             $category = $this->categoryFactory->create();
-            return $category->getResource()->load($category, $id)
-                ->setStoreId($this->subscriber->getStoreId())
+            $category->getResource()->load($category, $id);
+
+            return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
         }
 
@@ -313,9 +314,9 @@ class Subscriber
         $id = $this->subscriber->getFirstCategoryId();
         if ($id) {
             $category = $this->categoryFactory->create();
-            return $this->categoryFactory->create()
-                ->getResource()->load($category, $id)
-                ->setStoreId($this->subscriber->getStoreId())
+            $category->getResource()->load($category, $id);
+
+            return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
         }
 
@@ -333,9 +334,9 @@ class Subscriber
         //customer last category id
         if ($categoryId) {
             $category = $this->categoryFactory->create();
-            return $this->categoryFactory->create()
-                ->setStoreId($this->subscriber->getStoreId())
-                ->getResource()->load($category, $categoryId)
+            $category->getResource()->load($category, $categoryId);
+
+            return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
         }
 
@@ -376,11 +377,12 @@ class Subscriber
         //if the id and attribute found
         if ($id && $attribute) {
             $brand = $this->productFactory->create();
-            $brand = $brand->setStoreId($this->subscriber->getStoreId())
-                ->getResource()->load($brand, $id)
-                ->getAttributeText($attribute);
+            $brand->getResource()->load($brand, $id);
+            $brand = $brand->setStoreId($this->subscriber->getStoreId());
+
+            $text = $brand->getAttributeText($attribute);
             //check for brand text
-            if ($brand) {
+            if ($text) {
                 return $brand;
             }
         }

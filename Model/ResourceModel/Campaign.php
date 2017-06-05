@@ -75,7 +75,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         if ($couponCodeId) {
             $rule = $this->ruleFactory->create();
-            $rule = $rule->getResource()->load($rule, $couponCodeId);
+            $rule->getResource()->load($rule, $couponCodeId);
 
             $generator = $this->massGeneratorFactory->create();
             $generator->setFormat(

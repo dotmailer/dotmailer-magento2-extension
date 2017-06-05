@@ -102,7 +102,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
         if ($arrayKey && $id && $attribute && $conditionName && $valueName) {
             $rule = $this->rulesFactory->create();
-            $rule = $rule->getResource()->load($rule, $id);
+            $rule->getResource()->load($rule, $id);
             //rule not found
             if (!$rule->getId()) {
                 $this->http->getHeaders()->clearHeaders();

@@ -76,7 +76,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
         $quoteModel = $this->quoteFactory->create();
-        $quoteModel = $quoteModel->getResource()->load($quoteModel, $quoteId);
+        $quoteModel->getResource()->load($quoteModel, $quoteId);
         //number of product items to be displayed
         $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
         $quoteItems = $quoteModel->getAllItems();
