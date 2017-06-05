@@ -869,7 +869,7 @@ class Customer
         $categoryId = $this->customer->getLastCategoryId();
         //customer last category id
         if ($categoryId) {
-            $category = $this->categoryFactory->create();;
+            $category = $this->categoryFactory->create();
             return $category->setStoreId($this->customer->getStoreId())
                 ->getResource()->load($category, $categoryId)
                 ->getName();

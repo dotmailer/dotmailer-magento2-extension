@@ -12,8 +12,8 @@ class Customdatafields extends
     public $programFactory;
 
     public $elementFactory;
-    private $_getStatusRenderer;
-    private $_getAutomationRenderer;
+    private $getStatusRenderer;
+    private $getAutomationRenderer;
 
     /**
      * Customdatafields constructor.
@@ -36,8 +36,8 @@ class Customdatafields extends
 
     public function _prepareToRender()
     {
-        $this->_getStatusRenderer = null;
-        $this->_getAutomationRenderer = null;
+        $this->getStatusRenderer = null;
+        $this->getAutomationRenderer = null;
         $this->addColumn(
             'status',
             [
@@ -107,10 +107,10 @@ class Customdatafields extends
     public function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
         $optionExtraAttr = [];
-        $optionExtraAttr['option_' . $this->_getStatusRenderer()
+        $optionExtraAttr['option_' . $this->getStatusRenderer()
             ->calcOptionHash($row->getData('status'))]
                          = 'selected="selected"';
-        $optionExtraAttr['option_' . $this->_getAutomationRenderer()
+        $optionExtraAttr['option_' . $this->getAutomationRenderer()
             ->calcOptionHash($row->getData('automation'))]
                          = 'selected="selected"';
         $row->setData(
@@ -124,7 +124,7 @@ class Customdatafields extends
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getStatusRenderer()
+    public function getStatusRenderer()
     {
         $this->statusRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -140,7 +140,7 @@ class Customdatafields extends
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getAutomationRenderer()
+    public function getAutomationRenderer()
     {
         $this->automationRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',

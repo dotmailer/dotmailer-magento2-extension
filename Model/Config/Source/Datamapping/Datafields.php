@@ -23,7 +23,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    private $_storeManager;
+    private $storeManager;
 
     /**
      * Datafields constructor.
@@ -39,7 +39,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
     ) {
         $this->helper        = $data;
         $this->registry      = $registry;
-        $this->_storeManager = $storeManager;
+        $this->storeManager = $storeManager;
     }
 
     /**
