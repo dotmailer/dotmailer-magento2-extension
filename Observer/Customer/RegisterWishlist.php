@@ -20,39 +20,32 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      */
     private $wishlistFactory;
     /**
-     * @var \Magento\Customer\Model\CustomerFactory
+     * @var \Magento\Customer\Api\CustomerRepositoryInterface
      */
-    private $customerFactory;
+    private $customer;
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
     private $automationFactory;
-    /**
-     * @var \Magento\Wishlist\Model\WishlistFactory
-     */
-    private $wishlist;
 
     /**
      * RegisterWishlist constructor.
      *
-     * @param \Magento\Wishlist\Model\WishlistFactory        $wishlist
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Magento\Customer\Model\CustomerFactory        $customerFactory
-     * @param \Dotdigitalgroup\Email\Model\WishlistFactory   $wishlistFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data             $data
-     * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\AutomationFactory           $automationFactory
+     * @param \Magento\Customer\Api\CustomerRepositoryInterface        $customer
+     * @param \Dotdigitalgroup\Email\Model\WishlistFactory             $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                       $data
+     * @param \Magento\Store\Model\StoreManagerInterface               $storeManagerInterface
      */
     public function __construct(
-        \Magento\Wishlist\Model\WishlistFactory $wishlist,
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Magento\Customer\Model\CustomerFactory $customerFactory,
+        \Magento\Customer\Api\CustomerRepositoryInterface $customer,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->wishlist          = $wishlist;
         $this->automationFactory = $automationFactory;
-        $this->customerFactory   = $customerFactory;
+        $this->customer   = $customer;
         $this->wishlistFactory   = $wishlistFactory;
         $this->helper            = $data;
         $this->storeManager      = $storeManagerInterface;
@@ -64,14 +57,11 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         //wishlist
-        $wishlist = $observer->getEvent()->getObject()->getData();
-        //required data for checking the new instance of wishlist with items in it.
-        if (is_array($wishlist) && isset($wishlist['customer_id'])
-            && isset($wishlist['wishlist_id'])
-        ) {
-            $wishlistModel = $this->wishlist->create();
-            $wishlistModel = $wishlistModel->getResource()->load($wishlistModel, $wishlist['wishlist_id']);
-            $itemsCount = $wishlistModel->getItemsCount();
+        $wishlist = $observer->getEvent()->getObject();
+
+        if ($wishlist->getCustomerId() && $wishlist->getWishlistId())
+        {
+            $itemsCount = $wishlist->getItemsCount();
             //wishlist items found
             if ($itemsCount) {
                 //save wishlist info in the table
@@ -83,7 +73,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     /**
      * Automation new wishlist program.
      *
-     * @param array $wishlist
+     * @param \Magento\Wishlist\Model\Wishlist $wishlist
      *
      * @return $this
      *
@@ -93,16 +83,14 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     {
         try {
             $emailWishlist = $this->wishlistFactory->create();
-            $customer = $this->customerFactory->create();
 
             //if wishlist exist not to save again
-            if (!$emailWishlist->getWishlist($wishlist['wishlist_id'])) {
-                $customer = $customer->getResource()->load($customer, $wishlist['customer_id']);
+            if (!$emailWishlist->getWishlist($wishlist->getWishlistId())) {
+                $customer = $this->customer->getById($wishlist->getCustomerId());
                 $email = $customer->getEmail();
-                $wishlistId = $wishlist['wishlist_id'];
                 $websiteId = $customer->getWebsiteId();
-                $emailWishlist->setWishlistId($wishlistId)
-                    ->setCustomerId($wishlist['customer_id'])
+                $emailWishlist->setWishlistId($wishlist->getWishlistId())
+                    ->setCustomerId($wishlist->getCustomerId())
                     ->setStoreId($customer->getStoreId());
                 $emailWishlist->getResource()->save($emailWishlist);
 
@@ -126,7 +114,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                     $automation->setEmail($email)
                         ->setAutomationType(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_WISHLIST)
                         ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
-                        ->setTypeId($wishlistId)
+                        ->setTypeId($wishlist->getWishlistId())
                         ->setWebsiteId($websiteId)
                         ->setStoreName($storeName)
                         ->setProgramId($programId);
