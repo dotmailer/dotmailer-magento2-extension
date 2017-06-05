@@ -141,7 +141,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @return mixed
      */
-    protected function loadProductById($productId)
+    public function loadProductById($productId)
     {
         $collection = $this->addFieldToFilter('product_id', $productId)
             ->setPageSize(1);
