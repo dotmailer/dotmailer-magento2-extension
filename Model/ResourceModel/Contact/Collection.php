@@ -59,7 +59,7 @@ class Collection extends
             return $collection->getFirstItem();
         }
 
-        return $this;
+        return false;
     }
 
     /**

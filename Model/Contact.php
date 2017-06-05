@@ -25,8 +25,14 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      */
     public function loadByCustomerId($customerId)
     {
-        return $this->getCollection()
+        $contact = $this->getCollection()
             ->loadByCustomerId($customerId);
+
+        if($contact) {
+            return $contact;
+        }
+
+        return $this;
     }
 
     /**
