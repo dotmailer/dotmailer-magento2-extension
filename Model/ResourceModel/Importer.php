@@ -7,7 +7,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    public $localeDate;
+    private $localeDate;
 
     /**
      * Importer constructor.

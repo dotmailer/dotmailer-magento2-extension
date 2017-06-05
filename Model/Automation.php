@@ -7,15 +7,15 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
-    public $dateTime;
+    private $dateTime;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * Automation constructor.

@@ -10,11 +10,11 @@ class Test
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\App\Config\ReinitableConfigInterface
      */
-    public $config;
+    private $config;
 
     /**
      * Test constructor.

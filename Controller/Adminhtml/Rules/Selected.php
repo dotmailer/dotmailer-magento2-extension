@@ -7,32 +7,34 @@ class Selected extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\App\Response\Http
      */
-    public $http;
+    private $http;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
-    public $rulesFactory;
+    private $rulesFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
-    public $ruleType;
+    private $ruleType;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
      */
-    public $ruleCondition;
+    private $ruleCondition;
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
-    public $ruleValue;
-    /**
-     * @var
-     */
-    public $jsonEncoder;
+    private $ruleValue;
+
     /**
      * @var \Magento\Framework\Escaper
      */
     public $escaper;
+
+    /**
+     * @var \Magento\Framework\Json\Encoder
+     */
+    private $jsonEncoder;
 
     /**
      * Selected constructor.
@@ -72,7 +74,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }
@@ -176,7 +178,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      *
      * @return string
      */
-    public function getOptionHtml($title, $name, $options)
+    private function getOptionHtml($title, $name, $options)
     {
         $block = $this->_view->getLayout()->createBlock(
             'Magento\Framework\View\Element\Html\Select'

@@ -10,73 +10,73 @@ class Review
     /**
      * @var
      */
-    public $start;
+    private $start;
     /**
      * @var
      */
-    public $reviews;
+    private $reviews;
     /**
      * @var
      */
-    public $countReviews;
+    private $countReviews;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    public $resource;
+    private $resource;
 
     /**
      * @var
      */
-    public $reviewIds;
+    private $reviewIds;
     /**
      * @var \Magento\Review\Model\ReviewFactory
      */
-    public $reviewFactory;
+    private $reviewFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    public $productFactory;
+    private $productFactory;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    public $customerFactory;
+    private $customerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\ReviewFactory
      */
-    public $connectorReviewFactory;
+    private $connectorReviewFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory
      */
-    public $ratingFactory;
+    private $ratingFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
-    public $reviewCollection;
+    private $reviewCollection;
     /**
      * @var \Magento\Review\Model\Rating\Option\Vote
      */
-    public $vote;
+    private $vote;
     /**
      * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
-    public $mageReviewCollection;
+    private $mageReviewCollection;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-    public $coreDate;
+    private $coreDate;
 
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    public $coreResource;
+    private $coreResource;
 
     /**
      * Review constructor.

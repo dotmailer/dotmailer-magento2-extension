@@ -7,7 +7,7 @@ class RegisterCatalogValuesOrderStatuses implements \Magento\Framework\Event\Obs
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
 
     /**
      * RegisterCatalogValuesOrderStatuses constructor.

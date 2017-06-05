@@ -10,28 +10,28 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Psr\Log\LoggerInterface
      */
-    public $scopeConfig;
+    private $scopeConfig;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\CatalogFactory
      */
-    public $catalogFactory;
+    private $catalogFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
-    public $catalogCollection;
+    private $catalogCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * RemoveProduct constructor.

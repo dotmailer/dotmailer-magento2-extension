@@ -9,7 +9,7 @@ class Interval implements \Magento\Framework\Data\OptionSourceInterface
      *
      * @var array
      */
-    public $times
+    private $times
         = [
             1,
             2,

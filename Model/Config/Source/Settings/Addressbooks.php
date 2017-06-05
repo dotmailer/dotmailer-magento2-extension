@@ -7,22 +7,22 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
     /**
      * @var null
      */
-    public $options = null;
+    private $options = null;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
 
     /**
      * Configuration structure.
      *
      * @var \Magento\Config\Model\Config\Structure
      */
-    public $configStructure;
+    private $configStructure;
 
     /**
      * Addressbooks constructor.

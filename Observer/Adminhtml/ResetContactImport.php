@@ -10,20 +10,20 @@ class ResetContactImport implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    private $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
-    public $contactResourceFactory;
+    private $contactResourceFactory;
 
     /**
      * ResetContactImport constructor.

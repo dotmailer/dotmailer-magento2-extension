@@ -7,11 +7,11 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
-    public $ruleFactory;
+    private $ruleFactory;
 
     /**
      * Save constructor.
@@ -35,7 +35,7 @@ class Save extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }

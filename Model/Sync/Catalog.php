@@ -10,44 +10,44 @@ class Catalog
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    public $resource;
+    private $resource;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    public $scopeConfig;
+    private $scopeConfig;
 
     /**
      * @var
      */
-    public $start;
+    private $start;
     /**
      * @var int
      */
-    public $countProducts = 0;
+    private $countProducts = 0;
     /**
      * @var array
      */
-    public $productIds = [];
+    private $productIds = [];
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\ProductFactory
      */
-    public $connectorProductFactory;
+    private $connectorProductFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
-    public $catalogCollectionFactory;
+    private $catalogCollectionFactory;
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
-    public $productCollection;
+    private $productCollection;
 
     /**
      * Catalog constructor.

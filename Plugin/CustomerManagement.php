@@ -10,7 +10,7 @@ class CustomerManagement
     /**
      * @var \Dotdigitalgroup\Email\Model\Automation
      */
-    public $automation;
+    private $automation;
 
     /**
      * NewAutomation constructor.
