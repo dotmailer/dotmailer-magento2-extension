@@ -34,59 +34,59 @@ class Quote
      *
      * @var array
      */
-    public $lostBasketCustomers = [1, 2, 3];
+    private $lostBasketCustomers = [1, 2, 3];
     /**
      * Number of guest lost baskets available.
      *
      * @var array
      */
-    public $lostBasketGuests = [1, 2, 3];
+    private $lostBasketGuests = [1, 2, 3];
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    public $scopeConfig;
+    private $scopeConfig;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
-    public $orderCollection;
+    private $orderCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\CampaignFactory
      */
-    public $campaignFactory;
+    private $campaignFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
-    public $campaignCollection;
+    private $campaignCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
-    public $rulesFactory;
+    private $rulesFactory;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    public $timeZone;
+    private $timeZone;
 
     /**
      * Total number of customers found.
      * @var int
      */
-    public $totalCustomers = 0;
+    private $totalCustomers = 0;
 
     /**
      * Total number of guest found.
      * @var int
      */
-    public $totalGuests = 0;
+    private $totalGuests = 0;
 
     /**
      * Quote constructor.

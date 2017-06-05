@@ -7,7 +7,7 @@ class Attributes implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $dataHelper;
+    private $dataHelper;
 
     /**
      * Attributes constructor.

@@ -10,16 +10,16 @@ class Contact
     /**
      * @var
      */
-    public $start;
+    private $start;
     /**
      * @var int
      */
-    public $countCustomers = 0;
+    private $countCustomers = 0;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
@@ -27,11 +27,11 @@ class Contact
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Customer
      */
-    public $emailCustomer;
+    private $emailCustomer;
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    public $file;
+    private $file;
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport
      */
@@ -39,7 +39,7 @@ class Contact
 
     /**
      * Contact constructor.
-     * 
+     *
      * @param CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -171,7 +171,7 @@ class Contact
          */
 
         //customer collection
-        $customerCollection = $this->_getCustomerCollection(
+        $customerCollection = $this->getCustomerCollection(
             $customerIds,
             $website->getId()
         );
@@ -262,7 +262,7 @@ class Contact
      * @param int $websiteId
      * @return mixed
      */
-    public function _getCustomerCollection($customerIds, $websiteId = 0)
+    private function getCustomerCollection($customerIds, $websiteId = 0)
     {
         $statuses = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,

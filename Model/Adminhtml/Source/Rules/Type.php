@@ -7,11 +7,11 @@ class Type
     /**
      * @var
      */
-    public $configFactory;
+    private $configFactory;
     /**
      * @var
      */
-    public $productFactory;
+    private $productFactory;
 
     /**
      * Type constructor.

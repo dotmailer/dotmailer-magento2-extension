@@ -7,27 +7,27 @@ class Callback extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\User\Model\UserFactory
      */
-    public $adminUser;
+    private $adminUser;
     /**
      * @var \Magento\Store\Model\StoreManager
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    public $scopeConfig;
+    private $scopeConfig;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
-    public $config;
+    private $config;
     /**
      * @var \Magento\Backend\Helper\Data
      */
-    public $adminHelper;
+    private $adminHelper;
 
     /**
      * Callback constructor.

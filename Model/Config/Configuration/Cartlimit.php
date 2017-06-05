@@ -9,7 +9,7 @@ class Cartlimit implements \Magento\Framework\Data\OptionSourceInterface
      *
      * @var array
      */
-    public $times
+    private $times
         = [
             0,
             1,

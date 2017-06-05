@@ -7,7 +7,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
      */

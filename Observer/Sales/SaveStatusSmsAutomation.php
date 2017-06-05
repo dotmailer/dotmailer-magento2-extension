@@ -10,40 +10,40 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    public $scopeConfig;
+    private $scopeConfig;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Magento\Store\Model\App\EmulationFactory
      */
-    public $emulationFactory;
+    private $emulationFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
-    public $emailOrderFactory;
+    private $emailOrderFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
-    public $automationFactory;
+    private $automationFactory;
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
-    public $orderCollectionFactory;
+    private $orderCollectionFactory;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Config\Json
      */
-    public $serializer;
+    private $serializer;
 
     /**
      * SaveStatusSmsAutomation constructor.
@@ -170,7 +170,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      *
      * @param $data
      */
-    protected function doAutomationEnrolment($data)
+    private function doAutomationEnrolment($data)
     {
         //the program is not mapped
         if ($data['programId']) {

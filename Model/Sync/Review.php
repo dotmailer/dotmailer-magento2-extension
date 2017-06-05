@@ -10,43 +10,43 @@ class Review
     /**
      * @var
      */
-    public $start;
+    private $start;
     /**
      * @var
      */
-    public $reviews;
+    private $reviews;
     /**
      * @var
      */
-    public $countReviews;
+    private $countReviews;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var
      */
-    public $reviewIds;
+    private $reviewIds;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\ReviewFactory
      */
-    public $connectorReviewFactory;
+    private $connectorReviewFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory
      */
-    public $ratingFactory;
+    private $ratingFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
-    public $reviewCollection;
+    private $reviewCollection;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-    public $coreDate;
+    private $coreDate;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
      */

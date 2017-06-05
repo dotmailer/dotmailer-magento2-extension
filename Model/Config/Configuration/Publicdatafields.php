@@ -7,7 +7,7 @@ class Publicdatafields implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * Publicdatafields constructor.

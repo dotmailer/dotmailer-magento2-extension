@@ -7,11 +7,11 @@ class Customersreset extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    protected $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
 
     /**
      * Customersreset constructor.
@@ -46,7 +46,7 @@ class Customersreset extends \Magento\Backend\App\AbstractAction
     /**
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }

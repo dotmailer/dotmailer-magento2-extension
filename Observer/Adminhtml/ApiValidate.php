@@ -10,28 +10,28 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Backend\App\Action\Context
      */
-    public $context;
+    private $context;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    private $messageManager;
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    public $objectManager;
+    private $objectManager;
     /**
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
-    public $writer;
+    private $writer;
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
      */
-    public $test;
+    private $test;
 
     /**
      * ApiValidate constructor.

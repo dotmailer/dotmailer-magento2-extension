@@ -8,7 +8,7 @@ class Review extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
-    public $dateTime;
+    private $dateTime;
 
     /**
      * Review constructor.

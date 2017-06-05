@@ -35,7 +35,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var array
      */

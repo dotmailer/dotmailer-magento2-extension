@@ -13,35 +13,35 @@ class Campaign
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var
      */
-    public $storeManger;
+    private $storeManger;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
-    public $campaignCollection;
+    private $campaignCollection;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    public $salesOrderFactory;
+    private $salesOrderFactory;
 
     /**
      * @var \Magento\Store\Model\WebsiteFactory
      */
-    public $websiteFactory;
+    private $websiteFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
      */
-    public $campaignResourceModel;
+    private $campaignResourceModel;
 
     /**
      * Campaign constructor.

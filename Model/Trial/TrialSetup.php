@@ -12,15 +12,15 @@ class TrialSetup
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
      */
-    public $dataField;
+    private $dataField;
     /**
      * @var \Magento\Framework\App\Config\ReinitableConfigInterface
      */
-    public $config;
+    private $config;
 
     /**
      * TrialSetup constructor.

@@ -7,11 +7,11 @@ class Edit extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
-    public $rules;
+    private $rules;
 
     /**
      * Edit constructor.
@@ -35,7 +35,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }

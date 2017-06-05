@@ -7,15 +7,15 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    protected $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $catalogFactory;
+    private $catalogFactory;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * Catalogreset constructor.
@@ -69,7 +69,7 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
     /**
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }

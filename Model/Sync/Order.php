@@ -10,69 +10,69 @@ class Order
     /**
      * @var array
      */
-    public $accounts = [];
+    private $accounts = [];
     /**
      * @var string
      */
-    public $apiUsername;
+    private $apiUsername;
     /**
      * @var string
      */
-    public $apiPassword;
+    private $apiPassword;
 
     /**
      * Global number of orders.
      *
      * @var int
      */
-    public $countOrders = 0;
+    private $countOrders = 0;
 
     /**
      * @var array
      */
-    public $orderIds;
+    private $orderIds;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
-    public $contactResourceFactory;
+    private $contactResourceFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
-    public $orderFactory;
+    private $orderFactory;
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    public $salesOrderFactory;
+    private $salesOrderFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\OrderFactory
      */
-    public $connectorOrderFactory;
+    private $connectorOrderFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\AccountFactory
      */
-    public $accountFactory;
+    private $accountFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory
      */
-    public $orderResourceFactory;
+    private $orderResourceFactory;
     /**
      * @var array
      */
-    public $guests = [];
+    private $guests = [];
 
     /**
      * Order constructor.

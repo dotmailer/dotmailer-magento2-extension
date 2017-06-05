@@ -12,55 +12,55 @@ class Wishlist
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var
      */
-    public $wishlists;
+    private $wishlists;
     /**
      * @var array
      */
-    public $wishlistIds = [];
+    private $wishlistIds = [];
     /**
      * @var
      */
-    public $start;
+    private $start;
     /**
      * @var int
      */
-    public $countWishlists = 0;
+    private $countWishlists = 0;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    public $customerFactory;
+    private $customerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
-    public $wishlist;
+    private $wishlist;
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\WishlistFactory
      */
-    public $wishlistFactory;
+    private $wishlistFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory
      */
-    public $itemFactory;
+    private $itemFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
      */
-    public $wishlistCollection;
+    private $wishlistCollection;
     /**
      * @var \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory
      */
-    public $itemCollection;
+    private $itemCollection;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-    public $datetime;
+    private $datetime;
     /**
      * Wishlist constructor.
      *

@@ -7,11 +7,11 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Checkout\Model\Session
      */
-    public $checkoutSession;
+    private $checkoutSession;
 
     /**
      * Emailcapture constructor.

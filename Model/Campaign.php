@@ -41,7 +41,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
-    public $dateTime;
+    private $dateTime;
 
     /**
      * @param \Magento\Framework\Model\Context                        $context

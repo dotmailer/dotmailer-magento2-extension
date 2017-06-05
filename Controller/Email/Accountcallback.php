@@ -8,23 +8,23 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
-    public $jsonHelper;
+    private $jsonHelper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\Trial\TrialSetup
      */
-    public $trialSetup;
+    private $trialSetup;
     /**
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
-    public $remoteAddress;
+    private $remoteAddress;
 
     /**
      * Accountcallback constructor.
@@ -62,7 +62,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
 
         //if no value to any of the required params send error response
         if (empty($params['apiUser']) or empty($params['pass'])) {
-            $this->sendAjaxResponse(true, $this->_getErrorHtml());
+            $this->sendAjaxResponse(true, $this->getErrorHtml());
         } else {
             //Save api end point
             if (isset($params['apiEndpoint'])) {
@@ -77,9 +77,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             $syncStatus = $this->trialSetup->enableSyncForTrial();
 
             if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
-                $this->sendAjaxResponse(false, $this->_getSuccessHtml());
+                $this->sendAjaxResponse(false, $this->getSuccessHtml());
             } else {
-                $this->sendAjaxResponse(true, $this->_getErrorHtml());
+                $this->sendAjaxResponse(true, $this->getErrorHtml());
             }
         }
     }
@@ -90,7 +90,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @param $error
      * @param $msg
      */
-    public function sendAjaxResponse($error, $msg)
+    private function sendAjaxResponse($error, $msg)
     {
         $message = [
             'err' => $error,
@@ -109,7 +109,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      *
      * @return string
      */
-    protected function _getSuccessHtml()
+    private function getSuccessHtml()
     {
         return
             "<div class='modal-page'>
@@ -127,7 +127,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      *
      * @return string
      */
-    protected function _getErrorHtml()
+    private function getErrorHtml()
     {
         return
             "<div class='modal-page'>

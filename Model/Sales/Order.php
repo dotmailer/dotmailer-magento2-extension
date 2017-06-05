@@ -8,53 +8,42 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 class Order
 {
     /**
-     * @var array
-     */
-    public $accounts = [];
-    /**
      * @var string
      */
-    public $dateTime;
-
-    /**
-     * Global number of orders.
-     *
-     * @var int
-     */
-    public $countOrders = 0;
+    private $dateTime;
 
     /**
      * @var array
      */
-    public $reviewCollection = [];
+    private $reviewCollection = [];
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\CampaignFactory
      */
-    public $campaignFactory;
+    private $campaignFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
-    public $campaignCollection;
+    private $campaignCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
-    public $orderCollection;
+    private $orderCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
-    public $rulesFactory;
+    private $rulesFactory;
     /**
      * @var \Zend_Date
      */
-    public $date;
+    private $date;
     /**
      * Order constructor.
      *

@@ -40,72 +40,68 @@ class Automation
     /**
      * @var int
      */
-    public $limit = 100;
+    private $limit = 100;
     /**
      * @var
      */
-    public $email;
+    private $typeId;
     /**
      * @var
      */
-    public $typeId;
+    private $websiteId;
     /**
      * @var
      */
-    public $websiteId;
+    private $storeName;
     /**
      * @var
      */
-    public $storeName;
-    /**
-     * @var
-     */
-    public $programId;
+    private $programId;
     /**
      * @var string
      */
-    public $programStatus = 'Active';
+    private $programStatus = 'Active';
     /**
      * @var
      */
-    public $programMessage;
-    /**
-     * @var
-     */
-    public $automationType;
+    private $programMessage;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
+
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    public $resource;
+    private $resource;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    public $localeDate;
+    private $localeDate;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
      */
-    public $automationFactory;
+    private $automationFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\AutomationFactory
      */
-    public $automationResourceFactory;
+    private $automationResourceFactory;
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    public $orderFactory;
+    private $orderFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Config\Json
      */
-    public $serializer;
+    private $serializer;
 
     /**
      * Automation constructor.

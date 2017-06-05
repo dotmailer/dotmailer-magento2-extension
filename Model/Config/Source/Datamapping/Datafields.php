@@ -7,19 +7,13 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
 
-    /**
-     * Configuration structure.
-     *
-     * @var \Magento\Config\Model\Config\Structure
-     */
-    public $configStructure;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */

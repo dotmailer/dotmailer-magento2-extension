@@ -10,17 +10,17 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
-    public $collectionFactory;
+    private $collectionFactory;
 
     /**
      * @var object
      */
-    public $messageManager;
+    protected $messageManager;
 
     /**
      * @var Filter
      */
-    public $filter;
+    private $filter;
 
     /**
      * MassDelete constructor.

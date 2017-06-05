@@ -7,7 +7,7 @@ class Catalogtype implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Magento\Catalog\Model\Product\Type
      */
-    public $productType;
+    private $productType;
 
     /**
      * Catalogtype constructor.

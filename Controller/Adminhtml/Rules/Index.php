@@ -7,7 +7,7 @@ class Index extends \Magento\Backend\App\AbstractAction
     /**
      * @var PageFactory|\Magento\Framework\View\Result\PageFactory
      */
-    public $resultPageFactory;
+    private $resultPageFactory;
 
     /**
      * Index constructor.
@@ -28,7 +28,7 @@ class Index extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }

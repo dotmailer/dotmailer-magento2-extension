@@ -12,11 +12,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * @var
      */
-    public $conditionMap;
+    private $conditionMap;
     /**
      * @var
      */
-    public $defaultOptions;
+    private $defaultOptions;
     /**
      * @var
      */
@@ -24,30 +24,30 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * @var
      */
-    public $attributeMapForOrder;
+    private $attributeMapForOrder;
     /**
      * @var
      */
-    public $productAttribute;
+    private $productAttribute;
     /**
      * @var array
      */
-    public $used = [];
+    private $used = [];
 
     /**
      * @var Adminhtml\Source\Rules\Type
      */
-    public $rulesType;
+    private $rulesType;
 
     /**
      * @var \Magento\Eav\Model\Config
      */
-    public $config;
+    private $config;
 
     /**
      * @var Json
      */
-    public $serializer;
+    private $serializer;
 
     /**
      * Rules constructor.

@@ -7,22 +7,15 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var
      */
-    public $rest;
+    private $rest;
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
-    public $request;
-
-    /**
-     * Configuration structure.
-     *
-     * @var \Magento\Config\Model\Config\Structure
-     */
-    public $configStructure;
+    private $request;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */

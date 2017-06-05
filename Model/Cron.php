@@ -7,63 +7,63 @@ class Cron
     /**
      * @var Apiconnector\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var Sync\AutomationFactory
      */
-    public $automationFactory;
+    private $automationFactory;
     /**
      * @var ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
     /**
      * @var Sync\CatalogFactory
      */
-    public $catalogFactory;
+    private $catalogFactory;
     /**
      * @var Newsletter\SubscriberFactory
      */
-    public $subscriberFactory;
+    private $subscriberFactory;
     /**
      * @var Customer\GuestFactory
      */
-    public $guestFactory;
+    private $guestFactory;
     /**
      * @var Sync\Wishlist
      */
-    public $wishlistFactory;
+    private $wishlistFactory;
     /**
      * @var Sales\OrderFactory
      */
-    public $orderFactory;
+    private $orderFactory;
     /**
      * @var Sync\ReviewFactory
      */
-    public $reviewFactory;
+    private $reviewFactory;
     /**
      * @var Sales\QuoteFactory
      */
-    public $quoteFactory;
+    private $quoteFactory;
     /**
      * @var Sync\OrderFactory
      */
-    public $syncOrderFactory;
+    private $syncOrderFactory;
     /**
      * @var Sync\CampaignFactory
      */
-    public $campaignFactory;
+    private $campaignFactory;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
-    public $fileHelper;
+    private $fileHelper;
     /**
      * @var ResourceModel\Importer
      */
-    public $importerResource;
+    private $importerResource;
 
     /**
      * Cron constructor.
