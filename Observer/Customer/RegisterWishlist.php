@@ -10,27 +10,27 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
-    public $wishlistFactory;
+    private $wishlistFactory;
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    public $customerFactory;
+    private $customerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
-    public $automationFactory;
+    private $automationFactory;
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
-    public $wishlist;
+    private $wishlist;
 
     /**
      * RegisterWishlist constructor.
@@ -93,7 +93,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function registerWishlist($wishlist)
+    private function registerWishlist($wishlist)
     {
         try {
             $emailWishlist = $this->wishlistFactory->create();

@@ -13,7 +13,7 @@ class Coupon extends \Magento\SalesRule\Model\ResourceModel\Coupon
     /**
      * @var DateTime
      */
-    public $dateTime;
+    private $dateTime;
 
     /**
      * Coupon constructor.

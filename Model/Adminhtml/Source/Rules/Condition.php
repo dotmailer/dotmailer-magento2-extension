@@ -48,7 +48,7 @@ class Condition
      *
      * @return array
      */
-    public function optionsForNumericType()
+    private function optionsForNumericType()
     {
         $options = $this->toOptionArray();
         $options[] = [
@@ -70,7 +70,7 @@ class Condition
      *
      * @return array
      */
-    public function optionsForStringType()
+    private function optionsForStringType()
     {
         $options = $this->toOptionArray();
         $options[] = ['value' => 'like', 'label' => __('contains')];

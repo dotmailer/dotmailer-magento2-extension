@@ -10,28 +10,28 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Framework\Registry
      */
-    public $registry;
+    private $registry;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
-    public $automationFactory;
+    private $automationFactory;
     /**
      * @var
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * ChangeContactSubscription constructor.
@@ -147,7 +147,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function addSubscriberToAutomation($email, $subscriber, $websiteId)
+    private function addSubscriberToAutomation($email, $subscriber, $websiteId)
     {
         $storeId = $subscriber->getStoreId();
         $store = $this->storeManager->getStore($storeId);

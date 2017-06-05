@@ -10,55 +10,55 @@ class Order
     /**
      * @var array
      */
-    public $accounts = [];
+    private $accounts = [];
     /**
      * @var string
      */
-    public $dateTime;
+    private $dateTime;
 
     /**
      * Global number of orders.
      *
      * @var int
      */
-    public $countOrders = 0;
+    private $countOrders = 0;
 
     /**
      * @var array
      */
-    public $reviewCollection = [];
+    private $reviewCollection = [];
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\CampaignFactory
      */
-    public $campaignFactory;
+    private $campaignFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
-    public $campaignCollection;
+    private $campaignCollection;
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
-    public $orderCollection;
+    private $orderCollection;
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
-    public $rulesFactory;
+    private $rulesFactory;
     /**
      * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
      */
-    public $quoteCollection;
+    private $quoteCollection;
     /**
      * @var \Zend_Date
      */
-    public $date;
+    private $date;
     /**
      * Order constructor.
      *

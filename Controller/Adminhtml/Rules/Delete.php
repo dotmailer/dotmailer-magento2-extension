@@ -7,11 +7,11 @@ class Delete extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
-    public $rules;
+    private $rules;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * Delete constructor.
@@ -35,7 +35,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }

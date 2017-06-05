@@ -9,19 +9,19 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
-    public $quoteFactory;
+    private $quoteFactory;
     /**
      * @var \Magento\Customer\Model\SessionFactory
      */
-    public $sessionFactory;
+    private $sessionFactory;
     /**
      * @var \Magento\Checkout\Model\SessionFactory
      */
-    public $checkoutSession;
+    private $checkoutSession;
     /**
      * @var \Magento\Quote\Model\Quote
      */
-    public $quote;
+    private $quote;
 
     /**
      * Getbasket constructor.
@@ -68,16 +68,16 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         $this->quote = $quoteModel;
 
         if ($quoteModel->getCustomerId()) {
-            return $this->_handleCustomerBasket();
+            return $this->handleCustomerBasket();
         } else {
-            return $this->_handleGuestBasket();
+            return $this->handleGuestBasket();
         }
     }
 
     /**
      * Process customer basket.
      */
-    public function _handleCustomerBasket()
+    private function handleCustomerBasket()
     {
         /** @var \Magento\Customer\Model\Session $customerSession */
         $customerSession = $this->sessionFactory->create();
@@ -94,7 +94,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             ) {
                 $quote = $checkoutSession->getQuote();
                 if ($this->quote->getId() != $quote->getId()) {
-                    $this->_checkMissingAndAdd();
+                    $this->checkMissingAndAdd();
                 }
             }
 
@@ -135,7 +135,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Check missing items from current quote and add.
      */
-    public function _checkMissingAndAdd()
+    private function checkMissingAndAdd()
     {
         /** @var \Magento\Checkout\Model\Session $checkoutSession */
         $checkoutSession = $this->checkoutSession->create();
@@ -161,7 +161,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Process guest basket.
      */
-    public function _handleGuestBasket()
+    private function handleGuestBasket()
     {
         $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL

@@ -7,12 +7,12 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    protected $messageManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $dataHelper;
+    private $dataHelper;
 
     /**
      * Save constructor.

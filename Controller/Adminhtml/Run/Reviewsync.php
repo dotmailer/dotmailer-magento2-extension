@@ -7,11 +7,11 @@ class Reviewsync extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    protected $messageManager;
     /**
      * @var \Dotdigitalgroup\Email\Model\CronFactory
      */
-    public $cronFactory;
+    private $cronFactory;
 
     /**
      * Reviewsync constructor.
@@ -46,7 +46,7 @@ class Reviewsync extends \Magento\Backend\App\AbstractAction
     /**
      * @return bool
      */
-    public function _isAllowed()
+    protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }

@@ -10,11 +10,11 @@ class MassResend extends ImporterController
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
-    public $importerResource;
+    private $importerResource;
 
     /**
      * MassResend constructor.

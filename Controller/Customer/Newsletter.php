@@ -7,19 +7,19 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
     /**
      * @var \Magento\Customer\Model\Session
      */
-    public $customerSession;
+    private $customerSession;
     /**
      * @var \Magento\Framework\Data\Form\FormKey\Validator
      */
-    public $formKeyValidator;
+    private $formKeyValidator;
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    public $localeDate;
+    private $localeDate;
 
     /**
      * Newsletter constructor.

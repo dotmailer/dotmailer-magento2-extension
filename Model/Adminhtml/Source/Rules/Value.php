@@ -7,31 +7,31 @@ class Value
     /**
      * @var
      */
-    public $configFactory;
+    private $configFactory;
     /**
      * @var \Magento\Config\Model\Config\Source\Yesno
      */
-    public $yesno;
+    private $yesno;
     /**
      * @var \Magento\Directory\Model\Config\Source\Country
      */
-    public $country;
+    private $country;
     /**
      * @var \Magento\Directory\Model\Config\Source\Allregion
      */
-    public $allregion;
+    private $allregion;
     /**
      * @var \Magento\Shipping\Model\Config\Source\Allmethods
      */
-    public $allShippingMethods;
+    private $allShippingMethods;
     /**
      * @var \Magento\Payment\Model\Config\Source\Allmethods
      */
-    public $allPaymentMethods;
+    private $allPaymentMethods;
     /**
      * @var \Magento\Customer\Model\Config\Source\Group
      */
-    public $sourceGroup;
+    private $sourceGroup;
 
     /**
      * Value constructor.
