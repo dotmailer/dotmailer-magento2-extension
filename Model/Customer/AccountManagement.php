@@ -110,7 +110,5 @@ class AccountManagement extends \Magento\Customer\Model\AccountManagement
         } else {
             parent::sendEmailConfirmation($customer, $redirectUrl);
         }
-
-        return $this;
     }
 }
