@@ -26,7 +26,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      */
     public $ruleValue;
     /**
-     * @var \Magento\Framework\Serialize\Serializer\Json
+     * @var \Magento\Framework\Json\Helper\Data
      */
     public $jsonEncoder;
     /**
@@ -42,7 +42,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type      $ruleType
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
-     * @param \Magento\Framework\Serialize\Serializer\Json                  $jsonEncoder
+     * @param \Magento\Framework\Json\Helper\Data                           $jsonEncoder
      * @param \Magento\Framework\App\Response\Http                          $http
      * @param \Magento\Framework\Escaper                                    $escaper
      */
@@ -52,7 +52,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
-        \Magento\Framework\Serialize\Serializer\Json $jsonEncoder,
+        \Magento\Framework\Json\Helper\Data $jsonEncoder,
         \Magento\Framework\App\Response\Http $http,
         \Magento\Framework\Escaper $escaper
     ) {

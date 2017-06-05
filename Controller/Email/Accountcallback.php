@@ -10,7 +10,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      */
     public $helper;
     /**
-     * @var \Magento\Framework\Serialize\Serializer\Json
+     * @var \Magento\Framework\Json\Helper\Data
      */
     public $jsonHelper;
     /**
@@ -31,7 +31,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      *
      * @param \Magento\Framework\App\Action\Context                   $context
      * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
-     * @param \Magento\Framework\Serialize\Serializer\Json            $jsonHelper
+     * @param \Magento\Framework\Json\Helper\Data                     $jsonHelper
      * @param \Magento\Store\Model\StoreManagerInterface              $storeManager
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress    $remoteAddress
      * @param \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup
@@ -39,7 +39,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Serialize\Serializer\Json $jsonHelper,
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
         \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup

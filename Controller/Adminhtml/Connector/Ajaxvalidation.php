@@ -10,7 +10,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
     public $data;
 
     /**
-     * @var \Magento\Framework\Serialize\Serializer\Json
+     * @var \Magento\Framework\Json\Helper\Data
      */
     public $jsonHelper;
 
@@ -18,12 +18,12 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
      * Ajaxvalidation constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Framework\Serialize\Serializer\Json $jsonHelper
+     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\Serialize\Serializer\Json $jsonHelper,
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->data = $data;

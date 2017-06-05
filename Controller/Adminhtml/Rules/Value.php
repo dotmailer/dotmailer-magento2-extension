@@ -14,7 +14,7 @@ class Value extends \Magento\Backend\App\AbstractAction
      */
     public $ruleValue;
     /**
-     * @var \Magento\Framework\Serialize\Serializer\Json
+     * @var \Magento\Framework\Json\Helper\Data
      */
     public $jsonEncoder;
     /**
@@ -26,14 +26,14 @@ class Value extends \Magento\Backend\App\AbstractAction
      * Value constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue
-     * @param \Magento\Framework\Serialize\Serializer\Json              $jsonEncoder
+     * @param \Magento\Framework\Json\Helper\Data                       $jsonEncoder
      * @param \Magento\Backend\App\Action\Context                       $context
      * @param \Magento\Framework\App\Response\Http                      $http
      * @param \Magento\Framework\Escaper                                $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
-        \Magento\Framework\Serialize\Serializer\Json $jsonEncoder,
+        \Magento\Framework\Json\Helper\Data $jsonEncoder,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Response\Http $http,
         \Magento\Framework\Escaper $escaper

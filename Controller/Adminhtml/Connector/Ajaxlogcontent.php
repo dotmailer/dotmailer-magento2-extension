@@ -8,25 +8,26 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     public $file;
-
     /**
-     * @var \Magento\Framework\Serialize\Serializer\Json
+     * @var \Magento\Framework\Json\Helper\Data
      */
     public $jsonHelper;
-
+    /***
+     * @var \Magento\Framework\Escaper
+     */
     public $escaper;
 
     /**
      * Ajaxlogcontent constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\File $file
-     * @param \Magento\Framework\Serialize\Serializer\Json $jsonHelper
+     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\File $file,
-        \Magento\Framework\Serialize\Serializer\Json $jsonHelper,
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Escaper $escaper
     ) {
