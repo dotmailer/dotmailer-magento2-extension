@@ -77,7 +77,7 @@ class File
     /**
      * @return string
      */
-    private function getArchiveFolder()
+    public function getArchiveFolder()
     {
         $this->pathExists($this->outputArchiveFolder);
 
