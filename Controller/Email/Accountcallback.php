@@ -99,7 +99,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         $this->getResponse()
             ->setHeader('Content-type', 'application/javascript', true)
             ->setBody(
-                $this->getRequest()->getParam('callback') . '(' . $this->jsonHelper->serialize($message) . ')'
+                $this->getRequest()->getParam('callback') . '(' . $this->jsonHelper->jsonEncode($message) . ')'
             )
             ->sendResponse();
     }

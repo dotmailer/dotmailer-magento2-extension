@@ -135,7 +135,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')
-                ->setBody($this->jsonEncoder->serialize($response));
+                ->setBody($this->jsonEncoder->jsonEncode($response));
         }
 
         return $this;

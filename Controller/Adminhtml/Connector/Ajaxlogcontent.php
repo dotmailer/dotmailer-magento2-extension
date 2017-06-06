@@ -64,7 +64,7 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
             'content' => $content,
             'header' => $header
         ];
-        $this->getResponse()->representJson($this->jsonHelper->serialize($response));
+        $this->getResponse()->representJson($this->jsonHelper->jsonEncode($response));
     }
 
 

@@ -51,7 +51,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
                 $resonseData['message'] = 'Authorization has been denied for this request.';
             }
 
-            $this->getResponse()->representJson($this->jsonHelper->serialize($resonseData));
+            $this->getResponse()->representJson($this->jsonHelper->jsonEncode($resonseData));
         }
     }
 

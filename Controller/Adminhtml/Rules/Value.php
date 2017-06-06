@@ -88,7 +88,7 @@ class Value extends \Magento\Backend\App\AbstractAction
             }
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')->setBody(
-                $this->jsonEncoder->serialize($response)
+                $this->jsonEncoder->jsonEncode($response)
             );
         }
     }
