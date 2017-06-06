@@ -58,8 +58,7 @@ class ContactImportQueueExport
                     );
 
                 //set imported
-                $ids = implode(', ', $customerIds);
-                $resource->setImportedByIds($ids);
+                $resource->setImportedByIds($customerIds);
             }
         }
     }

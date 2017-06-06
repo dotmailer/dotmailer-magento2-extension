@@ -290,7 +290,7 @@ class Collection extends
     }
 
     /**
-     * Get contacts ti import by website
+     * Get contacts to import by website
      *
      * @param $websiteId
      * @param $syncLimit
@@ -300,6 +300,7 @@ class Collection extends
     {
         return $this->addFieldToSelect('*')
             ->addFieldToFilter('customer_id', ['neq' => '0'])
+            ->addFieldToFilter('email_imported', ['null' => true])
             ->addFieldToFilter('website_id', $websiteId)
             ->setPageSize($syncLimit);
     }
