@@ -59,7 +59,7 @@ class Collection extends
             $type
         );
         //limit because of the each contact request to get the id
-        $collection = $collection->getSelect()->limit($limit);
+        $collection->getSelect()->limit($limit);
 
         return $collection;
     }
