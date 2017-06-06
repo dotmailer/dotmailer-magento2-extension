@@ -68,7 +68,7 @@ class Catalog
         $this->importerFactory          = $importerFactory;
         $this->helper                   = $helper;
         $this->scopeConfig              = $scopeConfig;
-        $this->catalogCollectionFactory = $catalogResourceFactory;
+        $this->catalogResourceFactory   = $catalogResourceFactory;
     }
 
     /**

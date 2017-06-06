@@ -314,7 +314,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $coreResource = $this->getConnection();
             $tableName = $coreResource->getTableName('email_catalog');
-            $ids = implode(', ', $ids);
 
             if ($modified) {
                 $coreResource->update(
