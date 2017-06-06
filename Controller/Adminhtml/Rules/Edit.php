@@ -59,7 +59,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
 
         $emailRules = $this->rules;
         if ($id) {
-            $emailRules = $emailRules->load($id);
+            $emailRules->getResource()->load($emailRules, $id);
 
             if (!$emailRules->getId()) {
                 $this->messageManager->addErrorMessage(__('This rule no longer exists.'));
@@ -76,6 +76,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
             $this->rules->addData($data);
         }
 
+        $this->registry->unregister('current_ddg_rule'); // additional measure
         $this->registry->register('current_ddg_rule', $emailRules);
 
         $this->_view->getLayout()->getBlock('dotdigitalgroup.email.rules.edit')

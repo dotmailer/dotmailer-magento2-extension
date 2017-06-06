@@ -74,7 +74,8 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
             if (! $orderId) {
                 return false;
             }
-            $order = $this->orderFactory->create()->load($orderId);
+            $order = $this->orderFactory->create();
+            $order->getResource()->load($order, $orderId);
             $this->_coreRegistry->unregister('current_order'); // additional measure
             $this->_coreRegistry->register('current_order', $order);
         }

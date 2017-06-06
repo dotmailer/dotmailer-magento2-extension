@@ -16,13 +16,14 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Magento\Framework\App\RequestInterface
      */
     private $request;
-
     /**
-     * Configuration structure.
-     *
-     * @var \Magento\Config\Model\Config\Structure
+     * @var \Magento\Store\Model\StoreManagerInterface
      */
-    private $configStructure;
+    private $storeManager;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    private $registry;
 
     /**
      * Program constructor.
@@ -39,9 +40,9 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->helper        = $data;
-        $this->_registry     = $registry;
+        $this->registry     = $registry;
         $this->request       = $requestInterface;
-        $this->_storeManager = $storeManager;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -55,7 +56,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
         $fields[] = ['value' => '0', 'label' => __('-- Disabled --')];
         $websiteName = $this->request->getParam('website', false);
         $website = ($websiteName)
-            ? $this->_storeManager->getWebsite($websiteName) : 0;
+            ? $this->storeManager->getWebsite($websiteName) : 0;
         //api client is enabled
         $apiEnabled = $this->helper->isEnabled($website);
         if ($apiEnabled) {

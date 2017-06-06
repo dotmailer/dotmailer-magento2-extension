@@ -46,15 +46,15 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $object = $observer->getEvent()->getDataObject();
-        $wishlist = $this->wishlist->create()
-            ->load($object->getWishlistId());
+        $wishlistItem = $observer->getEvent()->getItem();
+        $wishlist = $this->wishlist->create();
+        $wishlist->getResource()->load($wishlist, $wishlistItem->getWishlistId());
         $emailWishlist = $this->wishlistFactory->create();
         try {
-            if ($object->getWishlistId()) {
+            if ($wishlistItem->getWishlistId()) {
                 $itemCount = count($wishlist->getItemCollection());
                 $item
-                           = $emailWishlist->getWishlist($object->getWishlistId());
+                           = $emailWishlist->getWishlist($wishlistItem->getWishlistId());
 
                 if ($item && $item->getId()) {
                     $preSaveItemCount = $item->getItemCount();
@@ -69,7 +69,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
                         $item->setWishlistModified(1);
                     }
 
-                    $item->save();
+                    $item->getResource()->save($item);
                 }
             }
         } catch (\Exception $e) {

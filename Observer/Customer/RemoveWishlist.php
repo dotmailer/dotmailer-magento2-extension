@@ -52,17 +52,13 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * If it's configured to capture on shipment - do this.
-     *
      * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $object = $observer->getEvent()->getDataObject();
-        $customer = $this->customerFactory->create()
-            ->load($object->getCustomerId());
+        $customer = $this->customerFactory->create();
+        $customer->getResource()->load($customer, $object->getCustomerId());
         $website = $this->storeManager->getStore($customer->getStoreId())
             ->getWebsite();
 
@@ -84,7 +80,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                         $website->getId()
                     );
-                    $item->delete();
+                    $item->getResource()->delete($item);
                 }
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);

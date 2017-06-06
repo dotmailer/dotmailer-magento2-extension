@@ -47,15 +47,14 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
             if (isset($apiContact->message) or ! $apiContact) {
                 $message = (isset($apiContact->message)) ? $apiContact->message : 'Error unknown';
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                    ->setMessage($message)
-                    ->save();
+                    ->setMessage($message);
             } else {
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTED)
                     ->setImportFinished(time())
                     ->setImportStarted(time())
-                    ->setMessage('')
-                    ->save();
+                    ->setMessage('');
             }
+            $item->getResource()->save($item);
         }
     }
 }

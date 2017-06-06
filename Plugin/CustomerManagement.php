@@ -30,7 +30,6 @@ class CustomerManagement
      * @param $customer
      * @return mixed
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @codingStandardsIgnoreStart
      */
     public function afterCreate(\Magento\Sales\Model\Order\CustomerManagement $subject, $customer)
     {
@@ -38,5 +37,4 @@ class CustomerManagement
         $this->automation->newCustomerAutomation($customer);
         return $customer;
     }
-    //codingStandardsIgnoreEnd
 }

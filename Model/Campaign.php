@@ -88,32 +88,24 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
      */
     public function loadByQuoteId($quoteId, $storeId)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('quote_id', $quoteId)
-            ->addFieldToFilter('store_id', $storeId)
-            ->setPageSize(1);
+        $item = $this->getCollection()
+            ->loadByQuoteId($quoteId, $storeId);
 
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
+        if ($item) {
+            return $item;
         } else {
-            $this->setQuoteId($quoteId)
+            return $this->setQuoteId($quoteId)
                 ->setStoreId($storeId);
         }
-
-        return $this;
     }
 
     /**
      * Prepare data to be saved to database.
      *
      * @return $this
-     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
-        //@codingStandardsIgnoreEnd
         parent::beforeSave();
         if ($this->isObjectNew()) {
             $this->setCreatedAt($this->dateTime->formatDate(true));

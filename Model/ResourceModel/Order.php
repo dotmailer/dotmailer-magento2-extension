@@ -68,7 +68,6 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $connection = $this->getConnection();
             $tableName = $connection->getTableName('email_order');
-            $ids = implode(', ', $ids);
             $connection->update(
                 $tableName,
                 [

@@ -25,16 +25,14 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
     private $ruleValue;
-
+    /**
+     * @var \Magento\Framework\Json\Helper\Data
+     */
+    public $jsonEncoder;
     /**
      * @var \Magento\Framework\Escaper
      */
     public $escaper;
-
-    /**
-     * @var \Magento\Framework\Json\Encoder
-     */
-    private $jsonEncoder;
 
     /**
      * Selected constructor.
@@ -44,7 +42,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type      $ruleType
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
-     * @param \Magento\Framework\Json\Encoder                               $jsonEncoder
+     * @param \Magento\Framework\Json\Helper\Data                           $jsonEncoder
      * @param \Magento\Framework\App\Response\Http                          $http
      * @param \Magento\Framework\Escaper                                    $escaper
      */
@@ -54,7 +52,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
-        \Magento\Framework\Json\Encoder $jsonEncoder,
+        \Magento\Framework\Json\Helper\Data $jsonEncoder,
         \Magento\Framework\App\Response\Http $http,
         \Magento\Framework\Escaper $escaper
     ) {
@@ -82,7 +80,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
     /**
      * Execute method.
      *
-     * @return \Magento\Framework\App\Response\Http
+     * @return mixed
      */
     public function execute()
     {
@@ -103,8 +101,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
         );
 
         if ($arrayKey && $id && $attribute && $conditionName && $valueName) {
-            $rule = $this->rulesFactory->create()
-                ->load($id);
+            $rule = $this->rulesFactory->create();
+            $rule->getResource()->load($rule, $id);
             //rule not found
             if (!$rule->getId()) {
                 $this->http->getHeaders()->clearHeaders();
@@ -137,8 +135,10 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')
-                ->setBody($this->jsonEncoder->encode($response));
+                ->setBody($this->jsonEncoder->jsonEncode($response));
         }
+
+        return $this;
     }
 
     /**

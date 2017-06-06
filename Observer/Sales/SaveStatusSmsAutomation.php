@@ -126,7 +126,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 
             // set back the current store
             $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
-            $emailOrder->save();
+            $emailOrder->getResource()->save($emailOrder);
 
             $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName);
 
@@ -175,15 +175,15 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         //the program is not mapped
         if ($data['programId']) {
             try {
-                $this->automationFactory->create()
+                $automation = $this->automationFactory->create()
                     ->setEmail($data['email'])
                     ->setAutomationType($data['automationType'])
                     ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
                     ->setTypeId($data['order_id'])
                     ->setWebsiteId($data['website_id'])
                     ->setStoreName($data['store_name'])
-                    ->setProgramId($data['programId'])
-                    ->save();
+                    ->setProgramId($data['programId']);
+                $automation->getResource()->save($automation);
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);
             }

@@ -8,6 +8,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     private $contactFactory;
+    /**
+     * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
+     */
+    public $subscribersCollection;
+    /**
+     * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
+     */
+    private $customerCollection;
+    /**
+     * @var \Magento\Cron\Model\ScheduleFactory
+     */
+    private $schelduleFactory;
 
     /**
      * Initialize resource.
@@ -22,15 +34,23 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
+     * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
+     * @param \Magento\Cron\Model\ScheduleFactory $schedule
      * @param null $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
+        \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
+        \Magento\Cron\Model\ScheduleFactory $schedule,
         $connectionName = null
     ) {
-    
+        $this->schelduleFactory = $schedule;
+        $this->customerCollection = $customerCollectionFactory;
         $this->contactFactory = $contactFactory;
+        $this->subscribersCollection = $subscriberCollection;
         parent::__construct($context, $connectionName);
     }
 
@@ -222,5 +242,742 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         );
 
         return $updated;
+    }
+
+    /**
+     * Get collection for subscribers by emails
+     *
+     * @param $emails
+     * @param $statuses
+     * @return mixed
+     */
+    public function getCollectionForSubscribersByEmails($emails, $statuses)
+    {
+        $salesOrder = $this->getConnection()->getTableName('sales_order');
+        $salesOrderItem = $this->getConnection()->getTableName('sales_order_item');
+        $catalogProductEntityInt = $this->getConnection()->getTableName('catalog_product_entity_int');
+        $eavAttribute = $this->getConnection()->getTableName('eav_attribute');
+        $eavAttributeOptionValue = $this->getConnection()->getTableName('eav_attribute_option_value');
+        $catalogCategoryProductIndex = $this->getConnection()->getTableName('catalog_category_product');
+
+        $collection = $this->subscribersCollection->create()
+            ->addFieldToSelect([
+                'subscriber_email',
+                'store_id',
+                'subscriber_status'
+            ]);
+
+        //only when subscriber emails are set
+        if (! empty($emails)) {
+            $collection->addFieldToFilter('subscriber_email', $emails);
+        }
+
+        $alias = 'subselect';
+        $connection = $this->getConnection();
+        $subselect = $connection->select()
+            ->from(
+                $salesOrder, [
+                    'customer_email as s_customer_email',
+                    'sum(grand_total) as total_spend',
+                    'count(*) as number_of_orders',
+                    'avg(grand_total) as average_order_value',
+                ]
+            )
+            ->group('customer_email');
+        //any order statuses selected
+        if (! empty($statuses)) {
+            $subselect->where('status in (?)', $statuses);
+        }
+
+        $columns = $this->buildCollectionColumns($salesOrder, $salesOrderItem, $catalogCategoryProductIndex);
+
+        /**
+         * CatalogStaging fix.
+         * @todo this will fix https://github.com/magento/magento2/issues/6478
+         */
+        $rowIdExists = $this->isRowIdExistsInCatalogProductEntityId();
+
+        if ($rowIdExists) {
+            $mostData = new \Zend_Db_Expr(
+                "(
+                    SELECT eaov.value from $salesOrder sfo
+                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                    LEFT JOIN $catalogProductEntityInt pei on pei.row_id = sfoi.product_id
+                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
+                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
+                    WHERE sfo.customer_email = main_table.subscriber_email AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
+                    GROUP BY eaov.value
+                    HAVING count(*) > 0
+                    ORDER BY count(*) DESC
+                    LIMIT 1
+                )"
+            );
+        } else {
+            $mostData = new \Zend_Db_Expr(
+                "(
+                    SELECT eaov.value from $salesOrder sfo
+                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                    LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
+                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
+                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
+                    WHERE sfo.customer_email = main_table.subscriber_email AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
+                    GROUP BY eaov.value
+                    HAVING count(*) > 0
+                    ORDER BY count(*) DESC
+                    LIMIT 1
+                )"
+            );
+
+        }
+
+        $columns['most_brand'] = $mostData;
+        $collection->getSelect()->columns(
+            $columns
+        );
+
+        $collection->getSelect()
+            ->joinLeft(
+                [$alias => $subselect],
+                "{$alias}.s_customer_email = main_table.subscriber_email"
+            );
+        return $collection;
+    }
+
+    /**
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @param $catalogCategoryProductIndex
+     * @return array
+     */
+    private function buildCollectionColumns($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
+    {
+        $columns = [
+            'last_order_date' => $this->createLastOrderDataColumn($salesOrder),
+            'last_order_id' => $this->createLastOrderIdColumn($salesOrder),
+            'last_increment_id' => $this->createLastIncrementIdColumn($salesOrder),
+            'first_category_id' => $this->createFirstCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex),
+            'last_category_id' => $this->createLastCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex),
+            'product_id_for_first_brand' => $this->createProductIdForFirstBrandColumn($salesOrder, $salesOrderItem),
+            'product_id_for_last_brand' => $this->createProductIdForLastBrandColumn($salesOrder, $salesOrderItem),
+            'week_day' => $this->createWeekDayColumn($salesOrder),
+            'month_day' => $this->createMonthDayColumn($salesOrder),
+            'most_category_id' => $this->createMostCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
+        ];
+        return $columns;
+    }
+
+    /**
+     * @param $salesOrder
+     * @return \Zend_Db_Expr
+     */
+    private function createLastOrderDataColumn($salesOrder)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT created_at FROM $salesOrder 
+                        WHERE customer_email = main_table.subscriber_email 
+                        ORDER BY created_at DESC 
+                        LIMIT 1
+                )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @return \Zend_Db_Expr
+     */
+    private function createLastOrderIdColumn($salesOrder)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT entity_id FROM $salesOrder
+                        WHERE customer_email = main_table.subscriber_email 
+                        ORDER BY created_at DESC 
+                        LIMIT 1
+                )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @return \Zend_Db_Expr
+     */
+    private function createLastIncrementIdColumn($salesOrder)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT increment_id FROM $salesOrder
+                        WHERE customer_email = main_table.subscriber_email 
+                        ORDER BY created_at DESC 
+                        LIMIT 1
+                )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @param $catalogCategoryProductIndex
+     * @return \Zend_Db_Expr
+     */
+    private function createFirstCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT ccpi.category_id FROM $salesOrder as sfo
+                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
+                        WHERE sfo.customer_email = main_table.subscriber_email
+                        ORDER BY sfo.created_at ASC, sfoi.price DESC
+                        LIMIT 1
+                    )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @param $catalogCategoryProductIndex
+     * @return \Zend_Db_Expr
+     */
+    private function createLastCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT ccpi.category_id FROM $salesOrder as sfo
+                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
+                        WHERE sfo.customer_email = main_table.subscriber_email
+                        ORDER BY sfo.created_at DESC, sfoi.price DESC
+                        LIMIT 1
+                    )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @return \Zend_Db_Expr
+     */
+    private function createProductIdForFirstBrandColumn($salesOrder, $salesOrderItem)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT sfoi.product_id FROM $salesOrder as sfo
+                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        WHERE sfo.customer_email = main_table.subscriber_email and sfoi.product_type = 'simple'
+                        ORDER BY sfo.created_at ASC, sfoi.price DESC
+                        LIMIT 1
+                    )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @return \Zend_Db_Expr
+     */
+    private function createProductIdForLastBrandColumn($salesOrder, $salesOrderItem)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT sfoi.product_id FROM $salesOrder as sfo
+                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        WHERE sfo.customer_email = main_table.subscriber_email and sfoi.product_type = 'simple'
+                        ORDER BY sfo.created_at DESC, sfoi.price DESC
+                        LIMIT 1
+                    )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @return \Zend_Db_Expr
+     */
+    private function createWeekDayColumn($salesOrder)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT dayname(created_at) as week_day
+                        FROM $salesOrder
+                        WHERE customer_email = main_table.subscriber_email
+                        GROUP BY week_day
+                        HAVING COUNT(*) > 0
+                        ORDER BY (COUNT(*)) DESC
+                        LIMIT 1
+                    )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @return \Zend_Db_Expr
+     */
+    private function createMonthDayColumn($salesOrder)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT monthname(created_at) as month_day
+                        FROM $salesOrder
+                        WHERE customer_email = main_table.subscriber_email
+                        GROUP BY month_day
+                        HAVING COUNT(*) > 0
+                        ORDER BY (COUNT(*)) DESC
+                        LIMIT 1
+                    )"
+        );
+    }
+
+    /**
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @param $catalogCategoryProductIndex
+     * @return \Zend_Db_Expr
+     */
+    private function createMostCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                        SELECT ccpi.category_id FROM $salesOrder as sfo
+                        LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        LEFT JOIN $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
+                        WHERE sfo.customer_email = main_table.subscriber_email AND ccpi.category_id is not null
+                        GROUP BY category_id
+                        HAVING COUNT(sfoi.product_id) > 0
+                        ORDER BY COUNT(sfoi.product_id) DESC
+                        LIMIT 1
+                    )"
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    private function isRowIdExistsInCatalogProductEntityId()
+    {
+        $connection = $this->getConnection();
+
+        return $connection->tableColumnExists(
+            $connection->getTableName('catalog_product_entity_int'),
+            'row_id'
+        );
+    }
+
+    /**
+     * Customer collection with all data ready for export.
+     *
+     * @param     $customerIds
+     * @param     $statuses
+     *
+     * @return $this
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getCustomerCollectionByIds($customerIds, $statuses)
+    {
+        $customerCollection = $this->buildCustomerCollection($customerIds);
+
+        $quote = $this->getConnection()->getTableName(
+            'quote'
+        );
+        $salesOrder = $this->getConnection()->getTableName(
+            'sales_order'
+        );
+        $customerLog = $this->getConnection()->getTableName(
+            'customer_log'
+        );
+        $eavAttribute = $this->getConnection()->getTableName(
+            'eav_attribute'
+        );
+        $salesOrderGrid = $this->getConnection()->getTableName(
+            'sales_order_grid'
+        );
+        $salesOrderItem = $this->getConnection()->getTableName(
+            'sales_order_item'
+        );
+        $catalogCategoryProductIndex = $this->getConnection()->getTableName(
+            'catalog_category_product'
+        );
+        $eavAttributeOptionValue = $this->getConnection()->getTableName(
+            'eav_attribute_option_value'
+        );
+        $catalogProductEntityInt = $this->getConnection()->getTableName(
+            'catalog_product_entity_int'
+        );
+
+        // get the last login date from the log_customer table
+        $customerCollection->getSelect()->columns([
+            'last_logged_date' => new \Zend_Db_Expr(
+                "(SELECT last_login_at FROM  $customerLog WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1)"
+            ),
+        ]);
+
+        // customer order information
+        $alias = 'subselect';
+
+        $orderTable = $this->getConnection()->getTableName('sales_order');
+        $connection = $this->getConnection();
+        $subselect = $connection->select()
+            ->from(
+                $orderTable, [
+                    'customer_id as s_customer_id',
+                    'sum(grand_total) as total_spend',
+                    'count(*) as number_of_orders',
+                    'avg(grand_total) as average_order_value',
+                ]
+            )
+            ->group('customer_id');
+        //any order statuses selected
+        if ($statuses) {
+            $subselect->where('status in (?)', $statuses);
+        }
+
+        $columnData = $this->buildColumnData(
+            $salesOrderGrid,
+            $quote,
+            $salesOrder,
+            $salesOrderItem,
+            $catalogCategoryProductIndex
+        );
+        $mostData = $this->buildMostData(
+            $salesOrder,
+            $salesOrderItem,
+            $catalogProductEntityInt,
+            $eavAttribute,
+            $eavAttributeOptionValue
+        );
+
+        $columnData['most_brand'] = $mostData;
+        $customerCollection->getSelect()->columns(
+            $columnData
+        );
+
+        $customerCollection->getSelect()
+            ->joinLeft(
+                [$alias => $subselect],
+                "{$alias}.s_customer_id = e.entity_id"
+            );
+
+        return $customerCollection;
+    }
+
+    /**
+     * @param $customerIds
+     * @return mixed
+     */
+    private function buildCustomerCollection($customerIds)
+    {
+        $customerCollection = $this->customerCollection->create()
+            ->addAttributeToSelect('*')
+            ->addNameToSelect();
+        $customerCollection = $this->addBillingJoinAttributesToCustomerCollection($customerCollection);
+        $customerCollection = $this->addShippingJoinAttributesToCustomerCollection($customerCollection);
+        $customerCollection = $customerCollection->addAttributeToFilter('entity_id', ['in' => $customerIds]);
+        return $customerCollection;
+    }
+
+    /**
+     * @param $salesOrderGrid
+     * @param $quote
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @param $catalogCategoryProductIndex
+     * @return array
+     */
+    private function buildColumnData($salesOrderGrid, $quote, $salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
+    {
+        $columnData = [
+            'last_order_date' => new \Zend_Db_Expr(
+                "(SELECT created_at FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
+            ),
+            'last_order_id' => new \Zend_Db_Expr(
+                "(SELECT entity_id FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
+            ),
+            'last_increment_id' => new \Zend_Db_Expr(
+                "(SELECT increment_id FROM $salesOrderGrid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"
+            ),
+            'last_quote_id' => new \Zend_Db_Expr(
+                "(SELECT entity_id FROM $quote WHERE customer_id = e.entity_id ORDER BY created_at DESC LIMIT 1)"
+            ),
+            'first_category_id' => new \Zend_Db_Expr(
+                "(
+                        SELECT ccpi.category_id FROM $salesOrder as sfo
+                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
+                        WHERE sfo.customer_id = e.entity_id
+                        ORDER BY sfo.created_at ASC, sfoi.price DESC
+                        LIMIT 1
+                    )"
+            ),
+            'last_category_id' => new \Zend_Db_Expr(
+                "(
+                        SELECT ccpi.category_id FROM $salesOrder as sfo
+                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
+                        WHERE sfo.customer_id = e.entity_id
+                        ORDER BY sfo.created_at DESC, sfoi.price DESC
+                        LIMIT 1
+                    )"
+            ),
+            'product_id_for_first_brand' => new \Zend_Db_Expr(
+                "(
+                        SELECT sfoi.product_id FROM $salesOrder as sfo
+                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
+                        ORDER BY sfo.created_at ASC, sfoi.price DESC
+                        LIMIT 1
+                    )"
+            ),
+            'product_id_for_last_brand' => new \Zend_Db_Expr(
+                "(
+                        SELECT sfoi.product_id FROM $salesOrder as sfo
+                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
+                        ORDER BY sfo.created_at DESC, sfoi.price DESC
+                        LIMIT 1
+                    )"
+            ),
+            'week_day' => new \Zend_Db_Expr(
+                "(
+                        SELECT dayname(created_at) as week_day
+                        FROM $salesOrder
+                        WHERE customer_id = e.entity_id
+                        GROUP BY week_day
+                        HAVING COUNT(*) > 0
+                        ORDER BY (COUNT(*)) DESC
+                        LIMIT 1
+                    )"
+            ),
+            'month_day' => new \Zend_Db_Expr(
+                "(
+                        SELECT monthname(created_at) as month_day
+                        FROM $salesOrder
+                        WHERE customer_id = e.entity_id
+                        GROUP BY month_day
+                        HAVING COUNT(*) > 0
+                        ORDER BY (COUNT(*)) DESC
+                        LIMIT 1
+                    )"
+            ),
+            'most_category_id' => new \Zend_Db_Expr(
+                "(
+                        SELECT ccpi.category_id FROM $salesOrder as sfo
+                        LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                        LEFT JOIN $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
+                        WHERE sfo.customer_id = e.entity_id AND ccpi.category_id is not null
+                        GROUP BY category_id
+                        HAVING COUNT(sfoi.product_id) > 0
+                        ORDER BY COUNT(sfoi.product_id) DESC
+                        LIMIT 1
+                    )"
+            )
+        ];
+        return $columnData;
+    }
+
+    /**
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @param $catalogProductEntityInt
+     * @param $eavAttribute
+     * @param $eavAttributeOptionValue
+     * @return \Zend_Db_Expr
+     */
+    private function buildMostData($salesOrder, $salesOrderItem, $catalogProductEntityInt, $eavAttribute, $eavAttributeOptionValue)
+    {
+        /**
+         * CatalogStaging fix.
+         * @todo this will fix https://github.com/magento/magento2/issues/6478
+         */
+        $rowIdExists = $this->isRowIdExistsInCatalogProductEntityId();
+
+        if ($rowIdExists) {
+            $mostData = new \Zend_Db_Expr(
+                "(
+                    SELECT eaov.value from $salesOrder sfo
+                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                    LEFT JOIN $catalogProductEntityInt pei on pei.row_id = sfoi.product_id
+                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
+                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
+                    WHERE sfo.customer_id = e.entity_id AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
+                    GROUP BY eaov.value
+                    HAVING count(*) > 0
+                    ORDER BY count(*) DESC
+                    LIMIT 1
+                )"
+            );
+        } else {
+            $mostData = new \Zend_Db_Expr(
+                "(
+                    SELECT eaov.value from $salesOrder sfo
+                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                    LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
+                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
+                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
+                    WHERE sfo.customer_id = e.entity_id AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
+                    GROUP BY eaov.value
+                    HAVING count(*) > 0
+                    ORDER BY count(*) DESC
+                    LIMIT 1
+                )"
+            );
+
+        }
+        return $mostData;
+    }
+
+    /**
+     * @param $customerCollection
+     * @return mixed
+     */
+    private function addShippingJoinAttributesToCustomerCollection($customerCollection)
+    {
+        $customerCollection = $customerCollection->joinAttribute(
+            'shipping_street',
+            'customer_address/street',
+            'default_shipping',
+            null,
+            'left'
+        )
+            ->joinAttribute(
+                'shipping_city',
+                'customer_address/city',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_country_code',
+                'customer_address/country_id',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_postcode',
+                'customer_address/postcode',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_telephone',
+                'customer_address/telephone',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_region',
+                'customer_address/region',
+                'default_shipping',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'shipping_company',
+                'customer_address/company',
+                'default_shipping',
+                null,
+                'left'
+            );
+        return $customerCollection;
+    }
+
+    /**
+     * @param $customerCollection
+     * @return mixed
+     */
+    private function addBillingJoinAttributesToCustomerCollection($customerCollection)
+    {
+        $customerCollection = $customerCollection->joinAttribute(
+            'billing_street',
+            'customer_address/street',
+            'default_billing',
+            null,
+            'left'
+        )
+            ->joinAttribute(
+                'billing_city',
+                'customer_address/city',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_country_code',
+                'customer_address/country_id',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_postcode',
+                'customer_address/postcode',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_telephone',
+                'customer_address/telephone',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_region',
+                'customer_address/region',
+                'default_billing',
+                null,
+                'left'
+            )
+            ->joinAttribute(
+                'billing_company',
+                'customer_address/company',
+                'default_billing',
+                null,
+                'left'
+            );
+        return $customerCollection;
+    }
+
+    /**
+     * Set imported by id
+     *
+     * @param $ids
+     */
+    public function setImportedByIds($ids)
+    {
+        $this->getConnection()->update(
+            $this->getMainTable(),
+            ['email_imported' => 1],
+            ["customer_id IN (?)" => $ids]
+        );
+    }
+
+    /**
+     * Get last cron ran date
+     *
+     * @param $cronJob
+     * @return mixed
+     */
+    public function getDateLastCronRun($cronJob)
+    {
+        $collection = $this->schelduleFactory->create()
+            ->getCollection()
+            ->addFieldToFilter('status', \Magento\Cron\Model\Schedule::STATUS_SUCCESS)
+            ->addFieldToFilter('job_code', $cronJob);
+        //limit and order the results
+        $collection->getSelect()
+            ->limit(1)
+            ->order('executed_at DESC');
+
+        if ($collection->getSize() == 0) {
+            return false;
+        }
+        $executedAt = $collection->getFirstItem()->getExecutedAt();
+
+        return $executedAt;
     }
 }

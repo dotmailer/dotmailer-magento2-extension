@@ -45,6 +45,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      */
     public function __construct(
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
@@ -75,6 +76,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     {
         $customer = $observer->getEvent()->getCustomer();
         $websiteId  = $customer->getWebsiteId();
+        $storeId = $customer->getStoreId();
 
         //check if enabled
         if (!$this->helper->isEnabled($websiteId)) {
@@ -95,6 +97,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             if ($emailReg) {
                 return $this;
             }
+            $this->registry->unregister($email . '_customer_save'); // additional measure
             $this->registry->register($email . '_customer_save', $email);
 
             $isContactExist = $this->contactFactory->create()
@@ -132,8 +135,9 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 $contactModel->setEmail($email);
             }
             $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
-                ->setCustomerId($customerId)
-                ->save();
+                ->setStoreId($storeId)
+                ->setCustomerId($customerId);
+            $contactModel->getResource()->save($contactModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

@@ -56,6 +56,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
                 //grab the datafields request and save to register
                 $client = $this->helper->getWebsiteApiClient($this->helper->getWebsite());
                 $campaigns = $client->getCampaigns();
+                $this->registry->unregister('campaigns'); // additional measure
                 $this->registry->register('campaigns', $campaigns);
             }
 
@@ -67,12 +68,10 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
                 //loop for all campaing options
                 foreach ($campaigns as $campaign) {
                     if (isset($campaign->name)) {
-                        //@codingStandardsIgnoreStart
                         $fields[] = [
                             'value' => $campaign->id,
                             'label' => $this->escaper->escapeQuote($campaign->name),
                         ];
-                        //@codingStandardsIgnoreEnd
                     }
                 }
             }

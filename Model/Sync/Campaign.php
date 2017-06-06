@@ -50,6 +50,8 @@ class Campaign
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
+     * @param \Magento\Store\Model\WebsiteFactory $websiteFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResourceModel
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory,
@@ -77,12 +79,11 @@ class Campaign
         foreach ($this->storeManager->getWebsites(true) as $website) {
             //check send status for processing
             $this->_checkSendStatus($website);
-            //@codingStandardsIgnoreStart
             //start send process
-            $storeIds = $this->websiteFactory->create()
-                ->load($website->getId())
-                ->getStoreIds();
-            //@codingStandardsIgnoreEnd
+            $website = $this->websiteFactory->create();
+            $website->getResource()->load($website, $website->getId());
+            $storeIds = $website->getStoreIds();
+
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = $this->getCampaignsToSend($emailsToSend, $website);
             $this->sendCampaignsViaDotmailer($campaignsToSend);
@@ -90,44 +91,14 @@ class Campaign
     }
 
     /**
-     * Get campaign collection
-     *
-     * @param $storeIds
-     * @param $sendStatus
-     * @param $sendIdCheck
-     * @return mixed
-     */
-    public function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
-    {
-        $emailCollection = $this->campaignCollection->create()
-            ->addFieldToFilter('send_status', $sendStatus)
-            ->addFieldToFilter('campaign_id', ['notnull' => true])
-            ->addFieldToFilter('store_id', ['in' => $storeIds]);
-
-        //check for send id
-        if ($sendIdCheck) {
-            $emailCollection->addFieldToFilter('send_id', ['notnull' => true])
-                ->getSelect()
-                ->group('send_id');
-        } else {
-            $emailCollection->getSelect()
-                ->order('campaign_id');
-        }
-
-        $emailCollection->getSelect()
-            ->limit(self::SEND_EMAIL_CONTACT_LIMIT);
-
-        return $emailCollection;
-    }
-
-    /**
      * @param $website
      */
     public function _checkSendStatus($website)
     {
-        $storeIds = $this->websiteFactory->create()
-            ->load($website->getId())
-            ->getStoreIds();
+        $websiteModel = $this->websiteFactory->create();
+        $websiteModel->getResource()->load($website, $website->getId());
+        $storeIds = $websiteModel->getStoreIds();
+
         $campaigns = $this->_getEmailCampaigns(
             $storeIds,
             \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
@@ -146,11 +117,11 @@ class Campaign
     }
 
     /**
+     * Get campaigns to send
+     *
      * @param $emailsToSend
      * @param $website
-     * @param $campaignsToSend
-     * @param $data
-     * @return mixed
+     * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function getCampaignsToSend($emailsToSend, $website)
@@ -166,19 +137,17 @@ class Campaign
             }
             //Only if valid client is returned
             if ($client) {
-                //@codingStandardsIgnoreStart
                 if (!$campaignId) {
                     $campaign->setMessage('Missing campaign id: ' . $campaignId)
-                        ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                        ->save();
+                        ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
+                    $this->campaignResourceModel->saveItem($campaign);
                     continue;
                 } elseif (!$email) {
                     $campaign->setMessage('Missing email')
-                        ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                        ->save();
+                        ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
+                    $this->campaignResourceModel->saveItem($campaign);
                     continue;
                 }
-                //@codingStandardsIgnoreEnd
                 $campaignsToSend[$campaignId]['client'] = $client;
                 try {
                     $contactId = $this->helper->getContactId(
@@ -193,12 +162,10 @@ class Campaign
                         $campaignsToSend[$campaignId]['contacts'][] = $contactId;
                         $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
                     } else {
-                        //@codingStandardsIgnoreStart
                         //update the failed to send email message error message
                         $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                            ->setMessage('Send not permitted. Contact is suppressed.')
-                            ->save();
-                        //@codingStandardsIgnoreEnd
+                            ->setMessage('Send not permitted. Contact is suppressed.');
+                        $this->campaignResourceModel->saveItem($campaign);
                     }
                 } catch (\Exception $e) {
                     throw new \Magento\Framework\Exception\LocalizedException(
@@ -211,8 +178,9 @@ class Campaign
     }
 
     /**
+     * Send campaigns
+     *
      * @param $campaignsToSend
-     * @return array
      */
     private function sendCampaignsViaDotmailer($campaignsToSend)
     {
@@ -236,6 +204,20 @@ class Campaign
                 }
             }
         }
+    }
+
+    /**
+     * Get campaign collection
+     *
+     * @param $storeIds
+     * @param $sendStatus
+     * @param $sendIdCheck
+     * @return mixed
+     */
+    public function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
+    {
+        return $this->campaignCollection->create()
+            ->getEmailCampaignsByStoreIds($storeIds, $sendStatus, $sendIdCheck);
     }
 
     /**

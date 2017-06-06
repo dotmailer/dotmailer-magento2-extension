@@ -9,7 +9,7 @@ use Magento\Ui\Component\MassAction\Filter;
 class MassDelete extends ImporterController
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory
      */
     private $collectionFactory;
 
@@ -49,7 +49,7 @@ class MassDelete extends ImporterController
         $collectionSize = $collection->getSize();
 
         foreach ($collection as $item) {
-            $item->delete();
+            $item->getResource()->delete($item);
         }
 
         $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));

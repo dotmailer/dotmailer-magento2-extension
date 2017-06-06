@@ -232,7 +232,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
                             });
                             $$('.admin__control-table tr td select').each(function(item) {
                                 Event.observe(item,'change', function(){
-                                     if(item.readAttribute('title') == 'conditions'){
+                                     if(item.readAttribute('title') === 'conditions'){
                                         doUpdateForCondition(item);
                                      }
                                 });
@@ -263,7 +263,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
                                 $$('.admin__control-table tr td select').each(function(item) {
                                     Event.observe(item,'change', function(){
-                                         if(item.readAttribute('title') == 'conditions'){
+                                         if(item.readAttribute('title') === 'conditions'){
                                             doUpdateForCondition(item);
                                          }
                                     });
@@ -299,7 +299,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
                                 $$('.admin__control-table tr td select').each(function(item) {
                                     Event.observe(item,'change', function(){
-                                         if(item.readAttribute('title') == 'conditions'){
+                                         if(item.readAttribute('title') === 'conditions'){
                                             doUpdateForCondition(item);
                                          }
                                     });

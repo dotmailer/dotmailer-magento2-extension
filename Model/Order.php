@@ -26,7 +26,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Order constructor.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection $salesCollection
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesCollection
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
@@ -63,21 +63,15 @@ class Order extends \Magento\Framework\Model\AbstractModel
      */
     public function loadByOrderId($orderId, $quoteId)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('order_id', $orderId)
-            ->addFieldToFilter('quote_id', $quoteId)
-            ->setPageSize(1);
+        $item = $this->getCollection()
+            ->loadByOrderIdAndQuoteId($orderId, $quoteId);
 
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
+        if ($item) {
+            return $item;
         } else {
-            $this->setOrderId($orderId)
+            return $this->setOrderId($orderId)
                 ->setQuoteId($quoteId);
         }
-
-        return $this;
     }
 
     /**
@@ -91,23 +85,17 @@ class Order extends \Magento\Framework\Model\AbstractModel
      */
     public function getEmailOrderRow($orderId, $quoteId, $storeId)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('order_id', $orderId)
-            ->addFieldToFilter('quote_id', $quoteId)
-            ->addFieldToFilter('store_id', $storeId);
+        $item = $this->getCollection()
+            ->getEmailOrderRow($orderId, $quoteId, $storeId);
 
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
+        if ($item) {
+            return $item;
         } else {
-            $this->setOrderId($orderId)
+            return $this->setOrderId($orderId)
                 ->setQuoteId($quoteId)
                 ->setStoreId($storeId)
                 ->setCreatedAt(time());
         }
-
-        return $this;
     }
 
     /**
@@ -116,57 +104,40 @@ class Order extends \Magento\Framework\Model\AbstractModel
      * @param $storeIds
      * @param $limit
      * @param $orderStatuses
-     * @return
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection|\Magento\Framework\DataObject
      */
     public function getOrdersToImport($storeIds, $limit, $orderStatuses)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('store_id', ['in' => $storeIds])
-            ->addFieldToFilter('order_status', ['in' => $orderStatuses])
-            ->addFieldToFilter('email_imported', ['null' => true]);
-
-        $collection->getSelect()->limit($limit);
-
-        return $collection;
+        return $this->getCollection()
+            ->getOrdersToImport($storeIds, $limit, $orderStatuses);
     }
 
     /**
-     * Get pending modfied orders to import.
+     * Get pending modified orders to import.
+     *
      * @param $storeIds
      * @param $limit
      * @param $orderStatuses
-     * @return
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection
      */
     public function getModifiedOrdersToImport($storeIds, $limit, $orderStatuses)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('store_id', ['in' => $storeIds])
-            ->addFieldToFilter('order_status', ['in' => $orderStatuses])
-            ->addFieldToFilter('email_imported', '1')
-            ->addFieldToFilter('modified', '1');
-
-        $collection->getSelect()->limit($limit);
-
-        return $collection;
+        return $this->getCollection()
+            ->getModifiedOrdersToImport($storeIds, $limit, $orderStatuses);
     }
 
     /**
-     * Get all sent orders older then certain days.
+     * Get all sent orders
      *
      * @param array $storeIds
      * @param int $limit
      *
-     * @return
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection
      */
     public function getAllSentOrders($storeIds, $limit)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('email_imported', 1)
-            ->addFieldToFilter('store_id', ['in' => $storeIds]);
-
-        $collection->getSelect()->limit($limit);
-
-        return $collection->load();
+        return $this->getCollection()
+            ->getAllSentOrders($storeIds, $limit);
     }
 
     /**

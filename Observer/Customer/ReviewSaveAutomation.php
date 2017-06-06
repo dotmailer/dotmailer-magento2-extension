@@ -74,8 +74,8 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             $store = $this->storeManager->getStore($dataObject->getStoreId());
             $storeName = $store->getName();
             $website = $this->storeManager->getStore($store)->getWebsite();
-            $customer = $this->customerFactory->create()
-                ->load($customerId);
+            $customer = $this->customerFactory->create();
+            $customer->getResource()->load($customer, $customerId);
             //if api is not enabled
             if (!$this->helper->isEnabled($website)) {
                 return $this;
@@ -92,7 +92,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
                     ->setWebsiteId($website->getId())
                     ->setStoreName($storeName)
                     ->setProgramId($programId);
-                $automation->save();
+                $automation->getResource()->save($automation);
             }
         }
 
@@ -107,11 +107,11 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     private function registerReview($review)
     {
         try {
-            $this->reviewFactory->create()
-                ->setReviewId($review->getReviewId())
+            $reviewModel = $this->reviewFactory->create();
+            $reviewModel->setReviewId($review->getReviewId())
                 ->setCustomerId($review->getCustomerId())
-                ->setStoreId($review->getStoreId())
-                ->save();
+                ->setStoreId($review->getStoreId());
+            $reviewModel->getResource()->save($reviewModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

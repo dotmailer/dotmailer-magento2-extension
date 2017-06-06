@@ -19,9 +19,10 @@ class Update extends Delete
     /**
      * Update constructor.
      *
-     * @param Contact                                     $contactResource
-     * @param \Dotdigitalgroup\Email\Helper\Data          $helper
-     * @param \Dotdigitalgroup\Email\Helper\File          $fileHelper
+     * @param Contact $contactResource
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
+     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      */
     public function __construct(
@@ -81,7 +82,9 @@ class Update extends Delete
                 $result = $this->syncItemSubscriberUpdateMode($importData, $websiteId);
             }
 
-            $this->_handleSingleItemAfterSync($item, $result);
+            if (isset($result)) {
+                $this->_handleSingleItemAfterSync($item, $result);
+            }
         }
     }
 
@@ -134,9 +137,10 @@ class Update extends Delete
             == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED
         ) {
             $apiContact = $this->client->getContactByEmail($email);
-            $result = $this->client->postContactsResubscribe($apiContact);
+            return $this->client->postContactsResubscribe($apiContact);
         }
-        return $result;
+
+        return false;
     }
 
     /**

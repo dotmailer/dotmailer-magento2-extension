@@ -32,7 +32,7 @@ class Type
      *
      * @param string $attribute
      *
-     * @return array
+     * @return mixed
      */
     public function getInputType($attribute)
     {
@@ -56,8 +56,6 @@ class Type
                 );
                 return $this->processAttribute($attribute);
         }
-
-        return 'string';
     }
 
     /**
@@ -73,6 +71,8 @@ class Type
         if ($attribute->usesSource()) {
             return 'select';
         }
+
+        return false;
     }
 
     /**

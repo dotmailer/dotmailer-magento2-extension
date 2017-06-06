@@ -73,11 +73,9 @@ class Subscriber
                 $function .= ucfirst($one);
             }
             try {
-                //@codingStandardsIgnoreStart
                 $value = call_user_func(
                     array('self', $function)
                 );
-                //@codingStandardsIgnoreEnd
                 $this->subscriberData[$key] = $value;
             } catch (\Exception $e) {
                 throw new \Magento\Framework\Exception\LocalizedException(
@@ -254,8 +252,10 @@ class Subscriber
     {
         $id = $this->subscriber->getMostCategoryId();
         if ($id) {
-            return $this->categoryFactory->create()->load($id)
-                ->setStoreId($this->subscriber->getStoreId())
+            $category = $this->categoryFactory->create();
+            $category->getResource()->load($category, $id);
+
+            return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
         }
 
@@ -313,8 +313,10 @@ class Subscriber
     {
         $id = $this->subscriber->getFirstCategoryId();
         if ($id) {
-            return $this->categoryFactory->create()->load($id)
-                ->setStoreId($this->subscriber->getStoreId())
+            $category = $this->categoryFactory->create();
+            $category->getResource()->load($category, $id);
+
+            return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
         }
 
@@ -331,9 +333,10 @@ class Subscriber
         $categoryId = $this->subscriber->getLastCategoryId();
         //customer last category id
         if ($categoryId) {
-            return $this->categoryFactory->create()
-                ->setStoreId($this->subscriber->getStoreId())
-                ->load($categoryId)
+            $category = $this->categoryFactory->create();
+            $category->getResource()->load($category, $categoryId);
+
+            return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
         }
 
@@ -373,12 +376,13 @@ class Subscriber
         );
         //if the id and attribute found
         if ($id && $attribute) {
-            $brand = $this->productFactory->create()
-                ->setStoreId($this->subscriber->getStoreId())
-                ->load($id)
-                ->getAttributeText($attribute);
+            $brand = $this->productFactory->create();
+            $brand->getResource()->load($brand, $id);
+            $brand = $brand->setStoreId($this->subscriber->getStoreId());
+
+            $text = $brand->getAttributeText($attribute);
             //check for brand text
-            if ($brand) {
+            if ($text) {
                 return $brand;
             }
         }

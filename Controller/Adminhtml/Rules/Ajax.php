@@ -25,7 +25,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
     private $ruleValue;
 
     /**
-     * @var \Magento\Framework\Json\Encoder
+     * @var \Magento\Framework\Json\Helper\Data
      */
     private $jsonEncoder;
 
@@ -41,7 +41,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type      $ruleType
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
-     * @param \Magento\Framework\Json\Encoder                               $jsonEncoder
+     * @param \Magento\Framework\Json\Helper\Data                           $jsonEncoder
      * @param \Magento\Framework\App\Response\Http                          $http
      * @param \Magento\Framework\Escaper                                    $escaper
      */
@@ -50,7 +50,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
-        \Magento\Framework\Json\Encoder $jsonEncoder,
+        \Magento\Framework\Json\Helper\Data $jsonEncoder,
         \Magento\Framework\App\Response\Http $http,
         \Magento\Framework\Escaper $escaper
     ) {
@@ -111,7 +111,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')
                 ->setBody(
-                    $this->jsonEncoder->encode($response)
+                    $this->jsonEncoder->jsonEncode($response)
                 );
         }
     }

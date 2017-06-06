@@ -83,6 +83,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
                         $this->connectorCatalogFactory->create()
                             ->reset();
                     }
+                    $this->registry->unregister('core_config_data_save_after_done'); // additional measure
                     $this->registry->register(
                         'core_config_data_save_after_done',
                         true
@@ -111,6 +112,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
                         $this->connectorContactFactory->create()
                             ->resetAllContacts();
                     }
+                    $this->registry->unregister('core_config_data_save_after_done_status'); // additional measure
                     $this->registry->register(
                         'core_config_data_save_after_done_status',
                         true

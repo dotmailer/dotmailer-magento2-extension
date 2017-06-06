@@ -15,11 +15,9 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
     private $registry;
 
     /**
-     * Configuration structure.
-     *
-     * @var \Magento\Config\Model\Config\Structure
+     * @var \Magento\Store\Model\StoreManagerInterface
      */
-    private $configStructure;
+    private $storeManager;
 
     /**
      * Datafields constructor.
@@ -35,7 +33,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
     ) {
         $this->helper        = $data;
         $this->registry      = $registry;
-        $this->_storeManager = $storeManager;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -60,6 +58,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
                 //grab the datafields request and save to register
                 $client = $this->helper->getWebsiteApiClient();
                 $datafields = $client->getDatafields();
+                $this->registry->unregister('datafields'); // additional measure
                 $this->registry->register('datafields', $datafields);
             }
 

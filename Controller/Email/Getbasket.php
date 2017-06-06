@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-use Magento\TestFramework\Event\Magento;
-
 class Getbasket extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -154,7 +152,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                     $currentQuote->addItem($item);
                 }
             }
-            $currentQuote->collectTotals()->save();
+            $currentQuote->collectTotals();
+            $currentQuote->getResource()->save($currentQuote);
         }
     }
 

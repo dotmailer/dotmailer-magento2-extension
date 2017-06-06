@@ -118,7 +118,9 @@
             <th class="other-text"
                 style="padding: 5px; border-bottom: 1px solid #cbd3d4;"><?php echo $block->escapeHtml(__('Total')); ?></th>
         </tr>
+        <?php $grandTotal = 0; ?>
         <?php foreach ($items as $item): ?>
+            <?php $grandTotal = $item['grandTotal']; ?>
             <tr>
                 <td style="padding: 5px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
                     <?php echo $block->getImage(
@@ -143,7 +145,7 @@
             <td class="hidemob" style="border: none;"></td>
             <td class="hidemob" style="border: none;"></td>
             <td class="other-text" style="padding: 5px;">
-                <?php echo $block->escapeHtml(__('Total: ')) . $item['grandTotal']; ?>
+                <?php echo $block->escapeHtml(__('Total: ')) . $grandTotal; ?>
             </td>
         </tr>
     </table>

@@ -76,7 +76,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
                     ->loadByCustomerEmail($email, $websiteId);
                 if ($contactModel->getId()) {
                     //remove contact
-                    $contactModel->delete();
+                    $contactModel->getResource()->delete($contactModel);
                 }
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);
