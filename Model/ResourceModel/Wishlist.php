@@ -131,7 +131,6 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $coreResource = $this->getConnection();
             $tableName = $coreResource->getTableName('email_wishlist');
-            $ids = implode(', ', $ids);
 
             //mark imported modified wishlists
             if ($modified) {
