@@ -180,7 +180,6 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $coreResource = $this->getConnection();
             $tableName = $coreResource->getTableName('email_review');
-            $ids = implode(', ', $ids);
             $coreResource->update(
                 $tableName,
                 ['review_imported' => 1, 'updated_at' => $nowDate],
@@ -233,9 +232,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             )
             ->setPage(1, 1);
 
-        $product->getFirstItem();
-
-        return $product;
+        return $product->getFirstItem();
     }
 
     /**
