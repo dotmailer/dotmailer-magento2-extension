@@ -81,9 +81,9 @@ class Campaign
             $this->_checkSendStatus($website);
             //start send process
             $website = $this->websiteFactory->create();
-            $storeIds = $website->getResource()
-                ->load($website, $website->getId())
-                ->getStoreIds();
+            $website->getResource()->load($website, $website->getId());
+            $storeIds = $website->getStoreIds();
+
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = $this->getCampaignsToSend($emailsToSend, $website);
             $this->sendCampaignsViaDotmailer($campaignsToSend);
@@ -96,9 +96,9 @@ class Campaign
     public function _checkSendStatus($website)
     {
         $websiteModel = $this->websiteFactory->create();
-        $storeIds = $websiteModel->getResource()
-            ->load($website, $website->getId())
-            ->getStoreIds();
+        $websiteModel->getResource()->load($website, $website->getId());
+        $storeIds = $websiteModel->getStoreIds();
+
         $campaigns = $this->_getEmailCampaigns(
             $storeIds,
             \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
