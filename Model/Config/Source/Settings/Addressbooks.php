@@ -63,6 +63,7 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
                 //make an api call an register the addressbooks
                 $addressBooks = $client->getAddressBooks();
                 if ($addressBooks) {
+                    $this->registry->unregister('addressbooks'); // additional measure
                     $this->registry->register('addressbooks', $addressBooks);
                 }
             }

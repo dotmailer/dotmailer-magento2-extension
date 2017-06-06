@@ -56,6 +56,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
                 //grab the datafields request and save to register
                 $client = $this->helper->getWebsiteApiClient($this->helper->getWebsite());
                 $campaigns = $client->getCampaigns();
+                $this->registry->unregister('campaigns'); // additional measure
                 $this->registry->register('campaigns', $campaigns);
             }
 

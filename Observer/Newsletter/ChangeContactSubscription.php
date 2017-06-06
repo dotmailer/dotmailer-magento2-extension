@@ -128,6 +128,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             if ($emailReg) {
                 return $this;
             }
+            $this->registry->unregister($email . '_subscriber_save'); // additional measure
             $this->registry->register($email . '_subscriber_save', $email);
             //add subscriber to automation
             $this->addSubscriberToAutomation($email, $subscriber, $websiteId);

@@ -58,6 +58,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
                 //grab the datafields request and save to register
                 $client = $this->helper->getWebsiteApiClient();
                 $datafields = $client->getDatafields();
+                $this->registry->unregister('datafields'); // additional measure
                 $this->registry->register('datafields', $datafields);
             }
 

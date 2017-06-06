@@ -97,6 +97,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             if ($emailReg) {
                 return $this;
             }
+            $this->registry->unregister($email . '_customer_save'); // additional measure
             $this->registry->register($email . '_customer_save', $email);
 
             $isContactExist = $this->contactFactory->create()
