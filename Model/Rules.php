@@ -216,7 +216,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
         //join tables to collection according to type
         $collection = $this->getResource()
-            ->joinTablesOnCollectionByType($condition, $type);
+            ->joinTablesOnCollectionByType($collection, $type);
 
         //process rule on collection according to combination
         $combination = $rule->getCombination();
