@@ -76,6 +76,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     {
         $customer = $observer->getEvent()->getCustomer();
         $websiteId  = $customer->getWebsiteId();
+        $storeId = $customer->getStoreId();
 
         //check if enabled
         if (!$this->helper->isEnabled($websiteId)) {
@@ -133,6 +134,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 $contactModel->setEmail($email);
             }
             $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
+                ->setStoreId($storeId)
                 ->setCustomerId($customerId);
             $contactModel->getResource()->save($contactModel);
         } catch (\Exception $e) {
