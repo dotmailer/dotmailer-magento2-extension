@@ -84,19 +84,19 @@ class Selected extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $id = $this->escaper->escapeJs(
+        $id = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('ruleid')
         );
-        $attribute = $this->escaper->escapeJs(
+        $attribute = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('attribute')
         );
-        $arrayKey = $this->escaper->escapeJs(
+        $arrayKey = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('arraykey')
         );
-        $conditionName = $this->escaper->escapeJs(
+        $conditionName = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('condition')
         );
-        $valueName = $this->escaper->escapeJs(
+        $valueName = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('value')
         );
 
@@ -137,8 +137,6 @@ class Selected extends \Magento\Backend\App\AbstractAction
             $this->http->setHeader('Content-Type', 'application/json')
                 ->setBody($this->jsonEncoder->jsonEncode($response));
         }
-
-        return $this;
     }
 
     /**

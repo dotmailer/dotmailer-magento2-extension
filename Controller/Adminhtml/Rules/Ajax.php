@@ -78,13 +78,13 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $attribute = $this->escaper->escapeJs(
+        $attribute = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('attribute')
         );
-        $conditionName = $this->escaper->escapeJs(
+        $conditionName = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('condition')
         );
-        $valueName = $this->escaper->escapeJs(
+        $valueName = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('value')
         );
         if ($attribute && $conditionName && $valueName) {
