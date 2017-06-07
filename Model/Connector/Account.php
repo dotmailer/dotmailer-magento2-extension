@@ -69,20 +69,6 @@ class Account
     public $orderIdsForSingleSync;
 
     /**
-     * Set api password.
-     *
-     * @param $apiPassword
-     *
-     * @return $this
-     */
-    public function setApiPassword($apiPassword)
-    {
-        $this->apiPassword = $apiPassword;
-
-        return $this;
-    }
-
-    /**
      * Get api password.
      *
      * @return mixed
