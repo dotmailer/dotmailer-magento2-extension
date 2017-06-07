@@ -30,12 +30,6 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
         $this->_controller = 'adminhtml_rules';
         $data              = [];
         parent::__construct($context, $data);
-
-        $this->addButton('save_and_continue_edit', [
-            'class' => 'save',
-            'label' => __('Save and Continue Edit'),
-            'onclick' => 'editForm.submit($(\'edit_form\').action + \'back/edit/\')',
-        ], 10);
     }
 
     /**
