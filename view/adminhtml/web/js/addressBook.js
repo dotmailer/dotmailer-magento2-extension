@@ -11,7 +11,7 @@ define(['jquery'], function($){
             var visibility  	= $('#sync_settings_dynamic_addressbook_visibility').val();
 
             if(name && visibility) {
-                $.post(url, {name: name, visiblity: visibility}, function () {
+                $.post(url, {name: name, visibility: visibility}, function () {
                     window.location.reload();
                 });
             }
