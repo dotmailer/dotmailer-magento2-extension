@@ -151,9 +151,9 @@ class Customer
     {
         $this->customer = $customer;
         $this->setReviewCollection();
+        $keys = array_keys($this->getMappingHash());
 
-        foreach ($this->getMappingHash() as $field) {
-            $key = key($field);
+        foreach ($keys as $key) {
             /*
              * call user function based on the attribute mapped.
              */
