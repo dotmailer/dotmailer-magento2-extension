@@ -69,7 +69,6 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->contactResourceFactory = ObjectManager::getInstance()->get('Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory');
         $this->orderResourceFactory = ObjectManager::getInstance()->get('Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory');
         $this->helper = $this->getMock('Dotdigitalgroup\Email\Helper\Data', [], [], '', false);
-        $this->resource = $this->getMock('Magento\Framework\App\ResourceConnection', [], [], '', false);
         $this->salesOrderFactory = $this->getMock('Magento\Sales\Model\OrderFactory', [], [], '', false);
         $this->storeManager = ObjectManager::getInstance()->get('\Magento\Store\Model\StoreManagerInterface');
 
@@ -81,7 +80,6 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             $this->contactResourceFactory,
             $this->orderResourceFactory,
             $this->helper,
-            $this->resource,
             $this->salesOrderFactory,
             $this->storeManager);
     }
