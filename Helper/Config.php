@@ -341,7 +341,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $website = $this->storeManager->getWebsite($website);
 
-        $apiEndpoint = $this->helper->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website) . DIRECTORY_SEPARATOR;
+        $apiEndpoint = $this->helper->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website) . '/';
         //replace the api with the app prefix from the domain name
         $regionBaseUrl = str_replace('api', 'app', $apiEndpoint);
 

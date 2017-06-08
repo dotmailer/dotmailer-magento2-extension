@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Datafield;
 class Save extends \Magento\Backend\App\AbstractAction
 {
     /**
+     * @var \Magento\Framework\Escaper
+     */
+    public $escaper;
+    /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
@@ -16,15 +20,17 @@ class Save extends \Magento\Backend\App\AbstractAction
 
     /**
      * Save constructor.
-     *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Escaper $escaper
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
+        \Magento\Framework\Escaper $escaper,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->dataHelper     = $data;
+        $this->escaper = $escaper;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -34,8 +40,8 @@ class Save extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $datafield = $this->getRequest()->getParam('name');
-        $type = $this->getRequest()->getParam('type');
+        $datafield = $this->escaper->escapeHtml($this->getRequest()->getParam('name'));
+        $type = $this->escaper->escapeHtml($this->getRequest()->getParam('type'));
         $default = $this->getRequest()->getParam('default');
         $visibility = $this->getRequest()->getParam('visibility');
 
