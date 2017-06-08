@@ -29,11 +29,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_FALLBACK_PRODUCTS_ITEMS = 'connector_dynamic_content/fallback_products/product_ids';
 
     /**
-     * @var array
-     */
-    private $periods = ['week', 'month', 'year'];
-
-    /**
      * @var \Magento\Framework\App\Helper\Context
      */
     private $context;
@@ -45,10 +40,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
-    /**
-     * @var
-     */
-    private $backendConfig;
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */

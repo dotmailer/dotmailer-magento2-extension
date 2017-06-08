@@ -52,24 +52,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     private $fileHelper;
-    /**
-     * @var
-     */
-    private $filename;
-
-    /**
-     * @var int
-     */
-    private $limit = 10;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-    /**
-     * @var
-     */
-    private $client;
     /**
      * @var
      */

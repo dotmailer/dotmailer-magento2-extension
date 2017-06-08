@@ -9,10 +9,6 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
      */
     private $helper;
     /**
-     * @var
-     */
-    private $rest;
-    /**
      * @var \Magento\Framework\App\RequestInterface
      */
     private $request;

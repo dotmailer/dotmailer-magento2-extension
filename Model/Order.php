@@ -9,10 +9,6 @@ class Order extends \Magento\Framework\Model\AbstractModel
      * @var \Magento\Sales\Model\ResourceModel\Order\Collection
      */
     private $salesCollection;
-    /**
-     * @var ResourceModel\Order\Collection
-     */
-    private $emailOrderCollection;
 
     /**
      * Constructor.

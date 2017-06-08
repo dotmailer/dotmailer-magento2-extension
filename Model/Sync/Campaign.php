@@ -15,10 +15,6 @@ class Campaign
      */
     private $helper;
     /**
-     * @var
-     */
-    private $storeManger;
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     private $campaignCollection;
