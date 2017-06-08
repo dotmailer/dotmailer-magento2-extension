@@ -8,18 +8,20 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     private $file;
-
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
     private $jsonHelper;
-
+    /**
+     * @var \Magento\Framework\Escaper
+     */
     private $escaper;
 
     /**
-     * Ajaxvalidation constructor.
+     * Ajaxlogcontent constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\Escaper $escaper
      */

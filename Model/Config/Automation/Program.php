@@ -20,6 +20,12 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Magento\Framework\App\RequestInterface
      */
     private $request;
+    /**
+     * Escaper
+     *
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Program constructor.
@@ -28,17 +34,20 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
      * @param \Magento\Framework\App\RequestInterface    $requestInterface
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Framework\Registry                $registry
+     * @param \Magento\Framework\Escaper                 $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\RequestInterface $requestInterface,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->helper       = $data;
         $this->request      = $requestInterface;
         $this->storeManager = $storeManagerInterface;
         $this->registry     = $registry;
+        $this->escaper      = $escaper;
     }
 
     /**
@@ -77,12 +86,10 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                 //loop for all programs option
                 foreach ($programs as $program) {
                     if (isset($program->id) && $program->status == 'Active') {
-                        //@codingStandardsIgnoreStart
                         $fields[] = [
                             'value' => $program->id,
-                            'label' => addslashes($program->name),
+                            'label' => $this->escaper->escapeQuote($program->name),
                         ];
-                        //@codingStandardsIgnoreEnd
                     }
                 }
             }

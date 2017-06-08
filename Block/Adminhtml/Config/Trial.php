@@ -494,11 +494,9 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      *
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @codingStandardsIgnoreStart
      */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        //@codingStandardsIgnoreEnd
         if (!$this->helper->isFrontEndAdminSecure()) {
             $html = '<a href=' .
                 self::TRIAL_EXTERNAL_URL .

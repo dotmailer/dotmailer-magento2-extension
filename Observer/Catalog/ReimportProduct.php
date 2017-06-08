@@ -50,8 +50,8 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
 
             if ($item = $this->loadProduct($productId)) {
                 if ($item->getImported()) {
-                    $item->setModified(1)
-                        ->save();
+                    $item->setModified(1);
+                    $item->getResource()->save($item);
                 }
             }
         } catch (\Exception $e) {
@@ -68,18 +68,15 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
      */
     protected function loadProduct($productId)
     {
-        $collection = $this->catalogCollection->create()
-            ->addFieldToFilter('product_id', $productId)
-            ->setPageSize(1);
+        $item = $this->catalogCollection->create()
+            ->loadProductById($productId);
 
-        if ($collection->getSize()) {
-            //@codingStandardsIgnoreStart
-            return $collection->getFirstItem();
-            //@codingStandardsIgnoreEnd
+        if ($item) {
+            return $item;
         } else {
-            $this->catalogFactory->create()
-                ->setProductId($productId)
-                ->save();
+            $catalog = $this->catalogFactory->create();
+            $catalog->setProductId($productId);
+            $catalog->getResource()->save($catalog);
         }
 
         return false;

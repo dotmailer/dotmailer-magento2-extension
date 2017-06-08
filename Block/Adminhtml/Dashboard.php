@@ -12,6 +12,7 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
      * @var string
      */
     public $_template = 'dashboard/main.phtml';
+    private $_blockGroup;
 
     public function _construct()
     {

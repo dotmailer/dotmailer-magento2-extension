@@ -56,7 +56,7 @@ class Subscriber
     private $importerFactory;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
     private $orderCollection;
 
@@ -83,21 +83,26 @@ class Subscriber
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
      */
     private $emailContactResource;
+    /**
+     * @var SubscriberWithSalesExporter
+     */
+    private $subscriberWithSalesExporter;
 
     /**
      * Subscriber constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection
      * @param SubscriberExporter $subscriberExporter
      * @param SubscriberWithSalesExporter $subscriberWithSalesExporter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberExporter $subscriberExporter,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter,
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory,
@@ -214,9 +219,8 @@ class Subscriber
      */
     public function checkInSales($emails)
     {
-        $collection = $this->orderCollection->create()
-            ->addFieldToFilter('customer_email', ['in' => $emails]);
-        return $collection->getColumnValues('customer_email');
+        return $this->orderCollection->create()
+            ->checkInSales($emails);
     }
 
     /**

@@ -164,12 +164,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * @return $this
-     * @codingStandardsIgnoreStart
      */
     public function beforeSave()
     {
         parent::beforeSave();
-        //@codingStandardsIgnoreEnd
         if ($this->isObjectNew()) {
             $this->setCreatedAt($this->dateTime->formatDate(true));
         }
@@ -208,8 +206,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             $this->setImportType($importType)
                 ->setImportData($importData)
                 ->setWebsiteId($websiteId)
-                ->setImportMode($importMode)
-                ->save();
+                ->setImportMode($importMode);
+
+            $this->getResource()->save($this);
 
             return true;
         } catch (\Exception $e) {
@@ -432,12 +431,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                                 );
                         }
                     } catch (\Exception $e) {
-                        //@codingStandardsIgnoreStart
                         $item->setMessage($e->getMessage())
-                            ->setImportStatus(self::FAILED)
-                            ->save();
+                            ->setImportStatus(self::FAILED);
+                        $this->saveItem($item);
                         continue;
-                        //@codingStandardsIgnoreEnd
                     }
 
                     $this->processResponse($response, $item, $websiteId);
@@ -454,14 +451,14 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     private function processResponse($response, $item, $websiteId)
     {
         if ($response) {
-            //@codingStandardsIgnoreStart
             if ($response->status == 'Finished') {
                 $now = gmdate('Y-m-d H:i:s');
 
                 $item->setImportStatus(self::IMPORTED)
                     ->setImportFinished($now)
-                    ->setMessage('')
-                    ->save();
+                    ->setMessage('');
+                $this->saveItem($item);
+
                 if (
                     $item->getImportType()
                     == self::IMPORT_TYPE_CONTACT or
@@ -489,9 +486,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     ->setMessage(
                         'Import failed with status '
                         . $response->status
-                    )
-                    ->save();
-                //@codingStandardsIgnoreEnd
+                    );
+                $this->saveItem($item);
             } else {
                 //Not finished
                 $this->totalItems += 1;
@@ -500,25 +496,24 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * @param $itemToSave
+     */
+    private function saveItem($itemToSave)
+    {
+        $this->getResource()->save($itemToSave);
+    }
+
+    /**
      * Get imports marked as importing.
      *
      * @param $limit
      *
-     * @return $this|bool
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection|bool
      */
     public function _getImportingItems($limit)
     {
-        $collection = $this->getCollection()
-            ->addFieldToFilter('import_status', ['eq' => self::IMPORTING])
-            ->addFieldToFilter('import_id', ['neq' => ''])
-            ->setPageSize($limit)
-            ->setCurPage(1);
-
-        if ($collection->getSize()) {
-            return $collection;
-        }
-
-        return false;
+        return $this->getCollection()
+            ->getItemsWithImportingStatus($limit);
     }
 
     /**
@@ -577,7 +572,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     public function _csvToArray($filename)
     {
-        //@codingStandardsIgnoreStart
         if (!file_exists($filename) || !is_readable($filename)) {
             return false;
         }
@@ -593,7 +587,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 }
             }
             fclose($handle);
-            //@codingStandardsIgnoreEnd
         }
 
         $contacts = [];
@@ -617,33 +610,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     public function _getQueue($importType, $importMode, $limit)
     {
-        $collection = $this->getCollection();
-
-        if (is_array($importType)) {
-            $condition = [];
-            foreach ($importType as $type) {
-                if ($type == 'Catalog') {
-                    $condition[] = ['like' => $type . '%'];
-                } else {
-                    $condition[] = ['eq' => $type];
-                }
-            }
-            $collection->addFieldToFilter('import_type', $condition);
-        } else {
-            $collection->addFieldToFilter(
-                'import_type',
-                ['eq' => $importType]
-            );
-        }
-
-        $collection->addFieldToFilter('import_mode', ['eq' => $importMode])
-            ->addFieldToFilter(
-                'import_status',
-                ['eq' => self::NOT_IMPORTED]
-            )
-            ->setPageSize($limit)
-            ->setCurPage(1);
-
-        return $collection;
+        return $this->getCollection()
+            ->getQueueByTypeAndMode($importType, $importMode, $limit);
     }
 }

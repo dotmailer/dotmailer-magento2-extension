@@ -77,15 +77,15 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
             return $this;
         }
         try {
-            $this->automationFactory->create()
+            $automation = $this->automationFactory->create()
                 ->setEmail($email)
                 ->setAutomationType($automationType)
                 ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
                 ->setTypeId($order->getIncrementId())
                 ->setWebsiteId($website->getId())
                 ->setStoreName($storeName)
-                ->setProgramId($programId)
-                ->save();
+                ->setProgramId($programId);
+            $automation->getResource()->save($automation);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

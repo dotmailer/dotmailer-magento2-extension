@@ -13,10 +13,6 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      */
     private $customerSession;
     /**
-     * @var \Magento\Framework\Data\Form\FormKey\Validator
-     */
-    private $formKeyValidator;
-    /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     private $localeDate;
@@ -27,19 +23,16 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @param \Dotdigitalgroup\Email\Helper\Data                   $helper
      * @param \Magento\Customer\Model\Session                      $session
      * @param \Magento\Framework\App\Action\Context                $context
-     * @param \Magento\Framework\Data\Form\FormKey\Validator       $formKeyValidator
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\Session $session,
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
     ) {
         $this->helper           = $helper;
         $this->customerSession  = $session;
-        $this->formKeyValidator = $formKeyValidator;
         $this->localeDate       = $localeDate;
         parent::__construct($context);
     }
@@ -49,9 +42,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        if (!$this->formKeyValidator->validate($this->getRequest())
-            or !$this->customerSession->getConnectorContactId()
-        ) {
+        if (!$this->customerSession->getConnectorContactId()) {
             return $this->_redirect('customer/account/');
         }
 
@@ -129,7 +120,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 );
             }
         }
-        $this->_redirect('customer/account/');
+        return $this->_redirect('customer/account/');
     }
 
     /**
@@ -238,9 +229,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 $contact->id
             );
             if (isset($bookResponse->message)) {
-                $bookError = true;
+                return true;
             }
         }
-        return $bookError;
+        return false;
     }
 }

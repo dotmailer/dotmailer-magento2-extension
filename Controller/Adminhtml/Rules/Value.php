@@ -14,7 +14,7 @@ class Value extends \Magento\Backend\App\AbstractAction
      */
     private $ruleValue;
     /**
-     * @var \Magento\Framework\Json\Encoder
+     * @var \Magento\Framework\Json\Helper\Data
      */
     private $jsonEncoder;
 
@@ -27,14 +27,14 @@ class Value extends \Magento\Backend\App\AbstractAction
      * Value constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue
-     * @param \Magento\Framework\Json\Encoder                           $jsonEncoder
+     * @param \Magento\Framework\Json\Helper\Data                       $jsonEncoder
      * @param \Magento\Backend\App\Action\Context                       $context
      * @param \Magento\Framework\App\Response\Http                      $http
      * @param \Magento\Framework\Escaper                                $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
-        \Magento\Framework\Json\Encoder $jsonEncoder,
+        \Magento\Framework\Json\Helper\Data $jsonEncoder,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Response\Http $http,
         \Magento\Framework\Escaper $escaper
@@ -62,13 +62,13 @@ class Value extends \Magento\Backend\App\AbstractAction
     public function execute()
     {
         $response = [];
-        $valueName = $this->escaper->escapeJs(
+        $valueName = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('value')
         );
-        $conditionValue = $this->escaper->escapeJs(
+        $conditionValue = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('condValue')
         );
-        $attributeValue = $this->escaper->escapeJs(
+        $attributeValue = $this->escaper->escapeHtml(
             $this->getRequest()->getParam('attributeValue')
         );
 
@@ -88,7 +88,7 @@ class Value extends \Magento\Backend\App\AbstractAction
             }
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')->setBody(
-                $this->jsonEncoder->encode($response)
+                $this->jsonEncoder->jsonEncode($response)
             );
         }
     }

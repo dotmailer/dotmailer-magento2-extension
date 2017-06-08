@@ -49,7 +49,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
             try {
                 $model = $this->rules;
                 $model->setId($id);
-                $model->delete();
+                $model->getResource()->delete($model);
                 $this->messageManager->addSuccessMessage(
                     __('The rule has been deleted.')
                 );

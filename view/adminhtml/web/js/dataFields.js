@@ -13,7 +13,7 @@ define(['jquery'], function($){
             var access    = $('#connector_data_mapping_dynamic_datafield_datafield_access').val();
 
             if(name && type && access) {
-                $.post(url, {name: name, type: type, deafult: d_default, visiblity: access}, function () {
+                $.post(url, {name: name, type: type, default: d_default, visibility: access}, function () {
                     window.location.reload();
                 });
             }

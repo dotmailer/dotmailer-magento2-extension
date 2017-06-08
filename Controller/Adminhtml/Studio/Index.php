@@ -6,6 +6,8 @@ class Index extends \Magento\Backend\App\AbstractAction
 {
     /**
      * Execute method.
+     *
+     * @return mixed
      */
     public function execute()
     {
@@ -24,6 +26,7 @@ class Index extends \Magento\Backend\App\AbstractAction
             return $resultRedirect;
         }
 
+        return $this;
     }
 
     /**

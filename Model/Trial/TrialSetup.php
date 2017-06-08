@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Trial;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 
 /**
  * Handle the trial account creation.
@@ -134,7 +133,6 @@ class TrialSetup
             ['name' => 'Magento_Subscribers', 'visibility' => 'Private'],
             ['name' => 'Magento_Guests', 'visibility' => 'Private'],
         ];
-        $error = false;
         $client = false;
         if ($this->helper->isEnabled()) {
             $client = $this->helper->getWebsiteApiClient(0, $username, $password);
@@ -227,6 +225,7 @@ class TrialSetup
     {
         //validate account
         $accountInfo = $client->getAccountInfo();
+        $error = false;
         if (isset($accountInfo->message)) {
             $this->helper->log('createAddressBooks ' . $accountInfo->message);
             $error = true;

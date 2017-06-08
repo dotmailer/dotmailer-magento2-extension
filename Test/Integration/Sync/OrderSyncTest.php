@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Customer;
 
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\TestFramework\ObjectManager;
 
 /**
@@ -164,6 +163,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
+     * @param int $withGuests
      */
     protected function prepareSync($withGuests = 0)
     {

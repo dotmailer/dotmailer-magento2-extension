@@ -18,6 +18,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
      * Ajaxvalidation constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
@@ -37,9 +38,7 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
     {
         $params = $this->getRequest()->getParams();
         $apiUsername = $params['api_username'];
-        //@codingStandardsIgnoreStart
         $apiPassword = base64_decode($params['api_password']);
-        //@codingStandardsIgnoreEnd
         //validate api, check against account info.
         if ($this->data->isEnabled()) {
             $client = $this->data->getWebsiteApiClient();

@@ -127,7 +127,6 @@ class Cron
     {
 
         //run the sync for contacts
-        /** @var Apiconnector\Contact $result */
         $result = $this->contactFactory->create()
             ->sync();
         //run subscribers and guests sync

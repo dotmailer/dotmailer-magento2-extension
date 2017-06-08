@@ -77,4 +77,15 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             return $e->getMessage();
         }
     }
+
+    /**
+     * Save item
+     *
+     * @param $item
+     * @return $this
+     */
+    public function saveItem($item)
+    {
+        return $this->save($item);
+    }
 }

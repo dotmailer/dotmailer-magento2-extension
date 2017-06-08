@@ -82,8 +82,8 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         $orderId = (int) $this->getRequest()->getParam('order_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
-        $orderModel = $this->orderFactory->create()
-            ->load($orderId);
+        $orderModel = $this->orderFactory->create();
+        $orderModel->getResource()->load($orderModel, $orderId);
         //number of product items to be displayed
         $limit = $this->recommendedHelper
             ->getDisplayLimitByMode($mode);

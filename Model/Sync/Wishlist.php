@@ -14,14 +14,6 @@ class Wishlist
      */
     private $helper;
     /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    private $resource;
-    /**
-     * @var
-     */
-    private $objectManager;
-    /**
      * @var
      */
     private $wishlists;
@@ -46,7 +38,7 @@ class Wishlist
      */
     private $importerFactory;
     /**
-     * @var \Magento\Wishlist\Model\WishlistFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
     private $wishlist;
     /**
@@ -76,11 +68,10 @@ class Wishlist
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection
      * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory            $itemFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\WishlistFactory                 $wishlistFactory
-     * @param \Magento\Wishlist\Model\WishlistFactory                               $wishlist
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory            $wishlist
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory                          $importerFactory
      * @param \Magento\Customer\Model\CustomerFactory                               $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                                    $helper
-     * @param \Magento\Framework\App\ResourceConnection                             $resource
      * @param \Magento\Framework\Stdlib\DateTime\DateTime                           $datetime
      */
     public function __construct(
@@ -88,11 +79,10 @@ class Wishlist
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection,
         \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory,
         \Dotdigitalgroup\Email\Model\Customer\WishlistFactory $wishlistFactory,
-        \Magento\Wishlist\Model\WishlistFactory $wishlist,
+        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlist,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Framework\Stdlib\DateTime\DateTime $datetime
     ) {
         $this->itemCollection = $itemCollection;
@@ -103,7 +93,6 @@ class Wishlist
         $this->importerFactory = $importerFactory;
         $this->customerFactory = $customerFactory;
         $this->helper = $helper;
-        $this->resource = $resource;
         $this->datetime = $datetime;
     }
 
@@ -146,7 +135,8 @@ class Wishlist
                 }
                 if (! empty($this->wishlists)) {
                     $message = '----------- Wishlist bulk sync ----------- : ' .
-                        gmdate('H:i:s', microtime(true) - $this->start) . ', Total synced = ' . $this->countWishlists;
+                        gmdate('H:i:s', microtime(true) - $this->start) .
+                        ', Total synced = ' . $this->countWishlists;
 
                     $this->helper->log($message);
                 }
@@ -180,16 +170,8 @@ class Wishlist
 
         if (! empty($this->wishlistIds)) {
             $collection = $this->wishlist->create()
-                ->getCollection()
-                ->addFieldToFilter('main_table.wishlist_id', ['in' => $this->wishlistIds])
-                ->addFieldToFilter('customer_id', ['notnull' => 'true']);
+                ->getWishlistByIds($this->wishlistIds);
 
-            $collection->getSelect()
-                ->joinLeft(
-                    ['c' => $this->resource->getTableName('customer_entity')],
-                    'c.entity_id = customer_id',
-                    ['email', 'store_id']
-                );
             foreach ($collection as $wishlist) {
                 $connectorWishlist = $this->wishlistFactory->create();
                 $connectorWishlist->setId($wishlist->getId())
@@ -220,20 +202,12 @@ class Wishlist
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
      * @param int                                      $limit
      *
-     * @return mixed
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\Collection
      */
     public function getWishlistToImport(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
     {
-        $collection = $this->wishlistCollection->create()
-            ->addFieldToFilter('wishlist_imported', ['null' => true])
-            ->addFieldToFilter(
-                'store_id',
-                ['in' => $website->getStoreIds()]
-            )
-            ->addFieldToFilter('item_count', ['gt' => 0]);
-        $collection->getSelect()->limit($limit);
-
-        return $collection;
+        return $this->wishlistCollection->create()
+            ->getWishlistToImportByWebsite($website, $limit);
     }
 
     /**
@@ -257,14 +231,7 @@ class Wishlist
         $wishlistIds = $collection->getColumnValues('wishlist_id');
 
         $wishlistCollection = $this->wishlist->create()
-            ->getCollection()
-            ->addFieldToFilter('wishlist_id', ['in' => $wishlistIds]);
-        $wishlistCollection->getSelect()
-            ->joinLeft(
-                ['c' => $this->resource->getTableName('customer_entity')],
-                'c.entity_id = customer_id',
-                ['email', 'store_id']
-            );
+            ->getWishlistByIds($wishlistIds);
 
         foreach ($wishlistCollection as $wishlist) {
             $wishlistId = $wishlist->getid();
@@ -328,15 +295,8 @@ class Wishlist
      */
     public function getModifiedWishlistToImport(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
     {
-        $collection = $this->wishlistCollection->create()
-            ->addFieldToFilter('wishlist_modified', 1)
-            ->addFieldToFilter(
-                'store_id',
-                ['in' => $website->getStoreIds()]
-            );
-        $collection->getSelect()->limit($limit);
-
-        return $collection;
+        return $this->wishlistCollection->create()
+            ->getModifiedWishlistToImportByWebsite($website, $limit);
     }
 
     /**
@@ -345,32 +305,8 @@ class Wishlist
      */
     public function setImported($ids, $modified = false)
     {
-        try {
-            $coreResource = $this->resource;
-            $write = $coreResource->getConnection('core_write');
-            $tableName = $coreResource->getTableName('email_wishlist');
-            $ids = implode(', ', $ids);
-            $now = $this->datetime->gmtDate();
-
-            //mark imported modified wishlists
-            if ($modified) {
-                $write->update(
-                    $tableName,
-                    [
-                        'wishlist_modified' => 'null',
-                        'updated_at' => $now,
-                    ],
-                    ["wishlist_id IN (?)" => $ids]
-                );
-            } else {
-                $write->update(
-                    $tableName,
-                    ['wishlist_imported' => 1, 'updated_at' => $now],
-                    ["wishlist_id IN (?)" => $ids]
-                );
-            }
-        } catch (\Exception $e) {
-            $this->helper->debug((string)$e, []);
-        }
+        $now = $this->datetime->gmtDate();
+        $this->wishlist->create()
+            ->setImported($ids, $now, $modified);
     }
 }

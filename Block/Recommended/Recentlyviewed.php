@@ -24,6 +24,10 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
     public $catalogFactory;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    private $storeManager;
 
     /**
      * Recentlyviewed constructor.

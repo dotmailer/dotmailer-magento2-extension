@@ -36,8 +36,9 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     /**
      * ApiValidate constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data           $data
-     * @param \Magento\Backend\App\Action\Context          $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
+     * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      */
     public function __construct(
@@ -61,11 +62,9 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      *
      * @return $this
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @codingStandardsIgnoreStart
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        //@codingStandardsIgnoreEnd
         $groups = $this->context->getRequest()->getPost('groups');
 
         if (isset($groups['api']['fields']['username']['inherit'])

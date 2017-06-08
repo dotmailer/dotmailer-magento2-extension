@@ -10,7 +10,7 @@ class Sub extends \Magento\Newsletter\Model\Subscriber
     /**
      * Sends out confirmation success email.
      *
-     * @return $this
+     * @return mixed
      */
     public function sendConfirmationSuccessEmail()
     {

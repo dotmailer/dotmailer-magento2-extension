@@ -67,8 +67,8 @@ class Callback extends \Magento\Framework\App\Action\Action
         $code = $this->getRequest()->getParam('code', false);
         $userId = $this->getRequest()->getParam('state');
         //load admin user
-        $adminUser = $this->adminUser->create()
-            ->load($userId);
+        $adminUser = $this->adminUser->create();
+        $adminUser->getResource()->load($adminUser, $userId);
         //app code and admin user must be present
         if ($code && $adminUser->getId()) {
             $clientId = $this->scopeConfig->getValue(
@@ -91,7 +91,6 @@ class Callback extends \Magento\Framework\App\Action\Action
             //callback url
             $url = $this->config->getTokenUrl();
 
-            //@codingStandardsIgnoreStart
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -112,10 +111,9 @@ class Callback extends \Magento\Framework\App\Action\Action
                 $this->helper->error('OAUTH failed ' . $response->error, []);
             } elseif (isset($response->refresh_token)) {
                 //save the refresh token to the admin user
-                $adminUser->setRefreshToken($response->refresh_token)
-                    ->save();
+                $adminUser->setRefreshToken($response->refresh_token);
+                $adminUser->getResource()->save($adminUser);
             }
-            //@codingStandardsIgnoreEnd
         }
         //redirect to automation index page
         $this->_redirect($this->adminHelper->getUrl('dotdigitalgroup_email/studio'));

@@ -72,11 +72,9 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @codingStandardsIgnoreStart
      */
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        //@codingStandardsIgnoreEnd
         $url = $this->getAuthoriseUrl();
         $disabled = false;
         //disable for ssl missing

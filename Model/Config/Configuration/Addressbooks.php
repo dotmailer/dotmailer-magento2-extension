@@ -49,6 +49,7 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
         } else {
             // api all address books
             $addressBooks = $client->getAddressBooks();
+            $this->registry->unregister('addressbooks'); // additional measure
             $this->registry->register('addressbooks', $addressBooks);
         }
 
