@@ -16,7 +16,7 @@ class Options implements \Magento\Framework\Data\OptionSourceInterface
             ],
             [
                 'label' => 'Suppressed',
-                'value' => 'suppressed'
+                'value' => 'Suppressed'
             ],[
                 'label' => 'Active',
                 'value' => 'Active'
