@@ -16,10 +16,6 @@ class Bulk
      */
     public $client;
     /**
-     * @var \Dotdigitalgroup\Email\Helper\File
-     */
-    public $fileHelper;
-    /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
@@ -32,18 +28,15 @@ class Bulk
      * Bulk constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
         $this->helper         = $helper;
         $this->serializer     = $serializer;
-        $this->fileHelper     = $fileHelper;
         $this->contactFactory = $contactFactory;
     }
 

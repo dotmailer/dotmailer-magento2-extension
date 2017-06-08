@@ -65,7 +65,9 @@ class Subscriber
     public function setSubscriberData($subscriber)
     {
         $this->subscriber = $subscriber;
-        foreach ($this->getMappingHash() as $key => $field) {
+        $mappingHash = array_keys($this->getMappingHash());
+
+        foreach ($mappingHash as $key) {
             //Call user function based on the attribute mapped.
             $function = 'get';
             $exploded = explode('_', $key);

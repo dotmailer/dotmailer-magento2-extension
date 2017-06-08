@@ -26,10 +26,6 @@ class File
      */
     private $enclosure;
     /**
-     * @var Data
-     */
-    private $helper;
-    /**
      * @var string
      */
     private $logFileName = 'connector.log';

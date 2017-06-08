@@ -5,10 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Settings;
 class Addressbooks implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * @var null
-     */
-    private $options = null;
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;

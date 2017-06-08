@@ -8,10 +8,6 @@ use Magento\Framework\Controller\ResultFactory;
 class MassResend extends ImporterController
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
-     */
-    private $importerFactory;
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
     private $importerResource;

@@ -27,33 +27,14 @@ class Subscriber
     private $countSubscribers = 0;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\File
-     */
-    private $file;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     private $contactFactory;
-    /**
-     * @var \Magento\Newsletter\Model\SubscriberFactory
-     */
-    private $subscriberFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
-     */
-    private $importerFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
@@ -64,20 +45,6 @@ class Subscriber
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     private $timezone;
-    /**
-     * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
-     */
-    private $subscribersCollection;
-
-    /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    private $resource;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory
-     */
-    private $emailSubscriber;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory

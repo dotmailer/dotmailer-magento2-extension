@@ -25,7 +25,7 @@ class Order
      *
      * @var int
      */
-    private $countOrders = 0;
+    public $countOrders = 0;
 
     /**
      * @var array
@@ -72,7 +72,7 @@ class Order
     /**
      * @var array
      */
-    private $guests = [];
+    public $guests = [];
 
     /**
      * Order constructor.
