@@ -276,7 +276,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $connection = $this->getConnection();
         $subselect = $connection->select()
             ->from(
-                $salesOrder, [
+                $salesOrder,
+                [
                     'customer_email as s_customer_email',
                     'sum(grand_total) as total_spend',
                     'count(*) as number_of_orders',
@@ -327,7 +328,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     LIMIT 1
                 )"
             );
-
         }
 
         $columns['most_brand'] = $mostData;
@@ -619,7 +619,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $connection = $this->getConnection();
         $subselect = $connection->select()
             ->from(
-                $orderTable, [
+                $orderTable,
+                [
                     'customer_id as s_customer_id',
                     'sum(grand_total) as total_spend',
                     'count(*) as number_of_orders',
@@ -821,7 +822,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     LIMIT 1
                 )"
             );
-
         }
         return $mostData;
     }

@@ -58,8 +58,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Reports\Block\Product\Viewed $viewed,
         \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
         $connectionName = null
-    )
-    {
+    ) {
+    
         $this->helper                   = $helper;
         $this->productFactory           = $productFactory;
         $this->categoryFactory          = $categoryFactory;
@@ -161,7 +161,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     ['product_url', 'name', 'store_id', 'small_image', 'price']
                 );
 
-            if($limit) {
+            if ($limit) {
                 $productCollection->getSelect()->limit($limit);
             }
         }
@@ -187,7 +187,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     ['product_url', 'name', 'store_id', 'small_image', 'price']
                 )->addFieldToFilter('sku', ['in' => $productsSku]);
 
-            if($limit) {
+            if ($limit) {
                 $productCollection->getSelect()->limit($limit);
             }
         }

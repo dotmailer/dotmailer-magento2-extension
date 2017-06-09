@@ -29,9 +29,9 @@ class Collection extends
     public function getAutomationStatusType()
     {
         $automationOrderStatusCollection = $this->addFieldToFilter(
-                'enrolment_status',
+            'enrolment_status',
             \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING
-            );
+        );
         $automationOrderStatusCollection
             ->addFieldToFilter(
                 'automation_type',

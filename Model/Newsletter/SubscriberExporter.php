@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
-
 class SubscriberExporter
 {
     /**
@@ -35,7 +34,8 @@ class SubscriberExporter
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager){
+        \Magento\Store\Model\StoreManagerInterface $storeManager
+    ) {
         $this->importerFactory   = $importerFactory;
         $this->file              = $file;
         $this->helper            = $helper;

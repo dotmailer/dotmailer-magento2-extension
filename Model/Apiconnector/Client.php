@@ -180,14 +180,19 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_USERPWD,
-            $this->getApiUsername() . ':' . $this->getApiPassword());
+        curl_setopt(
+            $ch,
+            CURLOPT_USERPWD,
+            $this->getApiUsername() . ':' . $this->getApiPassword()
+        );
 
         //case the deprication of @filename for uploading
         if (function_exists('curl_file_create')) {
             $args['file']
-                = curl_file_create($this->fileHelper->getFilePath($filename),
-                'text/csv');
+                = curl_file_create(
+                    $this->fileHelper->getFilePath($filename),
+                    'text/csv'
+                );
             curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
         } else {
             //standart use of curl file
@@ -200,8 +205,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: multipart/form-data',
-            ]
-        );
+            ]);
         // send contacts to address book
         $result = curl_exec($ch);
         $result = json_decode($result);
@@ -1342,8 +1346,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POST, count($params));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,
-            array('Content-Type: application/x-www-form-urlencoded'));
+        curl_setopt(
+            $ch,
+            CURLOPT_HTTPHEADER,
+            ['Content-Type: application/x-www-form-urlencoded']
+        );
 
         $response = json_decode(curl_exec($ch));
 

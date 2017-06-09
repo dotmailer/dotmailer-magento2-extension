@@ -85,7 +85,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getWishlistsForCustomer($customerId)
     {
-        if($customerId) {
+        if ($customerId) {
             $collection = $this->wishlist->create()
                 ->getCollection()
                 ->addFieldToFilter('customer_id', $customerId)

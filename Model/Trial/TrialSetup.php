@@ -142,7 +142,6 @@ class TrialSetup
             $this->helper->log('createAddressBooks client is not enabled');
         } else {
             $error = $this->validateAccountAndCreateAddressbooks($client, $addressBooks);
-
         }
 
         return $error == true ? false : true;
