@@ -419,7 +419,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             == self::IMPORT_TYPE_SUBSCRIBERS
                             or
                             $item->getImportType() == self::IMPORT_TYPE_GUEST
-
                         ) {
                             $response = $client->getContactsImportByImportId(
                                 $item->getImportId()
@@ -459,14 +458,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     ->setMessage('');
                 $this->saveItem($item);
 
-                if (
-                    $item->getImportType()
+                if ($item->getImportType()
                     == self::IMPORT_TYPE_CONTACT or
                     $item->getImportType()
                     == self::IMPORT_TYPE_SUBSCRIBERS or
                     $item->getImportType()
                     == self::IMPORT_TYPE_GUEST
-
                 ) {
                     //if file
                     if ($file = $item->getImportFile()) {
