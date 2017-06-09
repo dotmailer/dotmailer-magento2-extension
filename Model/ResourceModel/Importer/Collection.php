@@ -33,7 +33,8 @@ class Collection extends
     public function getItemsWithImportingStatus($limit)
     {
         $collection = $this->addFieldToFilter(
-            'import_status', ['eq' => \Dotdigitalgroup\Email\Model\Importer::IMPORTING]
+            'import_status',
+            ['eq' => \Dotdigitalgroup\Email\Model\Importer::IMPORTING]
         )
             ->addFieldToFilter('import_id', ['neq' => ''])
             ->setPageSize($limit)

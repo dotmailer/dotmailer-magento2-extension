@@ -70,8 +70,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         if (! isset($params['customer_id']) ||
             ! isset($params['code']) ||
             ! $this->helper->isCodeValid($params['code'])
-        )
-        {
+        ) {
             $this->helper->log('Recently viewed no id or valid code is set');
             return [];
         }

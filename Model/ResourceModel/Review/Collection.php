@@ -30,7 +30,8 @@ class Collection extends
     {
         return $this->addFieldToFilter('review_imported', ['null' => 'true'])
             ->addFieldToFilter(
-                'store_id', ['in' => $website->getStoreIds()]
+                'store_id',
+                ['in' => $website->getStoreIds()]
             )
             ->setPageSize($limit);
     }

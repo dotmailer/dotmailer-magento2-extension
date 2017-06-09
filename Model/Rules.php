@@ -462,7 +462,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         foreach ($collection as $collectionItem) {
             $items = $collectionItem->getAllItems();
             foreach ($items as $item) {
-
                 $product = $item->getProduct();
                 $attributes = $this->getAttributesArrayFromLoadedProduct($product);
 

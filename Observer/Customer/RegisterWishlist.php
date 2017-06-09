@@ -59,8 +59,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
         //wishlist
         $wishlist = $observer->getEvent()->getObject();
 
-        if ($wishlist->getCustomerId() && $wishlist->getWishlistId())
-        {
+        if ($wishlist->getCustomerId() && $wishlist->getWishlistId()) {
             $itemsCount = $wishlist->getItemsCount();
             //wishlist items found
             if ($itemsCount) {

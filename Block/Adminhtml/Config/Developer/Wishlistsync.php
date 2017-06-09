@@ -30,7 +30,8 @@ class Wishlistsync extends \Magento\Config\Block\System\Config\Form\Field
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) {
+    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/wishlistsync');
 
         return $this->getLayout()

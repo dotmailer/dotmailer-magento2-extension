@@ -167,10 +167,10 @@ class Review
 
                     foreach ($votesCollection as $ratingItem) {
                         $rating = $this->ratingFactory->create()
-                            ->setRating($ratingItem)
-                        ;
+                            ->setRating($ratingItem);
                         $connectorReview->createRating(
-                            $ratingItem->getRatingCode(), $rating
+                            $ratingItem->getRatingCode(),
+                            $rating
                         );
                     }
                     $this->reviews[$website->getId()][] = $connectorReview->expose();

@@ -46,8 +46,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
         if (! isset($params['quote_id']) ||
             ! isset($params['code']) ||
             ! $this->helper->isCodeValid($params['code'])
-        )
-        {
+        ) {
             $this->helper->log('Coupon no id or valid code is set');
 
             return false;

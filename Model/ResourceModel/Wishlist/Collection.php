@@ -77,8 +77,8 @@ class Collection extends
     public function getModifiedWishlistToImportByWebsite(
         \Magento\Store\Api\Data\WebsiteInterface $website,
         $limit = 100
-    )
-    {
+    ) {
+    
         $collection = $this->addFieldToFilter('wishlist_modified', 1)
             ->addFieldToFilter(
                 'store_id',
