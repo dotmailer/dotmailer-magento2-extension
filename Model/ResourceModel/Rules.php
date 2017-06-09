@@ -17,6 +17,7 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param $collection
      * @param $type
+     * @return mixed
      */
     public function joinTablesOnCollectionByType($collection, $type)
     {
@@ -47,5 +48,7 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     ['items_qty']
                 )->where('order_address.address_type = ?', 'shipping');
         }
+
+        return $collection;
     }
 }
