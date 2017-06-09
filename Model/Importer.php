@@ -439,6 +439,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
                     if (isset($response) && !isset($response->message) && isset($response->status)) {
                         $this->processResponse($response, $item, $websiteId);
+                    } else {
+                        $item->setImportStatus(self::FAILED)
+                            ->setMessage(
+                                'Failed to check import status '
+                                . $response->message
+                            );
+                        $this->saveItem($item);
                     }
                 }
             }
