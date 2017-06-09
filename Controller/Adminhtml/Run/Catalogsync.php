@@ -38,9 +38,8 @@ class Catalogsync extends \Magento\Backend\App\AbstractAction
 
         $this->messageManager->addSuccessMessage($result['message']);
 
-        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
-
-        $this->_redirect($redirectUrl);
+        $redirectBack = $this->_redirect->getRefererUrl();
+        $this->_redirect($redirectBack);
     }
 
     /**

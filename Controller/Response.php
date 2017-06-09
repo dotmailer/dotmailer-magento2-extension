@@ -72,23 +72,4 @@ class Response extends \Magento\Framework\App\Action\Action
             $this->helper->debug((string)$e, []);
         }
     }
-
-    /**
-     * Check for non empty content.
-     *
-     * @param      $output
-     * @param bool $flag
-     */
-    public function checkContentNotEmpty($output, $flag = true)
-    {
-        try {
-            if (strlen($output) < 3 && $flag == false) {
-                $this->sendResponse();
-            } elseif ($flag && !strpos($output, '<table') !== false) {
-                $this->sendResponse();
-            }
-        } catch (\Exception $e) {
-            $this->helper->debug((string)$e, []);
-        }
-    }
 }

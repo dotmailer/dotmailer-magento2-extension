@@ -58,7 +58,7 @@
                 </field>
                 <field id="customer_id" type="select" translate="label" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="0">
-                    <label>Customer Id</label>
+                    <label>Customer ID</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="firstname" type="select" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
@@ -264,7 +264,7 @@
                 </field>
                 <field id="last_brand_pur" type="select" translate="label" sortOrder="460" showInDefault="1"
                        showInWebsite="1" showInStore="0">
-                    <label>Last Brand PUrchased</label>
+                    <label>Last Brand Purchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
                 <field id="system_values" translate="label" sortOrder="470" showInDefault="1" showInStore="0"
