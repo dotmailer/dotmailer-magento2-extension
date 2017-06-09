@@ -382,7 +382,9 @@ abstract class Rest
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt(
-            $ch, CURLOPT_HTTPHEADER, [
+            $ch,
+            CURLOPT_HTTPHEADER,
+            [
                 'Accept: ' . $this->acceptType,
                 'Content-Type: application/json',
             ]
@@ -399,7 +401,8 @@ abstract class Rest
         if ($this->apiUsername !== null && $this->apiPassword !== null) {
             curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
             curl_setopt(
-                $ch, CURLOPT_USERPWD,
+                $ch,
+                CURLOPT_USERPWD,
                 $this->apiUsername . ':' . $this->apiPassword
             );
         }

@@ -200,7 +200,8 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $reviews = $this->mageReviewCollection->create()
             ->addFieldToFilter(
-                'main_table.review_id', ['in' => $ids]
+                'main_table.review_id',
+                ['in' => $ids]
             )
             ->addFieldToFilter('customer_id', ['notnull' => 'true']);
 

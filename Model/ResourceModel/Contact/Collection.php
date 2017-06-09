@@ -245,9 +245,9 @@ class Collection extends
     public function getNumberSubscribersSynced($websiteId = 0)
     {
         return $this->addFieldToFilter(
-                'subscriber_status',
-                \Dotdigitalgroup\Email\Model\Newsletter\Subscriber::STATUS_SUBSCRIBED
-            )
+            'subscriber_status',
+            \Dotdigitalgroup\Email\Model\Newsletter\Subscriber::STATUS_SUBSCRIBED
+        )
             ->addFieldToFilter('subscriber_imported', '1')
             ->addFieldToFilter('website_id', $websiteId)
             ->getSize();
@@ -263,9 +263,9 @@ class Collection extends
     public function getNumberSubscribers($websiteId = 0)
     {
         return $this->addFieldToFilter(
-                'subscriber_status',
-                \Dotdigitalgroup\Email\Model\Newsletter\Subscriber::STATUS_SUBSCRIBED
-            )
+            'subscriber_status',
+            \Dotdigitalgroup\Email\Model\Newsletter\Subscriber::STATUS_SUBSCRIBED
+        )
             ->addFieldToFilter('website_id', $websiteId)
             ->getSize();
     }

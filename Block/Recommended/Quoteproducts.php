@@ -65,8 +65,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         if (! isset($params['quote_id']) ||
             ! isset($params['code']) ||
             ! $this->helper->isCodeValid($params['code'])
-        )
-        {
+        ) {
             $this->helper->log('Quote recommendation no id or valid code is set');
             return [];
         }

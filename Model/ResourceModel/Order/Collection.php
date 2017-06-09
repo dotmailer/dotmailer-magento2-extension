@@ -166,8 +166,8 @@ class Collection extends
         $created,
         $storeIds,
         $campaignOrderIds = []
-    )
-    {
+    ) {
+    
         $collection = $this->orderCollection->create()
             ->addFieldToFilter(
                 'main_table.status',

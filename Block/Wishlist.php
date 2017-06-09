@@ -71,8 +71,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         if (! $params['customer_id'] ||
             ! isset($params['code']) ||
             ! $this->helper->isCodeValid($params['code'])
-        )
-        {
+        ) {
             $this->helper->log('Wishlist no id or valid code is set');
             return false;
         }

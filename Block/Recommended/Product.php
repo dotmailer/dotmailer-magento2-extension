@@ -72,8 +72,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         if (! isset($params['order_id']) ||
             ! isset($params['code']) ||
             ! $this->helper->isCodeValid($params['code'])
-        )
-        {
+        ) {
             $this->helper->log('Product recommendation for this order not found or invalid code');
             return [];
         }

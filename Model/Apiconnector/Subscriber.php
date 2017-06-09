@@ -76,7 +76,7 @@ class Subscriber
             }
             try {
                 $value = call_user_func(
-                    array('self', $function)
+                    ['self', $function]
                 );
                 $this->subscriberData[$key] = $value;
             } catch (\Exception $e) {
