@@ -72,13 +72,13 @@ class Campaign
      */
     public function sendCampaigns()
     {
+        /** @var \Magento\Store\Api\Data\WebsiteInterface $website */
         foreach ($this->storeManager->getWebsites(true) as $website) {
-            //check send status for processing
-            $this->_checkSendStatus($website);
-            //start send process
-            $website = $this->websiteFactory->create();
-            $website->getResource()->load($website, $website->getId());
             $storeIds = $website->getStoreIds();
+
+            //check send status for processing
+            $this->_checkSendStatus($website, $storeIds);
+            //start send process
 
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = $this->getCampaignsToSend($emailsToSend, $website);
@@ -88,13 +88,10 @@ class Campaign
 
     /**
      * @param $website
+     * @param $storeIds
      */
-    public function _checkSendStatus($website)
+    public function _checkSendStatus($website, $storeIds)
     {
-        $websiteModel = $this->websiteFactory->create();
-        $websiteModel->getResource()->load($website, $website->getId());
-        $storeIds = $websiteModel->getStoreIds();
-
         $campaigns = $this->_getEmailCampaigns(
             $storeIds,
             \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,

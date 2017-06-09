@@ -278,7 +278,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 continue;
             }
 
-            $this->processProcessAndCombinationCondition($collection, $cond, $value, $attribute);
+            $collection = $this->processProcessAndCombinationCondition($collection, $cond, $value, $attribute);
         }
         return $this->_processProductAttributes($collection);
     }
@@ -312,6 +312,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 [$this->conditionMap[$cond] => $value]
             );
         }
+
+        return $collection;
     }
 
     /**
@@ -415,7 +417,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             return $collection;
         }
 
-        $this->processProductAttributesInCollection($collection);
+        $collection = $this->processProductAttributesInCollection($collection);
 
         return $collection;
     }
@@ -450,7 +452,10 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Process product attributes on collection
+     *
      * @param $collection
+     * @return mixed
      */
     private function processProductAttributesInCollection($collection)
     {
@@ -544,6 +549,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 }
             }
         }
+
+        return $collection;
     }
 
     /**
