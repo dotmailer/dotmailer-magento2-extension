@@ -419,7 +419,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                             == self::IMPORT_TYPE_SUBSCRIBERS
                             or
                             $item->getImportType() == self::IMPORT_TYPE_GUEST
-
                         ) {
                             $response = $client->getContactsImportByImportId(
                                 $item->getImportId()
@@ -465,7 +464,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     == self::IMPORT_TYPE_SUBSCRIBERS or
                     $item->getImportType()
                     == self::IMPORT_TYPE_GUEST
-
                 ) {
                     //if file
                     if ($file = $item->getImportFile()) {
@@ -474,14 +472,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
                     if ($item->getImportId()) {
                         $this->_processContactImportReportFaults(
-                            $item->getImportId(),
-                            $websiteId
+                            $item->getImportId(), $websiteId
                         );
                     }
                 }
             } elseif (in_array(
-                $response->status,
-                $this->importStatuses
+                $response->status, $this->importStatuses
             )) {
                 $item->setImportStatus(self::FAILED)
                     ->setMessage(
