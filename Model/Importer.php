@@ -437,16 +437,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                         continue;
                     }
 
-                    if (isset($response) && !isset($response->message) && isset($response->status)) {
-                        $this->processResponse($response, $item, $websiteId);
-                    } else {
-                        $item->setImportStatus(self::FAILED)
-                            ->setMessage(
-                                'Failed to check import status '
-                                . $response->message
-                            );
-                        $this->saveItem($item);
-                    }
+                    $this->processResponse($response, $item, $websiteId);
                 }
             }
         }
@@ -468,7 +459,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     ->setMessage('');
                 $this->saveItem($item);
 
-                if ($item->getImportType()
+                if (
+                    $item->getImportType()
                     == self::IMPORT_TYPE_CONTACT or
                     $item->getImportType()
                     == self::IMPORT_TYPE_SUBSCRIBERS or
@@ -483,14 +475,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
                     if ($item->getImportId()) {
                         $this->_processContactImportReportFaults(
-                            $item->getImportId(),
-                            $websiteId
+                            $item->getImportId(), $websiteId
                         );
                     }
                 }
             } elseif (in_array(
-                $response->status,
-                $this->importStatuses
+                $response->status, $this->importStatuses
             )) {
                 $item->setImportStatus(self::FAILED)
                     ->setMessage(
