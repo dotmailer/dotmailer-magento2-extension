@@ -437,7 +437,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                         continue;
                     }
 
-                    if (isset($response) && !isset($response->message)) {
+                    if (isset($response) && !isset($response->message) && isset($response->status)) {
                         $this->processResponse($response, $item, $websiteId);
                     }
                 }
