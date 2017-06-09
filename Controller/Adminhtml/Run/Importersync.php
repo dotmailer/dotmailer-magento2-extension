@@ -34,9 +34,11 @@ class Importersync extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $result = $this->importerFactory->create()->processQueue();
+        /** @var \Dotdigitalgroup\Email\Model\Importer $importer */
+        $importer = $this->importerFactory->create();
+        $importer->processQueue();
 
-        $this->messageManager->addSuccessMessage($result['message']);
+        $this->messageManager->addSuccessMessage('Done.');
 
         $redirectBack = $this->_redirect->getRefererUrl();
 
