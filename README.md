@@ -7,6 +7,10 @@
 
 Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
 
+## Contribution
+
+For contribution please use "testing" branch to create PR agains. Thanks.
+
 ## V2.2.1
 
 ###### Bug fixes
