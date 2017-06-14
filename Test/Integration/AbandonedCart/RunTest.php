@@ -60,9 +60,10 @@ class RunTest extends \PHPUnit_Framework_TestCase
         $guestQuote = $this->objectManager->create('Dotdigitalgroup\Email\Model\Sales\Quote')
             ->proccessAbandonedCarts('guests');
 
-        $this->quoteCollection = $guestQuote->quoteCollection->create();
+        $this->quoteCollection = $guestQuote->quoteCollection;
+
         $this->assertGreaterThanOrEqual(1, $guestQuote->totalGuests);
-        $this->assertCollectionContains($quote);
+
     }
 
     /**
@@ -76,9 +77,7 @@ class RunTest extends \PHPUnit_Framework_TestCase
         /** @var \Dotdigitalgroup\Email\Model\Sales\Quote  $quote */
         $customerQuote = $this->objectManager->create('Dotdigitalgroup\Email\Model\Sales\Quote')
             ->proccessAbandonedCarts('customers');
-        $this->quoteCollection = $customerQuote->quoteCollection->create();
-
-
+        $this->quoteCollection = $customerQuote->quoteCollection;
         $this->assertEquals(1, $customerQuote->totalCustomers);
         $this->assertCollectionContains($quote);
 
