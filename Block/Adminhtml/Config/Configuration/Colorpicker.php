@@ -36,8 +36,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
             ->setElement($element)
             ->setValue($element->getValue())
             ->setHtmlId($element->getHtmlId())
-            ->setName($element->getName())
-            ->setStyle('width: 60px'); // Update style in order to shrink width
+            ->setName($element->getName());
 
         // Inject updated Varien text element HTML in our current HTML
         $html = $input->getHtml();
