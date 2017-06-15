@@ -19,10 +19,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
      */
     public $priceHelper;
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
-     */
-    public $productFactory;
-    /**
      * @var DOMDocument
      */
     public $domDocument;
@@ -34,35 +30,46 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
      */
     private $reviewFactory;
+    /**
+     * @var \Magento\Framework\View\Asset\Repository
+     */
+    private $assetRepository;
+    /**
+     * @var \Magento\Quote\Model\QuoteFactory
+     */
+    private $quoteFactory;
 
     /**
      * Feefo constructor.
      *
      * @param XSLTProcessor $processor
      * @param DOMDocument $document
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory
+     * @param \Magento\Framework\View\Asset\Repository $assetRepository
+     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param array $data
      */
     public function __construct(
         XSLTProcessor $processor,
         DOMDocument $document,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
+        \Magento\Framework\View\Asset\Repository $assetRepository,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory,
         array $data = []
     ) {
         $this->helper         = $helper;
         $this->domDocument = $document;
         $this->processor = $processor;
         $this->priceHelper    = $priceHelper;
-        $this->productFactory = $productFactory;
         $this->reviewFactory = $reviewFactory;
+        $this->assetRepository = $assetRepository;
+        $this->quoteFactory = $quoteFactory;
         parent::__construct($context, $data);
     }
 
@@ -97,12 +104,12 @@ class Feefo extends \Magento\Framework\View\Element\Template
      *
      * @return array
      */
-    public function getQuoteProducts()
+    private function getQuoteProducts()
     {
         $products = [];
         $params = $this->_request->getParams();
 
-        if (! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
+        if (! isset($params['quote_id']) || ! isset($params['code']) || ! $this->helper->isCodeValid($params['code'])) {
             $this->helper->log('Feefo no quote id or code is set');
 
             return $products;
@@ -110,7 +117,21 @@ class Feefo extends \Magento\Framework\View\Element\Template
 
         $quoteId = (int) $params['quote_id'];
 
-        return $this->reviewFactory->create()->getQuoteProducts($quoteId);
+        $quoteModel = $this->quoteFactory->create();
+        $quoteModel->getResource()
+            ->load($quoteModel, $quoteId);
+
+        if (! $quoteModel->getId()) {
+            return $products;
+        }
+
+        $productCollection = $this->reviewFactory->create()
+            ->getProductCollection($quoteModel);
+
+        foreach ($productCollection as $product) {
+                $products[$product->getSku()] = $product->getName();
+        }
+        return $products;
     }
 
     /**
@@ -155,5 +176,15 @@ class Feefo extends \Magento\Framework\View\Element\Template
         }
 
         return $reviews;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCssUrl()
+    {
+        return $this->assetRepository
+            ->createAsset('Dotdigitalgroup_Email::css/feefo.css')
+            ->getUrl();
     }
 }

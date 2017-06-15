@@ -1,0 +1,13 @@
+.comm-table td{
+    padding-bottom: 5px;
+}
+.comm-table th{
+    text-align: left;
+    border-bottom: 1px black solid;
+    padding-bottom: 3px;
+}
+.main-table td {
+    border-bottom: 2px #d3d3d3 dotted;
+    padding-top: 5px;
+    padding-bottom: 5px
+}
