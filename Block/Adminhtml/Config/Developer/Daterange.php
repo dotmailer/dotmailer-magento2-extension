@@ -15,8 +15,8 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
         $dateElements = '';
         foreach ($ranges as $range) {
             $dateElements .=
-                "<div style='width: 200px; margin-bottom: 2px;'>" .
-                "<p style='width:45px !important; margin: 0 !important; display: inline-block; font-weight:bold;'>"
+                "<div class = 'ddg-config-daterange-wrapper'>" .
+                "<p>"
                 . ucfirst($range) . ":
                     </p>
                     <input id='" . $range . "' name='" . $range . "'data-ui-id='' 

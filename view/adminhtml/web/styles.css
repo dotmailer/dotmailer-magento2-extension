@@ -2,3 +2,7 @@ div.dotmailer-success{background:url(images/i_msg-success.png) no-repeat; paddin
 div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10px; }
 
 .ddg-rules-conditions { width: 160px; }
+.ddg-config-daterange-wrapper { width: 200px; margin-bottom: 2px; }
+.ddg-config-daterange-wrapper p {
+    width:45px !important; margin: 0 !important; display: inline-block; font-weight:bold;
+}
