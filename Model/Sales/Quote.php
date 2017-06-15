@@ -30,6 +30,11 @@ class Quote
     const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3 = 'abandoned_carts/guests/campaign_3';
 
     /**
+     * @var
+     */
+    public $quoteCollection;
+
+    /**
      * Number of lost baskets available.
      *
      * @var array
@@ -80,13 +85,13 @@ class Quote
      * Total number of customers found.
      * @var int
      */
-    private $totalCustomers = 0;
+    public $totalCustomers = 0;
 
     /**
      * Total number of guest found.
      * @var int
      */
-    private $totalGuests = 0;
+    public $totalGuests = 0;
 
     /**
      * Quote constructor.
@@ -205,6 +210,8 @@ class Quote
             \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
             $websiteId
         );
+
+        $this->quoteCollection = $salesCollection;
 
         return $salesCollection;
     }
