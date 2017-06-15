@@ -2,11 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Test\Integration\Sales;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Quote\Model\Quote;
+use Magento\Store\Model\Store;
 use Magento\TestFramework\ObjectManager;
 
 /**
- * @magentoDBIsolation disabled
  */
 class RunTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,17 +46,28 @@ class RunTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @magentoFixture Magento/Store/_files/core_second_third_fixturestore.php
+     * @magentoAdminConfigFixture connector_api_credentials/api/enabled 0
      * @magentoConfigFixture default_store abandoned_carts/guests/enabled_1 1
-     * @magentoConfigFixture default_store abandoned_carts/guests/enabled_2 1
-     * @magentoConfigFixture default_store abandoned_carts/guests/enabled_3 1
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1
-     * @magentoConfigFixture default_store abandoned_carts/guests/send_after_3 1
-     * magentoConfigFixture general/locale/timezone Australia/Melbourne
+     * @magentoAdminConfigFixture connector/api/endpoint https://r1-api.dotmailer.com
      */
     public function test_can_find_guest_abandoned_carts()
     {
-        $quote = $this->createQuoteForGuests('15');
+        $this->createQuoteForGuests('15');
+
+        $storeMock = $this->getMockBuilder(Store::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockHelper = $this->getMockBuilder(Data::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->objectManager->addSharedInstance($mockHelper, Data::class);
+        $this->objectManager->addSharedInstance($storeMock, Store::class);
+        $mockHelper->method('updateLastQuoteId')->willReturn('');
+        $mockHelper->method('getStores')->willReturn([$storeMock]);
+        $storeMock->method('getId')->willReturn(1);
+
         /** @var \Dotdigitalgroup\Email\Model\Sales\Quote  $quote */
         $guestQuote = $this->objectManager->create('Dotdigitalgroup\Email\Model\Sales\Quote')
             ->proccessAbandonedCarts('guests');
@@ -68,12 +80,26 @@ class RunTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @magentoFixture Magento/Store/_files/core_second_third_fixturestore.php
-     * @magentoConfigFixture default_store abandoned_carts/customers/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/customers/enabled_1 1
+     * @magentoConfigFixture default_store abandoned_carts/customers/send_after_1 15
+     * @magentoAdminConfigFixture connector/api/endpoint https://r1-api.dotmailer.com
      */
     public function test_can_find_customer_abandoned_carts()
     {
         $quote = $this->createQuoteForCustomer('15');
+
+        $storeMock = $this->getMockBuilder(Store::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockHelper = $this->getMockBuilder(Data::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->objectManager->addSharedInstance($mockHelper, Data::class);
+        $this->objectManager->addSharedInstance($storeMock, Store::class);
+        $mockHelper->method('updateLastQuoteId')->willReturn('');
+        $mockHelper->method('getStores')->willReturn([$storeMock]);
+        $storeMock->method('getId')->willReturn(1);
+
         /** @var \Dotdigitalgroup\Email\Model\Sales\Quote  $quote */
         $customerQuote = $this->objectManager->create('Dotdigitalgroup\Email\Model\Sales\Quote')
             ->proccessAbandonedCarts('customers');

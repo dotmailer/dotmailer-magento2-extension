@@ -41,7 +41,6 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
 
     public function testContactDataFieldsAreUpdatedByEmail()
     {
-        $this->markTestSkipped();
         ///updatecontactdatafieldsbyemail called
         /** @var ObjectManager  $objectManager */
         $objectManager = ObjectManager::getInstance();
@@ -84,7 +83,6 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
          * Helper mock.
          */
         $mockHelper = $this->getMockBuilder(Data::class)
-
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -98,17 +96,15 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         //\Dotdigitalgroup\Email\Helper\Data
         $objectManager->addSharedInstance($mockHelper, Data::class);
 
-
-
         $mockCustomerSession->method('getCustomer')->willReturn($mockCustomer);
         $mockCustomer->method('getStore')->willReturn($mockStore);
         $mockStore->method('getWebsite')->willReturn('0');
         $mockHelper->method('isEnabled')->willReturn('1');
         $mockHelper->method('getWebsiteApiClient')->willReturn($mockClient);
         $mockClient->method('getContactById')->willReturn((object) ['id' => '111']);
-        $mockClient->method('setApiUsername')->willReturn('93465');
+        $mockClient->method('setApiUsername')->willReturn($mockClient);
         $mockClient->method('getDataFields')->willReturn([]);
-        $mockClient->method('setApipassword')->willReturn('pass');
+        $mockClient->method('setApipassword')->willReturn($mockClient);
         $mockClient->method('getContactById')->willReturn((object) ['id' => '111']);
         $mockClient->expects($this->atLeastOnce())->method('updateContactDatafieldsByEmail')->willReturn(true);
 
