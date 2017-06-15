@@ -6,3 +6,5 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
 .ddg-config-daterange-wrapper p {
     width:45px !important; margin: 0 !important; display: inline-block; font-weight:bold;
 }
+.ddg-dashboard-table { width: 100%}
+.ddg-dashboard-table td { width: 45%}
