@@ -105,7 +105,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
                     $valueOptions
                 );
             } elseif ($elmType == 'text') {
-                $html = "<input style='width:160px' title='cvalue' class='' id='' name=$valueName />";
+                $html = "<input title='cvalue' class='ddg-rules-conditions' id='' name=$valueName />";
                 $response['cvalue'] = $html;
             }
             $this->http->getHeaders()->clearHeaders();
@@ -132,10 +132,9 @@ class Ajax extends \Magento\Backend\App\AbstractAction
         );
         $block->setOptions($options)
             ->setId('')
-            ->setClass('')
+            ->setClass('ddg-rules-conditions')
             ->setTitle($title)
-            ->setName($name)
-            ->setExtraParams('style="width:160px"');
+            ->setName($name);
 
         return $block->toHtml();
     }

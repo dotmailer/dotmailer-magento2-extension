@@ -28,6 +28,10 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
     public $value;
+    /**
+     * @var string
+     */
+    private $className;
 
     /**
      * Customdatafields constructor.
@@ -46,6 +50,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         $this->condition = $condition;
         $this->value     = $value;
         $this->_addAfter = false;
+        $this->className = 'ddg-rules-conditions';
 
         $this->_addButtonLabel = __('Add New Condition');
         parent::__construct($context, $data);
@@ -60,21 +65,21 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             'attribute',
             [
                 'label' => __('Attribute'),
-                'style' => 'width:120px',
+                'class' => $this->className,
             ]
         );
         $this->addColumn(
             'conditions',
             [
                 'label' => __('Condition'),
-                'style' => 'width:120px',
+                'class' => $this->className,
             ]
         );
         $this->addColumn(
             'cvalue',
             [
                 'label' => __('Value'),
-                'style' => 'width:120px',
+                'class' => $this->className,
             ]
         );
     }
@@ -92,7 +97,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             return $this->_getAttributeRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
+                ->setClass($this->className)
                 ->setOptions(
                     $this->getElement()->getValues()
                 )
@@ -101,7 +106,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             return $this->_getConditionsRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
+                ->setClass($this->className)
                 ->setOptions(
                     $this->condition->toOptionArray()
                 )
@@ -110,7 +115,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             return $this->_getValueRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
+                ->setClass($this->className)
                 ->setOptions(
                     $this->value->toOptionArray()
                 )
