@@ -7,7 +7,6 @@ namespace Dotdigitalgroup\Email\Model\Sync;
  *
  * @package Dotdigitalgroup\Email\Controller\Customer
  * @magentoDBIsolation enabled
- * magentoAppArea cron
  */
 class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
 {
@@ -58,7 +57,6 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
             $this->objectManager->create('Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory'),
             $this->objectManager->create('Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory'),
             $helper,
-            $this->objectManager->create('Magento\Framework\App\ResourceConnection'),
             $this->objectManager->create('Magento\Sales\Model\OrderFactory'),
             $this->objectManager->create('\Magento\Store\Model\StoreManagerInterface')
         );
@@ -71,33 +69,22 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
-    public function test_importer_collection_count_is_one()
-    {
-        $this->createModifiedEmailOrder();
-        $this->prep();
-        $this->assertEquals(1, $this->importerCollection->getSize(), 'Item count is not one');
-    }
-
-    /**
-     * @magentoDataFixture Magento/Sales/_files/order.php
-     * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
-     * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     */
     public function test_single_order_is_type_order_and_mode_single()
     {
         $this->createModifiedEmailOrder();
         $this->prep();
 
-        $item = $this->importerCollection->getFirstItem();
+        $item = $this->importerCollection
+            ->addFieldToFilter('import_type', \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS)
+            ->addFieldToFilter('import_mode', \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE)
+            ->getFirstItem();
 
         $this->assertEquals(
             \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
             $item->getImportType(),
             'Item is not type of order'
         );
-        $this->assertEquals(
-            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
-            $item->getImportMode(),
+        $this->assertEquals(\Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE, $item->getImportMode(),
             'Item is not single mode'
         );
     }
@@ -107,13 +94,13 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
-    public function test_singe_order_type_is_array()
+    public function test_singe_order_type_is_object()
     {
         $this->createModifiedEmailOrder();
         $this->prep();
         $item = $this->importerCollection->getFirstItem();
 
-        $this->assertInternalType('array', unserialize($item->getImportData()), 'Import data is not of array type');
+        $this->assertInternalType('object', json_decode($item->getImportData()), 'Import data is not of object type');
     }
 
     public function createModifiedEmailOrder()

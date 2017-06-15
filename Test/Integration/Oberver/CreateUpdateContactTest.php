@@ -2,10 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+use Dotdigitalgroup\Email\Helper\Data;
+
 /**
- * Class CreateUpdateContactTest
- * @package Dotdigitalgroup\Email\Observer\Customer
- * @magentoDBIsolation disabled
+ * @magentoDbIsolation enabled
+ * @magentoAdminConfigFixture connector/api/endpoint https://r1-api.dotmailer.com
+ * @magentoAdminConfigFixture connector_api_credentials/api/enabled 1
+ * @magentoAdminConfigFixture connector_api_credentials/api/username dummyusername
+ * @magentoAdminConfigFixture connector_api_credentials/api/password dummypassword
  */
 class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,18 +17,32 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
      * @var \Magento\TestFramework\ObjectManager
      */
     public $objectManager;
+
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     public $customerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
+
+    /**
+     * @var string
+     */
     public $email;
+
+    /**
+     * @var object
+     */
     public $customerModel;
 
+    /**
+     * @var int
+     */
     public $customerId ;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -37,9 +55,6 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $this->customerFactory = $this->objectManager->create('\Magento\Customer\Model\CustomerFactory');
         $this->contactFactory = $this->objectManager->create('\Dotdigitalgroup\Email\Model\ContactFactory');
         $this->helper = $this->objectManager->create('\Dotdigitalgroup\Email\Helper\Data');
-
-        $this->prepareCustomerData();
-
     }
 
     public function prepareCustomerData()
@@ -51,8 +66,12 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $num = rand(500, 5000);
         $this->email = 'dummy' . $num . 'new@dotmailer.com';
 
-        $this->setupConfig('website', $website->getId());
-        $this->setupConfig('default', 0);
+        //pass the helper is enabled
+        $mockHelper = $this->getMockBuilder(Data::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->objectManager->addSharedInstance($mockHelper, Data::class);
+        $mockHelper->method('isEnabled')->willReturn(1);
 
         $customerModel = $this->customerFactory->create();
         $customerModel->setStore($store);
@@ -62,54 +81,45 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $customerModel->setLastname('Lastname');
         $customerModel->setPassword('dummypassword');
         $customerModel->save();
-        $this->customerId = $customerModel->getId();
 
+        $this->customerId = $customerModel->getId();
         $this->customerModel = $customerModel;
     }
 
-    public function testContactCreatedSuccessfully()
+    public function test_contact_created_and_updated_successfully()
     {
-        //save new customer which will trigger the observer and will create new contact
-
-        $contact = $this->contactFactory->create()
-            ->loadByCustomerId($this->customerModel->getId());
-        //check contact created after the customer was saved
-        $this->assertEquals($this->customerModel->getEmail(), $contact->getEmail(), 'Contact was not created');
-    }
-
-    public function test_contact_updated_successfully()
-    {
+        $this->prepareCustomerData();
         //update the email and save contact
         $updatedEmail = str_replace('new', 'updated', $this->email);
-        $customerModel = $this->customerModel
-            ->setEmail($updatedEmail)
-            ->save();
 
-        $contact = $this->contactFactory->create()
-            ->loadByCustomerId($customerModel->getId());
+        //save new customer which will trigger the observer and will create new contact
+        $contact = $this->loadContactByCustomerId();
+        $emailCreated = $contact->getEmail();
 
-        $this->assertEquals($updatedEmail, $contact->getEmail(), 'Contact was not updated');
+        $this->updateCustomerEmail($updatedEmail);
+        $contact = $this->loadContactByCustomerId();
+        $emailUpdated = $contact->getEmail();
+
+        //check contact created after the customer was saved
+        $this->assertEquals($this->email, $emailCreated, 'Contact was not found');
+
+        $this->assertEquals($updatedEmail, $emailUpdated, 'Updated contact was not found');
     }
 
-    private function setupConfig($scope, $scopeId)
+    private function updateCustomerEmail($updatedEmail)
     {
-        $this->helper->saveConfigData(
-            'connector_api_credentials/api/enabled',
-            1,
-            $scope,
-            $scopeId
-        );
-        $this->helper->saveConfigData(
-            'connector_api_credentials/api/username',
-            'dummy',
-            $scope,
-            $scopeId
-        );
-        $this->helper->saveConfigData(
-            'connector_api_credentials/api/password',
-            'dummy',
-            $scope,
-            $scopeId
-        );
+        return $this->customerModel
+            ->setEmail($updatedEmail)
+            ->save();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function loadContactByCustomerId()
+    {
+        $contact = $this->contactFactory->create()
+            ->loadByCustomerId($this->customerId);
+        return $contact;
     }
 }
