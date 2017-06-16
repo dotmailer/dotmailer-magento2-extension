@@ -39,9 +39,7 @@ class Response extends \Magento\Framework\App\Action\Action
         //authenticate
         $auth = $this->helper->auth($this->getRequest()->getParam('code'));
         if (!$auth) {
-            $this->sendResponse();
-
-            return;
+            return $this->sendResponse();
         }
     }
 
@@ -53,7 +51,7 @@ class Response extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     *
+     * @return mixed
      */
     public function sendResponse()
     {
@@ -67,7 +65,7 @@ class Response extends \Magento\Framework\App\Action\Action
                     true
                 )
                 ->setHeader('Content-type', 'text/html; charset=UTF-8', true);
-            $this->getResponse()->sendHeaders();
+            return $this->getResponse()->sendHeaders();
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

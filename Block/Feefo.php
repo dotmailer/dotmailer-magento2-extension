@@ -137,18 +137,12 @@ class Feefo extends \Magento\Framework\View\Element\Template
     /**
      * Get product reviews from feefo.
      *
+     * @param $check
      * @return array
      */
-    public function getProductsReview()
+    public function getProductsReview($check = true)
     {
-        $check = true;
         $reviews = [];
-        $feefoDir = BP . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR
-            . 'code' . DIRECTORY_SEPARATOR . 'Dotdigitalgroup'
-            . DIRECTORY_SEPARATOR .
-            'Email' . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR
-            . 'frontend' . DIRECTORY_SEPARATOR . 'templates'
-            . DIRECTORY_SEPARATOR . 'feefo';
         $logon = $this->helper->getFeefoLogon();
         $limit = $this->helper->getFeefoReviewsPerProduct();
         $products = $this->getQuoteProducts();
@@ -160,11 +154,11 @@ class Feefo extends \Magento\Framework\View\Element\Template
             $doc = $this->domDocument;
             $xsl = $this->processor;
             if ($check) {
-                $doc->load($feefoDir . DIRECTORY_SEPARATOR . 'feedback.xsl');
+                $pathToTemplate = $this->getFeefoTemplate('feedback.xsl');
+                $doc->load($pathToTemplate);
             } else {
-                $doc->load(
-                    $feefoDir . DIRECTORY_SEPARATOR . 'feedback-no-th.xsl'
-                );
+                $pathToTemplate = $this->getFeefoTemplate('feedback-no-th.xsl');
+                $doc->load($pathToTemplate);
             }
             $xsl->importStyleSheet($doc);
             $doc->loadXML(file_get_contents($url));
@@ -176,6 +170,17 @@ class Feefo extends \Magento\Framework\View\Element\Template
         }
 
         return $reviews;
+    }
+
+    /**
+     * @param $template
+     * @return string
+     */
+    private function getFeefoTemplate($template)
+    {
+        return $this->assetRepository
+            ->createAsset('Dotdigitalgroup_Email::feefo/' . $template)
+            ->getUrl();
     }
 
     /**
