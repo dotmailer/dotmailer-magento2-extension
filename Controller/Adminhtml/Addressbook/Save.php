@@ -7,7 +7,7 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Escaper
      */
-    public $escaper;
+    private $escaper;
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
@@ -55,7 +55,6 @@ class Save extends \Magento\Backend\App\AbstractAction
             }
         }
     }
-
 
     /**
      * Check the permission to run it.

@@ -32,7 +32,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Escaper
      */
-    public $escaper;
+    private $escaper;
 
     /**
      * Ajax constructor.

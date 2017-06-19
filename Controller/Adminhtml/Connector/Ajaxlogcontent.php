@@ -67,7 +67,6 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
         $this->getResponse()->representJson($this->jsonHelper->jsonEncode($response));
     }
 
-
     /**
      * @return bool
      */

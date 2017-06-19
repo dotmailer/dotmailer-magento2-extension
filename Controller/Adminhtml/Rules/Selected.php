@@ -32,7 +32,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Escaper
      */
-    public $escaper;
+    private $escaper;
 
     /**
      * Selected constructor.

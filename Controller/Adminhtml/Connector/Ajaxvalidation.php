@@ -13,6 +13,10 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
      * @var \Magento\Framework\Json\Helper\Data
      */
     private $jsonHelper;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Ajaxvalidation constructor.
@@ -20,14 +24,17 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Backend\App\Action\Context $context
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->data = $data;
         $this->jsonHelper = $jsonHelper;
+        $this->escaper = $escaper;
         parent::__construct($context);
     }
 
@@ -37,8 +44,10 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
     public function execute()
     {
         $params = $this->getRequest()->getParams();
-        $apiUsername = $params['api_username'];
-        $apiPassword = base64_decode($params['api_password']);
+        $apiUsername = $this->escaper->escapeHtml($params['api_username']);
+        $apiPassword = base64_decode(
+            $this->escaper->escapeHtml($params['api_password'])
+        );
         //validate api, check against account info.
         if ($this->data->isEnabled()) {
             $client = $this->data->getWebsiteApiClient();

@@ -25,6 +25,10 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
     private $remoteAddress;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Accountcallback constructor.
@@ -34,7 +38,8 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\Json\Helper\Data                     $jsonHelper
      * @param \Magento\Store\Model\StoreManagerInterface              $storeManager
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress    $remoteAddress
-     * @param \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup
+     * @param \Dotdigitalgroup\Email\Model\Trial\TrialSetup           $trialSetup
+     * @param \Magento\Framework\Escaper                              $escaper
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -42,13 +47,15 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
-        \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup
+        \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->helper        = $helper;
         $this->jsonHelper    = $jsonHelper;
         $this->storeManager  = $storeManager;
         $this->remoteAddress = $remoteAddress;
-        $this->trialSetup = $trialSetup;
+        $this->trialSetup    = $trialSetup;
+        $this->escaper       = $escaper;
 
         parent::__construct($context);
     }
@@ -58,7 +65,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $params = $this->getRequest()->getParams();
+        $params = $this->escaper->escapeHtml($this->getRequest()->getParams());
 
         //if no value to any of the required params send error response
         if (empty($params['apiUser']) or empty($params['pass'])) {
@@ -96,10 +103,11 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             'err' => $error,
             'message' => $msg,
         ];
+        $callback = $this->escaper->escapeHtml($this->getRequest()->getParam('callback'));
         $this->getResponse()
             ->setHeader('Content-type', 'application/javascript', true)
             ->setBody(
-                $this->getRequest()->getParam('callback') . '(' . $this->jsonHelper->jsonEncode($message) . ')'
+                $callback . '(' . $this->jsonHelper->jsonEncode($message) . ')'
             )
             ->sendResponse();
     }

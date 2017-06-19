@@ -69,7 +69,6 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         $productCollection = $this->catalogFactory->create()
             ->getProductCollectionFromIds($productIds, $limit);
 
-
         //important check the salable product in template
         return $productCollection;
     }

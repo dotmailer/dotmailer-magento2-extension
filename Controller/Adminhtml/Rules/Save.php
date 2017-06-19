@@ -12,6 +12,10 @@ class Save extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
     private $ruleFactory;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Save constructor.
@@ -19,15 +23,18 @@ class Save extends \Magento\Backend\App\AbstractAction
      * @param \Magento\Backend\App\Action\Context        $context
      * @param \Dotdigitalgroup\Email\Model\RulesFactory  $rulesFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Framework\Escaper                 $escaper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        \Magento\Framework\Escaper $escaper
     ) {
         parent::__construct($context);
         $this->ruleFactory  = $rulesFactory;
         $this->storeManager = $storeManagerInterface;
+        $this->escaper      = $escaper;
     }
 
     /**
@@ -46,10 +53,10 @@ class Save extends \Magento\Backend\App\AbstractAction
     public function execute()
     {
         if ($this->getRequest()->getParams()) {
-            $data = $this->getRequest()->getParams();
+            $data = $this->escaper->escapeHtml($this->getRequest()->getParams());
             try {
                 $ruleModel = $this->ruleFactory->create();
-                $id = $this->getRequest()->getParam('id');
+                $id = $data['id'];
 
                 if ($data['website_ids']) {
                     foreach ($data['website_ids'] as $websiteId) {
@@ -72,9 +79,7 @@ class Save extends \Magento\Backend\App\AbstractAction
                             $this->_redirect(
                                 '*/*/edit',
                                 [
-                                    'id' => $this->getRequest()->getParam(
-                                        'id'
-                                    )
+                                    'id' => $id
                                 ]
                             );
                             return;
@@ -120,7 +125,7 @@ class Save extends \Magento\Backend\App\AbstractAction
                 $this->_getSession()->setPageData($data);
                 $this->_redirect(
                     '*/*/edit',
-                    ['id' => $this->getRequest()->getParam('id')]
+                    ['id' => $id]
                 );
 
                 return;
