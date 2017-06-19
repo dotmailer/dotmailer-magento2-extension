@@ -16,6 +16,10 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
      */
     private $datafield;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Automapdatafields constructor.
@@ -23,15 +27,18 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
      * @param \Dotdigitalgroup\Email\Helper\Data               $data
      * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $datafield
      * @param \Magento\Backend\App\Action\Context              $context
+     * @param \Magento\Framework\Escaper                       $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $datafield,
-        \Magento\Backend\App\Action\Context $context
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->data           = $data;
         $this->datafield      = $datafield;
         $this->messageManager = $context->getMessageManager();
+        $this->escaper        = $escaper;
         parent::__construct($context);
     }
 
@@ -41,7 +48,9 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     public function execute()
     {
         $result = ['errors' => false, 'message' => ''];
-        $website = $this->getRequest()->getParam('website', 0);
+        $website = $this->escaper->escapeHtml(
+            $this->getRequest()->getParam('website', 0)
+        );
         $client = false;
         if ($this->data->isEnabled()) {
             $client = $this->data->getWebsiteApiClient($website);

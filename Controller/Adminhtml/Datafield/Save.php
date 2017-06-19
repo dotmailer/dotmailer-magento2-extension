@@ -7,7 +7,7 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Escaper
      */
-    public $escaper;
+    private $escaper;
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
@@ -42,8 +42,8 @@ class Save extends \Magento\Backend\App\AbstractAction
     {
         $datafield = $this->escaper->escapeHtml($this->getRequest()->getParam('name'));
         $type = $this->escaper->escapeHtml($this->getRequest()->getParam('type'));
-        $default = $this->getRequest()->getParam('default');
-        $visibility = $this->getRequest()->getParam('visibility');
+        $default = $this->escaper->escapeHtml($this->getRequest()->getParam('default'));
+        $visibility = $this->escaper->escapeHtml($this->getRequest()->getParam('visibility'));
 
         $website = (int) $this->getRequest()->getParam('website', 0);
 
@@ -58,7 +58,6 @@ class Save extends \Magento\Backend\App\AbstractAction
             }
         }
     }
-
 
     /**
      * @return bool

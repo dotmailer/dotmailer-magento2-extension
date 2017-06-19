@@ -7,19 +7,26 @@ class Response extends \Magento\Framework\App\Action\Action
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    private $helper;
+    public $helper;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    public $escaper;
 
     /**
      * Response constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\App\Action\Context $context
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->helper = $data;
+        $this->escaper = $escaper;
         parent::__construct($context);
     }
 
@@ -37,11 +44,10 @@ class Response extends \Magento\Framework\App\Action\Action
         }
 
         //authenticate
-        $auth = $this->helper->auth($this->getRequest()->getParam('code'));
+        $code = $this->escaper->escapeHtml($this->getRequest()->getParam('code'));
+        $auth = $this->helper->auth($code);
         if (!$auth) {
-            $this->sendResponse();
-
-            return;
+            return $this->sendResponse();
         }
     }
 
@@ -53,7 +59,7 @@ class Response extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     *
+     * @return mixed
      */
     public function sendResponse()
     {
@@ -67,7 +73,7 @@ class Response extends \Magento\Framework\App\Action\Action
                     true
                 )
                 ->setHeader('Content-type', 'text/html; charset=UTF-8', true);
-            $this->getResponse()->sendHeaders();
+            return $this->getResponse()->sendHeaders();
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

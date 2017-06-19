@@ -20,6 +20,10 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @var \Magento\Quote\Model\Quote
      */
     private $quote;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Getbasket constructor.
@@ -28,16 +32,19 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @param \Magento\Quote\Model\QuoteFactory      $quoteFactory
      * @param \Magento\Customer\Model\SessionFactory $sessionFactory
      * @param \Magento\Framework\App\Action\Context  $context
+     * @param \Magento\Framework\Escaper             $escaper
      */
     public function __construct(
         \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Customer\Model\SessionFactory $sessionFactory,
-        \Magento\Framework\App\Action\Context $context
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->checkoutSession = $checkoutSessionFactory;
         $this->sessionFactory  = $sessionFactory;
         $this->quoteFactory    = $quoteFactory;
+        $this->escaper         = $escaper;
         parent::__construct($context);
     }
 
@@ -46,7 +53,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $quoteId = $this->getRequest()->getParam('quote_id');
+        $quoteId = $this->escaper->escapeHtml($this->getRequest()->getParam('quote_id'));
         //no quote id redirect to base url
         if (!$quoteId) {
             return $this->_redirect('');

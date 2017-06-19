@@ -16,6 +16,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     private $localeDate;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Newsletter constructor.
@@ -24,16 +28,19 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @param \Magento\Customer\Model\Session                      $session
      * @param \Magento\Framework\App\Action\Context                $context
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Magento\Framework\Escaper                           $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\Session $session,
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->helper           = $helper;
         $this->customerSession  = $session;
         $this->localeDate       = $localeDate;
+        $this->escaper          = $escaper;
         parent::__construct($context);
     }
 
@@ -47,11 +54,11 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         }
 
         //params
-        $additionalSubscriptions = $this->getRequest()->getParam(
-            'additional_subscriptions'
+        $additionalSubscriptions = $this->escaper->escapeHtml(
+            $this->getRequest()->getParam('additional_subscriptions')
         );
-        $paramDataFields = $this->getRequest()->getParam(
-            'data_fields'
+        $paramDataFields = $this->escaper->escapeHtml(
+            $this->getRequest()->getParam('data_fields')
         );
         $customerId = $this->customerSession->getConnectorContactId();
         $customerEmail = $this->customerSession->getCustomer()

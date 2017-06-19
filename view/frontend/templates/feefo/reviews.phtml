@@ -1,15 +1,19 @@
-<?php $reviews = $block->getProductsReview(); ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+
+<?php $reviews = $block->getProductsReview(); ?>
     <head>
         <title><?php echo $block->escapeHtml(__("Feefo Feedback")); ?></title>
+        <link rel="stylesheet" type="text/css" media="all"
+              href="<?php echo $block->escapeUrl($block->getCssUrl()); ?>" />
     </head>
     <body>
         <table class="main-table">
             <tbody>
-                <?php foreach($reviews as $name => $review): ?>
+                <?php foreach ($reviews as $name => $review) : ?>
                     <tr>
-                        <td style="border-bottom: 2px #d3d3d3 dotted; padding-top: 5px; padding-bottom: 5px">
+                        <td>
                             <?php echo $block->escapeHtml($review); ?>
                         </td>
                     </tr>
@@ -18,13 +22,3 @@
         </table>
     </body>
 </html>
-<style>
-    .comm-table td{
-        padding-bottom: 5px;
-    }
-    .comm-table th{
-        text-align: left;
-        border-bottom: 1px black solid;
-        padding-bottom: 3px;
-    }
-</style>

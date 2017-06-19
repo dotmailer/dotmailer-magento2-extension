@@ -13,9 +13,7 @@ class Score extends \Dotdigitalgroup\Email\Controller\Response
         $this->authenticate();
 
         if (!$this->helper->getFeefoLogon()) {
-            $this->sendResponse();
-
-            return;
+            return $this->sendResponse();
         }
 
         $this->_view->loadLayout();

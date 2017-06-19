@@ -3,9 +3,9 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 /**
- * abstract Rest class to make cURL requests.
+ * Rest class to make cURL requests.
  */
-abstract class Rest
+class Rest
 {
     /**
      * @var null

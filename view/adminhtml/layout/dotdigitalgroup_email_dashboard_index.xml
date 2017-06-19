@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Dotdigitalgroup_Email::styles.css"/>
+    </head>
     <body>
         <referenceContainer name="page.main.actions">
             <block class="Magento\Backend\Block\Store\Switcher" name="adminhtml.report.product.downloads.store_switcher" template="Dotdigitalgroup_Email::store/switcher.phtml">
@@ -12,7 +15,7 @@
             </block>
         </referenceContainer>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard" name="dotdigitalgroup.email.dashboard.grid.container">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard" name="dotdigitalgroup.email.dashboard.grid.container" template="Dotdigitalgroup_Email::dashboard/main.phtml">
                 <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information" name="dotdigitalgroup.email.dashboard_left" template="Dotdigitalgroup_Email::dashboard/information.phtml">
                     <block class="Magento\Store\Block\Switcher" name="store_language" as="store_language" template="Magento_Store::switch/languages.phtml"/>
                 </block>

@@ -15,22 +15,11 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
         $dateElements = '';
         foreach ($ranges as $range) {
             $dateElements .=
-                "<div style='width: 200px; margin-bottom: 2px;'>" .
-                "<p style='width:45px !important; margin: 0 !important; display: inline-block; font-weight:bold;'>"
-                . ucfirst($range) . ":
-                    </p>
+                "<div class = 'ddg-config-daterange-wrapper'>" .
+                "<p>" . ucfirst($range) . ":</p>
                     <input id='" . $range . "' name='" . $range . "'data-ui-id='' 
-                        value='' class='input-text admin__control-text' type='text' />
-                </div>" .
-                '<script>
-                require(["jquery", "jquery/ui"], function () {
-                jQuery(document).ready(function () {
-                    var el = jQuery("#' . $range . '");
-                    el.datepicker({dateFormat:"yy-mm-dd"});
-                    el.addClass("datepicker");
-                });
-            });
-            </script>';
+                        value='' class='ddg-datepicker input-text admin__control-text' type='text' />
+                </div>";
         }
         return $dateElements;
     }
