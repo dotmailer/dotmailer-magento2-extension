@@ -4,7 +4,9 @@
     <head>
         <script src="Dotdigitalgroup_Email::js/daterange.js"/>
         <script src="Dotdigitalgroup_Email::js/node_modules/colpick/colpick.js"/>
-        <script src="Dotdigitalgroup_Email::js/node_modules/fancybox/jquery.fancybox.pack.js"/>
+        <script src="Dotdigitalgroup_Email::js/colorPickerInit.js"/>
+        <script src="Dotdigitalgroup_Email::js/datePickerInit.js"/>
+        <script src="Dotdigitalgroup_Email::js/fancyBoxInit.js"/>
         <css src="Dotdigitalgroup_Email::colpick.css"/>
         <css src="Dotdigitalgroup_Email::jquery.fancybox.css"/>
         <css src="Dotdigitalgroup_Email::styles.css"/>

@@ -15,7 +15,7 @@
             </block>
         </referenceContainer>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard" name="dotdigitalgroup.email.dashboard.grid.container">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard" name="dotdigitalgroup.email.dashboard.grid.container" template="Dotdigitalgroup_Email::dashboard/main.phtml">
                 <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information" name="dotdigitalgroup.email.dashboard_left" template="Dotdigitalgroup_Email::dashboard/information.phtml">
                     <block class="Magento\Store\Block\Switcher" name="store_language" as="store_language" template="Magento_Store::switch/languages.phtml"/>
                 </block>

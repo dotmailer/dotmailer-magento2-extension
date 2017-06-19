@@ -24,5 +24,9 @@
             <block class="Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit"
                    name="dotdigitalgroup.email.rules.edit"/>
         </referenceContainer>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Backend\Block\Template"
+                   name="dotdigitalgroup.email.rules.jsInit" template="Dotdigitalgroup_Email::rulesJsInit.phtml"/>
+        </referenceContainer>
     </body>
 </page>

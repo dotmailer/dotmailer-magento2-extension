@@ -15,3 +15,14 @@
         </tr>
     </table>
 </div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Dotdigitalgroup_Email/js/dashboard":{
+                "contactLink":"<?php echo $block->escapeUrl($block->getContactSyncLink()); ?>",
+                "importerLink":"<?php echo $block->escapeUrl($block->getImporterLink()); ?>"
+            }
+        }
+    }
+</script>
