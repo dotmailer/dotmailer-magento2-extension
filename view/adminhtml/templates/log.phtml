@@ -1,5 +1,8 @@
+<?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Logviewer $block */?>
 <div class="switcher">
-    <label style="font-weight: bold; padding-right: 10px;" for="connector-log-selector"><?php echo $block->escapeHtml(__('Select Log File:')); ?></label>
+    <label style="font-weight: bold; padding-right: 10px;" for="connector-log-selector">
+        <?php echo $block->escapeHtml(__('Select Log File:')); ?>
+    </label>
     <select id="connector-log-selector" style="width: 20em">
         <option value="connector"><?php echo $block->escapeHtml(__('Marketing Automation Log')); ?></option>
         <option value="system"><?php echo $block->escapeHtml(__('Magento System Log')); ?></option>
@@ -29,7 +32,7 @@
     {
         "*": {
             "Dotdigitalgroup_Email/js/logUpdater":{
-                "url":"<?php echo $block->escapeUrl($block->getUrl('dotdigitalgroup_email/connector/ajaxlogcontent')) ?>"
+                "url":"<?php echo $block->escapeUrl($block->getAjaxUrl()) ?>"
             }
         }
     }
