@@ -16,6 +16,10 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Reviewsreset constructor.
@@ -27,11 +31,13 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
         \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Helper\Data $data
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->reviewFactory  = $reviewFactory;
         $this->messageManager = $context->getMessageManager();
-        $this->helper = $data;
+        $this->helper         = $data;
+        $this->escaper        = $escaper;
         parent::__construct($context);
     }
 
@@ -40,7 +46,7 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $params = $this->getRequest()->getParams();
+        $params = $this->escaper->escapeHtml($this->getRequest()->getParams());
         if ($params['from'] && $params['to']) {
             $error = $this->helper->validateDateRange(
                 $params['from'],

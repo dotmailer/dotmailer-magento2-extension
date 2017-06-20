@@ -2,6 +2,9 @@
 
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Dotdigitalgroup_Email::styles.css"/>
+    </head>
     <body>
         <referenceContainer name="left">
             <block class="Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tabs" name="rules_edit_tabs">
@@ -20,6 +23,10 @@
         <referenceContainer name="content">
             <block class="Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit"
                    name="dotdigitalgroup.email.rules.edit"/>
+        </referenceContainer>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Backend\Block\Template"
+                   name="dotdigitalgroup.email.rules.jsInit" template="Dotdigitalgroup_Email::rulesJsInit.phtml"/>
         </referenceContainer>
     </body>
 </page>

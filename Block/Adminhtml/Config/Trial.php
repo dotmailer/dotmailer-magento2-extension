@@ -503,40 +503,14 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
                 ' target="_blank"><img style="margin-bottom:15px;" src=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
-            $script = "
-            <script>
-            require(['jquery', 'domReady'], function($){
-                  $('.various').fancybox();
-                });
-            </script>";
         } else {
-            $html = '<a class="various fancybox.iframe" data-fancybox-type="iframe" href=' .
+            $html = '<a class="ddg-fancyBox fancybox.iframe" data-fancybox-type="iframe" href=' .
                 $this->_getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
-            $script = "<script>
-            require(['jquery', 'domReady'], function($){
-                $('.various').fancybox({
-                    width	: 508,
-                    height	: 670,
-                    scrolling   : 'no',
-                    hideOnOverlayClick : false,
-                    helpers   : { 
-                        overlay : { 
-                            closeClick: false 
-                        } 
-                    }
-                });
-                
-                $(document).on('click', 'a.fancybox-close', function(){
-                    location.reload();
-                });
-            }); 
-        </script>
-        ";
         }
 
-        return $html . $script;
+        return $html;
     }
 
     /**

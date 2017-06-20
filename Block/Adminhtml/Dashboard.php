@@ -28,7 +28,6 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
             'contact_sync',
             [
                 'label' => __('Run Contact Sync'),
-                'onclick' => 'setLocation(\'' . $this->getContactSyncLink(). '\')',
                 'class' => 'primary'
             ]
         );
@@ -40,7 +39,6 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
             'importer_sync',
             [
                 'label' => __('Run Importer Sync'),
-                'onclick' => 'setLocation(\'' . $this->getImporterLink(). '\')',
                 'class' => 'primary'
             ]
         );

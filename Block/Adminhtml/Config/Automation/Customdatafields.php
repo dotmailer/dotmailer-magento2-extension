@@ -41,15 +41,13 @@ class Customdatafields extends
         $this->addColumn(
             'status',
             [
-                'label' => __('Order Status'),
-                'style' => 'width:120px',
+                'label' => __('Order Status')
             ]
         );
         $this->addColumn(
             'automation',
             [
-                'label' => __('Automation Program'),
-                'style' => 'width:120px',
+                'label' => __('Automation Program')
             ]
         );
         $this->_addAfter = false;

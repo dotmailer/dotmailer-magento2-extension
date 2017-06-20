@@ -11,19 +11,25 @@ class MassDelete extends \Magento\Backend\App\Action
      * @var \Magento\Cron\Model\ScheduleFactory
      */
     private $schedule;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * MassDelete constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Cron\Model\ScheduleFactory $schedule
+        \Magento\Cron\Model\ScheduleFactory $schedule,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->schedule = $schedule;
-
+        $this->escaper = $escaper;
         parent::__construct($context);
     }
     /**
@@ -31,7 +37,9 @@ class MassDelete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $ids = $this->getRequest()->getParam('id');
+        $ids = $this->escaper->escapeHtml(
+            $this->getRequest()->getParam('id')
+        );
 
         if (!is_array($ids)) {
             $this->messageManager->addErrorMessage(__('Please select cron.'));
@@ -53,7 +61,6 @@ class MassDelete extends \Magento\Backend\App\Action
 
         return $resultRedirect;
     }
-
 
     /**
      * @return bool

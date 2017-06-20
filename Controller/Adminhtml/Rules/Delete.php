@@ -12,6 +12,10 @@ class Delete extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Delete constructor.
@@ -19,15 +23,18 @@ class Delete extends \Magento\Backend\App\AbstractAction
      * @param \Magento\Backend\App\Action\Context        $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Model\Rules         $rules
+     * @param \Magento\Framework\Escaper                 $escaper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Dotdigitalgroup\Email\Model\Rules $rules
+        \Dotdigitalgroup\Email\Model\Rules $rules,
+        \Magento\Framework\Escaper $escaper
     ) {
         parent::__construct($context);
         $this->rules        = $rules;
         $this->storeManager = $storeManagerInterface;
+        $this->escaper      = $escaper;
     }
 
     /**
@@ -45,7 +52,8 @@ class Delete extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        if ($id = $this->getRequest()->getParam('id')) {
+        $id = $this->escaper->escapeHtml($this->getRequest()->getParam('id'));
+        if ($id) {
             try {
                 $model = $this->rules;
                 $model->setId($id);
@@ -62,7 +70,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
                 );
                 $this->_redirect(
                     '*/*/edit',
-                    ['id' => $this->getRequest()->getParam('id')]
+                    ['id' => $id]
                 );
 
                 return;

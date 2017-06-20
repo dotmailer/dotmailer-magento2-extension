@@ -36,34 +36,12 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
             ->setElement($element)
             ->setValue($element->getValue())
             ->setHtmlId($element->getHtmlId())
-            ->setName($element->getName())
-            ->setStyle('width: 60px'); // Update style in order to shrink width
+            ->setClass('ddg-colpicker')
+            ->setName($element->getName());
 
         // Inject updated Varien text element HTML in our current HTML
         $html = $input->getHtml();
 
-        // Inject JS code to display color picker
-        $html .= $this->_getJs($element->getHtmlId());
-
         return $html;
-    }
-
-    /**
-     * @param $htmlId
-     *
-     * @return string
-     */
-    public function _getJs($htmlId)
-    {
-        return '<script>
-			require([\'jquery\', \'domReady!\'], function($){
-    			$(\'' . '#' . $htmlId . '\').colpick({
-		        onChange:function(hsb,hex,rgb,el)
-		        {
-		            $(el).val(\'#\'+hex);
-		        }
-            });
-		});
-		</script>';
     }
 }

@@ -28,6 +28,10 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
     public $value;
+    /**
+     * @var string
+     */
+    private $className;
 
     /**
      * Customdatafields constructor.
@@ -46,6 +50,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         $this->condition = $condition;
         $this->value     = $value;
         $this->_addAfter = false;
+        $this->className = 'ddg-rules-conditions';
 
         $this->_addButtonLabel = __('Add New Condition');
         parent::__construct($context, $data);
@@ -60,21 +65,21 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             'attribute',
             [
                 'label' => __('Attribute'),
-                'style' => 'width:120px',
+                'class' => $this->className,
             ]
         );
         $this->addColumn(
             'conditions',
             [
                 'label' => __('Condition'),
-                'style' => 'width:120px',
+                'class' => $this->className,
             ]
         );
         $this->addColumn(
             'cvalue',
             [
                 'label' => __('Value'),
-                'style' => 'width:120px',
+                'class' => $this->className,
             ]
         );
     }
@@ -92,7 +97,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             return $this->_getAttributeRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
+                ->setClass($this->className)
                 ->setOptions(
                     $this->getElement()->getValues()
                 )
@@ -101,7 +106,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             return $this->_getConditionsRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
+                ->setClass($this->className)
                 ->setOptions(
                     $this->condition->toOptionArray()
                 )
@@ -110,7 +115,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
             return $this->_getValueRenderer()
                 ->setName($this->_getCellInputElementName($columnName))
                 ->setTitle($columnName)
-                ->setExtraParams('style="width:160px"')
+                ->setClass($this->className)
                 ->setOptions(
                     $this->value->toOptionArray()
                 )
@@ -207,133 +212,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      */
     public function _toHtml()
     {
-        $script
-            = "<script>
-                require([
-                    'prototype',
-                    'domReady!'
-                ], function () {
-                    $$('.admin__control-table tr td:first-child select').each(function(item) {
-                        doUpdateWithValues(item);
-                    });
-
-                    $$('.admin__control-table tr td:first-child select').each(function(item) {
-                        Event.observe(item,'change', function(){
-                            doUpdate(item);
-                        });
-                    });
-
-                    $$('.admin__control-table button.action-add').each(function(item) {
-                         Event.observe(item,'click', function(){
-                            $$('.admin__control-table tr td:first-child select').each(function(item) {
-                                 Event.observe(item,'change', function(){
-                                    doUpdate(item);
-                                });
-                            });
-                            $$('.admin__control-table tr td select').each(function(item) {
-                                Event.observe(item,'change', function(){
-                                     if(item.readAttribute('title') === 'conditions'){
-                                        doUpdateForCondition(item);
-                                     }
-                                });
-                            });
-                        });
-                    });
-
-                    function doUpdate(item){
-                        var url = '" . $this->getUrl(
-            'dotdigitalgroup_email/rules/ajax'
-        ) . "';
-                        var cond = item.up(1).down().next();
-                        var condName = cond.down().readAttribute('name');
-                        var value = item.up(1).down().next(1);
-                        var valueName = value.down().readAttribute('name');
-                        var attribute = item.value;
-                        new Ajax.Request(url, {
-                            method: 'post',
-                            parameters: {
-                                attribute: attribute,
-                                condition: condName,
-                                value: valueName
-                            },
-                            onSuccess: function(transport){
-                                var json = transport.responseJSON;
-                                cond.update(json.condition);
-                                value.update(json.cvalue);
-
-                                $$('.admin__control-table tr td select').each(function(item) {
-                                    Event.observe(item,'change', function(){
-                                         if(item.readAttribute('title') === 'conditions'){
-                                            doUpdateForCondition(item);
-                                         }
-                                    });
-                                });
-                            }
-                        });
-                    }
-
-                    function doUpdateWithValues(item){
-                        var url = '" . $this->getUrl(
-            'dotdigitalgroup_email/rules/selected'
-        ) . "';
-                        var arrayKey = item.up(1).readAttribute('id');
-                        var cond = item.up(1).down().next();
-                        var condName = cond.down().readAttribute('name');
-                        var value = item.up(1).down().next(1);
-                        var valueName = value.down().readAttribute('name');
-                        var attribute = item.value;
-                        var ruleId = $('rule_id').value;
-                        new Ajax.Request(url, {
-                            method: 'post',
-                            parameters: {
-                                attribute: attribute,
-                                condition: condName,
-                                value: valueName,
-                                arraykey: arrayKey,
-                                ruleid: ruleId
-                            },
-                            onSuccess: function(transport){
-                                var json = transport.responseJSON;
-                                cond.update(json.condition);
-                                value.update(json.cvalue);
-
-                                $$('.admin__control-table tr td select').each(function(item) {
-                                    Event.observe(item,'change', function(){
-                                         if(item.readAttribute('title') === 'conditions'){
-                                            doUpdateForCondition(item);
-                                         }
-                                    });
-                                });
-                            }
-                        });
-                    }
-
-                    function doUpdateForCondition(item){
-                        var url = '" . $this->getUrl(
-            'dotdigitalgroup_email/rules/value'
-        ) . "';
-                        var attribute = item.up(1).down();
-                        var attributeValue = attribute.down().value;
-                        var value = item.up().next();
-                        var valueName = value.down().readAttribute('name');
-                        var condValue = item.value;
-                        new Ajax.Request(url, {
-                            method: 'post',
-                            parameters: {
-                                attributeValue: attributeValue,
-                                value: valueName,
-                                condValue: condValue
-                            },
-                            onSuccess: function(transport){
-                                var json = transport.responseJSON;
-                                value.update(json.cvalue);
-                            }
-                        });
-                    }
-                });
-            </script>";
-
         return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
-        . '"/>' . parent::_toHtml() . $script;
+        . '"/>' . parent::_toHtml();
     }
 }

@@ -125,7 +125,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param $ids
      * @param $message
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Exception
      */
     public function setMessage($ids, $message)
     {
@@ -142,7 +142,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["id in (?)" => $ids]
             );
         } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -151,7 +151,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param $sendId
      * @param $message
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Exception
      */
     public function setMessageWithSendId($sendId, $message)
     {
@@ -167,7 +167,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ['send_id = ?' => $sendId]
             );
         } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -175,7 +175,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Set sent
      *
      * @param $sendId
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Exception
      */
     public function setSent($sendId)
     {
@@ -191,7 +191,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ['send_id = ?' => $sendId]
             );
         } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -200,7 +200,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param $ids
      * @param $sendId
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Exception
      */
     public function setProcessing($ids, $sendId)
     {
@@ -217,7 +217,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["id in (?)" => $ids]
             );
         } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
+            throw new \Exception($e->getMessage());
         }
     }
 
