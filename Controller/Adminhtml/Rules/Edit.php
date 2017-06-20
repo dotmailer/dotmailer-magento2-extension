@@ -12,6 +12,10 @@ class Edit extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
     private $rules;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    private $escaper;
 
     /**
      * Edit constructor.
@@ -19,15 +23,18 @@ class Edit extends \Magento\Backend\App\AbstractAction
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Model\Rules $rules
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\Rules $rules,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Escaper $escaper
     ) {
         parent::__construct($context);
         $this->rules = $rules;
         $this->registry = $registry;
+        $this->escaper = $escaper;
     }
 
     /**
@@ -45,7 +52,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $id = $this->getRequest()->getParam('id');
+        $id = $this->escaper->escapeHtml($this->getRequest()->getParam('id'));
 
         $this->_view->loadLayout();
         $this->_setActiveMenu(

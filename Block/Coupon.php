@@ -52,7 +52,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
             return false;
         }
 
-        $couponCodeId = $params['id'];
+        $couponCodeId = (int) $params['id'];
         $expireDate = false;
 
         if (is_numeric($params['expire_days'])) {

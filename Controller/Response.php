@@ -8,18 +8,25 @@ class Response extends \Magento\Framework\App\Action\Action
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    public $escaper;
 
     /**
      * Response constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\App\Action\Context $context
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\Escaper $escaper
     ) {
         $this->helper = $data;
+        $this->escaper = $escaper;
         parent::__construct($context);
     }
 
@@ -37,10 +44,13 @@ class Response extends \Magento\Framework\App\Action\Action
         }
 
         //authenticate
-        $auth = $this->helper->auth($this->getRequest()->getParam('code'));
+        $code = $this->escaper->escapeHtml($this->getRequest()->getParam('code'));
+        $auth = $this->helper->auth($code);
         if (!$auth) {
             return $this->sendResponse();
         }
+
+        return true;
     }
 
     /**
