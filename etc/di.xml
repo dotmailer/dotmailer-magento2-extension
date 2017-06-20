@@ -6,6 +6,10 @@
     <preference for="Magento\Customer\Model\Customer" type="Dotdigitalgroup\Email\Model\Customer\Customer"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Coupon" type="Dotdigitalgroup\Email\Model\SalesRule\Coupon"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Rule\Collection" type="Dotdigitalgroup\Email\Model\SalesRule\Collection"/>
+    <type name="Magento\Sales\Model\Order\CustomerManagement">
+        <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagement"
+                sortOrder="1"/>
+    </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
             <argument name="prices" xsi:type="array">
