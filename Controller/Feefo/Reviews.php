@@ -10,14 +10,14 @@ class Reviews extends \Dotdigitalgroup\Email\Controller\Response
     public function execute()
     {
         //authenticate
-        $this->authenticate();
+        if ($this->authenticate()) {
+            $quote = $this->escaper->escapeHtml($this->getRequest()->getParam('quote_id'));
+            if (!$this->helper->getFeefoLogon() or !$quote) {
+                return $this->sendResponse();
+            }
 
-        $quote = $this->escaper->escapeHtml($this->getRequest()->getParam('quote_id'));
-        if (!$this->helper->getFeefoLogon() or !$quote) {
-            return $this->sendResponse();
+            $this->_view->loadLayout();
+            $this->_view->renderLayout();
         }
-
-        $this->_view->loadLayout();
-        $this->_view->renderLayout();
     }
 }

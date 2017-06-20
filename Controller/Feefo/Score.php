@@ -10,13 +10,13 @@ class Score extends \Dotdigitalgroup\Email\Controller\Response
     public function execute()
     {
         //authenticate
-        $this->authenticate();
+        if ($this->authenticate()) {
+            if (!$this->helper->getFeefoLogon()) {
+                return $this->sendResponse();
+            }
 
-        if (!$this->helper->getFeefoLogon()) {
-            return $this->sendResponse();
+            $this->_view->loadLayout();
+            $this->_view->renderLayout();
         }
-
-        $this->_view->loadLayout();
-        $this->_view->renderLayout();
     }
 }

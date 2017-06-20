@@ -49,6 +49,8 @@ class Response extends \Magento\Framework\App\Action\Action
         if (!$auth) {
             return $this->sendResponse();
         }
+
+        return true;
     }
 
     /**
