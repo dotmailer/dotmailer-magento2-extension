@@ -52,4 +52,12 @@ class Logviewer extends \Magento\Backend\Block\Widget\Container
     {
         return nl2br($this->_escaper->escapeHtml($this->file->getLogFileContent()));
     }
+
+    /**
+     * @return string
+     */
+    public function getAjaxUrl()
+    {
+        return $this->getUrl('dotdigitalgroup_email/connector/ajaxlogcontent');
+    }
 }

@@ -1,6 +1,6 @@
-require(['jquery'], function (j) {
+require(['jquery'], function ($) {
     "use strict";
-    j(document).ready(function () {
+    $(document).ready(function () {
 
         /**
          * Update url params
@@ -35,11 +35,11 @@ require(['jquery'], function (j) {
                     '#connector_developer_settings_sync_settings_reset_catalog'
                 ];
 
-            j.each(elmToChange, function (k, v) {
-                var str = j(v).attr('onclick'),
-                    updatedUrl = updateUrlParameter(str, value, encodeURIComponent(j('#' + value).val()));
+            $.each(elmToChange, function (k, v) {
+                var str = $(v).attr('onclick'),
+                    updatedUrl = updateUrlParameter(str, value, encodeURIComponent($('#' + value).val()));
 
-                j(v).attr('onclick', updatedUrl);
+                $(v).attr('onclick', updatedUrl);
             });
         }
 
@@ -48,7 +48,7 @@ require(['jquery'], function (j) {
          * @param value
          */
         function observeChange(value) {
-            j('#' + value).change(function () {
+            $('#' + value).change(function () {
                 changeUrls(value);
             });
         }
@@ -56,7 +56,7 @@ require(['jquery'], function (j) {
         function start() {
             var elmToObserve = ['from', 'to'];
 
-            j.each(elmToObserve, function (key, value) {
+            $.each(elmToObserve, function (key, value) {
                 observeChange(value);
             });
         }

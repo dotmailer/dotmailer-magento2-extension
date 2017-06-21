@@ -305,7 +305,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPasscode()
     {
-        $websiteId = $this->_request->getParam('website', false);
+        $websiteId = (int) $this->_request->getParam('website', false);
 
         $scope = 'default';
         $scopeId = '0';
