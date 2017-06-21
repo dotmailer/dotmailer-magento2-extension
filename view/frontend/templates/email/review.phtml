@@ -1,3 +1,4 @@
+<?php /** @var \Dotdigitalgroup\Email\Block\Review $block */?>
 <?php
 $i = 0;
 $helper = $block->helper;
@@ -78,7 +79,8 @@ $website = $block->getWebsite();
 
     <?php foreach ($items as $item) : ?>
         <?php if ($i == 0) : ?>
-            <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse;'><tr>
+            <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0"
+            style='border-collapse: collapse;'><tr>
         <?php endif;?>
         <?php if ($mode == 'list') : ?>
             </tr><tr>
@@ -86,18 +88,21 @@ $website = $block->getWebsite();
 
         <td style="vertical-align: text-top; padding-right: 2px;">
             <?php echo $block->getImage($item, 'category_page_grid')->toHtml(); ?>
-            <div class="product-name" align="center"><b><?php echo substr($block->escapeHtml($item->getName()), 0,
-                        40); ?></b></div>
+            <div class="product-name" align="center"><b>
+                    <?php echo substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
             <div align="center">
                 <?php $url = $block->getReviewItemUrl($item->getId()) . $helper->getReviewReminderAnchor($website); ?>
-                <a class="proudct-url" href="<?php echo $block->escapeUrl($url); ?>"><?php echo $block->escapeHtml(__('Leave a review')); ?>
+                <a class="proudct-url" href="<?php echo $block->escapeUrl($url); ?>">
+                    <?php echo $block->escapeHtml(__('Leave a review')); ?>
                 </a>
             </div>
         </td>
 
-        <?php if ($i++ % 4 == 3 && $mode == 'grid') : ?></tr><tr><?php endif; ?>
+        <?php if ($i++ % 4 == 3 && $mode == 'grid') : ?>
+            </tr><tr>
+        <?php endif; ?>
     <?php endforeach;?>
-    <?php if ( $i > 0):?>
+    <?php if ($i > 0) : ?>
         </table>
     <?php endif;?>
 <?php endif;
