@@ -34,7 +34,7 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //base url
-        $baseUrl = $this->dataHelper->generateDynamicUrl();
+        $baseUrl = $this->escapeUrl($this->dataHelper->generateDynamicUrl());
         //config passcode
         $passcode = $this->dataHelper->getPasscode();
         //last quote id for dynamic page
