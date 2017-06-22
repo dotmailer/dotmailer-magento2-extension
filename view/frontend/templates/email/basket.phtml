@@ -207,7 +207,7 @@
                     <?php echo (int) $item['qty']; ?>
                 </td>
                 <td class="product-price">
-                    <?php /* @noEscape */ echo $item['total']; ?>
+                    <?php echo $block->escapeHtml($item['total']); ?>
                 </td>
             </tr>
         <?php endforeach; ?>
