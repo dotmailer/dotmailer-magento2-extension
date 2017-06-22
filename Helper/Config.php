@@ -7,8 +7,6 @@ namespace Dotdigitalgroup\Email\Helper;
  */
 class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const MODULE_NAME = 'Dotdigitalgroup_Email';
-
     /**
      * API SECTION.
      */

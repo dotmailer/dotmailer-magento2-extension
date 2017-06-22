@@ -48,17 +48,19 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $params = $this->escaper->escapeHtml($this->getRequest()->getParams());
-        if ($params['from'] && $params['to']) {
+        $params = $this->getRequest()->getParams();
+        $from = $this->escaper->escapeHtml($params['from']);
+        $to = $this->escaper->escapeHtml($params['to']);
+        if ($from && $to) {
             $error = $this->helper->validateDateRange(
-                $params['from'],
-                $params['to']
+                $from,
+                $to
             );
             if (is_string($error)) {
                 $this->messageManager->addErrorMessage($error);
             } else {
                 $this->wishlistFactory->create()
-                    ->resetWishlists($params['from'], $params['to']);
+                    ->resetWishlists($from, $to);
                 $this->messageManager->addSuccessMessage(__('Done.'));
             }
         } else {
