@@ -1,10 +1,11 @@
+<?php /** @var \Dotdigitalgroup\Email\Block\Recommended\Mostviewed $block */?>
 <?php
 $i = 0;
 $mode = $block->getMode();
 $products = $block->getLoadedProductCollection();
 ?>
 
-<?php if (!empty($products)): ?>
+<?php if (!empty($products)) : ?>
     <?php
     $dynamicStyle = $block->helper->getDynamicStyles();
     ?>

@@ -1,10 +1,11 @@
+<?php /** @var \Dotdigitalgroup\Email\Block\Wishlist $block */?>
 <?php
     $i = 0;
 $mode = $block->getMode();
 $items = $block->getWishlistItems();
 $priceHelper = $block->priceHelper;
 ?>
-<?php if($items): ?>
+<?php if ($items) : ?>
     <?php $dynamicStyle = $block->helper->getDynamicStyles(); ?>
     <style>
         .product-name{

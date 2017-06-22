@@ -48,7 +48,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory
-     * @param \Magento\Framework\View\Asset\Repository $assetRepository
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param array $data
      */
@@ -59,7 +58,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
-        \Magento\Framework\View\Asset\Repository $assetRepository,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         array $data = []
     ) {
@@ -68,7 +66,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $this->processor = $processor;
         $this->priceHelper    = $priceHelper;
         $this->reviewFactory = $reviewFactory;
-        $this->assetRepository = $assetRepository;
+        $this->assetRepository = $context->getAssetRepository();
         $this->quoteFactory = $quoteFactory;
         parent::__construct($context, $data);
     }
