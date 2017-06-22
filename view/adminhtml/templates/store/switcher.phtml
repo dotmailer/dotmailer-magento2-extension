@@ -131,7 +131,7 @@
                     "getUseConfirm":"<?php echo (int)$block->getUseConfirm(); ?>",
                     "getContent":"<?php echo $block->escapeHtml(__('Please confirm scope switching. All data that hasn\'t been saved will be lost.')) ?>",
                     "objVal":"<?php echo $block->escapeHtml($block->getStoreId()) ?>",
-                    "isUsingIframe":"<?php echo $block->isUsingIframe(); ?>",
+                    "isUsingIframe":"<?php echo $block->escapeHtml($block->isUsingIframe()); ?>",
                     "getSwitchUrl":"<?php echo $block->escapeUrl($block->getSwitchUrl()) ?>"
                 }
             }

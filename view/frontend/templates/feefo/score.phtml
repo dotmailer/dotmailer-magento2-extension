@@ -5,7 +5,7 @@ $vendorUrl = $data['vendorUrl'];
 $fullUrl = $data['fullUrl'];
 ?>
 <a href="<?php echo $block->escapeUrl($vendorUrl)?>" target='_blank'>
-    <img alt='Feefo logo' border='0' src="<?php echo $block->escapeXssInUrl($fullUrl)?>"
+    <img alt='Feefo logo' border='0' src="<?php echo $block->escapeUrl($fullUrl)?>"
          title="<?php echo $block->escapeHtml(__('See what our customers say about us')); ?>"
     >
 </a>
