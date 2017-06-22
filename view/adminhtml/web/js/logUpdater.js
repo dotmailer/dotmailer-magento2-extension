@@ -1,13 +1,13 @@
 define(['jquery'], function ($) {
-    "use strict";
+    'use strict';
 
     /**
      * scroll to the bottom of text
      */
-    function console_scroll() {
-        var logData = document.getElementById("log_data");
-        var dh = logData.scrollHeight;
-        var ch = logData.clientHeight;
+    function consoleScroll() {
+        var logData = document.getElementById('log_data'),
+            dh = logData.scrollHeight,
+            ch = logData.clientHeight;
 
         if (dh > ch) {
             logData.scrollTop = dh - ch;
@@ -16,23 +16,25 @@ define(['jquery'], function ($) {
 
     /**
      * Update elements
-     * @param log
-     * @param url
+     * @param {String} log
+     * @param {String} url
      */
     function doUpdate(log, url) {
-        $.post(url, {log: log}, function (json) {
+        $.post(url, {
+            log: log
+        }, function (json) {
             $('#log_data').html(json.content);
             $('#connector-log-header').html(json.header);
-            console_scroll();
+            consoleScroll();
         });
     }
 
     /**
      * Export/return log updater
-     * @param logUpdater
+     * @param {Object} logUpdater
      */
-    return function(logUpdater) {
-        console_scroll();
+    return function (logUpdater) {
+        consoleScroll();
 
         //Observer select
         $('#connector-log-selector').change(function () {
