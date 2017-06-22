@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Setup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Magento\Framework\App\ObjectManager;
 
 /**
  * @codeCoverageIgnore
@@ -22,29 +21,23 @@ class InstallSchema implements InstallSchemaInterface
         $installer = $setup;
         $installer->startSetup();
 
+        /**
+         * Create Table
+         */
         $this->createContactTable($installer);
         $this->createOrderTable($installer);
         $this->createCampaignTable($installer);
         $this->createReviewTable($installer);
         $this->createWishlistTable($installer);
-        $this->createQuoteTable($installer);
         $this->createCatalogTable($installer);
         $this->createRuleTable($installer);
         $this->createImporterTable($installer);
         $this->createAutomationTable($installer);
-        $this->populateEmailContactTable($installer);
-        $this->updateContactsWithCustomersThatAreSubscribers($installer);
-        $this->populateEmailOrderTable($installer);
-        $this->populateEmailReviewTable($installer);
-        $this->populateEmailWishlistTable($installer);
-        $this->populateEmailQuoteTable($installer);
-        $this->populateEmailCatalogTable($installer);
-        $this->addColumnToAdminUserTable($installer);
 
-        $configModel = $this->saveValuesToConfig();
-        $this->saveAllOrderStatusesAsString($configModel);
-        $this->saveAllProductTypesAsString($configModel);
-        $this->saveAllProductVisibilitiesAsString($configModel);
+        /**
+         * Modify table
+         */
+        $this->addColumnToAdminUserTable($installer);
 
         $installer->endSetup();
     }
@@ -793,127 +786,6 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      */
-    private function createQuoteTable($installer)
-    {
-        $this->dropQuoteTableIfExists($installer);
-
-        $quoteTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_quote'));
-
-        $quoteTable = $this->addColumnsToQuoteTable($quoteTable);
-        $quoteTable = $this->addIndexesToQuoteTable($installer, $quoteTable);
-
-        $quoteTable->setComment('Connector Quotes');
-        $installer->getConnection()->createTable($quoteTable);
-    }
-
-    /**
-     * @param $installer
-     */
-    private function dropQuoteTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_quote')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_quote')
-            );
-        }
-    }
-
-    /**
-     * @param $quoteTable
-     * @return mixed
-     */
-    private function addColumnsToQuoteTable($quoteTable)
-    {
-        return $quoteTable->addColumn(
-            'id', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null,
-            [
-                'primary' => true,
-                'identity' => true,
-                'unsigned' => true,
-                'nullable' => false
-            ], 'Primary Key'
-            )
-            ->addColumn(
-                'quote_id', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 10,
-                ['unsigned' => true, 'nullable' => false], 'Quote Id'
-            )
-            ->addColumn(
-                'customer_id', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                11, ['unsigned' => true, 'nullable' => false], 'Customer ID'
-            )
-            ->addColumn(
-                'store_id', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 5,
-                ['unsigned' => true, 'nullable' => false], 'Store Id'
-            )
-            ->addColumn(
-                'imported', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                null, ['unsigned' => true, 'nullable' => true], 'Quote Imported'
-            )
-            ->addColumn(
-                'modified', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                null, ['unsigned' => true, 'nullable' => true], 'Quote Modified'
-            )
-            ->addColumn(
-                'created_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null, [], 'Creation Time'
-            )
-            ->addColumn(
-                'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null, [], 'Update Time'
-            );
-    }
-
-    /**
-     * @param $installer
-     * @param $quoteTable
-     * @return mixed
-     */
-    private function addIndexesToQuoteTable($installer, $quoteTable)
-    {
-        return $quoteTable->addIndex(
-            $installer->getIdxName(
-                $installer->getTable('email_quote'), ['quote_id']
-            ), ['quote_id']
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_quote'), ['customer_id']
-                ), ['customer_id']
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_quote'), ['store_id']
-                ), ['store_id']
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_quote'), ['imported']
-                ), ['imported']
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_quote'), ['modified']
-                ), ['modified']
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_quote'), ['created_at']
-                ), ['created_at']
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    $installer->getTable('email_quote'), ['created_at']
-                ), ['created_at']
-            );
-    }
-
-    /**
-     * @param $installer
-     */
     private function createCatalogTable($installer)
     {
         $this->dropCatalogTableIfExists($installer);
@@ -1399,243 +1271,6 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param $installer
      */
-    private function populateEmailContactTable($installer)
-    {
-        $select = $installer->getConnection()->select()
-            ->from(
-                ['customer' => $installer->getTable('customer_entity')],
-                [
-                    'customer_id' => 'entity_id',
-                    'email',
-                    'website_id',
-                    'store_id'
-                ]
-            );
-
-        $insertArray = ['customer_id', 'email', 'website_id', 'store_id'];
-        $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_contact'), $insertArray, false
-        );
-        $installer->getConnection()->query($sqlQuery);
-
-        //Subscribers that are not customers
-        $select = $installer->getConnection()->select()
-            ->from(
-                [
-                    'subscriber' => $installer->getTable(
-                        'newsletter_subscriber'
-                    )
-                ],
-                [
-                    'email' => 'subscriber_email',
-                    'col2' => new \Zend_Db_Expr('1'),
-                    'col3' => new \Zend_Db_Expr('1'),
-                    'store_id',
-                ]
-            )
-            ->where('customer_id =?', 0)
-            ->where('subscriber_status =?', 1);
-        $insertArray = [
-            'email',
-            'is_subscriber',
-            'subscriber_status',
-            'store_id'
-        ];
-        $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_contact'), $insertArray, false
-        );
-        $installer->getConnection()->query($sqlQuery);
-    }
-
-    /**
-     * @param $installer
-     */
-    private function updateContactsWithCustomersThatAreSubscribers($installer)
-    {
-        //Update contacts with customers that are subscribers
-        $select = $installer->getConnection()->select();
-        $select->from(
-            $installer->getTable('newsletter_subscriber'),
-            'customer_id'
-        )
-            ->where('subscriber_status =?', 1)
-            ->where('customer_id >?', 0);
-        $customerIds = $select->getConnection()->fetchCol($select);
-
-        if (!empty($customerIds)) {
-            $customerIds = implode(', ', $customerIds);
-            $installer->getConnection()->update(
-                $installer->getTable('email_contact'),
-                array(
-                    'is_subscriber' => new \Zend_Db_Expr('1'),
-                    'subscriber_status' => new \Zend_Db_Expr('1')
-                ),
-                ["customer_id in (?)" => $customerIds]
-            );
-        }
-    }
-
-    /**
-     * @param $installer
-     */
-    private function populateEmailOrderTable($installer)
-    {
-        $select = $installer->getConnection()->select()
-            ->from(
-                $installer->getTable('sales_order'),
-                [
-                    'order_id' => 'entity_id',
-                    'quote_id',
-                    'store_id',
-                    'created_at',
-                    'updated_at',
-                    'order_status' => 'status'
-                ]
-            );
-        $insertArray = [
-            'order_id',
-            'quote_id',
-            'store_id',
-            'created_at',
-            'updated_at',
-            'order_status'
-        ];
-        $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_order'), $insertArray, false
-        );
-        $installer->getConnection()->query($sqlQuery);
-    }
-
-    /**
-     * @param $installer
-     */
-    private function populateEmailReviewTable($installer)
-    {
-        $inCond = $installer->getConnection()->prepareSqlCondition(
-            'review_detail.customer_id', ['notnull' => true]
-        );
-        $select = $installer->getConnection()->select()
-            ->from(
-                ['review' => $installer->getTable('review')],
-                [
-                    'review_id' => 'review.review_id',
-                    'created_at' => 'review.created_at'
-                ]
-            )
-            ->joinLeft(
-                ['review_detail' => $installer->getTable('review_detail')],
-                'review_detail.review_id = review.review_id',
-                [
-                    'store_id' => 'review_detail.store_id',
-                    'customer_id' => 'review_detail.customer_id'
-                ]
-            )
-            ->where($inCond);
-        $insertArray = [
-            'review_id',
-            'created_at',
-            'store_id',
-            'customer_id'
-        ];
-        $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_review'), $insertArray, false
-        );
-        $installer->getConnection()->query($sqlQuery);
-    }
-
-    /**
-     * @param $installer
-     */
-    private function populateEmailWishlistTable($installer)
-    {
-        $select = $installer->getConnection()->select()
-            ->from(
-                ['wishlist' => $installer->getTable('wishlist')],
-                [
-                    'wishlist_id',
-                    'customer_id',
-                    'created_at' => 'updated_at'
-                ]
-            )->joinLeft(
-                ['ce' => $installer->getTable('customer_entity')],
-                'wishlist.customer_id = ce.entity_id',
-                ['store_id']
-            )->joinInner(
-                ['wi' => $installer->getTable('wishlist_item')],
-                'wishlist.wishlist_id = wi.wishlist_id',
-                ['item_count' => 'count(wi.wishlist_id)']
-            )->group('wi.wishlist_id');
-
-        $insertArray = [
-            'wishlist_id',
-            'customer_id',
-            'created_at',
-            'store_id',
-            'item_count'
-        ];
-        $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_wishlist'), $insertArray, false
-        );
-        $installer->getConnection()->query($sqlQuery);
-    }
-
-    /**
-     * @param $installer
-     */
-    private function populateEmailQuoteTable($installer)
-    {
-        $select = $installer->getConnection()->select()
-            ->from(
-                $installer->getTable('quote'),
-                [
-                    'quote_id' => 'entity_id',
-                    'store_id',
-                    'customer_id',
-                    'created_at'
-                ]
-            )
-            ->where('customer_id !=?', null)
-            ->where('is_active =?', 1)
-            ->where('items_count >?', 0);
-        $insertArray = [
-            'quote_id',
-            'store_id',
-            'customer_id',
-            'created_at'
-        ];
-        $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_quote'), $insertArray, false
-        );
-        $installer->getConnection()->query($sqlQuery);
-    }
-
-    /**
-     * @param $installer
-     */
-    private function populateEmailCatalogTable($installer)
-    {
-        $select = $installer->getConnection()->select()
-            ->from(
-                [
-                    'catalog' => $installer->getTable(
-                        'catalog_product_entity'
-                    )
-                ],
-                [
-                    'product_id' => 'catalog.entity_id',
-                    'created_at' => 'catalog.created_at'
-                ]
-            );
-        $insertArray = ['product_id', 'created_at'];
-        $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_catalog'), $insertArray, false
-        );
-        $installer->getConnection()->query($sqlQuery);
-    }
-
-    /**
-     * @param $installer
-     */
     private function addColumnToAdminUserTable($installer)
     {
         $installer->getConnection()->addColumn(
@@ -1646,77 +1281,6 @@ class InstallSchema implements InstallSchemaInterface
                 'default' => null,
                 'comment' => 'Email connector refresh token',
             ]
-        );
-    }
-
-    /**
-     * @return mixed
-     */
-    private function saveValuesToConfig()
-    {
-        $configModel = ObjectManager::getInstance()->get(
-            'Magento\Config\Model\ResourceModel\Config'
-        );
-        return $configModel;
-    }
-
-    /**
-     * @param $configModel
-     */
-    private function saveAllOrderStatusesAsString($configModel)
-    {
-        $orderStatuses = ObjectManager::getInstance()->get(
-            'Magento\Sales\Model\Config\Source\Order\Status'
-        )->toOptionArray();
-        if (count($orderStatuses) > 0 && $orderStatuses[0]['value'] == '') {
-            array_shift($orderStatuses);
-        }
-        $options = [];
-        foreach ($orderStatuses as $status) {
-            $options[] = $status['value'];
-        }
-        $statusString = implode(',', $options);
-        $configModel->saveConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,
-            $statusString, 'website', 0
-        );
-    }
-
-    /**
-     * @param $configModel
-     */
-    private function saveAllProductTypesAsString($configModel)
-    {
-        $types = ObjectManager::getInstance()->create(
-            'Magento\Catalog\Model\Product\Type'
-        )->toOptionArray();
-        $options = [];
-        foreach ($types as $type) {
-            $options[] = $type['value'];
-        }
-        $typeString = implode(',', $options);
-        $configModel->saveConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE,
-            $typeString, 'website', '0'
-        );
-    }
-
-    /**
-     * @param $configModel
-     */
-    private function saveAllProductVisibilitiesAsString($configModel)
-    {
-        $visibilities = ObjectManager::getInstance()->create(
-            'Magento\Catalog\Model\Product\Visibility'
-        )->toOptionArray();
-        $options = [];
-        foreach ($visibilities as $visibility) {
-            $options[] = $visibility['value'];
-        }
-        $visibilityString = implode(',', $options);
-        $configModel->saveConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY,
-            $visibilityString, 'website', '0'
         );
     }
 }
