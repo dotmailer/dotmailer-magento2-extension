@@ -1,8 +1,12 @@
 define(['jquery'], function ($) {
-    "use strict";
+    'use strict';
 
+    /**
+     * @param {String} id
+     * @param {String} link
+     */
     function bind(id, link) {
-        $('#' + id).click(function() {
+        $('#' + id).click(function () {
             window.location.assign(link);
         });
     }
@@ -10,8 +14,7 @@ define(['jquery'], function ($) {
     /**
      * export/return
      */
-    return function(dasboard)
-    {
+    return function (dasboard) {
         bind('contact_sync', dasboard.contactLink);
         bind('importer_sync', dasboard.importerLink);
     };

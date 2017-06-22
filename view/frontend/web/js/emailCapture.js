@@ -1,10 +1,10 @@
-define(['jquery'],function($){
-    "use strict";
+define(['jquery'], function ($) {
+    'use strict';
 
     /**
      * Email validation
-     * @param sEmail
-     * @returns {boolean}
+     * @param {String} sEmail
+     * @returns {Boolean}
      */
     function validateEmail(sEmail) {
         var filter
@@ -15,30 +15,34 @@ define(['jquery'],function($){
 
     /**
      * Email capture for checkout
-     * @param url
+     * @param {String} url
      */
     function emailCaptureCheckout(url) {
-        $("body").on("blur","input[id=customer-email]", function(){
+        $('body').on('blur', 'input[id=customer-email]', function () {
             var email = $(this).val();
 
-            if(email && validateEmail(email)){
-                $.post(url, {email: email});
+            if (email && validateEmail(email)) {
+                $.post(url, {
+                    email: email
+                });
             }
         });
     }
 
     /**
      * Email capture for newsletter field
-     * @param url
+     * @param {String} url
      */
     function emailCaptureNewsletter(url) {
         $('input[id=newsletter]').each(function (index, element) {
             // Observe onblur event on element
-            $(element).on('blur', function() {
+            $(element).on('blur', function () {
                 var email = $(element).val();
 
-                if(email && validateEmail(email)){
-                    $.post(url, {email: email});
+                if (email && validateEmail(email)) {
+                    $.post(url, {
+                        email: email
+                    });
                 }
             });
         });
@@ -46,15 +50,14 @@ define(['jquery'],function($){
 
     /**
      * Exported/return email capture
-     * @param emailCapture
+     * @param {Object} emailCapture
      */
-    return function(emailCapture)
-    {
-        if(emailCapture.isEnabled && emailCapture.type === 'checkout') {
+    return function (emailCapture) {
+        if (emailCapture.isEnabled && emailCapture.type === 'checkout') {
             emailCaptureCheckout(emailCapture.url);
         }
 
-        if(emailCapture.isEnabled && emailCapture.type === 'newsletter') {
+        if (emailCapture.isEnabled && emailCapture.type === 'newsletter') {
             emailCaptureNewsletter(emailCapture.url);
         }
     };
