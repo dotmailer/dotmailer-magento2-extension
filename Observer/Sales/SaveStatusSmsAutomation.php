@@ -216,7 +216,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      * @param $websiteId
      * @param $storeName
      */
-    public function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName)
+    private function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName)
     {
         $configStatusAutomationMap = $this->serializer->unserialize(
             $this->scopeConfig->getValue(
