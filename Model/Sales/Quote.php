@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 /**
  * Customer and guest Abandoned Carts.
  */
+// @codingStandardsIgnoreFile
 class Quote
 {
     //customer
