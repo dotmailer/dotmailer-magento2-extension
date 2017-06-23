@@ -68,6 +68,10 @@
             font-family: <?php echo $block->escapeHtml($dynamicStyle['docFont']); ?>;
             background-color: <?php echo $block->escapeHtml($dynamicStyle['docBackgroundColor']); ?>;
             width: 100% !important;
+            float:left;
+            border: 1px solid #cbd3d4;
+            border-collapse: collapse;
+            padding: 5px;
         }
 
         .product-table img {
@@ -87,11 +91,9 @@
         }
 
         .pt-th-style-one {
-            float:left;
-            width:600px;
-            border: 1px solid #cbd3d4;
-            border-collapse: collapse;
             padding: 5px;
+            border-bottom: 1px solid #cbd3d4;
+            border-right: 1px solid #cbd3d4;
         }
 
         .pt-th-style-two {

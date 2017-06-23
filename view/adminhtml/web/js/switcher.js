@@ -1,18 +1,27 @@
 define([
     'jquery',
     'Magento_Ui/js/modal/confirm'
-], function(jQuery, confirm){
-    "use strict";
-    function init(useConfirm, getContent, objVal, isIframe, switchUrl ) {
+], function (jQuery, confirm) {
+    'use strict';
+
+    /**
+     * Init
+     * @param {Int} useConfirm
+     * @param {String} getContent
+     * @param {Int} objVal
+     * @param {Boolean} isIframe
+     * @param {String} switchUrl
+     */
+    function init(useConfirm, getContent, objVal, isIframe, switchUrl) {
         var scopeSwitcherHandler;
 
-        (function($) {
+        (function ($) {
             var $storesList = $('[data-role=stores-list]');
 
-            $storesList.on('click', '[data-value]', function(event) {
-                var val = $(event.target).data('value');
-                var role = $(event.target).data('role');
-                var switcher = $('[data-role='+role+']');
+            $storesList.on('click', '[data-value]', function (event) {
+                var val = $(event.target).data('value'),
+                    role = $(event.target).data('role'),
+                    switcher = $('[data-role=' + role + ']');
 
                 event.preventDefault();
 
@@ -22,12 +31,19 @@ define([
             });
         })(jQuery);
 
+        /**
+         * Switch scope
+         * @param {Object} obj
+         */
         function switchScope(obj) {
-            var switcher = jQuery(obj);
-            var scopeId = switcher.val();
-            var scopeParams = '';
-            var switcherParams;
+            var switcher = jQuery(obj),
+                scopeId = switcher.val(),
+                scopeParams = '',
+                switcherParams;
 
+            /**
+             * Reload
+             */
             function reload() {
                 var url;
 
@@ -69,9 +85,17 @@ define([
                 confirm({
                     content: getContent,
                     actions: {
+
+                        /**
+                         * Confirm
+                         */
                         confirm: function () {
                             reload();
                         },
+
+                        /**
+                         * Cancel
+                         */
                         cancel: function () {
                             obj.value = objVal;
                         }
@@ -88,9 +112,9 @@ define([
 
     /**
      *
-     * @param switcher
+     * @param {Object} switcher
      */
-    return function(switcher) {
+    return function (switcher) {
         init(
             switcher.getUseConfirm,
             switcher.getContent,

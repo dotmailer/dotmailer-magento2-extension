@@ -1,13 +1,14 @@
 require(['jquery'], function ($) {
-    "use strict";
+    'use strict';
+
     $(document).ready(function () {
 
         /**
          * Update url params
-         * @param uri
-         * @param key
-         * @param value
-         * @returns {string}
+         * @param {String} uri
+         * @param {String} key
+         * @param {String} value
+         * @returns {String}
          */
         function updateUrlParameter(uri, key, value) {
             var re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i'),
@@ -24,7 +25,7 @@ require(['jquery'], function ($) {
 
         /**
          * Change urls
-         * @param value
+         * @param {String} value
          */
         function changeUrls(value) {
             var elmToChange =
@@ -45,7 +46,7 @@ require(['jquery'], function ($) {
 
         /**
          * Observe change on given element
-         * @param value
+         * @param {String} value
          */
         function observeChange(value) {
             $('#' + value).change(function () {
@@ -53,6 +54,9 @@ require(['jquery'], function ($) {
             });
         }
 
+        /**
+         * Init
+         */
         function start() {
             var elmToObserve = ['from', 'to'];
 
