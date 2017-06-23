@@ -1,4 +1,4 @@
-define(['jquery', 'mailcheck'], function ($, Mailcheck) {
+define(['jquery', 'mailcheck', 'domReady!'], function ($, Mailcheck) {
     'use strict';
 
     /**

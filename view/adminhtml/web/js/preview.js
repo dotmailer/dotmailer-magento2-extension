@@ -1,4 +1,4 @@
-require(['jquery'], function ($j) {
+require(['jquery', 'domReady!'], function ($j) {
     'use strict';
 
     /**

@@ -1,4 +1,4 @@
-define(['trackingCode'], function (_dmTrack) {
+define(['trackingCode', 'domReady!'], function (_dmTrack) {
     'use strict';
 
     /**

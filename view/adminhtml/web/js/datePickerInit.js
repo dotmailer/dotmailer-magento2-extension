@@ -1,4 +1,4 @@
-require(['jquery', 'jquery/ui'], function ($) {
+require(['jquery', 'jquery/ui', 'domReady!'], function ($) {
     'use strict';
 
     var el = $('.ddg-datepicker');
