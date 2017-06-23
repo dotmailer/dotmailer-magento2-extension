@@ -32,7 +32,6 @@
     "magento/module-eav": "100.2.*",
     "magento/module-catalog": "101.1.*",
     "magento/module-catalog-inventory": "100.2.*",
-    "magento/module-sales-rule": "101.1.*",
     "magento/module-quote": "100.2.*",
     "magento/module-directory": "100.2.*",
     "magento/module-shipping": "100.2.*",
