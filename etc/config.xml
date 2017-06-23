@@ -313,7 +313,7 @@
             <cron_schedules>
                 <importer>*/5 * * * *</importer>
                 <contact>*/15 * * * *</contact>
-                <order_quote>*/15 * * * *</order_quote>
+                <order>*/15 * * * *</order>
                 <catalog>*/15 * * * *</catalog>
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
