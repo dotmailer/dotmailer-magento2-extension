@@ -5,7 +5,7 @@
     {
         "*": {
             "Dotdigitalgroup_Email/js/roiCode": {
-                "isEnabled": "<?php echo (boolean) $isEnabled ?>",
+                "isEnabled": "<?php echo $block->escapeHtml($isEnabled) ?>",
                 "total": "<?php echo $block->escapeHtml($block->getTotal()); ?>",
                 "items": <?php /* @noEscape */ echo $block->getProductNames(); ?>
             }

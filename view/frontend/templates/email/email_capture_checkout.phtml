@@ -8,7 +8,7 @@
 {
     "*": {
         "Dotdigitalgroup_Email/js/emailCapture":{
-            "isEnabled":"<?php echo (boolean) $helper->isEasyEmailCaptureEnabled(); ?>",
+            "isEnabled":"<?php echo $block->escapeHtml($helper->isEasyEmailCaptureEnabled()); ?>",
             "type":"checkout",
             "url":"<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>"
         }
