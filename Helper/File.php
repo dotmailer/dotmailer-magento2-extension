@@ -29,19 +29,20 @@ class File
      * @var string
      */
     private $logFileName = 'connector.log';
+    /**
+     * @var \Magento\Framework\App\Filesystem\DirectoryList
+     */
+    private $directoryList;
 
     /**
      * File constructor.
      *
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
-     * @param \Magento\Framework\Filesystem $filesystem
      */
     public function __construct(
-        \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
-        \Magento\Framework\Filesystem $filesystem
+        \Magento\Framework\App\Filesystem\DirectoryList $directoryList
     ) {
         $this->directoryList       = $directoryList;
-        $this->filesystem          = $filesystem;
         $varPath                   = $directoryList->getPath('var');
         $this->outputFolder        = $varPath . DIRECTORY_SEPARATOR . 'export' . DIRECTORY_SEPARATOR . 'email';
         $this->outputArchiveFolder = $this->outputFolder . DIRECTORY_SEPARATOR . 'archive';
