@@ -81,7 +81,7 @@ $priceHelper = $block->priceHelper;
             </tr><tr>
         <?php endif;?>
 		<?php
-			$total = $priceHelper->currency($_product->getPrice(), true);
+			$total = $priceHelper->currency($_product->getPrice(), true, false);
 		?>
 
 		<td style="vertical-align: text-top; padding-right: 2px;">
