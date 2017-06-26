@@ -105,7 +105,7 @@ class TrialSetup
                     $apiModel->postDataFields($dataField);
                     //map the successfully created data field
                     $this->helper->saveConfigData(
-                        'connector_data_mapping/customer_data/' . $key,
+                        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_DATA . '/' . $key,
                         strtoupper($dataField['name']),
                         'default',
                         0

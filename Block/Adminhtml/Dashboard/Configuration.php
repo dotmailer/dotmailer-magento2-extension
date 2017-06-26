@@ -48,7 +48,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
         $this->originalParams = $this->_escaper->escapeHtml(
             $this->getRequest()->getParam('section')
         );
-        $this->getRequest()->setParam('section', 'connector_developer_settings');
+        $this->getRequest()->setParam('section', 'dotdigitalgroup_developer_settings');
     }
 
     /**
@@ -64,6 +64,6 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
      */
     public function getSaveUrl()
     {
-        return $this->getUrl('adminhtml/system_config/save', ['section' => 'connector_developer_settings']);
+        return $this->getUrl('adminhtml/system_config/save', ['section' => 'dotdigitalgroup_developer_settings']);
     }
 }

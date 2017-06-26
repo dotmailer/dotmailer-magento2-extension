@@ -9,26 +9,26 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 class Quote
 {
     //customer
-    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_1 = 'abandoned_carts/customers/enabled_1';
-    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_2 = 'abandoned_carts/customers/enabled_2';
-    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_3 = 'abandoned_carts/customers/enabled_3';
-    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_1 = 'abandoned_carts/customers/send_after_1';
-    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_2 = 'abandoned_carts/customers/send_after_2';
-    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_3 = 'abandoned_carts/customers/send_after_3';
-    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_1 = 'abandoned_carts/customers/campaign_1';
-    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_2 = 'abandoned_carts/customers/campaign_2';
-    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_3 = 'abandoned_carts/customers/campaign_3';
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_1 = 'dotdigitalgroup_abandoned_carts/customers/enabled_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_2 = 'dotdigitalgroup_abandoned_carts/customers/enabled_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_3 = 'dotdigitalgroup_abandoned_carts/customers/enabled_3';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_1 = 'dotdigitalgroup_abandoned_carts/customers/send_after_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_2 = 'dotdigitalgroup_abandoned_carts/customers/send_after_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_3 = 'dotdigitalgroup_abandoned_carts/customers/send_after_3';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_1 = 'dotdigitalgroup_abandoned_carts/customers/campaign_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_2 = 'dotdigitalgroup_abandoned_carts/customers/campaign_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_3 = 'dotdigitalgroup_abandoned_carts/customers/campaign_3';
 
     //guest
-    const XML_PATH_LOSTBASKET_GUEST_ENABLED_1 = 'abandoned_carts/guests/enabled_1';
-    const XML_PATH_LOSTBASKET_GUEST_ENABLED_2 = 'abandoned_carts/guests/enabled_2';
-    const XML_PATH_LOSTBASKET_GUEST_ENABLED_3 = 'abandoned_carts/guests/enabled_3';
-    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_1 = 'abandoned_carts/guests/send_after_1';
-    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_2 = 'abandoned_carts/guests/send_after_2';
-    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_3 = 'abandoned_carts/guests/send_after_3';
-    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_1 = 'abandoned_carts/guests/campaign_1';
-    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2 = 'abandoned_carts/guests/campaign_2';
-    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3 = 'abandoned_carts/guests/campaign_3';
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_1 = 'dotdigitalgroup_abandoned_carts/guests/enabled_1';
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_2 = 'dotdigitalgroup_abandoned_carts/guests/enabled_2';
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_3 = 'dotdigitalgroup_abandoned_carts/guests/enabled_3';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_1 = 'dotdigitalgroup_abandoned_carts/guests/send_after_1';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_2 = 'dotdigitalgroup_abandoned_carts/guests/send_after_2';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_3 = 'dotdigitalgroup_abandoned_carts/guests/send_after_3';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_1 = 'dotdigitalgroup_abandoned_carts/guests/campaign_1';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2 = 'dotdigitalgroup_abandoned_carts/guests/campaign_2';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3 = 'dotdigitalgroup_abandoned_carts/guests/campaign_3';
 
     /**
      * @var

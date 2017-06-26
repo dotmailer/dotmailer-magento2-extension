@@ -1,14 +1,70 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-        <connector_api_credentials>
+        <dotdigitalgroup_api_credentials>
             <api>
                 <enabled>0</enabled>
                 <username></username>
                 <password></password>
             </api>
-        </connector_api_credentials>
-        <connector_sync_settings>
+        </dotdigitalgroup_api_credentials>
+        <dotdigitalgroup_data_mapping>
+            <customer_data>
+                <customer_id></customer_id>
+                <firstname></firstname>
+                <lastname></lastname>
+                <dob></dob>
+                <gender></gender>
+                <website_name></website_name>
+                <store_name></store_name>
+                <created_at></created_at>
+                <last_logged_date></last_logged_date>
+                <customer_group></customer_group>
+                <review_count></review_count>
+                <last_review_date></last_review_date>
+                <subscriber_status></subscriber_status>
+                <billing_address_1></billing_address_1>
+                <billing_address_2></billing_address_2>
+                <billing_city></billing_city>
+                <billing_state></billing_state>
+                <billing_country></billing_country>
+                <billing_postcode></billing_postcode>
+                <billing_telephone></billing_telephone>
+                <delivery_address_1></delivery_address_1>
+                <delivery_address_2></delivery_address_2>
+                <delivery_city></delivery_city>
+                <delivery_state></delivery_state>
+                <delivery_country></delivery_country>
+                <delivery_postcode></delivery_postcode>
+                <delivery_telephone></delivery_telephone>
+                <number_of_orders></number_of_orders>
+                <average_order_value></average_order_value>
+                <total_spend></total_spend>
+                <last_order_date></last_order_date>
+                <last_order_id></last_order_id>
+                <total_refund></total_refund>
+                <most_purchased_category></most_purchased_category>
+                <most_purchased_brand></most_purchased_brand>
+                <most_frequent_purchase_day></most_frequent_purchase_day>
+                <most_frequent_purchase_month></most_frequent_purchase_month>
+                <first_category_purchased></first_category_purchased>
+                <last_category_purchased></last_category_purchased>
+                <first_brand_purchased></first_brand_purchased>
+                <last_brand_purchased></last_brand_purchased>
+                <custom_attributes></custom_attributes>
+                <validator></validator>
+                <last_increment_id></last_increment_id>
+                <billing_company></billing_company>
+                <delivery_company></delivery_company>
+            </customer_data>
+            <dynamic_datafield>
+                <datafield_name></datafield_name>
+                <datafield_type></datafield_type>
+                <datafield_default></datafield_default>
+                <datafield_access></datafield_access>
+            </dynamic_datafield>
+        </dotdigitalgroup_data_mapping>
+        <dotdigitalgroup_sync_settings>
             <address_book>
                 <customers>0</customers>
                 <subscribers>0</subscribers>
@@ -27,8 +83,8 @@
                 <addressbook_name></addressbook_name>
                 <visibility></visibility>
             </dynamic_addressbook>
-        </connector_sync_settings>
-        <connector_lost_baskets>
+        </dotdigitalgroup_sync_settings>
+        <dotdigitalgroup_abandoned_carts>
             <customers>
                 <enabled_1>0</enabled_1>
                 <send_after_1></send_after_1>
@@ -51,8 +107,8 @@
                 <send_after_3></send_after_3>
                 <campaign_3></campaign_3>
             </guests>
-        </connector_lost_baskets>
-        <connector_automation_studio>
+        </dotdigitalgroup_abandoned_carts>
+        <dotdigitalgroup_automation>
             <visitor_automation>
                 <customer_automation>0</customer_automation>
                 <subscriber_automation>0</subscriber_automation>
@@ -80,8 +136,8 @@
                 <service_score_url></service_score_url>
                 <product_reviews_url></product_reviews_url>
             </feefo_feedback_engine>
-        </connector_automation_studio>
-        <connector_dynamic_content>
+        </dotdigitalgroup_automation>
+        <dotdigitalgroup_dynamic_content>
             <products>
                 <related_display_type>grid</related_display_type>
                 <related_items_to_display>2</related_items_to_display>
@@ -139,13 +195,13 @@
             <fallback_products>
                 <product_list></product_list>
             </fallback_products>
-        </connector_dynamic_content>
-        <connector_transactional_emails>
+        </dotdigitalgroup_dynamic_content>
+        <dotdigitalgroup_transactional_emails>
             <ddg_transactional>
                 <enabled>0</enabled>
             </ddg_transactional>
-        </connector_transactional_emails>
-        <connector_configuration>
+        </dotdigitalgroup_transactional_emails>
+        <dotdigitalgroup_configuration>
             <data_fields>
                 <order_status>complete,pending</order_status>
                 <brand_attribute>0</brand_attribute>
@@ -209,72 +265,8 @@
                 <can_show_fields>0</can_show_fields>
                 <fields_to_show>0</fields_to_show>
             </customer_addressbook>
-        </connector_configuration>
-        <connector_data_mapping>
-            <customer_data>
-                <customer_id></customer_id>
-                <firstname></firstname>
-                <lastname></lastname>
-                <dob></dob>
-                <gender></gender>
-                <website_name></website_name>
-                <store_name></store_name>
-                <created_at></created_at>
-                <last_logged_date></last_logged_date>
-                <customer_group></customer_group>
-                <review_count></review_count>
-                <last_review_date></last_review_date>
-                <subscriber_status></subscriber_status>
-                <billing_address_1></billing_address_1>
-                <billing_address_2></billing_address_2>
-                <billing_city></billing_city>
-                <billing_state></billing_state>
-                <billing_country></billing_country>
-                <billing_postcode></billing_postcode>
-                <billing_telephone></billing_telephone>
-                <delivery_address_1></delivery_address_1>
-                <delivery_address_2></delivery_address_2>
-                <delivery_city></delivery_city>
-                <delivery_state></delivery_state>
-                <delivery_country></delivery_country>
-                <delivery_postcode></delivery_postcode>
-                <delivery_telephone></delivery_telephone>
-                <number_of_orders></number_of_orders>
-                <average_order_value></average_order_value>
-                <total_spend></total_spend>
-                <last_order_date></last_order_date>
-                <last_order_id></last_order_id>
-                <total_refund></total_refund>
-                <most_purchased_category></most_purchased_category>
-                <most_purchased_brand></most_purchased_brand>
-                <most_frequent_purchase_day></most_frequent_purchase_day>
-                <most_frequent_purchase_month></most_frequent_purchase_month>
-                <first_category_purchased></first_category_purchased>
-                <last_category_purchased></last_category_purchased>
-                <first_brand_purchased></first_brand_purchased>
-                <last_brand_purchased></last_brand_purchased>
-                <custom_attributes></custom_attributes>
-                <validator></validator>
-                <last_increment_id></last_increment_id>
-                <billing_company></billing_company>
-                <delivery_company></delivery_company>
-            </customer_data>
-            <dynamic_datafield>
-                <datafield_name></datafield_name>
-                <datafield_type></datafield_type>
-                <datafield_default></datafield_default>
-                <datafield_access></datafield_access>
-            </dynamic_datafield>
-        </connector_data_mapping>
-        <connector_roi_tracking>
-            <page_tracking>
-                <enabled>0</enabled>
-            </page_tracking>
-            <roi_tracking>
-                <enabled>0</enabled>
-            </roi_tracking>
-        </connector_roi_tracking>
-        <connector_developer_settings>
+        </dotdigitalgroup_configuration>
+        <dotdigitalgroup_developer_settings>
             <import_settings>
                 <batch_size>500</batch_size>
                 <orders>50</orders>
@@ -317,6 +309,6 @@
                 <catalog>*/15 * * * *</catalog>
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
-        </connector_developer_settings>
+        </dotdigitalgroup_developer_settings>
     </default>
 </config>

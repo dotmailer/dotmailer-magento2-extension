@@ -38,7 +38,10 @@ class Customersreset extends \Magento\Backend\App\AbstractAction
 
         $this->messageManager->addSuccessMessage(__('Done.'));
 
-        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
+        $redirectUrl = $this->getUrl(
+            'adminhtml/system_config/edit',
+            ['section' => 'dotdigitalgroup_developer_settings']
+        );
 
         $this->_redirect($redirectUrl);
     }

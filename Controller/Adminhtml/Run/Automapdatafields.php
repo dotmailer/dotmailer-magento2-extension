@@ -56,7 +56,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
             $client = $this->data->getWebsiteApiClient($website);
         }
         $params = [
-            'section' => 'connector_developer_settings',
+            'section' => 'dotdigitalgroup_developer_settings',
             'website' => $website
         ];
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', $params);
@@ -87,7 +87,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
                      * map the succesful created datafield
                      */
                     $this->data->saveConfigData(
-                        'connector_data_mapping/customer_data/' . $key,
+                        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_DATA . '/' . $key,
                         strtoupper($datafield['name']),
                         $scope,
                         $scopeId

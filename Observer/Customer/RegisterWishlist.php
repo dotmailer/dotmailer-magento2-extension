@@ -103,7 +103,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                 }
                 $programId
                     = $this->helper->getWebsiteConfig(
-                        'connector_automation/visitor_automation/wishlist_automation',
+                        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
                         $websiteId
                     );
                 //wishlist program mapped
