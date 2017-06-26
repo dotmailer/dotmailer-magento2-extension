@@ -1,4 +1,4 @@
-define([], function () {
+define(['domReady!'], function () {
     'use strict';
 
     /**

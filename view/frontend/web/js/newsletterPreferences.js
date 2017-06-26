@@ -1,6 +1,7 @@
 require([
     'jquery',
-    'mage/calendar'
+    'mage/calendar',
+    'domReady!'
     ], function ($) {
     'use strict';
 

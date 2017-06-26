@@ -1,6 +1,7 @@
 define([
     'jquery',
-    'Magento_Ui/js/modal/confirm'
+    'Magento_Ui/js/modal/confirm',
+    'domReady!'
 ], function (jQuery, confirm) {
     'use strict';
 
