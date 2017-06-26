@@ -3,9 +3,15 @@
     {
         "*": {
             "Dotdigitalgroup_Email/js/rulesDatafields":{
-                "ajaxUrl":"<?php echo $block->getUrl('dotdigitalgroup_email/rules/ajax'); ?>",
-                "selectAjaxUrl":"<?php echo $block->getUrl('dotdigitalgroup_email/rules/selected'); ?>",
-                "valueAjaxUrl":"<?php echo $block->getUrl('dotdigitalgroup_email/rules/value'); ?>"
+                "ajaxUrl":"<?php echo $block->escapeUrl(
+                    $block->getUrl('dotdigitalgroup_email/rules/ajax')
+                ); ?>",
+                "selectAjaxUrl":"<?php echo $block->escapeUrl(
+                    $block->getUrl('dotdigitalgroup_email/rules/selected')
+                ); ?>",
+                "valueAjaxUrl":"<?php echo $block->escapeUrl(
+                    $block->getUrl('dotdigitalgroup_email/rules/value')
+                ); ?>"
             }
         }
     }
