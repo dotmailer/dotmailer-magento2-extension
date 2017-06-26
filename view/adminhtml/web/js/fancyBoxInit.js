@@ -1,4 +1,4 @@
-require(['jquery', 'domReady', 'fancybox'], function ($) {
+require(['jquery', 'fancybox', 'domReady!'], function ($) {
     'use strict';
 
     var fb = $('.ddg-fancyBox');
