@@ -70,7 +70,7 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
 
         $redirectUrl = $this->getUrl(
             'adminhtml/system_config/edit',
-            ['section' => 'connector_developer_settings']
+            ['section' => 'dotdigitalgroup_developer_settings']
         );
         $this->_redirect($redirectUrl);
     }

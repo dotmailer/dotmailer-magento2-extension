@@ -33,7 +33,8 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
+        $redirectUrl =
+            $this->getUrl('adminhtml/system_config/edit', ['section' => 'dotdigitalgroup_developer_settings']);
 
         $result = $this->contactFactory->create()
             ->deleteContactIds();

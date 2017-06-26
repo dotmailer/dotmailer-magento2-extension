@@ -4,7 +4,7 @@
         <tab id="ddg_automation" translate="label" sortOrder="500">
             <label>DOTMAILER</label>
         </tab>
-        <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
+        <section id="dotdigitalgroup_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
                  showInStore="0">
             <class>separator-top</class>
             <label>API Credentials</label>
@@ -36,7 +36,7 @@
                 </field>
             </group>
         </section>
-        <section id="connector_data_mapping" translate="label" sortOrder="140" showInDefault="1" showInStore="0"
+        <section id="dotdigitalgroup_data_mapping" translate="label" sortOrder="140" showInDefault="1" showInStore="0"
                  showInWebsite="1">
             <class>separator-top</class>
             <label>Data Mapping</label>
@@ -341,7 +341,7 @@
                 </field>
             </group>
         </section>
-        <section id="sync_settings" translate="label" type="text" sortOrder="150" showInWebsite="1" showInStore="0"
+        <section id="dotdigitalgroup_sync_settings" translate="label" type="text" sortOrder="150" showInWebsite="1" showInStore="0"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Sync Settings</label>
@@ -453,7 +453,7 @@
                 </field>
             </group>
         </section>
-        <section id="abandoned_carts" translate="label" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
+        <section id="dotdigitalgroup_abandoned_carts" translate="label" sortOrder="160" showInStore="1" showInWebsite="1" showInDefault="1">
             <class>separator-top</class>
             <label>Abandoned Carts</label>
             <tab>ddg_automation</tab>
@@ -575,7 +575,7 @@
                 </field>
             </group>
         </section>
-        <section id="connector_automation" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
+        <section id="dotdigitalgroup_automation" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Automation</label>
@@ -693,7 +693,7 @@
                 </field>
             </group>
         </section>
-        <section id="connector_dynamic_content" translate="label" sortOrder="180" showInStore="0" showInWebsite="1"
+        <section id="dotdigitalgroup_dynamic_content" translate="label" sortOrder="180" showInStore="0" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Dynamic Content</label>
@@ -989,7 +989,7 @@
                 </field>
             </group>
         </section>
-        <section id="transactional_emails" translate="label" sortOrder="190" showInStore="0" showInWebsite="1"
+        <section id="dotdigitalgroup_transactional_emails" translate="label" sortOrder="190" showInStore="0" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Transactional Emails</label>
@@ -1032,7 +1032,7 @@
                 </field>
             </group>
         </section>
-        <section id="connector_configuration" translate="label" sortOrder="200" showInStore="0" showInWebsite="1"
+        <section id="dotdigitalgroup_configuration" translate="label" sortOrder="200" showInStore="0" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Configuration</label>
@@ -1352,7 +1352,7 @@
                 </field>
             </group>
         </section>
-        <section id="connector_developer_settings" translate="label" sortOrder="500" showInStore="0" showInWebsite="1"
+        <section id="dotdigitalgroup_developer_settings" translate="label" sortOrder="500" showInStore="0" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Developer</label>

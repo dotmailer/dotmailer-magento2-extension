@@ -1164,7 +1164,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         //customer mapped data
         $store = $website->getDefaultStore();
         $mappedData = $this->scopeConfig->getValue(
-            'connector_data_mapping/customer_data',
+            EmailConfig::XML_PATH_CONNECTOR_CUSTOMER_DATA,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getId()
         );
@@ -1571,7 +1571,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $store = $website->getDefaultStore();
         $mappedData = $this->scopeConfig->getValue(
-            'connector_data_mapping/customer_data',
+            EmailConfig::XML_PATH_CONNECTOR_CUSTOMER_DATA,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getId()
         );

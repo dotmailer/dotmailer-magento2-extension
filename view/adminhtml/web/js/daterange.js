@@ -30,10 +30,10 @@ require(['jquery', 'domReady!'], function ($) {
         function changeUrls(value) {
             var elmToChange =
                 [
-                    '#connector_developer_settings_sync_settings_reset_orders',
-                    '#connector_developer_settings_sync_settings_reset_reviews',
-                    '#connector_developer_settings_sync_settings_reset_wishlists',
-                    '#connector_developer_settings_sync_settings_reset_catalog'
+                    '#dotdigitalgroup_developer_settings_sync_settings_reset_orders',
+                    '#dotdigitalgroup_developer_settings_sync_settings_reset_reviews',
+                    '#dotdigitalgroup_developer_settings_sync_settings_reset_wishlists',
+                    '#dotdigitalgroup_developer_settings_sync_settings_reset_catalog'
                 ];
 
             $.each(elmToChange, function (k, v) {
