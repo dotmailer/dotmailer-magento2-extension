@@ -75,7 +75,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        $url = $this->getAuthoriseUrl();
+        $url = $this->escapeUrl($this->getAuthoriseUrl());
         $disabled = false;
         //disable for ssl missing
         if (! $this->_isSecureUrl()) {
@@ -87,9 +87,9 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
 
         $title = ($refreshToken) ? __('Disconnect') : __('Connect');
 
-        $url = ($refreshToken) ? $this->getUrl(
+        $url = ($refreshToken) ? $this->escapeUrl($this->getUrl(
             'dotdigitalgroup_email/studio/disconnect'
-        ) : $url;
+        )) : $url;
 
         return $this->getLayout()->createBlock(
             'Magento\Backend\Block\Widget\Button'
