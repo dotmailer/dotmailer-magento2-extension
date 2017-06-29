@@ -37,22 +37,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_TOTALREFUND = 'connector_data_mapping/customer_data/total_refund';
 
     /**
-     * Abandoned Carts.
-     */
-    const XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CARTS_ENABLED_1 = 'connector_lost_baskets/customers/enabled_1';
-    const XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CAMPAIGN_1 = 'connector_lost_baskets/customers/campaign_1';
-    const XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CARTS_ENABLED_2 = 'connector_lost_baskets/customers/enabled_2';
-    const XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CAMPAIGN_2 = 'connector_lost_baskets/customers/campaign_2';
-    const XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CARTS_ENABLED_3 = 'connector_lost_baskets/customers/enabled_3';
-    const XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CAMPAIGN_3 = 'connector_lost_baskets/customers/campaign_3';
-    const XML_PATH_CONNECTOR_GUEST_ABANDONED_CARTS_ENABLED_1 = 'connector_lost_baskets/guests/enabled_1';
-    const XML_PATH_CONNECTOR_GUEST_ABANDONED_CAMPAIGN_1 = 'connector_lost_baskets/guests/campaign_1';
-    const XML_PATH_CONNECTOR_GUEST_ABANDONED_CARTS_ENABLED_2 = 'connector_lost_baskets/guests/enabled_2';
-    const XML_PATH_CONNECTOR_GUEST_ABANDONED_CAMPAIGN_2 = 'connector_lost_baskets/guests/campaign_2';
-    const XML_PATH_CONNECTOR_GUEST_ABANDONED_CARTS_ENABLED_3 = 'connector_lost_baskets/guests/enabled_3';
-    const XML_PATH_CONNECTOR_GUEST_ABANDONED_CAMPAIGN_3 = 'connector_lost_baskets/guests/campaign_3';
-
-    /**
      * Datafields Mapping.
      */
     const XML_PATH_CONNECTOR_CUSTOMER_ID = 'connector_data_mapping/customer_data/customer_id';
