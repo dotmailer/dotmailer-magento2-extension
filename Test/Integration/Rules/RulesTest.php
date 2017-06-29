@@ -216,60 +216,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $this->assertNotContains($expected->getId(), $this->quoteCollection->getAllIds(), $message);
     }
 
-    public function testExcludeByPaymentMethodOnORCondition()
-    {
-        $this->markTestIncomplete('payment method is not saving');
-        $quoteToBeExcluded = $this->createQuoteWithPayment('paypal');
-        $quoteToBeIncluded1 = $this->createQuoteWithPayment('foo');
-        $quoteToBeIncluded2 = $this->createQuoteWithoutPayment();
-        $this->createAbandonedCartRuleWithCondition('method', 'eq', 'paypal', self::RULE_OPERATOR_OR);
 
-        /** @var Rules $ruleService */
-        $ruleService = ObjectManager::getInstance()->create(Rules::class);
-        $ruleService->process($this->quoteCollection, Rules::ABANDONED, $this->currentWebsiteId);
-
-        $this->assertQuoteCollectionNotContains($quoteToBeExcluded);
-        $this->assertQuoteCollectionContains($quoteToBeIncluded1);
-        $this->assertQuoteCollectionContains($quoteToBeIncluded2);
-    }
-
-    public function testExcludeByPaymentMethodOnANDCondition()
-    {
-        $this->markTestIncomplete('payment method is not saving');
-        $quoteToBeExcluded = $this->createQuoteWithPayment('paypal');
-        $quoteToBeIncluded1 = $this->createQuoteWithPayment('foo');
-        $quoteToBeIncluded2 = $this->createQuoteWithoutPayment();
-        $this->createAbandonedCartRuleWithCondition('method', 'eq', 'paypal', self::RULE_OPERATOR_AND);
-
-        /** @var Rules $ruleService */
-        $ruleService = ObjectManager::getInstance()->create(Rules::class);
-        $ruleService->process($this->quoteCollection, Rules::ABANDONED, $this->currentWebsiteId);
-
-        $this->assertQuoteCollectionNotContains($quoteToBeExcluded);
-        $this->assertQuoteCollectionContains($quoteToBeIncluded1);
-        $this->assertQuoteCollectionContains($quoteToBeIncluded2);
-    }
-
-    public function testExcludeByTwoPaymentMethodsOnANDCondition()
-    {
-        $this->markTestIncomplete('payment method is not saving');
-        $quoteToBeExcluded1 = $this->createQuoteWithPayment('paypal');
-        $quoteToBeExcluded2 = $this->createQuoteWithPayment('checkmo');
-        $quoteToBeIncluded1 = $this->createQuoteWithPayment('foo');
-        $quoteToBeIncluded2 = $this->createQuoteWithoutPayment();
-
-        $rule = $this->createAbandonedCartRuleWithCondition('method', 'eq', 'paypal', self::RULE_OPERATOR_AND);
-        $this->addConditionToRule($rule, 'method', 'eq', 'checkmo');
-
-        /** @var Rules $ruleService */
-        $ruleService = ObjectManager::getInstance()->create(Rules::class);
-        $ruleService->process($this->quoteCollection, Rules::ABANDONED, $this->currentWebsiteId);
-
-        $this->assertQuoteCollectionNotContains($quoteToBeExcluded1);
-        $this->assertQuoteCollectionNotContains($quoteToBeExcluded2);
-        $this->assertQuoteCollectionContains($quoteToBeIncluded1);
-        $this->assertQuoteCollectionContains($quoteToBeIncluded2);
-    }
 
     private function createQuoteWithSubtotal($subtotal)
     {
