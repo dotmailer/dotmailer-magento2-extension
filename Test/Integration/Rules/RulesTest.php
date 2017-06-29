@@ -18,7 +18,7 @@ use Magento\TestFramework\ObjectManager;
 /**
  * @magentoDataFixture Magento/Customer/_files/customer.php
  * @magentoDataFixture Magento/Customer/_files/customer_address.php
- * magentoDataFixture Magento/Catalog/_files/products.php
+ * @magentoDataFixture Magento/Catalog/_files/products.php
  */
 class RulesTest extends \PHPUnit_Framework_TestCase
 {
