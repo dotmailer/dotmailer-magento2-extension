@@ -198,7 +198,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      * @param $status
      * @param $emailOrder
      */
-    public function handleOrderStatusChange($status, $emailOrder)
+    private function handleOrderStatusChange($status, $emailOrder)
     {
         $statusBefore = $this->registry->registry('sales_order_status_before');
         if ($status != $statusBefore) {
