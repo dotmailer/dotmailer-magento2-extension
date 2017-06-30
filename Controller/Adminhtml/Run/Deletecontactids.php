@@ -8,22 +8,23 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
-    private $contactFactory;
+    private $contact;
 
     /**
      * Deletecontactids constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
-     * @param \Magento\Backend\App\Action\Context                       $context
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->contactFactory = $contactFactory;
+        $this->contact = $contact;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -35,8 +36,7 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
     {
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 
-        $result = $this->contactFactory->create()
-            ->deleteContactIds();
+        $result = $this->contact->deleteContactIds();
 
         $this->messageManager->addSuccessMessage('Contact id\'s reseted ' . $result);
 

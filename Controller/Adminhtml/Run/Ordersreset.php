@@ -8,14 +8,17 @@ class Ordersreset extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
      */
-    private $orderFactory;
+    private $order;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Framework\Escaper
      */
@@ -24,18 +27,18 @@ class Ordersreset extends \Magento\Backend\App\AbstractAction
     /**
      * Ordersreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderFactory
-     * @param \Magento\Backend\App\Action\Context                     $context
-     * @param \Dotdigitalgroup\Email\Helper\Data                      $data
-     * @param \Magento\Framework\Escaper                              $escaper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $order
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order $order,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\Escaper $escaper
     ) {
-        $this->orderFactory   = $orderFactory;
+        $this->order   = $order;
         $this->messageManager = $context->getMessageManager();
         $this->helper         = $data;
         $this->escaper        = $escaper;
@@ -58,13 +61,11 @@ class Ordersreset extends \Magento\Backend\App\AbstractAction
             if (is_string($error)) {
                 $this->messageManager->addErrorMessage($error);
             } else {
-                $this->orderFactory->create()
-                    ->resetOrders($from, $to);
+                $this->order->resetOrders($from, $to);
                 $this->messageManager->addSuccessMessage(__('Done.'));
             }
         } else {
-            $this->orderFactory->create()
-                ->resetOrders();
+            $this->order->resetOrders();
             $this->messageManager->addSuccessMessage(__('Done.'));
         }
 
