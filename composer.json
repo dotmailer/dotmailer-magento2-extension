@@ -15,7 +15,6 @@
     }
   ],
   "require": {
-    "php": "~5.6.5|~7.0.0|~7.1.0",
     "magento/framework": "100.*",
     "magento/module-newsletter": "100.*",
     "magento/module-review": "100.*",
