@@ -79,7 +79,7 @@ class Bulk
      *
      * @return mixed|string
      */
-    public function _getAddressBook($importType, $websiteId)
+    private function _getAddressBook($importType, $websiteId)
     {
         switch ($importType) {
             case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT:
