@@ -56,7 +56,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         parent::__construct($context, $data);
     }
 
-    public function _prepareToRender()
+    protected function _prepareToRender()
     {
         $this->getConditionsRenderer = null;
         $this->getAttributeRenderer  = null;
@@ -128,7 +128,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * @param \Magento\Framework\DataObject $row
      */
-    public function _prepareArrayRow(\Magento\Framework\DataObject $row)
+    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
         $options = [];
 
@@ -153,7 +153,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @return mixed
      */
-    public function _getAttributeRenderer()
+    private function _getAttributeRenderer()
     {
         if (!$this->getAttributeRenderer) {
             $this->getAttributeRenderer = $this->getLayout()
@@ -172,7 +172,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @return mixed
      */
-    public function _getConditionsRenderer()
+    private function _getConditionsRenderer()
     {
         if (!$this->getConditionsRenderer) {
             $this->getConditionsRenderer = $this->getLayout()
@@ -191,7 +191,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @return mixed
      */
-    public function _getValueRenderer()
+    private function _getValueRenderer()
     {
         if (!$this->getValueRenderer) {
             $this->getValueRenderer = $this->getLayout()
@@ -210,7 +210,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @throws \Exception
      */
-    public function _toHtml()
+    protected function _toHtml()
     {
         return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
         . '"/>' . parent::_toHtml();
