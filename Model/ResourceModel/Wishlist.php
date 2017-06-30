@@ -46,7 +46,6 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @return int
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function resetWishlists($from = null, $to = null)
     {
@@ -63,18 +62,14 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 new \Zend_Db_Expr('not null')
             );
         }
-        try {
-            $num = $conn->update(
-                $conn->getTableName('email_wishlist'),
-                [
-                    'wishlist_imported' => new \Zend_Db_Expr('null'),
-                    'wishlist_modified' => new \Zend_Db_Expr('null'),
-                ],
-                $where
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $num = $conn->update(
+            $conn->getTableName('email_wishlist'),
+            [
+                'wishlist_imported' => new \Zend_Db_Expr('null'),
+                'wishlist_modified' => new \Zend_Db_Expr('null'),
+            ],
+            $where
+        );
 
         return $num;
     }

@@ -86,7 +86,6 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @return int
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function resetReviews($from = null, $to = null)
     {
@@ -103,15 +102,11 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 new \Zend_Db_Expr('not null')
             );
         }
-        try {
-            $num = $conn->update(
-                $conn->getTableName('email_review'),
-                ['review_imported' => new \Zend_Db_Expr('null')],
-                $where
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $num = $conn->update(
+            $conn->getTableName('email_review'),
+            ['review_imported' => new \Zend_Db_Expr('null')],
+            $where
+        );
 
         return $num;
     }
