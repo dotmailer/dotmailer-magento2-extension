@@ -168,8 +168,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
             //save the refresh token to the admin user
             if (is_string($token)) {
-                $adminUser->setRefreshToken($token)
-                    ->save();
+
+                $this->helper->setRefreshTokenForUser($adminUser, $token);
             }
 
             return $token;

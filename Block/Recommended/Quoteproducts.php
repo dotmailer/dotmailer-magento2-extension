@@ -27,17 +27,15 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Quoteproducts constructor.
-     *
-     * @param \Magento\Quote\Model\QuoteFactory                             $quoteFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory     $catalogFactory
-     * @param \Dotdigitalgroup\Email\Helper\Recommended                     $recommendedHelper
-     * @param \Magento\Framework\Pricing\Helper\Data                        $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context                        $context
-     * @param array                                                         $data
+     * 
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param array $data
      */
     public function __construct(
-        \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
@@ -47,10 +45,9 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     ) {
         parent::__construct($context, $data);
         $this->helper            = $helper;
-        $this->catalogFactory    = $catalogFactory;
-        $this->quoteFactory      = $quoteFactory;
-        $this->recommendedHelper = $recommendedHelper;
         $this->priceHelper       = $priceHelper;
+        $this->catalogFactory    = $catalogFactory;
+        $this->recommendedHelper = $recommendedHelper;
     }
 
     /**
@@ -74,11 +71,9 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $quoteId = (int) $this->getRequest()->getParam('quote_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
-        $quoteModel = $this->quoteFactory->create();
-        $quoteModel->getResource()->load($quoteModel, $quoteId);
+        $quoteItems = $this->helper->getQuoteAllItemsFor($quoteId);
         //number of product items to be displayed
         $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
-        $quoteItems = $quoteModel->getAllItems();
         $numItems = count($quoteItems);
 
         //no product found to display
