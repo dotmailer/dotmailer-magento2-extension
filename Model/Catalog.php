@@ -60,4 +60,20 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
 
         return $this;
     }
+
+    /**
+     * Load by product id.
+     *
+     * @param int $productId
+     *
+     * @return mixed
+     */
+    public function loadProductById($productId)
+    {
+        $collection = $this->getCollection()
+            ->addFieldToFilter('product_id', $productId)
+            ->setPageSize(1);
+
+        return $collection->getFirstItem();
+    }
 }

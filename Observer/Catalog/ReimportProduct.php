@@ -18,67 +18,42 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
-    private $catalogCollection;
 
     /**
      * ReimportProduct constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\CatalogFactory                     $catalogFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                              $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
-        \Dotdigitalgroup\Email\Helper\Data $data
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
     ) {
         $this->helper            = $data;
         $this->catalogFactory    = $catalogFactory;
-        $this->catalogCollection = $catalogCollectionFactory;
     }
 
     /**
-     * Execute method.
-     *
      * @param \Magento\Framework\Event\Observer $observer
+     * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        try {
-            $object = $observer->getEvent()->getDataObject();
-            $productId = $object->getId();
+        $productModel = $observer->getEvent()->getDataObject();
+        $productId = $productModel->getId();
 
-            if ($item = $this->loadProduct($productId)) {
-                if ($item->getImported()) {
-                    $item->setModified(1);
-                    $item->getResource()->save($item);
-                }
+        $emailCatalogModel = $this->catalogFactory->create();
+        $emailCatalog = $emailCatalogModel->loadProductById($productId);
+
+        if ($emailCatalog->getId()) {
+            if ($emailCatalog->getImported()) {
+                $emailCatalog->setModified(1);
             }
-        } catch (\Exception $e) {
-            $this->helper->debug((string)$e, []);
-        }
-    }
-
-    /**
-     * Load product. return item otherwise create item.
-     *
-     * @param int $productId
-     *
-     * @return bool
-     */
-    protected function loadProduct($productId)
-    {
-        $item = $this->catalogCollection->create()
-            ->loadProductById($productId);
-
-        if ($item) {
-            return $item;
         } else {
-            $catalog = $this->catalogFactory->create();
-            $catalog->setProductId($productId);
-            $catalog->getResource()->save($catalog);
+            $emailCatalog->setProductId($productId);
         }
 
-        return false;
+        $emailCatalog->getResource()->save($emailCatalog);
+
+        return $this;
     }
 }

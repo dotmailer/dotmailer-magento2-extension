@@ -135,7 +135,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Load product. return item otherwise create item.
+     * Load by product id.
      *
      * @param int $productId
      *
