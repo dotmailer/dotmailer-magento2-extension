@@ -11,26 +11,26 @@ class Coupon extends \Magento\Framework\View\Element\Template
      */
     public $helper;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CampaignFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
      */
-    private $campaignFactory;
+    private $campaign;
 
     /**
      * Coupon constructor.
      *
      * @param \Magento\Framework\View\Element\Template\Context              $context
      * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CampaignFactory    $campaignFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign    $campaign
      * @param array                                                         $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\CampaignFactory $campaignFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaign,
         array $data = []
     ) {
         $this->helper = $helper;
-        $this->campaignFactory = $campaignFactory;
+        $this->campaign = $campaign;
         parent::__construct($context, $data);
     }
 
@@ -60,8 +60,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
                 ->add(\DateInterval::createFromDateString(sprintf('P%sDay', $params['expire_days'])));
         }
 
-        return $this->campaignFactory->create()
-            ->generateCoupon($couponCodeId, $expireDate);
+        return $this->campaign->generateCoupon($couponCodeId, $expireDate);
     }
 
     /**

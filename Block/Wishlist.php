@@ -18,22 +18,21 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $customerFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
-    public $wishlistFactory;
+    public $wishlist;
 
     /**
      * Wishlist constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
-     * @param \Magento\Catalog\Block\Product\Context  $context
-     * @param \Dotdigitalgroup\Email\Helper\Data      $helper
-     * @param \Magento\Framework\Pricing\Helper\Data  $priceHelper
-     * @param array                                   $data
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -41,7 +40,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->wishlistFactory = $wishlistFactory;
+        $this->wishlist = $wishlist;
         $this->customerFactory = $customerFactory;
         $this->helper          = $helper;
         $this->priceHelper     = $priceHelper;
@@ -83,8 +82,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
             return false;
         }
 
-        return $this->wishlistFactory->create()
-            ->getWishlistsForCustomer($customerId);
+        return $this->wishlist->getWishlistsForCustomer($customerId);
     }
 
     /**

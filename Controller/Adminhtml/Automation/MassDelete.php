@@ -8,9 +8,9 @@ use Magento\Ui\Component\MassAction\Filter;
 class MassDelete extends \Magento\Backend\App\Action
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection
      */
-    private $collectionFactory;
+    private $catalogCollection;
 
     /**
      * @var object
@@ -24,18 +24,17 @@ class MassDelete extends \Magento\Backend\App\Action
 
     /**
      * MassDelete constructor.
-     *
      * @param \Magento\Backend\App\Action\Context $context
      * @param Filter $filter
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $collectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection $collection
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         Filter $filter,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $collectionFactory
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection $collection
     ) {
         $this->filter = $filter;
-        $this->collectionFactory = $collectionFactory;
+        $this->catalogCollection = $collection;
         parent::__construct($context);
     }
 
@@ -44,7 +43,7 @@ class MassDelete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $collection = $this->filter->getCollection($this->collectionFactory->create());
+        $collection = $this->filter->getCollection($this->catalogCollection);
         $collectionSize = $collection->getSize();
 
         foreach ($collection as $item) {

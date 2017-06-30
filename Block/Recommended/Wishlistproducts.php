@@ -21,29 +21,28 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $customerFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
-    public $wishlistFactory;
+    public $wishlist;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
-    public $catalogFactory;
+    public $catalog;
 
     /**
      * Wishlistproducts constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory     $catalogFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory    $wishlistFactory
-     * @param \Magento\Customer\Model\CustomerFactory                       $customerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Magento\Framework\Pricing\Helper\Data                        $priceHelper
-     * @param \Dotdigitalgroup\Email\Helper\Recommended                     $recommended
-     * @param \Magento\Catalog\Block\Product\Context                        $context
-     * @param array                                                         $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -56,8 +55,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->customerFactory   = $customerFactory;
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
-        $this->wishlistFactory   = $wishlistFactory;
-        $this->catalogFactory    = $catalogFactory;
+        $this->wishlist   = $wishlist;
+        $this->catalog    = $catalog;
     }
 
     /**
@@ -89,12 +88,11 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
         $customer = $this->customerFactory->create();
         $customer->getResource()->load($customer, $customerId);
-        if (!$customer->getId()) {
+        if (! $customer->getId()) {
             return [];
         }
 
-        return $this->wishlistFactory->create()
-            ->getWishlistsForCustomer($customerId);
+        return $this->wishlist->getWishlistsForCustomer($customerId);
     }
 
     /**
@@ -237,9 +235,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     private function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
     {
         $fallbackIds = $this->recommnededHelper->getFallbackIds();
-
-            $productCollection = $this->catalogFactory->create()
-                ->getProductCollectionFromIds($fallbackIds);
+        $productCollection = $this->catalog->getProductCollectionFromIds($fallbackIds);
 
         foreach ($productCollection as $product) {
             if ($product->isSaleable()) {

@@ -27,9 +27,9 @@ class Feefo extends \Magento\Framework\View\Element\Template
      */
     public $processor;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
-    private $reviewFactory;
+    private $review;
     /**
      * @var \Magento\Framework\View\Asset\Repository
      */
@@ -47,7 +47,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $review
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param array $data
      */
@@ -57,7 +57,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Framework\View\Element\Template\Context $context,
-        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $review,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         array $data = []
     ) {
@@ -65,7 +65,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $this->domDocument = $document;
         $this->processor = $processor;
         $this->priceHelper    = $priceHelper;
-        $this->reviewFactory = $reviewFactory;
+        $this->review = $review;
         $this->assetRepository = $context->getAssetRepository();
         $this->quoteFactory = $quoteFactory;
         parent::__construct($context, $data);
@@ -123,8 +123,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
             return $products;
         }
 
-        $productCollection = $this->reviewFactory->create()
-            ->getProductCollection($quoteModel);
+        $productCollection = $this->review->getProductCollection($quoteModel);
 
         foreach ($productCollection as $product) {
                 $products[$product->getSku()] = $product->getName();

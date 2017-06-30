@@ -17,14 +17,13 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $orderFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
-    public $reviewFactory;
+    public $review;
 
     /**
-     * Order constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory
+     * Review constructor.
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $review
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
@@ -32,14 +31,14 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $review,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
-        $this->reviewFactory     = $reviewFactory;
+        $this->review     = $review;
         $this->orderFactory      = $orderFactory;
         $this->helper            = $helper;
         $this->priceHelper       = $priceHelper;
@@ -127,8 +126,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
 
         $customerId = $order->getCustomerId();
 
-        $items = $this->reviewFactory->create()
-            ->filterItemsForReview($items, $customerId, $order);
+        $items = $this->review->filterItemsForReview($items, $customerId, $order);
 
         return $items;
     }
@@ -143,8 +141,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
             return [];
         }
 
-        $items = $this->reviewFactory->create()
-            ->getProductCollection($order);
+        $items = $this->review->getProductCollection($order);
 
         return $items;
     }
