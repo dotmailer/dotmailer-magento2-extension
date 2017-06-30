@@ -20,7 +20,6 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @return int
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function resetOrders($from = null, $to = null)
     {
@@ -37,18 +36,14 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 new \Zend_Db_Expr('not null')
             );
         }
-        try {
-            $num = $conn->update(
-                $conn->getTableName('email_order'),
-                [
-                    'email_imported' => new \Zend_Db_Expr('null'),
-                    'modified' => new \Zend_Db_Expr('null'),
-                ],
-                $where
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $num = $conn->update(
+            $conn->getTableName('email_order'),
+            [
+                'email_imported' => new \Zend_Db_Expr('null'),
+                'modified' => new \Zend_Db_Expr('null'),
+            ],
+            $where
+        );
 
         return $num;
     }
@@ -58,27 +53,22 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Mark the connector orders to be imported.
      *
      * @param $ids
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setImported($ids)
     {
         if (empty($ids)) {
             return ;
         }
-        try {
-            $connection = $this->getConnection();
-            $tableName = $connection->getTableName('email_order');
-            $connection->update(
-                $tableName,
-                [
-                    'modified' => new \Zend_Db_Expr('null'),
-                    'email_imported' => '1',
-                    'updated_at' => gmdate('Y-m-d H:i:s')
-                ],
-                ["order_id IN (?)" => $ids]
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $connection = $this->getConnection();
+        $tableName = $connection->getTableName('email_order');
+        $connection->update(
+            $tableName,
+            [
+                'modified' => new \Zend_Db_Expr('null'),
+                'email_imported' => '1',
+                'updated_at' => gmdate('Y-m-d H:i:s')
+            ],
+            ["order_id IN (?)" => $ids]
+        );
     }
 }

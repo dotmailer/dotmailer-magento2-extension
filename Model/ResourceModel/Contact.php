@@ -59,23 +59,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @return int
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function deleteContactIds()
     {
         $conn = $this->getConnection();
-        try {
-            $num = $conn->update(
-                $this->getTable('email_contact'),
-                ['contact_id' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto(
-                    'contact_id is ?',
-                    new \Zend_Db_Expr('not null')
-                )
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $num = $conn->update(
+            $this->getTable('email_contact'),
+            ['contact_id' => new \Zend_Db_Expr('null')],
+            $conn->quoteInto(
+                'contact_id is ?',
+                new \Zend_Db_Expr('not null')
+            )
+        );
 
         return $num;
     }
@@ -85,23 +80,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @return int
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function resetAllContacts()
     {
-        try {
-            $conn = $this->getConnection();
-            $num = $conn->update(
-                $conn->getTableName('email_contact'),
-                ['email_imported' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto(
-                    'email_imported is ?',
-                    new \Zend_Db_Expr('not null')
-                )
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $conn = $this->getConnection();
+        $num = $conn->update(
+            $conn->getTableName('email_contact'),
+            ['email_imported' => new \Zend_Db_Expr('null')],
+            $conn->quoteInto(
+                'email_imported is ?',
+                new \Zend_Db_Expr('not null')
+            )
+        );
 
         return $num;
     }
@@ -111,24 +101,19 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @return int
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function resetSubscribers()
     {
         $conn = $this->getConnection();
 
-        try {
-            $num = $conn->update(
-                $conn->getTableName('email_contact'),
-                ['subscriber_imported' => new \Zend_Db_Expr('null')],
-                $conn->quoteInto(
-                    'subscriber_imported is ?',
-                    new \Zend_Db_Expr('not null')
-                )
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $num = $conn->update(
+            $conn->getTableName('email_contact'),
+            ['subscriber_imported' => new \Zend_Db_Expr('null')],
+            $conn->quoteInto(
+                'subscriber_imported is ?',
+                new \Zend_Db_Expr('not null')
+            )
+        );
 
         return $num;
     }
@@ -138,7 +123,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param $data
      * @return int
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function unsubscribe($data)
     {
@@ -148,27 +132,23 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $write = $this->getConnection();
         $emails = '"' . implode('","', $data) . '"';
 
-        try {
-            //un-subscribe from the email contact table.
-            $updated = $write->update(
-                $this->getMainTable(),
-                [
-                    'is_subscriber' => new \Zend_Db_Expr('null'),
-                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
-                    'suppressed' => '1',
-                ],
-                ["email IN (?)" => $emails]
-            );
+        //un-subscribe from the email contact table.
+        $updated = $write->update(
+            $this->getMainTable(),
+            [
+                'is_subscriber' => new \Zend_Db_Expr('null'),
+                'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
+                'suppressed' => '1',
+            ],
+            ["email IN (?)" => $emails]
+        );
 
-            // un-subscribe newsletter subscribers
-            $write->update(
-                $this->getTable('newsletter_subscriber'),
-                ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
-                ["subscriber_email IN (?)" => $emails]
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        // un-subscribe newsletter subscribers
+        $write->update(
+            $this->getTable('newsletter_subscriber'),
+            ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
+            ["subscriber_email IN (?)" => $emails]
+        );
 
         return $updated;
     }
@@ -176,7 +156,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @param $data
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function insertGuest($data)
     {
@@ -189,12 +168,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $guests = array_diff_key($data, array_flip($emailsExistInTable));
 
         if (! empty($guests)) {
-            try {
-                $write = $this->getConnection();
-                $write->insertMultiple($this->getMainTable(), $guests);
-            } catch (\Exception $e) {
-                throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-            }
+            $write = $this->getConnection();
+            $write->insertMultiple($this->getMainTable(), $guests);
         }
     }
 
