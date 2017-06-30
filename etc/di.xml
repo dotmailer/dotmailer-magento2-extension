@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\Mail\Transport" type="Dotdigitalgroup\Email\Model\Mail\Transport"/>
-    <preference for="Magento\Newsletter\Model\Subscriber" type="Dotdigitalgroup\Email\Model\Newsletter\Sub"/>
     <preference for="Magento\Customer\Model\AccountManagement" type="Dotdigitalgroup\Email\Model\Customer\AccountManagement"/>
     <preference for="Magento\Customer\Model\Customer" type="Dotdigitalgroup\Email\Model\Customer\Customer"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Coupon" type="Dotdigitalgroup\Email\Model\SalesRule\Coupon"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Rule\Collection" type="Dotdigitalgroup\Email\Model\SalesRule\Collection"/>
     <type name="Magento\Sales\Model\Order\CustomerManagement">
-        <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagement"
-                sortOrder="1"/>
+        <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagement" sortOrder="1"/>
+    </type>
+    <type name="Magento\Newsletter\Model\Subscriber">
+        <plugin name="ddg_newsletter_disabler" type="Dotdigitalgroup\Email\Plugin\NewsletterDisable" sortOrder="1" disabled="false"/>
     </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
