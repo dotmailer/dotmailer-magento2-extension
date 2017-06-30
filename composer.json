@@ -42,7 +42,7 @@
   "require-dev": {
     "phpmd/phpmd": "@stable",
     "magento/marketplace-eqp": "dev-master",
-    "squizlabs/php_codesniffer": "1.5.3"
+    "squizlabs/php_codesniffer": "@stable"
   },
   "authors": [
     {

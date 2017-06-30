@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Cron
 {
     /**
@@ -83,6 +86,8 @@ class Cron
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param ResourceModel\Importer             $importerResource
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,

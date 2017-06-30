@@ -4,6 +4,8 @@ namespace Dotdigitalgroup\Email\Observer\Sales;
 
 /**
  * Trigger Order automation based on order state.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterface
 {

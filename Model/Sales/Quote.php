@@ -4,8 +4,9 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 
 /**
  * Customer and guest Abandoned Carts.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-// @codingStandardsIgnoreFile
 class Quote
 {
     //customer

@@ -9,6 +9,8 @@ use Magento\TestFramework\ObjectManager;
  * @package Dotdigitalgroup\Email\Controller\Customer
  * @magentoDBIsolation enabled
  * magentoAppArea cron
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 {

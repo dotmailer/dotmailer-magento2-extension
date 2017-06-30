@@ -85,6 +85,8 @@ class Rest
      * @param $json
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     private function prettyPrint($json)
     {

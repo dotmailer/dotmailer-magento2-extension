@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Customer;
 /**
  * Handle the email confirmation.
  *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class AccountManagement extends \Magento\Customer\Model\AccountManagement
 {
@@ -38,6 +39,8 @@ class AccountManagement extends \Magento\Customer\Model\AccountManagement
      * @param \Magento\Customer\Model\Customer $customerModel
      * @param \Magento\Framework\DataObjectFactory $objectFactory
      * @param \Magento\Framework\Api\ExtensibleDataObjectConverter $extensibleDataObjectConverter
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \Magento\Customer\Model\CustomerFactory $customerFactory,

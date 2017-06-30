@@ -3,7 +3,12 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 /**
- * manages the Customer data as datafields for contact.
+ * Manages the Customer data as datafields for contact.
+ *
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class Customer
 {
@@ -101,6 +106,8 @@ class Customer
      * @param \Magento\Newsletter\Model\SubscriberFactory                $subscriberFactory
      * @param \Magento\Catalog\Model\CategoryFactory                     $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,

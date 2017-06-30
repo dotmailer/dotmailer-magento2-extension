@@ -6,6 +6,8 @@ use Dotdigitalgroup\Email\Model\Importer;
 
 /**
  * Sync Wishlists.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Wishlist
 {
