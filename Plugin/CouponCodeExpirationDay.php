@@ -17,6 +17,7 @@ class CouponCodeExpirationDay
 
     /**
      * CouponCodeExpirationDay constructor.
+     *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\App\ResourceConnection $resourceConnection
      * @param \DateTime $dateTime

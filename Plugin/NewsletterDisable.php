@@ -18,8 +18,7 @@ class NewsletterDisable
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    )
-    {
+    ) {
         $this->scopeConfig = $scopeConfig;
     }
 
@@ -28,8 +27,10 @@ class NewsletterDisable
      * @param callable $proceed
      * @return mixed
      */
-    public function aroundSendConfirmationSuccessEmail(\Magento\Newsletter\Model\Subscriber $subscriber, callable $proceed)
-    {
+    public function aroundSendConfirmationSuccessEmail(
+        \Magento\Newsletter\Model\Subscriber $subscriber,
+        callable $proceed
+    ) {
         $storeId = $subscriber->getStoreId();
         //scope config for sending newsletter is disabled
         if (! $this->scopeConfig->getValue(

@@ -18,8 +18,7 @@ class CustomerNewsletterDisable
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    )
-    {
+    ) {
         $this->scopeConfig = $scopeConfig;
     }
 
@@ -28,7 +27,7 @@ class CustomerNewsletterDisable
      * @param callable $proceed
      * @return mixed
      */
-    public function aroundsendNewAccountEmail(\Magento\Customer\Model\Customer $customer, callable $proceed)
+    public function aroundSendNewAccountEmail(\Magento\Customer\Model\Customer $customer, callable $proceed)
     {
         $storeId = $customer->getStoreId();
 
