@@ -37,9 +37,7 @@ class MassDelete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $ids = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('id')
-        );
+        $ids = $this->getRequest()->getParam('id');
 
         if (!is_array($ids)) {
             $this->messageManager->addErrorMessage(__('Please select cron.'));

@@ -38,7 +38,7 @@ class MassResend extends ImporterController
      */
     public function execute()
     {
-        $searchIds = $this->escaper->escapeHtml($this->getRequest()->getParam('id'));
+        $searchIds = $this->getRequest()->getParam('id');
         if (!is_array($searchIds)) {
             $this->messageManager->addErrorMessage(__('Please select importer.'));
         } else {

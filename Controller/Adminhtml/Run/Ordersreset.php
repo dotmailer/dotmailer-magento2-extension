@@ -51,8 +51,8 @@ class Ordersreset extends \Magento\Backend\App\AbstractAction
     public function execute()
     {
         $params = $this->getRequest()->getParams();
-        $from = $this->escaper->escapeHtml($params['from']);
-        $to = $this->escaper->escapeHtml($params['to']);
+        $from = $params['from'];
+        $to = $params['to'];
         if ($from && $to) {
             $error = $this->helper->validateDateRange(
                 $from,

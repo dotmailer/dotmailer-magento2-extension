@@ -78,15 +78,9 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $attribute = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('attribute')
-        );
-        $conditionName = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('condition')
-        );
-        $valueName = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('value')
-        );
+        $attribute = $this->getRequest()->getParam('attribute');
+        $conditionName = $this->getRequest()->getParam('condition');
+        $valueName = $this->getRequest()->getParam('value');
         if ($attribute && $conditionName && $valueName) {
             $type = $this->ruleType->getInputType($attribute);
             $conditionOptions = $this->ruleCondition->getInputTypeOptions($type);

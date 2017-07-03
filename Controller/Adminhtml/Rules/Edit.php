@@ -52,7 +52,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $id = $this->escaper->escapeHtml($this->getRequest()->getParam('id'));
+        $id = $this->getRequest()->getParam('id');
 
         $this->_view->loadLayout();
         $this->_setActiveMenu(
