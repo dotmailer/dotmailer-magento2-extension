@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Importer extends \Magento\Framework\Model\AbstractModel
 {
     const NOT_IMPORTED = 0;
@@ -127,6 +130,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -275,6 +280,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Set importing priority.
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function _setPriority()
     {

@@ -4,6 +4,8 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 /**
  * Holds Account information.
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class Account
 {

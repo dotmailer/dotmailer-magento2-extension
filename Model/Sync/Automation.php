@@ -4,6 +4,8 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 /**
  * Sync automation by type.
+ *
+ * @SuppressWarnings(PHPMD.TooManyFields)
  */
 class Automation
 {

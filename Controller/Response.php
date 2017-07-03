@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Controller;
 
+/**
+ * @SuppressWarnings(PHPMD.NumberOfChildren)
+ */
 class Response extends \Magento\Framework\App\Action\Action
 {
     /**

@@ -324,6 +324,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @param $type
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function processOrCombination($collection, $conditions, $type)
     {
@@ -456,6 +459,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @param $collection
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     private function processProductAttributesInCollection($collection)
     {

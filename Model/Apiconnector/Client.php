@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 /**
  * dotmailer REST V2 api client.
  *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 {
