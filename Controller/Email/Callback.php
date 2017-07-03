@@ -28,10 +28,6 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @var \Magento\Backend\Helper\Data
      */
     private $adminHelper;
-    /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
 
     /**
      * Callback constructor.
@@ -43,7 +39,6 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @param \Magento\User\Model\UserFactory                    $adminUser
      * @param \Magento\Framework\App\Action\Context              $context
      * @param \Dotdigitalgroup\Email\Helper\Data                 $helper
-     * @param \Magento\Framework\Escaper                         $escaper
      */
     public function __construct(
         \Magento\Backend\Helper\Data $backendData,
@@ -52,8 +47,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         \Magento\Store\Model\StoreManager $storeManager,
         \Magento\User\Model\UserFactory $adminUser,
         \Magento\Framework\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Escaper $escaper
+        \Dotdigitalgroup\Email\Helper\Data $helper
     ) {
         $this->adminHelper      = $backendData;
         $this->config           = $config;
@@ -61,7 +55,6 @@ class Callback extends \Magento\Framework\App\Action\Action
         $this->storeManager     = $storeManager;
         $this->adminUser        = $adminUser;
         $this->helper           = $helper;
-        $this->escaper          = $escaper;
 
         parent::__construct($context);
     }
@@ -71,8 +64,8 @@ class Callback extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $code = $this->escaper->escapeHtml($this->getRequest()->getParam('code', false));
-        $userId = $this->escaper->escapeHtml($this->getRequest()->getParam('state'));
+        $code = $this->getRequest()->getParam('code', false);
+        $userId = $this->getRequest()->getParam('state');
         //load admin user
         $adminUser = $this->adminUser->create();
         $adminUser->getResource()->load($adminUser, $userId);

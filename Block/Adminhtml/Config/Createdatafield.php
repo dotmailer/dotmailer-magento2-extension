@@ -49,11 +49,10 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
         $originalData = $element->getOriginalData();
         $buttonLabel = !empty($originalData['button_label'])
             ? $originalData['button_label'] : $this->buttonLabel;
-        $url
-                      = $this->_urlBuilder->getUrl('dotdigitalgroup_email/datafield/save');
+        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/datafield/save');
         $this->addData(
             [
-                'button_label' => __($buttonLabel),
+                'button_label' => $buttonLabel,
                 'html_id' => $element->getHtmlId(),
                 'ajax_url' => $url,
             ]

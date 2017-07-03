@@ -146,7 +146,6 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      * @param $subscriber
      * @param $websiteId
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function addSubscriberToAutomation($email, $subscriber, $websiteId)
     {
@@ -160,39 +159,33 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         if (!$programId) {
             return;
         }
-        try {
-            //check the subscriber alredy exists
-            $enrolmentCollection = $this->automationFactory->create()
-                ->getCollection()
-                ->addFieldToFilter('email', $email)
-                ->addFieldToFilter(
-                    'automation_type',
+        //check the subscriber alredy exists
+        $enrolmentCollection = $this->automationFactory->create()
+            ->getCollection()
+            ->addFieldToFilter('email', $email)
+            ->addFieldToFilter(
+                'automation_type',
+                \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
+            )
+            ->addFieldToFilter('website_id', $websiteId)
+            ->setPageSize(1);
+        $enrolment = $enrolmentCollection->getFirstItem();
+        //add new subscriber to automation
+        if (!$enrolment->getId()) {
+            //save subscriber to the queue
+            $automation = $this->automationFactory->create()
+                ->setEmail($email)
+                ->setAutomationType(
                     \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
                 )
-                ->addFieldToFilter('website_id', $websiteId)
-                ->setPageSize(1);
-            $enrolment = $enrolmentCollection->getFirstItem();
-            //add new subscriber to automation
-            if (!$enrolment->getId()) {
-                //save subscriber to the queue
-                $automation = $this->automationFactory->create()
-                    ->setEmail($email)
-                    ->setAutomationType(
-                        \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
-                    )
-                    ->setEnrolmentStatus(
-                        \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING
-                    )
-                    ->setTypeId($subscriber->getId())
-                    ->setWebsiteId($websiteId)
-                    ->setStoreName($store->getName())
-                    ->setProgramId($programId);
-                $automation->getResource()->save($automation);
-            }
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __($e->getMessage())
-            );
+                ->setEnrolmentStatus(
+                    \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING
+                )
+                ->setTypeId($subscriber->getId())
+                ->setWebsiteId($websiteId)
+                ->setStoreName($store->getName())
+                ->setProgramId($programId);
+            $automation->getResource()->save($automation);
         }
     }
 }

@@ -77,7 +77,7 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
             if (isset($addressBooks->message)) {
                 $fields[] = [
                     'value' => 0,
-                    'label' => __($addressBooks->message),
+                    'label' => $addressBooks->message,
                 ];
             }
 

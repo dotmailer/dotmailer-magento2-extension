@@ -19,22 +19,21 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $productFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
-    public $catalogFactory;
+    public $catalog;
 
     /**
      * Bestsellers constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory           $catalogFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                                  $helper
-     * @param \Dotdigitalgroup\Email\Helper\Recommended                           $recommended
-     * @param \Magento\Catalog\Block\Product\Context                              $context
-     * @param \Magento\Catalog\Model\ProductFactory                               $productFactory
-     * @param array                                                               $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Magento\Catalog\Block\Product\Context $context,
@@ -44,7 +43,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->productFactory     = $productFactory;
         $this->helper             = $helper;
         $this->recommnededHelper  = $recommended;
-        $this->catalogFactory     = $catalogFactory;
+        $this->catalog     = $catalog;
         parent::__construct($context, $data);
     }
 
@@ -70,8 +69,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         $to = $this->_localeDate->date()->format(\Zend_Date::ISO_8601);
         $storeId = $this->_storeManager->getStore()->getId();
 
-        return $this->catalogFactory->create()
-            ->getBestsellerCollection($from, $to, $limit, $storeId);
+        return $this->catalog->getBestsellerCollection($from, $to, $limit, $storeId);
     }
 
     /**

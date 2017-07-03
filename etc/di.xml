@@ -1,14 +1,18 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\Mail\Transport" type="Dotdigitalgroup\Email\Model\Mail\Transport"/>
-    <preference for="Magento\Newsletter\Model\Subscriber" type="Dotdigitalgroup\Email\Model\Newsletter\Sub"/>
-    <preference for="Magento\Customer\Model\AccountManagement" type="Dotdigitalgroup\Email\Model\Customer\AccountManagement"/>
-    <preference for="Magento\Customer\Model\Customer" type="Dotdigitalgroup\Email\Model\Customer\Customer"/>
-    <preference for="Magento\SalesRule\Model\ResourceModel\Coupon" type="Dotdigitalgroup\Email\Model\SalesRule\Coupon"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Rule\Collection" type="Dotdigitalgroup\Email\Model\SalesRule\Collection"/>
     <type name="Magento\Sales\Model\Order\CustomerManagement">
-        <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagement"
-                sortOrder="1"/>
+        <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagement" sortOrder="1"/>
+    </type>
+    <type name="Magento\Newsletter\Model\Subscriber">
+        <plugin name="ddg_newsletter_disabler" type="Dotdigitalgroup\Email\Plugin\NewsletterDisable" sortOrder="1" disabled="false"/>
+    </type>
+    <type name="Magento\Customer\Model\Customer">
+        <plugin name="ddg_customer_newsletter_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerNewsletterDisable" sortOrder="1" disabled="false"/>
+    </type>
+    <type name="Magento\SalesRule\Model\ResourceModel\Coupon">
+        <plugin name="ddg_sales_coupon_expiration_date" type="Dotdigitalgroup\Email\Plugin\CouponCodeExpirationDay" sortOrder="1" disabled="false"/>
     </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
@@ -21,7 +25,6 @@
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="cron_report_grid_data_source" xsi:type="string">Magento\Cron\Ui\Model\ResourceModel\Schedule\Collection</item>
                 <item name="rules_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Rules\Collection</item>
                 <item name="importer_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Importer\Collection</item>
                 <item name="automation_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Automation\Collection</item>

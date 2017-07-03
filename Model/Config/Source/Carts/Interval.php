@@ -43,12 +43,12 @@ class Interval implements \Magento\Framework\Data\OptionSourceInterface
             if ($i == 0) {
                 $row = [
                     'value' => $one,
-                    'label' => __($one . ' Hour'),
+                    'label' => $one . __(' Hour'),
                 ];
             } else {
                 $row = [
                     'value' => $one,
-                    'label' => __($one . ' Hours'),
+                    'label' => $one . __(' Hours'),
                 ];
             }
             $result[] = $row;

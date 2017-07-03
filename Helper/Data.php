@@ -83,8 +83,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $serializer;
 
     /**
+     * @var \Magento\Quote\Model\QuoteFactory
+     */
+    protected $quoteFactory;
+
+    /**
      * Data constructor.
-     *
      * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param File $fileHelper
@@ -100,6 +104,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param ConfigFactory $configHelperFactory
      * @param Json $serilizer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -116,7 +121,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
         \Dotdigitalgroup\Email\Model\Config\Json $serilizer,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory
     ) {
         $this->serializer       = $serilizer;
         $this->adapter          = $adapter;
@@ -131,6 +137,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->clientFactory = $clientFactory;
         $this->configHelperFactory = $configHelperFactory;
         $this->datetime = $dateTime;
+        $this->quoteFactory = $quoteFactory;
 
         parent::__construct($context);
         $this->fileHelper = $fileHelper;
@@ -1647,5 +1654,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
 
         return $codeFromConfig === $code;
+    }
+
+    /**
+     * @param $adminUser
+     * @param $token
+     */
+    public function setRefreshTokenForUser($adminUser, $token)
+    {
+        $adminUser->setRefreshToken($token)
+            ->save();
+    }
+
+    /**
+     * @param $quoteId
+     * @return array
+     */
+    public function getQuoteAllItemsFor($quoteId)
+    {
+        $quoteModel = $this->quoteFactory->create();
+        $quoteModel->getResource()->load($quoteModel, $quoteId);
+        $quoteItems = $quoteModel->getAllItems();
+
+        return $quoteItems;
     }
 }

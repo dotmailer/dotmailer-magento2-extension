@@ -125,74 +125,57 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param $ids
      * @param $message
-     * @throws \Exception
      */
     public function setMessage($ids, $message)
     {
-        try {
-            $ids = implode(", ", $ids);
-            $conn = $this->getConnection();
-            $conn->update(
-                $this->getMainTable(),
-                [
-                    'message' => $message,
-                    'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
-                    'sent_at' =>  $this->datetime->gmtDate()
-                ],
-                ["id in (?)" => $ids]
-            );
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        $ids = implode(", ", $ids);
+        $conn = $this->getConnection();
+        $conn->update(
+            $this->getMainTable(),
+            [
+                'message' => $message,
+                'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
+                'sent_at' =>  $this->datetime->gmtDate()
+            ],
+            ["id in (?)" => $ids]
+        );
     }
 
     /**
-     * Set error message on given send id
-     *
      * @param $sendId
      * @param $message
-     * @throws \Exception
      */
     public function setMessageWithSendId($sendId, $message)
     {
-        try {
-            $conn = $this->getConnection();
-            $conn->update(
-                $this->getMainTable(),
-                [
-                    'message' => $message,
-                    'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
-                    'sent_at' => $this->datetime->gmtDate()
-                ],
-                ['send_id = ?' => $sendId]
-            );
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        $conn = $this->getConnection();
+        $conn->update(
+            $this->getMainTable(),
+            [
+                'message' => $message,
+                'send_status' => \Dotdigitalgroup\Email\Model\Campaign::FAILED,
+                'sent_at' => $this->datetime->gmtDate()
+            ],
+            ['send_id = ?' => $sendId]
+        );
     }
 
     /**
      * Set sent
      *
      * @param $sendId
-     * @throws \Exception
      */
     public function setSent($sendId)
     {
-        try {
-            $bind = [
-                'send_status' => \Dotdigitalgroup\Email\Model\Campaign::SENT,
-                'sent_at' => $this->datetime->gmtDate()
-            ];
-            $conn = $this->getConnection();
-            $conn->update(
-                $this->getMainTable(),
-                $bind,
-                ['send_id = ?' => $sendId]
-            );
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        $bind = [
+            'send_status' => \Dotdigitalgroup\Email\Model\Campaign::SENT,
+            'sent_at' => $this->datetime->gmtDate()
+        ];
+        $conn = $this->getConnection();
+        $conn->update(
+            $this->getMainTable(),
+            $bind,
+            ['send_id = ?' => $sendId]
+        );
     }
 
     /**
@@ -200,25 +183,20 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param $ids
      * @param $sendId
-     * @throws \Exception
      */
     public function setProcessing($ids, $sendId)
     {
-        try {
-            $ids = implode(', ', $ids);
-            $bind = [
-                'send_status' => \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
-                'send_id' => $sendId
-            ];
-            $conn = $this->getConnection();
-            $conn->update(
-                $this->getMainTable(),
-                $bind,
-                ["id in (?)" => $ids]
-            );
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        $ids = implode(', ', $ids);
+        $bind = [
+            'send_status' => \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
+            'send_id' => $sendId
+        ];
+        $conn = $this->getConnection();
+        $conn->update(
+            $this->getMainTable(),
+            $bind,
+            ["id in (?)" => $ids]
+        );
     }
 
     /**

@@ -122,23 +122,18 @@ class Guest
      * @param $guest
      * @param $website
      * @param $guestFilename
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function outputCsvToFile($guest, $website, $guestFilename)
     {
         $email = $guest->getEmail();
-        try {
-            $guest->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
-            $guest->getResource()->save($guest);
-            $storeName = $website->getName();
-            // save data for guests
-            $this->file->outputCSV(
-                $this->file->getFilePath($guestFilename),
-                [$email, 'Html', $storeName]
-            );
-            ++$this->countGuests;
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $guest->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
+        $guest->getResource()->save($guest);
+        $storeName = $website->getName();
+        // save data for guests
+        $this->file->outputCSV(
+            $this->file->getFilePath($guestFilename),
+            [$email, 'Html', $storeName]
+        );
+        ++$this->countGuests;
     }
 }

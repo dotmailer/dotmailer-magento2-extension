@@ -47,7 +47,7 @@ class Response extends \Magento\Framework\App\Action\Action
         }
 
         //authenticate
-        $code = $this->escaper->escapeHtml($this->getRequest()->getParam('code'));
+        $code = $this->getRequest()->getParam('code');
         $auth = $this->helper->auth($code);
         if (!$auth) {
             return $this->sendResponse();

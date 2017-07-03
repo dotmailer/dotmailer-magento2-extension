@@ -270,7 +270,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @return int
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function resetCatalog($from = null, $to = null)
     {
@@ -287,18 +286,14 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 new \Zend_Db_Expr('not null')
             );
         }
-        try {
-            $num = $conn->update(
-                $conn->getTableName('email_catalog'),
-                [
-                    'imported' => new \Zend_Db_Expr('null'),
-                    'modified' => new \Zend_Db_Expr('null'),
-                ],
-                $where
-            );
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
-        }
+        $num = $conn->update(
+            $conn->getTableName('email_catalog'),
+            [
+                'imported' => new \Zend_Db_Expr('null'),
+                'modified' => new \Zend_Db_Expr('null'),
+            ],
+            $where
+        );
 
         return $num;
     }

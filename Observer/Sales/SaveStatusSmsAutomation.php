@@ -88,81 +88,76 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      *
      * @return $this
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        try {
-            $order = $observer->getEvent()->getOrder();
-            $status         = $order->getStatus();
-            $storeId        = $order->getStoreId();
-            $customerEmail  = $order->getCustomerEmail();
-            $store      = $this->storeManager->getStore($storeId);
-            $storeName  = $store->getName();
-            $websiteId  = $store->getWebsiteId();
-            // start app emulation
-            $appEmulation = $this->emulationFactory->create();
-            $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
-            $emailOrder = $this->emailOrderFactory->create()
-                ->loadByOrderId($order->getEntityId(), $order->getQuoteId());
-            //reimport email order
-            $emailOrder->setUpdatedAt($order->getUpdatedAt())
-                ->setCreatedAt($order->getUpdatedAt())
-                ->setStoreId($storeId)
-                ->setOrderStatus($status);
+        $order = $observer->getEvent()->getOrder();
+        $status         = $order->getStatus();
+        $storeId        = $order->getStoreId();
+        $customerEmail  = $order->getCustomerEmail();
+        $store      = $this->storeManager->getStore($storeId);
+        $storeName  = $store->getName();
+        $websiteId  = $store->getWebsiteId();
+        // start app emulation
+        $appEmulation = $this->emulationFactory->create();
+        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
+        $emailOrder = $this->emailOrderFactory->create()
+            ->loadByOrderId($order->getEntityId(), $order->getQuoteId());
+        //reimport email order
+        $emailOrder->setUpdatedAt($order->getUpdatedAt())
+            ->setCreatedAt($order->getUpdatedAt())
+            ->setStoreId($storeId)
+            ->setOrderStatus($status);
 
-            if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
-                $emailOrder->setEmailImported(null);
-            }
+        if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
+            $emailOrder->setEmailImported(null);
+        }
 
-            $isEnabled = $this->helper->isStoreEnabled($storeId);
+        $isEnabled = $this->helper->isStoreEnabled($storeId);
 
-            //api not enabled, stop emulation and exit
-            if (! $isEnabled) {
-                $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
-                return $this;
-            }
-
-            // check for order status change
-            $this->handleOrderStatusChange($status, $emailOrder);
-
-            // set back the current store
+        //api not enabled, stop emulation and exit
+        if (! $isEnabled) {
             $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
-            $emailOrder->getResource()->save($emailOrder);
+            return $this;
+        }
 
-            $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName);
+        // check for order status change
+        $this->handleOrderStatusChange($status, $emailOrder);
 
-            //If customer's first order, also order state is new
-            if ($order->getCustomerId() && $order->getState() == \Magento\Sales\Model\Order::STATE_NEW) {
-                $orders = $this->orderCollectionFactory->create()
-                    ->addFieldToFilter('customer_id', $order->getCustomerId());
-                if ($orders->getSize() == 1) {
-                    $automationTypeNewOrder
-                        = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
-                    $programIdNewOrder = $this->helper->getAutomationIdByType(
-                        'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
-                        $order->getStoreId()
+        // set back the current store
+        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+        $emailOrder->getResource()->save($emailOrder);
+
+        $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName);
+
+        //If customer's first order, also order state is new
+        if ($order->getCustomerId() && $order->getState() == \Magento\Sales\Model\Order::STATE_NEW) {
+            $orders = $this->orderCollectionFactory->create()
+                ->addFieldToFilter('customer_id', $order->getCustomerId());
+            if ($orders->getSize() == 1) {
+                $automationTypeNewOrder
+                    = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
+                $programIdNewOrder = $this->helper->getAutomationIdByType(
+                    'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
+                    $order->getStoreId()
+                );
+                if ($programIdNewOrder) {
+                    //send to automation queue
+                    $this->doAutomationEnrolment(
+                        [
+                            'programId' => $programIdNewOrder,
+                            'automationType' => $automationTypeNewOrder,
+                            'email' => $customerEmail,
+                            'order_id' => $order->getIncrementId(),
+                            'website_id' => $websiteId,
+                            'store_name' => $storeName
+                        ]
                     );
-                    if ($programIdNewOrder) {
-                        //send to automation queue
-                        $this->doAutomationEnrolment(
-                            [
-                                'programId' => $programIdNewOrder,
-                                'automationType' => $automationTypeNewOrder,
-                                'email' => $customerEmail,
-                                'order_id' => $order->getIncrementId(),
-                                'website_id' => $websiteId,
-                                'store_name' => $storeName
-                            ]
-                        );
-                    }
                 }
             }
-            //admin oder when editing the first one is canceled
-            $this->registry->unregister('sales_order_status_before');
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(__($e->getMessage()));
         }
+        //admin oder when editing the first one is canceled
+        $this->registry->unregister('sales_order_status_before');
 
         return $this;
     }

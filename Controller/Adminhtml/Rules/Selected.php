@@ -84,21 +84,11 @@ class Selected extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $id = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('ruleid')
-        );
-        $attribute = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('attribute')
-        );
-        $arrayKey = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('arraykey')
-        );
-        $conditionName = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('condition')
-        );
-        $valueName = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('value')
-        );
+        $id = $this->getRequest()->getParam('ruleid');
+        $attribute = $this->getRequest()->getParam('attribute');
+        $arrayKey = $this->getRequest()->getParam('arraykey');
+        $conditionName = $this->getRequest()->getParam('condition');
+        $valueName = $this->getRequest()->getParam('value');
 
         if ($arrayKey && $id && $attribute && $conditionName && $valueName) {
             $rule = $this->rulesFactory->create();

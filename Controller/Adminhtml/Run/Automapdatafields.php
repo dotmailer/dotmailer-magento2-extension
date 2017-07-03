@@ -48,9 +48,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     public function execute()
     {
         $result = ['errors' => false, 'message' => ''];
-        $website = $this->escaper->escapeHtml(
-            $this->getRequest()->getParam('website', 0)
-        );
+        $website = $this->getRequest()->getParam('website', 0);
         $client = false;
         if ($this->data->isEnabled()) {
             $client = $this->data->getWebsiteApiClient($website);

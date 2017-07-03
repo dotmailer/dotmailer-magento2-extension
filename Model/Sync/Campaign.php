@@ -115,7 +115,6 @@ class Campaign
      * @param $emailsToSend
      * @param $website
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function getCampaignsToSend($emailsToSend, $website)
     {
@@ -142,28 +141,22 @@ class Campaign
                     continue;
                 }
                 $campaignsToSend[$campaignId]['client'] = $client;
-                try {
-                    $contactId = $this->helper->getContactId(
-                        $campaign->getEmail(),
-                        $websiteId
-                    );
-                    if (is_numeric($contactId)) {
-                        //update data fields for order review camapigns
-                        if ($campaign->getEventName() == 'Order Review') {
-                            $this->updateDataFieldsForORderReviewCampaigns($campaign, $websiteId, $client, $email);
-                        }
-                        $campaignsToSend[$campaignId]['contacts'][] = $contactId;
-                        $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
-                    } else {
-                        //update the failed to send email message error message
-                        $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
-                            ->setMessage('Send not permitted. Contact is suppressed.');
-                        $this->campaignResourceModel->saveItem($campaign);
+                $contactId = $this->helper->getContactId(
+                    $campaign->getEmail(),
+                    $websiteId
+                );
+                if (is_numeric($contactId)) {
+                    //update data fields for order review camapigns
+                    if ($campaign->getEventName() == 'Order Review') {
+                        $this->updateDataFieldsForORderReviewCampaigns($campaign, $websiteId, $client, $email);
                     }
-                } catch (\Exception $e) {
-                    throw new \Magento\Framework\Exception\LocalizedException(
-                        __($e->getMessage())
-                    );
+                    $campaignsToSend[$campaignId]['contacts'][] = $contactId;
+                    $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
+                } else {
+                    //update the failed to send email message error message
+                    $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
+                        ->setMessage('Send not permitted. Contact is suppressed.');
+                    $this->campaignResourceModel->saveItem($campaign);
                 }
             }
         }

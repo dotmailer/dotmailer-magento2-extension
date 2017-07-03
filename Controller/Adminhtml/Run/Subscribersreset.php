@@ -8,22 +8,23 @@ class Subscribersreset extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
-    private $contactFactory;
+    private $contact;
 
     /**
      * Subscribersreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
-     * @param \Magento\Backend\App\Action\Context                       $context
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->contactFactory = $contactFactory;
+        $this->contact = $contact;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -33,8 +34,7 @@ class Subscribersreset extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $this->contactFactory->create()
-            ->resetSubscribers();
+        $this->contact->resetSubscribers();
 
         $this->messageManager->addSuccessMessage(__('Done.'));
 
