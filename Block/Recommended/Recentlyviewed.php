@@ -21,9 +21,9 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $sessionFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
-    public $catalogFactory;
+    public $catalog;
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -32,7 +32,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Recentlyviewed constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Magento\Customer\Model\SessionFactory $sessionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
@@ -41,7 +41,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Magento\Customer\Model\SessionFactory $sessionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -55,7 +55,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
         $this->storeManager      = $this->_storeManager;
-        $this->catalogFactory    = $catalogFactory;
+        $this->catalog    = $catalog;
     }
 
     /**
@@ -79,16 +79,14 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $mode = $this->getRequest()->getActionName();
         $customerId = (int) $this->getRequest()->getParam('customer_id');
         $limit = (int) $this->recommnededHelper->getDisplayLimitByMode($mode);
-        $catalogFactory = $this->catalogFactory->create();
 
         //login customer to receive the recent products
         $session = $this->sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
-
-        $productIds = $catalogFactory->getRecentlyViewed($limit);
+        $productIds = $this->catalog->getRecentlyViewed($limit);
 
         //get product collection to check for salable
-        $productCollection = $catalogFactory->getProductCollectionFromIds($productIds);
+        $productCollection = $this->catalog->getProductCollectionFromIds($productIds);
 
         //show products only if is salable
         foreach ($productCollection as $product) {

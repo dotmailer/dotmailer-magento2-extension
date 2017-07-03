@@ -21,14 +21,14 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $scopeManager;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
-    public $catalogFactory;
+    public $catalog;
 
     /**
      * Push constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Data                        $helper
      * @param \Magento\Framework\Pricing\Helper\Data                    $priceHelper
      * @param \Dotdigitalgroup\Email\Helper\Recommended                 $recommended
@@ -36,7 +36,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array                                                     $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -45,7 +45,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     ) {
         parent::__construct($context, $data);
         $this->helper            = $helper;
-        $this->catalogFactory    = $catalogFactory;
+        $this->catalog    = $catalog;
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
     }
@@ -66,8 +66,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
         $mode = $this->getRequest()->getActionName();
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $productIds = $this->recommnededHelper->getProductPushIds();
-        $productCollection = $this->catalogFactory->create()
-            ->getProductCollectionFromIds($productIds, $limit);
+        $productCollection = $this->catalog->getProductCollectionFromIds($productIds, $limit);
 
         //important check the salable product in template
         return $productCollection;

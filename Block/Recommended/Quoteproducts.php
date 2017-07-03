@@ -23,13 +23,13 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $catalogFactory;
+    public $catalog;
 
     /**
      * Quoteproducts constructor.
-     * 
+     *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Magento\Catalog\Block\Product\Context $context
@@ -37,7 +37,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Catalog\Block\Product\Context $context,
@@ -45,8 +45,8 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     ) {
         parent::__construct($context, $data);
         $this->helper            = $helper;
+        $this->catalog           = $catalog;
         $this->priceHelper       = $priceHelper;
-        $this->catalogFactory    = $catalogFactory;
         $this->recommendedHelper = $recommendedHelper;
     }
 
@@ -190,9 +190,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     private function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
     {
         $fallbackIds = $this->recommendedHelper->getFallbackIds();
-
-            $productCollection = $this->catalogFactory->create()
-                ->getProductCollectionFromIds($fallbackIds);
+        $productCollection = $this->catalog->getProductCollectionFromIds($fallbackIds);
 
         foreach ($productCollection as $product) {
             if ($product->isSaleable()) {
@@ -205,6 +203,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
                 break;
             }
         }
+
         return $productsToDisplay;
     }
 

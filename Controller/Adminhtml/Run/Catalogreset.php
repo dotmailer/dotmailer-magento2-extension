@@ -9,9 +9,9 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
      */
     protected $messageManager;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
-    private $catalogFactory;
+    private $catalog;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -23,19 +23,18 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
 
     /**
      * Catalogreset constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory
-     * @param \Magento\Backend\App\Action\Context                       $context
-     * @param \Dotdigitalgroup\Email\Helper\Data                        $data
-     * @param \Magento\Framework\Escaper                                $escaper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\Escaper $escaper
     ) {
-        $this->catalogFactory = $catalogFactory;
+        $this->catalog = $catalog;
         $this->messageManager = $context->getMessageManager();
         $this->helper = $data;
         $this->escaper = $escaper;
@@ -58,13 +57,11 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
             if (is_string($error)) {
                 $this->messageManager->addErrorMessage($error);
             } else {
-                $this->catalogFactory->create()
-                    ->resetCatalog($from, $to);
+                $this->catalog->resetCatalog($from, $to);
                 $this->messageManager->addSuccessMessage(__('Done.'));
             }
         } else {
-            $this->catalogFactory->create()
-                ->resetCatalog();
+            $this->catalog->resetCatalog();
             $this->messageManager->addSuccessMessage(__('Done.'));
         }
 

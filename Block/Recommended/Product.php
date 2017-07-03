@@ -21,9 +21,9 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $orderFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
-    public $catalogFactory;
+    public $catalog;
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
      */
@@ -31,20 +31,19 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Product constructor.
-     *
-     * @param \Magento\Sales\Model\OrderFactory                             $orderFactory
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory       $clientFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory     $catalogFactory
-     * @param \Dotdigitalgroup\Email\Helper\Recommended                     $recommended
-     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Magento\Framework\Pricing\Helper\Data                        $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context                        $context
-     * @param array                                                         $data
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param array $data
      */
     public function __construct(
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
@@ -55,7 +54,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->orderFactory      = $orderFactory;
         $this->clientFactory     = $clientFactory;
         $this->recommendedHelper = $recommended;
-        $this->catalogFactory    = $catalogFactory;
+        $this->catalog    = $catalog;
         $this->helper            = $helper;
         $this->priceHelper       = $priceHelper;
     }
@@ -203,8 +202,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         $fallbackIds = $this->recommendedHelper->getFallbackIds();
 
-            $productCollection = $this->catalogFactory->create()
-                ->getProductCollectionFromIds($fallbackIds);
+            $productCollection = $this->catalog->getProductCollectionFromIds($fallbackIds);
 
         foreach ($productCollection as $product) {
             if ($product->isSaleable()) {

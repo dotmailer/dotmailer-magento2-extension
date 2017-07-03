@@ -10,9 +10,9 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
     protected $messageManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
-    private $wishlistFactory;
+    private $wishlist;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -25,18 +25,18 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
     /**
      * Wishlistsreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory
-     * @param \Magento\Backend\App\Action\Context                        $context
-     * @param \Dotdigitalgroup\Email\Helper\Data                         $data
-     * @param \Magento\Framework\Escaper                                 $escaper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\Escaper $escaper
     ) {
-        $this->wishlistFactory = $wishlistFactory;
+        $this->wishlist = $wishlist;
         $this->messageManager  = $context->getMessageManager();
         $this->helper = $data;
         $this->escaper = $escaper;
@@ -59,13 +59,11 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
             if (is_string($error)) {
                 $this->messageManager->addErrorMessage($error);
             } else {
-                $this->wishlistFactory->create()
-                    ->resetWishlists($from, $to);
+                $this->wishlist->resetWishlists($from, $to);
                 $this->messageManager->addSuccessMessage(__('Done.'));
             }
         } else {
-            $this->wishlistFactory->create()
-                ->resetWishlists();
+            $this->wishlist->resetWishlists();
             $this->messageManager->addSuccessMessage(__('Done.'));
         }
 

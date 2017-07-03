@@ -8,14 +8,17 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
-    private $reviewFactory;
+    private $review;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Framework\Escaper
      */
@@ -24,17 +27,18 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
     /**
      * Reviewsreset constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\Escaper $escaper
     ) {
-        $this->reviewFactory  = $reviewFactory;
+        $this->review  = $review;
         $this->messageManager = $context->getMessageManager();
         $this->helper         = $data;
         $this->escaper        = $escaper;
@@ -57,13 +61,11 @@ class Reviewsreset extends \Magento\Backend\App\AbstractAction
             if (is_string($error)) {
                 $this->messageManager->addErrorMessage($error);
             } else {
-                $this->reviewFactory->create()
-                    ->resetReviews($from, $to);
+                $this->review->resetReviews($from, $to);
                 $this->messageManager->addSuccessMessage(__('Done.'));
             }
         } else {
-            $this->reviewFactory->create()
-                ->resetReviews();
+            $this->review->resetReviews();
             $this->messageManager->addSuccessMessage(__('Done.'));
         }
 

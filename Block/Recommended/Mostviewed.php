@@ -19,27 +19,26 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
-    public $catalogFactory;
+    public $catalog;
 
     /**
      * Mostviewed constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Helper\Data                             $helper
-     * @param \Magento\Catalog\Block\Product\Context                         $context
-     * @param \Magento\Framework\Pricing\Helper\Data                         $priceHelper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory      $catalogFactory
-     * @param \Dotdigitalgroup\Email\Helper\Recommended                      $recommended
-     * @param array                                                          $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Catalog\Block\Product\Context $context,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         array $data = []
     ) {
-        $this->catalogFactory           = $catalogFactory;
+        $this->catalog           = $catalog;
         $this->helper                   = $helper;
         $this->recommnededHelper        = $recommended;
         $this->priceHelper              = $priceHelper;
@@ -68,14 +67,12 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $catId = $this->escapeHtml($this->getRequest()->getParam('category_id'));
         $catName = $this->escapeHtml($this->getRequest()->getParam('category_name'));
 
-        $reportProductCollection = $this->catalogFactory->create()
-            ->getMostViewedProductCollection($from, $to, $limit, $catId, $catName);
+        $reportProductCollection = $this->catalog->getMostViewedProductCollection($from, $to, $limit, $catId, $catName);
 
         //product ids from the report product collection
         $productIds = $reportProductCollection->getColumnValues('entity_id');
 
-        $productCollection = $this->catalogFactory->create()
-            ->getProductCollectionFromIds($productIds);
+        $productCollection = $this->catalog->getProductCollectionFromIds($productIds);
 
         //product collection
         foreach ($productCollection as $_product) {
