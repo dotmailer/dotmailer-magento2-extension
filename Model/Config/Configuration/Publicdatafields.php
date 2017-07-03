@@ -57,7 +57,7 @@ class Publicdatafields implements \Magento\Framework\Data\OptionSourceInterface
                 //message
                 $fields[] = [
                     'value' => 0,
-                    'label' => __($datafields->message),
+                    'label' => $datafields->message,
                 ];
             } else {
                 //loop for all datafields option
@@ -67,7 +67,7 @@ class Publicdatafields implements \Magento\Framework\Data\OptionSourceInterface
                     ) {
                         $fields[] = [
                             'value' => $datafield->name,
-                            'label' => __($datafield->name),
+                            'label' => $datafield->name,
                         ];
                     }
                 }
