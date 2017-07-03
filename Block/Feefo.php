@@ -47,7 +47,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $review
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param array $data
      */
@@ -57,7 +57,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Framework\View\Element\Template\Context $context,
-        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $review,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         array $data = []
     ) {

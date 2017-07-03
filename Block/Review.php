@@ -23,7 +23,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Review constructor.
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $review
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
@@ -31,7 +31,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $review,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
