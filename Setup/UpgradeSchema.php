@@ -171,7 +171,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         });
 
         foreach ($serializedRows as $id => $serializedRow) {
-            $convertedValue = $this->json->serialize(unserialize($serializedRow['value']));
+            $convertedValue = $this->json->serialize($this->unserialize($serializedRow['value']));
             $bind = ['value' => $convertedValue];
             $where = [$connection->quoteIdentifier('config_id') . '=?' => $id];
             $connection->update($configTable, $bind, $where);
@@ -194,7 +194,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         });
 
         foreach ($serializedRows as $id => $serializedRow) {
-            $convertedValue = $this->json->serialize(unserialize($serializedRow['conditions']));
+            $convertedValue = $this->json->serialize($this->unserialize($serializedRow['conditions']));
             $bind = ['conditions' => $convertedValue];
             $where = [$connection->quoteIdentifier('id') . '=?' => $id];
             $connection->update($rulesTable, $bind, $where);
@@ -221,7 +221,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         });
 
         foreach ($serializedRows as $id => $serializedRow) {
-            $convertedValue = $this->json->serialize(unserialize($serializedRow['import_data']));
+            $convertedValue = $this->json->serialize($this->unserialize($serializedRow['import_data']));
             $bind = ['import_data' => $convertedValue];
             $where = [$connection->quoteIdentifier('id') . '=?' => $id];
             $connection->update($importerTable, $bind, $where);
@@ -237,6 +237,28 @@ class UpgradeSchema implements UpgradeSchemaInterface
     private function isSerialized($value)
     {
         return (boolean) preg_match('/^((s|i|d|b|a|O|C):|N;)/', $value);
+    }
+
+    /**
+     * @param $string
+     * @return mixed
+     */
+    private function unserialize($string)
+    {
+        if (false === $string || null === $string || '' === $string) {
+            throw new \InvalidArgumentException('Unable to unserialize value.');
+        }
+        set_error_handler(
+            function () {
+                restore_error_handler();
+                throw new \InvalidArgumentException('Unable to unserialize value, string is corrupted.');
+            },
+            E_NOTICE
+        );
+        $result = unserialize($string, ['allowed_classes' => false]);
+        restore_error_handler();
+
+        return $result;
     }
 
 }
