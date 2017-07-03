@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\Mail\Transport" type="Dotdigitalgroup\Email\Model\Mail\Transport"/>
-    <preference for="Magento\Customer\Model\AccountManagement" type="Dotdigitalgroup\Email\Model\Customer\AccountManagement"/>
-    <preference for="Magento\SalesRule\Model\ResourceModel\Coupon" type="Dotdigitalgroup\Email\Model\SalesRule\Coupon"/>
     <preference for="Magento\SalesRule\Model\ResourceModel\Rule\Collection" type="Dotdigitalgroup\Email\Model\SalesRule\Collection"/>
     <type name="Magento\Sales\Model\Order\CustomerManagement">
         <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagement" sortOrder="1"/>
@@ -12,6 +10,9 @@
     </type>
     <type name="Magento\Customer\Model\Customer">
         <plugin name="ddg_customer_newsletter_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerNewsletterDisable" sortOrder="1" disabled="false"/>
+    </type>
+    <type name="Magento\SalesRule\Model\ResourceModel\Coupon">
+        <plugin name="ddg_sales_coupon_expiration_date" type="Dotdigitalgroup\Email\Plugin\CouponCodeExpirationDay" sortOrder="1" disabled="false"/>
     </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
