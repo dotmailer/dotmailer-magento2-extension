@@ -1332,7 +1332,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Get access token.
      *
      * @param string $url
-     * @param array $params
+     * @param array|string $params
      *
      * @return string/object
      */
