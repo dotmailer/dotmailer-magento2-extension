@@ -52,7 +52,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $id = $this->escaper->escapeHtml($this->getRequest()->getParam('id'));
+        $id = $this->getRequest()->getParam('id');
         if ($id) {
             try {
                 $model = $this->rules;

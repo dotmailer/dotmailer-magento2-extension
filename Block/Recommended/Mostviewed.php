@@ -64,8 +64,8 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
         $from  = $this->recommnededHelper->getTimeFromConfig($mode);
         $to = $this->_localeDate->date()->format(\Zend_Date::ISO_8601);
-        $catId = $this->escapeHtml($this->getRequest()->getParam('category_id'));
-        $catName = $this->escapeHtml($this->getRequest()->getParam('category_name'));
+        $catId = $this->getRequest()->getParam('category_id');
+        $catName = $this->getRequest()->getParam('category_name');
 
         $reportProductCollection = $this->catalog->getMostViewedProductCollection($from, $to, $limit, $catId, $catName);
 

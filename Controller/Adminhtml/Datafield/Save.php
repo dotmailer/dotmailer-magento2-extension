@@ -40,10 +40,10 @@ class Save extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $datafield = $this->escaper->escapeHtml($this->getRequest()->getParam('name'));
-        $type = $this->escaper->escapeHtml($this->getRequest()->getParam('type'));
-        $default = $this->escaper->escapeHtml($this->getRequest()->getParam('default'));
-        $visibility = $this->escaper->escapeHtml($this->getRequest()->getParam('visibility'));
+        $datafield = $this->getRequest()->getParam('name');
+        $type = $this->getRequest()->getParam('type');
+        $default = $this->getRequest()->getParam('default');
+        $visibility = $this->getRequest()->getParam('visibility');
 
         $website = (int) $this->getRequest()->getParam('website', 0);
 

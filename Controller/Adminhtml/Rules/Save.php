@@ -53,7 +53,7 @@ class Save extends \Magento\Backend\App\AbstractAction
     public function execute()
     {
         if ($this->getRequest()->getParams()) {
-            $data = $this->escaper->escapeHtml($this->getRequest()->getParams());
+            $data = $this->getRequest()->getParams();
             try {
                 $ruleModel = $this->ruleFactory->create();
                 $id = $data['id'];

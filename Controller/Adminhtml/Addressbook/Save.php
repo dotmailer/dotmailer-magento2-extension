@@ -39,8 +39,8 @@ class Save extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $addressBookName = $this->escaper->escapeHtml($this->getRequest()->getParam('name'));
-        $visibility = $this->escaper->escapeHtml($this->getRequest()->getParam('visibility'));
+        $addressBookName = $this->getRequest()->getParam('name');
+        $visibility = $this->getRequest()->getParam('visibility');
         $website = (int) $this->getRequest()->getParam('website', 0);
 
         if ($this->helperData->isEnabled($website)) {
