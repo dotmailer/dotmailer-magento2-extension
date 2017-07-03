@@ -60,4 +60,11 @@
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Wishlist</argument>
         </arguments>
     </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="cron_report_grid_data_source" xsi:type="string">Magento\Cron\Ui\Model\ResourceModel\Schedule\Collection</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

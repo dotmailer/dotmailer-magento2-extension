@@ -145,7 +145,6 @@ class Customer
      *
      * @return $this
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setCustomerData($customer)
     {
@@ -162,16 +161,10 @@ class Customer
             foreach ($exploded as $one) {
                 $function .= ucfirst($one);
             }
-            try {
-                $value = call_user_func(
-                    ['self', $function]
-                );
-                $this->customerData[$key] = $value;
-            } catch (\Exception $e) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    __($e->getMessage())
-                );
-            }
+            $value = call_user_func(
+                ['self', $function]
+            );
+            $this->customerData[$key] = $value;
         }
 
         return $this;

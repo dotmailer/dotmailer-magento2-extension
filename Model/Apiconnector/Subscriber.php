@@ -74,16 +74,10 @@ class Subscriber
             foreach ($exploded as $one) {
                 $function .= ucfirst($one);
             }
-            try {
-                $value = call_user_func(
-                    ['self', $function]
-                );
-                $this->subscriberData[$key] = $value;
-            } catch (\Exception $e) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    __($e->getMessage())
-                );
-            }
+            $value = call_user_func(
+                ['self', $function]
+            );
+            $this->subscriberData[$key] = $value;
         }
     }
 
