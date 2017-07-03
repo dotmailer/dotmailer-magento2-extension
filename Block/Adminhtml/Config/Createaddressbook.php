@@ -70,7 +70,7 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
 
         $this->addData(
             [
-                'button_label' => __($buttonLabel),
+                'button_label' => $buttonLabel,
                 'html_id' => $element->getHtmlId(),
                 'ajax_url' => $url,
             ]

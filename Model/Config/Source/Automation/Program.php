@@ -64,7 +64,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                     if ($one->status == 'Active') {
                         $fields[] = [
                             'value' => $one->id,
-                            'label' => __($one->name),
+                            'label' => $one->name,
                         ];
                     }
                 }
