@@ -17,17 +17,12 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public $recommendedHelper;
     /**
-     * @var \Magento\Quote\Model\QuoteFactory
-     */
-    public $quoteFactory;
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
     public $catalog;
 
     /**
      * Quoteproducts constructor.
-     *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
@@ -45,9 +40,9 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     ) {
         parent::__construct($context, $data);
         $this->helper            = $helper;
+        $this->recommendedHelper = $recommendedHelper;
         $this->catalog           = $catalog;
         $this->priceHelper       = $priceHelper;
-        $this->recommendedHelper = $recommendedHelper;
     }
 
     /**
