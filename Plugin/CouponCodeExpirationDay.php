@@ -35,10 +35,10 @@ class CouponCodeExpirationDay
     /**
      * Update auto generated Specific Coupon if it's rule changed
      *
-     * @param \Magento\SalesRule\Model\Rule $rule
+     * @param  $rule
      * @return $this
      */
-    public function aroundupdateSpecificCoupons(\Magento\SalesRule\Model\Rule $rule, callable $proceed)
+    public function aroundupdateSpecificCoupons($rule, callable $proceed)
     {
         if (!$rule || !$rule->getId() || !$rule->hasDataChanges()) {
             return $this;
