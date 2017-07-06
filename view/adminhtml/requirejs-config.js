@@ -4,7 +4,8 @@ var config = {
     },
     'shim': {
         'fancybox': {
-            exports: 'fancybox'
+            exports: 'fancybox',
+            'deps': ['jquery']
         }
     }
 };
