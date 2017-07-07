@@ -83,6 +83,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $serializer;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     */
+    private $contactResource;
+
+    /**
      * @var \Magento\Quote\Model\ResourceModel\Quote
      */
     private $quoteResource;
@@ -101,6 +106,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Data constructor.
      * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param File $fileHelper
      * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
      * @param \Magento\Framework\App\ResourceConnection $adapter
@@ -121,6 +127,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
@@ -154,6 +161,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->quoteResource = $quoteResource;
         $this->quoteFactory = $quoteFactory;
         $this->userResource = $userResource;
+        $this->contactResource = $contactResource;
 
         parent::__construct($context);
         $this->fileHelper = $fileHelper;
@@ -507,13 +515,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if ($response->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
                 $contact->setSuppressed(1);
             }
-            $contact->getResource()->save($contact);
+            $this->contactResource->save($contact);
             return false;
         }
         //save contact id
         if (isset($response->id)) {
             $contact->setContactId($response->id);
-            $contact->getResource()->save($contact);
+            $this->contactResource->save($contact);
         } else {
             //curl operation timeout
             return false;
@@ -845,7 +853,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setEmailImported(
                 \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED
             );
-        $contactModel->getResource()->save($contactModel);
+        $this->contactResource->save($contactModel);
     }
 
     /**

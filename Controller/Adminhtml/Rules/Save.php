@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 class Save extends \Magento\Backend\App\AbstractAction
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
+     */
+    private $rulesResource;
+    /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
@@ -19,19 +23,21 @@ class Save extends \Magento\Backend\App\AbstractAction
 
     /**
      * Save constructor.
-     *
-     * @param \Magento\Backend\App\Action\Context        $context
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory  $rulesFactory
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Magento\Framework\Escaper                 $escaper
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Escaper $escaper
     ) {
         parent::__construct($context);
+        $this->rulesResource = $rulesResource;
         $this->ruleFactory  = $rulesFactory;
         $this->storeManager = $storeManagerInterface;
         $this->escaper      = $escaper;
@@ -99,7 +105,7 @@ class Save extends \Magento\Backend\App\AbstractAction
 
                 $this->_getSession()->setPageData($ruleModel->getData());
 
-                $ruleModel->getResource()->save($ruleModel);
+                $this->rulesResource->save($ruleModel);
 
                 $this->messageManager->addSuccessMessage(
                     __('The rule has been saved.')

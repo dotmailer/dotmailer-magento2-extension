@@ -30,15 +30,20 @@ class Callback extends \Magento\Framework\App\Action\Action
     private $adminHelper;
 
     /**
+     * @var \Magento\User\Model\ResourceModel\User
+     */
+    private $userResource;
+
+    /**
      * Callback constructor.
-     *
-     * @param \Magento\Backend\Helper\Data                       $backendData
-     * @param \Dotdigitalgroup\Email\Helper\Config               $config
+     * @param \Magento\Backend\Helper\Data $backendData
+     * @param \Dotdigitalgroup\Email\Helper\Config $config
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-     * @param \Magento\Store\Model\StoreManager                  $storeManager
-     * @param \Magento\User\Model\UserFactory                    $adminUser
-     * @param \Magento\Framework\App\Action\Context              $context
-     * @param \Dotdigitalgroup\Email\Helper\Data                 $helper
+     * @param \Magento\Store\Model\StoreManager $storeManager
+     * @param \Magento\User\Model\UserFactory $adminUser
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\User\Model\ResourceModel\User $userResource
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      */
     public function __construct(
         \Magento\Backend\Helper\Data $backendData,
@@ -47,6 +52,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         \Magento\Store\Model\StoreManager $storeManager,
         \Magento\User\Model\UserFactory $adminUser,
         \Magento\Framework\App\Action\Context $context,
+        \Magento\User\Model\ResourceModel\User $userResource,
         \Dotdigitalgroup\Email\Helper\Data $helper
     ) {
         $this->adminHelper      = $backendData;
@@ -54,6 +60,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         $this->scopeConfig      = $scopeConfigInterface;
         $this->storeManager     = $storeManager;
         $this->adminUser        = $adminUser;
+        $this->userResource     = $userResource;
         $this->helper           = $helper;
 
         parent::__construct($context);
@@ -112,7 +119,8 @@ class Callback extends \Magento\Framework\App\Action\Action
             } elseif (isset($response->refresh_token)) {
                 //save the refresh token to the admin user
                 $adminUser->setRefreshToken($response->refresh_token);
-                $adminUser->getResource()->save($adminUser);
+
+                $this->userResource->save($adminUser);
             }
         }
         //redirect to automation index page

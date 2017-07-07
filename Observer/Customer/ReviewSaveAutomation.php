@@ -8,6 +8,14 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
+     */
+    private $reviewResource;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
+     */
+    private $automationResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -31,21 +39,26 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * ReviewSaveAutomation constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ReviewFactory     $reviewFactory
+     * @param \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $reviewResource
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Magento\Customer\Model\CustomerFactory        $customerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data             $data
-     * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Review $reviewResource,
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->reviewFactory     = $reviewFactory;
+        $this->reviewResource = $reviewResource;
+        $this->automationResource = $automationResource;
         $this->automationFactory = $automationFactory;
         $this->customerFactory   = $customerFactory;
         $this->helper            = $data;
@@ -92,7 +105,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
                     ->setWebsiteId($website->getId())
                     ->setStoreName($storeName)
                     ->setProgramId($programId);
-                $automation->getResource()->save($automation);
+                $this->automationResource->save($automation);
             }
         }
 
@@ -111,7 +124,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             $reviewModel->setReviewId($review->getReviewId())
                 ->setCustomerId($review->getCustomerId())
                 ->setStoreId($review->getStoreId());
-            $reviewModel->getResource()->save($reviewModel);
+            $this->reviewResource->save($reviewModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

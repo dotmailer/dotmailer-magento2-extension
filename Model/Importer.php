@@ -36,6 +36,11 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     const SYNC_SINGLE_LIMIT_NUMBER = 100;
 
     /**
+     * @var ResourceModel\Importer
+     */
+    private $importerResource;
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -119,6 +124,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * Importer constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param ResourceModel\Contact $contact
+     * @param ResourceModel\Importer $importerResource
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param Config\Json $serializer
      * @param \Magento\Framework\Model\Context $context
@@ -136,6 +142,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Magento\Framework\Model\Context $context,
@@ -150,6 +157,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     ) {
         $this->file          = $file;
         $this->helper        = $helper;
+        $this->importerResource = $importerResource;
         $this->directoryList = $directoryList;
         $this->objectManager = $objectManager;
         $this->contact       = $contact;
@@ -213,7 +221,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 ->setWebsiteId($websiteId)
                 ->setImportMode($importMode);
 
-            $this->getResource()->save($this);
+            $this->importerResource->save($this);
 
             return true;
         } catch (\Exception $e) {
@@ -504,7 +512,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     private function saveItem($itemToSave)
     {
-        $this->getResource()->save($itemToSave);
+        $this->importerResource->save($itemToSave);
     }
 
     /**

@@ -114,7 +114,7 @@ class Automation
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\AutomationFactory $automationResourceFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory,
@@ -124,7 +124,7 @@ class Automation
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\AutomationFactory $automationResourceFactory
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
     ) {
         $this->serializer = $serializer;
         $this->automationFactory = $automationFactory;
@@ -133,7 +133,7 @@ class Automation
         $this->resource          = $resource;
         $this->localeDate        = $localeDate;
         $this->orderFactory      = $orderFactory;
-        $this->automationResourceFactory = $automationResourceFactory;
+        $this->automationResource = $automationResource;
     }
 
     /**
@@ -178,7 +178,7 @@ class Automation
                 } else {
                     // the contact is suppressed or the request failed
                     $automation->setEnrolmentStatus('Suppressed');
-                    $automation->getResource()->save($automation);
+                    $this->automationResource->save($automation);
                 }
             }
             foreach ($contacts as $websiteId => $websiteContacts) {
@@ -196,7 +196,7 @@ class Automation
                         null,
                         false
                     )->format('Y-m-d H:i:s');
-                    $this->automationResourceFactory->create()
+                    $this->automationResource
                         ->updateStatus(
                             $contactIds,
                             $this->programStatus,

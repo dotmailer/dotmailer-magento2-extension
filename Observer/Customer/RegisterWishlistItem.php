@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
+     */
+    private $wishlistResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -22,18 +26,20 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * RegisterWishlistItem constructor.
-     *
      * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->wishlist        = $wishlist;
         $this->wishlistFactory = $wishlistFactory;
+        $this->wishlistResource = $wishlistResource;
         $this->helper          = $data;
     }
 
@@ -53,8 +59,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
         try {
             if ($wishlistItem->getWishlistId()) {
                 $itemCount = count($wishlist->getItemCollection());
-                $item
-                           = $emailWishlist->getWishlist($wishlistItem->getWishlistId());
+                $item = $emailWishlist->getWishlist($wishlistItem->getWishlistId());
 
                 if ($item && $item->getId()) {
                     $preSaveItemCount = $item->getItemCount();
@@ -69,7 +74,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
                         $item->setWishlistModified(1);
                     }
 
-                    $item->getResource()->save($item);
+                    $this->wishlistResource->save($item);
                 }
             }
         } catch (\Exception $e) {

@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Ajax;
 class Emailcapture extends \Magento\Framework\App\Action\Action
 {
     /**
+     * @var \Magento\Quote\Model\ResourceModel\Quote
+     */
+    private $quoteResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -15,17 +19,19 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
 
     /**
      * Emailcapture constructor.
-     *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Checkout\Model\Session $session
      * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
+        \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Checkout\Model\Session $session,
         \Magento\Framework\App\Action\Context $context
     ) {
         $this->helper          = $data;
+        $this->quoteResource = $quoteResource;
         $this->checkoutSession = $session;
         parent::__construct($context);
     }
@@ -44,7 +50,8 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
             if ($quote->hasItems()) {
                 try {
                     $quote->setCustomerEmail($email);
-                    $quote->getResource()->save($quote);
+
+                    $this->quoteResource->save($quote);
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);
                 }

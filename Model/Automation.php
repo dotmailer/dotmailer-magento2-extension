@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Model;
 class Automation extends \Magento\Framework\Model\AbstractModel
 {
     /**
+     * @var ResourceModel\Automation
+     */
+    private $automationResource;
+    /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
@@ -19,11 +23,11 @@ class Automation extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Automation constructor.
-     *
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param ResourceModel\Automation $automationResource
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
@@ -34,12 +38,14 @@ class Automation extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->dateTime     = $dateTime;
+        $this->automationResource = $automationResource;
         $this->helper       = $helper;
         $this->storeManager = $storeManagerInterface;
         parent::__construct(
@@ -112,7 +118,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
                     ->setStoreName($storeName)
                     ->setProgramId($programId);
 
-                $this->getResource()->save($this);
+                $this->automationResource->save($this);
             }
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);

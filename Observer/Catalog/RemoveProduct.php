@@ -8,10 +8,13 @@ namespace Dotdigitalgroup\Email\Observer\Catalog;
 class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     */
+    private $catalogResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-
     /**
      * @var \Psr\Log\LoggerInterface
      */
@@ -35,17 +38,18 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * RemoveProduct constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                         $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\CatalogFactory                          $catalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                                   $data
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface                   $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface                           $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -55,6 +59,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
         $this->helper            = $data;
         $this->scopeConfig       = $scopeConfig;
         $this->catalogFactory    = $catalogFactory;
+        $this->catalogResource = $catalogResource;
         $this->catalogCollection = $catalogCollectionFactory;
         $this->storeManager      = $storeManagerInterface;
     }
@@ -99,7 +104,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
         } else {
             $catalog = $this->catalogFactory->create();
             $catalog->setProductId($productId);
-            $catalog->getResource()->save($catalog);
+            $this->catalogResource->save($catalog);
         }
 
         return false;

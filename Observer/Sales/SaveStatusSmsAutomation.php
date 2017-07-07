@@ -1,6 +1,7 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 
 /**
  * Trigger Order automation based on order state.
@@ -9,6 +10,14 @@ namespace Dotdigitalgroup\Email\Observer\Sales;
  */
 class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterface
 {
+    /**
+     * @var Automation
+     */
+    private $automationResource;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
+     */
+    private $orderResource;
     /**
      * @var \Magento\Framework\Registry
      */
@@ -50,6 +59,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     /**
      * SaveStatusSmsAutomation constructor.
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
+     * @param Automation $automationResource
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
@@ -61,6 +72,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
         \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
@@ -71,6 +84,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->serializer = $serializer;
+        $this->orderResource = $orderResource;
+        $this->automationResource = $automationResource;
         $this->automationFactory      = $automationFactory;
         $this->emailOrderFactory      = $emailOrderFactory;
         $this->scopeConfig            = $scopeConfig;
@@ -126,7 +141,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 
         // set back the current store
         $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
-        $emailOrder->getResource()->save($emailOrder);
+        $this->orderResource->save($emailOrder);
 
         $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName);
 
@@ -180,7 +195,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                     ->setWebsiteId($data['website_id'])
                     ->setStoreName($data['store_name'])
                     ->setProgramId($data['programId']);
-                $automation->getResource()->save($automation);
+                $this->automationResource->save($automation);
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);
             }

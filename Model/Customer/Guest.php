@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Model\Customer;
 class Guest
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     */
+    private $contactResource;
+    /**
      * @var int
      */
     private $countGuests = 0;
@@ -34,20 +38,22 @@ class Guest
 
     /**
      * Guest constructor.
-     *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Helper\Data $helper
     ) {
         $this->importerFactory = $importerFactory;
         $this->contactFactory = $contactFactory;
+        $this->contactResource = $contactResource;
         $this->helper = $helper;
         $this->file = $file;
     }
@@ -127,7 +133,8 @@ class Guest
     {
         $email = $guest->getEmail();
         $guest->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
-        $guest->getResource()->save($guest);
+
+        $this->contactResource->save($guest);
         $storeName = $website->getName();
         // save data for guests
         $this->file->outputCSV(

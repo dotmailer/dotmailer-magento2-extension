@@ -7,6 +7,11 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
  */
 class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 {
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     */
+    private $catalogResource;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -38,12 +43,12 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * CreateUpdateContact constructor.
-     *
      * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      */
@@ -53,11 +58,13 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
     ) {
         $this->wishlist        = $wishlist;
         $this->contactFactory  = $contactFactory;
+        $this->catalogResource = $catalogResource;
         $this->customerFactory = $customerFactory;
         $this->helper          = $data;
         $this->registry        = $registry;
@@ -137,7 +144,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
                 ->setStoreId($storeId)
                 ->setCustomerId($customerId);
-            $contactModel->getResource()->save($contactModel);
+            $this->catalogResource->save($contactModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

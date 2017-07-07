@@ -27,16 +27,19 @@ class Bulk
     /**
      * Bulk constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
     ) {
         $this->helper         = $helper;
         $this->serializer     = $serializer;
+        $this->importerResource = $importerResource;
         $this->contactFactory = $contactFactory;
     }
 
@@ -115,13 +118,13 @@ class Bulk
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
                     ->setMessage($result->message);
 
-                $item->getResource()->save($item);
+                $this->importerResource->save($item);
             } elseif (isset($result->id) && !isset($result->message)) {
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
                     ->setImportId($result->id)
                     ->setImportStarted(time())
                     ->setMessage('');
-                $item->getResource()->save($item);
+                $this->importerResource->save($item);
             } else {
                 $message = (isset($result->message)) ? $result->message : 'Error unknown';
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
@@ -132,7 +135,7 @@ class Bulk
                     $item->setImportId($result->id);
                 }
 
-                $item->getResource()->save($item);
+                $this->importerResource->save($item);
             }
         }
     }
@@ -149,7 +152,7 @@ class Bulk
         if ($curlError) {
             $item->setMessage($curlError)
                 ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED);
-            $item->getResource()->save($item);
+            $this->importerResource->save($item);
 
             return true;
         }

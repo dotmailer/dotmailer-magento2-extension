@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 class Order
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
+     */
+    private $campaignResource;
+    /**
      * @var string
      */
     private $dateTime;
@@ -61,11 +65,13 @@ class Order
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime $datetime,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Zend_Date $date
     ) {
+        $this->campaignResource = $campaignResource;
         $this->rulesFactory       = $rulesFactory;
         $this->orderCollection    = $orderCollection;
         $this->campaignCollection = $campaignCollection;
@@ -119,7 +125,7 @@ class Order
                     if ($order->getCustomerId()) {
                         $emailCampaign->setCustomerId($order->getCustomerId());
                     }
-                    $emailCampaign->getResource()->saveItem($emailCampaign);
+                    $this->campaignResource->saveItem($emailCampaign);
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);
                 }
