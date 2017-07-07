@@ -18,6 +18,11 @@ class MassDelete extends \Magento\Backend\App\Action
     protected $messageManager;
 
     /**
+     * @var \Magento\Cron\Model\ResourceModel\Schedule
+     */
+    private $scheduleResource;
+
+    /**
      * @var Filter
      */
     private $filter;
@@ -25,17 +30,20 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * MassDelete constructor.
      *
+     * @param \Magento\Cron\Model\ResourceModel\Schedule $scheduleResource
      * @param \Magento\Backend\App\Action\Context $context
      * @param Filter $filter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $collectionFactory
      */
     public function __construct(
+        \Magento\Cron\Model\ResourceModel\Schedule $scheduleResource,
         \Magento\Backend\App\Action\Context $context,
         Filter $filter,
         \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $collectionFactory
     ) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
+        $this->scheduleResource = $scheduleResource;
         parent::__construct($context);
     }
 
@@ -48,7 +56,7 @@ class MassDelete extends \Magento\Backend\App\Action
         $collectionSize = $collection->getSize();
 
         foreach ($collection as $item) {
-            $item->getResource()->delete($item);
+            $this->scheduleResource->delete($item);
         }
 
         $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));

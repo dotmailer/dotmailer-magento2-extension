@@ -23,16 +23,22 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
      * @var
      */
     private $importerFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     */
+    private $contactResource;
 
     /**
      * RemoveContact constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -43,6 +49,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         $this->helper = $data;
         $this->storeManager = $storeManagerInterface;
         $this->importerFactory = $importerFactory;
+        $this->contactResource = $contactResource;
     }
 
     /**
@@ -76,7 +83,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
                     ->loadByCustomerEmail($email, $websiteId);
                 if ($contactModel->getId()) {
                     //remove contact
-                    $contactModel->getResource()->delete($contactModel);
+                    $this->contactResource->delete($contactModel);
                 }
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);

@@ -23,19 +23,27 @@ class MassDelete extends \Magento\Backend\App\Action
     private $filter;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
+     */
+    private $reviewResource;
+
+    /**
      * MassDelete constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $reviewResource
      * @param \Magento\Backend\App\Action\Context $context
      * @param Filter $filter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $collectionFactory
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Review $reviewResource,
         \Magento\Backend\App\Action\Context $context,
         Filter $filter,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $collectionFactory
     ) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
+        $this->reviewResource = $reviewResource;
         parent::__construct($context);
     }
 
@@ -48,7 +56,7 @@ class MassDelete extends \Magento\Backend\App\Action
         $collectionSize = $collection->getSize();
 
         foreach ($collection as $item) {
-            $item->getResource()->delete($item);
+            $this->reviewResource->delete($item);
         }
 
         $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));

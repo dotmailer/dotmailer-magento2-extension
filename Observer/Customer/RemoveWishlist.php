@@ -31,10 +31,15 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Customer\Model\ResourceModel\Customer
      */
     private $customerResource;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
+     */
+    private $wishlistResource;
 
     /**
      * RemoveWishlist constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource
      * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Magento\Customer\Model\CustomerFactory      $customerFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
@@ -43,6 +48,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Store\Model\StoreManagerInterface   $storeManagerInterface
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource,
         \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -56,6 +62,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
         $this->helper          = $data;
         $this->storeManager    = $storeManagerInterface;
         $this->customerResource = $customerResource;
+        $this->wishlistResource = $wishlistResource;
     }
 
     /**
@@ -87,7 +94,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                         $website->getId()
                     );
-                    $item->getResource()->delete($item);
+                    $this->wishlistResource->delete($item);
                 }
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);

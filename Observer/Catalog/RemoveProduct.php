@@ -32,10 +32,15 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     */
+    private $catalogResource;
 
     /**
      * RemoveProduct constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog                   $catalogResource
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory                         $importerFactory
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory                          $catalogFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
@@ -44,6 +49,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Store\Model\StoreManagerInterface                           $storeManagerInterface
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
@@ -57,6 +63,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
         $this->catalogFactory    = $catalogFactory;
         $this->catalogCollection = $catalogCollectionFactory;
         $this->storeManager      = $storeManagerInterface;
+        $this->catalogResource   = $catalogResource;
     }
 
     /**
@@ -75,7 +82,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                     $this->deleteFromAccount($productId);
                 }
                 //delete from table
-                $item->getResource()->delete($item);
+                $this->catalogResource->delete($item);
             }
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
