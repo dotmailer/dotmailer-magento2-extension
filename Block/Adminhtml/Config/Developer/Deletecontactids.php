@@ -38,7 +38,7 @@ class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
 
         return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
             ->setType('button')
-            ->setLabel(__($this->buttonLabel))
+            ->setLabel($this->buttonLabel)
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
     }

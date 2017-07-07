@@ -87,7 +87,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
     {
         return $this->getLayout()->createBlock('adminhtml/widget_button')
             ->setType('button')
-            ->setLabel(__($title))
+            ->setLabel($title)
             ->setOnClick('createDatafield(this.form, this);')
             ->toHtml();
     }
