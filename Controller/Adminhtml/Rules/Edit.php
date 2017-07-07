@@ -16,16 +16,22 @@ class Edit extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
+     */
+    private $rulesResource;
 
     /**
      * Edit constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Model\Rules $rules
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\Rules $rules,
         \Magento\Framework\Registry $registry,
@@ -35,6 +41,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
         $this->rules = $rules;
         $this->registry = $registry;
         $this->escaper = $escaper;
+        $this->rulesResource = $rulesResource;
     }
 
     /**
@@ -66,7 +73,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
 
         $emailRules = $this->rules;
         if ($id) {
-            $emailRules->getResource()->load($emailRules, $id);
+            $this->rulesResource->load($emailRules, $id);
 
             if (!$emailRules->getId()) {
                 $this->messageManager->addErrorMessage(__('This rule no longer exists.'));

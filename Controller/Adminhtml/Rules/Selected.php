@@ -33,10 +33,15 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
+     */
+    private $rulesResource;
 
     /**
      * Selected constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules              $rulesResource
      * @param \Magento\Backend\App\Action\Context                           $context
      * @param \Dotdigitalgroup\Email\Model\RulesFactory                     $rulesFactory
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type      $ruleType
@@ -47,6 +52,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @param \Magento\Framework\Escaper                                    $escaper
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType,
@@ -62,6 +68,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
         $this->ruleValue = $ruleValue;
         $this->jsonEncoder = $jsonEncoder;
         $this->escaper = $escaper;
+        $this->rulesResource = $rulesResource;
 
         parent::__construct($context);
         $this->http = $http;
@@ -92,7 +99,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
         if ($arrayKey && $id && $attribute && $conditionName && $valueName) {
             $rule = $this->rulesFactory->create();
-            $rule->getResource()->load($rule, $id);
+            $this->rulesResource->load($rule, $id);
             //rule not found
             if (!$rule->getId()) {
                 $this->http->getHeaders()->clearHeaders();

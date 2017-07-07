@@ -33,14 +33,28 @@ class Subscriber
     private $productFactory;
 
     /**
+     * @var \Magento\Catalog\Model\ResourceModel\Category
+     */
+    private $categoryResource;
+
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product
+     */
+    private $productResource;
+
+    /**
      * Subscriber constructor.
      *
+     * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
+     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      */
     public function __construct(
+        \Magento\Catalog\Model\ResourceModel\Product $productResource,
+        \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
@@ -50,6 +64,8 @@ class Subscriber
         $this->_store = $storeManager;
         $this->categoryFactory = $categoryFactory;
         $this->productFactory = $productFactory;
+        $this->categoryResource  = $categoryResource;
+        $this->productResource = $productResource;
     }
 
     /**
@@ -249,7 +265,7 @@ class Subscriber
         $id = $this->subscriber->getMostCategoryId();
         if ($id) {
             $category = $this->categoryFactory->create();
-            $category->getResource()->load($category, $id);
+            $this->categoryResource->load($category, $id);
 
             return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
@@ -310,7 +326,7 @@ class Subscriber
         $id = $this->subscriber->getFirstCategoryId();
         if ($id) {
             $category = $this->categoryFactory->create();
-            $category->getResource()->load($category, $id);
+            $this->categoryResource->load($category, $id);
 
             return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
@@ -330,7 +346,7 @@ class Subscriber
         //customer last category id
         if ($categoryId) {
             $category = $this->categoryFactory->create();
-            $category->getResource()->load($category, $categoryId);
+            $this->categoryResource->load($category, $categoryId);
 
             return $category->setStoreId($this->subscriber->getStoreId())
                 ->getName();
@@ -372,14 +388,14 @@ class Subscriber
         );
         //if the id and attribute found
         if ($id && $attribute) {
-            $brand = $this->productFactory->create();
-            $brand->getResource()->load($brand, $id);
-            $brand = $brand->setStoreId($this->subscriber->getStoreId());
+            $product = $this->productFactory->create();
+            $this->productResource->load($product, $id);
+            $product = $product->setStoreId($this->subscriber->getStoreId());
 
-            $text = $brand->getAttributeText($attribute);
+            $text = $product->getAttributeText($attribute);
             //check for brand text
             if ($text) {
-                return $brand;
+                return $text;
             }
         }
 
