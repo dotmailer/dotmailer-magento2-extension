@@ -51,17 +51,10 @@ class Transport extends \Zend_Mail_Transport_Smtp implements \Magento\Framework\
      */
     public function sendMessage()
     {
-        try {
-            if ($this->helper->isEnabled()) {
-                parent::send($this->message);
-            } else {
-                $this->sendMail->send($this->message);
-            }
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Exception\MailException(
-                $e->getMessage(),
-                $e
-            );
+        if ($this->helper->isEnabled()) {
+            parent::send($this->message);
+        } else {
+            $this->sendMail->send($this->message);
         }
     }
 }
