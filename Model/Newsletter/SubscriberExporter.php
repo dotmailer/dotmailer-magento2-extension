@@ -28,14 +28,20 @@ class SubscriberExporter
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     public $storeManager;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     */
+    private $contactResource;
 
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
+        $this->contactResource = $contactResource;
         $this->importerFactory   = $importerFactory;
         $this->file              = $file;
         $this->helper            = $helper;
@@ -82,7 +88,7 @@ class SubscriberExporter
                 [$email, 'Html', $storeName]
             );
             $subscriber->setSubscriberImported(1);
-            $subscriber->getResource()->save($subscriber);
+            $this->contactResource->save($subscriber);
             $updated++;
         }
         $this->helper->log('Subscriber filename: ' . $subscribersFilename);

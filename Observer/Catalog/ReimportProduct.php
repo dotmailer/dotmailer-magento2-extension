@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Observer\Catalog;
 class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     */
+    private $catalogResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -22,13 +26,16 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * ReimportProduct constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
     ) {
         $this->helper            = $data;
+        $this->catalogResource = $catalogResource;
         $this->catalogFactory    = $catalogFactory;
     }
 
@@ -52,7 +59,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
             $emailCatalog->setProductId($productId);
         }
 
-        $emailCatalog->getResource()->save($emailCatalog);
+        $this->catalogResource->save($emailCatalog);
 
         return $this;
     }

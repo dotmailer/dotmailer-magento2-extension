@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Observer\Sales;
 class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
+     */
+    private $automationResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -30,9 +34,11 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->automationFactory = $automationFactory;
+        $this->automationResource = $automationResource;
         $this->helper            = $data;
         $this->storeManager      = $storeManagerInterface;
     }
@@ -85,7 +91,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
                 ->setWebsiteId($website->getId())
                 ->setStoreName($storeName)
                 ->setProgramId($programId);
-            $automation->getResource()->save($automation);
+            $this->automationResource->save($automation);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

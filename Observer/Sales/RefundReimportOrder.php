@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Observer\Sales;
 class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
+     */
+    private $orderResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -30,10 +34,12 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->emailOrderFactory = $emailOrderFactory;
+        $this->orderResource = $orderResource;
         $this->helper            = $data;
         $this->_registry         = $registry;
     }
@@ -66,7 +72,7 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
             }
 
             $emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED);
-            $emailOrder->getResource()->save($emailOrder);
+            $this->orderResource->save($emailOrder);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

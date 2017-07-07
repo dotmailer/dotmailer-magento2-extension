@@ -66,6 +66,7 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
         $helper = new \Dotdigitalgroup\Email\Helper\Data(
             $objectManager->create('\Magento\Framework\App\ProductMetadata'),
             $objectManager->create('\Dotdigitalgroup\Email\Model\ContactFactory'),
+            $objectManager->create('\Dotdigitalgroup\Email\Model\ResourceModel\Contact'),
             $objectManager->create('\Dotdigitalgroup\Email\Helper\File'),
             $objectManager->create('\Magento\Config\Model\ResourceModel\Config'),
             $objectManager->create('\Magento\Framework\App\ResourceConnection'),
@@ -79,7 +80,10 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
             $objectManager->create('\Dotdigitalgroup\Email\Helper\ConfigFactory'),
             $objectManager->create('\Dotdigitalgroup\Email\Model\Config\Json'),
             $objectManager->create('\Magento\Framework\Stdlib\DateTime\DateTime'),
-            $objectManager->create('\Magento\Quote\Model\QuoteFactory')
+            $objectManager->create('\Magento\Quote\Model\ResourceModel\Quote'),
+            $objectManager->create('\Magento\Quote\Model\QuoteFactory'),
+            $objectManager->create('\Magento\User\Model\ResourceModel\User')
+
         );
         $apiEndpoint = $helper->getApiEndpoint($website, $mockClient);
         $this->assertEquals(

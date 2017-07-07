@@ -1,6 +1,7 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Model\Sales;
+use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 
 /**
  * Customer and guest Abandoned Carts.
@@ -35,6 +36,11 @@ class Quote
      * @var
      */
     public $quoteCollection;
+
+    /**
+     * @var Campaign
+     */
+    private $campaignResource;
 
     /**
      * Number of lost baskets available.
@@ -97,9 +103,9 @@ class Quote
 
     /**
      * Quote constructor.
-     *
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
+     * @param Campaign\CollectionFactory $campaignCollection
+     * @param Campaign $campaignResource
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -110,6 +116,7 @@ class Quote
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -120,6 +127,7 @@ class Quote
         $this->rulesFactory = $rulesFactory;
         $this->helper = $helper;
         $this->campaignCollection = $campaignCollection;
+        $this->campaignResource = $campaignResource;
         $this->campaignFactory = $campaignFactory;
         $this->storeManager = $storeManager;
         $this->orderCollection = $collectionFactory;
@@ -393,7 +401,7 @@ class Quote
                         ->setWebsiteId($websiteId)
                         ->setIsSent(null);
 
-                    $item->getResource()->saveItem($item);
+                    $this->campaignResource->saveItem($item);
                     $this->totalGuests++;
                 }
             }
@@ -470,7 +478,7 @@ class Quote
                         ->setWebsiteId($websiteId)
                         ->setIsSent(null);
 
-                    $item->getResource()->saveItem($item);
+                    $this->campaignResource->saveItem($item);
 
                     $this->totalCustomers++;
                 }

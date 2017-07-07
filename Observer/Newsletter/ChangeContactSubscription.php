@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Observer\Newsletter;
 class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     */
+    private $contactResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -29,29 +33,38 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      */
     private $automationFactory;
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
+     */
+    private $automationResource;
+    /**
      * @var
      */
     private $importerFactory;
 
     /**
      * ChangeContactSubscription constructor.
-     *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory    $contactFactory
-     * @param \Magento\Framework\Registry                    $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data             $data
-     * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory   $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
+     * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
+        $this->contactResource = $contactResource;
         $this->automationFactory = $automationFactory;
+        $this->automationResource = $automationResource;
         $this->contactFactory    = $contactFactory;
         $this->helper            = $data;
         $this->storeManager      = $storeManagerInterface;
@@ -121,7 +134,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             $contactEmail->setStoreId($storeId);
 
             //update contact
-            $contactEmail->getResource()->save($contactEmail);
+            $this->contactResource->save($contactEmail);
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
             $emailReg = $this->registry->registry($email . '_subscriber_save');
@@ -185,7 +198,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 ->setWebsiteId($websiteId)
                 ->setStoreName($store->getName())
                 ->setProgramId($programId);
-            $automation->getResource()->save($automation);
+            $this->automationResource->save($automation);
         }
     }
 }

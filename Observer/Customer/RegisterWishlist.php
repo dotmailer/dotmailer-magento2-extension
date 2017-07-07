@@ -8,6 +8,14 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
+     */
+    private $automationResource;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
+     */
+    private $wishlistResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -39,11 +47,15 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
         \Magento\Customer\Api\CustomerRepositoryInterface $customer,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
+        $this->automationResource = $automationResource;
+        $this->wishlistResource = $wishlistResource;
         $this->automationFactory = $automationFactory;
         $this->customer   = $customer;
         $this->wishlistFactory   = $wishlistFactory;
@@ -91,7 +103,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                 $emailWishlist->setWishlistId($wishlist->getWishlistId())
                     ->setCustomerId($wishlist->getCustomerId())
                     ->setStoreId($customer->getStoreId());
-                $emailWishlist->getResource()->save($emailWishlist);
+                $this->wishlistResource->save($emailWishlist);
 
                 $store
                            = $this->storeManager->getStore($customer->getStoreId());
@@ -117,7 +129,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                         ->setWebsiteId($websiteId)
                         ->setStoreName($storeName)
                         ->setProgramId($programId);
-                    $automation->getResource()->save($automation);
+                    $this->automationResource->save($automation);
                 }
             }
         } catch (\Exception $e) {
