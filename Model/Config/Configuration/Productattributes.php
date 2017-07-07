@@ -5,19 +5,19 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 class Productattributes implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection
+     * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory
      */
     private $attributes;
 
     /**
      * Productattributes constructor.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection $collection
+     * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $collectionFactory
      */
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection $collection
+        \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $collectionFactory
     ) {
-        $this->attributes = $collection;
+        $this->attributes = $collectionFactory;
     }
 
     /**
@@ -28,6 +28,7 @@ class Productattributes implements \Magento\Framework\Data\OptionSourceInterface
     public function toOptionArray()
     {
         $attributes = $this->attributes
+            ->create()
             ->addVisibleFilter();
 
         $attributeArray = [];

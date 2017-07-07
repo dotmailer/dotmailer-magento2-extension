@@ -21,7 +21,7 @@ class Customer
      */
     public $customerData;
     /**
-     * @var \Magento\Review\Model\ResourceModel\Review\Collection
+     * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
     public $reviewCollection;
 
@@ -117,7 +117,7 @@ class Customer
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
      * @param \Magento\Framework\Stdlib\DateTime                         $dateTime
      * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
-     * @param \Magento\Review\Model\ResourceModel\Review\Collection      $reviewCollection
+     * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                         $helper
      * @param \Magento\Customer\Model\GroupFactory                       $groupFactory
@@ -135,7 +135,7 @@ class Customer
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Review\Model\ResourceModel\Review\Collection $reviewCollection,
+        \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\GroupFactory $groupFactory,
@@ -148,7 +148,7 @@ class Customer
         $this->helper            = $helper;
         $this->_store            = $storeManager;
         $this->_contactFactory   = $contactFactory;
-        $this->reviewCollection  = $reviewCollection;
+        $this->reviewCollection  = $reviewCollectionFactory;
         $this->orderCollection   = $collectionFactory;
         $this->groupFactory      = $groupFactory;
         $this->subscriberFactory = $subscriberFactory;
@@ -225,7 +225,8 @@ class Customer
     public function setReviewCollection()
     {
         $customerId = $this->customer->getId();
-        $collection = $this->reviewCollection->addCustomerFilter($customerId)
+        $collection = $this->reviewCollection->create()
+            ->addCustomerFilter($customerId)
             ->setOrder('review_id', 'DESC');
 
         $this->reviewCollection = $collection;
