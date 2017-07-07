@@ -44,7 +44,7 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
             'Magento\Backend\Block\Widget\Button'
         )
             ->setType('button')
-            ->setLabel(__($this->buttonLabel))
+            ->setLabel($this->buttonLabel)
             ->setId($element->getId())
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();

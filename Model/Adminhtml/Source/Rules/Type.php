@@ -111,7 +111,7 @@ class Type
         $pAttributes = [];
         foreach ($productAttributes as $code => $label) {
             if (strpos($code, 'quote_item_') === false) {
-                $pAttributes[$code] = __($label);
+                $pAttributes[$code] = $label;
             }
         }
         $options = array_merge($defaultOptions, $pAttributes);
