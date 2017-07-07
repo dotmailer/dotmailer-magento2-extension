@@ -99,7 +99,7 @@ $products = $block->getLoadedProductCollection();
         <div align="center">
             <a class="proudct-url" href="<?php echo $block->escapeHtml($_product->getProductUrl()); ?>">
                 <?php if ($urlText = $block->getTextForUrl($_product->getStoreId())) {
-                    echo $block->escapeHtml(__($urlText));
+                    echo $block->escapeHtml($urlText);
                 } else {
                     echo $block->escapehtml(__('View Now'));
                 } ?>
