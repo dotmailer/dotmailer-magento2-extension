@@ -25,9 +25,10 @@ class CustomerNewsletterDisable
     /**
      * @param \Magento\Customer\Model\Customer $customer
      * @param callable $proceed
+     * @param array ...$args
      * @return mixed
      */
-    public function aroundSendNewAccountEmail(\Magento\Customer\Model\Customer $customer, callable $proceed)
+    public function aroundSendNewAccountEmail(\Magento\Customer\Model\Customer $customer, callable $proceed, ...$args)
     {
         $storeId = $customer->getStoreId();
 
@@ -37,7 +38,7 @@ class CustomerNewsletterDisable
             $storeId
         )
         ) {
-            return $proceed();
+            return $proceed(...$args);
         }
     }
 }
