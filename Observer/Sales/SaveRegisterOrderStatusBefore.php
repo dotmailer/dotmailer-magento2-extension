@@ -15,17 +15,24 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
      * @var \Magento\Sales\Model\OrderFactory
      */
     private $orderFactory;
+    /**
+     * @var \Magento\Sales\Model\ResourceModel\Order
+     */
+    private $orderResource;
 
     /**
      * SaveRegisterOrderStatusBefore constructor.
      *
+     * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
+        \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Framework\Registry $registry
     ) {
+        $this->orderResource = $orderResource;
         $this->orderFactory = $orderFactory;
         $this->registry     = $registry;
     }
@@ -44,7 +51,7 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
         } else {
             // the reloaded status
             $reloaded = $this->orderFactory->create();
-            $reloaded->getResource()->load($reloaded, $order->getId());
+            $this->orderResource->load($reloaded, $order->getId());
             $orderStatus = $reloaded->getStatus();
         }
         //register the order status before change

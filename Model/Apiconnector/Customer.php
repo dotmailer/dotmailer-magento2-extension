@@ -93,8 +93,26 @@ class Customer
         ];
 
     /**
+     * @var \Magento\Customer\Model\ResourceModel\Group
+     */
+    private $groupResource;
+
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Category
+     */
+    private $categoryResource;
+
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product
+     */
+    private $productResource;
+
+    /**
      * Customer constructor.
      *
+     * @param \Magento\Catalog\Model\ResourceModel\Product               $productResource
+     * @param \Magento\Catalog\Model\ResourceModel\Category              $categoryResource
+     * @param \Magento\Customer\Model\ResourceModel\Group                $groupResource
      * @param \Dotdigitalgroup\Email\Model\ContactFactory                $contactFactory
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
      * @param \Magento\Framework\Stdlib\DateTime                         $dateTime
@@ -110,6 +128,9 @@ class Customer
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
+        \Magento\Catalog\Model\ResourceModel\Product $productResource,
+        \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
+        \Magento\Customer\Model\ResourceModel\Group $groupResource,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Stdlib\DateTime $dateTime,
@@ -133,6 +154,9 @@ class Customer
         $this->subscriberFactory = $subscriberFactory;
         $this->categoryFactory   = $categoryFactory;
         $this->productFactory    = $productFactory;
+        $this->groupResource     = $groupResource;
+        $this->categoryResource  = $categoryResource;
+        $this->productResource = $productResource;
     }
 
     /**
@@ -685,7 +709,7 @@ class Customer
     {
         $groupId = $this->customer->getGroupId();
         $groupModel = $this->groupFactory->create();
-        $groupModel->getResource()->load($groupModel, $groupId);
+        $this->groupResource->load($groupModel, $groupId);
         if ($groupModel) {
             return $groupModel->getCode();
         }
@@ -789,7 +813,7 @@ class Customer
         $id = $this->customer->getMostCategoryId();
         if ($id) {
             $category = $this->categoryFactory->create();
-            $category->getResource()->load($category, $id);
+            $this->categoryResource->load($category, $id);
             return $category->setStoreId($this->customer->getStoreId())
                 ->getName();
         }
@@ -852,7 +876,7 @@ class Customer
         $id = $this->customer->getFirstCategoryId();
         if ($id) {
             $category = $this->categoryFactory->create();
-            $category->getResource()->load($category, $id);
+            $this->categoryResource->load($category, $id);
             return $category->setStoreId($this->customer->getStoreId())
                 ->getName();
         }
@@ -872,7 +896,7 @@ class Customer
         if ($categoryId) {
             $category = $this->categoryFactory->create();
             $category->setStoreId($this->customer->getStoreId());
-            $category->getResource()->load($category, $categoryId);
+            $this->categoryResource->load($category, $categoryId);
 
             return $category->getName();
         }
@@ -913,11 +937,11 @@ class Customer
         );
         //if the id and attribute found
         if ($id && $attribute) {
-            $brand = $this->productFactory->create();
-            $brand = $brand->setStoreId($this->customer->getStoreId());
-            $brand->getResource()->load($brand, $id);
+            $product = $this->productFactory->create();
+            $product = $product->setStoreId($this->customer->getStoreId());
+            $this->productResource->load($product, $id);
 
-            $text = $brand->getAttributeText($attribute);
+            $text = $product->getAttributeText($attribute);
             //check for brand text
             if ($text) {
                 return $text;

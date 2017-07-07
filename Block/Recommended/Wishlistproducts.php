@@ -28,9 +28,14 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     public $catalog;
+    /**
+     * @var \Magento\Customer\Model\ResourceModel\Customer
+     */
+    private $customerResource;
 
     /**
      * Wishlistproducts constructor.
+     * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
@@ -41,6 +46,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $data
      */
     public function __construct(
+        \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -57,6 +63,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->priceHelper       = $priceHelper;
         $this->wishlist   = $wishlist;
         $this->catalog    = $catalog;
+        $this->customerResource = $customerResource;
     }
 
     /**
@@ -87,7 +94,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         }
 
         $customer = $this->customerFactory->create();
-        $customer->getResource()->load($customer, $customerId);
+        $this->customerResource->load($customer, $customerId);
         if (! $customer->getId()) {
             return [];
         }

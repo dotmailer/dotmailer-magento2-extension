@@ -28,9 +28,14 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
      */
     public $clientFactory;
+    /**
+     * @var \Magento\Sales\Model\ResourceModel\Order
+     */
+    private $orderResource;
 
     /**
      * Product constructor.
+     * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
@@ -41,6 +46,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $data
      */
     public function __construct(
+        \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
@@ -57,6 +63,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->catalog    = $catalog;
         $this->helper            = $helper;
         $this->priceHelper       = $priceHelper;
+        $this->orderResource = $orderResource;
     }
 
     /**
@@ -81,7 +88,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
         $orderModel = $this->orderFactory->create();
-        $orderModel->getResource()->load($orderModel, $orderId);
+        $this->orderResource->load($orderModel, $orderId);
         //number of product items to be displayed
         $limit = $this->recommendedHelper
             ->getDisplayLimitByMode($mode);

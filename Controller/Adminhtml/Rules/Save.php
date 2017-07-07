@@ -20,16 +20,22 @@ class Save extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
+     */
+    private $rulesResource;
 
     /**
      * Save constructor.
-     * @param \Magento\Backend\App\Action\Context $context
+     *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
+     * @param \Magento\Backend\App\Action\Context        $context
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory  $rulesFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
@@ -41,6 +47,7 @@ class Save extends \Magento\Backend\App\AbstractAction
         $this->ruleFactory  = $rulesFactory;
         $this->storeManager = $storeManagerInterface;
         $this->escaper      = $escaper;
+        $this->rulesResource = $rulesResource;
     }
 
     /**
@@ -93,7 +100,7 @@ class Save extends \Magento\Backend\App\AbstractAction
                     }
                 }
 
-                $ruleModel->getResource()->load($ruleModel, $id);
+                $this->rulesResource->load($ruleModel, $id);
 
                 if ($id != $ruleModel->getId()) {
                     throw new \Magento\Framework\Exception\LocalizedException(

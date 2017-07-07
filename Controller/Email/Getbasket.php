@@ -24,9 +24,15 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @var \Magento\Quote\Model\Quote
      */
     private $quote;
+    /**
+     * @var \Magento\Quote\Model\ResourceModel\Quote
+     */
+    private $quoteResource;
 
     /**
      * Getbasket constructor.
+     *
+     * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\Customer\Model\SessionFactory $sessionFactory
@@ -34,6 +40,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
+        \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Customer\Model\SessionFactory $sessionFactory,
@@ -61,7 +68,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         /** @var \Magento\Quote\Model\Quote $quoteModel */
         $quoteModel = $this->quoteFactory->create();
 
-        $quoteModel->getResource()->load($quoteModel, $quoteId);
+        $this->quoteResource->load($quoteModel, $quoteId);
 
         //no quote id redirect to base url
         if (! $quoteModel->getId()) {

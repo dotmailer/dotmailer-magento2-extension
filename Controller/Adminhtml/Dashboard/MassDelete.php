@@ -15,21 +15,28 @@ class MassDelete extends \Magento\Backend\App\Action
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+    /**
+     * @var \Magento\Cron\Model\ResourceModel\Schedule
+     */
+    private $scheduleResource;
 
     /**
      * MassDelete constructor.
      *
+     * @param \Magento\Cron\Model\ResourceModel\Schedule $scheduleResource
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
      * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
+        \Magento\Cron\Model\ResourceModel\Schedule $scheduleResource,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Cron\Model\ScheduleFactory $schedule,
         \Magento\Framework\Escaper $escaper
     ) {
         $this->schedule = $schedule;
         $this->escaper = $escaper;
+        $this->scheduleResource = $scheduleResource;
         parent::__construct($context);
     }
     /**
@@ -46,7 +53,7 @@ class MassDelete extends \Magento\Backend\App\Action
                 foreach ($ids as $id) {
                     $model = $this->schedule->create()
                         ->setId($id);
-                    $model->getResource()->delete($model);
+                    $this->scheduleResource->delete($model);
                 }
                 $this->messageManager->addSuccessMessage(__('Total of %1 record(s) were deleted.', count($ids)));
             } catch (\Exception $e) {

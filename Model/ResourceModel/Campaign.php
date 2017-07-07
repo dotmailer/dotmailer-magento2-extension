@@ -24,6 +24,10 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Magento\SalesRule\Model\ResourceModel\Coupon
      */
     public $coupon;
+    /**
+     * @var \Magento\SalesRule\Model\ResourceModel\Rule
+     */
+    public $ruleResource;
 
     /**
      * Initialize resource.
@@ -36,6 +40,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Campaign constructor.
      *
+     * @param \Magento\SalesRule\Model\ResourceModel\Rule          $ruleResouce
      * @param \Magento\Framework\Model\ResourceModel\Db\Context    $context
      * @param \Magento\Framework\Stdlib\DateTime\DateTime          $dateTime
      * @param \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory
@@ -45,6 +50,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param null $connectionName
      */
     public function __construct(
+        \Magento\SalesRule\Model\ResourceModel\Rule             $rulesResource,
         \Magento\Framework\Model\ResourceModel\Db\Context       $context,
         \Magento\Framework\Stdlib\DateTime\DateTime             $dateTime,
         \Magento\SalesRule\Model\Coupon\MassgeneratorFactory    $massgeneratorFactory,
@@ -58,6 +64,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->coupon               = $coupon;
         $this->couponFactory        = $couponFactory;
         $this->massGeneratorFactory = $massgeneratorFactory;
+        $this->ruleResource         = $rulesResource;
         parent::__construct(
             $context,
             $connectionName
@@ -75,7 +82,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         if ($couponCodeId) {
             $rule = $this->ruleFactory->create();
-            $rule->getResource()->load($rule, $couponCodeId);
+            $this->ruleResource->load($rule, $couponCodeId);
 
             $generator = $this->massGeneratorFactory->create();
             $generator->setFormat(

@@ -20,9 +20,14 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
     public $review;
+    /**
+     * @var \Magento\Sales\Model\ResourceModel\Order
+     */
+    private $orderResource;
 
     /**
      * Review constructor.
+     * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -31,6 +36,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $data
      */
     public function __construct(
+        \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -42,6 +48,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->orderFactory      = $orderFactory;
         $this->helper            = $helper;
         $this->priceHelper       = $priceHelper;
+        $this->orderResource = $orderResource;
 
         parent::__construct($context, $data);
     }
@@ -74,7 +81,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
                 return false;
             }
             $order = $this->orderFactory->create();
-            $order->getResource()->load($order, $orderId);
+            $this->orderResource->load($order, $orderId);
             $this->_coreRegistry->unregister('current_order'); // additional measure
             $this->_coreRegistry->register('current_order', $order);
         }

@@ -28,6 +28,10 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory
      */
     public $productSoldFactory;
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Category
+     */
+    private $categoryResource;
 
     /**
      * Initialize resource.
@@ -40,6 +44,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Catalog constructor.
      *
+     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
@@ -50,6 +55,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param null $connectionName
      */
     public function __construct(
+        \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
@@ -66,6 +72,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->reportProductCollection  = $reportProductCollection;
         $this->viewed                   = $viewed;
         $this->productSoldFactory       = $productSoldFactory;
+        $this->categoryResource         = $categoryResource;
         parent::__construct(
             $context,
             $connectionName
@@ -91,7 +98,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         //filter collection by category by category_id
         if ($catId) {
             $category = $this->categoryFactory->create();
-            $category->getResource()->load($category, $catId);
+            $this->categoryResource->load($category, $catId);
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(

@@ -23,19 +23,27 @@ class MassDelete extends \Magento\Backend\App\Action
     private $filter;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
+     */
+    private $wishlistResource;
+
+    /**
      * MassDelete constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource
      * @param \Magento\Backend\App\Action\Context $context
      * @param Filter $filter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $collectionFactory
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource,
         \Magento\Backend\App\Action\Context $context,
         Filter $filter,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $collectionFactory
     ) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
+        $this->wishlistResource = $wishlistResource;
         parent::__construct($context);
     }
 
@@ -48,7 +56,7 @@ class MassDelete extends \Magento\Backend\App\Action
         $collectionSize = $collection->getSize();
 
         foreach ($collection as $item) {
-            $item->getResource()->delete($item);
+            $this->wishlistResource->delete($item);
         }
 
         $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));

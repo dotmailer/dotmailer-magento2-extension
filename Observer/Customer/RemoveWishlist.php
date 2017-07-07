@@ -27,10 +27,20 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
      * @var
      */
     private $importerFactory;
+    /**
+     * @var \Magento\Customer\Model\ResourceModel\Customer
+     */
+    private $customerResource;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
+     */
+    private $wishlistResource;
 
     /**
      * RemoveWishlist constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource
+     * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Magento\Customer\Model\CustomerFactory      $customerFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
@@ -38,6 +48,8 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Store\Model\StoreManagerInterface   $storeManagerInterface
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource,
+        \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
@@ -49,6 +61,8 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
         $this->wishlistFactory = $wishlistFactory;
         $this->helper          = $data;
         $this->storeManager    = $storeManagerInterface;
+        $this->customerResource = $customerResource;
+        $this->wishlistResource = $wishlistResource;
     }
 
     /**
@@ -58,7 +72,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
     {
         $object = $observer->getEvent()->getDataObject();
         $customer = $this->customerFactory->create();
-        $customer->getResource()->load($customer, $object->getCustomerId());
+        $this->customerResource->load($customer, $object->getCustomerId());
         $website = $this->storeManager->getStore($customer->getStoreId())
             ->getWebsite();
 
@@ -80,7 +94,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                         $website->getId()
                     );
-                    $item->getResource()->delete($item);
+                    $this->wishlistResource->delete($item);
                 }
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);
