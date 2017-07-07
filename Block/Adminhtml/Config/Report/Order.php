@@ -76,7 +76,7 @@ class Order extends \Magento\Config\Block\System\Config\Form\Field
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/addressbook/save');
         $this->addData(
             [
-                'button_label' => __($buttonLabel),
+                'button_label' => $buttonLabel,
                 'html_id' => $element->getHtmlId(),
                 'ajax_url' => $url,
             ]
