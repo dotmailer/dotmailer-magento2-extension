@@ -29,7 +29,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     private $reviewFactory;
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
+     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
     private $productCollection;
 
@@ -44,7 +44,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Review constructor.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection
+     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\Review\Model\ReviewFactory $reviewFactory
@@ -55,7 +55,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param null $connectionName
      */
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection,
+        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Review\Model\ReviewFactory $reviewFactory,
@@ -71,7 +71,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->vote = $vote;
         $this->quoteFactory = $quoteFactory;
         $this->reviewFactory = $reviewFactory;
-        $this->productCollection = $productCollection;
+        $this->productCollection = $productCollectionFactory;
         parent::__construct(
             $context,
             $connectionName
@@ -156,7 +156,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         if (! empty($productIds)) {
-            $products = $this->productCollection
+            $products = $this->productCollection->create()
                 ->addAttributeToSelect('*')
                 ->addFieldToFilter('entity_id', ['in' => $productIds]);
         }
