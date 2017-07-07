@@ -12,9 +12,9 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 class InstallData implements InstallDataInterface
 {
     /**
-     * @var \Magento\Config\Model\ResourceModel\ConfigFactory
+     * @var \Magento\Config\Model\ResourceModel\Config
      */
-    private $configFactory;
+    private $config;
     /**
      * @var \Magento\Sales\Model\Config\Source\Order\StatusFactory
      */
@@ -31,18 +31,18 @@ class InstallData implements InstallDataInterface
     /**
      * InstallData constructor.
      *
-     * @param \Magento\Config\Model\ResourceModel\ConfigFactory $configFactory
+     * @param \Magento\Config\Model\ResourceModel\Config $config
      * @param \Magento\Sales\Model\Config\Source\Order\StatusFactory $statusFactory
      * @param \Magento\Catalog\Model\Product\TypeFactory $typeFactory
      * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
      */
     public function __construct(
-        \Magento\Config\Model\ResourceModel\ConfigFactory $configFactory,
+        \Magento\Config\Model\ResourceModel\Config $config,
         \Magento\Sales\Model\Config\Source\Order\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\TypeFactory $typeFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
     ) {
-        $this->configFactory = $configFactory;
+        $this->config = $config;
         $this->statusFactory = $statusFactory;
         $this->typefactory = $typeFactory;
         $this->visibilityFactory = $visibilityFactory;
@@ -71,10 +71,9 @@ class InstallData implements InstallDataInterface
         /**
          * Save config value
          */
-        $configModel = $this->saveValuesToConfig();
-        $this->saveAllOrderStatusesAsString($configModel);
-        $this->saveAllProductTypesAsString($configModel);
-        $this->saveAllProductVisibilitiesAsString($configModel);
+        $this->saveAllOrderStatusesAsString($this->config);
+        $this->saveAllProductTypesAsString($this->config);
+        $this->saveAllProductVisibilitiesAsString($this->config);
 
         $installer->endSetup();
     }
@@ -284,16 +283,6 @@ class InstallData implements InstallDataInterface
             $installer->getTable('email_catalog'), $insertArray, false
         );
         $installer->getConnection()->query($sqlQuery);
-    }
-
-    /**
-     * @return \Magento\Config\Model\ResourceModel\Config
-     */
-    private function saveValuesToConfig()
-    {
-        $configModel = $this->configFactory->create();
-
-        return $configModel;
     }
 
     /**

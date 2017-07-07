@@ -41,9 +41,9 @@ class Order
      */
     private $storeManager;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
-    private $contactResourceFactory;
+    private $contactResource;
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
@@ -66,9 +66,9 @@ class Order
     private $importerFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
      */
-    private $orderResourceFactory;
+    private $orderResource;
     /**
      * @var array
      */
@@ -81,8 +81,8 @@ class Order
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderResourceFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -92,8 +92,8 @@ class Order
         \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
         \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory $orderResourceFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -102,8 +102,8 @@ class Order
         $this->orderFactory          = $orderFactory;
         $this->accountFactory        = $accountFactory;
         $this->connectorOrderFactory = $connectorOrderFactory;
-        $this->contactResourceFactory= $contactFactory;
-        $this->orderResourceFactory  = $orderResourceFactory;
+        $this->contactResource       = $contactResource;
+        $this->orderResource         = $orderResource;
         $this->helper                = $helper;
         $this->salesOrderFactory     = $salesOrderFactory;
         $this->storeManager          = $storeManagerInterface;
@@ -149,8 +149,7 @@ class Order
             }
 
             //mark the orders as imported
-            $this->orderResourceFactory->create()
-                ->setImported($this->orderIds);
+            $this->orderResource->setImported($this->orderIds);
 
             unset($this->accounts[$account->getApiUsername()]);
         }
@@ -159,8 +158,7 @@ class Order
          * Add guest to contacts table.
          */
         if (!empty($this->guests)) {
-            $this->contactResourceFactory->create()
-                ->insertGuest($this->guests);
+            $this->contactResource->insertGuest($this->guests);
         }
 
         if ($this->countOrders) {
