@@ -28,10 +28,15 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
     private $automationFactory;
+    /**
+     * @var \Magento\Customer\Model\ResourceModel\Customer
+     */
+    private $customerResource;
 
     /**
      * ReviewSaveAutomation constructor.
      *
+     * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Dotdigitalgroup\Email\Model\ReviewFactory     $reviewFactory
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Magento\Customer\Model\CustomerFactory        $customerFactory
@@ -39,6 +44,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Store\Model\StoreManagerInterface     $storeManagerInterface
      */
     public function __construct(
+        \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -50,6 +56,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
         $this->customerFactory   = $customerFactory;
         $this->helper            = $data;
         $this->storeManager      = $storeManagerInterface;
+        $this->customerResource  = $customerResource;
     }
 
     /**
@@ -75,7 +82,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             $storeName = $store->getName();
             $website = $this->storeManager->getStore($store)->getWebsite();
             $customer = $this->customerFactory->create();
-            $customer->getResource()->load($customer, $customerId);
+            $this->customerResource->load($customer, $customerId);
             //if api is not enabled
             if (!$this->helper->isEnabled($website)) {
                 return $this;

@@ -19,15 +19,21 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
     private $wishlist;
+    /**
+     * @var \Magento\Wishlist\Model\ResourceModel\Wishlist
+     */
+    private $wishlistResource;
 
     /**
      * RegisterWishlistItem constructor.
      *
+     * @param \Magento\Wishlist\Model\ResourceModel\Wishlist $wishlistResource
      * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
+        \Magento\Wishlist\Model\ResourceModel\Wishlist $wishlistResource,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
@@ -35,6 +41,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
         $this->wishlist        = $wishlist;
         $this->wishlistFactory = $wishlistFactory;
         $this->helper          = $data;
+        $this->wishlistResource = $wishlistResource;
     }
 
     /**
@@ -48,7 +55,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
     {
         $wishlistItem = $observer->getEvent()->getItem();
         $wishlist = $this->wishlist->create();
-        $wishlist->getResource()->load($wishlist, $wishlistItem->getWishlistId());
+        $this->wishlistResource->load($wishlist, $wishlistItem->getWishlistId());
         $emailWishlist = $this->wishlistFactory->create();
         try {
             if ($wishlistItem->getWishlistId()) {

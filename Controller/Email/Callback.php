@@ -28,10 +28,15 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @var \Magento\Backend\Helper\Data
      */
     private $adminHelper;
+    /**
+     * @var \Magento\User\Model\ResourceModel\User
+     */
+    private $userResource;
 
     /**
      * Callback constructor.
      *
+     * @param \Magento\User\Model\ResourceModel\User             $userResource
      * @param \Magento\Backend\Helper\Data                       $backendData
      * @param \Dotdigitalgroup\Email\Helper\Config               $config
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
@@ -41,6 +46,7 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @param \Dotdigitalgroup\Email\Helper\Data                 $helper
      */
     public function __construct(
+        \Magento\User\Model\ResourceModel\User $userResource,
         \Magento\Backend\Helper\Data $backendData,
         \Dotdigitalgroup\Email\Helper\Config $config,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface,
@@ -55,6 +61,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         $this->storeManager     = $storeManager;
         $this->adminUser        = $adminUser;
         $this->helper           = $helper;
+        $this->userResource     = $userResource;
 
         parent::__construct($context);
     }
@@ -68,7 +75,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         $userId = $this->getRequest()->getParam('state');
         //load admin user
         $adminUser = $this->adminUser->create();
-        $adminUser->getResource()->load($adminUser, $userId);
+        $this->userResource->load($adminUser, $userId);
         //app code and admin user must be present
         if ($code && $adminUser->getId()) {
             $clientId = $this->scopeConfig->getValue(
