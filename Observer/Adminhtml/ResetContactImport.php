@@ -21,26 +21,26 @@ class ResetContactImport implements \Magento\Framework\Event\ObserverInterface
      */
     private $contactFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
-    private $contactResourceFactory;
+    private $contactResource;
 
     /**
      * ResetContactImport constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact        $contactResource
      * @param \Dotdigitalgroup\Email\Model\ContactFactory               $contactFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                        $data
      * @param \Magento\Backend\App\Action\Context                       $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->contactFactory         = $contactFactory;
-        $this->contactResourceFactory = $contactResourceFactory;
+        $this->contactResource        = $contactResource;
         $this->helper                 = $data;
         $this->messageManager         = $context->getMessageManager();
     }
@@ -56,11 +56,10 @@ class ResetContactImport implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $contactModel = $this->contactResourceFactory->create();
         $numImported = $this->contactFactory->create()
             ->getNumberOfImportedContacs();
 
-        $updated = $contactModel->resetAllContacts();
+        $updated = $this->contactResource->resetAllContacts();
 
         $this->helper->log('-- Imported contacts: ' . $numImported
             . ' reseted :  ' . $updated . ' --');

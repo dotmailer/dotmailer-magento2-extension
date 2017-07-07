@@ -26,15 +26,15 @@ class MassDelete extends \Magento\Backend\App\Action
      * MassDelete constructor.
      * @param \Magento\Backend\App\Action\Context $context
      * @param Filter $filter
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection $collection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $collectionFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         Filter $filter,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection $collection
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $collectionFactory
     ) {
         $this->filter = $filter;
-        $this->catalogCollection = $collection;
+        $this->catalogCollection = $collectionFactory->create();
         parent::__construct($context);
     }
 

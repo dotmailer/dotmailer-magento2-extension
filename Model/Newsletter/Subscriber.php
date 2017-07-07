@@ -47,7 +47,7 @@ class Subscriber
     private $timezone;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $emailContactResource;
     /**
@@ -63,7 +63,7 @@ class Subscriber
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection
      * @param SubscriberExporter $subscriberExporter
      * @param SubscriberWithSalesExporter $subscriberWithSalesExporter
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
@@ -72,7 +72,7 @@ class Subscriber
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberExporter $subscriberExporter,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter,
-        \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResourceFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     ) {
         $this->helper            = $helper;
@@ -80,7 +80,7 @@ class Subscriber
         $this->orderCollection   = $orderCollection;
         $this->subscriberExporter = $subscriberExporter;
         $this->subscriberWithSalesExporter = $subscriberWithSalesExporter;
-        $this->emailContactResource = $contactResourceFactory;
+        $this->emailContactResource = $contactResource;
         $this->timezone = $timezone;
     }
 
@@ -241,7 +241,7 @@ class Subscriber
         }
         //Mark suppressed contacts
         if (! empty($suppressedEmails)) {
-            $this->emailContactResource->create()->unsubscribe($suppressedEmails);
+            $this->emailContactResource->unsubscribe($suppressedEmails);
         }
         return $result;
     }
