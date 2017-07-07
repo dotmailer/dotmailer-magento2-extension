@@ -37,9 +37,9 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
      */
     public $orderFactory;
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $contactResourceFactory;
+    public $contactResource;
     /**
      * @var \Magento\Framework\App\ResourceConnection | \PHPUnit_Framework_MockObject_MockObject
      */
@@ -58,9 +58,9 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     public $_orderSync;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory \PHPUnit_Framework_MockObject_MockObject
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order \PHPUnit_Framework_MockObject_MockObject
      */
-    public $orderResourceFactory;
+    public $orderResource;
 
     public function setUp()
     {
@@ -68,8 +68,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->account = ObjectManager::getInstance()->get('Dotdigitalgroup\Email\Model\Connector\AccountFactory');
         $this->orderFactory = $this->getMock('Dotdigitalgroup\Email\Model\OrderFactory', [], [], '', false);
         $this->connectorOrderFactory = $this->getMock('Dotdigitalgroup\Email\Model\Connector\OrderFactory', [], [], '', false);
-        $this->contactResourceFactory = ObjectManager::getInstance()->get('Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory');
-        $this->orderResourceFactory = ObjectManager::getInstance()->get('Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory');
+        $this->contactResource = ObjectManager::getInstance()->get('Dotdigitalgroup\Email\Model\ResourceModel\Contact');
+        $this->orderResource = ObjectManager::getInstance()->get('Dotdigitalgroup\Email\Model\ResourceModel\Order');
         $this->helper = $this->getMock('Dotdigitalgroup\Email\Helper\Data', [], [], '', false);
         $this->salesOrderFactory = $this->getMock('Magento\Sales\Model\OrderFactory', [], [], '', false);
         $this->storeManager = ObjectManager::getInstance()->get('\Magento\Store\Model\StoreManagerInterface');
@@ -79,8 +79,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             $this->orderFactory,
             $this->account,
             $this->connectorOrderFactory,
-            $this->contactResourceFactory,
-            $this->orderResourceFactory,
+            $this->contactResource,
+            $this->orderResource,
             $this->helper,
             $this->salesOrderFactory,
             $this->storeManager);
