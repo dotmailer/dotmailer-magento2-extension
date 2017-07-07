@@ -83,9 +83,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $serializer;
 
     /**
+     * @var \Magento\Quote\Model\ResourceModel\Quote
+     */
+    private $quoteResource;
+
+    /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
-    protected $quoteFactory;
+    private $quoteFactory;
+
+    /**
+     * @var \Magento\User\Model\ResourceModel\User
+     */
+    private $userResource;
 
     /**
      * Data constructor.
@@ -104,7 +114,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param ConfigFactory $configHelperFactory
      * @param Json $serilizer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
+     * @param \Magento\User\Model\ResourceModel\User $userResource
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -122,7 +134,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
         \Dotdigitalgroup\Email\Model\Config\Json $serilizer,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
-        \Magento\Quote\Model\QuoteFactory $quoteFactory
+        \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Magento\User\Model\ResourceModel\User $userResource
     ) {
         $this->serializer       = $serilizer;
         $this->adapter          = $adapter;
@@ -137,7 +151,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->clientFactory = $clientFactory;
         $this->configHelperFactory = $configHelperFactory;
         $this->datetime = $dateTime;
+        $this->quoteResource = $quoteResource;
         $this->quoteFactory = $quoteFactory;
+        $this->userResource = $userResource;
 
         parent::__construct($context);
         $this->fileHelper = $fileHelper;
@@ -1662,8 +1678,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function setRefreshTokenForUser($adminUser, $token)
     {
-        $adminUser->setRefreshToken($token)
-            ->save();
+        $adminUser = $adminUser->setRefreshToken($token);
+        $this->userResource->save($adminUser);
     }
 
     /**
@@ -1673,7 +1689,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getQuoteAllItemsFor($quoteId)
     {
         $quoteModel = $this->quoteFactory->create();
-        $quoteModel->getResource()->load($quoteModel, $quoteId);
+        $this->quoteResource->load($quoteModel, $quoteId);
         $quoteItems = $quoteModel->getAllItems();
 
         return $quoteItems;
