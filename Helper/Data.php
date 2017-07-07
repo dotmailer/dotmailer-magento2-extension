@@ -1689,7 +1689,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getQuoteAllItemsFor($quoteId)
     {
         $quoteModel = $this->quoteFactory->create();
-        $this->quoteResource->load($quoteModel, $quoteId, 'entity_id');
+        $this->quoteResource->load($quoteModel, $quoteId);
         $quoteItems = $quoteModel->getAllItems();
 
         return $quoteItems;
