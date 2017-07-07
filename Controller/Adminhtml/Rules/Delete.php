@@ -16,16 +16,22 @@ class Delete extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
+     */
+    private $rulesResource;
 
     /**
      * Delete constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
      * @param \Magento\Backend\App\Action\Context        $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Model\Rules         $rules
      * @param \Magento\Framework\Escaper                 $escaper
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\Rules $rules,
@@ -35,6 +41,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
         $this->rules        = $rules;
         $this->storeManager = $storeManagerInterface;
         $this->escaper      = $escaper;
+        $this->rulesResource = $rulesResource;
     }
 
     /**
@@ -57,7 +64,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
             try {
                 $model = $this->rules;
                 $model->setId($id);
-                $model->getResource()->delete($model);
+                $this->rulesResource->delete($model);
                 $this->messageManager->addSuccessMessage(
                     __('The rule has been deleted.')
                 );
