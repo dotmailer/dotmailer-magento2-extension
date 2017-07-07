@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="Magento\Framework\Mail\Transport" type="Dotdigitalgroup\Email\Model\Mail\Transport"/>
-    <preference for="Magento\SalesRule\Model\ResourceModel\Rule\Collection" type="Dotdigitalgroup\Email\Model\SalesRule\Collection"/>
     <type name="Magento\Sales\Model\Order\CustomerManagement">
         <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagement" sortOrder="1"/>
     </type>
@@ -13,6 +11,12 @@
     </type>
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon">
         <plugin name="ddg_sales_coupon_expiration_date" type="Dotdigitalgroup\Email\Plugin\CouponPlugin" sortOrder="10" disabled="false"/>
+    </type>
+    <type name="Magento\Framework\Mail\Transport">
+        <plugin name="ddg_mail_transport" type="Dotdigitalgroup\Email\Plugin\TransportPlugin" sortOrder="1" disabled="false" />
+    </type>
+    <type name="Magento\SalesRule\Model\ResourceModel\Rule\Collection">
+        <plugin name="ddg_sales_rule_collection" type="Dotdigitalgroup\Email\Plugin\RuleCollectionPlugin"/>
     </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
@@ -44,11 +48,6 @@
             <argument name="parameters" xsi:type="null"/>
         </arguments>
     </virtualType>
-    <type name="Dotdigitalgroup\Email\Model\Mail\Transport">
-        <arguments>
-            <argument name="sendmail" xsi:type="object">dotdigitalgroupZendMailTransportSendmail</argument>
-        </arguments>
-    </type>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
