@@ -30,8 +30,7 @@
                 <?php  echo $block->escapeHtml(__('Magento Version ')) ?>:
             </strong>
         </th>
-        <?php $mageVersionEdition = $block->getMagentoVersion()  .  '  ' . $block->getMagentoEdition(); ?>
-        <td><?php echo $block->escapeHtml($mageVersionEdition) ?></td>
+        <td><?php echo $block->escapeHtml($block->getMagentoVersion()) ?></td>
     </tr>
     <tr>
         <th>
