@@ -15,19 +15,11 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * @var \Magento\Customer\Model\SessionFactory
      */
-    private $sessionFactory;
-    /**
-     * @var \Magento\Checkout\Model\SessionFactory
-     */
     private $checkoutSession;
     /**
      * @var \Magento\Quote\Model\Quote
      */
     private $quote;
-    /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote
-     */
-    private $quoteResource;
 
     /**
      * Getbasket constructor.
@@ -35,20 +27,15 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
-     * @param \Magento\Customer\Model\SessionFactory $sessionFactory
-     * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
-        \Magento\Customer\Model\SessionFactory $sessionFactory,
-        \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Framework\App\Action\Context $context
     ) {
         $this->checkoutSession = $checkoutSessionFactory;
-        $this->sessionFactory  = $sessionFactory;
         $this->quoteFactory    = $quoteFactory;
         $this->quoteResource = $quoteResource;
         parent::__construct($context);
@@ -91,7 +78,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     private function handleCustomerBasket()
     {
         /** @var \Magento\Customer\Model\Session $customerSession */
-        $customerSession = $this->sessionFactory->create();
+        $customerSession = $this->checkoutSession->create();
         $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL
         );

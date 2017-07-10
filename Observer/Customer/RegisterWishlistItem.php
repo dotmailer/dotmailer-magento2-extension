@@ -10,6 +10,10 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
+    private $emailWishlistResource;
+    /**
+     * @var \Magento\Wishlist\Model\ResourceModel\Wishlist
+     */
     private $wishlistResource;
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -23,10 +27,6 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
     private $wishlist;
-    /**
-     * @var \Magento\Wishlist\Model\ResourceModel\Wishlist
-     */
-    private $wishlistResource;
 
     /**
      * RegisterWishlistItem constructor.
@@ -34,21 +34,21 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Wishlist\Model\ResourceModel\Wishlist $wishlistResource
      * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Wishlist $wishlistResource,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->wishlist        = $wishlist;
         $this->wishlistFactory = $wishlistFactory;
         $this->wishlistResource = $wishlistResource;
         $this->helper          = $data;
-        $this->wishlistResource = $wishlistResource;
+        $this->emailWishlistResource = $emailWishlistResource;
     }
 
     /**
@@ -82,7 +82,7 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
                         $item->setWishlistModified(1);
                     }
 
-                    $this->wishlistResource->save($item);
+                    $this->emailWishlistResource->save($item);
                 }
             }
         } catch (\Exception $e) {

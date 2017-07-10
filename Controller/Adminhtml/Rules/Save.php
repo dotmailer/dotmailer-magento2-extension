@@ -20,24 +20,19 @@ class Save extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
-     */
-    private $rulesResource;
 
     /**
      * Save constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
-     * @param \Magento\Backend\App\Action\Context        $context
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory  $rulesFactory
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Escaper $escaper
@@ -47,7 +42,6 @@ class Save extends \Magento\Backend\App\AbstractAction
         $this->ruleFactory  = $rulesFactory;
         $this->storeManager = $storeManagerInterface;
         $this->escaper      = $escaper;
-        $this->rulesResource = $rulesResource;
     }
 
     /**

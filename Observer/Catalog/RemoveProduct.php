@@ -39,9 +39,9 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * RemoveProduct constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog                   $catalogResource
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                         $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\CatalogFactory                          $catalogFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -62,7 +62,6 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
         $this->catalogFactory    = $catalogFactory;
         $this->catalogCollection = $catalogCollectionFactory;
         $this->storeManager      = $storeManagerInterface;
-        $this->catalogResource   = $catalogResource;
     }
 
     /**
