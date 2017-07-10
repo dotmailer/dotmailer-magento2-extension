@@ -50,7 +50,7 @@ class TransportPlugin
     /**
      * @param TransportInterface $subject
      * @param \Closure $proceed
-     * @throws \Magento\Framework\Exception\MailException
+     * @throws \Exception
      */
     public function aroundSendMessage(
         TransportInterface $subject,
@@ -60,10 +60,7 @@ class TransportPlugin
             try {
                 $this->smtp->send($this->message);
             } catch (\Exception $e) {
-                throw new \Magento\Framework\Exception\MailException(
-                    __($e->getMessage()),
-                    $e
-                );
+                throw new \Exception($e->getMessage());
             }
         } else {
             $proceed();
