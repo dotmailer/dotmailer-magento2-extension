@@ -141,9 +141,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         } else {
             $this->setUpdatedAt(time());
         }
-        $this->setConditions($this->serializer->serialize($this->getCondition()));
+        $this->setConditions($this->serializer->serialize($this->getConditions()));
         $this->setWebsiteIds(implode(',', $this->getWebsiteIds()));
-
         return $this;
     }
 
