@@ -61,9 +61,9 @@ class Save extends \Magento\Backend\App\AbstractAction
     {
         if ($this->getRequest()->getParams()) {
             $data = $this->getRequest()->getParams();
+            $id = $this->getRequest()->getParam('id');
             try {
                 $ruleModel = $this->ruleFactory->create();
-                $id = $data['id'];
 
                 if ($data['website_ids']) {
                     foreach ($data['website_ids'] as $websiteId) {
@@ -83,13 +83,12 @@ class Save extends \Magento\Backend\App\AbstractAction
                                     . '. You can only have one rule per website.'
                                 )
                             );
-                            $this->_redirect(
+                            return $this->_redirect(
                                 '*/*/edit',
                                 [
                                     'id' => $id
                                 ]
                             );
-                            return;
                         }
                     }
                 }
@@ -97,15 +96,11 @@ class Save extends \Magento\Backend\App\AbstractAction
                 $this->rulesResource->load($ruleModel, $id);
 
                 if ($id != $ruleModel->getId()) {
-                    throw new \Magento\Framework\Exception\LocalizedException(
-                        __('Wrong rule specified.')
-                    );
+                    $this->messageManager->addErrorMessage('Wrong rule specified.');
+                    return $this->_redirect('*/*/');
                 }
 
-                $this->evaluateRequestParams($data, $ruleModel);
-
-                $this->_getSession()->setPageData($ruleModel->getData());
-
+                $ruleModel = $this->evaluateRequestParams($data, $ruleModel);
                 $this->rulesResource->save($ruleModel);
 
                 $this->messageManager->addSuccessMessage(
@@ -113,32 +108,16 @@ class Save extends \Magento\Backend\App\AbstractAction
                 );
                 $this->_getSession()->setPageData(false);
                 if ($this->getRequest()->getParam('back')) {
-                    $this->_redirect(
+                    return $this->_redirect(
                         '*/*/edit',
                         ['id' => $ruleModel->getId()]
                     );
-
-                    return;
                 }
-                $this->_redirect('*/*/');
-
-                return;
             } catch (\Exception $e) {
-                $this->messageManager->addErrorMessage(
-                    __(
-                        'An error occurred while saving the rule data. Please review the log and try again.'
-                    )
-                );
-                $this->_getSession()->setPageData($data);
-                $this->_redirect(
-                    '*/*/edit',
-                    ['id' => $id]
-                );
-
-                return;
+                $this->messageManager->addErrorMessage($e->getMessage());
             }
         }
-        $this->_redirect('*/*/');
+        return $this->_redirect('*/*/');
     }
 
     /**
@@ -148,14 +127,18 @@ class Save extends \Magento\Backend\App\AbstractAction
     private function evaluateRequestParams($data, $ruleModel)
     {
         foreach ($data as $key => $value) {
-            if ($key != 'form_key') {
+            if ($key !== 'form_key' && $key !== 'key' && $key !== 'active_tab') {
                 if ($key == 'condition') {
                     if (is_array($value)) {
                         unset($value['__empty']);
                     }
+                    $ruleModel->setData('conditions', $value);
+                } else {
+                    $ruleModel->setData($key, $value);
                 }
-                $ruleModel->setData($key, $value);
             }
         }
+
+        return $ruleModel;
     }
 }
