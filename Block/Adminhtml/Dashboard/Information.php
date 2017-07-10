@@ -77,7 +77,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     }
 
     /**
-     * Mgento version
+     * Magento version
      * @return \Magento\Framework\Phrase | string
      */
     public function getMagentoVersion()
@@ -85,16 +85,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         $productMetadata = $this->productMetadata;
 
         return $this->escapeHtml(__('ver. %1', $productMetadata->getVersion()));
-    }
-
-    /**
-     * @return string
-     */
-    public function getMagentoEdition()
-    {
-        $productMetadata = $this->productMetadata;
-
-        return $productMetadata->getEdition();
     }
 
     /**
