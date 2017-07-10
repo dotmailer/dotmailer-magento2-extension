@@ -60,6 +60,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
         $this->helper            = $data;
         $this->scopeConfig       = $scopeConfig;
         $this->catalogFactory    = $catalogFactory;
+        $this->catalogResource   = $catalogResource;
         $this->catalogCollection = $catalogCollectionFactory;
         $this->storeManager      = $storeManagerInterface;
     }
