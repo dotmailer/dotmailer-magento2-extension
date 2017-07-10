@@ -54,8 +54,8 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
             $this->objectManager->create('Dotdigitalgroup\Email\Model\OrderFactory'),
             $this->objectManager->create('Dotdigitalgroup\Email\Model\Connector\AccountFactory'),
             $this->objectManager->create('Dotdigitalgroup\Email\Model\Connector\OrderFactory'),
-            $this->objectManager->create('Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory'),
-            $this->objectManager->create('Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory'),
+            $this->objectManager->create('Dotdigitalgroup\Email\Model\ResourceModel\Contact'),
+            $this->objectManager->create('Dotdigitalgroup\Email\Model\ResourceModel\Order'),
             $helper,
             $this->objectManager->create('Magento\Sales\Model\OrderFactory'),
             $this->objectManager->create('\Magento\Store\Model\StoreManagerInterface')

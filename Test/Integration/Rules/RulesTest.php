@@ -164,7 +164,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         ];
 
         $rule->setData('website_ids', $this->getWebsiteIdsFromRule($rule));
-        $rule->setData('condition', $conditions);
+        $rule->setData('conditions', $conditions);
 
         /** @var RulesResource $rulesResource */
         $rulesResource = ObjectManager::getInstance()->get(RulesResource::class);
