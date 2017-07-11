@@ -57,11 +57,7 @@ class TransportPlugin
         \Closure $proceed
     ) {
         if ($this->helper->isEnabled()) {
-            try {
-                $this->smtp->send($this->message);
-            } catch (\Exception $e) {
-                throw new \Exception($e->getMessage());
-            }
+            $this->smtp->send($this->message);
         } else {
             $proceed();
         }
