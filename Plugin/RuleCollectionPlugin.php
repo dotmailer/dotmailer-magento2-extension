@@ -27,15 +27,20 @@ class RuleCollectionPlugin
     }
 
     /**
-     * @param $subject
+     * @param \Magento\SalesRule\Model\ResourceModel\Rule\Collection $subject
      * @param $result
      * @param $websiteId
      * @param $customerGroupId
      * @param $couponCode
      * @return mixed
      */
-    public function afterSetValidationFilter($subject, $result, $websiteId, $customerGroupId, $couponCode)
-    {
+    public function afterSetValidationFilter(
+        \Magento\SalesRule\Model\ResourceModel\Rule\Collection $subject,
+        $result,
+        $websiteId,
+        $customerGroupId,
+        $couponCode
+    ) {
         $now = $this->date->date()->format('Y-m-d');
         $select = $subject->getSelect();
 
