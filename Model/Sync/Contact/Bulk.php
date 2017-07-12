@@ -10,15 +10,17 @@ class Bulk
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    protected $helper;
+
     /**
      * @var
      */
-    public $client;
+    protected $client;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
-    public $contactFactory;
+    private $contactFactory;
     /**
      * @var \Dotdigitalgroup\Email\Model\Config\Json
      */
