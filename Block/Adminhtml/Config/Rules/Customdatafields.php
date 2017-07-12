@@ -8,26 +8,28 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * @var
      */
-    public $getAttributeRenderer;
+    protected $getAttributeRenderer;
 
     /**
      * @var
      */
-    public $getConditionsRenderer;
+    protected $getConditionsRenderer;
 
     /**
      * @var
      */
-    public $getValueRenderer;
+    private $getValueRenderer;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
      */
-    public $condition;
+    private $condition;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
-    public $value;
+    private $value;
+
     /**
      * @var string
      */
