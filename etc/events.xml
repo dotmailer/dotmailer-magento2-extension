@@ -39,9 +39,6 @@
     <event name="core_config_data_save_after">
         <observer name="ddg_config_save_after" instance="Dotdigitalgroup\Email\Observer\Catalog\ResetCatalogContactImport"/>
     </event>
-    <event name="catalog_product_save_after">
-        <observer name="ddg_catalog_product_save_after" instance="Dotdigitalgroup\Email\Observer\Catalog\ReimportProduct"/>
-    </event>
     <event name="catalog_product_delete_after">
         <observer name="ddg_catalog_product_delete_after" instance="Dotdigitalgroup\Email\Observer\Catalog\RemoveProduct"/>
     </event>
