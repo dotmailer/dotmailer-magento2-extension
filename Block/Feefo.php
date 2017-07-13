@@ -3,17 +3,18 @@
 namespace Dotdigitalgroup\Email\Block;
 
 use DOMDocument;
+use Magento\Quote\Model\ResourceModel\Quote;
 use XSLTProcessor;
 
 const FEEFO_URL = 'http://www.feefo.com/feefo/xmlfeed.jsp?';
 
 class Feefo extends \Magento\Framework\View\Element\Template
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
@@ -26,14 +27,22 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @var XSLTProcessor
      */
     public $processor;
+
+    /**
+     * @var Quote
+     */
+    private $quoteResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
     private $review;
+
     /**
      * @var \Magento\Framework\View\Asset\Repository
      */
     private $assetRepository;
+
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
@@ -48,6 +57,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
+     * @param Quote $quoteResource
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param array $data
      */
@@ -58,6 +68,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
+        \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         array $data = []
     ) {
@@ -68,6 +79,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $this->review = $review;
         $this->assetRepository = $context->getAssetRepository();
         $this->quoteFactory = $quoteFactory;
+        $this->quoteResource = $quoteResource;
         parent::__construct($context, $data);
     }
 
@@ -116,8 +128,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $quoteId = (int) $params['quote_id'];
 
         $quoteModel = $this->quoteFactory->create();
-        $quoteModel->getResource()
-            ->load($quoteModel, $quoteId);
+        $this->quoteResource->load($quoteModel, $quoteId);
 
         if (! $quoteModel->getId()) {
             return $products;

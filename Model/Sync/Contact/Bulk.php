@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 class Bulk
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
+     */
+    protected $importerResource;
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $helper;
