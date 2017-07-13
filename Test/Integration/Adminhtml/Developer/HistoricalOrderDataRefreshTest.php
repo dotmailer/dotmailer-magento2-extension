@@ -209,7 +209,7 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
 
     public function emptyTable()
     {
-        $resourceModel = $this->objectManager->crate(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class);
+        $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class);
         $resourceModel->getConnection()->truncateTable($resourceModel->getMainTable());
     }
 }
