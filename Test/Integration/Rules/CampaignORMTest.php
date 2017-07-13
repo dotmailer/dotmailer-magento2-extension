@@ -2,12 +2,18 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection as CampaignCollection;
 use Magento\Framework\App\ResourceConnection;
 use Magento\TestFramework\ObjectManager;
 
 class CampaignORMTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
+     */
+    protected $campaignResource;
+
     /**
      * @return Campaign
      */
@@ -27,7 +33,7 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
         $model->setData('email', $email);
         $model->setData('customer_id', $customerId);
         $model->setData('message', 'Test Message');
-        $model->getResource()->save($model);
+        $this->campaignResource->save($model);
         return $model;
     }
 
@@ -41,8 +47,9 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
     {
         /** @var CampaignCollection $collection */
         $collection = ObjectManager::getInstance()->create(CampaignCollection::class);
+        $this->campaignResource = ObjectManager::getInstance()->create(\Dotdigitalgroup\Email\Model\ResourceModel\Campaign::class);
         $collection->walk(function (Campaign $campaign) {
-            $campaign->getResource()->delete($campaign);
+            $this->campaignResource->delete($campaign);
         });
     }
 
@@ -62,7 +69,7 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
         $model = $this->createCampaign('1', 'test@example.com');
 
         $loadedModel = $this->createCampaignModel();
-        $loadedModel->getResource()->load($loadedModel, $model->getId());
+        $this->campaignResource->load($loadedModel, $model->getId());
 
         $this->assertNotNull($model->getId());
         $this->assertSame($model->getData('email'), $loadedModel->getData('email'));
@@ -94,7 +101,7 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
         $model = $this->createCampaign(1, 'foo@example.com');
         $model->setData('store_id', $storeId);
         $model->setData('quote_id', $dummyQuoteId);
-        $model->getResource()->save($model);
+        $this->campaignResource->save($model);
 
         /** @var Campaign $emptyModel */
         $emptyModel = ObjectManager::getInstance()->create(Campaign::class);

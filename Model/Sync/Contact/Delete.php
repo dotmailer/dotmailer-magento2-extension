@@ -54,7 +54,7 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
                     ->setImportStarted(time())
                     ->setMessage('');
             }
-            $item->getResource()->save($item);
+            $this->importerResource->save($item);
         }
     }
 }

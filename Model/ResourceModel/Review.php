@@ -2,32 +2,45 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Magento\Review\Model\ResourceModel\Rating\Option;
+
 class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
     public $mageReviewCollection;
+
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
     public $productFactory;
+
     /**
      * @var \Magento\Review\Model\Rating\Option\Vote
      */
     public $vote;
+
+    /**
+     * @var Option\Vote\Collection
+     */
+    private $voteCollectionResource;
+
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
     private $quoteFactory;
+
     /**
      * @var \Magento\Review\Model\ReviewFactory
      */
     private $reviewFactory;
+
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
@@ -51,6 +64,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param Option\Vote\Collection $voteCollectionResource
      * @param \Magento\Review\Model\Rating\Option\Vote $vote
      * @param null $connectionName
      */
@@ -62,6 +76,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection,
         \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Review\Model\ResourceModel\Rating\Option\Vote\Collection $voteCollectionResource,
         \Magento\Review\Model\Rating\Option\Vote $vote,
         $connectionName = null
     ) {
@@ -71,6 +86,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->vote = $vote;
         $this->quoteFactory = $quoteFactory;
         $this->reviewFactory = $reviewFactory;
+        $this->voteCollectionResource = $voteCollectionResource;
         $this->productCollection = $productCollectionFactory;
         parent::__construct(
             $context,
@@ -232,15 +248,14 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get vote collection by review
+     * Get vote collection by review.
      *
      * @param $reviewId
      * @return mixed
      */
     public function getVoteCollectionByReview($reviewId)
     {
-        $votesCollection = $this->vote
-            ->getResourceCollection()
+        $votesCollection = $this->voteCollectionResource
             ->setReviewFilter($reviewId);
 
         $votesCollection->getSelect()->join(

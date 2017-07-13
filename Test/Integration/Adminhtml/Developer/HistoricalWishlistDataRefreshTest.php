@@ -207,7 +207,7 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
 
     public function emptyTable()
     {
-        $model = $this->objectManager->create($this->model);
-        $model->getResource()->getConnection()->truncateTable($model->getResource()->getMainTable());
+        $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Wishlist::class);
+        $resourceModel->getConnection()->truncateTable($resourceModel->getMainTable());
     }
 }
