@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+/**
+ * Class Createdatafield
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config
+ */
 class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**
@@ -26,7 +30,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @return $this
      */
-    public function _prepareLayout()
+    public function _prepareLayout()  //@codingStandardsIgnoreLine
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
@@ -43,7 +47,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    public function _getElementHtml(
+    public function _getElementHtml(  //@codingStandardsIgnoreLine
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $originalData = $element->getOriginalData();
@@ -84,7 +88,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getAddRowButtonHtml($title)
+    public function _getAddRowButtonHtml($title) //@codingStandardsIgnoreLine
     {
         return $this->getLayout()->createBlock('adminhtml/widget_button')
             ->setType('button')

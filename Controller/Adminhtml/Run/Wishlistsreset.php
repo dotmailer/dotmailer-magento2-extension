@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class Wishlistsreset
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class Wishlistsreset extends \Magento\Backend\App\AbstractAction
 {
     /**
@@ -70,7 +74,7 @@ class Wishlistsreset extends \Magento\Backend\App\AbstractAction
     /**
      * @return bool
      */
-    public function _isAllowed()
+    public function _isAllowed() //@codingStandardsIgnoreLine
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }

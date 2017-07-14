@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Rest
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 abstract class Rest
 {
     /**
@@ -60,8 +64,8 @@ abstract class Rest
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
-        $website = 0,
-        \Dotdigitalgroup\Email\Helper\Data $data
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        $website = 0
     ) {
         $this->helper        = $data;
         $this->url           = null;

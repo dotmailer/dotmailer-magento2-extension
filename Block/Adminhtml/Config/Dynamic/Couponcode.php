@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
+/**
+ * Class Couponcode
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic
+ */
 class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
 {
 
@@ -30,7 +34,7 @@ class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    public function _getElementHtml(
+    public function _getElementHtml( //@codingStandardsIgnoreLine
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //base url

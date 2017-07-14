@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
 use Magento\Backend\App\Action\Context;
 
+/**
+ * Class Ajax
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Rules
+ */
 class Ajax extends \Magento\Backend\App\AbstractAction
 {
     /**
@@ -60,7 +64,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    public function _isAllowed() //@codingStandardsIgnoreLine
     {
         return $this->_authorization->isAllowed(
             'Dotdigitalgroup_Email::exclusion_rules'
@@ -113,7 +117,7 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      *
      * @return string
      */
-    public function _getOptionHtml($title, $name, $options)
+    public function _getOptionHtml($title, $name, $options) //@codingStandardsIgnoreLine
     {
         $block = $this->_view->getLayout()->createBlock(
             'Magento\Framework\View\Element\Html\Select'

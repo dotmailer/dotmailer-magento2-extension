@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Class Wishlistproducts
+ * @package Dotdigitalgroup\Email\Block\Recommended
+ */
 class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -65,7 +69,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    public function _getWishlistItems()
+    public function _getWishlistItems() //@codingStandardsIgnoreLine
     {
         $wishlist = $this->_getWishlist();
         if ($wishlist && ! empty($wishlist->getItemCollection())) {
@@ -80,7 +84,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array|\Magento\Framework\DataObject
      */
-    public function _getWishlist()
+    public function _getWishlist() //@codingStandardsIgnoreLine
     {
         $customerId = $this->getRequest()->getParam('customer_id');
         if (!$customerId) {
@@ -146,7 +150,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             //check for product exists
             if ($product->getId()) {
                 //get single product for current mode
-                $recommendedProducts = $this->_getRecommendedProduct(
+                $recommendedProducts = $this->getRecommendedProduct(
                     $product,
                     $mode
                 );
@@ -210,7 +214,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    public function _getRecommendedProduct($productModel, $mode)
+    public function getRecommendedProduct($productModel, $mode)  //@codingStandardsIgnoreLine
     {
         //array of products to display
         $products = [];

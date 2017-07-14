@@ -10,7 +10,7 @@ class Rules extends \Magento\Backend\Block\Widget\Grid\Container
     /**
      * Constructor.
      */
-    public function _construct()
+    public function _construct()  //@codingStandardsIgnoreLine
     {
         $this->_controller = 'adminhtml_rules';
         $this->_blockGroup = 'Dotdigitalgroup_Email';

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Dashboard;
 
+/**
+ * Class Configuration
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Dashboard
+ */
 class Configuration extends \Magento\Config\Block\System\Config\Edit
 {
 
@@ -32,7 +36,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     /**
      * @return $this
      */
-    public function _prepareLayout()
+    public function _prepareLayout()  //@codingStandardsIgnoreLine
     {
         $this->_prepareRequestParams();
         parent::_prepareLayout();
@@ -43,7 +47,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     /**
      *
      */
-    public function _prepareRequestParams()
+    public function _prepareRequestParams()  //@codingStandardsIgnoreLine
     {
         $this->originalParams = $this->getRequest()->getParam('section');
         
@@ -53,7 +57,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     /**
      *
      */
-    public function _resetRequestParams()
+    public function _resetRequestParams()  //@codingStandardsIgnoreLine
     {
         $this->getRequest()->setParam('section', $this->originalParams);
     }

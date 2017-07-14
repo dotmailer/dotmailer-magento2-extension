@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
+/**
+ * Class Bulk
+ * @package Dotdigitalgroup\Email\Model\Sync\Contact
+ */
 class Bulk
 {
     /**
@@ -51,7 +55,7 @@ class Bulk
             if ($this->helper->isEnabled($websiteId)) {
                 $this->client = $this->helper->getWebsiteApiClient($websiteId);
 
-                $addressBook = $this->_getAddressBook(
+                $addressBook = $this->getAddressBook(
                     $item->getImportType(),
                     $websiteId
                 );
@@ -63,7 +67,7 @@ class Bulk
                         $addressBook
                     );
 
-                    $this->_handleItemAfterSync($item, $result);
+                    $this->handleItemAfterSync($item, $result);
                 }
             }
         }
@@ -77,7 +81,7 @@ class Bulk
      *
      * @return mixed|string
      */
-    public function _getAddressBook($importType, $websiteId)
+    public function getAddressBook($importType, $websiteId)
     {
         switch ($importType) {
             case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT:
@@ -104,9 +108,9 @@ class Bulk
      * @param $item
      * @param $result
      */
-    public function _handleItemAfterSync($item, $result)
+    public function handleItemAfterSync($item, $result)
     {
-        $curlError = $this->_checkCurlError($item);
+        $curlError = $this->checkCurlError($item);
 
         if (!$curlError) {
             if (isset($result->message) && !isset($result->id)) {
@@ -140,7 +144,7 @@ class Bulk
      *
      * @return bool
      */
-    public function _checkCurlError($item)
+    public function checkCurlError($item)
     {
         //if curl error 28
         $curlError = $this->client->getCurlError();

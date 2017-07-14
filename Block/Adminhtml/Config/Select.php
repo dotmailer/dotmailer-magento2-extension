@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+/**
+ * Class Select
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config
+ */
 class Select extends \Magento\Framework\View\Element\Html\Select
 {
     /**
@@ -9,7 +13,7 @@ class Select extends \Magento\Framework\View\Element\Html\Select
      *
      * @return string
      */
-    public function _toHtml()
+    public function _toHtml() //@codingStandardsIgnoreLine
     {
         return trim(preg_replace('/\s+/', ' ', parent::_toHtml()));
     }

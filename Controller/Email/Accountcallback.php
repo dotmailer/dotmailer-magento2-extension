@@ -2,9 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
+/**
+ * Class Accountcallback
+ * @package Dotdigitalgroup\Email\Controller\Email
+ */
 class Accountcallback extends \Magento\Framework\App\Action\Action
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -62,7 +65,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
 
         //if no value to any of the required params send error response
         if (empty($params['apiUser']) or empty($params['pass'])) {
-            $this->sendAjaxResponse(true, $this->_getErrorHtml());
+            $this->sendAjaxResponse(true, $this->getErrorHtml());
         } else {
             //Save api end point
             if (isset($params['apiEndpoint'])) {
@@ -77,9 +80,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             $syncStatus = $this->trialSetup->enableSyncForTrial();
 
             if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
-                $this->sendAjaxResponse(false, $this->_getSuccessHtml());
+                $this->sendAjaxResponse(false, $this->getSuccessHtml());
             } else {
-                $this->sendAjaxResponse(true, $this->_getErrorHtml());
+                $this->sendAjaxResponse(true, $this->getErrorHtml());
             }
         }
     }
@@ -109,7 +112,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      *
      * @return string
      */
-    protected function _getSuccessHtml()
+    protected function getSuccessHtml()
     {
         return
             "<div class='modal-page'>
@@ -127,7 +130,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      *
      * @return string
      */
-    protected function _getErrorHtml()
+    protected function getErrorHtml()
     {
         return
             "<div class='modal-page'>

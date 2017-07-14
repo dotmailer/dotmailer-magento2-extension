@@ -6,6 +6,8 @@ use Magento\Quote\Model\Quote;
 use Magento\TestFramework\ObjectManager;
 
 /**
+ * Class RunTest
+ * @package Dotdigitalgroup\Email\Test\Integration\Sales
  * @magentoDBIsolation disabled
  */
 class RunTest extends \PHPUnit_Framework_TestCase
@@ -29,7 +31,6 @@ class RunTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->objectManager = ObjectManager::getInstance();
-
     }
 
     public function tearDown()
@@ -53,7 +54,7 @@ class RunTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_3 1
      * magentoConfigFixture general/locale/timezone Australia/Melbourne
      */
-    public function test_can_find_guest_abandoned_carts()
+    public function test_can_find_guest_abandoned_carts() //@codingStandardsIgnoreLine
     {
         $quote = $this->createQuoteForGuests('15');
         /** @var \Dotdigitalgroup\Email\Model\Sales\Quote  $quote */
@@ -70,7 +71,7 @@ class RunTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store abandoned_carts/customers/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/customers/enabled_1 1
      */
-    public function test_can_find_customer_abandoned_carts()
+    public function test_can_find_customer_abandoned_carts() //@codingStandardsIgnoreLine
     {
         $quote = $this->createQuoteForCustomer($time = '15');
         $email = $quote->getCustomerEmail();
@@ -82,7 +83,6 @@ class RunTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $customerQuote->totalCustomers);
         $this->assertCollectionContains($quote);
-
     }
 
 
@@ -189,7 +189,6 @@ class RunTest extends \PHPUnit_Framework_TestCase
         $customer->isObjectNew(true);
         $customer->save();
 
-
         \Magento\TestFramework\Helper\Bootstrap::getInstance()->loadArea('frontend');
         $product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('Magento\Catalog\Model\Product');
         $product->setTypeId('simple')
@@ -259,10 +258,9 @@ class RunTest extends \PHPUnit_Framework_TestCase
         return $quote;
     }
 
-    private function assertCollectionContains( $expected)
+    private function assertCollectionContains($expected)
     {
         $message = sprintf('The quote with ID "%s" is not contained in the quote collection', $expected->getId());
         $this->assertContains($expected->getId(), $this->quoteCollection->getAllIds(), $message);
-
     }
 }

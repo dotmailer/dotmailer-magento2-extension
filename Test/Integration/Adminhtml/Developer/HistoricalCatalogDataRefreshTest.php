@@ -35,7 +35,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->dispatch($dispatchUrl);
     }
 
-    public function test_catalog_reset_successful_given_date_range()
+    public function test_catalog_reset_successful_given_date_range() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -53,10 +53,9 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->runReset('2017-02-09', '2017-02-10', $this->url);
 
         $this->assertEquals(1, $collection->getSize());
-
     }
 
-    public function test_catalog_reset_not_successful_wrong_date_range()
+    public function test_catalog_reset_not_successful_wrong_date_range() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -79,10 +78,9 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         );
 
         $this->assertEquals(0, $collection->getSize());
-
     }
 
-    public function test_catalog_reset_not_successful_invalid_date_range()
+    public function test_catalog_reset_not_successful_invalid_date_range() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -105,10 +103,9 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         );
 
         $this->assertEquals(0, $collection->getSize());
-
     }
 
-    public function test_catalog_full_reset_successful_without_date_range()
+    public function test_catalog_full_reset_successful_without_date_range() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -138,7 +135,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->assertEquals(2, $collection->getSize());
     }
 
-    public function test_catalog_full_reset_success_with_from_date_only()
+    public function test_catalog_full_reset_success_with_from_date_only() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -158,7 +155,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->assertEquals(1, $collection->getSize());
     }
 
-    public function test_catalog_full_reset_success_with_to_date_only()
+    public function test_catalog_full_reset_success_with_to_date_only() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 

@@ -9,7 +9,7 @@ abstract class Importer extends Action
     /**
      * @return bool
      */
-    protected function _isAllowed()
+    protected function _isAllowed() //@codingStandardsIgnoreLine
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::importer');
     }

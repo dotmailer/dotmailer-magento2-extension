@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 
 use Magento\TestFramework\Event\Magento;
 
+/**
+ * Class Getbasket
+ * @package Dotdigitalgroup\Email\Controller\Email
+ */
 class Getbasket extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -68,16 +72,16 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         $this->quote = $quoteModel;
 
         if ($quoteModel->getCustomerId()) {
-            return $this->_handleCustomerBasket();
+            return $this->handleCustomerBasket();
         } else {
-            return $this->_handleGuestBasket();
+            return $this->handleGuestBasket();
         }
     }
 
     /**
      * Process customer basket.
      */
-    public function _handleCustomerBasket()
+    public function handleCustomerBasket()
     {
         /** @var \Magento\Customer\Model\Session $customerSession */
         $customerSession = $this->sessionFactory->create();
@@ -94,7 +98,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             ) {
                 $quote = $checkoutSession->getQuote();
                 if ($this->quote->getId() != $quote->getId()) {
-                    $this->_checkMissingAndAdd();
+                    $this->checkMissingAndAdd();
                 }
             }
 
@@ -135,7 +139,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Check missing items from current quote and add.
      */
-    public function _checkMissingAndAdd()
+    public function checkMissingAndAdd()
     {
         /** @var \Magento\Checkout\Model\Session $checkoutSession */
         $checkoutSession = $this->checkoutSession->create();
@@ -161,7 +165,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Process guest basket.
      */
-    public function _handleGuestBasket()
+    public function handleGuestBasket()
     {
         $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL

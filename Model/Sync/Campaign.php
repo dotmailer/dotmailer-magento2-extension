@@ -73,14 +73,14 @@ class Campaign
     {
         foreach ($this->storeManager->getWebsites(true) as $website) {
             //check send status for processing
-            $this->_checkSendStatus($website);
+            $this->checkSendStatus($website);
             //@codingStandardsIgnoreStart
             //start send process
             $storeIds = $this->websiteFactory->create()
                 ->load($website->getId())
                 ->getStoreIds();
             //@codingStandardsIgnoreEnd
-            $emailsToSend = $this->_getEmailCampaigns($storeIds);
+            $emailsToSend = $this->getEmailCampaigns($storeIds);
             $campaignsToSend = [];
             foreach ($emailsToSend as $campaign) {
                 $email = $campaign->getEmail();
@@ -196,7 +196,7 @@ class Campaign
      * @param $sendIdCheck
      * @return mixed
      */
-    public function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
+    public function getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
     {
         $emailCollection = $this->campaignCollection->create()
             ->addFieldToFilter('send_status', $sendStatus)
@@ -222,12 +222,12 @@ class Campaign
     /**
      * @param $website
      */
-    public function _checkSendStatus($website)
+    public function checkSendStatus($website)
     {
         $storeIds = $this->websiteFactory->create()
             ->load($website->getId())
             ->getStoreIds();
-        $campaigns = $this->_getEmailCampaigns(
+        $campaigns = $this->getEmailCampaigns(
             $storeIds,
             \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
             true

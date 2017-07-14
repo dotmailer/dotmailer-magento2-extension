@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Report;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Report
+ */
 class Order extends \Magento\Config\Block\System\Config\Form\Field
 {
 
@@ -25,7 +29,7 @@ class Order extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Set template to itself.
      */
-    public function _prepareLayout()
+    public function _prepareLayout() //@codingStandardsIgnoreLine
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
@@ -67,7 +71,7 @@ class Order extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    public function _getElementHtml(
+    public function _getElementHtml( //@codingStandardsIgnoreLine
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $originalData = $element->getOriginalData();

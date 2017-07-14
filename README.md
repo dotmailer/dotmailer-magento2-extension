@@ -7,25 +7,6 @@
 
 Full support documentation and setup guides available here - https://support.dotmailer.com/hc/en-gb/categories/202610368-Magento
 
-## Contribution
-
-You are welcome to contribute to dotmailer for Magento! You can either:
-- Report a bug: create a [GitHub issue](https://github.com/dotmailer/dotmailer-magento2-extension/issues/new) including description, repro steps, Magento and extension version numbers
-- Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
-- Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
-
-## V2.2.1
-
-###### Bug fixes
-
- - We've fixed a styling issue that was not visible in the trial version pop-up window.
- - We've fixed a problem that had been adversely affecting the exclusion rules report table upon execution of a mass delete action.
- - We've refactored the code for trial accounts.
- - A fix has been implemented to prevent problems that were being experienced with OAUTH redirections.
- - Changes in 'Subscriber' status weren't being sent back to Magento from dotmailer; this has been fixed.
- - ‘First customer order’ automation programs were incorrectly firing more than once for customers; this no longer happens
- - Email capturing has been fixed to observe input for the entry fields; previously this hadn't been working as expected.
- 
 ## V2.2.0
 
 ###### Improvements

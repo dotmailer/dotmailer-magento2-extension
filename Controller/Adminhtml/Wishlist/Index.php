@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 
+/**
+ * Class Index
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist
+ */
 class Index extends \Magento\Backend\App\Action
 {
     /**
@@ -28,7 +32,7 @@ class Index extends \Magento\Backend\App\Action
      *
      * @return bool
      */
-    protected function _isAllowed()
+    protected function _isAllowed() //@codingStandardsIgnoreLine
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::wishlist');
     }

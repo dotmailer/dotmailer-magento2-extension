@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration;
 
+/**
+ * Class Colorpicker
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration
+ */
 class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
 {
     public $text;
@@ -25,7 +29,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return mixed|string
      */
-    public function _getElementHtml(
+    public function _getElementHtml( //@codingStandardsIgnoreLine
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         // Use Varien text element as a basis
@@ -53,7 +57,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    public function _getJs($htmlId)
+    public function _getJs($htmlId) //@codingStandardsIgnoreLine
     {
         return '<script type="text/javascript">
 			require([\'jquery\', \'domReady!\'], function($){

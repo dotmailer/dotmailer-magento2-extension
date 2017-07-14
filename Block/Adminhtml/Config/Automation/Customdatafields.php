@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation;
 
+/**
+ * Class Customdatafields
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation
+ */
 class Customdatafields extends
  \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
@@ -32,7 +36,7 @@ class Customdatafields extends
         parent::__construct($context, $data);
     }
 
-    public function _prepareToRender()
+    public function _prepareToRender() //@codingStandardsIgnoreLine
     {
         $this->_getStatusRenderer = null;
         $this->_getAutomationRenderer = null;
@@ -102,7 +106,7 @@ class Customdatafields extends
     /**
      * @param \Magento\Framework\DataObject $row
      */
-    public function _prepareArrayRow(\Magento\Framework\DataObject $row)
+    public function _prepareArrayRow(\Magento\Framework\DataObject $row) //@codingStandardsIgnoreLine
     {
         $optionExtraAttr = [];
         $optionExtraAttr['option_' . $this->_getStatusRenderer()
@@ -122,7 +126,7 @@ class Customdatafields extends
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getStatusRenderer()
+    public function _getStatusRenderer() //@codingStandardsIgnoreLine
     {
         $this->statusRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -138,7 +142,7 @@ class Customdatafields extends
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getAutomationRenderer()
+    public function _getAutomationRenderer() //@codingStandardsIgnoreLine
     {
         $this->automationRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -154,7 +158,7 @@ class Customdatafields extends
      *
      * @throws \Exception
      */
-    public function _toHtml()
+    public function _toHtml() //@codingStandardsIgnoreLine
     {
         return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
         . '"/>' . parent::_toHtml();

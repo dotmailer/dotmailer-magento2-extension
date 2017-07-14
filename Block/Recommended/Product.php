@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Class Product
+ * @package Dotdigitalgroup\Email\Block\Recommended
+ */
 class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -103,7 +107,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
             if ($productModel->getId()) {
                 //get single product for current mode
                 $recommendedProducts
-                    = $this->_getRecommendedProduct($productModel, $mode);
+                    = $this->getRecommendedProduct($productModel, $mode);
                 foreach ($recommendedProducts as $product) {
                     //check if still exists
                     if ($product->getId() && $productsToDisplayCounter < $limit
@@ -162,7 +166,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    public function _getRecommendedProduct($productModel, $mode)
+    public function getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = [];

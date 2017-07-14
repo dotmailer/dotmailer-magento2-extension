@@ -8,7 +8,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
     /**
      * @return $this
      */
-    public function _prepareForm()
+    public function _prepareForm() //@codingStandardsIgnoreLine
     {
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create(

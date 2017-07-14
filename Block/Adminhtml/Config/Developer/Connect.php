@@ -105,7 +105,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @return bool
      */
-    public function _isSecureUrl()
+    public function _isSecureUrl() //@codingStandardsIgnoreLine
     {
         $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
             \Magento\Framework\UrlInterface::URL_TYPE_WEB,

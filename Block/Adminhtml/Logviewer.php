@@ -3,7 +3,8 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Dashboard.
+ * Class Logviewer
+ * @package Dotdigitalgroup\Email\Block\Adminhtml
  */
 class Logviewer extends \Magento\Backend\Block\Widget\Container
 {
@@ -11,7 +12,7 @@ class Logviewer extends \Magento\Backend\Block\Widget\Container
     /**
      * @var string
      */
-    public $_template = 'log.phtml';
+    public $_template = 'log.phtml'; //@codingStandardsIgnoreLine
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
@@ -34,7 +35,7 @@ class Logviewer extends \Magento\Backend\Block\Widget\Container
         parent::__construct($context, $data);
     }
 
-    public function _construct()
+    public function _construct() //@codingStandardsIgnoreLine
     {
         $this->_blockGroup = 'Dotdigitalgroup_Email';
         $this->_controller = 'adminhtml_logviewer';

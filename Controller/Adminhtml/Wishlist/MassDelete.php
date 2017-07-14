@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
+/**
+ * Class MassDelete
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist
+ */
 class MassDelete extends \Magento\Backend\App\Action
 {
     /**
@@ -62,7 +66,7 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @return bool
      */
-    protected function _isAllowed()
+    protected function _isAllowed() //@codingStandardsIgnoreLine
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::wishlist');
     }

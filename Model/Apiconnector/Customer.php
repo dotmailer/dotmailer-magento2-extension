@@ -364,7 +364,7 @@ class Customer
      */
     public function getBillingAddress1()
     {
-        return $this->_getStreet($this->customer->getBillingStreet(), 1);
+        return $this->getStreet($this->customer->getBillingStreet(), 1);
     }
 
     /**
@@ -374,7 +374,7 @@ class Customer
      */
     public function getBillingAddress2()
     {
-        return $this->_getStreet($this->customer->getBillingStreet(), 2);
+        return $this->getStreet($this->customer->getBillingStreet(), 2);
     }
 
     /**
@@ -434,7 +434,7 @@ class Customer
      */
     public function getDeliveryAddress1()
     {
-        return $this->_getStreet($this->customer->getShippingStreet(), 1);
+        return $this->getStreet($this->customer->getShippingStreet(), 1);
     }
 
     /**
@@ -444,7 +444,7 @@ class Customer
      */
     public function getDeliveryAddress2()
     {
-        return $this->_getStreet($this->customer->getShippingStreet(), 2);
+        return $this->getStreet($this->customer->getShippingStreet(), 2);
     }
 
     /**
@@ -615,7 +615,7 @@ class Customer
      *
      * @return bool|string
      */
-    public function _getCustomerGender()
+    public function _getCustomerGender() //@codingStandardsIgnoreLine
     {
         $genderId = $this->customer->getGender();
         if (is_numeric($genderId)) {
@@ -628,7 +628,7 @@ class Customer
         return '';
     }
 
-    public function _getStreet($street, $line)
+    public function getStreet($street, $line)
     {
         $street = explode("\n", $street);
         if (isset($street[$line - 1])) {
@@ -638,7 +638,7 @@ class Customer
         return '';
     }
 
-    public function _getWebsiteName()
+    public function _getWebsiteName() //@codingStandardsIgnoreLine
     {
         $websiteId = $this->customer->getWebsiteId();
         $website = $this->_store->getWebsite($websiteId);
@@ -649,7 +649,7 @@ class Customer
         return '';
     }
 
-    public function _getStoreName()
+    public function _getStoreName() //@codingStandardsIgnoreLine
     {
         $storeId = $this->customer->getStoreId();
         $store = $this->_store->getStore($storeId);
@@ -681,7 +681,7 @@ class Customer
         return $this->mappingHash;
     }
 
-    public function _getCustomerGroup()
+    public function _getCustomerGroup() //@codingStandardsIgnoreLine
     {
         $groupId = $this->customer->getGroupId();
         $groupModel = $this->groupFactory->create()
@@ -888,7 +888,7 @@ class Customer
     {
         $id = $this->customer->getProductIdForFirstBrand();
 
-        return $this->_getBrandValue($id);
+        return $this->getBrandValue($id);
     }
 
     /**
@@ -900,10 +900,10 @@ class Customer
     {
         $id = $this->customer->getProductIdForLastBrand();
 
-        return $this->_getBrandValue($id);
+        return $this->getBrandValue($id);
     }
 
-    public function _getBrandValue($id)
+    public function getBrandValue($id)
     {
         //attribute mapped from the config
         $attribute = $this->helper->getWebsiteConfig(
@@ -991,7 +991,7 @@ class Customer
     /**
      * Get the customer reward.
      */
-    public function _setReward()
+    public function _setReward() //@codingStandardsIgnoreLine
     {
         //@codingStandardsIgnoreStart
         if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')) {

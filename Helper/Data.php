@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Helper;
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 
+/**
+ * Class Data
+ * @package Dotdigitalgroup\Email\Helper
+ */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
@@ -202,7 +206,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function authIpAddress()
     {
-        if ($ipString = $this->_getConfigValue(
+        if ($ipString = $this->getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES,
             'default'
         )
@@ -238,7 +242,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return mixed
      */
-    public function _getConfigValue(
+    public function getConfigValue(
         $path,
         $contextScope = 'default',
         $contextScopeId = null
@@ -259,7 +263,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getMappedCustomerId()
     {
-        return $this->_getConfigValue(
+        return $this->getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_ID,
             'default'
         );
@@ -272,7 +276,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getMappedOrderId()
     {
-        return $this->_getConfigValue(
+        return $this->getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID,
             'default'
         );
@@ -309,7 +313,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scopeId = $websiteId;
         }
 
-        $passcode = $this->_getConfigValue(
+        $passcode = $this->getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
             $scope,
             $scopeId
@@ -359,7 +363,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getLastOrderId()
     {
-        return $this->_getConfigValue(
+        return $this->getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID,
             'default'
         );
@@ -1044,7 +1048,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getLastQuoteId()
     {
-        return $this->_getConfigValue(
+        return $this->getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID,
             'default'
         );
@@ -1323,59 +1327,59 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $dynamicStyle = [
             'nameStyle' => explode(
                 ',',
-                $this->_getConfigValue(
+                $this->getConfigValue(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE
                 )
             ),
             'priceStyle' => explode(
                 ',',
-                $this->_getConfigValue(
+                $this->getConfigValue(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE
                 )
             ),
             'linkStyle' => explode(
                 ',',
-                $this->_getConfigValue(
+                $this->getConfigValue(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE
                 )
             ),
             'otherStyle' => explode(
                 ',',
-                $this->_getConfigValue(
+                $this->getConfigValue(
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE
                 )
             ),
-            'nameColor' => $this->_getConfigValue(
+            'nameColor' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR
             ),
-            'fontSize' => $this->_getConfigValue(
+            'fontSize' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE
             ),
-            'priceColor' => $this->_getConfigValue(
+            'priceColor' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR
             ),
-            'priceFontSize' => $this->_getConfigValue(
+            'priceFontSize' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE
             ),
-            'urlColor' => $this->_getConfigValue(
+            'urlColor' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR
             ),
-            'urlFontSize' => $this->_getConfigValue(
+            'urlFontSize' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE
             ),
-            'otherColor' => $this->_getConfigValue(
+            'otherColor' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR
             ),
-            'otherFontSize' => $this->_getConfigValue(
+            'otherFontSize' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE
             ),
-            'docFont' => $this->_getConfigValue(
+            'docFont' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT
             ),
-            'docBackgroundColor' => $this->_getConfigValue(
+            'docBackgroundColor' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR
             ),
-            'dynamicStyling' => $this->_getConfigValue(
+            'dynamicStyling' => $this->getConfigValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING
             ),
         ];

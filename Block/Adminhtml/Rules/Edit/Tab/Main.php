@@ -74,7 +74,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _prepareForm()
+    public function _prepareForm() //@codingStandardsIgnoreLine
     {
         $model = $this->_coreRegistry->registry('current_ddg_rule');
 
