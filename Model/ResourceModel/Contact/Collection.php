@@ -2,9 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 
-class Collection extends
- \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
+    /**
+     * @var string
+     */
     protected $_idFieldName = 'email_contact_id';
 
     /**
