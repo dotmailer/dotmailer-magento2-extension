@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Subscriber
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 class Subscriber
 {
     /**
@@ -59,6 +63,10 @@ class Subscriber
         $this->subscriberData[] = $data;
     }
 
+    /**
+     * @param $subscriber
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function setSubscriberData($subscriber)
     {
         $this->subscriber = $subscriber;
@@ -214,7 +222,7 @@ class Subscriber
     /**
      * @return string
      */
-    public function _getWebsiteName()
+    public function _getWebsiteName() //@codingStandardsIgnoreLine
     {
         $storeId = $this->subscriber->getStoreId();
         $website = $this->_store->getWebsite(
@@ -230,7 +238,7 @@ class Subscriber
     /**
      * @return string
      */
-    public function _getStoreName()
+    public function _getStoreName() //@codingStandardsIgnoreLine
     {
         $storeId = $this->subscriber->getStoreId();
         $store = $this->_store->getStore($storeId);
@@ -359,7 +367,7 @@ class Subscriber
         return $this->_getBrandValue($id);
     }
 
-    public function _getBrandValue($id)
+    public function _getBrandValue($id) //@codingStandardsIgnoreLine
     {
         //attribute mapped from the config
         $attribute = $this->helper->getWebsiteConfig(

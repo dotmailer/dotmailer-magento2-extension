@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Importer
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Importer extends \Magento\Framework\Model\AbstractModel
 {
     const NOT_IMPORTED = 0;
@@ -151,7 +155,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Constructor.
      */
-    public function _construct()
+    public function _construct()  //@codingStandardsIgnoreLine
     {
         $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Importer');
     }
@@ -225,15 +229,15 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $this->bulkSyncLimit = 5;
 
         //Set priority
-        $this->_setPriority();
+        $this->setPriority();
 
         //Check previous import status
-        $this->_checkImportStatus();
+        $this->checkImportStatus();
 
         //Bulk priority. Process group 1 first
         foreach ($this->bulkPriority as $bulk) {
             if ($this->totalItems < $bulk['limit']) {
-                $collection = $this->_getQueue(
+                $collection = $this->getQueue(
                     $bulk['type'],
                     $bulk['mode'],
                     $bulk['limit'] - $this->totalItems
@@ -252,7 +256,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         //Single/Update priority.
         foreach ($this->singlePriority as $single) {
             if ($this->totalItems < $single['limit']) {
-                $collection = $this->_getQueue(
+                $collection = $this->getQueue(
                     $single['type'],
                     $single['mode'],
                     $single['limit'] - $this->totalItems
@@ -271,7 +275,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Set importing priority.
      */
-    public function _setPriority()
+    public function setPriority()
     {
         /*
          * Bulk
@@ -395,9 +399,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Check importing status for pending import.
      */
-    public function _checkImportStatus()
+    public function checkImportStatus()
     {
-        if ($items = $this->_getImportingItems($this->bulkSyncLimit)) {
+        if ($items = $this->getImportingItems($this->bulkSyncLimit)) {
             foreach ($items as $item) {
                 $websiteId = $item->getWebsiteId();
                 $client = false;
@@ -456,7 +460,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                                 }
 
                                 if ($item->getImportId()) {
-                                    $this->_processContactImportReportFaults(
+                                    $this->processContactImportReportFaults(
                                         $item->getImportId(), $websiteId
                                     );
                                 }
@@ -488,7 +492,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return $this|bool
      */
-    public function _getImportingItems($limit)
+    public function getImportingItems($limit)
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('import_status', ['eq' => self::IMPORTING])
@@ -511,25 +515,25 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _processContactImportReportFaults($id, $websiteId)
+    public function processContactImportReportFaults($id, $websiteId)
     {
         $client = $this->helper->getWebsiteApiClient($websiteId);
         $response = $client->getContactImportReportFaults($id);
 
         if ($response) {
-            $data = $this->_removeUtf8Bom($response);
+            $data = $this->removeUtf8Bom($response);
             $fileName = $this->directoryList->getPath('var')
                 . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
             $this->file->open();
             $check = $this->file->write($fileName, $data);
 
             if ($check) {
-                $csvArray = $this->_csvToArray($fileName);
+                $csvArray = $this->csvToArray($fileName);
                 $this->file->rm($fileName);
                 $this->contact->unsubscribe($csvArray);
             } else {
                 $this->helper->log(
-                    '_processContactImportReportFaults: cannot save data to CSV file.'
+                    'processContactImportReportFaults: cannot save data to CSV file.'
                 );
             }
         }
@@ -542,7 +546,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return mixed
      */
-    public function _removeUtf8Bom($text)
+    public function removeUtf8Bom($text)
     {
         $bom = pack('H*', 'EFBBBF');
         $text = preg_replace("/^$bom/", '', $text);
@@ -557,7 +561,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return array|bool
      */
-    public function _csvToArray($filename)
+    public function csvToArray($filename)
     {
         //@codingStandardsIgnoreStart
         if (!file_exists($filename) || !is_readable($filename)) {
@@ -597,7 +601,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
      */
-    public function _getQueue($importType, $importMode, $limit)
+    public function getQueue($importType, $importMode, $limit)
     {
         $collection = $this->getCollection();
 

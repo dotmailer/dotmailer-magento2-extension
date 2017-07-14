@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+/**
+ * Class Customdatafields
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config
+ */
 class Customdatafields extends
  \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
@@ -61,7 +65,7 @@ class Customdatafields extends
         parent::__construct($context, $data);
     }
 
-    public function _prepareToRender()
+    public function _prepareToRender() //@codingStandardsIgnoreLine
     {
         $this->getDatafieldRenderer = null;
         $this->getAttributeRenderer = null;
@@ -126,7 +130,7 @@ class Customdatafields extends
     /**
      * @param \Magento\Framework\DataObject $row
      */
-    public function _prepareArrayRow(\Magento\Framework\DataObject $row)
+    public function _prepareArrayRow(\Magento\Framework\DataObject $row) //@codingStandardsIgnoreLine
     {
         $options = [];
 
@@ -147,7 +151,7 @@ class Customdatafields extends
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getAttributeRenderer()
+    public function _getAttributeRenderer() //@codingStandardsIgnoreLine
     {
         $this->attributeRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -163,7 +167,7 @@ class Customdatafields extends
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getDatafieldRenderer()
+    public function _getDatafieldRenderer() //@codingStandardsIgnoreLine
     {
         $this->datafieldRenderer = $this->getLayout()->createBlock(
             'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
@@ -179,7 +183,7 @@ class Customdatafields extends
      *
      * @throws \Exception
      */
-    public function _toHtml()
+    public function _toHtml() //@codingStandardsIgnoreLine
     {
         return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
         . '"/>' . parent::_toHtml();

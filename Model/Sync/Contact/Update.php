@@ -111,7 +111,7 @@ class Update extends Delete
                         }
                     }
 
-                    $this->_handleSingleItemAfterSync($item, $result);
+                    $this->handleSingleItemAfterSync($item, $result);
                 }
             }
         }

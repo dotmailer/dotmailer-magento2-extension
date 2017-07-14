@@ -53,7 +53,7 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
                             $item->getImportType()
                         );
                     }
-                    $this->_handleItemAfterSync($item, $result);
+                    $this->handleItemAfterSync($item, $result);
                 }
             }
         }

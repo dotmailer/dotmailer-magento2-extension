@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+/**
+ * Class Rules
+ * @package Dotdigitalgroup\Email\Model
+ */
 class Rules extends \Magento\Framework\Model\AbstractModel
 {
     const ABANDONED = 1;
@@ -68,9 +72,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->coreResource = $resourceConnection;
-        $this->config       = $config;
-        $this->rulesType    = $rulesType;
         parent::__construct(
             $context,
             $registry,
@@ -78,12 +79,15 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             $resourceCollection,
             $data
         );
+        $this->coreResource = $resourceConnection;
+        $this->config       = $config;
+        $this->rulesType    = $rulesType;
     }
 
     /**
      * Construct.
      */
-    public function _construct()
+    public function _construct() //@codingStandardsIgnoreLine
     {
         $this->defaultOptions = $this->rulesType->defaultOptions();
 
@@ -152,7 +156,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return $this
      */
-    public function _afterLoad()
+    public function _afterLoad() //@codingStandardsIgnoreLine
     {
         parent::_afterLoad();
         //@codingStandardsIgnoreStart
@@ -272,7 +276,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
         // ALL TRUE
         if ($combination == 1) {
-            return $this->_processAndCombination(
+            return $this->processAndCombination(
                 $collection,
                 $condition,
                 $type
@@ -293,7 +297,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return mixed
      */
-    public function _processAndCombination($collection, $conditions, $type)
+    public function processAndCombination($collection, $conditions, $type)
     {
         foreach ($conditions as $condition) {
             $attribute = $condition['attribute'];
@@ -347,7 +351,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 );
             }
         }
-        return $this->_processProductAttributes($collection);
+        return $this->processProductAttributes($collection);
     }
 
     /**
@@ -434,7 +438,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 $cond
             );
         }
-        return $this->_processProductAttributes($collection);
+        return $this->processProductAttributes($collection);
     }
 
     /**
@@ -444,7 +448,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return mixed
      */
-    public function _processProductAttributes($collection)
+    public function processProductAttributes($collection)
     {
         //if no product attribute or collection empty return collection
         if (empty($this->productAttribute) or !$collection->getSize()) {
@@ -490,7 +494,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                                 $attribute
                             );
                             //evaluate conditions on values. if true then unset item from collection
-                            if ($this->_evaluate(
+                            if ($this->evaluate(
                                 $value,
                                 $cond,
                                 $attributeValue
@@ -517,7 +521,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                             if (is_array($attributeValue)) {
                                 foreach ($attributeValue as $attrValue) {
                                     //evaluate conditions on values. if true then unset item from collection
-                                    if ($this->_evaluate(
+                                    if ($this->evaluate(
                                         $value,
                                         $cond,
                                         $attrValue
@@ -531,7 +535,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                                 }
                             } else {
                                 //evaluate conditions on values. if true then unset item from collection
-                                if ($this->_evaluate(
+                                if ($this->evaluate(
                                     $value,
                                     $cond,
                                     $attributeValue
@@ -561,7 +565,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return bool
      */
-    public function _evaluate($varOne, $op, $varTwo)
+    public function evaluate($varOne, $op, $varTwo)
     {
         switch ($op) {
             case 'eq':

@@ -65,7 +65,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @return bool|\Magento\Framework\DataObject
      */
-    public function _getWishlist()
+    public function _getWishlist() //@codingStandardsIgnoreLine
     {
         $customerId = $this->getRequest()->getParam('customer_id');
         if (!$customerId) {

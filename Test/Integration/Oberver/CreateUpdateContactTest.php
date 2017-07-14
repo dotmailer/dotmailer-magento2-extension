@@ -34,7 +34,6 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $this->contactFactory = $this->objectManager->create('\Dotdigitalgroup\Email\Model\ContactFactory');
 
         $this->prepareCustomerData();
-
     }
 
     public function tearDown()
@@ -44,12 +43,10 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
             ->delete();
         $this->customerModel
             ->delete();
-
     }
 
     public function prepareCustomerData()
     {
-
         $helper = $this->getMock('Dotdigitalgroup\Email\Helper\Data', [], [], '', false);
         $helper->method('isEnabled')->willReturn(true);
         $this->objectManager->addSharedInstance($helper, \Dotdigitalgroup\Email\Helper\Data::class);
@@ -84,7 +81,7 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->customerModel->getEmail(), $contact->getEmail(), 'Contact was not created');
     }
 
-    public function test_contact_updated_successfully()
+    public function test_contact_updated_successfully() //@codingStandardsIgnoreLine
     {
         //update the email and save contact
         $updatedEmail = str_replace('new', 'updated', $this->email);
@@ -97,6 +94,4 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($updatedEmail, $contact->getEmail(), 'Contact was not updated');
     }
-
-
 }

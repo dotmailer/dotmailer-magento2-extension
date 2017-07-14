@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+/**
+ * Class Automation
+ * @package Dotdigitalgroup\Email\Model\Sync
+ */
 class Automation
 {
     const AUTOMATION_TYPE_NEW_CUSTOMER = 'customer_automation';
@@ -221,7 +225,7 @@ class Automation
                     $contactsArray = $websiteContacts['contacts'];
                     //only for subscribed contacts
                     if (!empty($contactsArray) &&
-                        $this->_checkCampignEnrolmentActive($this->programId)
+                        $this->checkCampaignEnrolmentActive($this->programId)
                     ) {
                         $result = $this->sendContactsToAutomation(
                             array_values($contactsArray),
@@ -287,10 +291,10 @@ class Automation
             case self::AUTOMATION_TYPE_NEW_GUEST_ORDER:
             case self::ORDER_STATUS_AUTOMATION:
             case self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER:
-                $this->_updateNewOrderDatafields();
+                $this->updateNewOrderDatafields();
                 break;
             default:
-                $this->_updateDefaultDatafields($email);
+                $this->updateDefaultDatafields($email);
                 break;
         }
     }
@@ -300,7 +304,7 @@ class Automation
      *
      * @param string $email
      */
-    public function _updateDefaultDatafields($email)
+    public function updateDefaultDatafields($email)
     {
         $website = $this->storeManager->getWebsite($this->websiteId);
         $this->helper->updateDataFields($email, $website, $this->storeName);
@@ -309,7 +313,7 @@ class Automation
     /**
      * Update new order default datafields.
      */
-    public function _updateNewOrderDatafields()
+    public function updateNewOrderDatafields()
     {
         $website = $this->storeManager->getWebsite($this->websiteId);
         $orderModel = $this->orderFactory->create()
@@ -388,7 +392,7 @@ class Automation
      *
      * @return bool
      */
-    public function _checkCampignEnrolmentActive($programId)
+    public function checkCampaignEnrolmentActive($programId)
     {
         //program is not set
         if (!$programId) {

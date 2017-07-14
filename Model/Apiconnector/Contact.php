@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+/**
+ * Class Contact
+ * @package Dotdigitalgroup\Email\Model\Apiconnector
+ */
 class Contact
 {
     /**
@@ -236,7 +240,7 @@ class Contact
          */
 
         //customer collection
-        $customerCollection = $this->_getCustomerCollection(
+        $customerCollection = $this->getCustomerCollection(
             $customerIds,
             $website->getId()
         );
@@ -379,7 +383,7 @@ class Contact
         /*
          * END HEADERS.
          */
-        $customerCollection = $this->_getCustomerCollection(
+        $customerCollection = $this->getCustomerCollection(
             [$customerId],
             $website->getId()
         );
@@ -466,7 +470,7 @@ class Contact
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _getCustomerCollection($customerIds, $websiteId = 0)
+    public function getCustomerCollection($customerIds, $websiteId = 0)
     {
         $customerCollection = $this->customerCollection->create()
             ->addAttributeToSelect('*')

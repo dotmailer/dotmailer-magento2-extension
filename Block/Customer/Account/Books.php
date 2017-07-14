@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Customer\Account;
 
+/**
+ * Class Books
+ * @package Dotdigitalgroup\Email\Block\Customer\Account
+ */
 class Books extends \Magento\Framework\View\Element\Template
 {
     /**
@@ -40,9 +44,9 @@ class Books extends \Magento\Framework\View\Element\Template
         \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
+        parent::__construct($context, $data);
         $this->helper          = $helper;
         $this->customerSession = $customerSession;
-        parent::__construct($context, $data);
     }
 
     /**
@@ -71,7 +75,7 @@ class Books extends \Magento\Framework\View\Element\Template
      *
      * @return mixed
      */
-    public function _getWebsiteConfigFromHelper($path, $website)
+    public function getWebsiteConfigFromHelper($path, $website)
     {
         return $this->helper->getWebsiteConfig($path, $website);
     }
@@ -81,7 +85,7 @@ class Books extends \Magento\Framework\View\Element\Template
      *
      * @return bool|mixed|object
      */
-    public function _getApiClient()
+    public function getApiClient()
     {
         if (empty($this->client)) {
             $website = $this->getCustomer()->getStore()->getWebsite();
@@ -101,7 +105,7 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function getCanShowAdditionalBooks()
     {
-        return $this->_getWebsiteConfigFromHelper(
+        return $this->getWebsiteConfigFromHelper(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS,
             $this->getCustomer()->getStore()->getWebsite()
         );
@@ -115,7 +119,7 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getAdditionalBooksToShow()
     {
         $additionalBooksToShow = [];
-        $additionalFromConfig = $this->_getWebsiteConfigFromHelper(
+        $additionalFromConfig = $this->getWebsiteConfigFromHelper(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS,
             $this->getCustomer()->getStore()->getWebsite()
         );
@@ -129,7 +133,7 @@ class Books extends \Magento\Framework\View\Element\Template
 
             $this->getConnectorContact();
             if ($this->contactId) {
-                $addressBooks = $this->_getApiClient()
+                $addressBooks = $this->getApiClient()
                     ->getContactAddressBooks(
                         $this->contactId
                     );
@@ -141,7 +145,7 @@ class Books extends \Magento\Framework\View\Element\Template
                     }
                 }
                 foreach ($additionalFromConfig as $bookId) {
-                    $connectorBook = $this->_getApiClient()->getAddressBookById(
+                    $connectorBook = $this->getApiClient()->getAddressBookById(
                         $bookId
                     );
                     if (isset($connectorBook->id)) {
@@ -169,7 +173,7 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function getCanShowDataFields()
     {
-        return $this->_getWebsiteConfigFromHelper(
+        return $this->getWebsiteConfigFromHelper(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS,
             $this->getCustomer()->getStore()->getWebsite()
         );
@@ -183,7 +187,7 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getDataFieldsToShow()
     {
         $datafieldsToShow = [];
-        $dataFieldsFromConfig = $this->_getWebsiteConfigFromHelper(
+        $dataFieldsFromConfig = $this->getWebsiteConfigFromHelper(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS,
             $this->getCustomer()->getStore()->getWebsite()
         );
@@ -199,7 +203,7 @@ class Books extends \Magento\Framework\View\Element\Template
                         = $contactDataField->value;
                 }
 
-                $connectorDataFields = $this->_getApiClient()
+                $connectorDataFields = $this->getApiClient()
                     ->getDataFields();
                 $processedConnectorDataFields = [];
                 foreach ($connectorDataFields as $connectorDataField) {
@@ -264,7 +268,7 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function getConnectorContact()
     {
-        $contact = $this->_getApiClient()->getContactByEmail(
+        $contact = $this->getApiClient()->getContactByEmail(
             $this->getCustomer()->getEmail()
         );
 
@@ -272,7 +276,7 @@ class Books extends \Magento\Framework\View\Element\Template
             $this->customerSession->setConnectorContactId($contact->id);
             $this->contactId = $contact->id;
         } else {
-            $contact = $this->_getApiClient()->postContacts(
+            $contact = $this->getApiClient()->postContacts(
                 $this->getCustomer()->getEmail()
             );
             if ($contact->id) {

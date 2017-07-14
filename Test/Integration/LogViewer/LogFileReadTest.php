@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Magento\TestFramework\ObjectManager;
 
+/**
+ * Class LogFileReadTest
+ * @package Dotdigitalgroup\Email\Helper
+ */
 class LogFileReadTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -32,7 +36,7 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
         $this->helper = $this->objectManager->get(\Dotdigitalgroup\Email\Helper\Data::class);
     }
 
-    public function test_file_exists_and_content_contains_message()
+    public function test_file_exists_and_content_contains_message() //@codingStandardsIgnoreLine
     {
 
         $this->helper->log('logged message data');
@@ -40,23 +44,22 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
         $content = $this->fileHelper->getLogFileContent();
 
         $this->assertContains('logged message', $content);
-
     }
 
-    public function test_debug_log_contains_data_message()
+    public function test_debug_log_contains_data_message() //@codingStandardsIgnoreLine
     {
         $this->helper->debug('Dummy Title', ['mesage dummy text']);
 
         $this->assertContains('dummy text', $this->fileHelper->getLogFileContent());
     }
 
-    public function test_empty_log_file_returns_no_error()
+    public function test_empty_log_file_returns_no_error() //@codingStandardsIgnoreLine
     {
         $content = $this->fileHelper->getLogFileContent();
         $this->assertNotContains('Log file is not readable or does not exist at this moment', $content);
     }
 
-    public function test_log_file_with_data_returns_no_error()
+    public function test_log_file_with_data_returns_no_error() //@codingStandardsIgnoreLine
     {
         $this->helper->log('SOME TEXT DATA');
 
@@ -64,5 +67,4 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotContains('Log file is not readable or does not exist at this moment', $content);
     }
-    
 }

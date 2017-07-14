@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+/**
+ * Class Order
+ * @package Dotdigitalgroup\Email\Model\Connector
+ */
 class Order
 {
     /**
@@ -186,12 +190,12 @@ class Order
             foreach ($customAttributes as $customAttribute) {
                 if (isset($fields[$customAttribute])) {
                     $field = $fields[$customAttribute];
-                    $value = $this->_getCustomAttributeValue(
+                    $value = $this->getCustomAttributeValue(
                         $field,
                         $orderData
                     );
                     if ($value) {
-                        $this->_assignCustom($field, $value);
+                        $this->assignCustom($field, $value);
                     }
                 }
             }
@@ -203,11 +207,11 @@ class Order
         if ($orderData->getBillingAddress()) {
             $billingData = $orderData->getBillingAddress()->getData();
             $this->billingAddress = [
-                'billing_address_1' => $this->_getStreet(
+                'billing_address_1' => $this->getStreet(
                     $billingData['street'],
                     1
                 ),
-                'billing_address_2' => $this->_getStreet(
+                'billing_address_2' => $this->getStreet(
                     $billingData['street'],
                     2
                 ),
@@ -224,11 +228,11 @@ class Order
             $shippingData = $orderData->getShippingAddress()->getData();
 
             $this->deliveryAddress = [
-                'delivery_address_1' => $this->_getStreet(
+                'delivery_address_1' => $this->getStreet(
                     $shippingData['street'],
                     1
                 ),
-                'delivery_address_2' => $this->_getStreet(
+                'delivery_address_2' => $this->getStreet(
                     $shippingData['street'],
                     2
                 ),
@@ -251,7 +255,7 @@ class Order
             //product custom options
             $customOptions = [];
             if ($syncCustomOption) {
-                $customOptions = $this->_getOrderItemOptions($productItem);
+                $customOptions = $this->getOrderItemOptions($productItem);
             }
 
             $productModel = $productItem->getProduct();
@@ -281,7 +285,7 @@ class Order
                 if ($configAttributes) {
                     $configAttributes = explode(',', $configAttributes);
                     //attributes from attribute set
-                    $attributesFromAttributeSet = $this->_getAttributesArray(
+                    $attributesFromAttributeSet = $this->getAttributesArray(
                         $productModel->getAttributeSetId()
                     );
 
@@ -321,11 +325,11 @@ class Order
                                 // check limit on text and assign value to array
 
                                 $attributes[][$attributeCode]
-                                    = $this->_limitLength($value);
+                                    = $this->limitLength($value);
                             } elseif (is_array($value)) {
                                 $value = implode($value, ', ');
                                 $attributes[][$attributeCode]
-                                    = $this->_limitLength($value);
+                                    = $this->limitLength($value);
                             }
                         }
                     }
@@ -413,7 +417,7 @@ class Order
      *
      * @return string
      */
-    public function _getStreet($street, $line)
+    public function getStreet($street, $line)
     {
         $street = explode("\n", $street);
         if ($line == 1) {
@@ -456,7 +460,7 @@ class Order
      *
      * @return float|int|null|string
      */
-    public function _getCustomAttributeValue($field, $orderData)
+    public function getCustomAttributeValue($field, $orderData)
     {
         $type = $field['DATA_TYPE'];
 
@@ -505,7 +509,7 @@ class Order
      * @param $field
      * @param $value
      */
-    public function _assignCustom($field, $value)
+    public function assignCustom($field, $value)
     {
         $this->custom[$field['COLUMN_NAME']] = $value;
     }
@@ -517,7 +521,7 @@ class Order
      *
      * @return array
      */
-    public function _getAttributesArray($attributeSetId)
+    public function getAttributesArray($attributeSetId)
     {
         $result = [];
         $attributes = $this->attributeCollection->create()
@@ -538,7 +542,7 @@ class Order
      *
      * @return string
      */
-    public function _limitLength($value)
+    public function limitLength($value)
     {
         if (strlen($value) > 250) {
             $value = substr($value, 0, 250);
@@ -552,7 +556,7 @@ class Order
      *
      * @return array
      */
-    public function _getOrderItemOptions($orderItem)
+    public function getOrderItemOptions($orderItem)
     {
         $orderItemOptions = $orderItem->getProductOptions();
 

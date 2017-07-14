@@ -26,7 +26,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Initialize resource.
      */
-    public function _construct()
+    public function _construct() //@codingStandardsIgnoreLine
     {
         $this->_init('email_importer', 'id');
     }

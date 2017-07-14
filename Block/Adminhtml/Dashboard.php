@@ -11,9 +11,9 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
     /**
      * @var string
      */
-    public $_template = 'dashboard/main.phtml';
+    public $_template = 'dashboard/main.phtml'; //@codingStandardsIgnoreLine
 
-    public function _construct()
+    public function _construct() //@codingStandardsIgnoreLine
     {
         $this->_blockGroup = 'Dotdigitalgroup_Email';
         $this->_controller = 'adminhtml_dashboard';

@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+/**
+ * Class Trial
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config
+ */
 class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
     /**
@@ -78,7 +82,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
             </script>";
         } else {
             $html = '<a class="various fancybox.iframe" data-fancybox-type="iframe" href=' .
-                $this->_getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
+                $this->getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
             $script = "<script type='text/javascript'>
@@ -111,12 +115,12 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      *
      * @return string
      */
-    public function _getIframeFormUrl()
+    public function getIframeFormUrl()
     {
         $formUrl = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_URL;
         $ipAddress = $this->remoteAddress->getRemoteAddress();
-        $timezone = $this->_getTimeZoneId();
-        $culture = $this->_getCultureId();
+        $timezone = $this->getTimeZoneId();
+        $culture = $this->getCultureId();
         $company = $this->helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
         $callback = $this->storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
@@ -138,7 +142,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      *
      * @return string
      */
-    public function _getTimeZoneId()
+    public function getTimeZoneId()
     {
         $timeZone = $this->localeDate->getConfigTimezone();
         $result = '085';
@@ -591,7 +595,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      *
      * @return mixed
      */
-    public function _getCultureId()
+    public function getCultureId()
     {
         $fallback = 'en_US';
         $supportedCultures = [

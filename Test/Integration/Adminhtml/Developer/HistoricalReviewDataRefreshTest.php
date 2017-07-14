@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * Class HistoricalReviewDataRefreshTest
+ * @package Dotdigitalgroup\Email\Controller\Adminhtml\Run
+ */
 class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
@@ -35,7 +39,7 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->dispatch($dispatchUrl);
     }
 
-    public function test_review_reset_successful_given_date_range()
+    public function test_review_reset_successful_given_date_range() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -55,10 +59,9 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->runReset('2017-02-09', '2017-02-10', $this->url);
 
         $this->assertEquals(1, $collection->getSize());
-
     }
 
-    public function test_review_reset_not_successful_wrong_date_range()
+    public function test_review_reset_not_successful_wrong_date_range() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -83,10 +86,9 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         );
 
         $this->assertEquals(0, $collection->getSize());
-
     }
 
-    public function test_review_reset_not_successful_invalid_date_range()
+    public function test_review_reset_not_successful_invalid_date_range() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -111,10 +113,9 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         );
 
         $this->assertEquals(0, $collection->getSize());
-
     }
 
-    public function test_review_full_reset_successful_without_date_range()
+    public function test_review_full_reset_successful_without_date_range() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -148,7 +149,7 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->assertEquals(2, $collection->getSize());
     }
 
-    public function test_review_full_reset_success_with_from_date_only()
+    public function test_review_full_reset_success_with_from_date_only() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 
@@ -170,7 +171,7 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->assertEquals(1, $collection->getSize());
     }
 
-    public function test_review_full_reset_success_with_to_date_only()
+    public function test_review_full_reset_success_with_to_date_only() //@codingStandardsIgnoreLine
     {
         $this->emptyTable();
 

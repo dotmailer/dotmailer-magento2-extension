@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * Class Subscriber
+ * @package Dotdigitalgroup\Email\Model\Newsletter
+ */
 class Subscriber
 {
     const STATUS_SUBSCRIBED = 1;
@@ -82,6 +86,21 @@ class Subscriber
      */
     public $timezone;
 
+    /**
+     * Subscriber constructor.
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
@@ -611,11 +630,11 @@ class Subscriber
             }
 
             //there is a maximum of request we need to loop to get more suppressed contacts
-            for ($i=0; $i<= $limit;$i++) {
-                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect , $skip);
+            for ($i=0; $i<= $limit; $i++) {
+                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect, $skip);
 
                 // skip no more contacts or the api request failed
-                if(empty($apiContacts) || isset($apiContacts->message)) {
+                if (empty($apiContacts) || isset($apiContacts->message)) {
                     break;
                 }
                 $contacts = array_merge($contacts, $apiContacts);

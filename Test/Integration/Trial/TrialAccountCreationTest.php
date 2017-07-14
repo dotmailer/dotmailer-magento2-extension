@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-
 use Magento\TestFramework\ObjectManager;
 use Dotdigitalgroup\Email\Helper\Config;
 
@@ -38,11 +37,12 @@ class TrialAccountCreationTest extends \Magento\TestFramework\TestCase\AbstractC
      * @param $apiPass
      * @dataProvider apiDetailsDataProvider
      */
-    public function test_trial_account_created_successfully($apiUser, $apiPass)
+    public function test_trial_account_created_successfully($apiUser, $apiPass) //@codingStandardsIgnoreLine
     {
         $mockRemoteAddress = $this->getMock('Magento\Framework\HTTP\PhpEnvironment\RemoteAddress', [], [], '', false);
         $mockRemoteAddress->method('getRemoteAddress')->willReturn('104.40.179.234');
-        $this->_objectManager->addSharedInstance($mockRemoteAddress, \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress::class);
+        $this->_objectManager
+            ->addSharedInstance($mockRemoteAddress, \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress::class);
 
         //minimum params required to create kick start callback url to create trial
         $params = [

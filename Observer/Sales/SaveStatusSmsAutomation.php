@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+/**
+ * Class SaveStatusSmsAutomation
+ * @package Dotdigitalgroup\Email\Observer\Sales
+ */
 class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterface
 {
     /**
@@ -207,7 +211,6 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);
             }
-
         } else {
             $this->helper->log(
                 'automation type : ' . $data['automationType'] . ' program id not found'

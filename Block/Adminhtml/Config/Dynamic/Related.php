@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
+/**
+ * Class Related
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic
+ */
 class Related extends \Magento\Config\Block\System\Config\Form\Field
 {
 
@@ -30,7 +34,7 @@ class Related extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    public function _getElementHtml(
+    public function _getElementHtml( //@codingStandardsIgnoreLine
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         //passcode to append for url

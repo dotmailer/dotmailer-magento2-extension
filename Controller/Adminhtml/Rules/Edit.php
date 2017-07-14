@@ -35,7 +35,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
      *
      * @return bool
      */
-    public function _isAllowed()
+    public function _isAllowed() //@codingStandardsIgnoreLine
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }

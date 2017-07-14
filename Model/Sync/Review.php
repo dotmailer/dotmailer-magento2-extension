@@ -159,7 +159,7 @@ class Review
                         $website->getId()
                     );
                 //if no error then set imported
-                $this->_setImported($this->reviewIds);
+                $this->setImported($this->reviewIds);
                 //@codingStandardsIgnoreStart
                 $this->countReviews += count($reviews);
                 //@codingStandardsIgnoreStop
@@ -268,7 +268,7 @@ class Review
      *
      * @param $ids
      */
-    public function _setImported($ids)
+    public function setImported($ids)
     {
         try {
             $coreResource = $this->resource;

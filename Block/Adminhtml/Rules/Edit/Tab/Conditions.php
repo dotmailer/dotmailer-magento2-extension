@@ -75,7 +75,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _prepareForm()
+    public function _prepareForm() //@codingStandardsIgnoreLine
     {
         $model = $this->_coreRegistry->registry('current_ddg_rule');
         $form = $this->_formFactory->create();

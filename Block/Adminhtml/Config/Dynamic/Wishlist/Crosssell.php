@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist;
 
+/**
+ * Class Crosssell
+ * @package Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist
+ */
 class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
 {
 
@@ -30,7 +34,7 @@ class Crosssell extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) //@codingStandardsIgnoreLine
     {
         //passcode to append for url
         $passcode = $this->dataHelper->getPasscode();

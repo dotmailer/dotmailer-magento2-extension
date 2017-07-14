@@ -40,7 +40,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     /**
      * Constructor.
      */
-    public function _construct()
+    public function _construct()  //@codingStandardsIgnoreLine
     {
         $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Catalog');
     }

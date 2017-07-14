@@ -29,7 +29,7 @@ class Index extends \Magento\Backend\App\Action
      *
      * @return bool
      */
-    public function _isAllowed()
+    public function _isAllowed() //@codingStandardsIgnoreLine
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::catalog');
     }

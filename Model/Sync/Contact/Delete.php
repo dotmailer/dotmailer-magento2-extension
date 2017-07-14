@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
+/**
+ * Class Delete
+ * @package Dotdigitalgroup\Email\Model\Sync\Contact
+ */
 class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
 {
     /**
@@ -26,7 +30,7 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
                         //will assume that the request is done
                         $this->client->deleteContact($apiContact->id);
                     }
-                    $this->_handleSingleItemAfterSync($item, $apiContact);
+                    $this->handleSingleItemAfterSync($item, $apiContact);
                 }
             }
         }
@@ -36,9 +40,9 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
      * @param $item
      * @param $apiContact
      */
-    public function _handleSingleItemAfterSync($item, $apiContact)
+    public function handleSingleItemAfterSync($item, $apiContact)
     {
-        $curlError = $this->_checkCurlError($item);
+        $curlError = $this->checkCurlError($item);
         //no api connection error
         if (! $curlError) {
             //api response error

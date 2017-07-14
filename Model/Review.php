@@ -41,7 +41,7 @@ class Review extends \Magento\Framework\Model\AbstractModel
     /**
      * Constructor.
      */
-    public function _construct()
+    public function _construct() //@codingStandardsIgnoreLine
     {
         parent::_construct();
         $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Review');

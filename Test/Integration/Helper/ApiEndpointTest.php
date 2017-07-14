@@ -42,7 +42,7 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider dataProvider
      */
-    public function test_fetching_api_endpoint_successful($website, $endPoint)
+    public function test_fetching_api_endpoint_successful($website, $endPoint) //@codingStandardsIgnoreLine
     {
         /** @var ObjectManager $objectManager */
         $objectManager = ObjectManager::getInstance();
@@ -58,7 +58,13 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
         $mockClient->method('getAccountInfo')
             ->willReturn($accountInfo);
 
-        $mockClientFactory = $this->getMock(\Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory::class, [], [], '', false);
+        $mockClientFactory = $this->getMock(
+            \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory::class,
+            [],
+            [],
+            '',
+            false
+        );
         $mockClientFactory->method('create')
             ->willReturn($mockClient);
 

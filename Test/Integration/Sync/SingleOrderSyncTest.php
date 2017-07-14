@@ -71,7 +71,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
-    public function test_importer_collection_count_is_one()
+    public function test_importer_collection_count_is_one() //@codingStandardsIgnoreLine
     {
         $this->createModifiedEmailOrder();
         $this->prep();
@@ -83,7 +83,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
-    public function test_single_order_is_type_order_and_mode_single()
+    public function test_single_order_is_type_order_and_mode_single() //@codingStandardsIgnoreLine
     {
         $this->createModifiedEmailOrder();
         $this->prep();
@@ -107,7 +107,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
-    public function test_singe_order_type_is_array()
+    public function test_singe_order_type_is_array() //@codingStandardsIgnoreLine
     {
         $this->createModifiedEmailOrder();
         $this->prep();
