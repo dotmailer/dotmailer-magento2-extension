@@ -8,6 +8,10 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Contact
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     */
+    private $contactResource;
+    /**
      * @var
      */
     private $start;
@@ -51,6 +55,7 @@ class Contact
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport $contactImportQueueExport
     ) {
         $this->file            = $file;
@@ -59,6 +64,7 @@ class Contact
         $this->emailCustomer      = $customerFactory;
         //email contact collection
         $this->contactModel = $contactFactory;
+        $this->contactResource = $contactResource;
         $this->contactImportQueueExport = $contactImportQueueExport;
     }
 
@@ -191,7 +197,7 @@ class Contact
             $customersFile,
             $customerNum,
             $customerIds,
-            $this->contactModel->create()->getResource()
+            $this->contactResource
         );
 
         $this->countCustomers += $customerNum;
@@ -270,8 +276,6 @@ class Contact
         );
         $statuses = explode(',', $statuses);
 
-        return $this->contactModel->create()
-            ->getResource()
-            ->getCustomerCollectionByIds($customerIds, $statuses);
+        return $this->contactResource->getCustomerCollectionByIds($customerIds, $statuses);
     }
 }

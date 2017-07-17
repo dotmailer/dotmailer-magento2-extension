@@ -11,17 +11,16 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     private $catalogResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\CatalogFactory
      */
     private $catalogFactory;
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
-     */
 
     /**
      * ReimportProduct constructor.
@@ -52,14 +51,17 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
         $emailCatalog = $emailCatalogModel->loadProductById($productId);
 
         if ($emailCatalog->getId()) {
+            //update email catalog item when imported
             if ($emailCatalog->getImported()) {
                 $emailCatalog->setModified(1);
+                $this->catalogResource->save($emailCatalog);
             }
         } else {
-            $emailCatalog->setProductId($productId);
-        }
+            //create new email catalog item
+            //$emailCatalogModel->setProductId($productId);
 
-        $this->catalogResource->save($emailCatalog);
+            $this->catalogResource->save($emailCatalogModel);
+        }
 
         return $this;
     }

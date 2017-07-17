@@ -4,12 +4,11 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
-    protected $_idFieldName = 'id';
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    protected $helper;
+
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
@@ -129,25 +128,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 ->addOptionsToResult();
 
             return $productCollection;
-        }
-
-        return false;
-    }
-
-    /**
-     * Load by product id.
-     *
-     * @param int $productId
-     *
-     * @return mixed
-     */
-    public function loadProductById($productId)
-    {
-        $collection = $this->addFieldToFilter('product_id', $productId)
-            ->setPageSize(1);
-
-        if ($collection->getSize()) {
-            return $collection->getFirstItem();
         }
 
         return false;

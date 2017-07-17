@@ -1573,9 +1573,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getDateLastCronRun($cronJob)
     {
-        return $this->contactFactory->create()
-            ->getResource()
-            ->getDateLastCronRun($cronJob);
+        return $this->contactResource->getDateLastCronRun($cronJob);
     }
 
     /**

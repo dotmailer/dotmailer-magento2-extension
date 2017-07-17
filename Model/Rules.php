@@ -10,6 +10,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     const REVIEW = 2;
 
     /**
+     * @var ResourceModel\Rules
+     */
+    private $rulesResource;
+
+    /**
      * @var
      */
     private $conditionMap;
@@ -66,6 +71,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Registry $registry,
         \Magento\Eav\Model\Config $config,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -73,6 +79,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         $this->serializer = $serializer;
         $this->config       = $config;
         $this->rulesType    = $rulesType;
+        $this->rulesResource = $rulesResource;
         parent::__construct(
             $context,
             $registry,
@@ -214,8 +221,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         }
 
         //join tables to collection according to type
-        $collection = $this->getResource()
-            ->joinTablesOnCollectionByType($collection, $type);
+        $collection = $this->rulesResource->joinTablesOnCollectionByType($collection, $type);
 
         //process rule on collection according to combination
         $combination = $rule->getCombination();

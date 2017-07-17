@@ -115,22 +115,29 @@ class Order
     public $setFactory;
 
     /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product
+     */
+    private $productResource;
+
+    /**
      * Order constructor.
      *
-     * @param \Magento\Eav\Model\Entity\Attribute\SetFactory                           $setFactory
-     * @param \Magento\Eav\Api\AttributeSetRepositoryInterface                         $attributeSet
+     * @param \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory
+     * @param \Magento\Eav\Api\AttributeSetRepositoryInterface $attributeSet
      * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection
-     * @param \Magento\Catalog\Model\ProductFactory                                    $productFactory
-     * @param \Magento\Customer\Model\CustomerFactory                                  $customerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                                       $helperData
-     * @param \Magento\Store\Model\StoreManagerInterface                               $storeManagerInterface
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface                     $localeDate
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helperData
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
         \Magento\Eav\Api\AttributeSetRepositoryInterface $attributeSet,
         \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection,
         \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Catalog\Model\ResourceModel\Product $productResource,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -143,6 +150,7 @@ class Order
         $this->customerFactory     = $customerFactory;
         $this->helper              = $helperData;
         $this->localeDate          = $localeDate;
+        $this->productResource     = $productResource;
         $this->_storeManager       = $storeManagerInterface;
     }
 
@@ -415,7 +423,7 @@ class Order
                 $attributesFromAttributeSet
             )) {
                 //attribute input type
-                $inputType = $productModel->getResource()
+                $inputType = $this->productResource
                     ->getAttribute($attributeCode)
                     ->getFrontend()
                     ->getInputType();

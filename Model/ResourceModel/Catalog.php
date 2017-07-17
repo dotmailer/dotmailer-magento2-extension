@@ -50,7 +50,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param \Magento\Reports\Block\Product\Viewed $viewed
      * @param \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory
      * @param null $connectionName
      */
@@ -61,7 +60,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Reports\Block\Product\Viewed $viewed,
         \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
         $connectionName = null
     ) {
@@ -70,7 +68,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->productFactory           = $productFactory;
         $this->categoryFactory          = $categoryFactory;
         $this->reportProductCollection  = $reportProductCollection;
-        $this->viewed                   = $viewed;
         $this->productSoldFactory       = $productSoldFactory;
         $this->categoryResource         = $categoryResource;
         parent::__construct(

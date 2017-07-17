@@ -186,7 +186,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
     public function emptyTable()
     {
-        $model = $this->objectManager->create($this->model);
-        $model->getResource()->getConnection()->truncateTable($model->getResource()->getMainTable());
+        $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Catalog::class);
+        $resourceModel->getConnection()->truncateTable($resourceModel->getMainTable());
     }
 }
