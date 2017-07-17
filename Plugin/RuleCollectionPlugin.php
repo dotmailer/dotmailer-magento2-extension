@@ -21,17 +21,16 @@ class RuleCollectionPlugin
      */
     public function __construct(
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $date
-    )
-    {
+    ) {
         $this->date = $date;
     }
 
     /**
      * @param \Magento\SalesRule\Model\ResourceModel\Rule\Collection $subject
-     * @param $result
-     * @param $websiteId
-     * @param $customerGroupId
-     * @param $couponCode
+     * @param mixed $result
+     * @param mixed $websiteId
+     * @param mixed $customerGroupId
+     * @param mixed $couponCode
      * @return mixed
      */
     public function afterSetValidationFilter(
@@ -45,11 +44,14 @@ class RuleCollectionPlugin
         $select = $subject->getSelect();
 
         if (! empty($couponCode)) {
-            $select->where('(rule_coupons.expiration_date IS NULL) AND
-                     (to_date is null or to_date >= ?)
-                    OR
-                     (rule_coupons.expiration_date IS NOT NULL) AND
-                     (rule_coupons.expiration_date >= ?) ', $now);
+            $select->where(
+                '(rule_coupons.expiration_date IS NULL) AND
+                (to_date is null or to_date >= ?)
+                OR
+                (rule_coupons.expiration_date IS NOT NULL) AND
+                (rule_coupons.expiration_date >= ?) ',
+                $now
+            );
         }
         $select->where(
             '(main_table.to_date IS NULL) OR (main_table.to_date >= ?)',
@@ -58,5 +60,4 @@ class RuleCollectionPlugin
 
         return $result;
     }
-
 }

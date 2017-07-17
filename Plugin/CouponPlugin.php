@@ -21,8 +21,9 @@ class CouponPlugin
 
     /**
      * @param \Magento\SalesRule\Model\ResourceModel\Coupon $subject
-     * @param $result
+     * @param mixed $result
      * @param \Magento\SalesRule\Model\Rule $rule
+     *
      * @return \Magento\SalesRule\Model\Rule
      */
     public function afterUpdateSpecificCoupons(
