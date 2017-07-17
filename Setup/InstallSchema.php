@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Setup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Setup\Model\Installer;
 
 /**
  * @codeCoverageIgnore
@@ -207,7 +208,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createOrderTable($installer)
     {
@@ -235,7 +236,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function dropOrderTableIfExists($installer)
     {
@@ -784,7 +785,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createCatalogTable($installer)
     {
@@ -793,8 +794,18 @@ class InstallSchema implements InstallSchemaInterface
         $catalogTable = $installer->getConnection()->newTable(
             $installer->getTable('email_catalog'));
 
+
         $catalogTable = $this->addColumnsToCatalogTable($catalogTable);
         $catalogTable = $this->addIndexesToCatalogTable($installer, $catalogTable);
+        $catalogTable->addForeignKey(
+            $installer->getFkName(
+                'email_catalog', 'product_id', 'catalog_product_entity', 'entity_id'
+            ),
+            'product_id',
+            $installer->getTable('catalog_product_entity'),
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
 
         $catalogTable->setComment('Connector Catalog');
         $installer->getConnection()->createTable($catalogTable);
