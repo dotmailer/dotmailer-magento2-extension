@@ -72,7 +72,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function dropContactTableIfExists($installer)
     {
@@ -154,7 +154,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      * @param $contactTable
      * @return \Magento\Framework\DB\Ddl\Table
      */
@@ -223,10 +223,21 @@ class InstallSchema implements InstallSchemaInterface
         $orderTable->addForeignKey(
             $installer->getFkName(
                 $installer->getTable('email_order'), 'store_id',
-                'core/store', 'store_id'
+                'store', 'store_id'
             ),
             'store_id',
             $installer->getTable('store'), 'store_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+
+        $orderTable->addForeignKey(
+            $installer->getFkName(
+                $installer->getTable('email_order'), 'order_id',
+                'sales_order', 'entity_id'
+            ),
+            'order_id',
+            $installer->getTable('sales_order'), 'entity_id',
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
         );
@@ -304,7 +315,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      * @param $orderTable
      * @return mixed
      */
@@ -348,7 +359,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createCampaignTable($installer)
     {
@@ -363,7 +374,7 @@ class InstallSchema implements InstallSchemaInterface
         $campaignTable->addForeignKey(
             $installer->getFkName(
                 $installer->getTable('email_campaign'), 'store_id',
-                'core/store', 'store_id'
+                'store', 'store_id'
             ),
             'store_id',
             $installer->getTable('store'), 'store_id',
@@ -376,7 +387,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function dropCampaignTableIfExists($installer)
     {
@@ -468,7 +479,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      * @param $campaignTable
      * @return mixed
      */
@@ -537,7 +548,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createReviewTable($installer)
     {
@@ -554,7 +565,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function dropReviewTableIfExists($installer)
     {
@@ -611,7 +622,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      * @param $reviewTable
      * @return mixed
      */
@@ -650,7 +661,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createWishlistTable($installer)
     {
@@ -668,7 +679,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param  SchemaSetupInterface $installer
      */
     private function dropWishlistTableIfExists($installer)
     {
@@ -734,7 +745,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      * @param $wishlistTable
      * @return mixed
      */
@@ -812,7 +823,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function dropCatalogTableIfExists($installer)
     {
@@ -866,7 +877,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      * @param $catalogTable
      * @return mixed
      */
@@ -900,7 +911,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createRuleTable($installer)
     {
@@ -916,7 +927,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function dropRuleTableIfExists($installer)
     {
@@ -980,7 +991,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createImporterTable($installer)
     {
@@ -998,7 +1009,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function dropImporterTableIfExists($installer)
     {
@@ -1080,7 +1091,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      * @param $importerTable
      * @return mixed
      */
@@ -1134,7 +1145,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createAutomationTable($installer)
     {
@@ -1151,7 +1162,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function dropAutomationTableIfExists($installer)
     {
@@ -1223,7 +1234,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      * @param $automationTable
      * @return mixed
      */
@@ -1280,7 +1291,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function addColumnToAdminUserTable($installer)
     {
