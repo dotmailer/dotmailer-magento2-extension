@@ -15,14 +15,17 @@ class InstallData implements InstallDataInterface
      * @var \Magento\Config\Model\ResourceModel\Config
      */
     private $config;
+
     /**
      * @var \Magento\Sales\Model\Config\Source\Order\StatusFactory
      */
     private $statusFactory;
+
     /**
      * @var \Magento\Catalog\Model\Product\TypeFactory
      */
     private $typefactory;
+
     /**
      * @var \Magento\Catalog\Model\Product\VisibilityFactory
      */
@@ -80,12 +83,16 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param ModuleDataSetupInterface $installer
+     * 
+     * @return null
      */
     private function populateEmailContactTable($installer)
     {
         $select = $installer->getConnection()->select()
             ->from(
-                ['customer' => $installer->getTable('customer_entity')],
+                [
+                    'customer' => $installer->getTable('customer_entity')
+                ],
                 [
                     'customer_id' => 'entity_id',
                     'email',
@@ -96,7 +103,9 @@ class InstallData implements InstallDataInterface
 
         $insertArray = ['customer_id', 'email', 'website_id', 'store_id'];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_contact'), $insertArray, false
+            $installer->getTable('email_contact'),
+            $insertArray,
+            false
         );
         $installer->getConnection()->query($sqlQuery);
 
@@ -124,13 +133,17 @@ class InstallData implements InstallDataInterface
             'store_id'
         ];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_contact'), $insertArray, false
+            $installer->getTable('email_contact'),
+            $insertArray,
+            false
         );
         $installer->getConnection()->query($sqlQuery);
     }
 
     /**
      * @param ModuleDataSetupInterface $installer
+     * 
+     * @return null
      */
     private function updateContactsWithCustomersThatAreSubscribers($installer)
     {
@@ -148,10 +161,10 @@ class InstallData implements InstallDataInterface
             $customerIds = implode(', ', $customerIds);
             $installer->getConnection()->update(
                 $installer->getTable('email_contact'),
-                array(
+                [
                     'is_subscriber' => new \Zend_Db_Expr('1'),
                     'subscriber_status' => new \Zend_Db_Expr('1')
-                ),
+                ],
                 ["customer_id in (?)" => $customerIds]
             );
         }
@@ -159,6 +172,8 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param ModuleDataSetupInterface $installer
+     * 
+     * @return null
      */
     private function populateEmailOrderTable($installer)
     {
@@ -183,18 +198,23 @@ class InstallData implements InstallDataInterface
             'order_status'
         ];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_order'), $insertArray, false
+            $installer->getTable('email_order'),
+            $insertArray,
+            false
         );
         $installer->getConnection()->query($sqlQuery);
     }
 
     /**
      * @param ModuleDataSetupInterface $installer
+     * 
+     * @return null
      */
     private function populateEmailReviewTable($installer)
     {
         $inCond = $installer->getConnection()->prepareSqlCondition(
-            'review_detail.customer_id', ['notnull' => true]
+            'review_detail.customer_id',
+            ['notnull' => true]
         );
         $select = $installer->getConnection()->select()
             ->from(
@@ -220,13 +240,17 @@ class InstallData implements InstallDataInterface
             'customer_id'
         ];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_review'), $insertArray, false
+            $installer->getTable('email_review'),
+            $insertArray,
+            false
         );
         $installer->getConnection()->query($sqlQuery);
     }
 
     /**
      * @param ModuleDataSetupInterface $installer
+     * 
+     * @return null
      */
     private function populateEmailWishlistTable($installer)
     {
@@ -256,13 +280,17 @@ class InstallData implements InstallDataInterface
             'item_count'
         ];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_wishlist'), $insertArray, false
+            $installer->getTable('email_wishlist'),
+            $insertArray,
+            false
         );
         $installer->getConnection()->query($sqlQuery);
     }
 
     /**
      * @param ModuleDataSetupInterface $installer
+     * 
+     * @return null
      */
     private function populateEmailCatalogTable($installer)
     {
@@ -280,13 +308,17 @@ class InstallData implements InstallDataInterface
             );
         $insertArray = ['product_id', 'created_at'];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_catalog'), $insertArray, false
+            $installer->getTable('email_catalog'),
+            $insertArray,
+            false
         );
         $installer->getConnection()->query($sqlQuery);
     }
 
     /**
      * @param \Magento\Config\Model\ResourceModel\Config $configModel
+     * 
+     * @return null
      */
     private function saveAllOrderStatusesAsString($configModel)
     {
@@ -303,12 +335,15 @@ class InstallData implements InstallDataInterface
         $statusString = implode(',', $options);
         $configModel->saveConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,
-            $statusString, 'website', 0
+            $statusString,
+            'website',
+            0
         );
     }
 
     /**
      * @param \Magento\Config\Model\ResourceModel\Config $configModel
+     * @return null
      */
     private function saveAllProductTypesAsString($configModel)
     {
@@ -322,12 +357,16 @@ class InstallData implements InstallDataInterface
         $typeString = implode(',', $options);
         $configModel->saveConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE,
-            $typeString, 'website', '0'
+            $typeString,
+            'website',
+            '0'
         );
     }
 
     /**
      * @param \Magento\Config\Model\ResourceModel\Config $configModel
+     * 
+     * @return null
      */
     private function saveAllProductVisibilitiesAsString($configModel)
     {
@@ -341,7 +380,9 @@ class InstallData implements InstallDataInterface
         $visibilityString = implode(',', $options);
         $configModel->saveConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY,
-            $visibilityString, 'website', '0'
+            $visibilityString,
+            'website',
+            '0'
         );
     }
 }

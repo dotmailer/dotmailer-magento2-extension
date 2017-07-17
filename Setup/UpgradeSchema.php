@@ -26,6 +26,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     ) {
         $this->json = $json;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -88,9 +89,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $setup->endSetup();
     }
 
-    /***
-     * @param $connection
-     * @param $setup
+    /**
+     * @param mixed $connection
+     * @param mixed $setup
+     * 
+     * @return void
      */
     private function upgradeTwoOSix($connection, $setup)
     {
@@ -152,7 +155,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     /**
      * @param SchemaSetupInterface $setup
-     * @param $connection
+     * @param mixed $connection
+     * 
+     * @return null
      */
     private function convertDataForConfig(SchemaSetupInterface $setup, $connection)
     {
@@ -162,7 +167,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $configTable
         )->where(
             'path IN (?)',
-            ['connector_automation/order_status_automation/program', 'connector_data_mapping/customer_data/custom_attributes']
+            [
+                'connector_automation/order_status_automation/program',
+                'connector_data_mapping/customer_data/custom_attributes'
+            ]
         );
         $rows = $setup->getConnection()->fetchAssoc($select);
 
@@ -180,7 +188,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     /**
      * @param SchemaSetupInterface $setup
-     * @param $connection
+     * @param mixed $connection
+     * 
+     * @return null
      */
     private function convertDataForRules(SchemaSetupInterface $setup, $connection)
     {
@@ -203,7 +213,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     /**
      * @param SchemaSetupInterface $setup
-     * @param $connection
+     * @param mixed $connection
+     * 
+     * @return null
      */
     private function convertDataForImporter(SchemaSetupInterface $setup, $connection)
     {
@@ -240,7 +252,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @return mixed
      */
     private function unserialize($string)
@@ -260,5 +272,4 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         return $result;
     }
-
 }
