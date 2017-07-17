@@ -9,18 +9,22 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
+
     /**
-     * @var
+     * @var \Magento\Quote\Model\Quote
      */
     public $quote;
+
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
     public $quoteFactory;
+
     /**
      * @var \Magento\Store\Model\App\EmulationFactory
      */

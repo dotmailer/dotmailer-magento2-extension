@@ -11,7 +11,7 @@ class Catalog extends \Magento\Config\Block\System\Config\Form\Field
     public $buttonLabel = 'Contact Report';
 
     /**
-     * @param $buttonLabel
+     * @param string $buttonLabel
      *
      * @return $this
      */
@@ -24,6 +24,8 @@ class Catalog extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * Set template to itself.
+     * 
+     * @return $this
      */
     public function _prepareLayout()
     {

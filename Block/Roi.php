@@ -9,6 +9,7 @@ class Roi extends \Magento\Framework\View\Element\Template
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+    
     /**
      * @var \Magento\Checkout\Model\Session
      */

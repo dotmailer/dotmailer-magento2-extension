@@ -24,6 +24,9 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      */
     public $helper;
 
+    /**
+     * @var array
+     */
     private $timeZones = [
         ['MageTimeZone' => 'Australia/Darwin', 'MicrosoftTimeZoneIndex' => '250'],
         ['MageTimeZone' => 'Australia/Melbourne', 'MicrosoftTimeZoneIndex' => '260'],

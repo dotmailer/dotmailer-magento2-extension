@@ -12,7 +12,7 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
     public $vatButtonLabel = 'New Addressbook';
 
     /**
-     * @param $vatButtonLabel
+     * @param string $vatButtonLabel
      *
      * @return $this
      */

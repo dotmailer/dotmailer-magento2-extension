@@ -4,6 +4,9 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration;
 
 class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
 {
+    /**
+     * @var \Magento\Framework\Data\Form\Element\Text
+     */
     public $text;
 
     /**

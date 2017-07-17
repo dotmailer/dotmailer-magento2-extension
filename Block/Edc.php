@@ -6,7 +6,7 @@ class Edc extends \Magento\Framework\View\Element\Template
 {
 
     /**
-     * @param $store
+     * @param string $store
      *
      * @return mixed
      */

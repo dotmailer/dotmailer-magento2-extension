@@ -9,18 +9,22 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
+
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     public $customerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
     public $wishlist;
+
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer
      */
@@ -107,7 +111,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product url.
      *
-     * @param $store
+     * @param string $store
      *
      * @return mixed
      */

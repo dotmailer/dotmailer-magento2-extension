@@ -17,10 +17,12 @@ class Books extends \Magento\Framework\View\Element\Template
      * @var string
      */
     public $contactId;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Customer\Model\Session
      */
@@ -66,8 +68,8 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Get config values.
      *
-     * @param $path
-     * @param $website
+     * @param string $path
+     * @param mixed $website
      *
      * @return mixed
      */
