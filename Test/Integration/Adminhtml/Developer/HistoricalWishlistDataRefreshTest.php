@@ -10,9 +10,9 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     public $objectManager;
 
     /**
-     * @var object
+     * @var string
      */
-    public $model = Dotdigitalgroup\Email\Model\Wishlist::class;
+    public $model = \Dotdigitalgroup\Email\Model\Wishlist::class;
 
     /**
      * @var string
@@ -37,9 +37,9 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     }
 
     /**
-     * @param mixed $from
-     * @param mixed $to
-     * @param mixed $dispatchUrl
+     * @param string $from
+     * @param string $to
+     * @param string $dispatchUrl
      * @return void
      */
     public function runReset($from, $to, $dispatchUrl)
@@ -235,7 +235,7 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     }
 
     /**
-     * @param mixed $data
+     * @param array $data
      * @return void
      */
     public function createEmailData($data)

@@ -71,7 +71,7 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param mixed $order
+     * @param \Magento\Sales\Model\Order $order
      * @return void
      */
     public function createInvoice($order)

@@ -10,12 +10,12 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
     public $objectManager;
 
     /**
-     * @var object
+     * @var string
      */
-    public $model = Dotdigitalgroup\Email\Model\Order::class;
+    public $model = \Dotdigitalgroup\Email\Model\Order::class;
 
     /**
-     * @var object
+     * @var string
      */
     public $url = 'backend/dotdigitalgroup_email/run/ordersreset';
 
@@ -37,9 +37,9 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
     }
 
     /**
-     * @param mixed $from
-     * @param mixed $to
-     * @param mixed $dispatchUrl
+     * @param string $from
+     * @param string $to
+     * @param string $dispatchUrl
      * @return void
      */
     public function runReset($from, $to, $dispatchUrl)
@@ -237,7 +237,7 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
     }
 
     /**
-     * @param mixed $data
+     * @param array $data
      * @return void
      */
     public function createEmailData($data)

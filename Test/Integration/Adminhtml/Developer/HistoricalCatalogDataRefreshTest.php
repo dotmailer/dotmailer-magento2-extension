@@ -10,9 +10,9 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
     public $objectManager;
 
     /**
-     * @var [type]
+     * @var string
      */
-    public $model = Dotdigitalgroup\Email\Model\Catalog::class;
+    public $model = \Dotdigitalgroup\Email\Model\Catalog::class;
 
     /**
      * @var string
@@ -37,9 +37,9 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
     }
 
     /**
-     * @param mixed $from
-     * @param mixed $to
-     * @param mixed $dispatchUrl
+     * @param string $from
+     * @param string $to
+     * @param string $dispatchUrl
      * @return void
      */
     public function runReset($from, $to, $dispatchUrl)
@@ -214,7 +214,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
     }
 
     /**
-     * @param mixed $data
+     * @param array $data
      * @return void
      */
     public function createEmailData($data)
