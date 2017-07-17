@@ -58,7 +58,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
             }
         } else {
             //create new email catalog item
-            //$emailCatalogModel->setProductId($productId);
+            $emailCatalogModel->setProductId($productId);
 
             $this->catalogResource->save($emailCatalogModel);
         }
