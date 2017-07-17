@@ -14,34 +14,43 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
+
     /**
      * @var string
      */
     public $storeId;
+
     /**
      * @var string
      */
     public $orderStatus;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection
      */
     public $importerCollection;
 
+    /**
+     * @return void
+     */
     public function setup()
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->importerCollection = $this->objectManager->create(
-            'Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection'
+            Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection::class
         );
     }
 
+    /**
+     * @return void
+     */
     public function prep()
     {
         /** @var  \Magento\Store\Model\Store $store */
-        $store = $this->objectManager->create('Magento\Store\Model\Store');
+        $store = $this->objectManager->create(Magento\Store\Model\Store::class);
         $store->load($this->storeId);
 
-        $helper = $this->getMock('Dotdigitalgroup\Email\Helper\Data', [], [], '', false);
+        $helper = $this->getMock(Dotdigitalgroup\Email\Helper\Data::class, [], [], '', false);
         $helper->method('isEnabled')->willReturn(true);
         $helper->method('getWebsites')->willReturn([$store->getWebsite()]);
         $helper->method('getApiUsername')->willReturn('apiuser-dummy@apiconnector.com');
@@ -50,15 +59,15 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
         $helper->method('getConfigSelectedStatus')->willReturn($this->orderStatus);
 
         $orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
-            $this->objectManager->create('Dotdigitalgroup\Email\Model\ImporterFactory'),
-            $this->objectManager->create('Dotdigitalgroup\Email\Model\OrderFactory'),
-            $this->objectManager->create('Dotdigitalgroup\Email\Model\Connector\AccountFactory'),
-            $this->objectManager->create('Dotdigitalgroup\Email\Model\Connector\OrderFactory'),
-            $this->objectManager->create('Dotdigitalgroup\Email\Model\ResourceModel\Contact'),
-            $this->objectManager->create('Dotdigitalgroup\Email\Model\ResourceModel\Order'),
+            $this->objectManager->create(Dotdigitalgroup\Email\Model\ImporterFactory::class),
+            $this->objectManager->create(Dotdigitalgroup\Email\Model\OrderFactory::class),
+            $this->objectManager->create(Dotdigitalgroup\Email\Model\Connector\AccountFactory::class),
+            $this->objectManager->create(Dotdigitalgroup\Email\Model\Connector\OrderFactory::class),
+            $this->objectManager->create(Dotdigitalgroup\Email\Model\ResourceModel\Contact::class),
+            $this->objectManager->create(Dotdigitalgroup\Email\Model\ResourceModel\Order::class),
             $helper,
-            $this->objectManager->create('Magento\Sales\Model\OrderFactory'),
-            $this->objectManager->create('\Magento\Store\Model\StoreManagerInterface')
+            $this->objectManager->create(Magento\Sales\Model\OrderFactory::class),
+            $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class)
         );
 
         $orderSync->sync();
@@ -68,8 +77,10 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
+     * 
+     * @return null
      */
-    public function test_single_order_is_type_order_and_mode_single()
+    public function testSingleOrderIsTypeOrderAndModeSingle()
     {
         $this->createModifiedEmailOrder();
         $this->prep();
@@ -84,7 +95,9 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
             $item->getImportType(),
             'Item is not type of order'
         );
-        $this->assertEquals(\Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE, $item->getImportMode(),
+        $this->assertEquals(
+            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
+            $item->getImportMode(),
             'Item is not single mode'
         );
     }
@@ -93,8 +106,10 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
+     * 
+     * @return null
      */
-    public function test_singe_order_type_is_object()
+    public function testSingleOrderTypeIsObject()
     {
         $this->createModifiedEmailOrder();
         $this->prep();
@@ -103,17 +118,20 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('object', json_decode($item->getImportData()), 'Import data is not of object type');
     }
 
+    /**
+     * @return null
+     */
     public function createModifiedEmailOrder()
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $orderCollection */
-        $orderCollection = $this->objectManager->create('Magento\Sales\Model\ResourceModel\Order\Collection');
+        $orderCollection = $this->objectManager->create(Magento\Sales\Model\ResourceModel\Order\Collection::class);
         /** @var \Magento\Sales\Model\Order $order */
         $order = $orderCollection->getFirstItem();
 
         $this->storeId = $order->getStoreId();
         $this->orderStatus = [$order->getStatus()];
 
-        $emailOrder = $this->objectManager->create('Dotdigitalgroup\Email\Model\Order')
+        $emailOrder = $this->objectManager->create(Dotdigitalgroup\Email\Model\Order::class)
             ->setOrderId($order->getId())
             ->setOrderStatus($order->getStatus())
             ->setQuoteId($order->getQuoteId())

@@ -8,9 +8,20 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
-    public $model = 'Dotdigitalgroup\Email\Model\Wishlist';
+
+    /**
+     * @var object
+     */
+    public $model = Dotdigitalgroup\Email\Model\Wishlist::class;
+
+    /**
+     * @var string
+     */
     public $url = 'backend/dotdigitalgroup_email/run/wishlistsreset';
 
+    /**
+     * @return void
+     */
     public function setUp()
     {
         parent::setUp();
@@ -25,6 +36,12 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->getRequest()->setParams($params);
     }
 
+    /**
+     * @param mixed $from
+     * @param mixed $to
+     * @param mixed $dispatchUrl
+     * @return void
+     */
     public function runReset($from, $to, $dispatchUrl)
     {
         $params = [
@@ -35,7 +52,10 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->dispatch($dispatchUrl);
     }
 
-    public function test_wishlist_reset_successful_given_date_range()
+    /**
+     * @return void
+     */
+    public function testWishlistResetSuccessfulGivenDateRange()
     {
         $this->emptyTable();
 
@@ -59,7 +79,10 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
 
     }
 
-    public function test_wishlist_reset_not_successful_wrong_date_range()
+    /**
+     * @return void
+     */
+    public function testWishlistResetNotSuccessfulWrongDateRange()
     {
         $this->emptyTable();
 
@@ -88,7 +111,10 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
 
     }
 
-    public function test_wishlist_reset_not_successful_invalid_date_range()
+    /**
+     * @return void
+     */
+    public function testWishlistResetNotSuccessfulInvalidDateRange()
     {
         $this->emptyTable();
 
@@ -117,7 +143,10 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
 
     }
 
-    public function test_wishlist_full_reset_successful_without_date_range()
+    /**
+     * @return void
+     */
+    public function testWishlistFullResetSuccessfulWithoutDateRange()
     {
         $this->emptyTable();
 
@@ -153,7 +182,10 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->assertEquals(2, $collection->getSize());
     }
 
-    public function test_wishlist_full_reset_success_with_from_date_only()
+    /**
+     * @return void
+     */
+    public function testWishlistFullResetSuccessWithFromDateOnly()
     {
         $this->emptyTable();
 
@@ -176,7 +208,10 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->assertEquals(1, $collection->getSize());
     }
 
-    public function test_wishlist_full_reset_success_with_to_date_only()
+    /**
+     * @return void
+     */
+    public function testWishlistFullResetSuccessWithToDateOnly()
     {
         $this->emptyTable();
 
@@ -199,12 +234,19 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->assertEquals(1, $collection->getSize());
     }
 
+    /**
+     * @param mixed $data
+     * @return void
+     */
     public function createEmailData($data)
     {
         $emailModel = $this->objectManager->create($this->model);
         $emailModel->addData($data)->save();
     }
 
+    /**
+     * @return void
+     */
     public function emptyTable()
     {
         $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Wishlist::class);

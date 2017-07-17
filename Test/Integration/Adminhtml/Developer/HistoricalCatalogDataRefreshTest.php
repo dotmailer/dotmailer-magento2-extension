@@ -8,9 +8,20 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
      * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
-    public $model = 'Dotdigitalgroup\Email\Model\Catalog';
+
+    /**
+     * @var [type]
+     */
+    public $model = Dotdigitalgroup\Email\Model\Catalog::class;
+
+    /**
+     * @var string
+     */
     public $url = 'backend/dotdigitalgroup_email/run/catalogreset';
 
+    /**
+     * @return void
+     */
     public function setUp()
     {
         parent::setUp();
@@ -25,6 +36,12 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->getRequest()->setParams($params);
     }
 
+    /**
+     * @param mixed $from
+     * @param mixed $to
+     * @param mixed $dispatchUrl
+     * @return void
+     */
     public function runReset($from, $to, $dispatchUrl)
     {
         $params = [
@@ -35,7 +52,10 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->dispatch($dispatchUrl);
     }
 
-    public function test_catalog_reset_successful_given_date_range()
+    /**
+     * @return void
+     */
+    public function testCatalogResetSuccessfulGivenDateRange()
     {
         $this->emptyTable();
 
@@ -56,7 +76,10 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
     }
 
-    public function test_catalog_reset_not_successful_wrong_date_range()
+    /**
+     * @return void
+     */
+    public function testCatalogResetNotSuccessfulWrongDateRange()
     {
         $this->emptyTable();
 
@@ -82,7 +105,10 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
     }
 
-    public function test_catalog_reset_not_successful_invalid_date_range()
+    /**
+     * @return void
+     */
+    public function testCatalogResetNotSuccessfulInvalidDateRange()
     {
         $this->emptyTable();
 
@@ -108,7 +134,10 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
     }
 
-    public function test_catalog_full_reset_successful_without_date_range()
+    /**
+     * @return void
+     */
+    public function testCatalogFullResetSuccessfulWithoutDateRange()
     {
         $this->emptyTable();
 
@@ -138,7 +167,10 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->assertEquals(2, $collection->getSize());
     }
 
-    public function test_catalog_full_reset_success_with_from_date_only()
+    /**
+     * @return void
+     */
+    public function testCatalogFullResetSuccessWithFromDateOnly()
     {
         $this->emptyTable();
 
@@ -158,7 +190,10 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->assertEquals(1, $collection->getSize());
     }
 
-    public function test_catalog_full_reset_success_with_to_date_only()
+    /**
+     * @return void
+     */
+    public function testCatalogFullResetSuccessWithToDateOnly()
     {
         $this->emptyTable();
 
@@ -178,12 +213,19 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->assertEquals(1, $collection->getSize());
     }
 
+    /**
+     * @param mixed $data
+     * @return void
+     */
     public function createEmailData($data)
     {
         $emailModel = $this->objectManager->create($this->model);
         $emailModel->addData($data)->save();
     }
 
+    /**
+     * @return void
+     */
     public function emptyTable()
     {
         $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Catalog::class);

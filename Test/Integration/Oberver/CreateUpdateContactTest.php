@@ -48,19 +48,24 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
      */
     private $helper;
 
-
+    /**
+     * @return void
+     */
     public function setup()
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
         $this->customerFactory = $this->objectManager->create('\Magento\Customer\Model\CustomerFactory');
         $this->contactFactory = $this->objectManager->create('\Dotdigitalgroup\Email\Model\ContactFactory');
-        $this->helper = $this->objectManager->create('\Dotdigitalgroup\Email\Helper\Data');
+        $this->helper = $this->objectManager->create(\Dotdigitalgroup\Email\Helper\Data::class);
     }
 
+    /**
+     * @return void
+     */
     public function prepareCustomerData()
     {
         /** @var \Magento\Store\Model\StoreManagerInterface $storeManager */
-        $storeManager = $this->objectManager->create('\Magento\Store\Model\StoreManagerInterface');
+        $storeManager = $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class);
         $store = $storeManager->getStore();
         $website = $store->getWebsite();
         $num = rand(500, 5000);
@@ -86,7 +91,10 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $this->customerModel = $customerModel;
     }
 
-    public function test_contact_created_and_updated_successfully()
+    /**
+     * @return void
+     */
+    public function testContactCreatedAndUpdatedSuccessfully()
     {
         $this->prepareCustomerData();
         //update the email and save contact
@@ -106,6 +114,10 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($updatedEmail, $emailUpdated, 'Updated contact was not found');
     }
 
+    /**
+     * @param mixed $updatedEmail
+     * @return void
+     */
     private function updateCustomerEmail($updatedEmail)
     {
         return $this->customerModel

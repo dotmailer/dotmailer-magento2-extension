@@ -12,6 +12,9 @@ use Magento\TestFramework\ObjectManager;
 
 class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
 {
+    /**
+     * @return void
+     */
     public function testConnectorContactIdNotSetCausesRedirect()
     {
         /** @var ObjectManager $objectManager */
@@ -39,6 +42,9 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->assertRedirect($this->stringContains('/customer/account/'));
     }
 
+    /**
+     * @return void
+     */
     public function testContactDataFieldsAreUpdatedByEmail()
     {
         ///updatecontactdatafieldsbyemail called
@@ -107,7 +113,6 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $mockClient->method('setApipassword')->willReturn($mockClient);
         $mockClient->method('getContactById')->willReturn((object) ['id' => '111']);
         $mockClient->expects($this->atLeastOnce())->method('updateContactDatafieldsByEmail')->willReturn(true);
-
 
         $this->getRequest()->setParam('data_fields', []);
 
