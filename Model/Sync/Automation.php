@@ -92,10 +92,6 @@ class Automation
     private $automationFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\AutomationFactory
-     */
-    private $automationResourceFactory;
-    /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     private $orderFactory;

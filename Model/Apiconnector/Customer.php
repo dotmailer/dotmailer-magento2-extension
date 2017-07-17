@@ -6,7 +6,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
  * Manages the Customer data as datafields for contact.
  *
  * @SuppressWarnings(PHPMD.TooManyFields)
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */

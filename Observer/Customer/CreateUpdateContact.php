@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 
 /**
  * Creates and updates the contact for customer. Monitor the email change for customer.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 {

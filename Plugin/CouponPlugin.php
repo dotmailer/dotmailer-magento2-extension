@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Plugin;
 /**
  * Class CouponPlugin - ignore to change the expiration day for dotmailer coupon codes.
  *
- * @package Dotdigitalgroup\Email\Plugin
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class CouponPlugin
 {

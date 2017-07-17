@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
  * Trigger Order automation based on order state.
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterface
 {

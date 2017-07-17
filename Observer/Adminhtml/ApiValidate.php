@@ -78,6 +78,19 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         $apiPassword = isset($groups['api']['fields']['password']['value'])
             ? $groups['api']['fields']['password']['value'] : false;
 
+        $this->validateAccount($apiUsername, $apiPassword);
+
+        return $this;
+    }
+
+    /**
+     * Validate account
+     *
+     * @param $apiUsername
+     * @param $apiPassword
+     */
+    private function validateAccount($apiUsername, $apiPassword)
+    {
         //skip if the inherit option is selected
         if ($apiUsername && $apiPassword) {
             $this->helper->log('----VALIDATING ACCOUNT---');
@@ -89,8 +102,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
                 $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
             }
         }
-
-        return $this;
     }
 
     /**
