@@ -4,6 +4,12 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Magento\Review\Model\ResourceModel\Rating\Option;
 
+/**
+ * Class Review
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ */
 class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

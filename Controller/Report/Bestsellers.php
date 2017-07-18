@@ -4,6 +4,9 @@ namespace Dotdigitalgroup\Email\Controller\Report;
 
 class Bestsellers extends \Dotdigitalgroup\Email\Controller\Response
 {
+    /**
+     * @return null
+     */
     public function execute()
     {
         //authenticate

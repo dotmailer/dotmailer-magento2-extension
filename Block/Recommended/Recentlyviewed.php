@@ -8,22 +8,27 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
     public $recommnededHelper;
+
     /**
      * @var \Magento\Customer\Model\SessionFactory
      */
     public $sessionFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     public $catalog;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -117,7 +122,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $store
+     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return mixed
      */

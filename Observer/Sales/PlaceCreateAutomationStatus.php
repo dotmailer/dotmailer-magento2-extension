@@ -11,14 +11,17 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
      */
     private $automationResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
@@ -29,6 +32,7 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
      *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(

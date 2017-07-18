@@ -11,18 +11,22 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
     private $emailWishlistResource;
+
     /**
      * @var \Magento\Wishlist\Model\ResourceModel\Wishlist
      */
     private $wishlistResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
     private $wishlistFactory;
+    
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */

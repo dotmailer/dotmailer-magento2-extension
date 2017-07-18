@@ -11,26 +11,32 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
      */
     private $automationResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
     private $wishlistResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
     private $wishlistFactory;
+
     /**
      * @var \Magento\Customer\Api\CustomerRepositoryInterface
      */
     private $customer;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
@@ -40,8 +46,10 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      * RegisterWishlist constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory           $automationFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation    $automationResource     
      * @param \Magento\Customer\Api\CustomerRepositoryInterface        $customer
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory             $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist      $wishlistResource
      * @param \Dotdigitalgroup\Email\Helper\Data                       $data
      * @param \Magento\Store\Model\StoreManagerInterface               $storeManagerInterface
      */
@@ -65,6 +73,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -86,7 +96,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      *
      * @param \Magento\Wishlist\Model\Wishlist $wishlist
      *
-     * @return $this
+     * @return null
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */

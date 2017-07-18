@@ -146,7 +146,7 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
                 ]
             );
             $renderer = $this->getLayout()->createBlock(
-                'Magento\Backend\Block\Store\Switcher\Form\Renderer\Fieldset\Element'
+                \Magento\Backend\Block\Store\Switcher\Form\Renderer\Fieldset\Element::class
             );
             $field->setRenderer($renderer);
         }

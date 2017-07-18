@@ -11,7 +11,7 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
     public $buttonLabel = 'Contact Report';
 
     /**
-     * @param $buttonLabel
+     * @param string $buttonLabel
      *
      * @return $this
      */

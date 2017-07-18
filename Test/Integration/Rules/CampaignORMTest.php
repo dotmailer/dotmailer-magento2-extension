@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
-
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection as CampaignCollection;
 use Magento\Framework\App\ResourceConnection;
 use Magento\TestFramework\ObjectManager;
@@ -37,22 +36,35 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
         return $model;
     }
 
+    /**
+     * @param Campaign $campaign
+     * @param CampaignCollection $collection
+     * @return void
+     */
     private function assertCollectionContains(Campaign $campaign, CampaignCollection $collection)
     {
         $message = sprintf('Expected campaign with ID "%s" not found in collection', $campaign->getId());
         $this->assertContains($campaign->getId(), array_keys($collection->getItems()), $message);
     }
 
+    /**
+     * @return void
+     */
     protected function setUp()
     {
         /** @var CampaignCollection $collection */
         $collection = ObjectManager::getInstance()->create(CampaignCollection::class);
-        $this->campaignResource = ObjectManager::getInstance()->create(\Dotdigitalgroup\Email\Model\ResourceModel\Campaign::class);
+        $this->campaignResource = ObjectManager::getInstance()->create(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Campaign::class
+        );
         $collection->walk(function (Campaign $campaign) {
             $this->campaignResource->delete($campaign);
         });
     }
 
+    /**
+     * @return void
+     */
     public function testCampaignTableExists()
     {
         /** @var ResourceConnection $resource */
@@ -63,6 +75,7 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @magentoDbIsolation enabled
+     * @return void
      */
     public function testModelAndResourceModelORMConfiguration()
     {
@@ -77,6 +90,7 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @magentoDbIsolation enabled
+     * @return void
      */
     public function testCollectionORMConfiguration()
     {
@@ -93,6 +107,7 @@ class CampaignORMTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @magentoDbIsolation enabled
+     * @return void
      */
     public function testCanBeLoadedByQuoteId()
     {

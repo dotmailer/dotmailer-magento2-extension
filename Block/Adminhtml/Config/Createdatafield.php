@@ -12,7 +12,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
     public $buttonLabel = 'New Datafield';
 
     /**
-     * @param $buttonLabel
+     * @param string $buttonLabel
      *
      * @return $this
      */
@@ -77,7 +77,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * @param $title
+     * @param string $title
      *
      * @return mixed
      *

@@ -7,6 +7,11 @@ namespace Dotdigitalgroup\Email\Observer\Html;
  */
 class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
 {
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return null
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $grid = $observer->getBlock();
@@ -46,8 +51,10 @@ class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
     /**
      * Callback action for .
      *
-     * @param $collection
-     * @param $column
+     * @param mixed $collection
+     * @param mixed $column
+     *
+     * @return null
      */
     protected function filterCallbackContact($collection, $column)
     {

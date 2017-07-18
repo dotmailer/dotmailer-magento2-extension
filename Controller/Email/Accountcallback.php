@@ -9,18 +9,22 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
     private $jsonHelper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Trial\TrialSetup
      */
     private $trialSetup;
+
     /**
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
@@ -55,6 +59,8 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
 
     /**
      * Execute method.
+     *
+     * @return void
      */
     public function execute()
     {
@@ -87,8 +93,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     /**
      * Send ajax response.
      *
-     * @param $error
-     * @param $msg
+     * @param string $error
+     * @param string $msg
+     * @return void
      */
     private function sendAjaxResponse($error, $msg)
     {

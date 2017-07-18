@@ -12,7 +12,7 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $block = $this->getLayout()->createBlock(
-            'Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Preview',
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Preview::class,
             'ddg_automation_dynamic_preview'
         )->setTemplate(
             'system/preview.phtml'

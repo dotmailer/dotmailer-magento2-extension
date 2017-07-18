@@ -31,6 +31,8 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
 
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
+     * 
+     * @return null
      */
     public function execute()
     {

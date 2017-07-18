@@ -315,7 +315,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      *  Region aware authorize link.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return mixed
      */

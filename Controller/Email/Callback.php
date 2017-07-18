@@ -8,26 +8,32 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\User\Model\UserFactory
      */
     private $adminUser;
+
     /**
      * @var \Magento\Store\Model\StoreManager
      */
     private $storeManager;
+
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     private $scopeConfig;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
     private $config;
+
     /**
      * @var \Magento\Backend\Helper\Data
      */
     private $adminHelper;
+
     /**
      * @var \Magento\User\Model\ResourceModel\User
      */
@@ -68,6 +74,8 @@ class Callback extends \Magento\Framework\App\Action\Action
 
     /**
      * Execute method.
+     *
+     * @return null
      */
     public function execute()
     {

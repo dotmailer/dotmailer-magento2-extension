@@ -11,26 +11,32 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+    
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\WishlistFactory
      */
     private $wishlistFactory;
+    
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     private $customerFactory;
+    
     /**
-     * @var
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
+    
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer
      */
     private $customerResource;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
@@ -67,6 +73,8 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return null
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {

@@ -15,10 +15,12 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
     private $ruleType;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
      */
     private $ruleCondition;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
@@ -75,6 +77,8 @@ class Ajax extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
+     * 
+     * @return void
      */
     public function execute()
     {
@@ -113,16 +117,16 @@ class Ajax extends \Magento\Backend\App\AbstractAction
     /**
      * Get select options.
      *
-     * @param $title
-     * @param $name
-     * @param $options
+     * @param string $title
+     * @param string $name
+     * @param array $options
      *
      * @return string
      */
     private function _getOptionHtml($title, $name, $options)
     {
         $block = $this->_view->getLayout()->createBlock(
-            'Magento\Framework\View\Element\Html\Select'
+            \Magento\Framework\View\Element\Html\Select::class
         );
         $block->setOptions($options)
             ->setId('')

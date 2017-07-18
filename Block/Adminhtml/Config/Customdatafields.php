@@ -30,12 +30,12 @@ class Customdatafields extends
     public $elementFactory;
 
     /**
-     * @var
+     * @var object
      */
     public $getDatafieldRenderer;
 
     /**
-     * @var
+     * @var object
      */
     public $getAttributeRenderer;
 
@@ -61,6 +61,9 @@ class Customdatafields extends
         parent::__construct($context, $data);
     }
 
+    /**
+     * @return void
+     */
     public function _prepareToRender()
     {
         $this->getDatafieldRenderer = null;
@@ -125,6 +128,8 @@ class Customdatafields extends
 
     /**
      * @param \Magento\Framework\DataObject $row
+     * 
+     * @return null
      */
     public function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
@@ -150,7 +155,7 @@ class Customdatafields extends
     public function _getAttributeRenderer()
     {
         $this->attributeRenderer = $this->getLayout()->createBlock(
-            'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
@@ -166,7 +171,7 @@ class Customdatafields extends
     public function _getDatafieldRenderer()
     {
         $this->datafieldRenderer = $this->getLayout()->createBlock(
-            'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
