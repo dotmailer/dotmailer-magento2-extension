@@ -62,7 +62,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     private $helper;
 
     /**
-     * @var object
+     * @var string
      */
     private $apiEndpoint;
 
@@ -101,7 +101,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         ];
 
     /**
-     * @param mixed $apiEndpoint
+     * @param string $apiEndpoint
      * @return void
      */
     public function setApiEndpoint($apiEndpoint)
@@ -154,7 +154,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a contact by ID. Unsubscribed or suppressed contacts will not be retrieved.
      *
-     * @param mixed $id
+     * @param string $id
      *
      * @return null
      * @throws \Exception
@@ -374,7 +374,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Creates an address book.
      *
-     * @param mixed $name
+     * @param string $name
      * @param string $visibility
      *
      * @return null
