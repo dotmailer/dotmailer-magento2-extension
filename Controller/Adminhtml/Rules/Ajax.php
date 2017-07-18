@@ -117,9 +117,9 @@ class Ajax extends \Magento\Backend\App\AbstractAction
     /**
      * Get select options.
      *
-     * @param mixed $title
-     * @param mixed $name
-     * @param mixed $options
+     * @param string $title
+     * @param string $name
+     * @param array $options
      *
      * @return string
      */

@@ -175,9 +175,9 @@ class Selected extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @param mixed $title
-     * @param mixed $name
-     * @param mixed $options
+     * @param string $title
+     * @param string $name
+     * @param array $options
      *
      * @return string
      */

@@ -15,7 +15,7 @@ class Save extends \Magento\Backend\App\AbstractAction
     private $storeManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Rules
+     * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
     private $ruleFactory;
 
@@ -126,9 +126,9 @@ class Save extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @param mixed $data
-     * @param mixed $ruleModel
-     * 
+     * @param array $data
+     * @param \Dotdigitalgroup\Email\Model\Rules $ruleModel
+     *
      * @return null
      */
     private function evaluateRequestParams($data, $ruleModel)
