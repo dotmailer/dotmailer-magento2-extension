@@ -68,6 +68,8 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
     /**
      * Constructor. Initialization required variables for class instance.
+     * 
+     * @return void
      */
     public function _construct()
     {

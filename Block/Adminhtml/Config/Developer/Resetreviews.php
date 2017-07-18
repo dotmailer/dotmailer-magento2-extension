@@ -11,7 +11,7 @@ class Resetreviews extends \Magento\Config\Block\System\Config\Form\Field
     public $buttonLabel = 'Run Now';
 
     /**
-     * @param $buttonLabel
+     * @param string $buttonLabel
      *
      * @return $this
      */
@@ -41,7 +41,7 @@ class Resetreviews extends \Magento\Config\Block\System\Config\Form\Field
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/reviewsreset', $query);
 
         return $this->getLayout()->createBlock(
-            'Magento\Backend\Block\Widget\Button'
+            \Magento\Backend\Block\Widget\Button::class
         )
             ->setType('button')
             ->setLabel($this->buttonLabel)

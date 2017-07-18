@@ -8,26 +8,32 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
     public $recommendedHelper;
+
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     public $orderFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     public $catalog;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
      */
     public $clientFactory;
+
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order
      */
@@ -129,11 +135,13 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $orderItems
-     * @param $mode
-     * @param $productsToDisplayCounter
-     * @param $limit
-     * @param $maxPerChild
+     * Get products to display
+     *
+     * @param array $orderItems
+     * @param string $mode
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
      *
      * @return array
      */
@@ -168,11 +176,15 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $productsToDisplayCounter
-     * @param $limit
-     * @param $maxPerChild
-     * @param $recommendedProducts
-     * @param $productsToDisplay
+     * Add recommended products
+     *
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     * @param array $recommendedProducts
+     * @param array $productsToDisplay
+     *
+     * @return null
      */
     private function addRecommendedProducts(
         &$productsToDisplayCounter,
@@ -199,9 +211,11 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $productsToDisplay
-     * @param $productsToDisplayCounter
-     * @param $limit
+     * Fill products to display
+     *
+     * @param array $productsToDisplay
+     * @param array $productsToDisplayCounter
+     * @param int $limit
      *
      * @return mixed
      */
@@ -228,8 +242,8 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product related items.
      *
-     * @param $productModel
-     * @param $mode
+     * @param \Magento\Catalog\Model\Product $productModel
+     * @param string $mode
      *
      * @return array
      */
@@ -276,7 +290,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $store
+     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return mixed
      */

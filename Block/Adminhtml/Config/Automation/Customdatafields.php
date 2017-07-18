@@ -5,14 +5,34 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation;
 class Customdatafields extends
  \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select
+     */
     public $statusRenderer;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select
+     */
     public $automationRenderer;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Config\Source\Automation\ProgramFactory
+     */
     public $programFactory;
 
+    /**
+     * @var \Magento\Framework\Data\Form\Element\Factory
+     */
     public $elementFactory;
+
+    /**
+     * @var mixed
+     */
     private $getStatusRenderer;
+
+    /**
+     * @var mixed
+     */
     private $getAutomationRenderer;
 
     /**
@@ -34,6 +54,9 @@ class Customdatafields extends
         parent::__construct($context, $data);
     }
 
+    /**
+     * @return null
+     */
     public function _prepareToRender()
     {
         $this->getStatusRenderer = null;
@@ -101,6 +124,8 @@ class Customdatafields extends
 
     /**
      * @param \Magento\Framework\DataObject $row
+     * 
+     * @return void
      */
     public function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
@@ -125,7 +150,7 @@ class Customdatafields extends
     public function getStatusRenderer()
     {
         $this->statusRenderer = $this->getLayout()->createBlock(
-            'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
@@ -141,7 +166,7 @@ class Customdatafields extends
     public function getAutomationRenderer()
     {
         $this->automationRenderer = $this->getLayout()->createBlock(
-            'Dotdigitalgroup\Email\Block\Adminhtml\Config\Select',
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );

@@ -8,18 +8,22 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
+
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     public $orderFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
     public $review;
+
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order
      */
@@ -154,7 +158,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $productId
+     * @param int|string $productId
      *
      * @return string
      */

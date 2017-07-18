@@ -8,26 +8,32 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
     public $recommnededHelper;
+
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     public $customerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
     public $wishlist;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     public $catalog;
+
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer
      */
@@ -163,11 +169,12 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $items
-     * @param $mode
-     * @param $productsToDisplayCounter
-     * @param $limit
-     * @param $maxPerChild
+     * @param array $items
+     * @param string $mode
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     *
      * @return array
      */
     private function getProductsToDisplay($items, $mode, &$productsToDisplayCounter, $limit, $maxPerChild)
@@ -201,12 +208,16 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $productsToDisplayCounter
-     * @param $limit
-     * @param $maxPerChild
-     * @param $recommendedProducts
-     * @param $productsToDisplay
-     * @param $product
+     * Add recommended products
+     *
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     * @param array $recommendedProducts
+     * @param array $productsToDisplay
+     * @param \Magento\Catalog\Model\Product $product
+     *
+     * @return null
      */
     private function addRecommendedProducts(
         &$productsToDisplayCounter,
@@ -234,9 +245,12 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $productsToDisplay
-     * @param $productsToDisplayCounter
-     * @param $limit
+     * Fill products to display
+     *
+     * @param array $productsToDisplay
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     *
      * @return mixed
      */
     private function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
@@ -261,8 +275,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product related items.
      *
-     * @param $productModel
-     * @param $mode
+     * @param \Magento\Catalog\Model\Product $productModel
+     * @param string $mode
      *
      * @return array
      */
@@ -296,7 +310,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * Number of the colums.
+     * Number of the columns.
      *
      * @return int|mixed
      */
@@ -309,7 +323,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * AC link to dynamic content.
-     * @param $store
+     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return mixed
      */

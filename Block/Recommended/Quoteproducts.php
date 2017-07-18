@@ -8,14 +8,17 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
     public $recommendedHelper;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
@@ -107,11 +110,13 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $quoteItems
-     * @param $mode
-     * @param $productsToDisplayCounter
-     * @param $limit
-     * @param $maxPerChild
+     * Get products to display
+     *
+     * @param array $quoteItems
+     * @param string $mode
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
      *
      * @return array
      */
@@ -145,11 +150,15 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $productsToDisplayCounter
-     * @param $limit
-     * @param $maxPerChild
-     * @param $recommendedProducts
-     * @param $productsToDisplay
+     * Add recommended products
+     *
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     * @param array $recommendedProducts
+     * @param array $productsToDisplay
+     *
+     * @return null
      */
     private function addRecommendedProducts(
         &$productsToDisplayCounter,
@@ -176,9 +185,11 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $productsToDisplay
-     * @param $productsToDisplayCounter
-     * @param $limit
+     * Fill products to display
+     *
+     * @param array $productsToDisplay
+     * @param int $productsToDisplayCounter
+     * @param int $limit
      *
      * @return mixed
      */
@@ -205,8 +216,8 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product related items.
      *
-     * @param $productModel
-     * @param $mode
+     * @param \Magento\Catalog\Model\Product $productModel
+     * @param string $mode
      *
      * @return array
      */
@@ -254,7 +265,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $store
+     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return mixed
      */
