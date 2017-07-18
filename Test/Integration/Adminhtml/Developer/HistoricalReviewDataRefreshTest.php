@@ -10,12 +10,12 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
     public $objectManager;
 
     /**
-     * @var string
+     * @var object
      */
     public $model = \Dotdigitalgroup\Email\Model\Review::class;
 
     /**
-     * @var string
+     * @var object
      */
     public $url = 'backend/dotdigitalgroup_email/run/reviewsreset';
 
@@ -37,9 +37,9 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
     }
 
     /**
-     * @param string $from
-     * @param string $to
-     * @param string $dispatchUrl
+     * @param mixed $from
+     * @param mixed $to
+     * @param mixed $dispatchUrl
      * @return void
      */
     public function runReset($from, $to, $dispatchUrl)
@@ -228,7 +228,7 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
     }
 
     /**
-     * @param array $data
+     * @param mixed $data
      * @return void
      */
     public function createEmailData($data)

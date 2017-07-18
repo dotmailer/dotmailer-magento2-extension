@@ -28,6 +28,11 @@ class RulesTest extends \PHPUnit_Framework_TestCase
     const RULE_OPERATOR_OR = 2;
 
     /**
+     * @var object
+     */
+    public $serializer;
+
+    /**
      * @var QuoteCollection
      */
     private $quoteCollection;

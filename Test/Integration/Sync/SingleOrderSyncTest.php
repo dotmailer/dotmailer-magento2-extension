@@ -47,10 +47,10 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
     public function prep()
     {
         /** @var  \Magento\Store\Model\Store $store */
-        $store = $this->objectManager->create(Magento\Store\Model\Store::class);
+        $store = $this->objectManager->create(\Magento\Store\Model\Store::class);
         $store->load($this->storeId);
 
-        $helper = $this->getMock(Dotdigitalgroup\Email\Helper\Data::class, [], [], '', false);
+        $helper = $this->getMock(\Dotdigitalgroup\Email\Helper\Data::class, [], [], '', false);
         $helper->method('isEnabled')->willReturn(true);
         $helper->method('getWebsites')->willReturn([$store->getWebsite()]);
         $helper->method('getApiUsername')->willReturn('apiuser-dummy@apiconnector.com');
@@ -59,14 +59,14 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
         $helper->method('getConfigSelectedStatus')->willReturn($this->orderStatus);
 
         $orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
-            $this->objectManager->create(Dotdigitalgroup\Email\Model\ImporterFactory::class),
-            $this->objectManager->create(Dotdigitalgroup\Email\Model\OrderFactory::class),
-            $this->objectManager->create(Dotdigitalgroup\Email\Model\Connector\AccountFactory::class),
-            $this->objectManager->create(Dotdigitalgroup\Email\Model\Connector\OrderFactory::class),
-            $this->objectManager->create(Dotdigitalgroup\Email\Model\ResourceModel\Contact::class),
-            $this->objectManager->create(Dotdigitalgroup\Email\Model\ResourceModel\Order::class),
+            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ImporterFactory::class),
+            $this->objectManager->create(\Dotdigitalgroup\Email\Model\OrderFactory::class),
+            $this->objectManager->create(\Dotdigitalgroup\Email\Model\Connector\AccountFactory::class),
+            $this->objectManager->create(\Dotdigitalgroup\Email\Model\Connector\OrderFactory::class),
+            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class),
+            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class),
             $helper,
-            $this->objectManager->create(Magento\Sales\Model\OrderFactory::class),
+            $this->objectManager->create(\Magento\Sales\Model\OrderFactory::class),
             $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class)
         );
 
@@ -124,14 +124,14 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
     public function createModifiedEmailOrder()
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $orderCollection */
-        $orderCollection = $this->objectManager->create(Magento\Sales\Model\ResourceModel\Order\Collection::class);
+        $orderCollection = $this->objectManager->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
         /** @var \Magento\Sales\Model\Order $order */
         $order = $orderCollection->getFirstItem();
 
         $this->storeId = $order->getStoreId();
         $this->orderStatus = [$order->getStatus()];
 
-        $emailOrder = $this->objectManager->create(Dotdigitalgroup\Email\Model\Order::class)
+        $emailOrder = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Order::class)
             ->setOrderId($order->getId())
             ->setOrderStatus($order->getStatus())
             ->setQuoteId($order->getQuoteId())
