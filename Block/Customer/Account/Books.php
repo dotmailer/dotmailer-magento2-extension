@@ -69,7 +69,7 @@ class Books extends \Magento\Framework\View\Element\Template
      * Get config values.
      *
      * @param string $path
-     * @param mixed $website
+     * @param int $website
      *
      * @return mixed
      */

@@ -92,7 +92,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         )) : $url;
 
         return $this->getLayout()->createBlock(
-            Magento\Backend\Block\Widget\Button::class
+            \Magento\Backend\Block\Widget\Button::class
         )
             ->setType('button')
             ->setLabel($title)

@@ -6,12 +6,12 @@ class Customdatafields extends
  \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
     /**
-     * @var mixed
+     * @var \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select
      */
     public $statusRenderer;
 
     /**
-     * @var mixed
+     * @var \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select
      */
     public $automationRenderer;
 
@@ -150,7 +150,7 @@ class Customdatafields extends
     public function getStatusRenderer()
     {
         $this->statusRenderer = $this->getLayout()->createBlock(
-            Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
@@ -166,7 +166,7 @@ class Customdatafields extends
     public function getAutomationRenderer()
     {
         $this->automationRenderer = $this->getLayout()->createBlock(
-            Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );

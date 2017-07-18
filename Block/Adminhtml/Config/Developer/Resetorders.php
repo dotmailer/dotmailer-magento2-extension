@@ -41,7 +41,7 @@ class Resetorders extends \Magento\Config\Block\System\Config\Form\Field
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/ordersreset', $query);
 
         return $this->getLayout()
-            ->createBlock(Magento\Backend\Block\Widget\Button::class)
+            ->createBlock(\Magento\Backend\Block\Widget\Button::class)
             ->setType('button')
             ->setId($element->getId())
             ->setLabel($this->buttonLabel)

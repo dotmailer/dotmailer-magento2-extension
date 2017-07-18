@@ -155,7 +155,7 @@ class Customdatafields extends
     public function _getAttributeRenderer()
     {
         $this->attributeRenderer = $this->getLayout()->createBlock(
-            Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );
@@ -171,7 +171,7 @@ class Customdatafields extends
     public function _getDatafieldRenderer()
     {
         $this->datafieldRenderer = $this->getLayout()->createBlock(
-            Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+            \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
             '',
             ['data' => ['is_render_to_js_template' => true]]
         );

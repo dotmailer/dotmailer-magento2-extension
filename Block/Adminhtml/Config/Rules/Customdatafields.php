@@ -165,7 +165,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         if (!$this->getAttributeRenderer) {
             $this->getAttributeRenderer = $this->getLayout()
                 ->createBlock(
-                    Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+                    \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
                     '',
                     ['data' => ['is_render_to_js_template' => true]]
                 );
@@ -184,7 +184,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         if (!$this->getConditionsRenderer) {
             $this->getConditionsRenderer = $this->getLayout()
                 ->createBlock(
-                    Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+                    \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
                     '',
                     ['data' => ['is_render_to_js_template' => true]]
                 );
@@ -203,7 +203,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
         if (!$this->getValueRenderer) {
             $this->getValueRenderer = $this->getLayout()
                 ->createBlock(
-                    Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+                    \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
                     '',
                     ['data' => ['is_render_to_js_template' => true]]
                 );

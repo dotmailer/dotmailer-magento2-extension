@@ -36,7 +36,7 @@ class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
             'dotdigitalgroup_email/run/deletecontactids'
         );
 
-        return $this->getLayout()->createBlock(Magento\Backend\Block\Widget\Button::class)
+        return $this->getLayout()->createBlock(\Magento\Backend\Block\Widget\Button::class)
             ->setType('button')
             ->setLabel($this->buttonLabel)
             ->setOnClick("window.location.href='" . $url . "'")

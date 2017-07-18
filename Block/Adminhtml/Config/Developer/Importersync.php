@@ -35,7 +35,7 @@ class Importersync extends \Magento\Config\Block\System\Config\Form\Field
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/importersync');
 
         return $this->getLayout()
-            ->createBlock(Magento\Backend\Block\Widget\Button::class)
+            ->createBlock(\Magento\Backend\Block\Widget\Button::class)
             ->setType('button')
             ->setLabel($this->buttonLabel)
             ->setOnClick("window.location.href='" . $url . "'")

@@ -169,12 +169,12 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param mixed $items
-     * @param mixed $mode
-     * @param mixed $productsToDisplayCounter
-     * @param mixed $limit
-     * @param mixed $maxPerChild
-     * 
+     * @param array $items
+     * @param string $mode
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     *
      * @return array
      */
     private function getProductsToDisplay($items, $mode, &$productsToDisplayCounter, $limit, $maxPerChild)
@@ -208,13 +208,15 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param mixed $productsToDisplayCounter
-     * @param mixed $limit
-     * @param mixed $maxPerChild
-     * @param mixed $recommendedProducts
-     * @param mixed $productsToDisplay
-     * @param mixed $product
-     * 
+     * Add recommended products
+     *
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     * @param array $recommendedProducts
+     * @param array $productsToDisplay
+     * @param \Magento\Catalog\Model\Product $product
+     *
      * @return null
      */
     private function addRecommendedProducts(
@@ -243,10 +245,12 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param mixed $productsToDisplay
-     * @param mixed $productsToDisplayCounter
-     * @param mixed $limit
-     * 
+     * Fill products to display
+     *
+     * @param array $productsToDisplay
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     *
      * @return mixed
      */
     private function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
@@ -271,8 +275,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product related items.
      *
-     * @param mixed $productModel
-     * @param mixed $mode
+     * @param \Magento\Catalog\Model\Product $productModel
+     * @param string $mode
      *
      * @return array
      */
@@ -306,7 +310,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * Number of the colums.
+     * Number of the columns.
      *
      * @return int|mixed
      */

@@ -184,7 +184,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param mixed $template
+     * @param string $template
      * 
      * @return string
      */

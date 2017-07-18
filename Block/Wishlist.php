@@ -111,7 +111,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product url.
      *
-     * @param string $store
+     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return mixed
      */

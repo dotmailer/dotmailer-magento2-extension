@@ -135,11 +135,13 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param mixed $orderItems
-     * @param mixed $mode
-     * @param mixed $productsToDisplayCounter
-     * @param mixed $limit
-     * @param mixed $maxPerChild
+     * Get products to display
+     *
+     * @param array $orderItems
+     * @param string $mode
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
      *
      * @return array
      */
@@ -174,12 +176,14 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param mixed $productsToDisplayCounter
-     * @param mixed $limit
-     * @param mixed $maxPerChild
-     * @param mixed $recommendedProducts
-     * @param mixed $productsToDisplay
-     * 
+     * Add recommended products
+     *
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     * @param array $recommendedProducts
+     * @param array $productsToDisplay
+     *
      * @return null
      */
     private function addRecommendedProducts(
@@ -207,9 +211,11 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param mixed $productsToDisplay
-     * @param mixed $productsToDisplayCounter
-     * @param mixed $limit
+     * Fill products to display
+     *
+     * @param array $productsToDisplay
+     * @param array $productsToDisplayCounter
+     * @param int $limit
      *
      * @return mixed
      */
@@ -236,8 +242,8 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Product related items.
      *
-     * @param mixed $productModel
-     * @param mixed $mode
+     * @param \Magento\Catalog\Model\Product $productModel
+     * @param string $mode
      *
      * @return array
      */

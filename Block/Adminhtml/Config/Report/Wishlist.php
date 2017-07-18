@@ -11,7 +11,7 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
     public $buttonLabel = 'Contact Report';
 
     /**
-     * @param strin $buttonLabel
+     * @param string $buttonLabel
      *
      * @return $this
      */

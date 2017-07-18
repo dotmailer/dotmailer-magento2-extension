@@ -14,7 +14,7 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
     public $_template = 'dashboard/main.phtml';
 
     /**
-     * Undocumented function
+     * Dashboard constructor
      *
      * @return void
      */
