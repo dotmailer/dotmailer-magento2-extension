@@ -115,7 +115,7 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param mixed $updatedEmail
+     * @param string $updatedEmail
      * @return void
      */
     private function updateCustomerEmail($updatedEmail)

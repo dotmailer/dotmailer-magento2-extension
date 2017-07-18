@@ -46,8 +46,8 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param mixed $website
-     * @param mixed $endPoint
+     * @param int $website
+     * @param string $endPoint
      *
      * @return null
      * 
