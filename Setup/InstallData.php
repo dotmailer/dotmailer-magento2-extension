@@ -83,7 +83,7 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param ModuleDataSetupInterface $installer
-     * 
+     *
      * @return null
      */
     private function populateEmailContactTable($installer)
@@ -142,7 +142,7 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param ModuleDataSetupInterface $installer
-     * 
+     *
      * @return null
      */
     private function updateContactsWithCustomersThatAreSubscribers($installer)
@@ -172,7 +172,7 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param ModuleDataSetupInterface $installer
-     * 
+     *
      * @return null
      */
     private function populateEmailOrderTable($installer)
@@ -207,7 +207,7 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param ModuleDataSetupInterface $installer
-     * 
+     *
      * @return null
      */
     private function populateEmailReviewTable($installer)
@@ -249,7 +249,7 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param ModuleDataSetupInterface $installer
-     * 
+     *
      * @return null
      */
     private function populateEmailWishlistTable($installer)
@@ -289,7 +289,7 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param ModuleDataSetupInterface $installer
-     * 
+     *
      * @return null
      */
     private function populateEmailCatalogTable($installer)
@@ -317,7 +317,7 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param \Magento\Config\Model\ResourceModel\Config $configModel
-     * 
+     *
      * @return null
      */
     private function saveAllOrderStatusesAsString($configModel)
@@ -365,7 +365,7 @@ class InstallData implements InstallDataInterface
 
     /**
      * @param \Magento\Config\Model\ResourceModel\Config $configModel
-     * 
+     *
      * @return null
      */
     private function saveAllProductVisibilitiesAsString($configModel)

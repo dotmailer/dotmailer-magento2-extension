@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Setup;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use \Magento\Framework\DB\Adapter\AdapterInterface;
 
 /**
  * @codeCoverageIgnore
@@ -90,9 +91,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
-     * @param mixed $connection
-     * @param mixed $setup
-     * 
+     * @param AdapterInterface $connection
+     * @param SchemaSetupInterface $setup
+     *
      * @return void
      */
     private function upgradeTwoOSix($connection, $setup)
@@ -155,8 +156,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     /**
      * @param SchemaSetupInterface $setup
-     * @param mixed $connection
-     * 
+     * @param AdapterInterface $connection
+     *
      * @return null
      */
     private function convertDataForConfig(SchemaSetupInterface $setup, $connection)
@@ -188,8 +189,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     /**
      * @param SchemaSetupInterface $setup
-     * @param mixed $connection
-     * 
+     * @param AdapterInterface $connection
+     *
      * @return null
      */
     private function convertDataForRules(SchemaSetupInterface $setup, $connection)
@@ -213,8 +214,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     /**
      * @param SchemaSetupInterface $setup
-     * @param mixed $connection
-     * 
+     * @param AdapterInterface $connection
+     *
      * @return null
      */
     private function convertDataForImporter(SchemaSetupInterface $setup, $connection)

@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Setup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\DB\Ddl\Table;
 
 /**
  * @codeCoverageIgnore
@@ -44,7 +45,7 @@ class InstallSchema implements InstallSchemaInterface
 
     /**
      * @param SchemaSetupInterface $installer
-     * 
+     *
      * @return null
      */
     private function createContactTable($installer)
@@ -76,8 +77,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function dropContactTableIfExists($installer)
@@ -93,7 +94,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $contactTable
+     * @param Table $contactTable
      * @return \Magento\Framework\DB\Ddl\Table
      */
     private function addColumnsToContactTable($contactTable)
@@ -190,8 +191,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mxied $installer
-     * @param mixed $contactTable
+     * @param SchemaSetupInterface $installer
+     * @param Table $contactTable
      * @return \Magento\Framework\DB\Ddl\Table
      */
     private function addIndexesToContactTable($installer, $contactTable)
@@ -243,8 +244,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function createOrderTable($installer)
@@ -277,8 +278,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function dropOrderTableIfExists($installer)
@@ -294,8 +295,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $orderTable
-     * @return mixed
+     * @param Table $orderTable
+     * @return Table
      */
     private function addColumnsToOrderTable($orderTable)
     {
@@ -370,9 +371,9 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * @param mixed $orderTable
-     * @return mixed
+     * @param SchemaSetupInterface $installer
+     * @param Table $orderTable
+     * @return Table
      */
     private function addIndexesToOrderTable($installer, $orderTable)
     {
@@ -428,8 +429,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function createCampaignTable($installer)
@@ -462,8 +463,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function dropCampaignTableIfExists($installer)
@@ -479,8 +480,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $campaignTable
-     * @return mixed
+     * @param Table $campaignTable
+     * @return Table
      */
     private function addColumnsToCampaignTable($campaignTable)
     {
@@ -597,9 +598,9 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * @param mixed $campaignTable
-     * @return mixed
+     * @param SchemaSetupInterface $installer
+     * @param Table $campaignTable
+     * @return Table
      */
     private function addIndexesToCampaignTable($installer, $campaignTable)
     {
@@ -690,8 +691,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function createReviewTable($installer)
@@ -710,8 +711,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function dropReviewTableIfExists($installer)
@@ -727,8 +728,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $reviewTable
-     * @return mixed
+     * @param Table $reviewTable
+     * @return Table
      */
     private function addColumnsToReviewTable($reviewTable)
     {
@@ -789,9 +790,9 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * @param mixed $reviewTable
-     * @return mixed
+     * @param SchemaSetupInterface $installer
+     * @param Table $reviewTable
+     * @return Table
      */
     private function addIndexesToReviewTable($installer, $reviewTable)
     {
@@ -840,8 +841,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function createWishlistTable($installer)
@@ -860,8 +861,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function dropWishlistTableIfExists($installer)
@@ -877,8 +878,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $wishlistTable
-     * @return mixed
+     * @param Table $wishlistTable
+     * @return Table
      */
     private function addColumnsToWishlistTable($wishlistTable)
     {
@@ -944,7 +945,8 @@ class InstallSchema implements InstallSchemaInterface
             'Creation Time'
         )
         ->addColumn(
-            'updated_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+            'updated_at',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
             null,
             [],
             'Update Time'
@@ -952,9 +954,9 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * @param mixed $wishlistTable
-     * @return mixed
+     * @param SchemaSetupInterface $installer
+     * @param Table $wishlistTable
+     * @return Table
      */
     private function addIndexesToWishlistTable($installer, $wishlistTable)
     {
@@ -1017,8 +1019,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function createCatalogTable($installer)
@@ -1037,7 +1039,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
+     * @param SchemaSetupInterface $installer
      * @return null
      */
     private function dropCatalogTableIfExists($installer)
@@ -1053,8 +1055,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $catalogTable
-     * @return mixed
+     * @param Table $catalogTable
+     * @return Table
      */
     private function addColumnsToCatalogTable($catalogTable)
     {
@@ -1108,9 +1110,9 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * @param mixed $catalogTable
-     * @return mixed
+     * @param SchemaSetupInterface $installer
+     * @param Table $catalogTable
+     * @return Table
      */
     private function addIndexesToCatalogTable($installer, $catalogTable)
     {
@@ -1152,8 +1154,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function createRuleTable($installer)
@@ -1171,8 +1173,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function dropRuleTableIfExists($installer)
@@ -1188,8 +1190,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $ruleTable
-     * @return mixed
+     * @param Table $ruleTable
+     * @return Table
      */
     private function addColumnsToRulesTable($ruleTable)
     {
@@ -1264,8 +1266,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function createImporterTable($installer)
@@ -1284,8 +1286,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function dropImporterTableIfExists($installer)
@@ -1301,8 +1303,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $importerTable
-     * @return mixed
+     * @param Table $importerTable
+     * @return Table
      */
     private function addColumnsToImporterTable($importerTable)
     {
@@ -1405,9 +1407,9 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * @param mixed $importerTable
-     * @return mixed
+     * @param SchemaSetupInterface $installer
+     * @param Table $importerTable
+     * @return Table
      */
     private function addIndexesToImporterTable($installer, $importerTable)
     {
@@ -1477,8 +1479,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function createAutomationTable($installer)
@@ -1497,8 +1499,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function dropAutomationTableIfExists($installer)
@@ -1514,8 +1516,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed  $automationTable
-     * @return mixed
+     * @param Table $automationTable
+     * @return Table
      */
     private function addColumnsToAutomationTable($automationTable)
     {
@@ -1604,9 +1606,9 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * @param mixed $automationTable
-     * @return mixed
+     * @param SchemaSetupInterface $installer
+     * @param Table $automationTable
+     * @return Table
      */
     private function addIndexesToAutomationTable($installer, $automationTable)
     {
@@ -1669,15 +1671,15 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param mixed $installer
-     * 
+     * @param SchemaSetupInterface $installer
+     *
      * @return null
      */
     private function addColumnToAdminUserTable($installer)
     {
         $installer->getConnection()->addColumn(
             $installer->getTable('admin_user'),
-            'refresh_token', 
+            'refresh_token',
             [
             'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
             'length' => 256,
