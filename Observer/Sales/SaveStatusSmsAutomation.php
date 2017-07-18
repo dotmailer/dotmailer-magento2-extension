@@ -1,6 +1,7 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
+
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 
 /**
@@ -14,38 +15,47 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      * @var Automation
      */
     private $automationResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
      */
     private $orderResource;
+
     /**
      * @var \Magento\Framework\Registry
      */
     private $registry;
+
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     private $scopeConfig;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Magento\Store\Model\App\EmulationFactory
      */
     private $emulationFactory;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
     private $emailOrderFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
     private $automationFactory;
+
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
     private $orderCollectionFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -180,7 +190,9 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     /**
      * Save enrolment to queue for cron automation enrolment.
      *
-     * @param $data
+     * @param mixed $data
+     *
+     * @return null
      */
     private function doAutomationEnrolment($data)
     {
@@ -207,8 +219,10 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     }
 
     /**
-     * @param $status
-     * @param $emailOrder
+     * @param string $status
+     * @param Dotdigitalgroup\Email\Model\Order $emailOrder
+     *
+     * @return null
      */
     private function handleOrderStatusChange($status, $emailOrder)
     {
@@ -222,11 +236,13 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     }
 
     /**
-     * @param $order
-     * @param $status
-     * @param $customerEmail
-     * @param $websiteId
-     * @param $storeName
+     * @param Magento\Sales\Model\Order $order
+     * @param string $status
+     * @param string $customerEmail
+     * @param mixed $websiteId
+     * @param string $storeName
+     *     
+     * @return null
      */
     private function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName)
     {

@@ -11,6 +11,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Backend\App\Action\Context
      */
@@ -20,14 +21,17 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Framework\Message\ManagerInterface
      */
     private $messageManager;
+
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
     private $objectManager;
+
     /**
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
     private $writer;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
      */
@@ -98,6 +102,8 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      *
      * @param string $apiUsername
      * @param string $apiPassword
+     *
+     * @return null
      */
     private function saveApiEndpoint($apiUsername, $apiPassword)
     {
