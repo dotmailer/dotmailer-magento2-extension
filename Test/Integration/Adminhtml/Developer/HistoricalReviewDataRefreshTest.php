@@ -8,9 +8,20 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
      * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
-    public $model = 'Dotdigitalgroup\Email\Model\Review';
+
+    /**
+     * @var string
+     */
+    public $model = \Dotdigitalgroup\Email\Model\Review::class;
+
+    /**
+     * @var string
+     */
     public $url = 'backend/dotdigitalgroup_email/run/reviewsreset';
 
+    /**
+     * @return void
+     */
     public function setUp()
     {
         parent::setUp();
@@ -25,6 +36,12 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->getRequest()->setParams($params);
     }
 
+    /**
+     * @param string $from
+     * @param string $to
+     * @param string $dispatchUrl
+     * @return void
+     */
     public function runReset($from, $to, $dispatchUrl)
     {
         $params = [
@@ -35,7 +52,10 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->dispatch($dispatchUrl);
     }
 
-    public function test_review_reset_successful_given_date_range()
+    /**
+     * @return void
+     */
+    public function testReviewResetSuccessfulGivenDateRange()
     {
         $this->emptyTable();
 
@@ -58,7 +78,10 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
 
     }
 
-    public function test_review_reset_not_successful_wrong_date_range()
+    /**
+     * @return void
+     */
+    public function testReviewresetNotSuccessfulWrongDateRange()
     {
         $this->emptyTable();
 
@@ -86,7 +109,10 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
 
     }
 
-    public function test_review_reset_not_successful_invalid_date_range()
+    /**
+     * @return void
+     */
+    public function testReviewresetNotSuccessfulInvalidDateRange()
     {
         $this->emptyTable();
 
@@ -114,7 +140,10 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
 
     }
 
-    public function test_review_full_reset_successful_without_date_range()
+    /**
+     * @return void
+     */
+    public function testReviewFullResetSuccsesfulWithoutDateRange()
     {
         $this->emptyTable();
 
@@ -148,7 +177,10 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->assertEquals(2, $collection->getSize());
     }
 
-    public function test_review_full_reset_success_with_from_date_only()
+    /**
+     * @return void
+     */
+    public function testReviewFullResetSuccessWithFromDateOnly()
     {
         $this->emptyTable();
 
@@ -170,7 +202,10 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->assertEquals(1, $collection->getSize());
     }
 
-    public function test_review_full_reset_success_with_to_date_only()
+    /**
+     * @return void
+     */
+    public function testReviewFullResetSuccessWithToDateOnly()
     {
         $this->emptyTable();
 
@@ -192,12 +227,19 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->assertEquals(1, $collection->getSize());
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     public function createEmailData($data)
     {
         $emailModel = $this->objectManager->create($this->model);
         $emailModel->addData($data)->save();
     }
 
+    /**
+     * @return void
+     */
     public function emptyTable()
     {
         $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Review::class);

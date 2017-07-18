@@ -8,9 +8,20 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
      * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
-    public $model = 'Dotdigitalgroup\Email\Model\Order';
+
+    /**
+     * @var string
+     */
+    public $model = \Dotdigitalgroup\Email\Model\Order::class;
+
+    /**
+     * @var string
+     */
     public $url = 'backend/dotdigitalgroup_email/run/ordersreset';
 
+    /**
+     * @return void
+     */
     public function setUp()
     {
         parent::setUp();
@@ -25,6 +36,12 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
         $this->getRequest()->setParams($params);
     }
 
+    /**
+     * @param string $from
+     * @param string $to
+     * @param string $dispatchUrl
+     * @return void
+     */
     public function runReset($from, $to, $dispatchUrl)
     {
         $params = [
@@ -35,7 +52,10 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
         $this->dispatch($dispatchUrl);
     }
 
-    public function test_order_reset_successful_given_date_range()
+    /**
+     * @return void
+     */
+    public function testOrderResetSuccessfulGivenDateRange()
     {
         $this->emptyTable();
 
@@ -62,7 +82,10 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
 
     }
 
-    public function test_order_reset_not_successful_wrong_date_range()
+    /**
+     * @return void
+     */
+    public function testOrderResetNotSuccessfulWrongDateRange()
     {
         $this->emptyTable();
 
@@ -91,7 +114,10 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
 
     }
 
-    public function test_order_reset_not_successful_invalid_date_range()
+    /**
+     * @return void
+     */
+    public function testOrderResetNotSuccessfulInvalidDateRange()
     {
         $this->emptyTable();
 
@@ -120,7 +146,10 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
 
     }
 
-    public function test_order_full_reset_successful_without_date_range()
+    /**
+     * @return void
+     */
+    public function testOrderFullResetSuccessfulWithoutDateRange()
     {
         $this->emptyTable();
 
@@ -155,7 +184,10 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
         $this->assertEquals(2, $collection->getSize());
     }
 
-    public function test_order_full_reset_success_with_from_date_only()
+    /**
+     * @return void
+     */
+    public function testOrderFullResetSuccessWithFromDateOnly()
     {
         $this->emptyTable();
 
@@ -178,7 +210,10 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
         $this->assertEquals(1, $collection->getSize());
     }
 
-    public function test_order_full_reset_success_with_to_date_only()
+    /**
+     * @return void
+     */
+    public function testOrderFullResetSuccessWithToDateOnly()
     {
         $this->emptyTable();
 
@@ -201,12 +236,19 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
         $this->assertEquals(1, $collection->getSize());
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     public function createEmailData($data)
     {
         $emailModel = $this->objectManager->create($this->model);
         $emailModel->addData($data)->save();
     }
 
+    /**
+     * @return void
+     */
     public function emptyTable()
     {
         $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class);

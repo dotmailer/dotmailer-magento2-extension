@@ -11,15 +11,24 @@ namespace Dotdigitalgroup\Email\Test\Integration\Automation;
 class FirstOrderTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var object
+     */
     public $objectManager;
+
+    /**
+     * @var int
+     */
     public $orderIncrementId;
 
+    /**
+     * @return void
+     */
     public function setUp()
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->orderIncrementId = '100000001';
     }
-
 
     /**
      * @magentoDataFixture Magento/Sales/_files/order_with_customer.php
@@ -27,8 +36,10 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store connector_api_credentials/api/username dummyusername
      * @magentoConfigFixture default_store connector_api_credentials/api/password dummypassword
      * @magentoConfigFixture default_store connector_automation/visitor_automation/first_order_automation 123
+     * 
+     * @return null
      */
-    public function test_first_customer_automation()
+    public function testFirstCustomerAutomation()
     {
         $this->objectManager->create(\Magento\Customer\Model\Customer::class);
 
@@ -41,7 +52,9 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
         $order->setCustomerId(1);
         $order->save();
 
-        $automation = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection::class);
+        $automation = $this->objectManager->create(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection::class
+        );
         $automation->addFieldToFilter('email', $orderEmail);
         $automation->addFieldToFilter('automation_type', 'first_order_automation');
 
@@ -57,10 +70,14 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $automation->getSize(), 'duplicate automation for first order');
     }
 
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     * @return void
+     */
     public function createInvoice($order)
     {
         $orderService = \Magento\TestFramework\ObjectManager::getInstance()->create(
-            'Magento\Sales\Api\InvoiceManagementInterface'
+            \Magento\Sales\Api\InvoiceManagementInterface::class
         );
         $invoice = $orderService->prepareInvoice($order);
         $invoice->register();
@@ -71,6 +88,4 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
 
         return $order;
     }
-
-
 }
