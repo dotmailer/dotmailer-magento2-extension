@@ -658,8 +658,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Save api endpoint into config.
      *
-     * @param mixed string $apiEndpoint
-     * @param mixed int $websiteId
+     * @param string $apiEndpoint
+     * @param  int $websiteId
      * 
      * @return null
      */

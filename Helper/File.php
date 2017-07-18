@@ -191,8 +191,8 @@ class File
      * Convert array into the csv.
      *
      * @param array $fields
-     * @param mixed  $delimiter
-     * @param mixed $enclosure
+     * @param string $delimiter
+     * @param string $enclosure
      * @param bool $encloseAll
      * @param bool $nullToMysqlNull
      *
