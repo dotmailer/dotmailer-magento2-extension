@@ -33,6 +33,8 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
 
     /**
      * Validate api user.
+     * 
+     * @return void
      */
     public function execute()
     {

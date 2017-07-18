@@ -8,10 +8,12 @@ class Save extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -36,6 +38,8 @@ class Save extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
+     * 
+     * @return null
      */
     public function execute()
     {

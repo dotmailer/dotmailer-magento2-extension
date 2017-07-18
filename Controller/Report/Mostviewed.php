@@ -4,6 +4,9 @@ namespace Dotdigitalgroup\Email\Controller\Report;
 
 class Mostviewed extends \Dotdigitalgroup\Email\Controller\Response
 {
+    /**
+     * @return null
+     */
     public function execute()
     {
         //authenticate

@@ -8,14 +8,17 @@ class Save extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
      */
     private $rulesResource;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
     private $ruleFactory;
+
     /**
      * @var \Magento\Framework\Escaper
      */
@@ -56,6 +59,8 @@ class Save extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
+     * 
+     * @return mixed
      */
     public function execute()
     {
@@ -121,8 +126,10 @@ class Save extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @param $data
-     * @param $ruleModel
+     * @param mixed $data
+     * @param mixed $ruleModel
+     * 
+     * @return null
      */
     private function evaluateRequestParams($data, $ruleModel)
     {

@@ -8,14 +8,17 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+    
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $data;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
      */
     private $datafield;
+
     /**
      * @var \Magento\Framework\Escaper
      */
@@ -44,6 +47,8 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
+     * 
+     * @return null
      */
     public function execute()
     {
