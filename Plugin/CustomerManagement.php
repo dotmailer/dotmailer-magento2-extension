@@ -27,7 +27,7 @@ class CustomerManagement
      * Plugin for create function.
      *
      * @param \Magento\Sales\Model\Order\CustomerManagement $subject
-     * @param $customer
+     * @param mixed $customer
      * @return mixed
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

@@ -25,11 +25,18 @@ class CustomerNewsletterDisable
     /**
      * @param \Magento\Customer\Model\Customer $customer
      * @param callable $proceed
-     * @param array ...$args
-     * @return mixed
+     * @param string $type
+     * @param string $backUrl
+     * @param string $storeId
+     * @return void
      */
-    public function aroundSendNewAccountEmail(\Magento\Customer\Model\Customer $customer, callable $proceed, ...$args)
-    {
+    public function aroundSendNewAccountEmail(
+        \Magento\Customer\Model\Customer $customer,
+        callable $proceed,
+        $type,
+        $backUrl,
+        $storeId
+    ) {
         $storeId = $customer->getStoreId();
 
         if (! $this->scopeConfig->getValue(
@@ -38,7 +45,7 @@ class CustomerNewsletterDisable
             $storeId
         )
         ) {
-            return $proceed(...$args);
+            return $proceed($type, $backUrl, $storeId);
         }
     }
 }
