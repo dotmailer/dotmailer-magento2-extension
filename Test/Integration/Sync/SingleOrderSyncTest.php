@@ -37,7 +37,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->importerCollection = $this->objectManager->create(
-            Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection::class
+            \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection::class
         );
     }
 

@@ -86,10 +86,10 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             false
         );
         $this->contactResource = ObjectManager::getInstance()->get(
-            Dotdigitalgroup\Email\Model\ResourceModel\Contact::class
+            \Dotdigitalgroup\Email\Model\ResourceModel\Contact::class
         );
         $this->orderResource = ObjectManager::getInstance()->get(
-            Dotdigitalgroup\Email\Model\ResourceModel\Order::class
+            \Dotdigitalgroup\Email\Model\ResourceModel\Order::class
         );
         $this->helper = $this->getMock(Dotdigitalgroup\Email\Helper\Data::class, [], [], '', false);
         $this->salesOrderFactory = $this->getMock('Magento\Sales\Model\OrderFactory', [], [], '', false);

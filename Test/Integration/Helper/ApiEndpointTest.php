@@ -37,7 +37,7 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
         $objectManager = ObjectManager::getInstance();
 
         /** @var \Magento\Config\Model\ResourceModel\Config $config */
-        $config = $objectManager->create(Magento\Config\Model\ResourceModel\Config::class);
+        $config = $objectManager->create(\Magento\Config\Model\ResourceModel\Config::class);
         $data = $this->dataProvider();
 
         foreach ($data as $item) {
@@ -46,7 +46,7 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $website
+     * @param int $website
      * @param string $endPoint
      *
      * @return null

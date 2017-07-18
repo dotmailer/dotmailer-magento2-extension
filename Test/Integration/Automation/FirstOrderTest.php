@@ -77,7 +77,7 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
     public function createInvoice($order)
     {
         $orderService = \Magento\TestFramework\ObjectManager::getInstance()->create(
-            Magento\Sales\Api\InvoiceManagementInterface::class
+            \Magento\Sales\Api\InvoiceManagementInterface::class
         );
         $invoice = $orderService->prepareInvoice($order);
         $invoice->register();
