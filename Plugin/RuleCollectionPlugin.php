@@ -6,6 +6,8 @@ namespace Dotdigitalgroup\Email\Plugin;
  * Class RuleCollectionPlugin.
  *
  * Set validation for the coupon codes.
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class RuleCollectionPlugin
 {

@@ -79,6 +79,25 @@ class Edit extends \Magento\Backend\App\AbstractAction
         );
 
         $emailRules = $this->rules;
+        $this->checkRuleExistAndLoad($id, $emailRules);
+
+        $this->registry->unregister('current_ddg_rule'); // additional measure
+        $this->registry->register('current_ddg_rule', $emailRules);
+
+        $this->_view->getLayout()->getBlock('dotdigitalgroup.email.rules.edit')
+            ->setData('action', $this->getUrl('*/*/save'));
+        $this->_view->renderLayout();
+    }
+
+    /**
+     * Check rule exist
+     *
+     * @param mixed $id
+     * @param \Dotdigitalgroup\Email\Model\Rules $emailRules
+     * @return void
+     */
+    private function checkRuleExistAndLoad($id, $emailRules)
+    {
         if ($id) {
             $this->rulesResource->load($emailRules, $id);
 
@@ -87,6 +106,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
                 $this->_redirect('*/*');
             }
         }
+
         $this->_view->getPage()->getConfig()->getTitle()->prepend(
             $emailRules->getId() ? $emailRules->getName() : __('New Rule')
         );
@@ -96,12 +116,5 @@ class Edit extends \Magento\Backend\App\AbstractAction
         if (!empty($data)) {
             $this->rules->addData($data);
         }
-
-        $this->registry->unregister('current_ddg_rule'); // additional measure
-        $this->registry->register('current_ddg_rule', $emailRules);
-
-        $this->_view->getLayout()->getBlock('dotdigitalgroup.email.rules.edit')
-            ->setData('action', $this->getUrl('*/*/save'));
-        $this->_view->renderLayout();
     }
 }

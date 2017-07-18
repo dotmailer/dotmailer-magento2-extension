@@ -21,6 +21,7 @@ use Magento\TestFramework\ObjectManager;
  * @magentoDataFixture Magento/Catalog/_files/products.php
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class RulesTest extends \PHPUnit_Framework_TestCase
 {
@@ -96,26 +97,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param mixed $paymentCode
-     * @return void
-     */
-    private function createQuoteWithPayment($paymentCode)
-    {
-        $quote = $this->createQuote();
-        $quote->getPayment()->setMethod($paymentCode);
-        $quote->setPaymentMethod($paymentCode);
-        $quote->getPayment()->setQuote($quote);
-        $quote->getPayment()->importData(['method' => $paymentCode]);
-
-        /** @var QuoteResource $quoteResource */
-        $quoteResource = ObjectManager::getInstance()->create(QuoteResource::class);
-        $quoteResource->save($quote);
-
-        return $quote;
-    }
-
-    /**
-     * @return void
+     * @return $quote
      */
     public function createQuoteWithoutPayment()
     {
@@ -168,7 +150,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
      * @param string $attribute
      * @param string $condition
      * @param string $value
-     * 
+     *
      * @return null
      */
     private function addConditionToRule(Rules $rule, $attribute, $condition, $value)
@@ -225,16 +207,6 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         /** @var StoreManagerInterface $storeManager */
         $storeManager = ObjectManager::getInstance()->get(StoreManagerInterface::class);
         $this->currentWebsiteId = $storeManager->getStore()->getWebsiteId();
-    }
-
-    /**
-     * @param Quote $expected
-     * @return void
-     */
-    private function assertQuoteCollectionContains(Quote $expected)
-    {
-        $message = sprintf('The quote with ID "%s" is not contained in the quote collection', $expected->getId());
-        $this->assertContains($expected->getId(), $this->quoteCollection->getAllIds(), $message);
     }
 
     /**

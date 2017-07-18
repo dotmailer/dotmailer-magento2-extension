@@ -9,9 +9,11 @@ use \Magento\Framework\App\Config\ScopeConfigInterface;
 /**
  * General most used helper to work with config data, saving updating and generating.
  *
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ * @SuppressWarnings(PHPMD.TooManyFields)
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {

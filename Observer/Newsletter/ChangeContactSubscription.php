@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
 /**
  * Contact newsletter subscription change.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInterface
 {
