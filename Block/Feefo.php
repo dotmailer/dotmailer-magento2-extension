@@ -19,20 +19,22 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
+
     /**
      * @var DOMDocument
      */
     public $domDocument;
+
     /**
      * @var XSLTProcessor
      */
     public $processor;
-
+    
     /**
      * @var Quote
      */
     private $quoteResource;
-
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
@@ -145,7 +147,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
     /**
      * Get product reviews from feefo.
      *
-     * @param $check
+     * @param mixed $check
+     * 
      * @return array
      */
     public function getProductsReview($check = true)
@@ -181,7 +184,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param $template
+     * @param string $template
+     * 
      * @return string
      */
     private function getFeefoTemplate($template)

@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 
 /**
  * Creates and updates the contact for customer. Monitor the email change for customer.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 {
@@ -12,30 +13,37 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     private $contactResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Framework\Registry
      */
     private $registry;
+
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     private $customerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     private $contactFactory;
+
     /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
     private $wishlist;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
+    
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory
      */

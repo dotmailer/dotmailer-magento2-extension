@@ -8,14 +8,17 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     private $catalog;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Framework\Escaper
      */
@@ -43,6 +46,8 @@ class Catalogreset extends \Magento\Backend\App\AbstractAction
 
     /**
      * Refresh suppressed contacts.
+     * 
+     * @return null
      */
     public function execute()
     {

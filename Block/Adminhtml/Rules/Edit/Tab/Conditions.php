@@ -108,7 +108,7 @@ then multiple lines for same attribute will be ignored.</small>',
             'options' => $this->options->toOptionArray(),
         ]);
         $renderer = $this->getLayout()
-            ->createBlock('Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules\Customdatafields');
+            ->createBlock(\Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules\Customdatafields::class);
         $field->setRenderer($renderer);
 
         $form->setValues($model->getData());

@@ -675,66 +675,22 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             'last_quote_id' => new \Zend_Db_Expr(
                 "(SELECT entity_id FROM $quote WHERE customer_id = e.entity_id ORDER BY created_at DESC LIMIT 1)"
             ),
-            'first_category_id' => new \Zend_Db_Expr(
-                "(
-                        SELECT ccpi.category_id FROM $salesOrder as sfo
-                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                        WHERE sfo.customer_id = e.entity_id
-                        ORDER BY sfo.created_at ASC, sfoi.price DESC
-                        LIMIT 1
-                    )"
+            'first_category_id' => $this->buildCategoryColumn(
+                $salesOrder,
+                $salesOrderItem,
+                $catalogCategoryProductIndex,
+                'ASC'
             ),
-            'last_category_id' => new \Zend_Db_Expr(
-                "(
-                        SELECT ccpi.category_id FROM $salesOrder as sfo
-                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                        WHERE sfo.customer_id = e.entity_id
-                        ORDER BY sfo.created_at DESC, sfoi.price DESC
-                        LIMIT 1
-                    )"
+            'last_category_id' => $this->buildCategoryColumn(
+                $salesOrder,
+                $salesOrderItem,
+                $catalogCategoryProductIndex,
+                'DESC'
             ),
-            'product_id_for_first_brand' => new \Zend_Db_Expr(
-                "(
-                        SELECT sfoi.product_id FROM $salesOrder as sfo
-                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
-                        ORDER BY sfo.created_at ASC, sfoi.price DESC
-                        LIMIT 1
-                    )"
-            ),
-            'product_id_for_last_brand' => new \Zend_Db_Expr(
-                "(
-                        SELECT sfoi.product_id FROM $salesOrder as sfo
-                        left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                        WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
-                        ORDER BY sfo.created_at DESC, sfoi.price DESC
-                        LIMIT 1
-                    )"
-            ),
-            'week_day' => new \Zend_Db_Expr(
-                "(
-                        SELECT dayname(created_at) as week_day
-                        FROM $salesOrder
-                        WHERE customer_id = e.entity_id
-                        GROUP BY week_day
-                        HAVING COUNT(*) > 0
-                        ORDER BY (COUNT(*)) DESC
-                        LIMIT 1
-                    )"
-            ),
-            'month_day' => new \Zend_Db_Expr(
-                "(
-                        SELECT monthname(created_at) as month_day
-                        FROM $salesOrder
-                        WHERE customer_id = e.entity_id
-                        GROUP BY month_day
-                        HAVING COUNT(*) > 0
-                        ORDER BY (COUNT(*)) DESC
-                        LIMIT 1
-                    )"
-            ),
+            'product_id_for_first_brand' => $this->buildProductColumn($salesOrder, $salesOrderItem, 'ASC'),
+            'product_id_for_last_brand' => $this->buildProductColumn($salesOrder, $salesOrderItem, 'DESC'),
+            'week_day' => $this->buildPeriodColumn($salesOrder, 'week_day'),
+            'month_day' => $this->buildPeriodColumn($salesOrder, 'month_day'),
             'most_category_id' => new \Zend_Db_Expr(
                 "(
                         SELECT ccpi.category_id FROM $salesOrder as sfo
@@ -749,6 +705,72 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             )
         ];
         return $columnData;
+    }
+
+    /**
+     * Build period column
+     *
+     * @param string $salesOrder
+     * @param string $group
+     * @return \Zend_Db_Expr
+     */
+    private function buildPeriodColumn($salesOrder, $group)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                SELECT dayname(created_at) as week_day
+                FROM $salesOrder
+                WHERE customer_id = e.entity_id
+                GROUP BY $group
+                HAVING COUNT(*) > 0
+                ORDER BY (COUNT(*)) DESC
+                LIMIT 1
+            )"
+        );
+    }
+
+    /**
+     * Build product column
+     *
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @param $order
+     * @return \Zend_Db_Expr
+     */
+    private function buildProductColumn($salesOrder, $salesOrderItem, $order)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                SELECT sfoi.product_id FROM $salesOrder as sfo
+                left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                WHERE sfo.customer_id = e.entity_id and sfoi.product_type = 'simple'
+                ORDER BY sfo.created_at $order, sfoi.price DESC
+                LIMIT 1
+            )"
+        );
+    }
+
+    /**
+     * Build category column
+     *
+     * @param $salesOrder
+     * @param $salesOrderItem
+     * @param $catalogCategoryProductIndex
+     * @param $order
+     * @return \Zend_Db_Expr
+     */
+    private function buildCategoryColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex, $order)
+    {
+        return new \Zend_Db_Expr(
+            "(
+                SELECT ccpi.category_id FROM $salesOrder as sfo
+                left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
+                WHERE sfo.customer_id = e.entity_id
+                ORDER BY sfo.created_at $order, sfoi.price DESC
+                LIMIT 1
+            )"
+        );
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
 /**
  * Contact newsletter subscription change.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInterface
 {
@@ -11,18 +12,22 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Framework\Registry
      */
     private $registry;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
@@ -32,12 +37,14 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
     private $automationFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
      */
     private $automationResource;
+
     /**
-     * @var
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
 
@@ -155,10 +162,11 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     /**
      * Register subscriber to automation.
      *
-     * @param $email
-     * @param $subscriber
-     * @param $websiteId
+     * @param string $email
+     * @param \Magento\Newsletter\Model\Subscriber $subscriber
+     * @param string|int|null $websiteId
      *
+     * @return void
      */
     private function addSubscriberToAutomation($email, $subscriber, $websiteId)
     {

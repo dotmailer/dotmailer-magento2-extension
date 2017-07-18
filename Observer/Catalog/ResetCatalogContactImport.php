@@ -69,6 +69,8 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return null
      */
     private function resetConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
     {
@@ -97,6 +99,8 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return null   
      */
     private function resetAllContactsInConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
     {

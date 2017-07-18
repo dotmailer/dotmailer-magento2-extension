@@ -13,6 +13,7 @@ class Value extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
     private $ruleValue;
+
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
@@ -58,6 +59,8 @@ class Value extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
+     * 
+     * @return null
      */
     public function execute()
     {
@@ -88,15 +91,15 @@ class Value extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @param $title
-     * @param $name
-     * @param $options
+     * @param string $title
+     * @param string $name
+     * @param array $options
      *
      * @return string
      */
     private function getOptionHtml($title, $name, $options)
     {
-        $block = $this->_view->getLayout()->createBlock('Magento\Framework\View\Element\Html\Select');
+        $block = $this->_view->getLayout()->createBlock(\Magento\Framework\View\Element\Html\Select::class);
         $block->setOptions($options)
             ->setId('')
             ->setClass('')

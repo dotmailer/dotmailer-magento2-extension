@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 
 /**
  * Transactional data for orders to sync.
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Order
 {

@@ -16,10 +16,12 @@ class ResetContactImport implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Framework\Message\ManagerInterface
      */
     private $messageManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     private $contactFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
@@ -61,8 +63,10 @@ class ResetContactImport implements \Magento\Framework\Event\ObserverInterface
 
         $updated = $this->contactResource->resetAllContacts();
 
-        $this->helper->log('-- Imported contacts: ' . $numImported
-            . ' reseted :  ' . $updated . ' --');
+        $this->helper->log(
+            '-- Imported contacts: ' . $numImported
+            . ' reseted :  ' . $updated . ' --'
+        );
 
         return $this;
     }

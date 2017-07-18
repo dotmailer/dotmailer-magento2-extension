@@ -10,14 +10,17 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
     public $recommnededHelper;
+
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
     public $productFactory;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
@@ -83,7 +86,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @param $store
+     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return mixed
      */

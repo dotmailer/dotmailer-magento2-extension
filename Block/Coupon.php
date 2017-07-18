@@ -10,6 +10,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
      */

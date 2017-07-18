@@ -21,12 +21,12 @@ use Magento\TestFramework\ObjectManager;
  * @magentoDataFixture Magento/Catalog/_files/products.php
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class RulesTest extends \PHPUnit_Framework_TestCase
 {
     const RULE_OPERATOR_AND = 1;
     const RULE_OPERATOR_OR = 2;
-    public $serializer;
 
     /**
      * @var QuoteCollection
@@ -54,6 +54,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $quoteAddress;
     }
 
+    /**
+     * @return void
+     */
     private function getCustomer()
     {
         /** @var CustomerRepositoryInterface $customerRepository */
@@ -61,6 +64,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $customerRepository->getById(1);
     }
 
+    /**
+     * @return void
+     */
     private function getProduct()
     {
         /** @var ProductResource $resourceModel */
@@ -71,6 +77,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $product;
     }
 
+    /**
+     * @return void
+     */
     private function createQuote()
     {
         /** @var Quote $quote */
@@ -87,21 +96,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $quote;
     }
 
-    private function createQuoteWithPayment($paymentCode)
-    {
-        $quote = $this->createQuote();
-        $quote->getPayment()->setMethod($paymentCode);
-        $quote->setPaymentMethod($paymentCode);
-        $quote->getPayment()->setQuote($quote);
-        $quote->getPayment()->importData(['method' => $paymentCode]);
-
-        /** @var QuoteResource $quoteResource */
-        $quoteResource = ObjectManager::getInstance()->create(QuoteResource::class);
-        $quoteResource->save($quote);
-
-        return $quote;
-    }
-
+    /**
+     * @return $quote
+     */
     public function createQuoteWithoutPayment()
     {
         $quote = $this->createQuote();
@@ -153,6 +150,8 @@ class RulesTest extends \PHPUnit_Framework_TestCase
      * @param string $attribute
      * @param string $condition
      * @param string $value
+     *
+     * @return null
      */
     private function addConditionToRule(Rules $rule, $attribute, $condition, $value)
     {
@@ -171,6 +170,10 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $rulesResource->save($rule);
     }
 
+    /**
+     * @param Rules $rule
+     * @return array
+     */
     private function getWebsiteIdsFromRule(Rules $rule)
     {
         $websiteIds = $rule->getData('website_ids');
@@ -194,6 +197,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $conditions;
     }
 
+    /**
+     * @return void
+     */
     protected function setUp()
     {
         $this->quoteCollection = ObjectManager::getInstance()->create(QuoteCollection::class);
@@ -203,12 +209,10 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $this->currentWebsiteId = $storeManager->getStore()->getWebsiteId();
     }
 
-    private function assertQuoteCollectionContains(Quote $expected)
-    {
-        $message = sprintf('The quote with ID "%s" is not contained in the quote collection', $expected->getId());
-        $this->assertContains($expected->getId(), $this->quoteCollection->getAllIds(), $message);
-    }
-
+    /**
+     * @param Quote $expected
+     * @return void
+     */
     private function assertQuoteCollectionNotContains(Quote $expected)
     {
         $message = sprintf(
@@ -218,8 +222,10 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $this->assertNotContains($expected->getId(), $this->quoteCollection->getAllIds(), $message);
     }
 
-
-
+    /**
+     * @param mixed $subtotal
+     * @return void
+     */
     private function createQuoteWithSubtotal($subtotal)
     {
         /** @var \Magento\Quote\Model\Quote $quote */
@@ -231,6 +237,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $quote;
     }
 
+    /**
+     * @return void
+     */
     public function testRuleWithSubtotalCondition()
     {
         //subtotal
@@ -251,6 +260,9 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $this->assertQuoteCollectionNotContains($quote2);
     }
 
+    /**
+     * @return void
+     */
     public function testRuleWithCustomerSegmentANDPaymentMethod()
     {
         $attribute1  = 'method';

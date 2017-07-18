@@ -11,10 +11,12 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
      * @var \Magento\Framework\Registry
      */
     private $registry;
+
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     private $orderFactory;
+    
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order
      */

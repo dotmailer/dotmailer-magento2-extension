@@ -13,6 +13,11 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
      */
     public $_template = 'dashboard/main.phtml';
 
+    /**
+     * Dashboard constructor
+     *
+     * @return void
+     */
     public function _construct()
     {
         $this->_blockGroup = 'Dotdigitalgroup_Email';

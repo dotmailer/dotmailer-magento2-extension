@@ -10,20 +10,25 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
      * @var string
      */
     public $pathLogfile = '';
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     public $fileHelper;
+
     /**
      * @var \Magento\TestFramework\ObjectManager
      */
     public $objectManager;
+
     /**
      * @var  \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
 
-
+    /**
+     * @return void
+     */
     public function setup()
     {
         $this->objectManager = ObjectManager::getInstance();
@@ -32,7 +37,10 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
         $this->helper = $this->objectManager->get(\Dotdigitalgroup\Email\Helper\Data::class);
     }
 
-    public function test_file_exists_and_content_contains_message()
+    /**
+     * @return void
+     */
+    public function testFileExistsAndContentContainsMessage()
     {
 
         $this->helper->log('logged message data');
@@ -43,20 +51,29 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function test_debug_log_contains_data_message()
+    /**
+     * @return void
+     */
+    public function testDebugLogContainsDataMessage()
     {
         $this->helper->debug('Dummy Title', ['mesage dummy text']);
 
         $this->assertContains('dummy text', $this->fileHelper->getLogFileContent());
     }
 
-    public function test_empty_log_file_returns_no_error()
+    /**
+     * @return void
+     */
+    public function testEmptyLogFileReturnsNoError()
     {
         $content = $this->fileHelper->getLogFileContent();
         $this->assertNotContains('Log file is not readable or does not exist at this moment', $content);
     }
 
-    public function test_log_file_with_data_returns_no_error()
+    /**
+     * @return void
+     */
+    public function testLogFileWithDataReturnsNoError()
     {
         $this->helper->log('SOME TEXT DATA');
 
@@ -64,5 +81,4 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotContains('Log file is not readable or does not exist at this moment', $content);
     }
-    
 }

@@ -68,7 +68,6 @@ class MassDelete extends ImporterController
         return $resultRedirect->setPath('*/*/');
     }
 
-
     /**
      * Check the permission to run it.
      *

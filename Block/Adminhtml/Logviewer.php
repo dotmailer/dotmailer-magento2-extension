@@ -34,6 +34,9 @@ class Logviewer extends \Magento\Backend\Block\Widget\Container
         parent::__construct($context, $data);
     }
 
+    /**
+     * @return void
+     */
     public function _construct()
     {
         $this->_blockGroup = 'Dotdigitalgroup_Email';

@@ -8,14 +8,17 @@ class Edit extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Registry
      */
     private $registry;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
     private $rules;
+
     /**
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
      */
@@ -56,6 +59,8 @@ class Edit extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
+     * 
+     * @return void
      */
     public function execute()
     {
@@ -65,13 +70,34 @@ class Edit extends \Magento\Backend\App\AbstractAction
         $this->_setActiveMenu(
             'Magento_CatalogRule::exclusion_rules'
         )->_addBreadcrumb(
-            $id ? __('Edit Rule')
-                : __('New Rule'),
-            $id ? __('Edit Rule')
-                : __('New Rule')
+            $id
+            ? __('Edit Rule')
+            : __('New Rule'),
+            $id
+            ? __('Edit Rule')
+            : __('New Rule')
         );
 
         $emailRules = $this->rules;
+        $this->checkRuleExistAndLoad($id, $emailRules);
+
+        $this->registry->unregister('current_ddg_rule'); // additional measure
+        $this->registry->register('current_ddg_rule', $emailRules);
+
+        $this->_view->getLayout()->getBlock('dotdigitalgroup.email.rules.edit')
+            ->setData('action', $this->getUrl('*/*/save'));
+        $this->_view->renderLayout();
+    }
+
+    /**
+     * Check rule exist
+     *
+     * @param mixed $id
+     * @param \Dotdigitalgroup\Email\Model\Rules $emailRules
+     * @return void
+     */
+    private function checkRuleExistAndLoad($id, $emailRules)
+    {
         if ($id) {
             $this->rulesResource->load($emailRules, $id);
 
@@ -80,6 +106,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
                 $this->_redirect('*/*');
             }
         }
+
         $this->_view->getPage()->getConfig()->getTitle()->prepend(
             $emailRules->getId() ? $emailRules->getName() : __('New Rule')
         );
@@ -89,12 +116,5 @@ class Edit extends \Magento\Backend\App\AbstractAction
         if (!empty($data)) {
             $this->rules->addData($data);
         }
-
-        $this->registry->unregister('current_ddg_rule'); // additional measure
-        $this->registry->register('current_ddg_rule', $emailRules);
-
-        $this->_view->getLayout()->getBlock('dotdigitalgroup.email.rules.edit')
-            ->setData('action', $this->getUrl('*/*/save'));
-        $this->_view->renderLayout();
     }
 }

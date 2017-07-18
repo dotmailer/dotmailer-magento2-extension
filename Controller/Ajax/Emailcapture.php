@@ -8,10 +8,12 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
      * @var \Magento\Quote\Model\ResourceModel\Quote
      */
     private $quoteResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Checkout\Model\Session
      */
@@ -38,6 +40,8 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
 
     /**
      * Easy email capture for Newsletter and Checkout.
+     *
+     * @return mixed
      */
     public function execute()
     {

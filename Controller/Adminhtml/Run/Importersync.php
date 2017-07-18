@@ -8,6 +8,7 @@ class Importersync extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
@@ -31,6 +32,8 @@ class Importersync extends \Magento\Backend\App\AbstractAction
 
     /**
      * Refresh suppressed contacts.
+     * 
+     * @return null
      */
     public function execute()
     {

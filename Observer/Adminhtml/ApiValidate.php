@@ -11,6 +11,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Backend\App\Action\Context
      */
@@ -20,14 +21,17 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Framework\Message\ManagerInterface
      */
     private $messageManager;
+
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
     private $objectManager;
+
     /**
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
     private $writer;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
      */
@@ -78,6 +82,20 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         $apiPassword = isset($groups['api']['fields']['password']['value'])
             ? $groups['api']['fields']['password']['value'] : false;
 
+        $this->validateAccount($apiUsername, $apiPassword);
+
+        return $this;
+    }
+
+    /**
+     * Validate account
+     *
+     * @param string|boolean $apiUsername
+     * @param string|boolean $apiPassword
+     * @return void
+     */
+    private function validateAccount($apiUsername, $apiPassword)
+    {
         //skip if the inherit option is selected
         if ($apiUsername && $apiPassword) {
             $this->helper->log('----VALIDATING ACCOUNT---');
@@ -89,8 +107,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
                 $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
             }
         }
-
-        return $this;
     }
 
     /**
@@ -98,6 +114,8 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      *
      * @param string $apiUsername
      * @param string $apiPassword
+     *
+     * @return null
      */
     private function saveApiEndpoint($apiUsername, $apiPassword)
     {

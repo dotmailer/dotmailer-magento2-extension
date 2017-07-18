@@ -6,6 +6,8 @@ class Recentlyviewed extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @return null
      */
     public function execute()
     {

@@ -11,7 +11,7 @@ class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
     public $buttonLabel = 'Run Now';
 
     /**
-     * @param $buttonLabel
+     * @param string $buttonLabel
      *
      * @return $this
      */
@@ -36,7 +36,7 @@ class Deletecontactids extends \Magento\Config\Block\System\Config\Form\Field
             'dotdigitalgroup_email/run/deletecontactids'
         );
 
-        return $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
+        return $this->getLayout()->createBlock(\Magento\Backend\Block\Widget\Button::class)
             ->setType('button')
             ->setLabel($this->buttonLabel)
             ->setOnClick("window.location.href='" . $url . "'")

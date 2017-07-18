@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Plugin;
 /**
  * Class CouponPlugin - ignore to change the expiration day for dotmailer coupon codes.
  *
- * @package Dotdigitalgroup\Email\Plugin
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class CouponPlugin
 {
@@ -21,8 +21,9 @@ class CouponPlugin
 
     /**
      * @param \Magento\SalesRule\Model\ResourceModel\Coupon $subject
-     * @param $result
+     * @param mixed $result
      * @param \Magento\SalesRule\Model\Rule $rule
+     *
      * @return \Magento\SalesRule\Model\Rule
      */
     public function afterUpdateSpecificCoupons(
