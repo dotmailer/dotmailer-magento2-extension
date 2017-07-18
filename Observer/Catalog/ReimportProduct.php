@@ -51,6 +51,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
         $emailCatalog = $emailCatalogModel->loadProductById($productId);
 
         if ($emailCatalog->getId()) {
+            //update email catalog item when imported
             if ($emailCatalog->getImported()) {
                 $emailCatalog->setModified(1);
                 $this->catalogResource->save($emailCatalog);
@@ -58,7 +59,6 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
         } else {
             //create new email catalog item
             //$emailCatalogModel->setProductId($productId);
-            
             $this->catalogResource->save($emailCatalogModel);
         }
 
