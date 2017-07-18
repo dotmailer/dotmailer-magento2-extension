@@ -27,9 +27,9 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public $vote;
 
     /**
-     * @var Option\Vote\Collection
+     * @var Option\Vote\CollectionFactory
      */
-    private $voteCollectionResource;
+    private $voteCollection;
 
     /**
      * @var \Magento\Quote\Model\QuoteFactory
@@ -66,7 +66,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param Option\Vote\Collection $voteCollectionResource
+     * @param Option\Vote\CollectionFactory voteCollection
      * @param \Magento\Review\Model\Rating\Option\Vote $vote
      * @param null $connectionName
      */
@@ -78,7 +78,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Review\Model\ResourceModel\Rating\Option\Vote\Collection $voteCollectionResource,
+        \Magento\Review\Model\ResourceModel\Rating\Option\Vote\CollectionFactory $voteCollection,
         \Magento\Review\Model\Rating\Option\Vote $vote,
         $connectionName = null
     ) {
@@ -88,7 +88,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->vote = $vote;
         $this->quoteFactory = $quoteFactory;
         $this->reviewFactory = $reviewFactory;
-        $this->voteCollectionResource = $voteCollectionResource;
+        $this->voteCollection = $voteCollection;
         $this->productCollection = $productCollectionFactory;
         parent::__construct(
             $context,
@@ -259,7 +259,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getVoteCollectionByReview($reviewId)
     {
-        $votesCollection = $this->voteCollectionResource
+        $votesCollection = $this->voteCollection->create()
             ->setReviewFilter($reviewId);
 
         $votesCollection->getSelect()->join(

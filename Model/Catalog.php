@@ -5,6 +5,21 @@ namespace Dotdigitalgroup\Email\Model;
 class Catalog extends \Magento\Framework\Model\AbstractModel
 {
     /**
+     * @var string
+     */
+    protected $_idFieldName = 'id';
+
+    /**
+     * @var ResourceModel\Catalog
+     */
+    public $catalogResource;
+    
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
+     */
+    private $catalogCollection;
+
+    /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
@@ -12,6 +27,8 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     /**
      * Catalog constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
+     * @param ResourceModel\Catalog\CollectionFactory $catalogCollection
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
@@ -20,6 +37,8 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      * @param array $data
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,        
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
@@ -27,6 +46,8 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->catalogResource = $catalogResource;
+        $this->catalogCollection = $catalogCollection;        
         $this->dateTime = $dateTime;
         parent::__construct(
             $context,
@@ -72,7 +93,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      */
     public function loadProductById($productId)
     {
-        $collection = $this->getCollection()
+        $collection = $this->catalogCollection->create()
             ->addFieldToFilter('product_id', $productId)
             ->setPageSize(1);
 
