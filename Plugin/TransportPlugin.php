@@ -43,9 +43,11 @@ class TransportPlugin
         }
         $this->message  = $message;
         $this->helper   = $helper;
-        $this->smtp = $smtpFactory->create([
+        $this->smtp = $smtpFactory->create(
+            [
             'host' => $this->helper->getSmtpHost(),
-            'config' => $this->helper->getTransportConfig()]
+            'config' => $this->helper->getTransportConfig()
+            ]
         );
     }
 
@@ -53,6 +55,8 @@ class TransportPlugin
      * @param TransportInterface $subject
      * @param \Closure $proceed
      * @throws \Exception
+     *
+     * @return null
      */
     public function aroundSendMessage(
         TransportInterface $subject,
