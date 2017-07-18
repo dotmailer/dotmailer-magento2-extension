@@ -22,6 +22,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Config\Model\ResourceModel\Config
      */
     public $resourceConfig;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -31,6 +32,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
+
     /**
      * @var \Magento\Framework\App\ProductMetadata
      */
@@ -60,18 +62,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var File
      */
     public $fileHelper;
+
     /**
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
     public $writer;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
      */
     public $clientFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\ConfigFactory ConfigFactory
      */
     public $configHelperFactory;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
@@ -192,7 +198,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $storeId
+     * @param int $storeId
+     *
      * @return bool
      */
     public function isStoreEnabled($storeId)
@@ -219,7 +226,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Passcode for dynamic content liks.
      *
-     * @param $authRequest
+     * @param mixed $authRequest
      *
      * @return bool
      */
@@ -272,7 +279,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get config scope value.
      *
-     * @param        $path
+     * @param string $path
      * @param string $contextScope
      * @param null $contextScopeId
      *
@@ -361,10 +368,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Save config data.
      *
-     * @param $path
-     * @param $value
-     * @param $scope
-     * @param $scopeId
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     *
+     * @return null
      */
     public function saveConfigData($path, $value, $scope, $scopeId)
     {
@@ -379,8 +388,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Disable wishlist sync.
      *
-     * @param $scope
-     * @param $scopeId
+     * @param string $scope
+     * @param int $scopeId
+     *
+     * @return null
      */
     public function disableTransactionalDataConfig($scope, $scopeId)
     {
@@ -407,7 +418,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Log data into the connector file.
-     * @param $data
+     * @param mixed $data
+     *
+     * @return null
      */
     public function log($data)
     {
@@ -418,6 +431,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $message
      * @param mixed $extra
+     *
+     * @return null
      */
     public function debug($message, $extra)
     {
@@ -426,8 +441,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      *
-     * @param $message
-     * @param $extra
+     * @param string $message
+     * @param mixed $extra
+     *
+     * @return null
      */
     public function error($message, $extra)
     {
@@ -570,8 +587,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get Api endPoint
      *
-     * @param $websiteId
-     * @param $client
+     * @param int $websiteId
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     *
      * @return mixed
      */
     public function getApiEndpoint($websiteId, $client)
@@ -594,6 +612,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Get api end point from api
      *
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     *
      * @return mixed
      */
     public function getApiEndPointFromApi($client)
@@ -615,7 +634,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get api end point for given website
      *
-     * @param $websiteId
+     * @param int $websiteId
+     *
      * @return mixed
      */
     public function getApiEndPointFromConfig($websiteId)
@@ -638,8 +658,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Save api endpoint into config.
      *
-     * @param $apiEndpoint
-     * @param $websiteId
+     * @param string $apiEndpoint
+     * @param  int $websiteId
+     * 
+     * @return null
      */
     public function saveApiEndpoint($apiEndpoint, $websiteId)
     {
@@ -721,7 +743,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Guest address book.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return mixed
      */
@@ -806,7 +828,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get website config.
      *
-     * @param $path
+     * @param mixed $path
      * @param int $website
      * @param string $scope
      *
@@ -844,7 +866,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Mark contact for reimport.
      *
-     * @param $customerId
+     * @param int $customerId
+     *
+     * @return null
      */
     public function setConnectorContactToReImport($customerId)
     {
@@ -859,7 +883,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Disable website config when the request is made admin area only!
      *
-     * @param $path
+     * @param string $path
+     *
+     * @return null
      */
     public function disableConfigForWebsite($path)
     {
@@ -1017,9 +1043,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Update data fields.
      *
-     * @param $email
-     * @param $website
-     * @param $storeName
+     * @param string $email
+     * @param mixed $website
+     * @param string $storeName
+     * 
+     * @return null
      */
     public function updateDataFields($email, $website, $storeName)
     {
@@ -1054,9 +1082,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Update last quote id datafield.
      *
-     * @param $quoteId
-     * @param $email
-     * @param $websiteId
+     * @param int $quoteId
+     * @param string $email
+     * @param int $websiteId
+     *
+     * @return null
      */
     public function updateLastQuoteId($quoteId, $email, $websiteId)
     {
@@ -1190,7 +1220,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get customer datafields mapped - exclude custom attributes.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return mixed
      */
@@ -1238,9 +1268,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Api- update the product name most expensive.
      *
-     * @param $name
-     * @param $email
-     * @param $websiteId
+     * @param string $name
+     * @param string $email
+     * @param int $websiteId
+     *
+     * @return null
      */
     public function updateAbandonedProductName($name, $email, $websiteId)
     {
@@ -1436,8 +1468,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get config value on website level.
      *
-     * @param $path
-     * @param $website
+     * @param string $path
+     * @param mixed $website
      *
      * @return mixed
      */
@@ -1447,7 +1479,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $website
+     * @param mixed $website
      *
      * @return string
      */
@@ -1459,7 +1491,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get review setting delay time.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return int
      */
@@ -1471,7 +1503,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Is the review new product enabled.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return bool
      */
@@ -1486,7 +1518,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get review campaign for automation review.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return int
      */
@@ -1501,7 +1533,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get review anchor value.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return string
      */
@@ -1513,7 +1545,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get review display type.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return string
      */
@@ -1568,7 +1600,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $cronJob
+     * @param mixed $cronJob
      * @return mixed
      */
     public function getDateLastCronRun($cronJob)
@@ -1579,7 +1611,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get website datafields for subscriber
      *
-     * @param $website
+     * @param mixed $website
      * @return array
      */
     public function getWebsiteSalesDataFields($website)
@@ -1621,8 +1653,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Validate date range
      *
-     * @param $dateFrom
-     * @param $dateTo
+     * @param mixed $dateFrom
+     * @param mixed $dateTo
      * @return bool|string
      */
     public function validateDateRange($dateFrom, $dateTo)
@@ -1637,7 +1669,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $date
+     * @param mixed $date
      * @return bool|\DateTime|false
      */
     public function validateDate($date)
@@ -1652,7 +1684,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get difference between dates
      *
-     * @param $created
+     * @param mixed $created
      * @return false|int
      */
     public function getDateDifference($created)
@@ -1665,7 +1697,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Validate code
      *
-     * @param $code
+     * @param mixed $code
      * @return bool
      */
     public function isCodeValid($code)
@@ -1679,8 +1711,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $adminUser
-     * @param $token
+     * @param mixed $adminUser
+     * @param mixed $token
+     *
+     * @return null
      */
     public function setRefreshTokenForUser($adminUser, $token)
     {
@@ -1689,7 +1723,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $quoteId
+     * @param int $quoteId
      * @return array
      */
     public function getQuoteAllItemsFor($quoteId)

@@ -32,18 +32,22 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Framework\App\Helper\Context
      */
     private $context;
+
     /**
      * @var Data
      */
     private $helper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
     private $adapter;
+
     /**
      * @var \Zend_Date
      */
@@ -288,7 +292,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $config
+     * @param string $config
      *
      * @return mixed
      */
@@ -313,7 +317,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $period
+     * @param string $period
      *
      * @return mixed
      */

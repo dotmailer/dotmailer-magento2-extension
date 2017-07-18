@@ -12,6 +12,7 @@ class File
      * @var string
      */
     private $outputFolder;
+
     /**
      * @var string
      */
@@ -21,14 +22,17 @@ class File
      * @var string
      */
     private $delimiter;
+
     /**
      * @var string
      */
     private $enclosure;
+
     /**
      * @var string
      */
     private $logFileName = 'connector.log';
+    
     /**
      * @var \Magento\Framework\App\Filesystem\DirectoryList
      */
@@ -95,7 +99,9 @@ class File
     /**
      * Move file to archive dir.
      *
-     * @param $filename
+     * @param mixed $filename
+     * 
+     * @return null
      */
     public function archiveCSV($filename)
     {
@@ -109,9 +115,11 @@ class File
     /**
      * Moves the output file from one folder to the next.
      *
-     * @param $sourceFolder
-     * @param $destFolder
-     * @param $filename
+     * @param mixed $sourceFolder
+     * @param mixed $destFolder
+     * @param mixed $filename
+     *
+     * @return null
      */
     private function moveFile($sourceFolder, $destFolder, $filename)
     {
@@ -126,10 +134,12 @@ class File
     /**
      * Output an array to the output file FORCING Quotes around all fields.
      *
-     * @param $filepath
-     * @param $csv
+     * @param mixed $filepath
+     * @param mixed $csv
      *
      * @throws \Exception
+     *
+     * @return null
      */
     public function outputForceQuotesCSV($filepath, $csv)
     {
@@ -147,8 +157,10 @@ class File
     }
 
     /**
-     * @param $filepath
-     * @param $csv
+     * @param mixed $filepath
+     * @param mixed $csv
+     *
+     * @return null
      */
     public function outputCSV($filepath, $csv)
     {
@@ -164,7 +176,9 @@ class File
     /**
      * If the path does not exist then create it.
      *
-     * @param $path
+     * @param mixed $path
+     *
+     * @return null
      */
     private function pathExists($path)
     {
@@ -177,8 +191,8 @@ class File
      * Convert array into the csv.
      *
      * @param array $fields
-     * @param       $delimiter
-     * @param       $enclosure
+     * @param string $delimiter
+     * @param string $enclosure
      * @param bool $encloseAll
      * @param bool $nullToMysqlNull
      *
@@ -224,7 +238,7 @@ class File
     /**
      * Delete file or directory.
      *
-     * @param $path
+     * @param mixed $path
      *
      * @return bool
      */
@@ -289,9 +303,10 @@ class File
         }
     }
 
-
     /**
-     * @param $data
+     * @param mixed $data
+     *
+     * @return null
      */
     public function info($data)
     {
@@ -299,8 +314,10 @@ class File
     }
 
     /**
-     * @param $message
-     * @param $extra
+     * @param mixed $message
+     * @param mixed $extra
+     *
+     * @return null
      */
     public function debug($message, $extra)
     {
