@@ -11,22 +11,27 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
     private $reviewResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
      */
     private $automationResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     private $customerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ReviewFactory
      */
@@ -36,6 +41,7 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
     private $automationFactory;
+
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer
      */
@@ -123,7 +129,9 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     /**
      * Register review.
      *
-     * @param $review
+     * @param mixed $review
+     *
+     * @return null
      */
     private function registerReview($review)
     {

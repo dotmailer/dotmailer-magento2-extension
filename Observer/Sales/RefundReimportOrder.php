@@ -11,6 +11,7 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
      */
     private $orderResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -20,6 +21,7 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
     private $emailOrderFactory;
+
     /**
      * @var \Magento\Framework\Registry
      */
@@ -29,6 +31,7 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
      * RefundReimportOrder constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param \Magento\Framework\Registry               $registry
      * @param \Dotdigitalgroup\Email\Helper\Data        $data
      */
@@ -64,9 +67,11 @@ class RefundReimportOrder implements \Magento\Framework\Event\ObserverInterface
             $emailOrder = $this->emailOrderFactory->create()
                 ->loadByOrderId($orderId, $quoteId, $storeId);
             if (!$emailOrder->getId()) {
-                $this->helper->log('ERROR Creditmemmo Order not found :'
+                $this->helper->log(
+                    'ERROR Creditmemmo Order not found :'
                     . $orderId . ', quote id : ' . $quoteId . ', store id '
-                    . $storeId);
+                    . $storeId
+                );
 
                 return $this;
             }

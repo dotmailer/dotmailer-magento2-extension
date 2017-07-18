@@ -11,26 +11,32 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     private $catalogResource;
+    
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+    
     /**
      * @var \Psr\Log\LoggerInterface
      */
     private $scopeConfig;
+    
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\CatalogFactory
      */
     private $catalogFactory;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
     private $catalogCollection;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
@@ -69,15 +75,15 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      * Execute method.
      *
      * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return null
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-
         try {
             $object = $observer->getEvent()->getDataObject();
             $productId = $object->getId();
-            $emailCatalog = $this->catalogFactory->create();
-            if ($item = $emailCatalog->loadProductById($productId)) {
+            if ($item = $this->loadProduct($productId)) {
                 //if imported delete from account
                 if ($item->getImported()) {
                     $this->deleteFromAccount($productId);
@@ -117,6 +123,8 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      * Delete piece of transactional data by key.
      *
      * @param int $key
+     *
+     * @return null
      */
     protected function deleteFromAccount($key)
     {
