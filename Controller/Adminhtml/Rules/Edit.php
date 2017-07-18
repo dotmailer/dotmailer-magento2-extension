@@ -85,8 +85,9 @@ class Edit extends \Magento\Backend\App\AbstractAction
     /**
      * Check rule exist
      *
-     * @param $id
-     * @param $emailRules
+     * @param mixed $id
+     * @param \Dotdigitalgroup\Email\Model\Rules $emailRules
+     * @return void
      */
     private function checkRuleExistAndLoad($id, $emailRules)
     {

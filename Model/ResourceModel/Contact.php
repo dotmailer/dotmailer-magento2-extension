@@ -710,14 +710,14 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Build period column
      *
-     * @param $salesOrder
-     * @param $group
+     * @param string $salesOrder
+     * @param string $group
      * @return \Zend_Db_Expr
      */
     private function buildPeriodColumn($salesOrder, $group)
     {
         return new \Zend_Db_Expr(
-    "(
+            "(
                 SELECT dayname(created_at) as week_day
                 FROM $salesOrder
                 WHERE customer_id = e.entity_id
