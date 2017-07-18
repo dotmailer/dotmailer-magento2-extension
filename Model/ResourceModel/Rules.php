@@ -6,6 +6,8 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * Initialize resource.
+     * 
+     * @return null
      */
     public function _construct()
     {
@@ -15,8 +17,8 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Join tables on collection by type
      *
-     * @param $collection
-     * @param $type
+     * @param mixed $collection
+     * @param mixed $type
      * @return mixed
      */
     public function joinTablesOnCollectionByType($collection, $type)

@@ -5,29 +5,35 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 class Value
 {
     /**
-     * @var
+     * @var \Magento\Eav\Model\ConfigFactory
      */
     private $configFactory;
+
     /**
      * @var \Magento\Config\Model\Config\Source\Yesno
      */
     private $yesno;
+
     /**
      * @var \Magento\Directory\Model\Config\Source\Country
      */
     private $country;
+
     /**
      * @var \Magento\Directory\Model\Config\Source\Allregion
      */
     private $allregion;
+
     /**
      * @var \Magento\Shipping\Model\Config\Source\Allmethods
      */
     private $allShippingMethods;
+
     /**
      * @var \Magento\Payment\Model\Config\Source\Allmethods
      */
     private $allPaymentMethods;
+
     /**
      * @var \Magento\Customer\Model\Config\Source\Group
      */
@@ -65,7 +71,7 @@ class Value
     /**
      * Get element type.
      *
-     * @param $attribute
+     * @param mixed $attribute
      *
      * @return string
      */
@@ -95,7 +101,7 @@ class Value
     /**
      * Get options array.
      *
-     * @param      $attribute
+     * @param mixed $attribute
      * @param bool $isEmpty
      *
      * @return array

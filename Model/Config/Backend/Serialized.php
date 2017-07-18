@@ -39,7 +39,7 @@ class Serialized extends \Magento\Framework\App\Config\Value
     }
 
     /**
-     * @return void
+     * @return null
      */
     protected function _afterLoad()
     {

@@ -29,6 +29,9 @@ class Mode implements \Magento\Framework\Data\OptionSourceInterface
         ];
     }
 
+    /**
+     * @return void
+     */
     public function toOptionArray()
     {
 

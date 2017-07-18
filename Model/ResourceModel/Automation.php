@@ -11,12 +11,18 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
+     * 
+     * @return null
      */
     public function _construct()
     {
         $this->_init('email_automation', 'id');
     }
 
+    /**
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $data
@@ -28,11 +34,13 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * update status for automation entries
      *
-     * @param $contactIds
-     * @param $status
-     * @param $message
-     * @param $updatedAt
-     * @param $type
+     * @param mixed $contactIds
+     * @param mixed $status
+     * @param mixed $message
+     * @param mixed $updatedAt
+     * @param mixed $type
+     * 
+     * @return null
      */
     public function updateStatus($contactIds, $status, $message, $updatedAt, $type)
     {

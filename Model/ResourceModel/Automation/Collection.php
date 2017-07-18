@@ -12,12 +12,14 @@ class Collection extends
 
     /**
      * Initialize resource collection.
+     * 
+     * @return null
      */
     public function _construct()
     {
         $this->_init(
-            'Dotdigitalgroup\Email\Model\Automation',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Automation'
+            \Dotdigitalgroup\Email\Model\Automation::class,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Automation::class
         );
     }
 
@@ -45,8 +47,8 @@ class Collection extends
     /**
      * Get collection by type
      *
-     * @param $type
-     * @param $limit
+     * @param mixed $type
+     * @param mixed $limit
      * @return $this
      */
     public function getCollectionByType($type, $limit)

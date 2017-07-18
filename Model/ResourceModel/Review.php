@@ -54,6 +54,8 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
+     * 
+     * @return null
      */
     public function _construct()
     {
@@ -70,7 +72,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param Option\Vote\CollectionFactory $voteCollection
+     * @param Option\Vote\CollectionFactory voteCollection
      * @param \Magento\Review\Model\Rating\Option\Vote $vote
      * @param null $connectionName
      */
@@ -136,9 +138,9 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Filter items for review
      *
-     * @param $items
-     * @param $customerId
-     * @param $order
+     * @param mixed $items
+     * @param mixed $customerId
+     * @param mixed $order
      * @return mixed
      */
     public function filterItemsForReview($items, $customerId, $order)
@@ -163,7 +165,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get product collection from order
      *
-     * @param $order
+     * @param mixed $order
      * @return array|\Magento\Framework\Data\Collection\AbstractDb
      */
     public function getProductCollection($order)
@@ -189,8 +191,10 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set imported in bulk query.
      *
-     * @param $ids
-     * @param $nowDate
+     * @param mixed $ids
+     * @param mixed $nowDate
+     * 
+     * @return null
      */
     public function setImported($ids, $nowDate)
     {
@@ -210,7 +214,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get Mage reviews by ids
      *
-     * @param $ids
+     * @param mixed $ids
      * @return mixed
      */
     public function getMageReviewsByIds($ids)
@@ -235,8 +239,8 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get product by id and store
      *
-     * @param $id
-     * @param $storeId
+     * @param mixed $id
+     * @param mixed $storeId
      * @return mixed
      */
     public function getProductByIdAndStore($id, $storeId)
@@ -256,7 +260,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get vote collection by review.
      *
-     * @param $reviewId
+     * @param mixed $reviewId
      * @return mixed
      */
     public function getVoteCollectionByReview($reviewId)

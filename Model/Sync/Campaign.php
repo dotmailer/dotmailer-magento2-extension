@@ -14,6 +14,7 @@ class Campaign
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
@@ -69,6 +70,8 @@ class Campaign
      * Sending the campaigns
      *
      * @throws \Magento\Framework\Exception\LocalizedException
+     * 
+     * @return null
      */
     public function sendCampaigns()
     {
@@ -87,8 +90,10 @@ class Campaign
     }
 
     /**
-     * @param $website
-     * @param $storeIds
+     * @param mixed $website
+     * @param mixed $storeIds
+     * 
+     * @return null
      */
     public function _checkSendStatus($website, $storeIds)
     {
@@ -112,8 +117,8 @@ class Campaign
     /**
      * Get campaigns to send
      *
-     * @param $emailsToSend
-     * @param $website
+     * @param mixed $emailsToSend
+     * @param mixed $website
      * @return array
      */
     private function getCampaignsToSend($emailsToSend, $website)
@@ -166,7 +171,9 @@ class Campaign
     /**
      * Send campaigns
      *
-     * @param $campaignsToSend
+     * @param mixed $campaignsToSend
+     * 
+     * @return null
      */
     private function sendCampaignsViaDotmailer($campaignsToSend)
     {
@@ -195,9 +202,9 @@ class Campaign
     /**
      * Get campaign collection
      *
-     * @param $storeIds
-     * @param $sendStatus
-     * @param $sendIdCheck
+     * @param mixed $storeIds
+     * @param mixed $sendStatus
+     * @param mixed $sendIdCheck
      * @return mixed
      */
     public function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
@@ -207,10 +214,12 @@ class Campaign
     }
 
     /**
-     * @param $campaign
-     * @param $websiteId
-     * @param $client
-     * @param $email
+     * @param mixed $campaign
+     * @param mixed $websiteId
+     * @param mixed $client
+     * @param mixed $email
+     * 
+     * @return null
      */
     private function updateDataFieldsForORderReviewCampaigns($campaign, $websiteId, $client, $email)
     {

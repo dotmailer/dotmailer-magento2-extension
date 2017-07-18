@@ -33,7 +33,7 @@ class Update extends Delete
     ) {
         $this->contactResource = $contactResource;
 
-        parent::__construct($helper,$importerResource, $serializer, $contactFactory);
+        parent::__construct($helper, $importerResource, $serializer, $contactFactory);
     }
 
     /**
@@ -46,7 +46,9 @@ class Update extends Delete
     /**
      * Sync.
      *
-     * @param $collection
+     * @param mixed $collection
+     * 
+     * @return null
      */
     public function sync($collection)
     {
@@ -66,9 +68,11 @@ class Update extends Delete
     }
 
     /**
-     * @param $item
-     * @param $importData
-     * @param $websiteId
+     * @param mixed  $item
+     * @param mixed $importData
+     * @param mixed $websiteId
+     * 
+     * @return null
      */
     public function syncItem($item, $importData, $websiteId)
     {
@@ -88,8 +92,8 @@ class Update extends Delete
     }
 
     /**
-     * @param $importData
-     * @param $websiteId
+     * @param mixed $importData
+     * @param mixed $websiteId
      * @return mixed
      */
     private function syncItemContactEmailUpdateMode($importData, $websiteId)
@@ -122,7 +126,7 @@ class Update extends Delete
     }
 
     /**
-     * @param $importData
+     * @param mixed $importData
      * @return mixed
      */
     private function syncItemSubscriberResubscribedMode($importData)
@@ -143,8 +147,8 @@ class Update extends Delete
     }
 
     /**
-     * @param $importData
-     * @param $websiteId
+     * @param mixed $importData
+     * @param mixed $websiteId
      * @return mixed
      */
     private function syncItemSubscriberUpdateMode($importData, $websiteId)

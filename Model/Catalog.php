@@ -13,6 +13,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      * @var ResourceModel\Catalog
      */
     public $catalogResource;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
@@ -26,6 +27,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     /**
      * Catalog constructor.
      *
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
      * @param ResourceModel\Catalog\CollectionFactory $catalogCollection
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -36,7 +38,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,        
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
@@ -45,7 +47,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
         array $data = []
     ) {
         $this->catalogResource = $catalogResource;
-        $this->catalogCollection = $catalogCollection;
+        $this->catalogCollection = $catalogCollection;        
         $this->dateTime = $dateTime;
         parent::__construct(
             $context,
@@ -58,10 +60,12 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
+     * 
+     * @return null
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Catalog');
+        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Catalog::class);
     }
 
     /**
@@ -95,5 +99,4 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
 
         return $collection->getFirstItem();
     }
-
 }

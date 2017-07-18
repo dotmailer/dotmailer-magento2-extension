@@ -11,58 +11,72 @@ class Cron
      * @var Apiconnector\ContactFactory
      */
     private $contactFactory;
+
     /**
      * @var Sync\AutomationFactory
      */
     private $automationFactory;
+
     /**
      * @var ImporterFactory
      */
     private $importerFactory;
+
     /**
      * @var Sync\CatalogFactory
      */
     private $catalogFactory;
+
     /**
      * @var Newsletter\SubscriberFactory
      */
     private $subscriberFactory;
+
     /**
      * @var Customer\GuestFactory
      */
     private $guestFactory;
+
     /**
      * @var Sync\Wishlist
      */
     private $wishlistFactory;
+
     /**
      * @var Sales\OrderFactory
      */
     private $orderFactory;
+
     /**
      * @var Sync\ReviewFactory
      */
     private $reviewFactory;
+
     /**
      * @var Sales\QuoteFactory
      */
     private $quoteFactory;
+
     /**
      * @var Sync\OrderFactory
      */
     private $syncOrderFactory;
+
     /**
      * @var Sync\CampaignFactory
      */
     private $campaignFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+    
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     private $fileHelper;
+
     /**
      * @var ResourceModel\Importer
      */
@@ -190,6 +204,8 @@ class Cron
 
     /**
      * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS.
+     * 
+     * @return null
      */
     public function reviewsAndWishlist()
     {
@@ -219,6 +235,8 @@ class Cron
 
     /**
      * CRON FOR ABANDONED CARTS.
+     * 
+     * @return null
      */
     public function abandonedCarts()
     {
@@ -227,6 +245,8 @@ class Cron
 
     /**
      * CRON FOR AUTOMATION.
+     * 
+     * @return null
      */
     public function syncAutomation()
     {
@@ -237,6 +257,8 @@ class Cron
      * Send email campaigns.
      *
      * @throws \Magento\Framework\Exception\LocalizedException
+     * 
+     * @return null
      */
     public function sendCampaigns()
     {
@@ -245,6 +267,8 @@ class Cron
 
     /**
      * CRON FOR ORDER TRANSACTIONAL DATA.
+     * 
+     * @return null
      */
     public function orderSync()
     {

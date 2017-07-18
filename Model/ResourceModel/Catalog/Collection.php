@@ -16,12 +16,14 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     /**
      * Initialize resource collection.
+     * 
+     * @return null
      */
     public function _construct()
     {
         $this->_init(
-            'Dotdigitalgroup\Email\Model\Catalog',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Catalog'
+            \Dotdigitalgroup\Email\Model\Catalog::class,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Catalog::class
         );
     }
 
@@ -62,8 +64,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get product collection to export.
      *
-     * @param      $store
-     * @param      $limit
+     * @param mixed $store
+     * @param mixed $limit
      * @param bool $modified
      *
      * @return mixed

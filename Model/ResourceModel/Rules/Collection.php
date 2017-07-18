@@ -5,15 +5,21 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel\Rules;
 class Collection extends
  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
+    /**
+     * @var string
+     */
     protected $_idFieldName = 'id';
+
     /**
      * Initialize resource collection.
+     * 
+     * @return void
      */
     public function _construct()
     {
         $this->_init(
-            'Dotdigitalgroup\Email\Model\Rules',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Rules'
+            \Dotdigitalgroup\Email\Model\Rules::class,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Rules::class
         );
     }
 
@@ -32,8 +38,8 @@ class Collection extends
     /**
      * Check if rule already exist for website.
      *
-     * @param      $websiteId
-     * @param      $type
+     * @param mixed $websiteId
+     * @param mixed $type
      * @param bool $ruleId
      *
      * @return bool
@@ -58,8 +64,8 @@ class Collection extends
     /**
      * Get rule for website.
      *
-     * @param $type
-     * @param $websiteId
+     * @param object $type
+     * @param object $websiteId
      *
      * @return array|\Magento\Framework\DataObject
      */

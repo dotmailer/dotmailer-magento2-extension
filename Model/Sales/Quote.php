@@ -1,6 +1,7 @@
 <?php
 
 namespace Dotdigitalgroup\Email\Model\Sales;
+
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 
 /**
@@ -33,7 +34,7 @@ class Quote
     const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3 = 'abandoned_carts/guests/campaign_3';
 
     /**
-     * @var
+     * @var object
      */
     public $quoteCollection;
 
@@ -48,6 +49,7 @@ class Quote
      * @var array
      */
     private $lostBasketCustomers = [1, 2, 3];
+
     /**
      * Number of guest lost baskets available.
      *
@@ -64,26 +66,32 @@ class Quote
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     private $scopeConfig;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
     private $orderCollection;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\CampaignFactory
      */
     private $campaignFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     private $campaignCollection;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
     private $rulesFactory;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
@@ -163,8 +171,8 @@ class Quote
     }
 
     /**
-     * @param $num
-     * @param $storeId
+     * @param mixed $num
+     * @param mixed $storeId
      *
      * @return mixed
      */
@@ -178,8 +186,8 @@ class Quote
     }
 
     /**
-     * @param $num
-     * @param $storeId
+     * @param mixed $num
+     * @param mixed $storeId
      *
      * @return mixed
      */
@@ -227,8 +235,8 @@ class Quote
     }
 
     /**
-     * @param $num
-     * @param $storeId
+     * @param mixed $num
+     * @param mixed $storeId
      *
      * @return mixed
      */
@@ -245,8 +253,8 @@ class Quote
      * Send email only if the interval limit passed, no emails during this interval.
      * Return false for any found for this period.
      *
-     * @param $email
-     * @param $storeId
+     * @param mixed $email
+     * @param mixed $storeId
      *
      * @return bool
      */
@@ -289,8 +297,8 @@ class Quote
     }
 
     /**
-     * @param $num
-     * @param $storeId
+     * @param mixed $num
+     * @param mixed $storeId
      *
      * @return bool
      */
@@ -304,8 +312,8 @@ class Quote
     }
 
     /**
-     * @param $num
-     * @param $storeId
+     * @param mixed $num
+     * @param mixed $storeId
      *
      * @return mixed
      */
@@ -319,8 +327,8 @@ class Quote
     }
 
     /**
-     * @param $num
-     * @param $storeId
+     * @param mixed $num
+     * @param mixed $storeId
      *
      * @return mixed
      */
@@ -334,7 +342,9 @@ class Quote
     }
 
     /**
-     * @param $storeId
+     * @param mixed $storeId
+     * 
+     * @return null
      */
     private function searchForGuestAbandonedCarts($storeId)
     {
@@ -409,7 +419,9 @@ class Quote
     }
 
     /**
-     * @param $storeId
+     * @param mixed $storeId
+     * 
+     * @return null
      */
     private function searchForCustomerAbandonedCarts($storeId)
     {
@@ -487,8 +499,8 @@ class Quote
     }
 
     /**
-     * @param $storeId
-     * @param $num
+     * @param mixed $storeId
+     * @param mixed $num
      *
      * @return \DateInterval
      */
@@ -505,9 +517,11 @@ class Quote
     }
 
     /**
-     * @param $mostExpensiveItem
-     * @param $email
-     * @param $websiteId
+     * @param mixed $mostExpensiveItem
+     * @param mixed $email
+     * @param mixed $websiteId
+     * 
+     * @return null
      */
     private function processMostExpensiveItem($mostExpensiveItem, $email, $websiteId)
     {
@@ -517,8 +531,8 @@ class Quote
     }
 
     /**
-     * @param $storeId
-     * @param $num
+     * @param mixed $storeId
+     * @param mixed $num
      *
      * @return \DateInterval
      */

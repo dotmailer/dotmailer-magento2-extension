@@ -80,7 +80,7 @@ class Review
     }
 
     /**
-     * @param $customer
+     * @param mixed $customer
      *
      * @return $this
      */
@@ -93,7 +93,7 @@ class Review
     }
 
     /**
-     * @param $customerId
+     * @param mixed $customerId
      *
      * @return $this
      */
@@ -113,7 +113,7 @@ class Review
     }
 
     /**
-     * @param $id
+     * @param mixed $id
      *
      * @return $this
      */
@@ -135,8 +135,10 @@ class Review
     /**
      * Create rating on runtime.
      *
-     * @param $ratingName
-     * @param $rating
+     * @param mixed $ratingName
+     * @param mixed $rating
+     * 
+     * @return null
      */
     public function createRating($ratingName, $rating)
     {
@@ -146,7 +148,7 @@ class Review
     /**
      * Set review date.
      *
-     * @param $date
+     * @param mixed $date
      *
      * @return $this;
      */
@@ -203,7 +205,9 @@ class Review
     /**
      * Set product name.
      *
-     * @param $name
+     * @param mixed $name
+     * 
+     * @return null
      */
     public function setProductName($name)
     {
@@ -221,7 +225,9 @@ class Review
     /**
      * Set product sku.
      *
-     * @param $sku
+     * @param mixed $sku
+     * 
+     * @return null
      */
     public function setProductSku($sku)
     {
@@ -239,7 +245,7 @@ class Review
     /**
      * Set website name.
      *
-     * @param $name
+     * @param object $name
      *
      * @return $this
      */
@@ -261,7 +267,7 @@ class Review
     /**
      * Set store name.
      *
-     * @param $name
+     * @param mixed $name
      *
      * @return $this
      */
@@ -283,7 +289,7 @@ class Review
     /**
      * Set email
      *
-     * @param $email
+     * @param mixed $email
      *
      * @return $this
      */

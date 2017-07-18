@@ -11,46 +11,57 @@ class Rest
      * @var null
      */
     private $url;
+
     /**
      * @var string
      */
     private $verb;
+
     /**
      * @var null
      */
     private $requestBody;
+
     /**
      * @var int
      */
     private $requestLength;
+
     /**
      * @var string
      */
     private $apiUsername;
+
     /**
      * @var string
      */
     private $apiPassword;
+
     /**
      * @var string
      */
     private $acceptType;
+
     /**
      * @var null
      */
     private $responseBody;
+
     /**
      * @var null
      */
     private $responseInfo;
+
     /**
-     * @var
+     * @var null
      */
     private $curlError;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var bool
      */
@@ -60,6 +71,8 @@ class Rest
      * Rest constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param int $website
+     * 
+     * @return null
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
@@ -82,7 +95,7 @@ class Rest
     }
 
     /**
-     * @param $json
+     * @param mixed $json
      *
      * @return string
      *
@@ -194,6 +207,8 @@ class Rest
 
     /**
      * @throws \Exception
+     * 
+     * @return mixed
      */
     public function execute()
     {
@@ -235,6 +250,9 @@ class Rest
         return $this->responseBody;
     }
 
+    /**
+     * @return void
+     */
     private function processDebugApi()
     {
         if ($this->helper->isDebugEnabled()) {
@@ -273,7 +291,9 @@ class Rest
     /**
      * Execute curl get request.
      *
-     * @param $ch
+     * @param mixed $ch
+     * 
+     * @return null
      */
     private function executeGet($ch)
     {
@@ -283,7 +303,9 @@ class Rest
     /**
      * Execute post request.
      *
-     * @param $ch
+     * @param mixed $ch
+     * 
+     * @return null
      */
     private function executePost($ch)
     {
@@ -300,7 +322,9 @@ class Rest
     /**
      * Post from the file.
      *
-     * @param $filename
+     * @param mixed $filename
+     * 
+     * @return null
      */
     public function buildPostBodyFromFile($filename)
     {
@@ -312,7 +336,9 @@ class Rest
     /**
      * Execute put.
      *
-     * @param $ch
+     * @param mixed $ch
+     * 
+     * @return null
      */
     private function executePut($ch)
     {
@@ -337,7 +363,9 @@ class Rest
     /**
      * Ececute delete.
      *
-     * @param $ch
+     * @param mixed $ch
+     * 
+     * @return null
      */
     private function executeDelete($ch)
     {
@@ -348,7 +376,9 @@ class Rest
     /**
      * Execute request.
      *
-     * @param $ch
+     * @param mixed $ch
+     * 
+     * @return null
      */
     private function doExecute(&$ch)
     {
@@ -374,7 +404,9 @@ class Rest
     /**
      * Curl options.
      *
-     * @param $ch
+     * @param mixed $ch
+     * 
+     * @return null
      */
     private function setCurlOpts(&$ch)
     {
@@ -396,7 +428,9 @@ class Rest
     /**
      * Basic auth.
      *
-     * @param $ch
+     * @param mixed $ch
+     * 
+     * @return null
      */
     private function setAuth(&$ch)
     {
@@ -423,7 +457,9 @@ class Rest
     /**
      * Set accept type.
      *
-     * @param $acceptType
+     * @param mixed $acceptType
+     * 
+     * @return null
      */
     public function setAcceptType($acceptType)
     {
@@ -443,7 +479,7 @@ class Rest
     /**
      * Set api username.
      *
-     * @param $apiUsername
+     * @param mixed $apiUsername
      *
      * @return $this
      */
@@ -467,7 +503,7 @@ class Rest
     /**
      * Set api password.
      *
-     * @param $apiPassword
+     * @param mixed $apiPassword
      *
      * @return $this
      */
@@ -490,6 +526,8 @@ class Rest
 
     /**
      * Get response info.
+     * 
+     * @return mixed
      */
     private function getResponseInfo()
     {
@@ -509,7 +547,7 @@ class Rest
     /**
      * Set url.
      *
-     * @param $url
+     * @param mixed $url
      *
      * @return $this
      */
@@ -533,7 +571,7 @@ class Rest
     /**
      * Set the verb.
      *
-     * @param $verb
+     * @param mixed $verb
      *
      * @return $this
      */

@@ -83,18 +83,22 @@ class Product
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     public $storeManager;
+
     /**
      * @var \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory
      */
     public $statusFactory;
+
     /**
      * @var \Magento\Catalog\Model\Product\VisibilityFactory
      */
     public $visibilityFactory;
+
     /**
      * @var \Magento\Catalog\Model\Product\Media\ConfigFactory
      */
     public $mediaConfigFactory;
+
     /**
      * @var \Magento\CatalogInventory\Model\Stock\ItemFactory
      */
@@ -214,7 +218,9 @@ class Product
     }
 
     /**
-     * @param $product
+     * @param mixed $product
+     * 
+     * @return null
      */
     private function processProductOptions($product)
     {
@@ -326,6 +332,8 @@ class Product
 
     /**
      * Init not serializable fields.
+     * 
+     * @return null
      */
     public function __wakeup()
     {

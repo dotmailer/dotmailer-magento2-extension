@@ -2,7 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends
+ \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
      * @var string
@@ -16,15 +17,26 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     /**
      * Initialize resource collection.
+     * 
+     * @return null
      */
     public function _construct()
     {
         $this->_init(
-            'Dotdigitalgroup\Email\Model\Contact',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Contact'
+            \Dotdigitalgroup\Email\Model\Contact::class,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Contact::class
         );
     }
 
+    /**
+     * @param \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory
+     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
+     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource
+     */
     public function __construct(
         \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory,
         \Psr\Log\LoggerInterface $logger,
@@ -156,7 +168,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Contact subscribers to import for website.
      *
-     * @param $emails
+     * @param mixed $emails
      *
      * @return $this
      */
@@ -275,7 +287,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get subscribers data by emails
      *
-     * @param $emails
+     * @param mixed $emails
      * @return array
      */
     public function getSubscriberDataByEmails($emails)
@@ -294,8 +306,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get contacts to import by website
      *
-     * @param $websiteId
-     * @param $syncLimit
+     * @param mixed $websiteId
+     * @param mixed $syncLimit
      * @return $this
      */
     public function getContactsToImportByWebsite($websiteId, $syncLimit)

@@ -10,10 +10,12 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
+     * 
+     * @return null
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Contact');
+        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class);
     }
 
     /**
@@ -89,7 +91,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      *
      * @param \Magento\Store\Model\Website $website
      * @param int $limit
-     * @param $isCustomerCheck
+     * @param mixed $isCustomerCheck
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
      */
@@ -109,7 +111,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Contact subscribers to import for website.
      *
-     * @param $emails
+     * @param mixed $emails
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
      */

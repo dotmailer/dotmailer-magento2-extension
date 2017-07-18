@@ -8,6 +8,7 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+    
     /**
      * @var \Magento\Framework\Registry
      */

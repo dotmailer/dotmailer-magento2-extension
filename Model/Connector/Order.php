@@ -15,68 +15,83 @@ class Order
      * @var string
      */
     public $id;
+
     /**
      * Email.
      *
      * @var string
      */
     public $email;
+
     /**
      * @var int
      */
     public $quoteId;
+
     /**
      * @var string
      */
     public $storeName;
+
     /**
      * @var string
      */
     public $purchaseDate;
+
     /**
      * @var array
      */
     public $deliveryAddress = [];
+
     /**
      * @var array
      */
     public $billingAddress = [];
+
     /**
      * @var array
      */
     public $products = [];
+
     /**
      * @var float
      */
     public $orderSubtotal;
+
     /**
      * @var float
      */
     public $discountAmount;
+
     /**
      * @var float
      */
     public $orderTotal;
+
     /**
      * Payment name.
      *
      * @var string
      */
     public $payment;
+
     /**
      * @var string
      */
     public $deliveryMethod;
+
     /**
      * @var float
      */
     public $deliveryTotal;
+
     /**
      * @var string
      */
     public $currency;
+
     /**
-     * @var
+     * @var object
      */
     public $couponCode;
 
@@ -89,26 +104,32 @@ class Order
      * @var string
      */
     public $orderStatus;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
     public $localeDate;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     public $customerFactory;
+
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
     public $productFactory;
+
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory
      */
     public $attributeCollection;
+
     /**
      * @var \Magento\Eav\Model\Entity\Attribute\SetFactory
      */
@@ -157,7 +178,7 @@ class Order
     /**
      * Set the order data information.
      *
-     * @param $orderData
+     * @param mixed $orderData
      *
      * @return $this
      */
@@ -254,7 +275,9 @@ class Order
     }
 
     /**
-     * @param $orderData
+     * @param mixed $orderData
+     * 
+     * @return null
      */
     private function processBillingAddress($orderData)
     {
@@ -278,7 +301,9 @@ class Order
     }
 
     /**
-     * @param $orderData
+     * @param mixed $orderData
+     * 
+     * @return null
      */
     private function processShippingAddress($orderData)
     {
@@ -303,8 +328,10 @@ class Order
     }
 
     /**
-     * @param $orderData
-     * @param $syncCustomOption
+     * @param mixed $orderData
+     * @param mixed $syncCustomOption
+     * 
+     * @return null
      */
     private function processOrderItems($orderData, $syncCustomOption)
     {
@@ -407,10 +434,10 @@ class Order
     }
 
     /**
-     * @param $configAttributes
-     * @param $attributesFromAttributeSet
-     * @param $productModel
-     * @param $attributes
+     * @param mixed $configAttributes
+     * @param mixed $attributesFromAttributeSet
+     * @param mixed $productModel
+     * @param mixed $attributes
      *
      * @return array
      */
@@ -455,9 +482,9 @@ class Order
     }
 
     /**
-     * @param $attributes
-     * @param $value
-     * @param $attributeCode
+     * @param mixed $attributes
+     * @param mixed $value
+     * @param mixed $attributeCode
      *
      * @return array
      */
@@ -479,8 +506,8 @@ class Order
     /**
      * Get the street name by line number.
      *
-     * @param $street
-     * @param $line
+     * @param mixed $street
+     * @param mixed $line
      *
      * @return string
      */
@@ -522,8 +549,8 @@ class Order
     /**
      * Get attrubute value for the field.
      *
-     * @param $field
-     * @param $orderData
+     * @param mixed $field
+     * @param mixed $orderData
      *
      * @return float|int|null|string
      */
@@ -573,8 +600,10 @@ class Order
     /**
      * Create property on runtime.
      *
-     * @param $field
-     * @param $value
+     * @param mixed $field
+     * @param mixed $value
+     * 
+     * @return null
      */
     public function _assignCustom($field, $value)
     {
@@ -584,7 +613,7 @@ class Order
     /**
      * Get attributes from attribute set.
      *
-     * @param $attributeSetId
+     * @param mixed $attributeSetId
      *
      * @return array
      */
@@ -605,7 +634,7 @@ class Order
     /**
      *  Check string length and limit to 250.
      *
-     * @param $value
+     * @param mixed $value
      *
      * @return string
      */
@@ -619,7 +648,7 @@ class Order
     }
 
     /**
-     * @param $orderItem
+     * @param mixed $orderItem
      * @return array
      */
     public function _getOrderItemOptions($orderItem)
@@ -692,13 +721,15 @@ class Order
 
     /**
      * Init not serializable fields.
+     * 
+     * @return null
      */
     public function __wakeup()
     {
     }
 
     /**
-     * @param $product
+     * @param mixed $product
      *
      * @return string
      */

@@ -8,18 +8,22 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Magento\Framework\Registry
      */
     private $registry;
+
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
     private $request;
+    
     /**
      * Escaper
      *

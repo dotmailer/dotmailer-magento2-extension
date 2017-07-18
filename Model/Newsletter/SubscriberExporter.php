@@ -28,11 +28,20 @@ class SubscriberExporter
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     public $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
 
+    /**
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
@@ -52,8 +61,8 @@ class SubscriberExporter
     /**
      * Export subscribers
      *
-     * @param $website
-     * @param $subscribers
+     * @param mixed $website
+     * @param mixed $subscribers
      * @return int
      */
     public function exportSubscribers($website, $subscribers)
@@ -107,8 +116,8 @@ class SubscriberExporter
     /**
      * Get the store id from newsletter_subscriber, return default if not found.
      *
-     * @param $email
-     * @param $subscribers
+     * @param mixed $email
+     * @param mixed $subscribers
      *
      * @return int
      */

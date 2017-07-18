@@ -9,28 +9,32 @@ namespace Dotdigitalgroup\Email\Model\Customer\Wishlist;
 class Item
 {
     /**
-     * @var
+     * @var object
      */
     public $sku;
+
     /**
-     * @var
+     * @var object
      */
     public $qty;
+
     /**
-     * @var
+     * @var object
      */
     public $name;
+
     /**
-     * @var
+     * @var object
      */
     public $price;
+
     /**
-     * @var
+     * @var object
      */
     public $totalValueOfProduct;
 
     /**
-     * @param $product
+     * @param mixed $product
      *
      * @return $this
      */
@@ -43,7 +47,7 @@ class Item
     }
 
     /**
-     * @param $name
+     * @param mixed $name
      *
      * @return $this
      */
@@ -63,7 +67,7 @@ class Item
     }
 
     /**
-     * @param $qty
+     * @param mixed $qty
      *
      * @return $this
      */
@@ -91,7 +95,7 @@ class Item
     }
 
     /**
-     * @param $product
+     * @param mixed $product
      *
      * @return $this
      */
@@ -114,7 +118,7 @@ class Item
     }
 
     /**
-     * @param $sku
+     * @param mixed $sku
      *
      * @return $this
      */

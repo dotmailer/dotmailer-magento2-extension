@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model;
 class Review extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_REVIEW_IMPORTED = 1;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
@@ -40,11 +41,13 @@ class Review extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
+     * 
+     * @return null
      */
     public function _construct()
     {
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Review');
+        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Review::class);
     }
 
     /**

@@ -8,14 +8,17 @@ class Automation extends \Magento\Framework\Model\AbstractModel
      * @var ResourceModel\Automation
      */
     private $automationResource;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -59,11 +62,13 @@ class Automation extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
+     * 
+     * @return null
      */
     public function _construct()
     {
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Automation');
+        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Automation::class);
     }
 
     /**
@@ -85,7 +90,9 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     /**
      * New customer automation
      *
-     * @param $customer
+     * @param mixed $customer
+     * 
+     * @return null
      */
     public function newCustomerAutomation($customer)
     {
