@@ -10,70 +10,84 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 class Account
 {
     /**
-     * @var
+     * @var object
      */
     public $apiUsername;
+
     /**
-     * @var
+     * @var object
      */
     public $apiPassword;
+
     /**
-     * @var
+     * @var object
      */
     public $limit;
+
     /**
-     * @var
+     * @var object
      */
     public $contactBookId;
+
     /**
-     * @var
+     * @var object
      */
     public $subscriberBookId;
+
     /**
      * @var array
      */
     public $websites = [];
+
     /**
-     * @var
+     * @var object
      */
     public $csvHeaders;
+
     /**
-     * @var
+     * @var object
      */
     public $customersFilename;
+
     /**
-     * @var
+     * @var object
      */
     public $subscribersFilename;
+
     /**
-     * @var
+     * @var object
      */
     public $mappingHash;
+
     /**
      * @var array
      */
     public $contacts = [];
+
     /**
      * @var array
      */
     public $orders = [];
+
     /**
-     * @var
+     * @var object
      */
     public $orderIds;
+
     /**
      * @var array
      */
     public $ordersForSingleSync = [];
+
     /**
-     * @var
+     * @var object
      */
     public $orderIdsForSingleSync;
 
     /**
      * Set api password.
      *
-     * @param $apiPassword
+     * @param mixed $apiPassword
      *
      * @return $this
      */
@@ -97,7 +111,7 @@ class Account
     /**
      * Set api username.
      *
-     * @param $apiUsername
+     * @param mixed $apiUsername
      *
      * @return $this
      */
@@ -122,6 +136,8 @@ class Account
      * Set contact book id.
      *
      * @param string $contactBookId
+     * 
+     * @return null
      */
     public function setContactBookId($contactBookId)
     {
@@ -142,6 +158,8 @@ class Account
      * Set contacts.
      *
      * @param array $contacts
+     * 
+     * @return null
      */
     public function setContacts($contacts)
     {
@@ -165,7 +183,9 @@ class Account
     /**
      * Set customers filename.
      *
-     * @param $customersFilename
+     * @param mixed $customersFilename
+     * 
+     * @return null
      */
     public function setCustomersFilename($customersFilename)
     {
@@ -182,6 +202,8 @@ class Account
 
     /**
      * @param mixed $limit
+     * 
+     * @return null
      */
     public function setLimit($limit)
     {
@@ -197,7 +219,9 @@ class Account
     }
 
     /**
-     * @param $mappingHash
+     * @param mixed $mappingHash
+     * 
+     * @return null
      */
     public function setMappingHash($mappingHash)
     {
@@ -214,6 +238,8 @@ class Account
 
     /**
      * @param array $orders
+     * 
+     * @return null
      */
     public function setOrders($orders)
     {
@@ -232,6 +258,8 @@ class Account
 
     /**
      * @param string $subscriberBookId
+     * 
+     * @return null
      */
     public function setSubscriberBookId($subscriberBookId)
     {
@@ -247,7 +275,9 @@ class Account
     }
 
     /**
-     * @param $subscribersFilename
+     * @param mixed $subscribersFilename
+     * 
+     * @return null
      */
     public function setSubscribersFilename($subscribersFilename)
     {
@@ -263,7 +293,9 @@ class Account
     }
 
     /**
-     * @param $csvHeaders
+     * @param mixed $csvHeaders
+     * 
+     * @return null
      */
     public function setCsvHeaders($csvHeaders)
     {
@@ -280,6 +312,8 @@ class Account
 
     /**
      * @param mixed $websites
+     * 
+     * @return null
      */
     public function setWebsites($websites)
     {
@@ -296,6 +330,8 @@ class Account
 
     /**
      * @param array $orderIds
+     * 
+     * @return null
      */
     public function setOrderIds($orderIds)
     {
@@ -312,6 +348,8 @@ class Account
 
     /**
      * @param array $orders
+     * 
+     * @return null
      */
     public function setOrdersForSingleSync($orders)
     {
@@ -330,6 +368,8 @@ class Account
 
     /**
      * @param array $orderIds
+     * 
+     * @return null
      */
     public function setOrderIdsForSingleSync($orderIds)
     {

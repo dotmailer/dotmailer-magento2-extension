@@ -44,6 +44,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var array
      */
@@ -75,41 +76,50 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         ];
 
     /**
-     * @var
+     * @var object
      */
     public $bulkPriority;
+
     /**
-     * @var
+     * @var object
      */
     public $singlePriority;
+
     /**
-     * @var
+     * @var object
      */
     public $totalItems;
+    
     /**
-     * @var
+     * @var object
      */
     public $bulkSyncLimit;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
     public $dateTime;
+
     /**
      * @var \Magento\Framework\Filesystem\Io\File
      */
     public $file;
+
     /**
      * @var ResourceModel\Contact
      */
     public $contact;
+    
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
+
     /**
      * @var \Magento\Framework\App\Filesystem\DirectoryList
      */
     public $directoryList;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
@@ -169,10 +179,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
+     * 
+     * @return null
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Importer');
+        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Importer::class);
     }
 
     /**
@@ -193,7 +205,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * Register import in queue.
      *
      * @param string $importType
-     * @param        $importData
+     * @param mixed $importData
      * @param string $importMode
      * @param int $websiteId
      * @param bool $file
@@ -233,6 +245,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Proccess the data from queue.
+     * 
+     * @return null
      */
     public function processQueue()
     {
@@ -289,6 +303,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Set importing priority.
      *
+     * @return null
+     * 
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function _setPriority()
@@ -306,7 +322,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
         //Contact Bulk
         $contact = $defaultBulk;
-        $contact['model'] = 'Dotdigitalgroup\Email\Model\Sync\Contact\Bulk';
+        $contact['model'] = \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk::class;
         $contact['type'] = [
             self::IMPORT_TYPE_CONTACT,
             self::IMPORT_TYPE_GUEST,
@@ -315,12 +331,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
         //Bulk Order
         $order = $defaultBulk;
-        $order['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Bulk';
+        $order['model'] = \Dotdigitalgroup\Email\Model\Sync\Td\Bulk::class;
         $order['type'] = self::IMPORT_TYPE_ORDERS;
 
         //Bulk Other TD
         $other = $defaultBulk;
-        $other['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Bulk';
+        $other['model'] = \Dotdigitalgroup\Email\Model\Sync\Td\Bulk::class;
         $other['type'] = [
             'Catalog',
             self::IMPORT_TYPE_REVIEWS,
@@ -331,7 +347,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
          * Update
          */
         $defaultSingleUpdate = [
-            'model' => 'Dotdigitalgroup\Email\Model\Sync\Contact\Update',
+            'model' => \Dotdigitalgroup\Email\Model\Sync\Contact\Update::class,
             'mode' => '',
             'type' => '',
             'limit' => self::SYNC_SINGLE_LIMIT_NUMBER,
@@ -354,13 +370,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
         //Order Update
         $orderUpdate = $defaultSingleUpdate;
-        $orderUpdate['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Update';
+        $orderUpdate['model'] = \Dotdigitalgroup\Email\Model\Sync\Td\Update::class;
         $orderUpdate['mode'] = self::MODE_SINGLE;
         $orderUpdate['type'] = self::IMPORT_TYPE_ORDERS;
 
         //Update Other TD
         $updateOtherTd = $defaultSingleUpdate;
-        $updateOtherTd['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Update';
+        $updateOtherTd['model'] = \Dotdigitalgroup\Email\Model\Sync\Td\Update::class;
         $updateOtherTd['mode'] = self::MODE_SINGLE;
         $updateOtherTd['type'] = [
             'Catalog',
@@ -379,13 +395,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
         //Contact Delete
         $contactDelete = $defaultSingleDelete;
-        $contactDelete['model'] = 'Dotdigitalgroup\Email\Model\Sync\Contact\Delete';
+        $contactDelete['model'] = \Dotdigitalgroup\Email\Model\Sync\Contact\Delete::class;
         $contactDelete['mode'] = self::MODE_CONTACT_DELETE;
         $contactDelete['type'] = self::IMPORT_TYPE_CONTACT;
 
         //TD Delete
         $tdDelete = $defaultSingleDelete;
-        $tdDelete['model'] = 'Dotdigitalgroup\Email\Model\Sync\Td\Delete';
+        $tdDelete['model'] = \Dotdigitalgroup\Email\Model\Sync\Td\Delete::class;
         $tdDelete['mode'] = self::MODE_SINGLE_DELETE;
         $tdDelete['type'] = [
             'Catalog',
@@ -414,6 +430,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Check importing status for pending import.
+     * 
+     * @return null
      */
     public function _checkImportStatus()
     {
@@ -458,9 +476,11 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $response
-     * @param $item
-     * @param $websiteId
+     * @param mixed $response
+     * @param mixed $item
+     * @param mixed $websiteId
+     * 
+     * @return null
      */
     private function processResponse($response, $item, $websiteId)
     {
@@ -487,12 +507,14 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
                     if ($item->getImportId()) {
                         $this->_processContactImportReportFaults(
-                            $item->getImportId(), $websiteId
+                            $item->getImportId(),
+                            $websiteId
                         );
                     }
                 }
             } elseif (in_array(
-                $response->status, $this->importStatuses
+                $response->status,
+                $this->importStatuses
             )) {
                 $item->setImportStatus(self::FAILED)
                     ->setMessage(
@@ -508,7 +530,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $itemToSave
+     * @param mixed $itemToSave
+     * 
+     * @return null
      */
     private function saveItem($itemToSave)
     {
@@ -518,7 +542,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Get imports marked as importing.
      *
-     * @param $limit
+     * @param mixed $limit
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection|bool
      */
@@ -535,6 +559,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param int $websiteId
      *
      * @throws \Magento\Framework\Exception\LocalizedException
+     * 
+     * @return null
      */
     public function _processContactImportReportFaults($id, $websiteId)
     {
@@ -563,7 +589,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Convert utf8 data.
      *
-     * @param $text
+     * @param mixed $text
      *
      * @return mixed
      */

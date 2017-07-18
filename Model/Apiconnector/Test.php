@@ -11,6 +11,7 @@ class Test
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+    
     /**
      * @var \Magento\Framework\App\Config\ReinitableConfigInterface
      */

@@ -10,7 +10,9 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
     /**
      * Sync.
      *
-     * @param $collection
+     * @param mixed $collection
+     * 
+     * @return null
      */
     public function sync($collection)
     {

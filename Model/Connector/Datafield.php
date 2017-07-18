@@ -12,18 +12,22 @@ class Datafield
      * @var string
      */
     public $name;
+
     /**
      * @var string
      */
     public $type;
+
     /**
      * @var string
      */
     public $visibility;
+
     /**
      * @var string
      */
     public $defaultValue;
+
     /**
      * Contact datafields.
      *
@@ -280,6 +284,8 @@ class Datafield
      * Set contact datafields.
      *
      * @param array $contactDatafields
+     * 
+     * @return null
      */
     public function setContactDatafields($contactDatafields)
     {
@@ -299,8 +305,8 @@ class Datafield
     /**
      * Set a single datafield.
      *
-     * @param        $name
-     * @param        $value
+     * @param mixed $name
+     * @param mixed $value
      * @param string $type
      * @param string $visibility
      *

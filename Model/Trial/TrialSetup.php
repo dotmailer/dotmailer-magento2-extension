@@ -13,10 +13,12 @@ class TrialSetup
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
      */
     private $dataField;
+
     /**
      * @var \Magento\Framework\App\Config\ReinitableConfigInterface
      */
@@ -43,8 +45,8 @@ class TrialSetup
     /**
      * Save api credentioals.
      *
-     * @param $apiUser
-     * @param $apiPass
+     * @param mixed $apiUser
+     * @param mixed $apiPass
      *
      * @return bool
      */
@@ -78,8 +80,8 @@ class TrialSetup
     /**
      * Setup data fields.
      *
-     * @param $username
-     * @param $password
+     * @param mixed $username
+     * @param mixed $password
      *
      * @return bool
      */
@@ -121,8 +123,8 @@ class TrialSetup
     /**
      * Create certain address books.
      *
-     * @param $username
-     * @param $password
+     * @param mixed $username
+     * @param mixed $password
      *
      * @return bool
      */
@@ -150,8 +152,10 @@ class TrialSetup
     /**
      * Map the successfully created address book
      *
-     * @param $name
-     * @param $id
+     * @param mixed $name
+     * @param mixed $id
+     * 
+     * @return null
      */
     public function mapAddressBook($name, $id)
     {
@@ -203,7 +207,9 @@ class TrialSetup
     /**
      * Save api endpoint.
      *
-     * @param $value
+     * @param mixed $value
+     * 
+     * @return null
      */
     public function saveApiEndPoint($value)
     {
@@ -216,8 +222,8 @@ class TrialSetup
     }
 
     /**
-     * @param $client
-     * @param $addressBooks
+     * @param mixed $client
+     * @param mixed $addressBooks
      * @return bool
      */
     private function validateAccountAndCreateAddressbooks($client, $addressBooks)

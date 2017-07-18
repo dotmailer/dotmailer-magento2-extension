@@ -8,26 +8,32 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Magento\Catalog\Model\ProductFactory
      */
     private $productFactory;
+
     /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     private $categoryFactory;
+
     /**
      * @var \Magento\Reports\Model\ResourceModel\Product\CollectionFactory
      */
     private $reportProductCollection;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Reports\Block\Product\Viewed
      */
     public $viewed;
+
     /**
      * @var \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory
      */
     public $productSoldFactory;
+
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Category
      */
@@ -35,6 +41,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
+     * 
+     * @return null
      */
     public function _construct()
     {
@@ -79,11 +87,11 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get most viewed product collection
      *
-     * @param $from
-     * @param $to
-     * @param $limit
-     * @param $catId
-     * @param $catName
+     * @param mixed $from
+     * @param mixed $to
+     * @param mixed $limit
+     * @param mixed $catId
+     * @param mixed $catName
      * @return mixed
      */
     public function getMostViewedProductCollection($from, $to, $limit, $catId, $catName)
@@ -105,8 +113,10 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     )
                     ->where('ccpi.category_id =?', $catId);
             } else {
-                $this->helper->log('Most viewed. Category id ' . $catId
-                    . ' is invalid. It does not exist.');
+                $this->helper->log(
+                    'Most viewed. Category id ' . $catId
+                    . ' is invalid. It does not exist.'
+                );
             }
         }
 
@@ -123,8 +133,10 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     )
                     ->where('ccpi.category_id =?', $category->getId());
             } else {
-                $this->helper->log('Most viewed. Category name ' . $catName
-                    . ' is invalid. It does not exist.');
+                $this->helper->log(
+                    'Most viewed. Category name ' . $catName
+                    . ' is invalid. It does not exist.'
+                );
             }
         }
 
@@ -134,7 +146,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get recently viewed
      *
-     * @param $limit
+     * @param mixed $limit
      * @return array
      */
     public function getRecentlyViewed($limit)
@@ -149,8 +161,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get product collection from ids
      *
-     * @param $ids
-     * @param $limit
+     * @param mixed $ids
+     * @param mixed $limit
      * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     public function getProductCollectionFromIds($ids, $limit = false)
@@ -176,8 +188,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get product collection from ids
      *
-     * @param $productsSku
-     * @param $limit
+     * @param mixed $productsSku
+     * @param mixed $limit
      * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     public function getProductsCollectionBySku($productsSku, $limit = false)
@@ -202,10 +214,10 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get bestseller collection
      *
-     * @param $from
-     * @param $to
-     * @param $limit
-     * @param $storeId
+     * @param mixed $from
+     * @param mixed $to
+     * @param mixed $limit
+     * @param mixed $storeId
      * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     public function getBestsellerCollection($from, $to, $limit, $storeId)
@@ -305,8 +317,10 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set imported in bulk query. If modified true then set modified to null in bulk query.
      *
-     * @param      $ids
+     * @param mixed $ids
      * @param bool $modified
+     * 
+     * @return null
      */
     public function setImportedByIds($ids, $modified = false)
     {
@@ -342,6 +356,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Remove product with product id set and no product
+     * 
+     * @return null
      */
     public function removeOrphanProducts()
     {

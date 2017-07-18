@@ -5,20 +5,6 @@ namespace Dotdigitalgroup\Email\Model;
 class Catalog extends \Magento\Framework\Model\AbstractModel
 {
     /**
-     * @var string
-     */
-    protected $_idFieldName = 'id';
-
-    /**
-     * @var ResourceModel\Catalog
-     */
-    public $catalogResource;
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
-     */
-    private $catalogCollection;
-
-    /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
@@ -26,7 +12,6 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     /**
      * Catalog constructor.
      *
-     * @param ResourceModel\Catalog\CollectionFactory $catalogCollection
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
@@ -35,8 +20,6 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
@@ -44,8 +27,6 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->catalogResource = $catalogResource;
-        $this->catalogCollection = $catalogCollection;
         $this->dateTime = $dateTime;
         parent::__construct(
             $context,
@@ -58,10 +39,12 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
+     * 
+     * @return null
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Catalog');
+        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Catalog::class);
     }
 
     /**
@@ -89,11 +72,10 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      */
     public function loadProductById($productId)
     {
-        $collection = $this->catalogCollection->create()
+        $collection = $this->getCollection()
             ->addFieldToFilter('product_id', $productId)
             ->setPageSize(1);
 
         return $collection->getFirstItem();
     }
-
 }

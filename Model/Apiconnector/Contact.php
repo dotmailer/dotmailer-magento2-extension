@@ -11,10 +11,12 @@ class Contact
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
+    
     /**
-     * @var
+     * @var object
      */
     private $start;
+
     /**
      * @var int
      */
@@ -24,18 +26,22 @@ class Contact
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactModel;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Customer
      */
     private $emailCustomer;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     private $file;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport
      */
@@ -48,6 +54,7 @@ class Contact
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param ContactImportQueueExport $contactImportQueueExport
      */
     public function __construct(
@@ -207,11 +214,11 @@ class Contact
 
     /**
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param $customerCollection
-     * @param $mappedHash
-     * @param $customAttributes
-     * @param $customersFile
-     * @param $customerIds
+     * @param mixed $customerCollection
+     * @param mixed $mappedHash
+     * @param mixed $customAttributes
+     * @param mixed $customersFile
+     * @param mixed $customerIds
      *
      * @return int
      */
@@ -264,7 +271,7 @@ class Contact
     /**
      * Customer collection with all data ready for export.
      *
-     * @param $customerIds
+     * @param mixed $customerIds
      * @param int $websiteId
      * @return mixed
      */

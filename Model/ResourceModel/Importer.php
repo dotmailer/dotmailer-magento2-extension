@@ -25,6 +25,8 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
+     * 
+     * @return null
      */
     public function _construct()
     {
@@ -34,7 +36,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset importer items.
      *
-     * @param $ids
+     * @param mixed $ids
      *
      * @return int|string
      */
@@ -57,7 +59,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Delete completed records older then 30 days from provided table.
      *
-     * @param $tableName
+     * @param mixed $tableName
      *
      * @return \Exception|int
      */
@@ -81,7 +83,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Save item
      *
-     * @param $item
+     * @param mixed $item
      * @return $this
      */
     public function saveItem($item)

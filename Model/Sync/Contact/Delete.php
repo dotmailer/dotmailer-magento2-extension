@@ -10,7 +10,9 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
     /**
      * Sync.
      *
-     * @param $collection
+     * @param mixed $collection
+     * 
+     * @return null
      */
     public function sync($collection)
     {
@@ -35,8 +37,10 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
     }
 
     /**
-     * @param $item
-     * @param $apiContact
+     * @param mixed $item
+     * @param mixed $apiContact
+     * 
+     * @return null
      */
     public function _handleSingleItemAfterSync($item, $apiContact)
     {

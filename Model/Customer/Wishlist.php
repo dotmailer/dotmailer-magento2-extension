@@ -11,10 +11,12 @@ class Wishlist
      * @var int
      */
     public $id;
+
     /**
      * @var int
      */
     public $customerId;
+
     /**
      * @var string
      */
@@ -54,7 +56,7 @@ class Wishlist
     }
 
     /**
-     * @param $customer
+     * @param mixed $customer
      *
      * @return $this
      */
@@ -87,7 +89,7 @@ class Wishlist
     }
 
     /**
-     * @param $id
+     * @param mixed $id
      *
      * @return $this
      */
@@ -109,7 +111,9 @@ class Wishlist
     /**
      * Set wishlist item.
      *
-     * @param $item
+     * @param mixed $item
+     * 
+     * @return null
      */
     public function setItem($item)
     {
@@ -132,7 +136,7 @@ class Wishlist
     /**
      * Set wishlist date.
      *
-     * @param $date
+     * @param mixed $date
      *
      * @return $this;
      */
@@ -154,7 +158,7 @@ class Wishlist
     /**
      * Set email
      *
-     * @param $email
+     * @param mixed $email
      *
      * @return $this
      */
@@ -176,6 +180,9 @@ class Wishlist
         return $properties;
     }
 
+    /**
+     * @return void
+     */
     public function getData()
     {
         return get_object_vars($this);

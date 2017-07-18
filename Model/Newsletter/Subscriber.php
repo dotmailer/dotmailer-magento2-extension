@@ -15,7 +15,7 @@ class Subscriber
     const STATUS_UNCONFIRMED = 4;
 
     /**
-     * @var
+     * @var object
      */
     private $start;
 
@@ -50,6 +50,7 @@ class Subscriber
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $emailContactResource;
+
     /**
      * @var SubscriberWithSalesExporter
      */
@@ -126,7 +127,7 @@ class Subscriber
     /**
      * Export subscribers per website.
      *
-     * @param $website
+     * @param mixed $website
      *
      * @return int
      *
@@ -171,7 +172,10 @@ class Subscriber
         }
 
         if (! empty($subscribersWithSaleData)) {
-            $updated += $this->subscriberWithSalesExporter->exportSubscribersWithSales($website, $subscribersWithSaleData);
+            $updated += $this->subscriberWithSalesExporter->exportSubscribersWithSales(
+                $website,
+                $subscribersWithSaleData
+            );
             //add updated number for the website
             $this->countSubscribers += $updated;
         }
@@ -181,7 +185,7 @@ class Subscriber
     /**
      * Check emails exist in sales order table
      *
-     * @param $emails
+     * @param mixed $emails
      * @return array
      */
     public function checkInSales($emails)

@@ -6,18 +6,28 @@ class Collection extends
  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
 
+    /**
+     * @var string
+     */
     protected $_idFieldName = 'id';
 
     /**
      * Initialize resource collection.
+     * 
+     * @return null
      */
     public function _construct()
     {
-        $this->_init('Dotdigitalgroup\Email\Model\Importer', 'Dotdigitalgroup\Email\Model\ResourceModel\Importer');
+        $this->_init(
+            \Dotdigitalgroup\Email\Model\Importer::class,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Importer::class
+        );
     }
 
     /**
      * Reset collection.
+     * 
+     * @return null
      */
     public function reset()
     {
@@ -27,7 +37,7 @@ class Collection extends
     /**
      * Get imports marked as importing.
      *
-     * @param $limit
+     * @param mixed $limit
      * @return mixed
      */
     public function getItemsWithImportingStatus($limit)
@@ -50,9 +60,9 @@ class Collection extends
     /**
      * Get the imports by type and mode.
      *
-     * @param $importType
-     * @param $importMode
-     * @param $limit
+     * @param mixed $importType
+     * @param mixed $importMode
+     * @param mixed $limit
      * @return mixed
      */
     public function getQueueByTypeAndMode($importType, $importMode, $limit)

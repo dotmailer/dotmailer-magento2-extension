@@ -11,13 +11,14 @@ class Bulk
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
     protected $importerResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $helper;
 
     /**
-     * @var
+     * @var object
      */
     protected $client;
 
@@ -25,6 +26,7 @@ class Bulk
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     private $contactFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Config\Json
      */
@@ -52,7 +54,9 @@ class Bulk
     /**
      * Sync.
      *
-     * @param $collection
+     * @param mixed $collection
+     * 
+     * @return null
      */
     public function sync($collection)
     {
@@ -83,8 +87,8 @@ class Bulk
     /**
      * Get addressbook by import type.
      *
-     * @param $importType
-     * @param $websiteId
+     * @param mixed $importType
+     * @param mixed $websiteId
      *
      * @return mixed|string
      */
@@ -112,8 +116,10 @@ class Bulk
     }
 
     /**
-     * @param $item
-     * @param $result
+     * @param mixed  $item
+     * @param mixed $result
+     * 
+     * @return null
      */
     public function _handleItemAfterSync($item, $result)
     {
@@ -147,7 +153,7 @@ class Bulk
     }
 
     /**
-     * @param $item
+     * @param mixed $item
      *
      * @return bool
      */

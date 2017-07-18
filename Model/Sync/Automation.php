@@ -43,28 +43,34 @@ class Automation
      * @var int
      */
     private $limit = 100;
+
     /**
-     * @var
+     * @var object
      */
     private $typeId;
+
     /**
-     * @var
+     * @var object
      */
     private $websiteId;
+
     /**
-     * @var
+     * @var object
      */
     private $storeName;
+
     /**
-     * @var
+     * @var object
      */
     private $programId;
+
     /**
      * @var string
      */
     private $programStatus = 'Active';
+
     /**
-     * @var
+     * @var object
      */
     private $programMessage;
 
@@ -72,6 +78,7 @@ class Automation
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+    
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -81,6 +88,7 @@ class Automation
      * @var \Magento\Framework\App\ResourceConnection
      */
     private $resource;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
@@ -95,6 +103,7 @@ class Automation
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\AutomationFactory
      */
     private $automationResourceFactory;
+
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
@@ -140,6 +149,8 @@ class Automation
      * Sync.
      *
      * @throws \Magento\Framework\Exception\LocalizedException
+     * 
+     * @return null
      */
     public function sync()
     {
@@ -212,8 +223,10 @@ class Automation
     /**
      * Update single contact datafields for this automation type.
      *
-     * @param $type
-     * @param $email
+     * @param mixed $type
+     * @param mixed $email
+     * 
+     * @return null
      */
     public function updateDatafieldsByType($type, $email)
     {
@@ -233,7 +246,9 @@ class Automation
     /**
      * Update config datafield.
      *
-     * @param string $email
+     * @param mixed string $email
+     * 
+     * @return null
      */
     public function _updateDefaultDatafields($email)
     {
@@ -243,6 +258,8 @@ class Automation
 
     /**
      * Update new order default datafields.
+     * 
+     * @return null
      */
     public function _updateNewOrderDatafields()
     {
@@ -319,7 +336,7 @@ class Automation
     /**
      * Program check if is valid and active.
      *
-     * @param $programId
+     * @param mixed $programId
      *
      * @return bool
      */
@@ -345,8 +362,8 @@ class Automation
     /**
      * Enrol contacts for a program.
      *
-     * @param $contacts
-     * @param $websiteId
+     * @param mixed $contacts
+     * @param mixed $websiteId
      *
      * @return mixed
      */
@@ -366,6 +383,8 @@ class Automation
 
     /**
      * Setup automation types
+     * 
+     * @return null
      */
     private function setupAutomationTypes()
     {
@@ -379,8 +398,8 @@ class Automation
     }
 
     /**
-     * @param $type
-     * @param $config
+     * @param mixed $type
+     * @param mixed $config
      * @return mixed
      */
     private function buildFirstDimensionOfContactsArray($type, $config)
@@ -408,8 +427,10 @@ class Automation
     }
 
     /**
-     * @param $contactsArray
-     * @param $websiteId
+     * @param mixed  $contactsArray
+     * @param mixed  $websiteId
+     * 
+     * @return null
      */
     private function sendSubscribedContactsToAutomation($contactsArray, $websiteId)
     {

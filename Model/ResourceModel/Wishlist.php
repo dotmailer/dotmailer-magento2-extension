@@ -8,6 +8,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
     public $wishlist;
+    
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -15,6 +16,8 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
+     * 
+     * @return null
      */
     public function _construct()
     {
@@ -75,7 +78,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param $customerId
+     * @param mixed $customerId
      * @return mixed
      */
     public function getWishlistsForCustomer($customerId)
@@ -96,7 +99,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param $ids
+     * @param mixed $ids
      * @return mixed
      */
     public function getWishlistByIds($ids)
@@ -117,9 +120,11 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param $ids
-     * @param $updatedAt
+     * @param mixed $ids
+     * @param mixed $updatedAt
      * @param bool $modified
+     * 
+     * @return null
      */
     public function setImported($ids, $updatedAt, $modified = false)
     {

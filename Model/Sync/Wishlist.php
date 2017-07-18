@@ -15,54 +15,67 @@ class Wishlist
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
-     * @var
+     * @var object
      */
     private $wishlists;
+
     /**
      * @var array
      */
     private $wishlistIds = [];
+
     /**
-     * @var
+     * @var object 
      */
     private $start;
+
     /**
      * @var int
      */
     private $countWishlists = 0;
+
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
     private $customerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
     private $wishlist;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\WishlistFactory
      */
     private $wishlistFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory
      */
     private $itemFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
      */
     private $wishlistCollection;
+
     /**
      * @var \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory
      */
     private $itemCollection;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
     private $datetime;
+
     /**
      * Wishlist constructor.
      *
@@ -154,6 +167,8 @@ class Wishlist
 
     /**
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * 
+     * @return null
      */
     public function exportWishlistForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website)
     {
@@ -216,6 +231,8 @@ class Wishlist
      * Export single wishilist for website.
      *
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * 
+     * @return null
      */
     public function exportWishlistForWebsiteInSingle(\Magento\Store\Api\Data\WebsiteInterface $website)
     {
@@ -302,8 +319,10 @@ class Wishlist
     }
 
     /**
-     * @param      $ids
+     * @param mixed $ids
      * @param bool $modified
+     * 
+     * @return null
      */
     public function setImported($ids, $modified = false)
     {

@@ -11,6 +11,7 @@ class Order
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
      */
     private $campaignResource;
+
     /**
      * @var string
      */
@@ -20,34 +21,42 @@ class Order
      * @var array
      */
     private $reviewCollection = [];
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\CampaignFactory
      */
     private $campaignFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
      */
     private $campaignCollection;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
     private $orderCollection;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
     private $rulesFactory;
+
     /**
      * @var \Zend_Date
      */
     private $date;
+
     /**
      * Order constructor.
      *
@@ -55,6 +64,7 @@ class Order
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime $datetime
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -84,6 +94,8 @@ class Order
 
     /**
      * Create review campaigns
+     * 
+     * @return null
      */
     public function createReviewCampaigns()
     {
@@ -97,8 +109,10 @@ class Order
     /**
      * Register review campaign.
      *
-     * @param $collection
-     * @param $websiteId
+     * @param mixed $collection
+     * @param mixed $websiteId
+     * 
+     * @return null
      */
     public function registerCampaign($collection, $websiteId)
     {
@@ -135,6 +149,8 @@ class Order
 
     /**
      * Search for orders to review per website.
+     * 
+     * @return null
      */
     public function searchOrdersForReview()
     {
@@ -208,8 +224,7 @@ class Order
      *
      * @return bool|mixed
      */
-    public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer
-    )
+    public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer)
     {
         $storeIds = $this->storeManager->getWebsite(
             $customer->getWebsiteId()
@@ -226,8 +241,7 @@ class Order
      *
      * @return bool|mixed
      */
-    public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer
-    )
+    public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer)
     {
         $storeIds = $this->storeManager->getWebsite(
             $customer->getWebsiteId()

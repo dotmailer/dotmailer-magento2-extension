@@ -13,61 +13,72 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Customer
 {
     /**
-     * @var
+     * @var object
      */
     public $customer;
+
     /**
-     * @var
+     * @var object
      */
     public $customerData;
+
     /**
      * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
     public $reviewCollection;
 
     /**
-     * @var
+     * @var object
      */
     public $rewardCustomer;
+
     /**
      * @var string
      */
     public $rewardLastSpent = '';
+
     /**
      * @var string
      */
     public $rewardLastEarned = '';
+
     /**
      * @var string
      */
     public $rewardExpiry = '';
 
     /**
-     * @var
+     * @var object
      */
     public $mappingHash;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
     /**
      * @var \Magento\Customer\Model\GroupFactory
      */
     public $groupFactory;
+
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory
      */
     public $subscriberFactory;
+
     /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     public $categoryFactory;
+
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
     public $productFactory;
+
     /**
-     * @var
+     * @var object
      */
     public $reward;
 
@@ -77,7 +88,7 @@ class Customer
     public $orderCollection;
 
     /**
-     * @var
+     * @var object
      */
     public $contactFactory;
 
@@ -162,7 +173,9 @@ class Customer
     /**
      * Set key value data.
      *
-     * @param $data
+     * @param mixed $data
+     * 
+     * @return null
      */
     public function setData($data)
     {
@@ -172,7 +185,7 @@ class Customer
     /**
      * Set customer data.
      *
-     * @param $customer
+     * @param mixed customer
      *
      * @return $this
      *
@@ -203,6 +216,8 @@ class Customer
 
     /**
      * @param string $email
+     * 
+     * @return null
      */
     public function setEmail($email)
     {
@@ -211,6 +226,8 @@ class Customer
 
     /**
      * @param string $emailType
+     * 
+     * @return null
      */
     public function setEmailType($emailType)
     {
@@ -653,6 +670,11 @@ class Customer
         return '';
     }
 
+    /**
+     * @param mixed $street
+     * @param mixed $line
+     * @return void
+     */
     public function _getStreet($street, $line)
     {
         $street = explode("\n", $street);
@@ -663,6 +685,9 @@ class Customer
         return '';
     }
 
+    /**
+     * @return string
+     */
     public function _getWebsiteName()
     {
         $websiteId = $this->customer->getWebsiteId();
@@ -674,6 +699,9 @@ class Customer
         return '';
     }
 
+    /**
+     * @return string
+     */
     public function _getStoreName()
     {
         $storeId = $this->customer->getStoreId();
@@ -687,7 +715,7 @@ class Customer
     }
 
     /**
-     * @param $mapping_hash
+     * @param mixed $mapping_hash
      *
      * @return $this
      */
@@ -706,6 +734,9 @@ class Customer
         return $this->mappingHash;
     }
 
+    /**
+     * @return string
+     */
     public function _getCustomerGroup()
     {
         $groupId = $this->customer->getGroupId();
@@ -721,7 +752,7 @@ class Customer
     /**
      * mapping hash value.
      *
-     * @param $value
+     * @param mixed $value
      *
      * @return $this
      */
@@ -732,6 +763,10 @@ class Customer
         return $this;
     }
 
+    /**
+     * @param string $string
+     * @return void
+     */
     public function cleanString($string)
     {
         $cleanedString = preg_replace('/[^0-9]/', '', $string);
@@ -929,6 +964,10 @@ class Customer
         return $this->_getBrandValue($id);
     }
 
+    /**
+     * @param mixed $id
+     * @return void
+     */
     public function _getBrandValue($id)
     {
         //attribute mapped from the config
@@ -1017,6 +1056,8 @@ class Customer
 
     /**
      * Get the customer reward.
+     * 
+     * @return null
      */
     public function _setReward()
     {
@@ -1059,6 +1100,7 @@ class Customer
     {
         return $this->customer->getBillingCompany();
     }
+    
     /**
      * Get shipping company name.
      *

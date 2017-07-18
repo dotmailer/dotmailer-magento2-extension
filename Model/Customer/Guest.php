@@ -11,26 +11,32 @@ class Guest
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
+
     /**
      * @var int
      */
     private $countGuests = 0;
+
     /**
-     * @var
+     * @var object
      */
     private $start;
+    
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     private $file;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     private $contactFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
@@ -60,6 +66,8 @@ class Guest
 
     /**
      * GUEST SYNC.
+     * 
+     * @return null
      */
     public function sync()
     {
@@ -77,17 +85,20 @@ class Guest
             }
         }
         if ($this->countGuests) {
-            $this->helper->log('----------- Guest sync ----------- : ' .
+            $this->helper->log(
+                '----------- Guest sync ----------- : ' .
                 gmdate('H:i:s', microtime(true) - $this->start) .
-                ', Total synced = ' . $this->countGuests);
+                ', Total synced = ' . $this->countGuests
+            );
         }
     }
 
     /**
      * Export guests for a website.
      *
-     * @param $website
+     * @param mixed $website
      *
+     * @return null
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function exportGuestPerWebsite($website)
@@ -96,8 +107,10 @@ class Guest
             ->getGuests($website);
         //found some guests
         if ($guests->getSize()) {
-            $guestFilename = strtolower($website->getCode() . '_guest_'
-                . date('d_m_Y_Hi') . '.csv');
+            $guestFilename = strtolower(
+                $website->getCode() . '_guest_'
+                . date('d_m_Y_Hi') . '.csv'
+            );
             $this->helper->log('Guest file: ' . $guestFilename);
             $storeName = $this->helper->getMappedStoreName($website);
             $this->file->outputCSV(
@@ -125,9 +138,11 @@ class Guest
     /**
      * Output
      *
-     * @param $guest
-     * @param $website
-     * @param $guestFilename
+     * @param mixed $guest
+     * @param mixed $website
+     * @param mixed $guestFilename
+     * 
+     * @return null
      */
     private function outputCsvToFile($guest, $website, $guestFilename)
     {

@@ -5,15 +5,21 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 class Collection extends
  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
+    /**
+     * @var string
+     */
     protected $_idFieldName = 'id';
+
     /**
      * Initialize resource collection.
+     * 
+     * @return null
      */
     public function _construct()
     {
         $this->_init(
-            'Dotdigitalgroup\Email\Model\Campaign',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Campaign'
+            \Dotdigitalgroup\Email\Model\Campaign::class,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Campaign::class
         );
     }
 
@@ -41,9 +47,9 @@ class Collection extends
     /**
      * Get campaign collection
      *
-     * @param $storeIds
-     * @param $sendStatus
-     * @param $sendIdCheck
+     * @param mixed $storeIds
+     * @param mixed $sendStatus
+     * @param mixed $sendIdCheck
      * @return mixed
      */
     public function getEmailCampaignsByStoreIds($storeIds, $sendStatus = 0, $sendIdCheck = false)
@@ -71,7 +77,7 @@ class Collection extends
     /**
      * Get collection by event
      *
-     * @param $event
+     * @param mixed $event
      * @return $this
      */
     public function getCollectionByEvent($event)
@@ -82,8 +88,8 @@ class Collection extends
     /**
      * Get number of campaigns for contact by interval
      *
-     * @param $email
-     * @param $updated
+     * @param mixed  $email
+     * @param mixed $updated
      * @return int
      */
     public function getNumberOfCampaignsForContactByInterval($email, $updated)

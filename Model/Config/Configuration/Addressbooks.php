@@ -8,10 +8,12 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Framework\Registry
      */
     private $registry;
+    
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -36,6 +38,8 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
 
     /**
      * Get address books.
+     * 
+     * @return null
      */
     public function getAddressBooks()
     {

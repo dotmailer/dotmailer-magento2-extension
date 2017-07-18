@@ -10,10 +10,12 @@ class Collection extends
      * @var string
      */
     protected $_idFieldName = 'email_order_id';
+
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
     private $orderCollection;
+
     /**
      * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
      */
@@ -21,15 +23,26 @@ class Collection extends
 
     /**
      * Initialize resource collection.
+     * @return null
      */
     public function _construct()
     {
         $this->_init(
-            'Dotdigitalgroup\Email\Model\Order',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Order'
+            \Dotdigitalgroup\Email\Model\Order::class,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Order::class
         );
     }
 
+    /**
+     * @param \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory
+     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
+     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource
+     */
     public function __construct(
         \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory,
         \Psr\Log\LoggerInterface $logger,
@@ -55,8 +68,8 @@ class Collection extends
     /**
      * Load the email order by quote id.
      *
-     * @param $orderId
-     * @param $quoteId
+     * @param mixed $orderId
+     * @param mixed $quoteId
      * @return mixed
      */
     public function loadByOrderIdAndQuoteId($orderId, $quoteId)
@@ -98,9 +111,9 @@ class Collection extends
     /**
      * Get pending orders for import.
      *
-     * @param $storeIds
-     * @param $limit
-     * @param $orderStatuses
+     * @param mixed $storeIds
+     * @param mixed $limit
+     * @param mixed $orderStatuses
      * @return $this
      */
     public function getOrdersToImport($storeIds, $limit, $orderStatuses)
@@ -117,9 +130,9 @@ class Collection extends
     /**
      * Get pending modified orders to import.
      *
-     * @param $storeIds
-     * @param $limit
-     * @param $orderStatuses
+     * @param mixed $storeIds
+     * @param mixed $limit
+     * @param mixed $orderStatuses
      * @return $this
      */
     public function getModifiedOrdersToImport($storeIds, $limit, $orderStatuses)
@@ -155,9 +168,9 @@ class Collection extends
     /**
      * Get sales collection for review
      *
-     * @param $orderStatusFromConfig
-     * @param $created
-     * @param $storeIds
+     * @param mixed $orderStatusFromConfig
+     * @param mixed $created
+     * @param mixed $storeIds
      * @param array $campaignOrderIds
      * @return \Magento\Sales\Model\ResourceModel\Order\Collection
      */
@@ -193,7 +206,7 @@ class Collection extends
      * Get customer last order id.
      *
      * @param \Magento\Customer\Model\Customer $customer
-     * @param $storeIds
+     * @param mixed $storeIds
      *
      * @return mixed
      */
@@ -216,7 +229,7 @@ class Collection extends
      * Get customer last quote id.
      *
      * @param \Magento\Customer\Model\Customer $customer
-     * @param $storeIds
+     * @param mixed $storeIds
      *
      * @return mixed
      */
@@ -238,8 +251,8 @@ class Collection extends
     /**
      * Get store quotes
      *
-     * @param $storeId
-     * @param $updated
+     * @param mixed $storeId
+     * @param mixed $updated
      * @param bool $guest
      * @return \Magento\Quote\Model\ResourceModel\Quote\Collection
      */
@@ -266,7 +279,7 @@ class Collection extends
     /**
      * Check emails exist in sales order table
      *
-     * @param $emails
+     * @param mixed $emails
      * @return array
      */
     public function checkInSales($emails)

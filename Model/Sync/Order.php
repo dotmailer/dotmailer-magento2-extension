@@ -11,10 +11,12 @@ class Order
      * @var array
      */
     private $accounts = [];
+
     /**
      * @var string
      */
     private $apiUsername;
+
     /**
      * @var string
      */
@@ -36,30 +38,37 @@ class Order
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */
     private $orderFactory;
+
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     private $salesOrderFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\OrderFactory
      */
     private $connectorOrderFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\AccountFactory
      */
     private $accountFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
@@ -69,6 +78,7 @@ class Order
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
      */
     private $orderResource;
+
     /**
      * @var array
      */
@@ -172,6 +182,8 @@ class Order
      * Search the configuration data per website.
      *
      * @throws \Magento\Framework\Exception\LocalizedException
+     * 
+     * @return null
      */
     public function searchWebsiteAccounts()
     {
@@ -214,7 +226,7 @@ class Order
     }
 
     /**
-     * @param $website
+     * @param mixed $website
      * @param int $limit
      * @return array
      */
@@ -246,8 +258,8 @@ class Order
     }
 
     /**
-     * @param $website
-     * @param $limit
+     * @param mixed $website
+     * @param mixed $limit
      * @return array
      */
     protected function getModifiedOrders($website, $limit)
@@ -277,11 +289,10 @@ class Order
         return $orders;
     }
 
-
     /**
-     * @param $orderCollection
-     * @param $orderModel
-     * @param $orders
+     * @param mixed $orderCollection
+     * @param mixed $orderModel
+     * @param mixed $orders
      * @return array
      */
     protected function mappOrderData($orderCollection, $orderModel, $orders)
@@ -324,8 +335,10 @@ class Order
     }
 
     /**
-     * @param $ordersForSingleSync
-     * @param $website
+     * @param mixed $ordersForSingleSync
+     * @param mixed $website
+     * 
+     * @return null
      */
     protected function createSingleImports($ordersForSingleSync, $website)
     {

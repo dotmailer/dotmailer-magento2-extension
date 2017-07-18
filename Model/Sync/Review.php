@@ -8,45 +8,55 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 class Review
 {
     /**
-     * @var
+     * @var object
      */
     private $start;
+
     /**
-     * @var
+     * @var object
      */
     private $reviews;
+
     /**
-     * @var
+     * @var object
      */
     private $countReviews;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
-     * @var
+     * @var object
      */
     private $reviewIds;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\ReviewFactory
      */
     private $connectorReviewFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory
      */
     private $ratingFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
     private $reviewCollection;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
     private $coreDate;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory
      */
@@ -138,6 +148,8 @@ class Review
      * Export reviews for website.
      *
      * @param \Magento\Store\Model\Website $website
+     * 
+     * @return null
      */
     public function _exportReviewsForWebsite(\Magento\Store\Model\Website $website)
     {
@@ -199,7 +211,9 @@ class Review
     /**
      * Set imported in bulk query.
      *
-     * @param $ids
+     * @param mixed $ids
+     * 
+     * @return null
      */
     public function _setImported($ids)
     {

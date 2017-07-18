@@ -12,6 +12,7 @@ class ContactImportQueueExport
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     public $importerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
@@ -33,10 +34,12 @@ class ContactImportQueueExport
 
     /**
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param $customersFile
-     * @param $customerNum
-     * @param $customerIds
-     * @param $resource
+     * @param mixed $customersFile
+     * @param mixed $customerNum
+     * @param mixed $customerIds
+     * @param mixed $resource
+     * 
+     * @return null
      */
     public function enqueueForExport(
         \Magento\Store\Api\Data\WebsiteInterface $website,

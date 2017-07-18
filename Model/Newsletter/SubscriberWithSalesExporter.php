@@ -39,6 +39,15 @@ class SubscriberWithSalesExporter
      */
     public $emailContactResource;
 
+    /**
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
@@ -58,8 +67,8 @@ class SubscriberWithSalesExporter
     }
 
     /**
-     * @param $website
-     * @param $subscribers
+     * @param mixed $website
+     * @param mixed $subscribers
      * @return int
      */
     public function exportSubscribersWithSales($website, $subscribers)
@@ -130,7 +139,7 @@ class SubscriberWithSalesExporter
     }
 
     /**
-     * @param $emails
+     * @param mixed $emails
      * @param int $websiteId
      * @return mixed
      */

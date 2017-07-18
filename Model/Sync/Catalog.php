@@ -11,35 +11,42 @@ class Catalog
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     private $scopeConfig;
 
     /**
-     * @var
+     * @var object
      */
     private $start;
+
     /**
      * @var int
      */
     private $countProducts = 0;
+
     /**
      * @var array
      */
     private $productIds = [];
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\ProductFactory
      */
     private $connectorProductFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
     private $catalogCollectionFactory;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
@@ -102,7 +109,7 @@ class Catalog
     /**
      * Export catalog.
      *
-     * @param $store
+     * @param mixed $store
      *
      * @return array|bool
      */
@@ -132,9 +139,11 @@ class Catalog
     /**
      * Export in single.
      *
-     * @param $store
-     * @param $collectionName
-     * @param $websiteId
+     * @param mixed $store
+     * @param mixed $collectionName
+     * @param mixed $websiteId
+     * 
+     * @return null
      */
     public function _exportInSingle($store, $collectionName, $websiteId)
     {
@@ -169,7 +178,7 @@ class Catalog
     /**
      * Get product collection to export.
      *
-     * @param      $store
+     * @param mixed $store
      * @param bool $modified
      *
      * @return mixed
@@ -186,8 +195,10 @@ class Catalog
     /**
      * Set imported in bulk query. If modified true then set modified to null in bulk query.
      *
-     * @param      $ids
+     * @param mixed $ids
      * @param bool $modified
+     * 
+     * @return mixed
      */
     public function _setImported($ids, $modified = false)
     {
@@ -195,6 +206,9 @@ class Catalog
             ->setImportedByIds($ids, $modified);
     }
 
+    /**
+     * @return void
+     */
     public function syncCatalog()
     {
         try {

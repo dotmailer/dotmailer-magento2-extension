@@ -5,15 +5,21 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel\Wishlist;
 class Collection extends
  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
+    /**
+     * @var string
+     */
     protected $_idFieldName = 'id';
+
     /**
      * Initialize resource collection.
+     * 
+     * @return null
      */
     public function _construct()
     {
         $this->_init(
-            'Dotdigitalgroup\Email\Model\Wishlist',
-            'Dotdigitalgroup\Email\Model\ResourceModel\Wishlist'
+            \Dotdigitalgroup\Email\Model\Wishlist::class,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist::class
         );
     }
 
@@ -32,7 +38,7 @@ class Collection extends
     /**
      * Get the collection first item.
      *
-     * @param $wishListId
+     * @param mixed $wishListId
      *
      * @return bool|\Magento\Framework\DataObject
      */

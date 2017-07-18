@@ -5,11 +5,12 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 class Type
 {
     /**
-     * @var
+     * @var \Magento\Eav\Model\ConfigFactory
      */
     private $configFactory;
+    
     /**
-     * @var
+     * @var \Magento\SalesRule\Model\Rule\Condition\ProductFactory
      */
     private $productFactory;
 

@@ -11,22 +11,27 @@ class Subscriber
      * @var \Magento\Newsletter\Model\Subscriber
      */
     private $subscriber;
+
     /**
      * @var []
      */
     private $subscriberData;
+
     /**
      * @var []
      */
     private $mappingHash;
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     private $categoryFactory;
+
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
@@ -71,13 +76,19 @@ class Subscriber
     /**
      * Set key value data.
      *
-     * @param $data
+     * @param mixed $data
+     * 
+     * @return null
      */
     public function setData($data)
     {
         $this->subscriberData[] = $data;
     }
 
+    /**
+     * @param mixed $subscriber
+     * @return void
+     */
     public function setSubscriberData($subscriber)
     {
         $this->subscriber = $subscriber;
@@ -98,7 +109,7 @@ class Subscriber
     }
 
     /**
-     * @param $mappingHash
+     * @param mixed $mappingHash
      * @return $this
      */
     public function setMappingHash($mappingHash)
@@ -377,6 +388,10 @@ class Subscriber
         return $this->_getBrandValue($id);
     }
 
+    /**
+     * @param mixed $id
+     * @return void
+     */
     public function _getBrandValue($id)
     {
         //attribute mapped from the config

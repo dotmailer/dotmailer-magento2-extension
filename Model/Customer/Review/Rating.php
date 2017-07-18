@@ -14,7 +14,7 @@ class Rating
     public $ratingScore;
 
     /**
-     * @param $rating
+     * @param mixed $rating
      *
      * @return $this
      */
@@ -26,7 +26,7 @@ class Rating
     }
 
     /**
-     * @param $score
+     * @param mixed $score
      *
      * @return $this
      */

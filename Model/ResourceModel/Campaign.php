@@ -8,22 +8,27 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
     public $datetime;
+
     /**
      * @var \Magento\SalesRule\Model\RuleFactory
      */
     public $ruleFactory;
+
     /**
      * @var \Magento\SalesRule\Model\Coupon\MassgeneratorFactory
      */
     public $massGeneratorFactory;
+
     /**
      * @var \Magento\SalesRule\Model\CouponFactory
      */
     public $couponFactory;
+
     /**
      * @var \Magento\SalesRule\Model\ResourceModel\Coupon
      */
     public $coupon;
+
     /**
      * @var \Magento\SalesRule\Model\ResourceModel\Rule
      */
@@ -31,6 +36,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
+     * @return null
      */
     public function _construct()
     {
@@ -74,7 +80,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Generate coupon
      *
-     * @param $couponCodeId
+     * @param mixed $couponCodeId
      * @param bool $expireDate
      * @return bool
      */
@@ -130,8 +136,10 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set error message
      *
-     * @param $ids
-     * @param $message
+     * @param mixed $ids
+     * @param mixed $message
+     * 
+     * @return null
      */
     public function setMessage($ids, $message)
     {
@@ -149,8 +157,10 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param $sendId
-     * @param $message
+     * @param mixed $sendId
+     * @param mixed $message
+     * 
+     * @return null
      */
     public function setMessageWithSendId($sendId, $message)
     {
@@ -169,7 +179,9 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set sent
      *
-     * @param $sendId
+     * @param mixed $sendId
+     * 
+     * @return null
      */
     public function setSent($sendId)
     {
@@ -188,8 +200,10 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set processing
      *
-     * @param $ids
-     * @param $sendId
+     * @param mixed $ids
+     * @param mixed $sendId
+     * 
+     * @return null
      */
     public function setProcessing($ids, $sendId)
     {
@@ -209,7 +223,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Save item
      *
-     * @param $item
+     * @param mixed $item
      * @return \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function saveItem($item)

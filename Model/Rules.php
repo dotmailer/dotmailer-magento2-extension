@@ -15,25 +15,30 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     private $rulesResource;
 
     /**
-     * @var
+     * @var object
      */
     private $conditionMap;
+
     /**
-     * @var
+     * @var object
      */
     private $defaultOptions;
+
     /**
-     * @var
+     * @var object
      */
     public $attributeMapForQuote;
+
     /**
-     * @var
+     * @var object
      */
     private $attributeMapForOrder;
+    
     /**
-     * @var
+     * @var object
      */
     private $productAttribute;
+
     /**
      * @var array
      */
@@ -61,6 +66,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Eav\Model\Config $config
      * @param Json $serializer
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
@@ -91,6 +97,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Construct.
+     * 
+     * @return null
      */
     public function _construct()
     {
@@ -133,7 +141,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             'customer_email' => 'main_table.customer_email',
         ];
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Rules');
+        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Rules::class);
     }
 
     /**
@@ -170,8 +178,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Check if rule already exist for website.
      *
-     * @param      $websiteId
-     * @param      $type
+     * @param mixed $websiteId
+     * @param mixed $type
      * @param bool $ruleId
      *
      * @return bool
@@ -185,8 +193,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Get rule for website.
      *
-     * @param $type
-     * @param $websiteId
+     * @param mixed $type
+     * @param mixed $websiteId
      *
      * @return array|\Magento\Framework\DataObject
      */
@@ -199,9 +207,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process rule on collection.
      *
-     * @param $collection
-     * @param $type
-     * @param $websiteId
+     * @param mixed $collection
+     * @param mixed $type
+     * @param mixed $websiteId
      *
      * @return mixed
      */
@@ -245,9 +253,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * process And combination on collection.
      *
-     * @param $collection
-     * @param $conditions
-     * @param $type
+     * @param mixed $collection
+     * @param mixed $conditions
+     * @param mixed $type
      *
      * @return mixed
      */
@@ -289,10 +297,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $collection
-     * @param $cond
-     * @param $value
-     * @param $attribute
+     * @param mixed $collection
+     * @param mixed $cond
+     * @param mixed $value
+     * @param mixed $attribute
+     * 
+     * @return null
      */
     private function processProcessAndCombinationCondition($collection, $cond, $value, $attribute)
     {
@@ -324,9 +334,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * process Or combination on collection.
      *
-     * @param $collection
-     * @param $conditions
-     * @param $type
+     * @param mixed $collection
+     * @param mixed $conditions
+     * @param mixed $type
      *
      * @return mixed
      *
@@ -414,7 +424,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process product attributes on collection.
      *
-     * @param $collection
+     * @param mixed $collection
      *
      * @return mixed
      */
@@ -433,9 +443,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Evaluate two values against condition.
      *
-     * @param $varOne
-     * @param $op
-     * @param $varTwo
+     * @param mixed $varOne
+     * @param mixed $op
+     * @param mixed $varTwo
      *
      * @return bool
      */
@@ -462,7 +472,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process product attributes on collection
      *
-     * @param $collection
+     * @param mixed $collection
      * @return mixed
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -563,7 +573,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $product
+     * @param mixed $product
      * @return mixed
      */
     private function getAttributesArrayFromLoadedProduct($product)

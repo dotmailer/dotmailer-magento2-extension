@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model;
 class Order extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_ORDER_NOT_IMPORTED = null;
+
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\Collection
      */
@@ -12,11 +13,13 @@ class Order extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
+     * 
+     * @return null
      */
     public function _construct()
     {
         parent::_construct();
-        $this->_init('Dotdigitalgroup\Email\Model\ResourceModel\Order');
+        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class);
     }
 
     /**
@@ -97,9 +100,9 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Get pending orders for import.
      *
-     * @param $storeIds
-     * @param $limit
-     * @param $orderStatuses
+     * @param mixed $storeIds
+     * @param mixed $limit
+     * @param mixed $orderStatuses
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection|\Magento\Framework\DataObject
      */
     public function getOrdersToImport($storeIds, $limit, $orderStatuses)
@@ -111,9 +114,9 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Get pending modified orders to import.
      *
-     * @param $storeIds
-     * @param $limit
-     * @param $orderStatuses
+     * @param mixed $storeIds
+     * @param mixed $limit
+     * @param mixed $orderStatuses
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection
      */
     public function getModifiedOrdersToImport($storeIds, $limit, $orderStatuses)
@@ -137,7 +140,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $orderIds
+     * @param mixed $orderIds
      * @return mixed
      */
     public function getSalesOrdersWithIds($orderIds)
