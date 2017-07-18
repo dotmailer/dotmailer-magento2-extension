@@ -28,9 +28,9 @@ class RuleCollectionPlugin
     /**
      * @param \Magento\SalesRule\Model\ResourceModel\Rule\Collection $subject
      * @param mixed $result
-     * @param mixed $websiteId
-     * @param mixed $customerGroupId
-     * @param mixed $couponCode
+     * @param int $websiteId
+     * @param int $customerGroupId
+     * @param string $couponCode
      * @return mixed
      */
     public function afterSetValidationFilter(
@@ -46,8 +46,7 @@ class RuleCollectionPlugin
         if (! empty($couponCode)) {
             $select->where(
                 '(rule_coupons.expiration_date IS NULL) AND
-                (to_date is null or to_date >= ?)
-                OR
+                (to_date is null or to_date >= ?) OR
                 (rule_coupons.expiration_date IS NOT NULL) AND
                 (rule_coupons.expiration_date >= ?) ',
                 $now

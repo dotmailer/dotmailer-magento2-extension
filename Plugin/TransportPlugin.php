@@ -44,7 +44,8 @@ class TransportPlugin
         $this->smtp = $smtpFactory->create(
             [
             'host' => $this->helper->getSmtpHost(),
-            'config' => $this->helper->getTransportConfig()]
+            'config' => $this->helper->getTransportConfig()
+            ]
         );
     }
 
