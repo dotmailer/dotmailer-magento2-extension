@@ -86,8 +86,8 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     /**
      * Validate account
      *
-     * @param mixed $apiUsername
-     * @param mixed $apiPassword
+     * @param string|boolean $apiUsername
+     * @param string|boolean $apiPassword
      * @return void
      */
     private function validateAccount($apiUsername, $apiPassword)
