@@ -8,10 +8,12 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
     /**
      * @var \Magento\Customer\Model\Session
      */
     private $customerSession;
+
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
@@ -120,8 +122,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $addressBooks
-     * @param $subscriberAddressBook
+     * @param mixed $addressBooks
+     * @param mixed $subscriberAddressBook
      *
      * @return array
      */
@@ -140,10 +142,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $additionalSubscriptions
-     * @param $processedAddressBooks
-     * @param $client
-     * @param $contact
+     * @param mixed $additionalSubscriptions
+     * @param mixed $processedAddressBooks
+     * @param mixed $client
+     * @param mixed $contact
      *
      * @return bool
      */
@@ -177,8 +179,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $client
-     * @param $paramDataFields
+     * @param mixed $client
+     * @param mixed $paramDataFields
      *
      * @return array
      */
@@ -211,9 +213,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $processedAddressBooks
-     * @param $client
-     * @param $contact
+     * @param mixed $processedAddressBooks
+     * @param mixed $client
+     * @param mixed $contact
      *
      * @return bool
      */

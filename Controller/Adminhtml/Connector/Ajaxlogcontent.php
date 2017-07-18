@@ -8,10 +8,12 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     private $file;
+
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
     private $jsonHelper;
+
     /**
      * @var \Magento\Framework\Escaper
      */
@@ -39,6 +41,8 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
 
     /**
      * Ajax get log file content.
+     * 
+     * @return null
      */
     public function execute()
     {

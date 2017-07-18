@@ -47,6 +47,8 @@ class Ordersreset extends \Magento\Backend\App\AbstractAction
 
     /**
      * Refresh suppressed contacts.
+     * 
+     * @return null
      */
     public function execute()
     {

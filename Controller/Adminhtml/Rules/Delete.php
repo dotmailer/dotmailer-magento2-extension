@@ -8,14 +8,17 @@ class Delete extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
     private $rules;
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
     /**
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
      */
@@ -56,6 +59,8 @@ class Delete extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
+     * 
+     * @return null
      */
     public function execute()
     {

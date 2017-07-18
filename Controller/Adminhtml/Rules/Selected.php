@@ -13,26 +13,32 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
     private $rulesFactory;
+    
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
     private $ruleType;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
      */
     private $ruleCondition;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
      */
     private $ruleValue;
+
     /**
      * @var \Magento\Framework\Json\Helper\Data
      */
     public $jsonEncoder;
+
     /**
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
      */
@@ -137,12 +143,14 @@ class Selected extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @param $elmType
-     * @param $selectedConditions
-     * @param $attribute
-     * @param $selectedValues
-     * @param $valueName
-     * @param $response
+     * @param mixed $elmType
+     * @param mixed $selectedConditions
+     * @param mixed $attribute
+     * @param mixed $selectedValues
+     * @param mixed $valueName
+     * @param mixed $response
+     * 
+     * @return null
      */
     private function evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $valueName, &$response)
     {
@@ -167,16 +175,16 @@ class Selected extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @param $title
-     * @param $name
-     * @param $options
+     * @param string $title
+     * @param string $name
+     * @param array $options
      *
      * @return string
      */
     private function getOptionHtml($title, $name, $options)
     {
         $block = $this->_view->getLayout()->createBlock(
-            'Magento\Framework\View\Element\Html\Select'
+            \Magento\Framework\View\Element\Html\Select::class
         );
         $block->setOptions($options)
             ->setId('')

@@ -11,6 +11,7 @@ class MassResend extends ImporterController
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
     private $importerResource;
+    
     /**
      * @var \Magento\Framework\Escaper
      */

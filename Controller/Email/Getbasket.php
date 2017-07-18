@@ -8,14 +8,17 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @var \Magento\Quote\Model\ResourceModel\Quote
      */
     private $quoteResource;
+
     /**
      * @var \Magento\Quote\Model\QuoteFactory
      */
     private $quoteFactory;
+
     /**
      * @var \Magento\Customer\Model\SessionFactory
      */
     private $checkoutSession;
+
     /**
      * @var \Magento\Quote\Model\Quote
      */
@@ -43,6 +46,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Wishlist page to display the user items with specific email.
+     *
+     * @return null
      */
     public function execute()
     {
@@ -74,6 +79,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Process customer basket.
+     *
+     * @return null     
      */
     private function handleCustomerBasket()
     {
@@ -132,6 +139,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Check missing items from current quote and add.
+     *
+     * @return null     
      */
     private function checkMissingAndAdd()
     {
@@ -160,6 +169,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Process guest basket.
+     *
+     * @return null     
      */
     private function handleGuestBasket()
     {

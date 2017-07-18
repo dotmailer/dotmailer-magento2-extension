@@ -8,14 +8,17 @@ class Edit extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Registry
      */
     private $registry;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
     private $rules;
+
     /**
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
      */
@@ -56,6 +59,8 @@ class Edit extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
+     * 
+     * @return void
      */
     public function execute()
     {
@@ -65,10 +70,12 @@ class Edit extends \Magento\Backend\App\AbstractAction
         $this->_setActiveMenu(
             'Magento_CatalogRule::exclusion_rules'
         )->_addBreadcrumb(
-            $id ? __('Edit Rule')
-                : __('New Rule'),
-            $id ? __('Edit Rule')
-                : __('New Rule')
+            $id
+            ? __('Edit Rule')
+            : __('New Rule'),
+            $id
+            ? __('Edit Rule')
+            : __('New Rule')
         );
 
         $emailRules = $this->rules;
