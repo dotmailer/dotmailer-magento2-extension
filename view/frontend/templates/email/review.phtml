@@ -10,8 +10,8 @@ $website = $block->getWebsite();
     <?php $dynamicStyle = $helper->getDynamicStyles(); ?>
     <style>
         .product-name{
-            color: <?php echo $block->escapeHtml($dynamicStyle['nameColor']);?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['fontSize']);?>;
+            color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['fontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
@@ -21,8 +21,8 @@ $website = $block->getWebsite();
         <?php endif; ?>
         }
         .product-price{
-            color: <?php echo $block->escapeHtml($dynamicStyle['priceColor']);?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
+            color: <?= $block->escapeHtml($dynamicStyle['priceColor']);?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
@@ -32,8 +32,8 @@ $website = $block->getWebsite();
         <?php endif; ?>
         }
         .proudct-url{
-            color: <?php echo $block->escapeHtml($dynamicStyle['urlColor']);?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
+            color: <?= $block->escapeHtml($dynamicStyle['urlColor']);?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
@@ -43,8 +43,8 @@ $website = $block->getWebsite();
         <?php endif; ?>
         }
         .product-table{
-            font-family: <?php echo $block->escapeHtml($dynamicStyle['docFont']);?>;
-            background-color: <?php echo $block->escapeHtml($dynamicStyle['docBackgroundColor']);?>;
+            font-family: <?= $block->escapeHtml($dynamicStyle['docFont']);?>;
+            background-color: <?= $block->escapeHtml($dynamicStyle['docBackgroundColor']);?>;
             width: 100% !important;
         }
         .product-table img{
@@ -58,7 +58,7 @@ $website = $block->getWebsite();
         }
 
         /** Styling from config field **/
-        <?php echo $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
+        <?= $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
@@ -87,13 +87,13 @@ $website = $block->getWebsite();
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
-            <?php echo $block->getImage($item, 'category_page_grid')->toHtml(); ?>
+            <?= $block->getImage($item, 'category_page_grid')->toHtml(); ?>
             <div class="product-name" align="center"><b>
-                    <?php echo substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
+                    <?= substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
             <div align="center">
                 <?php $url = $block->getReviewItemUrl($item->getId()) . $helper->getReviewReminderAnchor($website); ?>
-                <a class="proudct-url" href="<?php echo $block->escapeUrl($url); ?>">
-                    <?php echo $block->escapeHtml(__('Leave a review')); ?>
+                <a class="proudct-url" href="<?= $block->escapeUrl($url); ?>">
+                    <?= $block->escapeHtml(__('Leave a review')); ?>
                 </a>
             </div>
         </td>

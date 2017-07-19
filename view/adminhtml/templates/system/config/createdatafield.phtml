@@ -1,8 +1,8 @@
 <?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Config\Createdatafield $block */?>
 <div class="actions actions-create-datafield">
     <div id="validation_result" class="message-validation hidden"></div>
-    <button class="action-create-datafield" type="button" id="<?php echo $block->getHtmlId() ?>">
-        <span><?php echo $block->escapeHtml($block->getButtonLabel()) ?></span>
+    <button class="action-create-datafield" type="button" id="<?= $block->getHtmlId() ?>">
+        <span><?= $block->escapeHtml($block->getButtonLabel()) ?></span>
     </button>
 </div>
 
@@ -10,7 +10,7 @@
     {
         "*": {
             "Dotdigitalgroup_Email/js/dataFields":{
-                "url":"<?php echo $block->escapeUrl($block->getAjaxUrl()) ?>"
+                "url":"<?= $block->escapeUrl($block->getAjaxUrl()) ?>"
             }
         }
     }

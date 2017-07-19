@@ -2,29 +2,29 @@
 <div id="ddg-edc-preview">
     <div class = "ddg-edc-wrapper">
         <div class="ddg-edc-title">
-            <?php echo $block->escapeHtml(__('PRODUCT STYLING PREVIEW')); ?>
+            <?= $block->escapeHtml(__('PRODUCT STYLING PREVIEW')); ?>
         </div>
         <div class = "ddg-edc-content" id="connector_configuration_dynamic_content_style_doc-preview">
-            <a href="<?php echo $block->escapeUrl($block->getBaseUrl()) ?>" title="Sample Image" target="_blank">
-                <img src="<?php echo $block->escapeUrl($block->getImagePlaceholder()) ?>" alt="Sample Image"/>
+            <a href="<?= $block->escapeUrl($block->getBaseUrl()) ?>" title="Sample Image" target="_blank">
+                <img src="<?= $block->escapeUrl($block->getImagePlaceholder()) ?>" alt="Sample Image"/>
             </a>
             <div id="connector_configuration_dynamic_content_style_name-preview">
-                <?php echo $block->escapeHtml(__('Product Name')); ?>
+                <?= $block->escapeHtml(__('Product Name')); ?>
             </div>
             <div id="connector_configuration_dynamic_content_style_price-preview">
                 <?php $price = $block->getCurrencySymbol() . "99.99";?>
-                <?php echo $block->escapeHtml($price); ?>
+                <?= $block->escapeHtml($price); ?>
             </div>
             <div>
                 <a id="connector_configuration_dynamic_content_style_link-preview" target="_blank"
-                   href="<?php echo $block->escapeUrl($block->getBaseUrl()); ?>">View Now</a>
+                   href="<?= $block->escapeUrl($block->getBaseUrl()); ?>">View Now</a>
             </div>
         </div>
         <div class = "ddg-edc-preview-coupon-title">
-            <?php echo $block->escapeHtml(__('COUPON STYLING PREVIEW')); ?>
+            <?= $block->escapeHtml(__('COUPON STYLING PREVIEW')); ?>
         </div>
         <div id="connector_configuration_dynamic_content_style_coupon-preview" class = "ddg-edc-coupon-text">
-            <?php echo $block->escapeHtml(__('DOT-XXX-XXX-XXX')); ?>
+            <?= $block->escapeHtml(__('DOT-XXX-XXX-XXX')); ?>
         </div>
     </div>
 </div>

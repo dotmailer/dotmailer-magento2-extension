@@ -4,8 +4,8 @@
     <?php $dynamicStyle = $block->getDynamicStyle();?>
     <style>
         .product-name {
-            color: <?php echo $block->escapeHtml($dynamicStyle['nameColor']); ?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['fontSize']); ?>;
+            color: <?= $block->escapeHtml($dynamicStyle['nameColor']); ?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['fontSize']); ?>;
             <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
                 font-weight: bold;
             <?php endif; ?>
@@ -21,8 +21,8 @@
         }
 
         .product-price {
-            color: <?php echo $block->escapeHtml($dynamicStyle['priceColor']); ?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['priceFontSize']); ?>;
+            color: <?= $block->escapeHtml($dynamicStyle['priceColor']); ?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['priceFontSize']); ?>;
             padding: 5px;
             border-bottom: 1px solid #cbd3d4;
             <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
@@ -37,8 +37,8 @@
         }
 
         .product-url {
-            color: <?php echo $block->escapeHtml($dynamicStyle['urlColor']); ?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']); ?>
+            color: <?= $block->escapeHtml($dynamicStyle['urlColor']); ?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']); ?>
             <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
                 font-weight: bold;
             <?php endif; ?>
@@ -51,8 +51,8 @@
         }
 
         .other-text {
-            color: <?php echo $block->escapeHtml($dynamicStyle['otherColor']); ?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['otherFontSize']); ?>;
+            color: <?= $block->escapeHtml($dynamicStyle['otherColor']); ?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['otherFontSize']); ?>;
             <?php if (in_array('bold', $dynamicStyle['otherStyle'])) : ?>
                 font-weight: bold;
             <?php endif; ?>
@@ -65,8 +65,8 @@
         }
 
         .product-table {
-            font-family: <?php echo $block->escapeHtml($dynamicStyle['docFont']); ?>;
-            background-color: <?php echo $block->escapeHtml($dynamicStyle['docBackgroundColor']); ?>;
+            font-family: <?= $block->escapeHtml($dynamicStyle['docFont']); ?>;
+            background-color: <?= $block->escapeHtml($dynamicStyle['docBackgroundColor']); ?>;
             width: 100% !important;
             float:left;
             border: 1px solid #cbd3d4;
@@ -125,7 +125,7 @@
             text-align: center;
         }
 
-        <?php echo $block->escapeHtml($dynamicStyle['dynamicStyling']); ?>
+        <?= $block->escapeHtml($dynamicStyle['dynamicStyling']); ?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
@@ -175,16 +175,16 @@
     <table class="product-table">
         <tr>
             <th class="other-text pt-th-style-one">
-                <?php echo $block->escapeHtml(__("Image")); ?>
+                <?= $block->escapeHtml(__("Image")); ?>
             </th>
             <th class="other-text pt-th-style-one">
-                <?php echo $block->escapeHtml(__("Description")); ?>
+                <?= $block->escapeHtml(__("Description")); ?>
             </th>
             <th class="other-text pt-th-style-one">
-                <?php echo $block->escapeHtml(__("Quantity")); ?>
+                <?= $block->escapeHtml(__("Quantity")); ?>
             </th>
             <th class="other-text pt-th-style-two">
-                <?php echo $block->escapeHtml(__('Total')); ?>
+                <?= $block->escapeHtml(__('Total')); ?>
             </th>
         </tr>
         <?php $grandTotal = 0; ?>
@@ -192,22 +192,22 @@
             <?php $grandTotal = $item['grandTotal']; ?>
             <tr>
                 <td class="product-image">
-                    <?php echo $block->getImage(
+                    <?= $block->getImage(
                         $item['product'],
                         'product_small_image'
                     )->toHtml();
                     ?>
                 </td>
                 <td class="product-name">
-                    <a class="product-url" href="<?php echo $block->escapeHtml($item['productUrl']); ?>">
-                    <?php echo $block->escapeHtml($item['product']->getName())
+                    <a class="product-url" href="<?= $block->escapeHtml($item['productUrl']); ?>">
+                    <?= $block->escapeHtml($item['product']->getName())
                         . '</a></br>'
                         ?></td>
                 <td class="product-price quantity">
-                    <?php echo (int) $item['qty']; ?>
+                    <?= (int) $item['qty']; ?>
                 </td>
                 <td class="product-price">
-                    <?php echo $block->escapeHtml($item['total']); ?>
+                    <?= $block->escapeHtml($item['total']); ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -216,13 +216,13 @@
             <td class="hidemob"></td>
             <td class="hidemob"></td>
             <td class="other-text other-text-padding">
-                <?php echo $block->escapeHtml(__('Total: ') . $grandTotal); ?>
+                <?= $block->escapeHtml(__('Total: ') . $grandTotal); ?>
             </td>
         </tr>
     </table>
     <?php if ($block->canShowUrl()) : ?>
         <p class="cart-link">
-            <a href="<?php echo $block->escapeUrl($block->getUrlForLink()); ?>" class="product-url">
+            <a href="<?= $block->escapeUrl($block->getUrlForLink()); ?>" class="product-url">
                 <strong>
                     <?php
                     $link = ($block->takeMeToCartTextForUrl()) ?
