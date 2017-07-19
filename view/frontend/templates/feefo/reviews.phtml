@@ -5,9 +5,9 @@
 
 <?php $reviews = $block->getProductsReview(); ?>
     <head>
-        <title><?php echo $block->escapeHtml(__("Feefo Feedback")); ?></title>
+        <title><?= $block->escapeHtml(__("Feefo Feedback")); ?></title>
         <link rel="stylesheet" type="text/css" media="all"
-              href="<?php echo $block->escapeUrl($block->getCssUrl()); ?>" />
+              href="<?= $block->escapeUrl($block->getCssUrl()); ?>" />
     </head>
     <body>
         <table class="main-table">
@@ -15,7 +15,7 @@
                 <?php foreach ($reviews as $name => $review) : ?>
                     <tr>
                         <td>
-                            <?php echo $block->escapeHtml($review); ?>
+                            <?= $block->escapeHtml($review); ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

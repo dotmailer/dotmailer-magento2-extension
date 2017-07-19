@@ -3,42 +3,42 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php  echo $block->escapeHtml(__('PHP Version')) ?>:
+                <?= $block->escapeHtml(__('PHP Version')) ?>:
             </strong>
         </th>
-        <td><div class="message-link"><?php echo $block->escapeHtml($block->getPhpVersion()) ?></div></td>
+        <td><div class="message-link"><?= $block->escapeHtml($block->getPhpVersion()) ?></div></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php  echo $block->escapeHtml(__('PHP max execution time')) ?>:
+                <?= $block->escapeHtml(__('PHP max execution time')) ?>:
             </strong>
         </th>
-        <td><?php  echo $block->escapeHtml($block->getPhpMaxExecutionTime()); ?></td>
+        <td><?= $block->escapeHtml($block->getPhpMaxExecutionTime()); ?></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php  echo $block->escapeHtml(__('Mode ')) ?>:
+                <?= $block->escapeHtml(__('Mode ')) ?>:
             </strong>
         </th>
-        <td><?php  echo $block->escapeHtml($block->getDeveloperMode()) ?></td>
+        <td><?= $block->escapeHtml($block->getDeveloperMode()) ?></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php  echo $block->escapeHtml(__('Magento Version ')) ?>:
+                <?= $block->escapeHtml(__('Magento Version ')) ?>:
             </strong>
         </th>
-        <td><?php echo $block->escapeHtml($block->getMagentoVersion()) ?></td>
+        <td><?= $block->escapeHtml($block->getMagentoVersion()) ?></td>
     </tr>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?php  echo $block->escapeHtml(__('Connector Version ')) ?>:
+                <?= $block->escapeHtml(__('Connector Version ')) ?>:
             </strong>
         </th>
-        <td><?php echo $block->escapeHtml($block->getConnectorVersion()) ?></td>
+        <td><?= $block->escapeHtml($block->getConnectorVersion()) ?></td>
     </tr>
 
 </table>

@@ -1,18 +1,18 @@
 <?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Dashboard $block */?>
 <div class="content-header">
-    <?php echo $block->getChildHtml('adminhtml.system.config.switcher');?>
+    <?= $block->getChildHtml('adminhtml.system.config.switcher');?>
 </div>
 <div class="dashboard-container">
-    <?php echo $block->getChildHtml('store_language');?>
+    <?= $block->getChildHtml('store_language');?>
     <table cellspacing="25" class="message-system-inner ddg-dashboard-table">
         <tr>
-            <td><?php echo $block->getChildHtml('dotdigitalgroup.email.dashboard_left') ?></td>
-            <td><?php echo $block->getChildHtml('dotdigitalgroup.email.dashboard_right') ?></td>
+            <td><?= $block->getChildHtml('dotdigitalgroup.email.dashboard_left') ?></td>
+            <td><?= $block->getChildHtml('dotdigitalgroup.email.dashboard_right') ?></td>
         </tr>
     </table>
     <table>
         <tr>
-            <td><?php echo $block->getChildHtml('dotdigitalgroup.email.dashboard_config') ?></td>
+            <td><?= $block->getChildHtml('dotdigitalgroup.email.dashboard_config') ?></td>
         </tr>
     </table>
 </div>
@@ -21,8 +21,8 @@
     {
         "*": {
             "Dotdigitalgroup_Email/js/dashboard":{
-                "contactLink":"<?php echo $block->escapeUrl($block->getContactSyncLink()); ?>",
-                "importerLink":"<?php echo $block->escapeUrl($block->getImporterLink()); ?>"
+                "contactLink":"<?= $block->escapeUrl($block->getContactSyncLink()); ?>",
+                "importerLink":"<?= $block->escapeUrl($block->getImporterLink()); ?>"
             }
         }
     }

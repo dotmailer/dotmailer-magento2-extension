@@ -8,9 +8,9 @@
 {
     "*": {
         "Dotdigitalgroup_Email/js/emailCapture":{
-            "isEnabled":"<?php echo $block->escapeHtml($helper->isEasyEmailCaptureForNewsletterEnabled()); ?>",
+            "isEnabled":"<?= $block->escapeHtml($helper->isEasyEmailCaptureForNewsletterEnabled()); ?>",
             "type":"newsletter",
-            "url":"<?php echo $block->escapeHtml($helper->getEmailCaptureUrl()); ?>"
+            "url":"<?= $block->escapeHtml($helper->getEmailCaptureUrl()); ?>"
         }
     }
 }
