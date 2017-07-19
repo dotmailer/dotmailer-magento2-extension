@@ -261,14 +261,22 @@ class InstallSchema implements InstallSchemaInterface
 
         $orderTable->addForeignKey(
             $installer->getFkName(
-                $installer->getTable('email_order'),
-                'store_id',
-                'core/store',
-                'store_id'
+                $installer->getTable('email_order'), 'store_id',
+                'store', 'store_id'
             ),
             'store_id',
-            $installer->getTable('store'),
-            'store_id',
+            $installer->getTable('store'), 'store_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+
+        $orderTable->addForeignKey(
+            $installer->getFkName(
+                $installer->getTable('email_order'), 'order_id',
+                'sales_order', 'entity_id'
+            ),
+            'order_id',
+            $installer->getTable('sales_order'), 'entity_id',
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
         );
@@ -1033,6 +1041,15 @@ class InstallSchema implements InstallSchemaInterface
 
         $catalogTable = $this->addColumnsToCatalogTable($catalogTable);
         $catalogTable = $this->addIndexesToCatalogTable($installer, $catalogTable);
+        $catalogTable->addForeignKey(
+            $installer->getFkName(
+                'email_catalog', 'product_id', 'catalog_product_entity', 'entity_id'
+            ),
+            'product_id',
+            $installer->getTable('catalog_product_entity'),
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
 
         $catalogTable->setComment('Connector Catalog');
         $installer->getConnection()->createTable($catalogTable);

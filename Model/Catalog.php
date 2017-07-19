@@ -38,7 +38,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,        
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
