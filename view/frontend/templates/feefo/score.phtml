@@ -4,8 +4,8 @@ $data = $block->getServiceScoreLogo();
 $vendorUrl = $data['vendorUrl'];
 $fullUrl = $data['fullUrl'];
 ?>
-<a href="<?php echo $block->escapeUrl($vendorUrl)?>" target='_blank'>
-    <img alt='Feefo logo' border='0' src="<?php echo $block->escapeUrl($fullUrl)?>"
-         title="<?php echo $block->escapeHtml(__('See what our customers say about us')); ?>"
+<a href="<?= $block->escapeUrl($vendorUrl)?>" target='_blank'>
+    <img alt='Feefo logo' border='0' src="<?= $block->escapeUrl($fullUrl)?>"
+         title="<?= $block->escapeHtml(__('See what our customers say about us')); ?>"
     >
 </a>

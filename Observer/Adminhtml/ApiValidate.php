@@ -23,11 +23,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     private $messageManager;
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    private $objectManager;
-
-    /**
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
     private $writer;
@@ -51,12 +46,11 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Config\Storage\Writer $writer
     ) {
-        $this->helper         = $data;
         $this->test           = $test;
+        $this->helper         = $data;
+        $this->writer         = $writer;
         $this->context        = $context;
         $this->messageManager = $context->getMessageManager();
-        $this->objectManager  = $context->getObjectManager();
-        $this->writer         = $writer;
     }
 
     /**

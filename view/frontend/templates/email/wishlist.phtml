@@ -9,8 +9,8 @@ $priceHelper = $block->priceHelper;
     <?php $dynamicStyle = $block->helper->getDynamicStyles(); ?>
     <style>
         .product-name{
-            color: <?php echo $block->escapeHtml($dynamicStyle['nameColor']);?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['fontSize']);?>;
+            color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['fontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
@@ -20,8 +20,8 @@ $priceHelper = $block->priceHelper;
         <?php endif; ?>
         }
         .product-price{
-            color: <?php echo $block->escapeHtml($dynamicStyle['priceColor']);?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
+            color: <?= $block->escapeHtml($dynamicStyle['priceColor']);?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
@@ -31,8 +31,8 @@ $priceHelper = $block->priceHelper;
         <?php endif; ?>
         }
         .proudct-url{
-            color: <?php echo $block->escapeHtml($dynamicStyle['urlColor']);?>;
-            font-size: <?php echo $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
+            color: <?= $block->escapeHtml($dynamicStyle['urlColor']);?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
@@ -42,8 +42,8 @@ $priceHelper = $block->priceHelper;
         <?php endif; ?>
         }
         .product-table{
-            font-family: <?php echo $block->escapeHtml($dynamicStyle['docFont']);?>;
-            background-color: <?php echo $block->escapeHtml($dynamicStyle['docBackgroundColor']);?>;
+            font-family: <?= $block->escapeHtml($dynamicStyle['docFont']);?>;
+            background-color: <?= $block->escapeHtml($dynamicStyle['docBackgroundColor']);?>;
             width: 100% !important;
         }
         .product-table img{
@@ -56,7 +56,7 @@ $priceHelper = $block->priceHelper;
             padding-bottom: 10px;
         }
         /** Styling from config field **/
-        <?php echo $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
+        <?= $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
@@ -75,38 +75,49 @@ $priceHelper = $block->priceHelper;
     <?php foreach ($items as $item) :?>
         <?php $_product = $item->getProduct(); ?>
         <?php if ($i == 0) : ?>
-            <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse: collapse; font-size:12px;'><tr>
+            <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0" style='border-collapse:
+            collapse; font-size:12px;'><tr>
         <?php endif;?>
-        <?php if($mode == 'list'):?>
+        <?php if ($mode == 'list') : ?>
             </tr><tr>
         <?php endif;?>
-		<?php
-			$total = $priceHelper->currency($_product->getPrice(), true, false);
-		?>
+        <?php $total = $priceHelper->currency($_product->getPrice(), true, false); ?>
 
-		<td style="vertical-align: text-top; padding-right: 2px;">
-            <a href="<?php echo $block->escapeHtml($_product->getProductUrl()) ?>"
-               title="<?php echo $block->escapeHtml($block->stripTags($block->getImageLabel($_product, 'small_image'),
-                   null, true)) ?>" class="product-image">
-                <?php echo $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
+        <td style="vertical-align: text-top; padding-right: 2px;">
+            <a href="<?= $block->escapeHtml($_product->getProductUrl()) ?>"
+               title="<?= $block->escapeHtml(
+                   $block->stripTags(
+                       $block->getImageLabel($_product, 'small_image'),
+                       null,
+                       true
+                   )
+               ) ?>" class="product-image">
+                <?= $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
             </a>
-            <div class="product-name" align="center"><b><?php echo $block->escapeHtml(substr($_product->getName(), 0,
-                        40)); ?></b></div>
-            <div class="product-price" align="center"><?php echo $block->escapeHtml($total); ?></div>
+            <div class="product-name" align="center"><b><?= $block->escapeHtml(
+                substr(
+                    $_product->getName(),
+                    0,
+                    40
+                )
+            ); ?></b></div>
+            <div class="product-price" align="center"><?= $block->escapeHtml($total); ?></div>
             <div align="center">
-                <a class="proudct-url" href="<?php echo $block->escapeHtml($_product->getProductUrl()); ?>">
-                    <?php
-                    if ($urlText = $block->getTextForUrl($_product->getStoreId()))
-                        echo $block->escapeHtml($urlText);
-                    else
-                        echo $block->escapeHtml(__('View Now'));
-                    ?>
+                <a class="proudct-url" href="<?= $block->escapeHtml($_product->getProductUrl()); ?>">
+                    <?php if ($urlText = $block->getTextForUrl($_product->getStoreId())) : ?>
+                        <?= $block->escapeHtml($urlText); ?>
+                    <?php else : ?>
+                        <?= $block->escapeHtml(__('View Now')); ?>
+                    <?php endif;?>
                 </a>
             </div>
         </td>
 
-        <?php if ($i++ % 4 == 3 && $mode == 'grid') : ?></tr><tr><?php endif; ?>
+        <?php if ($i++ % 4 == 3 && $mode == 'grid') : ?>
+            </tr><tr>
+        <?php endif; ?>
     <?php endforeach;?>
-    <?php if( $i > 0):?> </table>
+    <?php if ($i > 0) : ?>
+            </table>
     <?php endif; ?>
-<?php endif;
+<?php endif; ?>
