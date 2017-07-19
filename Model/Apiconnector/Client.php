@@ -106,7 +106,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function setApiEndpoint($apiEndpoint)
     {
-        $this->apiEndpoint = $apiEndpoint;
+        $this->apiEndpoint = trim($apiEndpoint);
     }
 
     /**
