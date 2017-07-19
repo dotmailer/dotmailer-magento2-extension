@@ -7,6 +7,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
  *
  * @package Dotdigitalgroup\Email\Controller\Customer
  * @magentoDBIsolation enabled
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
 {

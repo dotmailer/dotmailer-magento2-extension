@@ -9,6 +9,7 @@ use Magento\TestFramework\ObjectManager;
  *
  * @package Dotdigitalgroup\Email\Helper
  * @magentoDBIsolation enabled
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ApiEndpointTest extends \PHPUnit_Framework_TestCase
 {

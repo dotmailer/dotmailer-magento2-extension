@@ -683,6 +683,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param mixed $salesOrderItem
      * @param mixed $catalogCategoryProductIndex
      * @return array
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     private function buildColumnData(
         $salesOrderGrid,
