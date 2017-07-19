@@ -47,7 +47,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
         array $data = []
     ) {
         $this->catalogResource = $catalogResource;
-        $this->catalogCollection = $catalogCollection;        
+        $this->catalogCollection = $catalogCollection;
         $this->dateTime = $dateTime;
         parent::__construct(
             $context,
