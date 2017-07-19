@@ -485,7 +485,7 @@ class Rest
      */
     public function setApiUsername($apiUsername)
     {
-        $this->apiUsername = $apiUsername;
+        $this->apiUsername = trim($apiUsername);
 
         return $this;
     }
@@ -509,7 +509,7 @@ class Rest
      */
     public function setApiPassword($apiPassword)
     {
-        $this->apiPassword = $apiPassword;
+        $this->apiPassword = trim($apiPassword);
 
         return $this;
     }
