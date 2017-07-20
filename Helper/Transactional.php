@@ -111,6 +111,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     public function getTransportConfig()
     {
         $config = [
+            'name' => $this->getSmtpHost(),
             'port' => $this->getSmtpPort(),
             'auth' => 'login',
             'username' => $this->getSmtpUsername(),
