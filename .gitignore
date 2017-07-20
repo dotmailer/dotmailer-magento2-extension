@@ -7,5 +7,4 @@ vendor
 composer.lock
 Test/Unit
 .DS_Store
-node_modules
 auth.json
