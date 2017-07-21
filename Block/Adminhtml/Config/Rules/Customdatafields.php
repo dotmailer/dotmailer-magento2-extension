@@ -6,17 +6,17 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 {
 
     /**
-     * @var object
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     protected $getAttributeRenderer;
 
     /**
-     * @var object
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     protected $getConditionsRenderer;
 
     /**
-     * @var object
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     private $getValueRenderer;
 

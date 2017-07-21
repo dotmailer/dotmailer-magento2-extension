@@ -13,7 +13,7 @@ class Contact
     private $contactResource;
     
     /**
-     * @var object
+     * @var mixed
      */
     private $start;
 

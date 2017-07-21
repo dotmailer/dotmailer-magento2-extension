@@ -78,10 +78,11 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Generate coupon
+     * Generate coupon.
      *
-     * @param mixed $couponCodeId
+     * @param int $couponCodeId
      * @param bool $expireDate
+     *
      * @return bool
      */
     public function generateCoupon($couponCodeId, $expireDate = false)
@@ -136,8 +137,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set error message
      *
-     * @param mixed $ids
-     * @param mixed $message
+     * @param array $ids
+     * @param string $message
      * 
      * @return null
      */
@@ -157,8 +158,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $sendId
-     * @param mixed $message
+     * @param int $sendId
+     * @param string $message
      * 
      * @return null
      */
@@ -177,9 +178,9 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Set sent
+     * Set sent.
      *
-     * @param mixed $sendId
+     * @param int $sendId
      * 
      * @return null
      */
@@ -200,8 +201,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set processing
      *
-     * @param mixed $ids
-     * @param mixed $sendId
+     * @param array $ids
+     * @param int $sendId
      * 
      * @return null
      */

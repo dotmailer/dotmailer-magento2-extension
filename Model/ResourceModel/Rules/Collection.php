@@ -38,8 +38,8 @@ class Collection extends
     /**
      * Check if rule already exist for website.
      *
-     * @param mixed $websiteId
-     * @param mixed $type
+     * @param int $websiteId
+     * @param string $type
      * @param bool $ruleId
      *
      * @return bool
@@ -64,8 +64,8 @@ class Collection extends
     /**
      * Get rule for website.
      *
-     * @param object $type
-     * @param object $websiteId
+     * @param string $type
+     * @param int|array $websiteId
      *
      * @return array|\Magento\Framework\DataObject
      */

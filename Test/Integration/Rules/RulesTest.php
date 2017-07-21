@@ -55,17 +55,18 @@ class RulesTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return void
+     * @return \Magento\Customer\Api\Data\CustomerInterface
      */
     private function getCustomer()
     {
         /** @var CustomerRepositoryInterface $customerRepository */
         $customerRepository = ObjectManager::getInstance()->create(CustomerRepositoryInterface::class);
+
         return $customerRepository->getById(1);
     }
 
     /**
-     * @return void
+     * @return Product
      */
     private function getProduct()
     {
@@ -74,11 +75,12 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         /** @var Product $product */
         $product = ObjectManager::getInstance()->create(Product::class);
         $resourceModel->load($product, 1);
+
         return $product;
     }
 
     /**
-     * @return void
+     * @return Quote
      */
     private function createQuote()
     {
@@ -93,11 +95,12 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         $quote->setCheckoutMethod('customer');
         $quote->setReservedOrderId('test_order_1');
         $quote->addProduct($this->getProduct(), 2);
+
         return $quote;
     }
 
     /**
-     * @return $quote
+     * @return Quote
      */
     public function createQuoteWithoutPayment()
     {
@@ -110,6 +113,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param int $operator
+     *
      * @return Rules
      */
     private function createAbandonedCartRuleWithOperator($operator)
@@ -134,6 +138,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
      * @param string $condition
      * @param string $value
      * @param int $operator
+     *
      * @return Rules
      */
     private function createAbandonedCartRuleWithCondition($attribute, $condition, $value, $operator)
@@ -184,6 +189,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param Rules $rule
+     *
      * @return array
      */
     private function getConditionsFromRule(Rules $rule)
@@ -224,7 +230,8 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param mixed $subtotal
-     * @return void
+     *
+     * @return Quote
      */
     private function createQuoteWithSubtotal($subtotal)
     {

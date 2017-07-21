@@ -64,11 +64,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get product collection to export.
      *
-     * @param mixed $store
-     * @param mixed $limit
+     * @param null|string|bool|int|\Magento\Store\Model\Store  $store
+     * @param int $limit
      * @param bool $modified
      *
-     * @return mixed
+     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|bool
      */
     public function getProductsToExportByStore($store, $limit, $modified = false)
     {

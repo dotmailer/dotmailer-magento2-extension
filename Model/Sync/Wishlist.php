@@ -17,7 +17,7 @@ class Wishlist
     private $helper;
 
     /**
-     * @var object
+     * @var array
      */
     private $wishlists;
 
@@ -27,7 +27,7 @@ class Wishlist
     private $wishlistIds = [];
 
     /**
-     * @var object 
+     * @var mixed
      */
     private $start;
 
@@ -319,7 +319,7 @@ class Wishlist
     }
 
     /**
-     * @param mixed $ids
+     * @param array $ids
      * @param bool $modified
      * 
      * @return null

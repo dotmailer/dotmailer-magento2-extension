@@ -8,7 +8,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Rest
 {
     /**
-     * @var null
+     * @var string|null
      */
     private $url;
 
@@ -18,7 +18,7 @@ class Rest
     private $verb;
 
     /**
-     * @var null
+     * @var string|null
      */
     private $requestBody;
 
@@ -43,17 +43,17 @@ class Rest
     private $acceptType;
 
     /**
-     * @var null
+     * @var mixed
      */
     private $responseBody;
 
     /**
-     * @var null
+     * @var mixed
      */
     private $responseInfo;
 
     /**
-     * @var null
+     * @var string
      */
     private $curlError;
 
@@ -71,7 +71,7 @@ class Rest
      * Rest constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param int $website
-     * 
+     *
      * @return null
      */
     public function __construct(

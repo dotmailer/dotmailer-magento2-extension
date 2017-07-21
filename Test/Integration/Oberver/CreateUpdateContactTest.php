@@ -34,7 +34,7 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
     public $email;
 
     /**
-     * @var object
+     * @var \Magento\Customer\Model\Customer
      */
     public $customerModel;
 
@@ -116,7 +116,8 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $updatedEmail
-     * @return void
+     *
+     * @return \Magento\Customer\Model\Customer
      */
     private function updateCustomerEmail($updatedEmail)
     {
@@ -126,12 +127,13 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return mixed
+     * @return \Dotdigitalgroup\Email\Model\Contact
      */
     public function loadContactByCustomerId()
     {
         $contact = $this->contactFactory->create()
             ->loadByCustomerId($this->customerId);
+
         return $contact;
     }
 }

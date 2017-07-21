@@ -15,7 +15,7 @@ class Subscriber
     const STATUS_UNCONFIRMED = 4;
 
     /**
-     * @var object
+     * @var mixed
      */
     private $start;
 
@@ -127,7 +127,7 @@ class Subscriber
     /**
      * Export subscribers per website.
      *
-     * @param mixed $website
+     * @param \Magento\Store\Model\Website $website
      *
      * @return int
      *
@@ -183,9 +183,10 @@ class Subscriber
     }
 
     /**
-     * Check emails exist in sales order table
+     * Check emails exist in sales order table.
      *
-     * @param mixed $emails
+     * @param array $emails
+     *
      * @return array
      */
     public function checkInSales($emails)
@@ -196,6 +197,7 @@ class Subscriber
 
     /**
      * Un-subscribe suppressed contacts.
+     *
      * @return mixed
      */
     public function unsubscribe()

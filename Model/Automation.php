@@ -90,7 +90,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     /**
      * New customer automation
      *
-     * @param mixed $customer
+     * @param \Magento\Customer\Model\Customer $customer
      * 
      * @return null
      */

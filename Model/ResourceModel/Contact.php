@@ -126,7 +126,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Unsubscribe a contact from email_contact/newsletter table.
      *
-     * @param mixed $data
+     * @param array $data
      * @return int
      */
     public function unsubscribe($data)
@@ -159,7 +159,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $data
+     * @param array $data
      *
      * @return null
      */
@@ -226,11 +226,12 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get collection for subscribers by emails
+     * Get collection for subscribers by emails.
      *
-     * @param mixed $emails
-     * @param mixed $statuses
-     * @return mixed
+     * @param array $emails
+     * @param array $statuses
+     *
+     * @return \Magento\Newsletter\Model\ResourceModel\Subscriber\Collection
      */
     public function getCollectionForSubscribersByEmails($emails, $statuses)
     {
@@ -327,9 +328,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
-     * @param mixed $salesOrderItem
-     * @param mixed $catalogCategoryProductIndex
+     * @param string $salesOrder
+     * @param string $salesOrderItem
+     * @param string $catalogCategoryProductIndex
+     *
      * @return array
      */
     private function buildCollectionColumns($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
@@ -358,11 +360,13 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $catalogCategoryProductIndex
             )
         ];
+
         return $columns;
     }
 
     /**
-     * @param mixed $salesOrder
+     * @param string $salesOrder
+     *
      * @return \Zend_Db_Expr
      */
     private function createLastOrderDataColumn($salesOrder)
@@ -378,7 +382,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
+     * @param string $salesOrder
+     *
      * @return \Zend_Db_Expr
      */
     private function createLastOrderIdColumn($salesOrder)
@@ -394,7 +399,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
+     * @param string $salesOrder
+     *
      * @return \Zend_Db_Expr
      */
     private function createLastIncrementIdColumn($salesOrder)
@@ -410,9 +416,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
-     * @param mixed $salesOrderItem
-     * @param mixed $catalogCategoryProductIndex
+     * @param string $salesOrder
+     * @param string $salesOrderItem
+     * @param string $catalogCategoryProductIndex
+     *
      * @return \Zend_Db_Expr
      */
     private function createFirstCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
@@ -430,9 +437,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
-     * @param mixed $salesOrderItem
-     * @param mixed $catalogCategoryProductIndex
+     * @param string $salesOrder
+     * @param string $salesOrderItem
+     * @param string $catalogCategoryProductIndex
+     *
      * @return \Zend_Db_Expr
      */
     private function createLastCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
@@ -450,8 +458,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
-     * @param mixed $salesOrderItem
+     * @param string $salesOrder
+     * @param string $salesOrderItem
+     *
      * @return \Zend_Db_Expr
      */
     private function createProductIdForFirstBrandColumn($salesOrder, $salesOrderItem)
@@ -468,8 +477,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
-     * @param mixed $salesOrderItem
+     * @param string $salesOrder
+     * @param string $salesOrderItem
+     *
      * @return \Zend_Db_Expr
      */
     private function createProductIdForLastBrandColumn($salesOrder, $salesOrderItem)
@@ -486,7 +496,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
+     * @param string $salesOrder
+     *
      * @return \Zend_Db_Expr
      */
     private function createWeekDayColumn($salesOrder)
@@ -505,7 +516,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
+     * @param string $salesOrder
+     *
      * @return \Zend_Db_Expr
      */
     private function createMonthDayColumn($salesOrder)
@@ -524,9 +536,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $salesOrder
-     * @param mixed $salesOrderItem
-     * @param mixed $catalogCategoryProductIndex
+     * @param string $salesOrder
+     * @param string $salesOrderItem
+     * @param string $catalogCategoryProductIndex
+     *
      * @return \Zend_Db_Expr
      */
     private function createMostCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
@@ -561,8 +574,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Customer collection with all data ready for export.
      *
-     * @param  mixed $customerIds
-     * @param  mixed $statuses
+     * @param  array $customerIds
+     * @param  array $statuses
      *
      * @return $this
      *
@@ -662,8 +675,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $customerIds
-     * @return mixed
+     * @param array $customerIds
+     *
+     * @return \Magento\Customer\Model\ResourceModel\Customer\Collection
      */
     private function buildCustomerCollection($customerIds)
     {
@@ -673,15 +687,17 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $customerCollection = $this->addBillingJoinAttributesToCustomerCollection($customerCollection);
         $customerCollection = $this->addShippingJoinAttributesToCustomerCollection($customerCollection);
         $customerCollection = $customerCollection->addAttributeToFilter('entity_id', ['in' => $customerIds]);
+
         return $customerCollection;
     }
 
     /**
-     * @param mixed $salesOrderGrid
-     * @param mixed $quote
-     * @param mixed $salesOrder
-     * @param mixed $salesOrderItem
-     * @param mixed $catalogCategoryProductIndex
+     * @param string $salesOrderGrid
+     * @param string $quote
+     * @param string $salesOrder
+     * @param string $salesOrderItem
+     * @param string $catalogCategoryProductIndex
+     *
      * @return array
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
@@ -793,15 +809,17 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     )"
             )
         ];
+
         return $columnData;
     }
 
     /**
-     * @param mixed $salesOrder
-     * @param mixed $salesOrderItem
-     * @param mixed $catalogProductEntityInt
-     * @param mixed $eavAttribute
-     * @param mixed $eavAttributeOptionValue
+     * @param string $salesOrder
+     * @param string $salesOrderItem
+     * @param string $catalogProductEntityInt
+     * @param string $eavAttribute
+     * @param string $eavAttributeOptionValue
+     *
      * @return \Zend_Db_Expr
      */
     private function buildMostData(
@@ -856,8 +874,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $customerCollection
-     * @return mixed
+     * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
+     *
+     * @return \Magento\Customer\Model\ResourceModel\Customer\Collection
      */
     private function addShippingJoinAttributesToCustomerCollection($customerCollection)
     {
@@ -910,12 +929,14 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 null,
                 'left'
             );
+
         return $customerCollection;
     }
 
     /**
-     * @param mixed $customerCollection
-     * @return mixed
+     * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
+     *
+     * @return \Magento\Customer\Model\ResourceModel\Customer\Collection
      */
     private function addBillingJoinAttributesToCustomerCollection($customerCollection)
     {
@@ -968,15 +989,16 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 null,
                 'left'
             );
+
         return $customerCollection;
     }
 
     /**
-     * Set imported by id
+     * Set imported by id.
      *
-     * @param mixed $ids
+     * @param array $ids
      * 
-     * @return mixed
+     * @return null
      */
     public function setImportedByIds($ids)
     {
@@ -988,9 +1010,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get last cron ran date
+     * Get last cron ran date.
      *
      * @param mixed $cronJob
+     *
      * @return mixed
      */
     public function getDateLastCronRun($cronJob)

@@ -25,6 +25,7 @@ class NewsletterDisable
     /**
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
      * @param callable $proceed
+     *
      * @return mixed
      */
     public function aroundSendConfirmationSuccessEmail(

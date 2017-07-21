@@ -9,32 +9,32 @@ namespace Dotdigitalgroup\Email\Model\Customer\Wishlist;
 class Item
 {
     /**
-     * @var object
+     * @var string
      */
     public $sku;
 
     /**
-     * @var object
+     * @var string
      */
     public $qty;
 
     /**
-     * @var object
+     * @var string
      */
     public $name;
 
     /**
-     * @var object
+     * @var float
      */
     public $price;
 
     /**
-     * @var object
+     * @var float
      */
     public $totalValueOfProduct;
 
     /**
-     * @param mixed $product
+     * @param \Magento\Catalog\Model\Product $product
      *
      * @return $this
      */
@@ -47,7 +47,7 @@ class Item
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      *
      * @return $this
      */
@@ -59,7 +59,7 @@ class Item
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -67,7 +67,7 @@ class Item
     }
 
     /**
-     * @param mixed $qty
+     * @param float $qty
      *
      * @return $this
      */
@@ -79,7 +79,7 @@ class Item
     }
 
     /**
-     * @return mixed
+     * @return float
      */
     public function getQty()
     {
@@ -87,7 +87,7 @@ class Item
     }
 
     /**
-     * @return mixed
+     * @return float
      */
     public function getTotalValueOfProduct()
     {
@@ -95,7 +95,7 @@ class Item
     }
 
     /**
-     * @param mixed $product
+     * @param \Magento\Catalog\Model\Product $product
      *
      * @return $this
      */
@@ -110,7 +110,7 @@ class Item
     }
 
     /**
-     * @return mixed
+     * @return float
      */
     public function getPrice()
     {
@@ -118,7 +118,7 @@ class Item
     }
 
     /**
-     * @param mixed $sku
+     * @param string $sku
      *
      * @return $this
      */
@@ -130,7 +130,7 @@ class Item
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getSku()
     {

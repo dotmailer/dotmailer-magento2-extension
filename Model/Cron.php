@@ -182,7 +182,7 @@ class Cron
     /**
      * CRON FOR CATALOG SYNC.
      *
-     * @return mixed
+     * @return array
      */
     public function catalogSync()
     {
@@ -195,11 +195,11 @@ class Cron
     /**
      * CRON FOR EMAIL IMPORTER PROCESSOR.
      *
-     * @return mixed
+     * @return null
      */
     public function emailImporter()
     {
-        return $this->importerFactory->create()->processQueue();
+        $this->importerFactory->create()->processQueue();
     }
 
     /**
@@ -219,7 +219,7 @@ class Cron
     /**
      * Review sync.
      *
-     * @return mixed
+     * @return array
      */
     public function reviewSync()
     {
@@ -268,12 +268,13 @@ class Cron
     /**
      * CRON FOR ORDER TRANSACTIONAL DATA.
      * 
-     * @return null
+     * @return array
      */
     public function orderSync()
     {
         // send order
-        $orderResult = $this->syncOrderFactory->create()->sync();
+        $orderResult = $this->syncOrderFactory->create()
+            ->sync();
 
         return $orderResult;
     }
@@ -292,6 +293,7 @@ class Cron
             'campaign' => 'email_campaign',
         ];
         $message = 'Cleaning cron job result :';
+
         foreach ($tables as $key => $table) {
             $result = $this->importerResource->cleanup($table);
             $message .= " $result records removed from $key .";

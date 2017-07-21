@@ -72,7 +72,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param Option\Vote\CollectionFactory voteCollection
+     * @param Option\Vote\CollectionFactory $voteCollection
      * @param \Magento\Review\Model\Rating\Option\Vote $vote
      * @param null $connectionName
      */
@@ -105,11 +105,10 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset the email reviews for re-import.
      *
-     * @param null $from
-     * @param null $to
+     * @param mixed $from
+     * @param mixed $to
      *
      * @return int
-     *
      */
     public function resetReviews($from = null, $to = null)
     {
@@ -136,11 +135,12 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Filter items for review
+     * Filter items for review.
      *
-     * @param mixed $items
-     * @param mixed $customerId
+     * @param array $items
+     * @param int $customerId
      * @param mixed $order
+     *
      * @return mixed
      */
     public function filterItemsForReview($items, $customerId, $order)
@@ -163,16 +163,17 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get product collection from order
+     * Get product collection from order.
      *
-     * @param mixed $order
+     * @param \Magento\Quote\Model\Quote $quote
+     *
      * @return array|\Magento\Framework\Data\Collection\AbstractDb
      */
-    public function getProductCollection($order)
+    public function getProductCollection($quote)
     {
         $productIds = [];
         $products = [];
-        $items = $order->getAllVisibleItems();
+        $items = $quote->getAllVisibleItems();
 
         //get the product ids for the collection
         foreach ($items as $item) {
@@ -191,7 +192,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set imported in bulk query.
      *
-     * @param mixed $ids
+     * @param array $ids
      * @param mixed $nowDate
      * 
      * @return null
@@ -212,10 +213,11 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get Mage reviews by ids
+     * Get Mage reviews by ids.
      *
-     * @param mixed $ids
-     * @return mixed
+     * @param array $ids
+     *
+     * @return \Magento\Review\Model\ResourceModel\Review\Collection
      */
     public function getMageReviewsByIds($ids)
     {
@@ -237,10 +239,11 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get product by id and store
+     * Get product by id and store.
      *
-     * @param mixed $id
-     * @param mixed $storeId
+     * @param int $id
+     * @param int $storeId
+     *
      * @return mixed
      */
     public function getProductByIdAndStore($id, $storeId)
@@ -260,7 +263,8 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get vote collection by review.
      *
-     * @param mixed $reviewId
+     * @param int $reviewId
+     *
      * @return mixed
      */
     public function getVoteCollectionByReview($reviewId)

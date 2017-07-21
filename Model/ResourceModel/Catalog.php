@@ -85,14 +85,15 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get most viewed product collection
+     * Get most viewed product collection.
      *
      * @param mixed $from
      * @param mixed $to
-     * @param mixed $limit
-     * @param mixed $catId
-     * @param mixed $catName
-     * @return mixed
+     * @param int $limit
+     * @param int $catId
+     * @param string $catName
+     *
+     * @return \Magento\Reports\Model\ResourceModel\Product\Collection
      */
     public function getMostViewedProductCollection($from, $to, $limit, $catId, $catName)
     {
@@ -144,9 +145,10 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get recently viewed
+     * Get recently viewed.
      *
-     * @param mixed $limit
+     * @param int $limit
+     *
      * @return array
      */
     public function getRecentlyViewed($limit)
@@ -159,10 +161,11 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get product collection from ids
+     * Get product collection from ids.
      *
-     * @param mixed $ids
-     * @param mixed $limit
+     * @param array $ids
+     * @param int|bool $limit
+     *
      * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     public function getProductCollectionFromIds($ids, $limit = false)
@@ -186,10 +189,11 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get product collection from ids
+     * Get product collection from ids.
      *
-     * @param mixed $productsSku
-     * @param mixed $limit
+     * @param string $productsSku
+     * @param int|bool $limit
+     *
      * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     public function getProductsCollectionBySku($productsSku, $limit = false)
@@ -212,12 +216,13 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get bestseller collection
+     * Get bestseller collection.
      *
      * @param mixed $from
      * @param mixed $to
-     * @param mixed $limit
-     * @param mixed $storeId
+     * @param int $limit
+     * @param int $storeId
+     *
      * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     public function getBestsellerCollection($from, $to, $limit, $storeId)
@@ -281,8 +286,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset for re-import.
      *
-     * @param null $from
-     * @param null $to
+     * @param mixed $from
+     * @param mixed $to
      *
      * @return int
      *
@@ -317,7 +322,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Set imported in bulk query. If modified true then set modified to null in bulk query.
      *
-     * @param mixed $ids
+     * @param array $ids
      * @param bool $modified
      * 
      * @return null

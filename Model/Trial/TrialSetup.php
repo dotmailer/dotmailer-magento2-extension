@@ -45,8 +45,8 @@ class TrialSetup
     /**
      * Save api credentioals.
      *
-     * @param mixed $apiUser
-     * @param mixed $apiPass
+     * @param string $apiUser
+     * @param string $apiPass
      *
      * @return bool
      */
@@ -80,8 +80,8 @@ class TrialSetup
     /**
      * Setup data fields.
      *
-     * @param mixed $username
-     * @param mixed $password
+     * @param string $username
+     * @param string $password
      *
      * @return bool
      */
@@ -123,8 +123,8 @@ class TrialSetup
     /**
      * Create certain address books.
      *
-     * @param mixed $username
-     * @param mixed $password
+     * @param string $username
+     * @param string $password
      *
      * @return bool
      */
@@ -152,8 +152,8 @@ class TrialSetup
     /**
      * Map the successfully created address book
      *
-     * @param mixed $name
-     * @param mixed $id
+     * @param string $name
+     * @param int $id
      * 
      * @return null
      */
@@ -207,7 +207,7 @@ class TrialSetup
     /**
      * Save api endpoint.
      *
-     * @param mixed $value
+     * @param string $value
      * 
      * @return null
      */
@@ -222,8 +222,9 @@ class TrialSetup
     }
 
     /**
-     * @param mixed $client
-     * @param mixed $addressBooks
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param array $addressBooks
+     *
      * @return bool
      */
     private function validateAccountAndCreateAddressbooks($client, $addressBooks)
@@ -256,6 +257,7 @@ class TrialSetup
                 }
             }
         }
+
         return $error;
     }
 }

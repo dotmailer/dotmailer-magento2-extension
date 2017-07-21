@@ -6,7 +6,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
 {
 
     /**
-     * @var object
+     * @var mixed
      */
     public $originalParams;
 

@@ -23,7 +23,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      *
      * @param int $customerId
      *
-     * @return mixed
+     * @return $this
      */
     public function loadByCustomerId($customerId)
     {
@@ -91,7 +91,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      *
      * @param \Magento\Store\Model\Website $website
      * @param int $limit
-     * @param mixed $isCustomerCheck
+     * @param bool $isCustomerCheck
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
      */
@@ -111,7 +111,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Contact subscribers to import for website.
      *
-     * @param mixed $emails
+     * @param array $emails
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
      */

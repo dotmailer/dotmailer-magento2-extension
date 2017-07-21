@@ -8,17 +8,17 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 class Review
 {
     /**
-     * @var object
+     * @var mixed
      */
     private $start;
 
     /**
-     * @var object
+     * @var array
      */
     private $reviews;
 
     /**
-     * @var object
+     * @var int
      */
     private $countReviews;
 
@@ -28,7 +28,7 @@ class Review
     private $helper;
 
     /**
-     * @var object
+     * @var array
      */
     private $reviewIds;
 
@@ -200,7 +200,7 @@ class Review
      * @param \Magento\Store\Model\Website $website
      * @param int $limit
      *
-     * @return mixed
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Review\Collection
      */
     public function _getReviewsToExport(\Magento\Store\Model\Website $website, $limit = 100)
     {
@@ -211,7 +211,7 @@ class Review
     /**
      * Set imported in bulk query.
      *
-     * @param mixed $ids
+     * @param array $ids
      * 
      * @return null
      */

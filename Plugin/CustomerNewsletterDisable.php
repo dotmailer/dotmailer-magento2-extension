@@ -28,7 +28,8 @@ class CustomerNewsletterDisable
      * @param string $type
      * @param string $backUrl
      * @param string $storeId
-     * @return void
+     *
+     * @return mixed
      */
     public function aroundSendNewAccountEmail(
         \Magento\Customer\Model\Customer $customer,

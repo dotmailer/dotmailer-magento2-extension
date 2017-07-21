@@ -18,7 +18,7 @@ class Bulk
     protected $helper;
 
     /**
-     * @var object
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
     protected $client;
 
@@ -87,8 +87,8 @@ class Bulk
     /**
      * Get addressbook by import type.
      *
-     * @param mixed $importType
-     * @param mixed $websiteId
+     * @param string $importType
+     * @param int $websiteId
      *
      * @return mixed|string
      */

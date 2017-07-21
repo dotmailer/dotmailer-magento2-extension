@@ -147,6 +147,7 @@ class Quote
      * Proccess abandoned carts.
      *
      * @param string $mode
+     *
      * @return $this
      */
     public function proccessAbandonedCarts($mode = 'all')
@@ -171,10 +172,10 @@ class Quote
     }
 
     /**
-     * @param mixed $num
-     * @param mixed $storeId
+     * @param int $num
+     * @param int $storeId
      *
-     * @return mixed
+     * @return bool
      */
     public function isLostBasketCustomerEnabled($num, $storeId)
     {
@@ -186,8 +187,8 @@ class Quote
     }
 
     /**
-     * @param mixed $num
-     * @param mixed $storeId
+     * @param int $num
+     * @param int $storeId
      *
      * @return mixed
      */
@@ -201,8 +202,8 @@ class Quote
     }
 
     /**
-     * @param null $from
-     * @param null $to
+     * @param mixed $from
+     * @param mixed $to
      * @param bool|false $guest
      * @param int $storeId
      *
@@ -235,8 +236,8 @@ class Quote
     }
 
     /**
-     * @param mixed $num
-     * @param mixed $storeId
+     * @param int $num
+     * @param int $storeId
      *
      * @return mixed
      */
@@ -253,8 +254,8 @@ class Quote
      * Send email only if the interval limit passed, no emails during this interval.
      * Return false for any found for this period.
      *
-     * @param mixed $email
-     * @param mixed $storeId
+     * @param string $email
+     * @param int $storeId
      *
      * @return bool
      */
@@ -297,8 +298,8 @@ class Quote
     }
 
     /**
-     * @param mixed $num
-     * @param mixed $storeId
+     * @param int $num
+     * @param int $storeId
      *
      * @return bool
      */
@@ -312,8 +313,8 @@ class Quote
     }
 
     /**
-     * @param mixed $num
-     * @param mixed $storeId
+     * @param int $num
+     * @param int $storeId
      *
      * @return mixed
      */
@@ -327,8 +328,8 @@ class Quote
     }
 
     /**
-     * @param mixed $num
-     * @param mixed $storeId
+     * @param int $num
+     * @param int $storeId
      *
      * @return mixed
      */
@@ -342,7 +343,7 @@ class Quote
     }
 
     /**
-     * @param mixed $storeId
+     * @param int $storeId
      * 
      * @return null
      */
@@ -419,7 +420,7 @@ class Quote
     }
 
     /**
-     * @param mixed $storeId
+     * @param int $storeId
      * 
      * @return null
      */
@@ -499,8 +500,8 @@ class Quote
     }
 
     /**
-     * @param mixed $storeId
-     * @param mixed $num
+     * @param int $storeId
+     * @param int $num
      *
      * @return \DateInterval
      */
@@ -518,8 +519,8 @@ class Quote
 
     /**
      * @param mixed $mostExpensiveItem
-     * @param mixed $email
-     * @param mixed $websiteId
+     * @param string $email
+     * @param int $websiteId
      * 
      * @return null
      */
@@ -531,8 +532,8 @@ class Quote
     }
 
     /**
-     * @param mixed $storeId
-     * @param mixed $num
+     * @param int $storeId
+     * @param int $num
      *
      * @return \DateInterval
      */
