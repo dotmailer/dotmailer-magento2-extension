@@ -26,16 +26,6 @@ class Customdatafields extends
     public $elementFactory;
 
     /**
-     * @var mixed
-     */
-    private $getStatusRenderer;
-
-    /**
-     * @var mixed
-     */
-    private $getAutomationRenderer;
-
-    /**
      * Customdatafields constructor.
      *
      * @param \Magento\Framework\Data\Form\Element\Factory                         $elementFactory
@@ -59,8 +49,6 @@ class Customdatafields extends
      */
     public function _prepareToRender()
     {
-        $this->getStatusRenderer = null;
-        $this->getAutomationRenderer = null;
         $this->addColumn(
             'status',
             [
