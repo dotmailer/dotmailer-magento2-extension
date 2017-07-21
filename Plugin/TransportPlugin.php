@@ -52,11 +52,12 @@ class TransportPlugin
         \Closure $proceed
     ) {
         if ($this->helper->isEnabled()) {
-            $reflection = new \ReflectionClass($subject);
-
+            // For >= 2.2
             if (method_exists($subject, 'getMessage')) {
                 $this->smtp->send($subject->getMessage());
             } else {
+                //For < 2.2
+                $reflection = new \ReflectionClass($subject);
                 $property = $reflection->getProperty('_message');
                 $property->setAccessible(true);
                 $this->smtp->send($property->getValue($subject));
