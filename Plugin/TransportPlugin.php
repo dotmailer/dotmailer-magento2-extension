@@ -12,11 +12,6 @@ use Magento\Framework\Mail\TransportInterface;
 class TransportPlugin
 {
     /**
-     * @var \Magento\Framework\Mail\MessageInterface
-     */
-    private $message;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Transactional
      */
     private $helper;
@@ -29,19 +24,13 @@ class TransportPlugin
     /**
      * TransportPlugin constructor.
      *
-     * @param \Magento\Framework\Mail\MessageInterface $message
      * @param \Zend_Mail_Transport_SmtpFactory $smtpFactory
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      */
     public function __construct(
-        \Magento\Framework\Mail\MessageInterface $message,
         \Zend_Mail_Transport_SmtpFactory $smtpFactory,
         \Dotdigitalgroup\Email\Helper\Transactional $helper
     ) {
-        if (!$message instanceof \Zend_Mail) {
-            throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
-        }
-        $this->message  = $message;
         $this->helper   = $helper;
         $this->smtp = $smtpFactory->create(
             [
@@ -63,7 +52,15 @@ class TransportPlugin
         \Closure $proceed
     ) {
         if ($this->helper->isEnabled()) {
-            $this->smtp->send($this->message);
+            $reflection = new \ReflectionClass($subject);
+
+            if (method_exists($subject, 'getMessage')) {
+                $this->smtp->send($subject->getMessage());
+            } else {
+                $property = $reflection->getProperty('_message');
+                $property->setAccessible(true);
+                $this->smtp->send($property->getValue($subject));
+            }
         } else {
             $proceed();
         }
