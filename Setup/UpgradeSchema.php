@@ -85,6 +85,16 @@ class UpgradeSchema implements UpgradeSchemaInterface
              * Rules conditions.
              */
             $this->convertDataForRules($setup, $connection);
+            /**
+             * Index foreign key for email catalog.
+             */
+            $this->addIndexKeyForCatalog($setup, $connection);
+
+            /**
+             * Add index foreign key for email order.
+             */
+            $this->addIndexKeyForOrder($setup, $connection);
+
         }
 
         $setup->endSetup();
@@ -272,5 +282,56 @@ class UpgradeSchema implements UpgradeSchemaInterface
         restore_error_handler();
 
         return $result;
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param AdapterInterface $connection
+     *
+     * @return null
+     */
+    private function addIndexKeyForCatalog(
+        SchemaSetupInterface $setup,
+        \Magento\Framework\DB\Adapter\AdapterInterface $connection
+    ) {
+        $connection->addForeignKey(
+            $setup->getFkName(
+                'email_catalog',
+                'product_id',
+                'catalog_product_entity',
+                'entity_id'
+            ),
+            $setup->getTable('email_catalog'),
+            'product_id',
+            $setup->getTable('catalog_product_entity'),
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param AdapterInterface $connection
+     *
+     * @return null
+     */
+    private function addIndexKeyForOrder(
+        SchemaSetupInterface $setup,
+        \Magento\Framework\DB\Adapter\AdapterInterface $connection
+    ) {
+        $connection->addForeignKey(
+            $setup->getFkName(
+                'email_order',
+                'order_id',
+                'sales_order',
+                'entity_id'
+            ),
+            $setup->getTable('email_order'),
+            'order_id',
+            $setup->getTable('sales_order'),
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+
     }
 }
