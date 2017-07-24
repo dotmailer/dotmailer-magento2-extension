@@ -35,6 +35,7 @@ class NewAutomation implements \Magento\Framework\Event\ObserverInterface
         $customer = $observer->getEvent()->getCustomer();
         //New Automation enrolment to queue
         $this->automation->newCustomerAutomation($customer);
+
         return $this;
     }
 }

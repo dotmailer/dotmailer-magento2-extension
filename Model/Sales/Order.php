@@ -111,7 +111,7 @@ class Order
      * Register review campaign.
      *
      * @param mixed $collection
-     * @param mixed $websiteId
+     * @param int $websiteId
      * 
      * @return null
      */

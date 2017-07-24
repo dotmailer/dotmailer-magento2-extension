@@ -228,6 +228,7 @@ class Order
     /**
      * @param mixed $website
      * @param int $limit
+     *
      * @return array
      */
     public function getPendingConnectorOrders($website, $limit = 100)
@@ -259,7 +260,8 @@ class Order
 
     /**
      * @param mixed $website
-     * @param mixed $limit
+     * @param int $limit
+     *
      * @return array
      */
     protected function getModifiedOrders($website, $limit)
@@ -290,9 +292,10 @@ class Order
     }
 
     /**
-     * @param mixed $orderCollection
-     * @param mixed $orderModel
-     * @param mixed $orders
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection $orderCollection
+     * @param \Dotdigitalgroup\Email\Model\Order $orderModel
+     * @param array $orders
+     *
      * @return array
      */
     protected function mappOrderData($orderCollection, $orderModel, $orders)
@@ -331,11 +334,12 @@ class Order
 
             $this->orderIds[] = $order->getId();
         }
+
         return $orders;
     }
 
     /**
-     * @param mixed $ordersForSingleSync
+     * @param array $ordersForSingleSync
      * @param mixed $website
      * 
      * @return null

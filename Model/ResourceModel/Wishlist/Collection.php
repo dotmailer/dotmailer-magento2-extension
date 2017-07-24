@@ -38,7 +38,7 @@ class Collection extends
     /**
      * Get the collection first item.
      *
-     * @param mixed $wishListId
+     * @param int $wishListId
      *
      * @return bool|\Magento\Framework\DataObject
      */

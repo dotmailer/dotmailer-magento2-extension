@@ -17,8 +17,8 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset the email order for re-import.
      *
-     * @param null $from
-     * @param null $to
+     * @param mixed $from
+     * @param mixed $to
      *
      * @return int
      *
@@ -53,14 +53,14 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Mark the connector orders to be imported.
      *
-     * @param mixed $ids
+     * @param array $ids
      * 
      * @return null
      */
     public function setImported($ids)
     {
         if (empty($ids)) {
-            return ;
+            return;
         }
         $connection = $this->getConnection();
         $tableName = $connection->getTableName('email_order');

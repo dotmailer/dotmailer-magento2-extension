@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 class Contact extends \Magento\Backend\App\Action
 {
     /**
-     * @var PageFactory|\Magento\Framework\View\Result\PageFactory
+     * @var \Magento\Framework\View\Result\PageFactory
      */
     private $resultPageFactory;
 

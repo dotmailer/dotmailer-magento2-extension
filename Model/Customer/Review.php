@@ -80,7 +80,7 @@ class Review
     }
 
     /**
-     * @param mixed $customer
+     * @param \Magento\Customer\Model\Customer $customer
      *
      * @return $this
      */
@@ -93,7 +93,7 @@ class Review
     }
 
     /**
-     * @param mixed $customerId
+     * @param int $customerId
      *
      * @return $this
      */
@@ -105,7 +105,7 @@ class Review
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getCustomerId()
     {
@@ -113,7 +113,7 @@ class Review
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      *
      * @return $this
      */
@@ -125,7 +125,7 @@ class Review
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getId()
     {
@@ -135,8 +135,8 @@ class Review
     /**
      * Create rating on runtime.
      *
-     * @param mixed $ratingName
-     * @param mixed $rating
+     * @param string $ratingName
+     * @param \Dotdigitalgroup\Email\Model\Customer\Review\Rating $rating
      * 
      * @return null
      */
@@ -205,7 +205,7 @@ class Review
     /**
      * Set product name.
      *
-     * @param mixed $name
+     * @param string $name
      * 
      * @return null
      */
@@ -225,7 +225,7 @@ class Review
     /**
      * Set product sku.
      *
-     * @param mixed $sku
+     * @param string $sku
      * 
      * @return null
      */
@@ -245,7 +245,7 @@ class Review
     /**
      * Set website name.
      *
-     * @param object $name
+     * @param string $name
      *
      * @return $this
      */
@@ -267,7 +267,7 @@ class Review
     /**
      * Set store name.
      *
-     * @param mixed $name
+     * @param string $name
      *
      * @return $this
      */
@@ -289,7 +289,7 @@ class Review
     /**
      * Set email
      *
-     * @param mixed $email
+     * @param string $email
      *
      * @return $this
      */
@@ -312,7 +312,7 @@ class Review
     }
 
     /**
-     * @return string[]
+     * @return array
      */
     public function __sleep()
     {

@@ -11,7 +11,6 @@ namespace Dotdigitalgroup\Email\Plugin;
  */
 class RuleCollectionPlugin
 {
-
     /**
      * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
@@ -19,6 +18,7 @@ class RuleCollectionPlugin
 
     /**
      * RuleCollectionPlugin constructor.
+     *
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $date
      */
     public function __construct(
@@ -33,6 +33,7 @@ class RuleCollectionPlugin
      * @param int $websiteId
      * @param int $customerGroupId
      * @param string $couponCode
+     *
      * @return mixed
      */
     public function afterSetValidationFilter(

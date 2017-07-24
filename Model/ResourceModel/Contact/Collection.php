@@ -168,7 +168,7 @@ class Collection extends
     /**
      * Contact subscribers to import for website.
      *
-     * @param mixed $emails
+     * @param array $emails
      *
      * @return $this
      */
@@ -287,7 +287,7 @@ class Collection extends
     /**
      * Get subscribers data by emails
      *
-     * @param mixed $emails
+     * @param array $emails
      * @return array
      */
     public function getSubscriberDataByEmails($emails)
@@ -306,8 +306,8 @@ class Collection extends
     /**
      * Get contacts to import by website
      *
-     * @param mixed $websiteId
-     * @param mixed $syncLimit
+     * @param int $websiteId
+     * @param int $syncLimit
      * @return $this
      */
     public function getContactsToImportByWebsite($websiteId, $syncLimit)

@@ -18,7 +18,7 @@ class Guest
     private $countGuests = 0;
 
     /**
-     * @var object
+     * @var mixed
      */
     private $start;
     
@@ -96,7 +96,7 @@ class Guest
     /**
      * Export guests for a website.
      *
-     * @param mixed $website
+     * @param \Magento\Store\Model\Website $website
      *
      * @return null
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -138,9 +138,9 @@ class Guest
     /**
      * Output
      *
-     * @param mixed $guest
-     * @param mixed $website
-     * @param mixed $guestFilename
+     * @param \Dotdigitalgroup\Email\Model\Contact $guest
+     * @param \Magento\Store\Model\Website $website
+     * @param string $guestFilename
      * 
      * @return null
      */

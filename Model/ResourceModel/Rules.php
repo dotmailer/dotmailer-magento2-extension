@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Cron\Collection;
+
 class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
@@ -15,11 +17,12 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Join tables on collection by type
+     * Join tables on collection by type.
      *
-     * @param mixed $collection
-     * @param mixed $type
-     * @return mixed
+     * @param Collection $collection
+     * @param string $type
+     *
+     * @return Collection
      */
     public function joinTablesOnCollectionByType($collection, $type)
     {

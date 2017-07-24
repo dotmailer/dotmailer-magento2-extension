@@ -67,8 +67,9 @@ class SubscriberWithSalesExporter
     }
 
     /**
-     * @param mixed $website
-     * @param mixed $subscribers
+     * @param \Magento\Store\Model\Website $website
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection $subscribers
+     *
      * @return int
      */
     public function exportSubscribersWithSales($website, $subscribers)
@@ -139,8 +140,9 @@ class SubscriberWithSalesExporter
     }
 
     /**
-     * @param mixed $emails
+     * @param array $emails
      * @param int $websiteId
+     *
      * @return mixed
      */
     public function getCollection($emails, $websiteId = 0)

@@ -103,7 +103,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @param int $productId
      *
-     * @return bool
+     * @return bool|\Dotdigitalgroup\Email\Model\Catalog
      */
     protected function loadProduct($productId)
     {

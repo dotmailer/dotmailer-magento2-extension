@@ -147,7 +147,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     /**
      * Get product reviews from feefo.
      *
-     * @param mixed $check
+     * @param bool $check
      * 
      * @return array
      */

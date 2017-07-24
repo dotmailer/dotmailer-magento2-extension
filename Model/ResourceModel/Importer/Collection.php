@@ -37,7 +37,8 @@ class Collection extends
     /**
      * Get imports marked as importing.
      *
-     * @param mixed $limit
+     * @param int $limit
+     *
      * @return mixed
      */
     public function getItemsWithImportingStatus($limit)
@@ -60,10 +61,11 @@ class Collection extends
     /**
      * Get the imports by type and mode.
      *
-     * @param mixed $importType
-     * @param mixed $importMode
-     * @param mixed $limit
-     * @return mixed
+     * @param string $importType
+     * @param string $importMode
+     * @param int $limit
+     *
+     * @return $this
      */
     public function getQueueByTypeAndMode($importType, $importMode, $limit)
     {

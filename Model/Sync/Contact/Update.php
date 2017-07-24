@@ -18,6 +18,7 @@ class Update extends Delete
 
     /**
      * Update constructor.
+     *
      * @param Contact $contactResource
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
@@ -68,7 +69,7 @@ class Update extends Delete
     }
 
     /**
-     * @param mixed  $item
+     * @param mixed $item
      * @param mixed $importData
      * @param mixed $websiteId
      * 
@@ -94,6 +95,7 @@ class Update extends Delete
     /**
      * @param mixed $importData
      * @param mixed $websiteId
+     *
      * @return mixed
      */
     private function syncItemContactEmailUpdateMode($importData, $websiteId)
@@ -127,6 +129,7 @@ class Update extends Delete
 
     /**
      * @param mixed $importData
+     *
      * @return mixed
      */
     private function syncItemSubscriberResubscribedMode($importData)
@@ -149,6 +152,7 @@ class Update extends Delete
     /**
      * @param mixed $importData
      * @param mixed $websiteId
+     *
      * @return mixed
      */
     private function syncItemSubscriberUpdateMode($importData, $websiteId)
