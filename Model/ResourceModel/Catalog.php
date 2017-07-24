@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

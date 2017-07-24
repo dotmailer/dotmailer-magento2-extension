@@ -399,7 +399,7 @@ class Automation
 
     /**
      * @param string $type
-     * @param  $config
+     * @param string $config
      *
      * @return mixed
      */
