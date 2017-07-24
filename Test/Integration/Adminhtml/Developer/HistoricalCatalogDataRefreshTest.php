@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+/**
+ * @magentoDataFixture Magento/Catalog/_files/products.php
+ */
 class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
