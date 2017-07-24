@@ -67,18 +67,6 @@ class Studio extends \Magento\Backend\Block\Widget\Form
     }
 
     /**
-     * Constructor. Initialization required variables for class instance.
-     * 
-     * @return void
-     */
-    public function _construct()
-    {
-        $this->_blockGroup = 'Dotdigitalgroup\Email';
-        $this->_controller = 'adminhtml_studio';
-        parent::_construct();
-    }
-
-    /**
      * Returns page header.
      *
      * @return \Magento\Framework\Phrase

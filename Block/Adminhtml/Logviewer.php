@@ -39,7 +39,6 @@ class Logviewer extends \Magento\Backend\Block\Widget\Container
      */
     public function _construct()
     {
-        $this->_blockGroup = 'Dotdigitalgroup_Email';
         $this->_controller = 'adminhtml_logviewer';
         $this->_headerText = __('Log Viewer');
         parent::_construct();
