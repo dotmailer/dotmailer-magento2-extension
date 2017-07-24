@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
-use Dotdigitalgroup\Email\Model\ResourceModel\Cron\Collection;
-
 class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

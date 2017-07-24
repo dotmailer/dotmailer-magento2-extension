@@ -20,7 +20,6 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
      */
     public function _construct()
     {
-        $this->_blockGroup = 'Dotdigitalgroup_Email';
         $this->_controller = 'adminhtml_dashboard';
         $this->_headerText = __('Dashboard');
         parent::_construct();
