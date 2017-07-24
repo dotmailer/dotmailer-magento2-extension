@@ -28,6 +28,7 @@ class Collection extends
 
     /**
      * Initialize resource collection.
+     *
      * @return null
      */
     public function _construct()
@@ -73,8 +74,9 @@ class Collection extends
     /**
      * Load the email order by quote id.
      *
-     * @param mixed $orderId
-     * @param mixed $quoteId
+     * @param int $orderId
+     * @param int $quoteId
+     *
      * @return mixed
      */
     public function loadByOrderIdAndQuoteId($orderId, $quoteId)
@@ -116,9 +118,10 @@ class Collection extends
     /**
      * Get pending orders for import.
      *
-     * @param mixed $storeIds
-     * @param mixed $limit
-     * @param mixed $orderStatuses
+     * @param array $storeIds
+     * @param int $limit
+     * @param array $orderStatuses
+     *
      * @return $this
      */
     public function getOrdersToImport($storeIds, $limit, $orderStatuses)
@@ -135,9 +138,10 @@ class Collection extends
     /**
      * Get pending modified orders to import.
      *
-     * @param mixed $storeIds
-     * @param mixed $limit
-     * @param mixed $orderStatuses
+     * @param array $storeIds
+     * @param int $limit
+     * @param array $orderStatuses
+     *
      * @return $this
      */
     public function getModifiedOrdersToImport($storeIds, $limit, $orderStatuses)
@@ -153,7 +157,7 @@ class Collection extends
     }
 
     /**
-     * Get all sent orders
+     * Get all sent orders.
      *
      * @param array $storeIds
      * @param int $limit
@@ -171,12 +175,13 @@ class Collection extends
     }
 
     /**
-     * Get sales collection for review
+     * Get sales collection for review.
      *
-     * @param mixed $orderStatusFromConfig
+     * @param string $orderStatusFromConfig
      * @param mixed $created
-     * @param mixed $storeIds
+     * @param array $storeIds
      * @param array $campaignOrderIds
+     *
      * @return \Magento\Sales\Model\ResourceModel\Order\Collection
      */
     public function getSalesCollectionForReviews(
@@ -211,7 +216,7 @@ class Collection extends
      * Get customer last order id.
      *
      * @param \Magento\Customer\Model\Customer $customer
-     * @param mixed $storeIds
+     * @param array $storeIds
      *
      * @return mixed
      */
@@ -234,7 +239,7 @@ class Collection extends
      * Get customer last quote id.
      *
      * @param \Magento\Customer\Model\Customer $customer
-     * @param mixed $storeIds
+     * @param array $storeIds
      *
      * @return mixed
      */
@@ -254,11 +259,12 @@ class Collection extends
     }
 
     /**
-     * Get store quotes
+     * Get store quotes.
      *
-     * @param mixed $storeId
+     * @param int $storeId
      * @param mixed $updated
      * @param bool $guest
+     *
      * @return \Magento\Quote\Model\ResourceModel\Quote\Collection
      */
     public function getStoreQuotes($storeId, $updated, $guest = false)
@@ -282,9 +288,10 @@ class Collection extends
     }
 
     /**
-     * Check emails exist in sales order table
+     * Check emails exist in sales order table.
      *
-     * @param mixed $emails
+     * @param array $emails
+     *
      * @return array
      */
     public function checkInSales($emails)

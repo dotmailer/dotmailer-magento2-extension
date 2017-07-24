@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Cron\Collection;
+
 class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
@@ -44,8 +46,8 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset the email wishlist for re-import.
      *
-     * @param null $from
-     * @param null $to
+     * @param mixed $from
+     * @param mixed $to
      *
      * @return int
      *
@@ -78,8 +80,9 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $customerId
-     * @return mixed
+     * @param int $customerId
+     *
+     * @return bool|\Magento\Framework\DataObject
      */
     public function getWishlistsForCustomer($customerId)
     {
@@ -99,7 +102,8 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $ids
+     * @param array $ids
+     *
      * @return mixed
      */
     public function getWishlistByIds($ids)
@@ -120,7 +124,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param mixed $ids
+     * @param array $ids
      * @param mixed $updatedAt
      * @param bool $modified
      * 

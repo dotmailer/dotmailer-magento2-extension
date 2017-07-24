@@ -13,7 +13,7 @@ class MassDelete extends \Magento\Backend\App\Action
     private $catalogCollection;
 
     /**
-     * @var object
+     * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
 

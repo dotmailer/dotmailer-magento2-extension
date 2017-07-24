@@ -59,7 +59,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Delete completed records older then 30 days from provided table.
      *
-     * @param mixed $tableName
+     * @param string $tableName
      *
      * @return \Exception|int
      */
@@ -84,6 +84,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Save item
      *
      * @param mixed $item
+     *
      * @return $this
      */
     public function saveItem($item)

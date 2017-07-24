@@ -45,10 +45,11 @@ class Collection extends
     }
 
     /**
-     * Get collection by type
+     * Get collection by type.
      *
-     * @param mixed $type
-     * @param mixed $limit
+     * @param string $type
+     * @param string $limit
+     *
      * @return $this
      */
     public function getCollectionByType($type, $limit)

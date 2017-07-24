@@ -8,14 +8,14 @@ class Customdatafields extends
     /**
      * Customer attributes.
      *
-     * @var object
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     public $attributeRenderer;
 
     /**
      * Customer datafields.
      *
-     * @var object
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     public $datafieldRenderer;
 
@@ -30,12 +30,12 @@ class Customdatafields extends
     public $elementFactory;
 
     /**
-     * @var object
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     public $getDatafieldRenderer;
 
     /**
-     * @var object
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     public $getAttributeRenderer;
 

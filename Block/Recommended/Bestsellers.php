@@ -88,7 +88,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
-     * @return mixed
+     * @return string|null
      */
     public function getTextForUrl($store)
     {

@@ -13,7 +13,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Customer
 {
     /**
-     * @var object
+     * @var \Magento\Customer\Model\Customer
      */
     public $customer;
 
@@ -185,7 +185,7 @@ class Customer
     /**
      * Set customer data.
      *
-     * @param mixed customer
+     * @param \Magento\Customer\Model\Customer customer
      *
      * @return $this
      *

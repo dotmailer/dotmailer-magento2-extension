@@ -45,39 +45,41 @@ class Collection extends
     }
 
     /**
-     * Get campaign collection
+     * Get campaign collection.
      *
-     * @param mixed $storeIds
-     * @param mixed $sendStatus
-     * @param mixed $sendIdCheck
-     * @return mixed
+     * @param array $storeIds
+     * @param int $sendStatus
+     * @param bool $sendIdCheck
+     *
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection
      */
     public function getEmailCampaignsByStoreIds($storeIds, $sendStatus = 0, $sendIdCheck = false)
     {
-        $emailCollection = $this->addFieldToFilter('send_status', $sendStatus)
+        $campaignCollection = $this->addFieldToFilter('send_status', $sendStatus)
             ->addFieldToFilter('campaign_id', ['notnull' => true])
             ->addFieldToFilter('store_id', ['in' => $storeIds]);
 
         //check for send id
         if ($sendIdCheck) {
-            $emailCollection->addFieldToFilter('send_id', ['notnull' => true])
+            $campaignCollection->addFieldToFilter('send_id', ['notnull' => true])
                 ->getSelect()
                 ->group('send_id');
         } else {
-            $emailCollection->getSelect()
+            $campaignCollection->getSelect()
                 ->order('campaign_id');
         }
 
-        $emailCollection->getSelect()
+        $campaignCollection->getSelect()
             ->limit(\Dotdigitalgroup\Email\Model\Sync\Campaign::SEND_EMAIL_CONTACT_LIMIT);
 
-        return $emailCollection;
+        return $campaignCollection;
     }
 
     /**
-     * Get collection by event
+     * Get collection by event.
      *
-     * @param mixed $event
+     * @param string $event
+     *
      * @return $this
      */
     public function getCollectionByEvent($event)
@@ -86,10 +88,11 @@ class Collection extends
     }
 
     /**
-     * Get number of campaigns for contact by interval
+     * Get number of campaigns for contact by interval.
      *
-     * @param mixed  $email
+     * @param string  $email
      * @param mixed $updated
+     *
      * @return int
      */
     public function getNumberOfCampaignsForContactByInterval($email, $updated)

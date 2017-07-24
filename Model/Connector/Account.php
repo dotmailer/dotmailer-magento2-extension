@@ -10,27 +10,27 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 class Account
 {
     /**
-     * @var object
+     * @var string
      */
     public $apiUsername;
 
     /**
-     * @var object
+     * @var string
      */
     public $apiPassword;
 
     /**
-     * @var object
+     * @var int|string
      */
     public $limit;
 
     /**
-     * @var object
+     * @var int|string
      */
     public $contactBookId;
 
     /**
-     * @var object
+     * @var int|string
      */
     public $subscriberBookId;
 
@@ -40,22 +40,22 @@ class Account
     public $websites = [];
 
     /**
-     * @var object
+     * @var array
      */
     public $csvHeaders;
 
     /**
-     * @var object
+     * @var string
      */
     public $customersFilename;
 
     /**
-     * @var object
+     * @var string
      */
     public $subscribersFilename;
 
     /**
-     * @var object
+     * @var array
      */
     public $mappingHash;
 
@@ -70,7 +70,7 @@ class Account
     public $orders = [];
 
     /**
-     * @var object
+     * @var array
      */
     public $orderIds;
 
@@ -80,7 +80,7 @@ class Account
     public $ordersForSingleSync = [];
 
     /**
-     * @var object
+     * @var array
      */
     public $orderIdsForSingleSync;
 
@@ -101,7 +101,7 @@ class Account
     /**
      * Get api password.
      *
-     * @return mixed
+     * @return string
      */
     public function getApiPassword()
     {
@@ -111,7 +111,7 @@ class Account
     /**
      * Set api username.
      *
-     * @param mixed $apiUsername
+     * @param string $apiUsername
      *
      * @return $this
      */
@@ -125,7 +125,7 @@ class Account
     /**
      * Get api username.
      *
-     * @return mixed
+     * @return string
      */
     public function getApiUsername()
     {
@@ -147,7 +147,7 @@ class Account
     /**
      * Get contact book ids.
      *
-     * @return array
+     * @return string
      */
     public function getContactBookIds()
     {
@@ -203,7 +203,7 @@ class Account
     /**
      * @param mixed $limit
      * 
-     * @return null
+     * @return string
      */
     public function setLimit($limit)
     {
@@ -211,7 +211,7 @@ class Account
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getLimit()
     {
@@ -221,7 +221,7 @@ class Account
     /**
      * @param mixed $mappingHash
      * 
-     * @return null
+     * @return array
      */
     public function setMappingHash($mappingHash)
     {
@@ -229,7 +229,7 @@ class Account
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getMappingHash()
     {
@@ -239,7 +239,7 @@ class Account
     /**
      * @param array $orders
      * 
-     * @return null
+     * @return array
      */
     public function setOrders($orders)
     {
@@ -259,7 +259,7 @@ class Account
     /**
      * @param string $subscriberBookId
      * 
-     * @return null
+     * @return array
      */
     public function setSubscriberBookId($subscriberBookId)
     {
@@ -267,7 +267,7 @@ class Account
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getSubscriberBookIds()
     {
@@ -275,9 +275,9 @@ class Account
     }
 
     /**
-     * @param mixed $subscribersFilename
+     * @param string $subscribersFilename
      * 
-     * @return null
+     * @return string
      */
     public function setSubscribersFilename($subscribersFilename)
     {
@@ -285,7 +285,7 @@ class Account
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getSubscribersFilename()
     {
@@ -293,9 +293,9 @@ class Account
     }
 
     /**
-     * @param mixed $csvHeaders
+     * @param array $csvHeaders
      * 
-     * @return null
+     * @return array
      */
     public function setCsvHeaders($csvHeaders)
     {
@@ -303,7 +303,7 @@ class Account
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getCsvHeaders()
     {
@@ -311,9 +311,9 @@ class Account
     }
 
     /**
-     * @param mixed $websites
+     * @param array $websites
      * 
-     * @return null
+     * @return array
      */
     public function setWebsites($websites)
     {
@@ -321,7 +321,7 @@ class Account
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getWebsites()
     {
@@ -331,7 +331,7 @@ class Account
     /**
      * @param array $orderIds
      * 
-     * @return null
+     * @return array
      */
     public function setOrderIds($orderIds)
     {

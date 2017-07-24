@@ -18,7 +18,7 @@ class Catalog
     private $scopeConfig;
 
     /**
-     * @var object
+     * @var mixed
      */
     private $start;
 
@@ -109,7 +109,7 @@ class Catalog
     /**
      * Export catalog.
      *
-     * @param mixed $store
+     * @param \Magento\Store\Model\Store $store
      *
      * @return array|bool
      */
@@ -139,9 +139,9 @@ class Catalog
     /**
      * Export in single.
      *
-     * @param mixed $store
-     * @param mixed $collectionName
-     * @param mixed $websiteId
+     * @param \Magento\Store\Model\Store $store
+     * @param string $collectionName
+     * @param int $websiteId
      * 
      * @return null
      */
@@ -195,19 +195,19 @@ class Catalog
     /**
      * Set imported in bulk query. If modified true then set modified to null in bulk query.
      *
-     * @param mixed $ids
+     * @param array $ids
      * @param bool $modified
      * 
-     * @return mixed
+     * @return null
      */
     public function _setImported($ids, $modified = false)
     {
-        return $this->catalogResourceFactory->create()
+        $this->catalogResourceFactory->create()
             ->setImportedByIds($ids, $modified);
     }
 
     /**
-     * @return void
+     * @return null
      */
     public function syncCatalog()
     {

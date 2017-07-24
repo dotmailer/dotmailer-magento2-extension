@@ -61,8 +61,9 @@ class SubscriberExporter
     /**
      * Export subscribers
      *
-     * @param mixed $website
-     * @param mixed $subscribers
+     * @param \Magento\Store\Model\Website $website
+     * @param  \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection $subscribers
+     *
      * @return int
      */
     public function exportSubscribers($website, $subscribers)
@@ -110,14 +111,15 @@ class SubscriberExporter
                 $website->getId(),
                 $subscribersFilename
             );
+
         return $updated;
     }
 
     /**
      * Get the store id from newsletter_subscriber, return default if not found.
      *
-     * @param mixed $email
-     * @param mixed $subscribers
+     * @param string $email
+     * @param array $subscribers
      *
      * @return int
      */

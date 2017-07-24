@@ -91,7 +91,7 @@ class Campaign
 
     /**
      * @param mixed $website
-     * @param mixed $storeIds
+     * @param array $storeIds
      * 
      * @return null
      */
@@ -115,10 +115,11 @@ class Campaign
     }
 
     /**
-     * Get campaigns to send
+     * Get campaigns to send.
      *
      * @param mixed $emailsToSend
      * @param mixed $website
+     *
      * @return array
      */
     private function getCampaignsToSend($emailsToSend, $website)
@@ -165,13 +166,14 @@ class Campaign
                 }
             }
         }
+
         return $campaignsToSend;
     }
 
     /**
-     * Send campaigns
+     * Send campaigns.
      *
-     * @param mixed $campaignsToSend
+     * @param array $campaignsToSend
      * 
      * @return null
      */
@@ -200,11 +202,12 @@ class Campaign
     }
 
     /**
-     * Get campaign collection
+     * Get campaign collection.
      *
-     * @param mixed $storeIds
-     * @param mixed $sendStatus
-     * @param mixed $sendIdCheck
+     * @param array $storeIds
+     * @param int $sendStatus
+     * @param bool $sendIdCheck
+     *
      * @return mixed
      */
     public function _getEmailCampaigns($storeIds, $sendStatus = 0, $sendIdCheck = false)
@@ -215,9 +218,9 @@ class Campaign
 
     /**
      * @param mixed $campaign
-     * @param mixed $websiteId
+     * @param int $websiteId
      * @param mixed $client
-     * @param mixed $email
+     * @param string $email
      * 
      * @return null
      */

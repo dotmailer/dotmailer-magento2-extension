@@ -34,11 +34,11 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * update status for automation entries
      *
-     * @param mixed $contactIds
-     * @param mixed $status
-     * @param mixed $message
+     * @param array $contactIds
+     * @param string $status
+     * @param string $message
      * @param mixed $updatedAt
-     * @param mixed $type
+     * @param string $type
      * 
      * @return null
      */

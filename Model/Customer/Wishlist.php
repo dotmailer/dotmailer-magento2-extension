@@ -23,7 +23,7 @@ class Wishlist
     public $email;
 
     /**
-     * wishlist items.
+     * Wishlist items.
      *
      * @var array
      */
@@ -56,7 +56,7 @@ class Wishlist
     }
 
     /**
-     * @param mixed $customer
+     * @param \Magento\Customer\Model\Customer $customer
      *
      * @return $this
      */
@@ -69,7 +69,7 @@ class Wishlist
     }
 
     /**
-     * @param mixed $customerId
+     * @param int $customerId
      *
      * @return $this
      */
@@ -81,7 +81,7 @@ class Wishlist
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getCustomerId()
     {
@@ -89,7 +89,7 @@ class Wishlist
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      *
      * @return $this
      */
@@ -101,7 +101,7 @@ class Wishlist
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getId()
     {
@@ -111,7 +111,7 @@ class Wishlist
     /**
      * Set wishlist item.
      *
-     * @param mixed $item
+     * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\Item $item
      * 
      * @return null
      */
@@ -158,7 +158,7 @@ class Wishlist
     /**
      * Set email
      *
-     * @param mixed $email
+     * @param string $email
      *
      * @return $this
      */
@@ -170,7 +170,7 @@ class Wishlist
     }
 
     /**
-     * @return string[]
+     * @return array
      */
     public function __sleep()
     {
@@ -181,7 +181,7 @@ class Wishlist
     }
 
     /**
-     * @return void
+     * @return array
      */
     public function getData()
     {

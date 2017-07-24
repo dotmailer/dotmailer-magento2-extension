@@ -221,7 +221,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 
     /**
      * @param string $status
-     * @param Dotdigitalgroup\Email\Model\Order $emailOrder
+     * @param \Dotdigitalgroup\Email\Model\Order $emailOrder
      *
      * @return null
      */
@@ -237,10 +237,10 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     }
 
     /**
-     * @param Magento\Sales\Model\Order $order
+     * @param \Magento\Sales\Model\Order $order
      * @param string $status
      * @param string $customerEmail
-     * @param mixed $websiteId
+     * @param int $websiteId
      * @param string $storeName
      *     
      * @return null

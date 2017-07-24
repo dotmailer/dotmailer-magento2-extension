@@ -100,9 +100,10 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Get pending orders for import.
      *
-     * @param mixed $storeIds
-     * @param mixed $limit
-     * @param mixed $orderStatuses
+     * @param array $storeIds
+     * @param int $limit
+     * @param array $orderStatuses
+     *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection|\Magento\Framework\DataObject
      */
     public function getOrdersToImport($storeIds, $limit, $orderStatuses)
@@ -114,9 +115,10 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Get pending modified orders to import.
      *
-     * @param mixed $storeIds
-     * @param mixed $limit
-     * @param mixed $orderStatuses
+     * @param array $storeIds
+     * @param int $limit
+     * @param array $orderStatuses
+     *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection
      */
     public function getModifiedOrdersToImport($storeIds, $limit, $orderStatuses)
@@ -140,8 +142,9 @@ class Order extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param mixed $orderIds
-     * @return mixed
+     * @param array $orderIds
+     *
+     * @return \Magento\Sales\Model\ResourceModel\Order\Collection
      */
     public function getSalesOrdersWithIds($orderIds)
     {

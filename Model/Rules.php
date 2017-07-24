@@ -15,27 +15,27 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     private $rulesResource;
 
     /**
-     * @var object
+     * @var array
      */
     private $conditionMap;
 
     /**
-     * @var object
+     * @var array
      */
     private $defaultOptions;
 
     /**
-     * @var object
+     * @var array
      */
     public $attributeMapForQuote;
 
     /**
-     * @var object
+     * @var array
      */
     private $attributeMapForOrder;
     
     /**
-     * @var object
+     * @var array
      */
     private $productAttribute;
 
@@ -149,7 +149,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     public function beforeSave()
     {
-
         parent::beforeSave();
         if ($this->isObjectNew()) {
             $this->setCreatedAt(time());
@@ -178,8 +177,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Check if rule already exist for website.
      *
-     * @param mixed $websiteId
-     * @param mixed $type
+     * @param int $websiteId
+     * @param string $type
      * @param bool $ruleId
      *
      * @return bool
@@ -193,8 +192,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Get rule for website.
      *
-     * @param mixed $type
-     * @param mixed $websiteId
+     * @param string $type
+     * @param int $websiteId
      *
      * @return array|\Magento\Framework\DataObject
      */
@@ -208,8 +207,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * Process rule on collection.
      *
      * @param mixed $collection
-     * @param mixed $type
-     * @param mixed $websiteId
+     * @param string $type
+     * @param int $websiteId
      *
      * @return mixed
      */
@@ -254,8 +253,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * process And combination on collection.
      *
      * @param mixed $collection
-     * @param mixed $conditions
-     * @param mixed $type
+     * @param array $conditions
+     * @param string $type
      *
      * @return mixed
      */
@@ -293,14 +292,15 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
             $collection = $this->processProcessAndCombinationCondition($collection, $cond, $value, $attribute);
         }
+
         return $this->_processProductAttributes($collection);
     }
 
     /**
      * @param mixed $collection
-     * @param mixed $cond
-     * @param mixed $value
-     * @param mixed $attribute
+     * @param string $cond
+     * @param string $value
+     * @param string $attribute
      * 
      * @return null
      */
@@ -335,8 +335,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * process Or combination on collection.
      *
      * @param mixed $collection
-     * @param mixed $conditions
-     * @param mixed $type
+     * @param array $conditions
+     * @param string $type
      *
      * @return mixed
      *
@@ -443,9 +443,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Evaluate two values against condition.
      *
-     * @param mixed $varOne
-     * @param mixed $op
-     * @param mixed $varTwo
+     * @param string $varOne
+     * @param string $op
+     * @param string $varTwo
      *
      * @return bool
      */
@@ -470,9 +470,10 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Process product attributes on collection
+     * Process product attributes on collection.
      *
      * @param mixed $collection
+     *
      * @return mixed
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -573,8 +574,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param mixed $product
-     * @return mixed
+     * @param \Magento\Catalog\Model\Product $product
+     *
+     * @return array
      */
     private function getAttributesArrayFromLoadedProduct($product)
     {
@@ -583,6 +585,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             \Magento\Catalog\Model\Product::ENTITY,
             $product
         );
+
         return array_keys($attributes);
     }
 }

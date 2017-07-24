@@ -45,22 +45,22 @@ class Automation
     private $limit = 100;
 
     /**
-     * @var object
+     * @var string
      */
     private $typeId;
 
     /**
-     * @var object
+     * @var int
      */
     private $websiteId;
 
     /**
-     * @var object
+     * @var string
      */
     private $storeName;
 
     /**
-     * @var object
+     * @var string
      */
     private $programId;
 
@@ -70,7 +70,7 @@ class Automation
     private $programStatus = 'Active';
 
     /**
-     * @var object
+     * @var string
      */
     private $programMessage;
 
@@ -223,8 +223,8 @@ class Automation
     /**
      * Update single contact datafields for this automation type.
      *
-     * @param mixed $type
-     * @param mixed $email
+     * @param string $type
+     * @param string $email
      * 
      * @return null
      */
@@ -246,7 +246,7 @@ class Automation
     /**
      * Update config datafield.
      *
-     * @param mixed string $email
+     * @param mixed|string $email
      * 
      * @return null
      */
@@ -336,7 +336,7 @@ class Automation
     /**
      * Program check if is valid and active.
      *
-     * @param mixed $programId
+     * @param int $programId
      *
      * @return bool
      */
@@ -362,8 +362,8 @@ class Automation
     /**
      * Enrol contacts for a program.
      *
-     * @param mixed $contacts
-     * @param mixed $websiteId
+     * @param array $contacts
+     * @param int $websiteId
      *
      * @return mixed
      */
@@ -398,8 +398,9 @@ class Automation
     }
 
     /**
-     * @param mixed $type
-     * @param mixed $config
+     * @param string $type
+     * @param  $config
+     *
      * @return mixed
      */
     private function buildFirstDimensionOfContactsArray($type, $config)
@@ -427,8 +428,8 @@ class Automation
     }
 
     /**
-     * @param mixed  $contactsArray
-     * @param mixed  $websiteId
+     * @param array  $contactsArray
+     * @param int  $websiteId
      * 
      * @return null
      */

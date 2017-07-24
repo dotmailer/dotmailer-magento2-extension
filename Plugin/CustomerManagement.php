@@ -35,6 +35,7 @@ class CustomerManagement
     {
         //New Automation enrolment to queue
         $this->automation->newCustomerAutomation($customer);
+
         return $customer;
     }
 }

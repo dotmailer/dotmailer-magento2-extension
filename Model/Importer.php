@@ -76,22 +76,22 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         ];
 
     /**
-     * @var object
+     * @var array
      */
     public $bulkPriority;
 
     /**
-     * @var object
+     * @var array
      */
     public $singlePriority;
 
     /**
-     * @var object
+     * @var int
      */
     public $totalItems;
     
     /**
-     * @var object
+     * @var int
      */
     public $bulkSyncLimit;
 
@@ -478,7 +478,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * @param mixed $response
      * @param mixed $item
-     * @param mixed $websiteId
+     * @param int $websiteId
      * 
      * @return null
      */
@@ -542,7 +542,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Get imports marked as importing.
      *
-     * @param mixed $limit
+     * @param int $limit
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection|bool
      */
@@ -589,9 +589,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Convert utf8 data.
      *
-     * @param mixed $text
+     * @param string $text
      *
-     * @return mixed
+     * @return string
      */
     public function _removeUtf8Bom($text)
     {

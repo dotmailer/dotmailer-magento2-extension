@@ -25,7 +25,7 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Set template to itself.
      * 
-     * @return null
+     * @return $this
      */
     public function _prepareLayout()
     {

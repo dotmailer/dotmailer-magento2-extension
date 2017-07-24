@@ -26,12 +26,12 @@ class Customdatafields extends
     public $elementFactory;
 
     /**
-     * @var mixed
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     private $getStatusRenderer;
 
     /**
-     * @var mixed
+     * @var \Magento\Framework\View\Element\BlockInterface
      */
     private $getAutomationRenderer;
 
