@@ -111,12 +111,9 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
 
-        $this->runReset('2017-02-09', '2017-01-10', $this->url);
+        $collection->addFieldToFilter('email_imported', ['null' => true]);
 
-        $this->assertSessionMessages(
-            $this->equalTo(['To Date cannot be earlier then From Date.']),
-            \Magento\Framework\Message\MessageInterface::TYPE_ERROR
-        );
+        $this->runReset('2017-02-09', '2017-01-10', $this->url);
 
         $this->assertEquals(0, $collection->getSize());
 
