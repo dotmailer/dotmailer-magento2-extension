@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
+namespace Dotdigitalgroup\Email\Tests\Integration\Adminhtml\Developer;
 
 /**
  * @magentoDataFixture Magento/Catalog/_files/products.php
@@ -53,6 +53,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         ];
         $this->getRequest()->setParams($params);
         $this->dispatch($dispatchUrl);
+
     }
 
     /**
@@ -69,11 +70,12 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         ];
         $this->createEmailData($data);
 
+        $this->runReset('2017-02-09', '2017-02-10', $this->url);
+
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('imported', ['null' => true]);
 
-        $this->runReset('2017-02-09', '2017-02-10', $this->url);
+        $collection->addFieldToFilter('imported', ['null' => true]);
 
         $this->assertEquals(1, $collection->getSize());
 
