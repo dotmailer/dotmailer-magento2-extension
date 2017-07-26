@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
+namespace Dotdigitalgroup\Email\Tests\Integration\Adminhtml\Developer;
 
 class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {

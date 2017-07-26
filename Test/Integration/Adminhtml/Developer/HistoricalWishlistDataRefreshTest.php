@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
+namespace Dotdigitalgroup\Email\Tests\Integration\Adminhtml\Developer;
 
 class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
