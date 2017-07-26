@@ -90,7 +90,7 @@ class HistoricalOrderDataRefreshTest extends \Magento\TestFramework\TestCase\Abs
     /**
      * @return void
      */
-    public function atestOrderResetNotSuccessfulWrongDateRange()
+    public function testOrderResetNotSuccessfulWrongDateRange()
     {
         $this->emptyTable();
 
