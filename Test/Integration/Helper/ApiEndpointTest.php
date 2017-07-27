@@ -51,7 +51,7 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
      * @param string $endPoint
      *
      * @return null
-     * 
+     *
      * @dataProvider dataProvider
      */
     public function testFetchingApiEndpointSuccessful($website, $endPoint)

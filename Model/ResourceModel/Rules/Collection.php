@@ -12,7 +12,7 @@ class Collection extends
 
     /**
      * Initialize resource collection.
-     * 
+     *
      * @return void
      */
     public function _construct()

@@ -174,7 +174,7 @@ class Customer
      * Set key value data.
      *
      * @param mixed $data
-     * 
+     *
      * @return null
      */
     public function setData($data)
@@ -216,7 +216,7 @@ class Customer
 
     /**
      * @param string $email
-     * 
+     *
      * @return null
      */
     public function setEmail($email)
@@ -226,7 +226,7 @@ class Customer
 
     /**
      * @param string $emailType
-     * 
+     *
      * @return null
      */
     public function setEmailType($emailType)
@@ -1056,7 +1056,7 @@ class Customer
 
     /**
      * Get the customer reward.
-     * 
+     *
      * @return null
      */
     public function _setReward()

@@ -182,7 +182,7 @@ class Order
      * Search the configuration data per website.
      *
      * @throws \Magento\Framework\Exception\LocalizedException
-     * 
+     *
      * @return null
      */
     public function searchWebsiteAccounts()
@@ -341,7 +341,7 @@ class Order
     /**
      * @param array $ordersForSingleSync
      * @param mixed $website
-     * 
+     *
      * @return null
      */
     protected function createSingleImports($ordersForSingleSync, $website)

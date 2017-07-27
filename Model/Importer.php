@@ -179,7 +179,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
-     * 
+     *
      * @return null
      */
     public function _construct()
@@ -245,7 +245,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Proccess the data from queue.
-     * 
+     *
      * @return null
      */
     public function processQueue()
@@ -304,7 +304,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * Set importing priority.
      *
      * @return null
-     * 
+     *
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function _setPriority()
@@ -430,7 +430,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Check importing status for pending import.
-     * 
+     *
      * @return null
      */
     public function _checkImportStatus()
@@ -479,7 +479,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param mixed $response
      * @param mixed $item
      * @param int $websiteId
-     * 
+     *
      * @return null
      */
     private function processResponse($response, $item, $websiteId)
@@ -531,7 +531,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
     /**
      * @param mixed $itemToSave
-     * 
+     *
      * @return null
      */
     private function saveItem($itemToSave)
@@ -559,7 +559,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param int $websiteId
      *
      * @throws \Magento\Framework\Exception\LocalizedException
-     * 
+     *
      * @return null
      */
     public function _processContactImportReportFaults($id, $websiteId)

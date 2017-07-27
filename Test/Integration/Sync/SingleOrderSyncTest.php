@@ -78,7 +78,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     * 
+     *
      * @return null
      */
     public function testSingleOrderIsTypeOrderAndModeSingle()
@@ -107,7 +107,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     * 
+     *
      * @return null
      */
     public function testSingleOrderTypeIsObject()

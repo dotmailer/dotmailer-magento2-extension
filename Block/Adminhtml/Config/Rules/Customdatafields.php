@@ -132,7 +132,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
     /**
      * @param \Magento\Framework\DataObject $row
-     * 
+     *
      * @return null
      */
     protected function _prepareArrayRow(\Magento\Framework\DataObject $row)

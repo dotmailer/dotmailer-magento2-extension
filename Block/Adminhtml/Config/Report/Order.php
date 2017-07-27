@@ -24,7 +24,7 @@ class Order extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * Set template to itself.
-     * 
+     *
      * @return mixed
      */
     public function _prepareLayout()

@@ -24,7 +24,7 @@ class Catalog extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * Set template to itself.
-     * 
+     *
      * @return $this
      */
     public function _prepareLayout()

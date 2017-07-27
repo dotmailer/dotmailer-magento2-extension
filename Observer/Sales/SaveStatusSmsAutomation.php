@@ -242,7 +242,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      * @param string $customerEmail
      * @param int $websiteId
      * @param string $storeName
-     *     
+     *
      * @return null
      */
     private function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName)

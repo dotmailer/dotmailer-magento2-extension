@@ -149,7 +149,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @param mixed $selectedValues
      * @param mixed $valueName
      * @param mixed $response
-     * 
+     *
      * @return null
      */
     private function evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $valueName, &$response)

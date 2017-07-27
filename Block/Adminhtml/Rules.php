@@ -9,7 +9,7 @@ class Rules extends \Magento\Backend\Block\Widget\Grid\Container
 {
     /**
      * Constructor.
-     * 
+     *
      * @return null
      */
     public function _construct()

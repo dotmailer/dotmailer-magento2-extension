@@ -6,7 +6,7 @@ class Related extends \Dotdigitalgroup\Email\Controller\Response
 {
     /**
      * Basket page to display the user items with specific email.
-     * 
+     *
      * @return null
      */
     public function execute()

@@ -167,7 +167,7 @@ class Wishlist
 
     /**
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * 
+     *
      * @return null
      */
     public function exportWishlistForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website)
@@ -231,7 +231,7 @@ class Wishlist
      * Export single wishilist for website.
      *
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * 
+     *
      * @return null
      */
     public function exportWishlistForWebsiteInSingle(\Magento\Store\Api\Data\WebsiteInterface $website)
@@ -321,7 +321,7 @@ class Wishlist
     /**
      * @param array $ids
      * @param bool $modified
-     * 
+     *
      * @return null
      */
     public function setImported($ids, $modified = false)

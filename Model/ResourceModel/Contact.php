@@ -26,7 +26,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
-     * 
+     *
      * @return null
      */
     public function _construct()
@@ -997,7 +997,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Set imported by id.
      *
      * @param array $ids
-     * 
+     *
      * @return null
      */
     public function setImportedByIds($ids)
