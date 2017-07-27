@@ -11,7 +11,7 @@ class Bulk extends \Dotdigitalgroup\Email\Model\Sync\Contact\Bulk
      * Sync.
      *
      * @param mixed $collection
-     * 
+     *
      * @return null
      */
     public function sync($collection)

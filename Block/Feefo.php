@@ -148,7 +148,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * Get product reviews from feefo.
      *
      * @param bool $check
-     * 
+     *
      * @return array
      */
     public function getProductsReview($check = true)
@@ -185,7 +185,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
 
     /**
      * @param string $template
-     * 
+     *
      * @return string
      */
     private function getFeefoTemplate($template)

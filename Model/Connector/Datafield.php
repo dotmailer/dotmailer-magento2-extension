@@ -284,7 +284,7 @@ class Datafield
      * Set contact datafields.
      *
      * @param array $contactDatafields
-     * 
+     *
      * @return null
      */
     public function setContactDatafields($contactDatafields)

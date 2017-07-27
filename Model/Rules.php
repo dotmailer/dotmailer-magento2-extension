@@ -97,7 +97,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Construct.
-     * 
+     *
      * @return null
      */
     public function _construct()
@@ -301,7 +301,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @param string $cond
      * @param string $value
      * @param string $attribute
-     * 
+     *
      * @return null
      */
     private function processProcessAndCombinationCondition($collection, $cond, $value, $attribute)

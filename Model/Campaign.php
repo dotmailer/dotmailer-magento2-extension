@@ -71,7 +71,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
-     * 
+     *
      * @return null
      */
     public function _construct()

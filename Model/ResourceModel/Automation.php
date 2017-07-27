@@ -11,7 +11,7 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
-     * 
+     *
      * @return null
      */
     public function _construct()
@@ -39,7 +39,7 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string $message
      * @param mixed $updatedAt
      * @param string $type
-     * 
+     *
      * @return null
      */
     public function updateStatus($contactIds, $status, $message, $updatedAt, $type)

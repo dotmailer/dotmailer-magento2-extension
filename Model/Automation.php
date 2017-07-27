@@ -62,7 +62,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Constructor.
-     * 
+     *
      * @return null
      */
     public function _construct()
@@ -91,7 +91,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
      * New customer automation
      *
      * @param \Magento\Customer\Model\Customer $customer
-     * 
+     *
      * @return null
      */
     public function newCustomerAutomation($customer)

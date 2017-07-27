@@ -36,7 +36,7 @@ class FirstOrderTest extends \PHPUnit_Framework_TestCase
      * @magentoConfigFixture default_store connector_api_credentials/api/username dummyusername
      * @magentoConfigFixture default_store connector_api_credentials/api/password dummypassword
      * @magentoConfigFixture default_store connector_automation/visitor_automation/first_order_automation 123
-     * 
+     *
      * @return null
      */
     public function testFirstCustomerAutomation()

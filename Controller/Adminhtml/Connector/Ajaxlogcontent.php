@@ -41,7 +41,7 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
 
     /**
      * Ajax get log file content.
-     * 
+     *
      * @return null
      */
     public function execute()

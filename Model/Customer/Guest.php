@@ -66,7 +66,7 @@ class Guest
 
     /**
      * GUEST SYNC.
-     * 
+     *
      * @return null
      */
     public function sync()
@@ -141,7 +141,7 @@ class Guest
      * @param \Dotdigitalgroup\Email\Model\Contact $guest
      * @param \Magento\Store\Model\Website $website
      * @param string $guestFilename
-     * 
+     *
      * @return null
      */
     private function outputCsvToFile($guest, $website, $guestFilename)

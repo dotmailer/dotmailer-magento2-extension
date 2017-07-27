@@ -6,7 +6,7 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * Initialize resource.
-     * 
+     *
      * @return null
      */
     public function _construct()
@@ -54,7 +54,7 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Mark the connector orders to be imported.
      *
      * @param array $ids
-     * 
+     *
      * @return null
      */
     public function setImported($ids)

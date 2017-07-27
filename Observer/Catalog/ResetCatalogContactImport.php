@@ -100,7 +100,7 @@ class ResetCatalogContactImport implements \Magento\Framework\Event\ObserverInte
     /**
      * @param \Magento\Framework\Event\Observer $observer
      *
-     * @return null   
+     * @return null
      */
     private function resetAllContactsInConnectorCatalogFactoryIfRequired(\Magento\Framework\Event\Observer $observer)
     {

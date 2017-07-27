@@ -136,7 +136,7 @@ class Account
      * Set contact book id.
      *
      * @param string $contactBookId
-     * 
+     *
      * @return null
      */
     public function setContactBookId($contactBookId)
@@ -158,7 +158,7 @@ class Account
      * Set contacts.
      *
      * @param array $contacts
-     * 
+     *
      * @return null
      */
     public function setContacts($contacts)
@@ -184,7 +184,7 @@ class Account
      * Set customers filename.
      *
      * @param mixed $customersFilename
-     * 
+     *
      * @return null
      */
     public function setCustomersFilename($customersFilename)
@@ -202,7 +202,7 @@ class Account
 
     /**
      * @param mixed $limit
-     * 
+     *
      * @return string
      */
     public function setLimit($limit)
@@ -220,7 +220,7 @@ class Account
 
     /**
      * @param mixed $mappingHash
-     * 
+     *
      * @return array
      */
     public function setMappingHash($mappingHash)
@@ -238,7 +238,7 @@ class Account
 
     /**
      * @param array $orders
-     * 
+     *
      * @return array
      */
     public function setOrders($orders)
@@ -258,7 +258,7 @@ class Account
 
     /**
      * @param string $subscriberBookId
-     * 
+     *
      * @return array
      */
     public function setSubscriberBookId($subscriberBookId)
@@ -276,7 +276,7 @@ class Account
 
     /**
      * @param string $subscribersFilename
-     * 
+     *
      * @return string
      */
     public function setSubscribersFilename($subscribersFilename)
@@ -294,7 +294,7 @@ class Account
 
     /**
      * @param array $csvHeaders
-     * 
+     *
      * @return array
      */
     public function setCsvHeaders($csvHeaders)
@@ -312,7 +312,7 @@ class Account
 
     /**
      * @param array $websites
-     * 
+     *
      * @return array
      */
     public function setWebsites($websites)
@@ -330,7 +330,7 @@ class Account
 
     /**
      * @param array $orderIds
-     * 
+     *
      * @return array
      */
     public function setOrderIds($orderIds)
@@ -348,7 +348,7 @@ class Account
 
     /**
      * @param array $orders
-     * 
+     *
      * @return null
      */
     public function setOrdersForSingleSync($orders)
@@ -368,7 +368,7 @@ class Account
 
     /**
      * @param array $orderIds
-     * 
+     *
      * @return null
      */
     public function setOrderIdsForSingleSync($orderIds)

@@ -112,7 +112,7 @@ class Wishlist
      * Set wishlist item.
      *
      * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\Item $item
-     * 
+     *
      * @return null
      */
     public function setItem($item)

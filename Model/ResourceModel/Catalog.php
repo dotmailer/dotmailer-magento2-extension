@@ -44,7 +44,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
-     * 
+     *
      * @return null
      */
     public function _construct()
@@ -327,7 +327,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $ids
      * @param bool $modified
-     * 
+     *
      * @return null
      */
     public function setImportedByIds($ids, $modified = false)
@@ -364,7 +364,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Remove product with product id set and no product
-     * 
+     *
      * @return null
      */
     public function removeOrphanProducts()

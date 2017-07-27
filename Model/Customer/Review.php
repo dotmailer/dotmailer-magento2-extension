@@ -137,7 +137,7 @@ class Review
      *
      * @param string $ratingName
      * @param \Dotdigitalgroup\Email\Model\Customer\Review\Rating $rating
-     * 
+     *
      * @return null
      */
     public function createRating($ratingName, $rating)
@@ -206,7 +206,7 @@ class Review
      * Set product name.
      *
      * @param string $name
-     * 
+     *
      * @return null
      */
     public function setProductName($name)
@@ -226,7 +226,7 @@ class Review
      * Set product sku.
      *
      * @param string $sku
-     * 
+     *
      * @return null
      */
     public function setProductSku($sku)

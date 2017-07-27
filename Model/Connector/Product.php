@@ -219,7 +219,7 @@ class Product
 
     /**
      * @param mixed $product
-     * 
+     *
      * @return null
      */
     private function processProductOptions($product)
@@ -332,7 +332,7 @@ class Product
 
     /**
      * Init not serializable fields.
-     * 
+     *
      * @return null
      */
     public function __wakeup()

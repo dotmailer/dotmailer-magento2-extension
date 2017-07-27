@@ -48,7 +48,6 @@ class LogFileReadTest extends \PHPUnit_Framework_TestCase
         $content = $this->fileHelper->getLogFileContent();
 
         $this->assertContains('logged message', $content);
-
     }
 
     /**

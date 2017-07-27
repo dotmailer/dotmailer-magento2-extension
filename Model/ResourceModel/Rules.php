@@ -8,7 +8,7 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * Initialize resource.
-     * 
+     *
      * @return null
      */
     public function _construct()

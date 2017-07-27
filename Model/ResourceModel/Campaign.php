@@ -139,7 +139,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $ids
      * @param string $message
-     * 
+     *
      * @return null
      */
     public function setMessage($ids, $message)
@@ -160,7 +160,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @param int $sendId
      * @param string $message
-     * 
+     *
      * @return null
      */
     public function setMessageWithSendId($sendId, $message)
@@ -181,7 +181,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Set sent.
      *
      * @param int $sendId
-     * 
+     *
      * @return null
      */
     public function setSent($sendId)
@@ -203,7 +203,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $ids
      * @param int $sendId
-     * 
+     *
      * @return null
      */
     public function setProcessing($ids, $sendId)
