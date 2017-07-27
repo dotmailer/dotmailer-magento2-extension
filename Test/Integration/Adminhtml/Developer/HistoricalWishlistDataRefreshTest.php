@@ -76,7 +76,6 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->runReset('2017-02-09', '2017-02-10', $this->url);
 
         $this->assertEquals(1, $collection->getSize());
-
     }
 
     /**
@@ -108,7 +107,6 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         );
 
         $this->assertEquals(0, $collection->getSize());
-
     }
 
     /**
@@ -140,7 +138,6 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         );
 
         $this->assertEquals(0, $collection->getSize());
-
     }
 
     /**

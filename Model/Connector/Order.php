@@ -276,7 +276,7 @@ class Order
 
     /**
      * @param mixed $orderData
-     * 
+     *
      * @return null
      */
     private function processBillingAddress($orderData)
@@ -302,7 +302,7 @@ class Order
 
     /**
      * @param mixed $orderData
-     * 
+     *
      * @return null
      */
     private function processShippingAddress($orderData)
@@ -330,7 +330,7 @@ class Order
     /**
      * @param mixed $orderData
      * @param mixed $syncCustomOption
-     * 
+     *
      * @return null
      */
     private function processOrderItems($orderData, $syncCustomOption)
@@ -602,7 +602,7 @@ class Order
      *
      * @param mixed $field
      * @param mixed $value
-     * 
+     *
      * @return null
      */
     public function _assignCustom($field, $value)
@@ -721,7 +721,7 @@ class Order
 
     /**
      * Init not serializable fields.
-     * 
+     *
      * @return null
      */
     public function __wakeup()

@@ -112,7 +112,7 @@ class Customdatafields extends
 
     /**
      * @param \Magento\Framework\DataObject $row
-     * 
+     *
      * @return void
      */
     public function _prepareArrayRow(\Magento\Framework\DataObject $row)

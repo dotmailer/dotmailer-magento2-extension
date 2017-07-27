@@ -38,7 +38,7 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
 
     /**
      * Get address books.
-     * 
+     *
      * @return null
      */
     public function getAddressBooks()

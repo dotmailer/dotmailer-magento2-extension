@@ -662,7 +662,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $apiEndpoint
      * @param  int $websiteId
-     * 
+     *
      * @return null
      */
     public function saveApiEndpoint($apiEndpoint, $websiteId)
@@ -1048,7 +1048,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $email
      * @param mixed $website
      * @param string $storeName
-     * 
+     *
      * @return null
      */
     public function updateDataFields($email, $website, $storeName)

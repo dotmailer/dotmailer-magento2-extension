@@ -77,7 +77,7 @@ class Subscriber
      * Set key value data.
      *
      * @param mixed $data
-     * 
+     *
      * @return null
      */
     public function setData($data)

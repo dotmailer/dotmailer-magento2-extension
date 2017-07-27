@@ -142,7 +142,7 @@ class Catalog
      * @param \Magento\Store\Model\Store $store
      * @param string $collectionName
      * @param int $websiteId
-     * 
+     *
      * @return null
      */
     public function _exportInSingle($store, $collectionName, $websiteId)
@@ -197,7 +197,7 @@ class Catalog
      *
      * @param array $ids
      * @param bool $modified
-     * 
+     *
      * @return null
      */
     public function _setImported($ids, $modified = false)

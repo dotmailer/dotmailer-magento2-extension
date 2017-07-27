@@ -154,7 +154,7 @@ class TrialSetup
      *
      * @param string $name
      * @param int $id
-     * 
+     *
      * @return null
      */
     public function mapAddressBook($name, $id)
@@ -208,7 +208,7 @@ class TrialSetup
      * Save api endpoint.
      *
      * @param string $value
-     * 
+     *
      * @return null
      */
     public function saveApiEndPoint($value)

@@ -36,7 +36,7 @@ class Response extends \Magento\Framework\App\Action\Action
 
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
-     * 
+     *
      * @return mixed
      */
     public function authenticate()

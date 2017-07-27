@@ -148,7 +148,7 @@ class Review
      * Export reviews for website.
      *
      * @param \Magento\Store\Model\Website $website
-     * 
+     *
      * @return null
      */
     public function _exportReviewsForWebsite(\Magento\Store\Model\Website $website)
@@ -212,7 +212,7 @@ class Review
      * Set imported in bulk query.
      *
      * @param array $ids
-     * 
+     *
      * @return null
      */
     public function _setImported($ids)

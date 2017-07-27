@@ -149,7 +149,7 @@ class Automation
      * Sync.
      *
      * @throws \Magento\Framework\Exception\LocalizedException
-     * 
+     *
      * @return null
      */
     public function sync()
@@ -225,7 +225,7 @@ class Automation
      *
      * @param string $type
      * @param string $email
-     * 
+     *
      * @return null
      */
     public function updateDatafieldsByType($type, $email)
@@ -247,7 +247,7 @@ class Automation
      * Update config datafield.
      *
      * @param mixed|string $email
-     * 
+     *
      * @return null
      */
     public function _updateDefaultDatafields($email)
@@ -258,7 +258,7 @@ class Automation
 
     /**
      * Update new order default datafields.
-     * 
+     *
      * @return null
      */
     public function _updateNewOrderDatafields()
@@ -383,7 +383,7 @@ class Automation
 
     /**
      * Setup automation types
-     * 
+     *
      * @return null
      */
     private function setupAutomationTypes()
@@ -430,7 +430,7 @@ class Automation
     /**
      * @param array  $contactsArray
      * @param int  $websiteId
-     * 
+     *
      * @return null
      */
     private function sendSubscribedContactsToAutomation($contactsArray, $websiteId)

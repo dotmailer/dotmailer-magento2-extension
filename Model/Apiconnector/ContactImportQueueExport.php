@@ -38,7 +38,7 @@ class ContactImportQueueExport
      * @param mixed $customerNum
      * @param mixed $customerIds
      * @param mixed $resource
-     * 
+     *
      * @return null
      */
     public function enqueueForExport(

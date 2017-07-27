@@ -59,7 +59,7 @@ class Delete extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
-     * 
+     *
      * @return null
      */
     public function execute()
