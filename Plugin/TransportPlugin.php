@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Magento\Framework\Mail\TransportInterface;
+use Magento\Payment\Gateway\Http\Client\Zend;
 
 /**
  * SMTP mail transport.
@@ -24,11 +25,11 @@ class TransportPlugin
     /**
      * TransportPlugin constructor.
      *
-     * @param \Zend_Mail_Transport_SmtpFactory $smtpFactory
+     * @param \Dotdigitalgroup\Email\Zend\SmtpFactory $smtpFactory
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      */
     public function __construct(
-        \Zend_Mail_Transport_SmtpFactory $smtpFactory,
+        \Dotdigitalgroup\Email\Zend\SmtpFactory $smtpFactory,
         \Dotdigitalgroup\Email\Helper\Transactional $helper
     ) {
         $this->helper   = $helper;
