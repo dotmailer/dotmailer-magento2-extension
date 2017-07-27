@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Magento\Framework\Mail\TransportInterface;
-use Magento\Payment\Gateway\Http\Client\Zend;
 
 /**
  * SMTP mail transport.
