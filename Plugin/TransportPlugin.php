@@ -28,7 +28,7 @@ class TransportPlugin
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Mail\TransportFactory $mailAdapterFactory,
+        \Dotdigitalgroup\Email\Model\Mail\AdapterInterfaceFactory $mailAdapterFactory,
         \Dotdigitalgroup\Email\Helper\Transactional $helper
     ) {
         $this->helper   = $helper;
