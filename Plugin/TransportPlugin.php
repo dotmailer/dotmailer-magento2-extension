@@ -33,11 +33,9 @@ class TransportPlugin
     ) {
         $this->helper   = $helper;
         $this->mailAdapter = $mailAdapterFactory->create(
-            ['data' => 
-                [
-                'host' => $this->helper->getSmtpHost(),
-                'config' => $this->helper->getTransportConfig()
-                ]
+            [
+            'host' => $this->helper->getSmtpHost(),
+            'config' => $this->helper->getTransportConfig()
             ]
         );
     }
