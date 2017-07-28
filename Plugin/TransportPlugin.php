@@ -17,22 +17,22 @@ class TransportPlugin
     private $helper;
 
     /**
-     * @var \Zend_Mail_Transport_Smtp
+     * @var \Dotdigitalgroup\Email\Model\Mail\AdapterInterface
      */
-    private $smtp;
+    private $mailAdapter;
 
     /**
      * TransportPlugin constructor.
      *
-     * @param \Zend_Mail_Transport_SmtpFactory $smtpFactory
+     * @param \Dotdigitalgroup\Email\Model\Mail\AdapterInterfaceFactory $mailAdapterFactory
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      */
     public function __construct(
-        \Zend_Mail_Transport_SmtpFactory $smtpFactory,
+        \Dotdigitalgroup\Email\Model\Mail\AdapterInterfaceFactory $mailAdapterFactory,
         \Dotdigitalgroup\Email\Helper\Transactional $helper
     ) {
         $this->helper   = $helper;
-        $this->smtp = $smtpFactory->create(
+        $this->mailAdapter = $mailAdapterFactory->create(
             [
             'host' => $this->helper->getSmtpHost(),
             'config' => $this->helper->getTransportConfig()
@@ -54,13 +54,13 @@ class TransportPlugin
         if ($this->helper->isEnabled()) {
             // For >= 2.2
             if (method_exists($subject, 'getMessage')) {
-                $this->smtp->send($subject->getMessage());
+                $this->mailAdapter->send($subject->getMessage());
             } else {
                 //For < 2.2
                 $reflection = new \ReflectionClass($subject);
                 $property = $reflection->getProperty('_message');
                 $property->setAccessible(true);
-                $this->smtp->send($property->getValue($subject));
+                $this->mailAdapter->send($property->getValue($subject));
             }
         } else {
             $proceed();
