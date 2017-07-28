@@ -67,12 +67,12 @@
     <preference for="Dotdigitalgroup\Email\Model\Mail\AdapterInterface" type="Dotdigitalgroup\Email\Model\Mail\Transport" />
     <virtualType name="defaultMailSender" type="\Zend\Mail\Transport\Smtp">
         <arguments>
-            <argument name="options" xsi:type="\Zend\Mail\Transport\SmtpOptions"/>
+            <argument name="options" xsi:type="object"/>
         </arguments>
     </virtualType>
     <type name="Dotdigitalgroup\Email\Model\Mail\Transport">
         <arguments>
-            <argument name="smtp" xsi:type="\Zend\Mail\Transport\Smtp">defaultMailSender</argument>
+            <argument name="smtp" xsi:type="object">defaultMailSender</argument>
         </arguments>
     </type>
 </config>
