@@ -13,7 +13,8 @@ class Transport implements \Dotdigitalgroup\Email\Model\Mail\AdapterInterface
      * @param string $host
      * @param array $config
      */
-    public function __construct($host, $config) {
+    public function __construct($host, $config)
+    {
         $this->smtp = new \Zend_Mail_Transport_Smtp($host, $config);
     }
 
