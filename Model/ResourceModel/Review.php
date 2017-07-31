@@ -54,7 +54,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
-     * 
+     *
      * @return null
      */
     public function _construct()
@@ -194,7 +194,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $ids
      * @param mixed $nowDate
-     * 
+     *
      * @return null
      */
     public function setImported($ids, $nowDate)

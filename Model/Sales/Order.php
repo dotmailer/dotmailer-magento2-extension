@@ -95,7 +95,7 @@ class Order
 
     /**
      * Create review campaigns
-     * 
+     *
      * @return null
      */
     public function createReviewCampaigns()
@@ -112,7 +112,7 @@ class Order
      *
      * @param mixed $collection
      * @param int $websiteId
-     * 
+     *
      * @return null
      */
     public function registerCampaign($collection, $websiteId)
@@ -150,7 +150,7 @@ class Order
 
     /**
      * Search for orders to review per website.
-     * 
+     *
      * @return null
      */
     public function searchOrdersForReview()

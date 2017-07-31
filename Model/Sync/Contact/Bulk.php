@@ -55,7 +55,7 @@ class Bulk
      * Sync.
      *
      * @param mixed $collection
-     * 
+     *
      * @return null
      */
     public function sync($collection)
@@ -118,7 +118,7 @@ class Bulk
     /**
      * @param mixed  $item
      * @param mixed $result
-     * 
+     *
      * @return null
      */
     public function _handleItemAfterSync($item, $result)

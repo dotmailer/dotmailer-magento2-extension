@@ -80,7 +80,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Process customer basket.
      *
-     * @return null     
+     * @return null
      */
     private function handleCustomerBasket()
     {
@@ -140,7 +140,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Check missing items from current quote and add.
      *
-     * @return null     
+     * @return null
      */
     private function checkMissingAndAdd()
     {
@@ -170,7 +170,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * Process guest basket.
      *
-     * @return null     
+     * @return null
      */
     private function handleGuestBasket()
     {

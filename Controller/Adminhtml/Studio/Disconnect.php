@@ -6,7 +6,7 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
 {
     /**
      * Disconnect and remote the refresh token.
-     * 
+     *
      * @return void
      */
     public function execute()

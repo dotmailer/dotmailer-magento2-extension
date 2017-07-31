@@ -114,7 +114,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     * 
+     *
      * @return null
      */
     public function testOrderSyncCanFindGuests()
@@ -143,7 +143,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     * 
+     *
      * @return null
      */
     public function testGuestsOrderNotCreatingDuplicatesContact()
@@ -155,14 +155,13 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 
         $this->assertEquals('1', count($this->_orderSync->guests));
         $this->assertEquals('1', $this->_orderSync->countOrders);
-
     }
 
     /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     * 
+     *
      * @return null
      */
     public function testGuestFoundMarkedIsGuest()
@@ -179,7 +178,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     * 
+     *
      * @return null
      */
     public function testCanSyncModifiedOrders()
@@ -268,7 +267,6 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             ));
             $connectorOrder->method('getModifiedOrdersToImport')->willReturn($emailOrderCollection);
         } else {
-
             $connectorOrder->method('getOrdersToImport')->willReturn($emailOrderCollection);
             $connectorOrder->method('getModifiedOrdersToImport')->willReturn($this->getMock(
                 \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection::class,

@@ -207,7 +207,7 @@ class Rest
 
     /**
      * @throws \Exception
-     * 
+     *
      * @return mixed
      */
     public function execute()
@@ -292,7 +292,7 @@ class Rest
      * Execute curl get request.
      *
      * @param mixed $ch
-     * 
+     *
      * @return null
      */
     private function executeGet($ch)
@@ -304,7 +304,7 @@ class Rest
      * Execute post request.
      *
      * @param mixed $ch
-     * 
+     *
      * @return null
      */
     private function executePost($ch)
@@ -323,7 +323,7 @@ class Rest
      * Post from the file.
      *
      * @param mixed $filename
-     * 
+     *
      * @return null
      */
     public function buildPostBodyFromFile($filename)
@@ -337,7 +337,7 @@ class Rest
      * Execute put.
      *
      * @param mixed $ch
-     * 
+     *
      * @return null
      */
     private function executePut($ch)
@@ -364,7 +364,7 @@ class Rest
      * Ececute delete.
      *
      * @param mixed $ch
-     * 
+     *
      * @return null
      */
     private function executeDelete($ch)
@@ -377,7 +377,7 @@ class Rest
      * Execute request.
      *
      * @param mixed $ch
-     * 
+     *
      * @return null
      */
     private function doExecute(&$ch)
@@ -405,7 +405,7 @@ class Rest
      * Curl options.
      *
      * @param mixed $ch
-     * 
+     *
      * @return null
      */
     private function setCurlOpts(&$ch)
@@ -429,7 +429,7 @@ class Rest
      * Basic auth.
      *
      * @param mixed $ch
-     * 
+     *
      * @return null
      */
     private function setAuth(&$ch)
@@ -458,7 +458,7 @@ class Rest
      * Set accept type.
      *
      * @param mixed $acceptType
-     * 
+     *
      * @return null
      */
     public function setAcceptType($acceptType)
@@ -526,7 +526,7 @@ class Rest
 
     /**
      * Get response info.
-     * 
+     *
      * @return mixed
      */
     private function getResponseInfo()

@@ -53,7 +53,6 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         ];
         $this->getRequest()->setParams($params);
         $this->dispatch($dispatchUrl);
-
     }
 
     /**
@@ -78,7 +77,6 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $collection->addFieldToFilter('imported', ['null' => true]);
 
         $this->assertEquals(1, $collection->getSize());
-
     }
 
     /**
@@ -107,7 +105,6 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         );
 
         $this->assertEquals(0, $collection->getSize());
-
     }
 
     /**
@@ -136,7 +133,6 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         );
 
         $this->assertEquals(0, $collection->getSize());
-
     }
 
     /**

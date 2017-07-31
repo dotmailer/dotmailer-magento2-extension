@@ -59,7 +59,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
 
     /**
      * Execute method.
-     * 
+     *
      * @return void
      */
     public function execute()

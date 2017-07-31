@@ -46,7 +46,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      * RegisterWishlist constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory           $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation    $automationResource     
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation    $automationResource
      * @param \Magento\Customer\Api\CustomerRepositoryInterface        $customer
      * @param \Dotdigitalgroup\Email\Model\WishlistFactory             $wishlistFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist      $wishlistResource

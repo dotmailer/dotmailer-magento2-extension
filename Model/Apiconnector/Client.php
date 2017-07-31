@@ -262,7 +262,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param string|int $addressBookId
      * @param string|int $contactId
-     * 
+     *
      * @return null
      */
     public function deleteAddressBookContact($addressBookId, $contactId)
@@ -328,7 +328,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Get all address books.
      *
      * @return mixed
-     * 
+     *
      * @throws \Exception
      */
     public function getAddressBooks()
@@ -404,7 +404,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Get list of all campaigns.
      *
      * @return mixed
-     * 
+     *
      * @throws \Exception
      */
     public function getCampaigns()
@@ -853,7 +853,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Gets a summary of information about the current status of the account.
      *
      * @return object
-     * 
+     *
      * @throws \Exception
      */
     public function getAccountInfo()
@@ -906,7 +906,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param mixed $apiContact
      *
      * @return null
-     * 
+     *
      * @throws \Exception
      */
     public function postContactsResubscribe($apiContact)
@@ -932,7 +932,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Gets all custom from addresses which can be used in a campaign.
      *
      * @return object
-     * 
+     *
      * @throws \Exception
      */
     public function getCustomFromAddresses()
@@ -982,7 +982,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * https://apiconnector.com/v2/programs?select={select}&skip={skip}.
      *
      * @return object
-     * 
+     *
      * @throws \Exception
      */
     public function getPrograms()

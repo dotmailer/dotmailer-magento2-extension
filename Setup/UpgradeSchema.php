@@ -94,7 +94,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
              * Add index foreign key for email order.
              */
             $this->addIndexKeyForOrder($setup, $connection);
-
         }
 
         $setup->endSetup();
@@ -332,6 +331,5 @@ class UpgradeSchema implements UpgradeSchemaInterface
             'entity_id',
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
         );
-
     }
 }

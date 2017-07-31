@@ -11,7 +11,7 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
      * Sync.
      *
      * @param mixed $collection
-     * 
+     *
      * @return null
      */
     public function sync($collection)

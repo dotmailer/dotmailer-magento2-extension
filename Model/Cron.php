@@ -204,7 +204,7 @@ class Cron
 
     /**
      * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS.
-     * 
+     *
      * @return null
      */
     public function reviewsAndWishlist()
@@ -235,7 +235,7 @@ class Cron
 
     /**
      * CRON FOR ABANDONED CARTS.
-     * 
+     *
      * @return null
      */
     public function abandonedCarts()
@@ -245,7 +245,7 @@ class Cron
 
     /**
      * CRON FOR AUTOMATION.
-     * 
+     *
      * @return null
      */
     public function syncAutomation()
@@ -257,7 +257,7 @@ class Cron
      * Send email campaigns.
      *
      * @throws \Magento\Framework\Exception\LocalizedException
-     * 
+     *
      * @return null
      */
     public function sendCampaigns()
@@ -267,7 +267,7 @@ class Cron
 
     /**
      * CRON FOR ORDER TRANSACTIONAL DATA.
-     * 
+     *
      * @return array
      */
     public function orderSync()

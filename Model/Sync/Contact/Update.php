@@ -48,7 +48,7 @@ class Update extends Delete
      * Sync.
      *
      * @param mixed $collection
-     * 
+     *
      * @return null
      */
     public function sync($collection)
@@ -72,7 +72,7 @@ class Update extends Delete
      * @param mixed $item
      * @param mixed $importData
      * @param mixed $websiteId
-     * 
+     *
      * @return null
      */
     public function syncItem($item, $importData, $websiteId)

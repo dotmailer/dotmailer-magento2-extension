@@ -344,7 +344,7 @@ class Quote
 
     /**
      * @param int $storeId
-     * 
+     *
      * @return null
      */
     private function searchForGuestAbandonedCarts($storeId)
@@ -421,7 +421,7 @@ class Quote
 
     /**
      * @param int $storeId
-     * 
+     *
      * @return null
      */
     private function searchForCustomerAbandonedCarts($storeId)
@@ -521,7 +521,7 @@ class Quote
      * @param mixed $mostExpensiveItem
      * @param string $email
      * @param int $websiteId
-     * 
+     *
      * @return null
      */
     private function processMostExpensiveItem($mostExpensiveItem, $email, $websiteId)

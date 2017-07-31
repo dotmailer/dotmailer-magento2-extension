@@ -70,7 +70,7 @@ class Campaign
      * Sending the campaigns
      *
      * @throws \Magento\Framework\Exception\LocalizedException
-     * 
+     *
      * @return null
      */
     public function sendCampaigns()
@@ -92,7 +92,7 @@ class Campaign
     /**
      * @param mixed $website
      * @param array $storeIds
-     * 
+     *
      * @return null
      */
     public function _checkSendStatus($website, $storeIds)
@@ -174,7 +174,7 @@ class Campaign
      * Send campaigns.
      *
      * @param array $campaignsToSend
-     * 
+     *
      * @return null
      */
     private function sendCampaignsViaDotmailer($campaignsToSend)
@@ -221,7 +221,7 @@ class Campaign
      * @param int $websiteId
      * @param mixed $client
      * @param string $email
-     * 
+     *
      * @return null
      */
     private function updateDataFieldsForORderReviewCampaigns($campaign, $websiteId, $client, $email)
