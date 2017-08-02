@@ -35,7 +35,7 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $mockCustomerSession->method('getConnectorContactId')->willReturn(false);
         $objectManager->addSharedInstance($mockCustomerSession, CustomerSession::class);
 
-        $mockCustomerSession->expects($this->never())->method('getCustomer');
+        $mockCustomerSession->expects($this->once())->method('getConnectorContactId');
 
         $this->dispatch('connector/customer/newsletter');
 

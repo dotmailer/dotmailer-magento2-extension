@@ -6,14 +6,9 @@ class Index extends \Magento\Backend\App\AbstractAction
 {
     /**
      * Execute method.
-     *
-     * @return mixed
      */
     public function execute()
     {
-        $this->_view->loadLayout();
-        $this->_view->renderLayout();
-
         //not connected - redirect to connect settings page
         $adminUser = $this->_auth->getUser();
         $refreshToken = $adminUser->getRefreshToken();
@@ -21,12 +16,15 @@ class Index extends \Magento\Backend\App\AbstractAction
         if (! $refreshToken) {
             $resultRedirect = $this->resultRedirectFactory->create();
             $this->messageManager->addNoticeMessage('Please enter OAUTH creds and click Connect.');
-            $resultRedirect->setPath('admin/system_config/edit', ['section' => 'connector_developer_settings']);
+            //Redirect to developer section config
+            $resultRedirect->setPath('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 
             return $resultRedirect;
         }
 
-        return $this;
+        //Load and render layout if there is $refreshToken
+        $this->_view->loadLayout();
+        $this->_view->renderLayout();
     }
 
     /**
