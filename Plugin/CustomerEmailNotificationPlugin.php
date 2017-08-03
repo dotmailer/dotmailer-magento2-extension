@@ -20,7 +20,7 @@ class CustomerEmailNotificationPlugin
     private $storeManager;
 
     /**
-     * CustomerNewsletterDisable constructor.
+     * CustomerEmailNotificationPlugin constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(

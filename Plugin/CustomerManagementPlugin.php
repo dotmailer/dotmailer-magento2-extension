@@ -13,7 +13,7 @@ class CustomerManagementPlugin
     private $automation;
 
     /**
-     * NewAutomation constructor.
+     * CustomerManagementPlugin constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Automation $automation
      */

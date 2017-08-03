@@ -13,7 +13,7 @@ class SubscriberPlugin
     public $scopeConfig;
 
     /**
-     * NewsletterDisable constructor.
+     * SubscriberPlugin constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(

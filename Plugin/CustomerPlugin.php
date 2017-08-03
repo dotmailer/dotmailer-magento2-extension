@@ -13,7 +13,7 @@ class CustomerPlugin
     public $scopeConfig;
 
     /**
-     * CustomerSendNewAccountEmailDisable constructor.
+     * CustomerPlugin constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
