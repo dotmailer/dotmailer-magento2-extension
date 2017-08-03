@@ -322,9 +322,15 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             if ($cond == 'like' or $cond == 'nlike') {
                 $value = '%' . $value . '%';
             }
+            //condition with null values can't be filter using sting, inlude to filter null values
+            $conditionMap[] = [$this->conditionMap[$cond] => $value];
+            if ($cond == 'eq' or $cond == 'neq'){
+                $conditionMap[] = ['null' => true];
+            }
+
             $collection->addFieldToFilter(
                 $attribute,
-                [$this->conditionMap[$cond] => $value]
+                $conditionMap
             );
         }
 
