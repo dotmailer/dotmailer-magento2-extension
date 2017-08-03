@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Plugin;
 /**
  * New customer automation plugin.
  */
-class CustomerManagement
+class CustomerManagementPlugin
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\Automation

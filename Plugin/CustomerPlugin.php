@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Plugin;
 /**
  * Disable customer email depending on settings value.
  */
-class CustomerSendNewAccountEmailDisable
+class CustomerPlugin
 {
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
