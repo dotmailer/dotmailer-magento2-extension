@@ -39,9 +39,9 @@ class RuleCollectionPlugin
     public function afterSetValidationFilter(
         \Magento\SalesRule\Model\ResourceModel\Rule\Collection $subject,
         $result,
-        $websiteId,
-        $customerGroupId,
-        $couponCode
+        $websiteId = 0,
+        $customerGroupId = 0,
+        $couponCode = ''
     ) {
         $now = $this->date->date()->format('Y-m-d');
         $select = $subject->getSelect();
