@@ -57,7 +57,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
 
         if (is_numeric($params['expire_days'])) {
             $expireDate = $this->_localeDate->date()
-                ->add(\DateInterval::createFromDateString(sprintf('P%sDay', $params['expire_days'])));
+                ->add(\DateInterval::createFromDateString(sprintf('%s day', $params['expire_days'])));
         }
 
         return $this->campaign->generateCoupon($couponCodeId, $expireDate);
