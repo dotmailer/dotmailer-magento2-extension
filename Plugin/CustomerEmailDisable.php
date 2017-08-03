@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Plugin;
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class CustomerNewAccountDisable
+class CustomerEmailDisable
 {
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
