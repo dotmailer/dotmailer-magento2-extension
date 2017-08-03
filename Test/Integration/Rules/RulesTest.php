@@ -99,6 +99,32 @@ class RulesTest extends \PHPUnit_Framework_TestCase
         return $quote;
     }
 
+    private function createQuoteWithCityAddress($city)
+    {
+        /** @var Quote $quote */
+        $quote = ObjectManager::getInstance()->create(Quote::class);
+        $quote->setStoreId(1);
+        $quote->setIsActive(true);
+        $quote->setData('is_multi_shipping', false);
+        $quote->assignCustomerWithAddressChange($this->getCustomer());
+
+        $shippingAddress = $this->createQuoteAddress('shipping');
+        $shippingAddress->setCity($city);
+        $billingAddress = $this->createQuoteAddress('billing');
+        $billingAddress->setCity($city);
+        $quote->setShippingAddress($shippingAddress);
+        $quote->setBillingAddress($billingAddress);
+
+        $quote->setCheckoutMethod('customer');
+        $quote->setReservedOrderId('test_order_no_address_1');
+        $quote->addProduct($this->getProduct(), 2);
+
+        $quoteResource = ObjectManager::getInstance()->create(QuoteResource::class);
+        $quoteResource->save($quote);
+
+        return $quote;
+    }
+
     /**
      * @return Quote
      */
@@ -229,6 +255,18 @@ class RulesTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param Quote $expected
+     */
+    private function assertQuoteCollectionContains(Quote $expected)
+    {
+        $message = sprintf(
+            'The quote with ID "%s" is not contained in the quote collection, but is absent',
+            $expected->getId()
+        );
+        $this->assertContains($expected->getId(), $this->quoteCollection->getAllIds(), $message);
+    }
+
+    /**
      * @param mixed $subtotal
      *
      * @return Quote
@@ -279,5 +317,26 @@ class RulesTest extends \PHPUnit_Framework_TestCase
 
         $this->createAbandonedCartRuleWithCondition($attribute1, 'neq', $value1, self::RULE_OPERATOR_AND);
         $this->createAbandonedCartRuleWithCondition($attribute2, 'eq', $value2, self::RULE_OPERATOR_AND);
+    }
+
+    /**
+     * Test shipping city AC is excluded by the exclusion rules.
+     */
+    public function testShippingCityNullValue()
+    {
+        //create a rule to exclude the city attribute from the abandoned carts
+        $attribute = 'city';
+        $value = $cityOne = 'CityM';
+        $city = null;
+        $this->createAbandonedCartRuleWithCondition($attribute, 'eq', $value, self::RULE_OPERATOR_AND);
+
+        $quote = $this->createQuoteWithCityAddress($city);
+        $quote1 = $this->createQuoteWithCityAddress($cityOne);
+        /** @var Rules $ruleService */
+        $ruleService = ObjectManager::getInstance()->create(Rules::class);
+        $ruleService->process($this->quoteCollection, Rules::ABANDONED, $this->currentWebsiteId);
+
+        $this->assertQuoteCollectionContains($quote);
+        $this->assertQuoteCollectionNotContains($quote1);
     }
 }
