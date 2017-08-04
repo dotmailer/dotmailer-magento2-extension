@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Plugin;
 /**
  * Newsletter disable susbcriber email depending on settings value.
  */
-class NewsletterDisable
+class SubscriberPlugin
 {
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -13,7 +13,7 @@ class NewsletterDisable
     public $scopeConfig;
 
     /**
-     * NewsletterDisable constructor.
+     * SubscriberPlugin constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(

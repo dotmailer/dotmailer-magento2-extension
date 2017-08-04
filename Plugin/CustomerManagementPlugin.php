@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Plugin;
 /**
  * New customer automation plugin.
  */
-class CustomerManagement
+class CustomerManagementPlugin
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\Automation
@@ -13,7 +13,7 @@ class CustomerManagement
     private $automation;
 
     /**
-     * NewAutomation constructor.
+     * CustomerManagementPlugin constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Automation $automation
      */

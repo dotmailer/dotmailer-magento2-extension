@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Plugin;
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class CustomerEmailDisable
+class CustomerEmailNotificationPlugin
 {
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -20,7 +20,7 @@ class CustomerEmailDisable
     private $storeManager;
 
     /**
-     * CustomerNewsletterDisable constructor.
+     * CustomerEmailNotificationPlugin constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(

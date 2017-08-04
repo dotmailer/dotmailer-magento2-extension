@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Sales\Model\Order\CustomerManagement">
-        <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagement" sortOrder="1"/>
+        <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagementPlugin" sortOrder="1"/>
     </type>
     <type name="Magento\Newsletter\Model\Subscriber">
-        <plugin name="ddg_newsletter_disabler" type="Dotdigitalgroup\Email\Plugin\NewsletterDisable" sortOrder="1" disabled="false"/>
+        <plugin name="ddg_newsletter_disabler" type="Dotdigitalgroup\Email\Plugin\SubscriberPlugin" sortOrder="1" disabled="false"/>
     </type>
     <type name="Magento\Customer\Model\Customer">
-        <plugin name="ddg_customer_newsletter_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerNewsletterDisable" sortOrder="1" disabled="false"/>
+        <plugin name="ddg_customer_sendNewAccountEmail_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerPlugin" sortOrder="1" disabled="false"/>
     </type>
     <type name="Magento\Customer\Model\EmailNotification">
-        <plugin name="ddg_customer_email_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerEmailDisable" sortOrder="1" disabled="false"/>
+        <plugin name="ddg_customer_email_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerEmailNotificationPlugin" sortOrder="1" disabled="false"/>
     </type>
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon">
         <plugin name="ddg_sales_coupon_expiration_date" type="Dotdigitalgroup\Email\Plugin\CouponPlugin" sortOrder="10" disabled="false"/>
