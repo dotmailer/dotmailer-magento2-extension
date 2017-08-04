@@ -324,7 +324,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             }
             //condition with null values can't be filter using sting, inlude to filter null values
             $conditionMap[] = [$this->conditionMap[$cond] => $value];
-            if ($cond == 'eq' or $cond == 'neq'){
+            if ($cond == 'eq' or $cond == 'neq') {
                 $conditionMap[] = ['null' => true];
             }
 
