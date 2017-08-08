@@ -198,10 +198,17 @@ class Order
             ''
         );
         $this->currency = $orderData->getStoreCurrencyCode();
+        $payment = $orderData->getPayment();
 
-        if ($payment = $orderData->getPayment()) {
-            $this->payment = $payment->getMethodInstance()->getTitle();
+        if ($payment) {
+            if($payment->getMethod()) {
+                $methodInstance = $payment->getMethodInstance($payment->getMethod());
+                if($methodInstance) {
+                    $this->payment = $methodInstance->getTitle();
+                }
+            }
         }
+
         $this->couponCode = $orderData->getCouponCode();
 
         /*

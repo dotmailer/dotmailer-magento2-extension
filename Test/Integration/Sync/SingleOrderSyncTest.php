@@ -43,7 +43,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return void
+     * @return mixed
      */
     public function prep()
     {
@@ -71,7 +71,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
             $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class)
         );
 
-        $orderSync->sync();
+        return $orderSync->sync();
     }
 
     /**
@@ -142,4 +142,58 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
 
         $emailOrder->save();
     }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testSingleOrderSync()
+    {
+        $this->createModifiedEmailOrder();
+        $orderResponse = $this->prep();
+
+        $expected = 'Orders updated 1';
+
+        $this->assertEquals($expected, $orderResponse['message']);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testSyncOrderWithoutPaymentInfoSync()
+    {
+        $this->createOrderWithoutPayment();
+        $orderResponse = $this->prep();
+
+        $expected = 'Orders updated 1';
+
+        $this->assertEquals($expected, $orderResponse['message']);
+    }
+
+    private function createOrderWithoutPayment()
+    {
+        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $orderCollection */
+        $orderCollection = $this->objectManager->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
+        $orderResource = $this->objectManager->create(\Magento\Sales\Model\ResourceModel\Order::class);
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $orderCollection->getFirstItem();
+        $payment = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
+            \Magento\Sales\Model\Order\Payment::class
+        );
+        $order->setPayment($payment);
+        $orderResource->save($order);
+
+        $this->storeId = $order->getStoreId();
+        $this->orderStatus = [$order->getStatus()];
+
+        $emailOrder = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Order::class)
+            ->setOrderId($order->getId())
+            ->setOrderStatus($order->getStatus())
+            ->setQuoteId($order->getQuoteId())
+            ->setStoreId($this->storeId)
+            ->setEmailImported('1')
+            ->setModified('1');
+
+        $emailOrder->save();
+    }
+
 }
