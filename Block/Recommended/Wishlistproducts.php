@@ -187,7 +187,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             //check for product exists
             if ($product->getId()) {
                 //get single product for current mode
-                $recommendedProducts = $this->_getRecommendedProduct($product, $mode);
+                $recommendedProductIds = $this->_getRecommendedProduct($product, $mode);
+                $recommendedProducts = $this->catalog->getProductCollectionFromIds($recommendedProductIds);
 
                 $this->addRecommendedProducts(
                     $productsToDisplayCounter,
@@ -286,13 +287,13 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         $products = [];
         switch ($mode) {
             case 'related':
-                $products = $productModel->getRelatedProducts();
+                $products = $productModel->getRelatedProductIds();
                 break;
             case 'upsell':
-                $products = $productModel->getUpSellProducts();
+                $products = $productModel->getUpSellProductIds();
                 break;
             case 'crosssell':
-                $products = $productModel->getCrossSellProducts();
+                $products = $productModel->getCrossSellProductIds();
                 break;
         }
 
