@@ -29,12 +29,14 @@ class CouponPlugin
     public function afterUpdateSpecificCoupons(
         \Magento\SalesRule\Model\ResourceModel\Coupon $subject,
         $result,
-        \Magento\SalesRule\Model\Rule $rule
+        \Magento\SalesRule\Model\Rule $rule = null
     ) {
-        //update the generated and the expiration date
-        $rule->setData('expiration_date', null);
-        $rule->setData('generated_by_dotmailer', '1');
-        $subject->save($rule);
+        if ($rule) {
+            //update the generated and the expiration date
+            $rule->setData('expiration_date', null);
+            $rule->setData('generated_by_dotmailer', '1');
+            $subject->save($rule);
+        }
 
         return $rule;
     }
