@@ -121,7 +121,9 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 
             $productUrl = $_product->getProductUrl();
             $grandTotal = $this->priceHelper->currency(
-                $this->getGrandTotal()
+                $this->getGrandTotal(),
+                true,
+                false
             );
             $itemsData[] = [
                 'grandTotal' => $grandTotal,
