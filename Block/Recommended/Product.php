@@ -155,7 +155,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
             //check for product exists
             if ($productModel->getId()) {
                 //get single product for current mode
-                $recommendedProductIds = $this->_getRecommendedProduct($productModel, $mode);
+                $recommendedProductIds = $this->getRecommendedProduct($productModel, $mode);
                 $recommendedProducts = $this->catalog->getProductCollectionFromIds($recommendedProductIds);
 
                 $this->addRecommendedProducts(
@@ -247,7 +247,7 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    public function _getRecommendedProduct($productModel, $mode)
+    private function getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = [];
