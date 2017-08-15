@@ -8,6 +8,20 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
+     * @var \Magento\Reports\Model\ResourceModel\Product\Index\Collection\AbstractCollection
+     */
+    private $productIndexcollection;
+
+    /**
+     * @var \Magento\Catalog\Model\Product\Visibility
+     */
+    private $productVisibility;
+
+    /**
+     * @var \Magento\Catalog\Model\Config
+     */
+    private $config;
+    /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
     private $productFactory;
@@ -58,6 +72,9 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\Product\Index\Collection $productIndexCollection
+     * @param \Magento\Catalog\Model\Config $config
+     * @param \Magento\Catalog\Model\Product\Visibility $productVisibility
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
@@ -68,6 +85,9 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Model\Product\Index\Collection $productIndexCollection,
+        \Magento\Catalog\Model\Config $config,
+        \Magento\Catalog\Model\Product\Visibility $productVisibility,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection,
         \Magento\Catalog\Model\ProductFactory $productFactory,
@@ -76,6 +96,9 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     ) {
     
         $this->helper                   = $helper;
+        $this->productIndexcollection = $productIndexCollection;
+        $this->config = $config;
+        $this->productVisibility = $productVisibility;
         $this->productFactory           = $productFactory;
         $this->categoryFactory          = $categoryFactory;
         $this->reportProductCollection  = $reportProductCollection;
@@ -150,17 +173,30 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get recently viewed.
      *
+     * @param int $customerId
      * @param int $limit
      *
      * @return array
      */
-    public function getRecentlyViewed($limit)
+    public function getRecentlyViewed($customerId, $limit)
     {
-        $collection = $this->viewed;
-        $productItems = $collection->getItemsCollection()
-            ->setPageSize($limit);
+        $attributes = $this->config->getProductAttributes();
 
-        return $productItems->getColumnValues('product_id');
+        $this->productIndexcollection->addAttributeToSelect($attributes);
+        $this->productIndexcollection->setCustomerId($customerId);
+        $this->productIndexcollection->addUrlRewrite()->setPageSize(
+            $limit
+        )->setCurPage(
+            1
+        );
+
+        /* Price data is added to consider item stock status using price index */
+        $collection = $this->productIndexcollection->addPriceData()
+            ->addIndexFilter()
+            ->setAddedAtOrder()
+            ->setVisibility($this->productVisibility->getVisibleInSiteIds());
+
+        return $collection->getColumnValues('product_id');
     }
 
     /**
