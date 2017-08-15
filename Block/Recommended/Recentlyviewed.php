@@ -88,7 +88,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         //login customer to receive the recent products
         $session = $this->sessionFactory->create();
         $isLoggedIn = $session->loginById($customerId);
-        $productIds = $this->catalog->getRecentlyViewed($limit);
+        $productIds = $this->catalog->getRecentlyViewed($customerId, $limit);
 
         //get product collection to check for salable
         $productCollection = $this->catalog->getProductCollectionFromIds($productIds);
