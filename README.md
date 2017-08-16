@@ -17,11 +17,11 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 
 ## V2.3.0
 
-##### Improvements
+###### Improvements
 
  - We've done a large amount of code refactoring and have implemented main Magento extension best practices.
  
-##### Bug fixes 
+###### Bug fixes 
  - The order sync no longer gets stuck due to missing additional info that’s required.
  - Coupon codes no longer expire after an hour despite the expiration being set beyond an hour.
  - We’ve fixed the response that’s returned when Feefo authorisation fails.
