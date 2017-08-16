@@ -28,11 +28,11 @@ You are welcome to contribute to dotmailer for Magento! You can either:
  - Security has been enhanced for external dynamic content so that links typecast the expected input.
  - Support is no longer provided for PHP 5.5.
  - The cron default config for orders has been fixed.
- - domready fixes have been implemented for easy email capture, mail check, ROI, tracking code, fancyBox and log viewer.
+ - JavaScript ‘DOM ready’ fixes have been implemented for easy email capture, MailCheck, ROI and page tracking code, fancyBox and log viewer.
  - A problem with disabling the customer registration email has been fixed.
  - As a security update, we’ve removed usage of ‘serialize/unserialize’ and using json_encode/json_decode instead.
  - A security update has been implemented for the permission in var/export/email and /var/export/email/archive folders, plus usage of ‘umask’ has been removed.
- - zend mail SMTP transport is now compatible with Magento 2.2 changes.
+ - The transport file from the Zend Mail library is now compatible with Magento 2.2.
  - Foreign keys have been added to the email_catalog table’s catalog_product_entity, and to email_order table’s sales_order.
   
 ## V2.2.1
