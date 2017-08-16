@@ -15,6 +15,26 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.3.0
+
+##### Improvements
+
+ - We've done a large amount of code refactoring and have implemented main Magento extension best practices.
+ 
+##### Bug fixes 
+ - The order sync no longer gets stuck due to missing additional info that’s required.
+ - Coupon codes no longer expire after an hour despite the expiration being set beyond an hour.
+ - We’ve fixed the response that’s returned when Feefo authorisation fails.
+ - Security has been enhanced for external dynamic content so that links typecast the expected input.
+ - Support is no longer provided for PHP 5.5.
+ - The cron default config for orders has been fixed.
+ - domready fixes have been implemented for easy email capture, mail check, ROI, tracking code, fancyBox and log viewer.
+ - A problem with disabling the customer registration email has been fixed.
+ - As a security update, we’ve removed usage of ‘serialize/unserialize’ and using json_encode/json_decode instead.
+ - A security update has been implemented for the permission in var/export/email and /var/export/email/archive folders, plus usage of ‘umask’ has been removed.
+ - zend mail SMTP transport is now compatible with Magento 2.2 changes.
+ - Foreign keys have been added to the email_catalog table’s catalog_product_entity, and to email_order table’s sales_order.
+  
 ## V2.2.1
 
 ###### Bug fixes
