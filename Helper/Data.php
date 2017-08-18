@@ -1235,13 +1235,39 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getId()
         );
+
         unset($mappedData['custom_attributes'], $mappedData['abandoned_prod_name']);
+
+        //@todo check for enterprise version ?!?
+        $enterpriseMapping = $this->getEnterpriseAttributes($website);
+        if ($enterpriseMapping) {
+            $mappedData = array_merge($mappedData, $enterpriseMapping);
+        }
         //skip non mapped customer datafields
         foreach ($mappedData as $key => $value) {
             if (!$value) {
                 unset($mappedData[$key]);
             }
         }
+
+        return $mappedData;
+    }
+    /**
+     * Enterprise data datafields attributes.
+     *
+     * @param int $website
+     *
+     * @return array/null
+     *
+     */
+    public function getEnterpriseAttributes($website = 0)
+    {
+        $store = $website->getDefaultStore();
+        $mappedData = $this->scopeConfig->getValue(
+            'connector_data_mapping/enterprise_data',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store->getId()
+        );
 
         return $mappedData;
     }
