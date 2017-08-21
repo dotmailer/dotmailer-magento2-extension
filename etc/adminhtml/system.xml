@@ -312,7 +312,7 @@
             </group>
             <group id="enterprise_data" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1">
                 <label>Enterprise Data</label>
-                <field id="reward_points" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="reward_points_heading" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Reward Points</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
