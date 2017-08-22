@@ -51,9 +51,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $store;
 
     /**
-     * @var \Magento\Framework\Module\ModuleListInterface
+     * @var \Magento\Framework\Module\FullModuleList
      */
-    public $moduleInterface;
+    public $fullModuleList;
 
     /**
      * @var \Magento\Customer\Model\CustomerFactory
@@ -121,7 +121,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
-     * @param \Magento\Framework\Module\ModuleListInterface $moduleListInterface
+     * @param \Magento\Framework\Module\FullModuleList $fullModuleList
      * @param \Magento\Store\Model\Store $store
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
@@ -142,7 +142,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
-        \Magento\Framework\Module\ModuleListInterface $moduleListInterface,
+        \Magento\Framework\Module\FullModuleList $fullModuleList,
         \Magento\Store\Model\Store $store,
         \Magento\Framework\App\Config\Storage\Writer $writer,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
@@ -160,7 +160,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->resourceConfig   = $resourceConfig;
         $this->storeManager     = $storeManager;
         $this->customerFactory  = $customerFactory;
-        $this->moduleInterface  = $moduleListInterface;
+        $this->fullModuleList  = $fullModuleList;
         $this->store            = $store;
         $this->writer = $writer;
         $this->clientFactory = $clientFactory;
@@ -1238,11 +1238,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         unset($mappedData['custom_attributes'], $mappedData['abandoned_prod_name']);
 
-        //@todo check for enterprise version ?!?
-        $enterpriseMapping = $this->getEnterpriseAttributes($website);
-        if ($enterpriseMapping) {
-            $mappedData = array_merge($mappedData, $enterpriseMapping);
+        //Only if enterprise running
+        if ($this->isEnterprise()) {
+            $enterpriseMapping = $this->getEnterpriseAttributes($website);
+            if ($enterpriseMapping) {
+                $mappedData = array_merge($mappedData, $enterpriseMapping);
+            }
         }
+
         //skip non mapped customer datafields
         foreach ($mappedData as $key => $value) {
             if (!$value) {
@@ -1610,7 +1613,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getConnectorVersion()
     {
-        return $this->moduleInterface->getOne(self::MODULE_NAME)['setup_version'];
+        return $this->fullModuleList->getOne(self::MODULE_NAME)['setup_version'];
     }
 
     /**
@@ -1761,5 +1764,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $quoteItems = $quoteModel->getAllItems();
 
         return $quoteItems;
+    }
+
+    /**
+     * Check if running Magento edition is enterprise
+     *
+     * @return bool
+     */
+    public function isEnterprise()
+    {
+        $allModules = $this->fullModuleList->getAll();
+
+        if (isset($allModules['Magento_Reward']) && isset($allModules['Magento_GiftCard'])) {
+            return true;
+        }
+
+        return false;
     }
 }

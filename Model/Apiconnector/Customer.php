@@ -134,6 +134,11 @@ class Customer
     private $historyFactory;
 
     /**
+     * @var \Magento\CustomerSegment\Model\ResourceModel\Customer
+     */
+    private $customerSegmentResource;
+
+    /**
      * Customer constructor.
      * @param \Magento\Reward\Model\Reward\HistoryFactory $historyFactory
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
@@ -152,6 +157,7 @@ class Customer
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\CustomerSegment\Model\ResourceModel\Customer $customerSegmentResource
      */
     public function __construct(
         \Magento\Reward\Model\Reward\HistoryFactory $historyFactory,
@@ -170,7 +176,8 @@ class Customer
         \Magento\Customer\Model\GroupFactory $groupFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\CustomerSegment\Model\ResourceModel\Customer $customerSegmentResource
     ) {
         $this->dateTime          = $dateTime;
         $this->_objectManager    = $objectManager;
@@ -189,6 +196,7 @@ class Customer
         $this->historyFactory    = $historyFactory;
         $this->rewardData        = $rewardData;
         $this->historyCollectionFactory = $historyCollectionFactory;
+        $this->customerSegmentResource = $customerSegmentResource;
     }
 
     /**
@@ -822,14 +830,13 @@ class Customer
      */
     public function getCustomerSegments()
     {
-        $contactModel = $this->_contactFactory->create()
-            ->getCollection()
-            ->addFieldToFilter('customer_id', $this->getCustomerId())
-            ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
-            ->setPageSize(1)
-            ->getFirstItem();
-        if ($contactModel) {
-            return $contactModel->getSegmentIds();
+        $segmentIds = $this->customerSegmentResource->getCustomerWebsiteSegments(
+            $this->getCustomerId(),
+            $this->customer->getWebsiteId()
+        );
+
+        if (! empty($segmentIds)) {
+            return implode(',', $segmentIds);
         }
 
         return '';
