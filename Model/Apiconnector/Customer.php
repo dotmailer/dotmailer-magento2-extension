@@ -104,6 +104,16 @@ class Customer
         ];
 
     /**
+     * @var \Magento\Reward\Helper\Data
+     */
+    private $rewardData;
+
+    /**
+     * @var \Magento\Reward\Model\ResourceModel\Reward\History\CollectionFactory
+     */
+    private $historyCollectionFactory;
+
+    /**
      * @var \Magento\Customer\Model\ResourceModel\Group
      */
     private $groupResource;
@@ -119,26 +129,38 @@ class Customer
     private $productResource;
 
     /**
+     * @var \Magento\Reward\Model\Reward\HistoryFactory
+     */
+    private $historyFactory;
+
+    /**
+     * @var \Magento\CustomerSegment\Model\ResourceModel\Customer
+     */
+    private $customerSegmentResource;
+
+    /**
      * Customer constructor.
-     *
-     * @param \Magento\Catalog\Model\ResourceModel\Product               $productResource
-     * @param \Magento\Catalog\Model\ResourceModel\Category              $categoryResource
-     * @param \Magento\Customer\Model\ResourceModel\Group                $groupResource
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory                $contactFactory
-     * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
-     * @param \Magento\Framework\Stdlib\DateTime                         $dateTime
-     * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
+     * @param \Magento\Reward\Model\Reward\HistoryFactory $historyFactory
+     * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
+     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
+     * @param \Magento\Customer\Model\ResourceModel\Group $groupResource
+     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                         $helper
-     * @param \Magento\Customer\Model\GroupFactory                       $groupFactory
-     * @param \Magento\Newsletter\Model\SubscriberFactory                $subscriberFactory
-     * @param \Magento\Catalog\Model\CategoryFactory                     $categoryFactory
-     * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
-     *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Reward\Helper\Data $rewardData
+     * @param \Magento\Reward\Model\ResourceModel\Reward\History\CollectionFactory $historyCollectionFactory
+     * @param \Magento\Customer\Model\GroupFactory $groupFactory
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\CustomerSegment\Model\ResourceModel\Customer $customerSegmentResource
      */
     public function __construct(
+        \Magento\Reward\Model\Reward\HistoryFactory $historyFactory,
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
         \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
         \Magento\Customer\Model\ResourceModel\Group $groupResource,
@@ -149,10 +171,13 @@ class Customer
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Reward\Helper\Data $rewardData,
+        \Magento\Reward\Model\ResourceModel\Reward\History\CollectionFactory $historyCollectionFactory,
         \Magento\Customer\Model\GroupFactory $groupFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\CustomerSegment\Model\ResourceModel\Customer $customerSegmentResource
     ) {
         $this->dateTime          = $dateTime;
         $this->_objectManager    = $objectManager;
@@ -167,7 +192,11 @@ class Customer
         $this->productFactory    = $productFactory;
         $this->groupResource     = $groupResource;
         $this->categoryResource  = $categoryResource;
-        $this->productResource = $productResource;
+        $this->productResource   = $productResource;
+        $this->historyFactory    = $historyFactory;
+        $this->rewardData        = $rewardData;
+        $this->historyCollectionFactory = $historyCollectionFactory;
+        $this->customerSegmentResource = $customerSegmentResource;
     }
 
     /**
@@ -801,14 +830,13 @@ class Customer
      */
     public function getCustomerSegments()
     {
-        $contactModel = $this->_contactFactory->create()
-            ->getCollection()
-            ->addFieldToFilter('customer_id', $this->getCustomerId())
-            ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
-            ->setPageSize(1)
-            ->getFirstItem();
-        if ($contactModel) {
-            return $contactModel->getSegmentIds();
+        $segmentIds = $this->customerSegmentResource->getCustomerWebsiteSegments(
+            $this->getCustomerId(),
+            $this->customer->getWebsiteId()
+        );
+
+        if (! empty($segmentIds)) {
+            return implode(',', $segmentIds);
         }
 
         return '';
@@ -821,9 +849,8 @@ class Customer
      */
     public function getLastUsedDate()
     {
-        //last used from the reward history based on the points delta used
-        //enterprise module
-        $lastUsed = $this->historyFactory->create()
+        //last used from the reward history based on the points delta used enterprise module
+        $lastUsed = $this->historyCollectionFactory->create()
             ->addCustomerFilter($this->customer->getId())
             ->addWebsiteFilter($this->customer->getWebsiteId())
             ->addFieldToFilter('points_delta', ['lt' => 0])
@@ -833,7 +860,7 @@ class Customer
             ->getCreatedAt();
         //for any valid date
         if ($lastUsed) {
-            return $this->helper->formatDate($lastUsed, 'short', true);
+            return $this->dateTime->formatDate($lastUsed, true);
         }
 
         return '';
@@ -998,7 +1025,7 @@ class Customer
      */
     public function getRewardPoints()
     {
-        if (!$this->reward) {
+        if (! $this->reward) {
             $this->_setReward();
         }
 
@@ -1014,7 +1041,7 @@ class Customer
      *
      * @return mixed
      */
-    public function getRewardAmount()
+    public function getRewardAmmount()
     {
         if (!$this->reward) {
             $this->_setReward();
@@ -1061,12 +1088,10 @@ class Customer
      */
     public function _setReward()
     {
-        if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')) {
-            $enHelper = $this->_objectManager->create('Magento\Reward\Helper\Reward');
-            $collection = $rewardModel->getCollection()
+        $collection = $this->historyCollectionFactory->create()
                 ->addCustomerFilter($this->customer->getId())
                 ->addWebsiteFilter($this->customer->getWebsiteId())
-                ->setExpiryConfig($enHelper->getExpiryConfig())
+                ->setExpiryConfig($this->rewardData->getExpiryConfig())
                 ->addExpirationDate($this->customer->getWebsiteId())
                 ->skipExpiredDuplicates()
                 ->setDefaultOrder();
@@ -1076,9 +1101,6 @@ class Customer
                 ->getFirstItem();
 
             $this->reward = $item;
-        } else {
-            $this->reward = true;
-        }
     }
 
     /**
