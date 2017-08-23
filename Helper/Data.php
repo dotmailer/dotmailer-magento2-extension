@@ -51,7 +51,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $store;
 
     /**
-     * @var \Magento\Framework\Module\FullModuleList
+     * @var \Magento\Framework\Module\ModuleListInterface
      */
     public $fullModuleList;
 
@@ -121,7 +121,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
-     * @param \Magento\Framework\Module\FullModuleList $fullModuleList
+     * @param \Magento\Framework\Module\ModuleListInterface $moduleListInterface
      * @param \Magento\Store\Model\Store $store
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
@@ -142,7 +142,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
-        \Magento\Framework\Module\FullModuleList $fullModuleList,
+        \Magento\Framework\Module\ModuleListInterface $moduleListInterface,
         \Magento\Store\Model\Store $store,
         \Magento\Framework\App\Config\Storage\Writer $writer,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
@@ -160,7 +160,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->resourceConfig   = $resourceConfig;
         $this->storeManager     = $storeManager;
         $this->customerFactory  = $customerFactory;
-        $this->fullModuleList  = $fullModuleList;
+        $this->fullModuleList   = $moduleListInterface;
         $this->store            = $store;
         $this->writer = $writer;
         $this->clientFactory = $clientFactory;
