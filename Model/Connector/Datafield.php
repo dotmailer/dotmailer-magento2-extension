@@ -348,7 +348,7 @@ class Datafield
         $contactDataFields = $this->contactDatafields;
 
         //If enterprise merge enterprise data fields
-        if ($this->helper->isEnterprise()) {
+        if (! empty($this->getEnterpriseDataFields())) {
             $contactDataFields = array_merge($this->contactEnterpriseDataFields, $contactDataFields);
         }
 
@@ -386,6 +386,10 @@ class Datafield
      */
     public function getEnterpriseDataFields()
     {
+        if (! $this->helper->isEnterprise()) {
+            return [];
+        }
+
         return $this->contactEnterpriseDataFields;
     }
 }
