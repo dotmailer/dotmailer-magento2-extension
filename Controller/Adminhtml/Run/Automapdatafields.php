@@ -69,7 +69,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
         } else {
             // get all possible datatifileds
             $datafields = $this->datafield->getContactDatafields();
-            $eeFields = $this->datafield->contactEnterpriseDataFields;
+            $eeFields = $this->datafield->getEnterpriseDataFields();
             foreach ($datafields as $key => $datafield) {
                 $response = $client->postDataFields($datafield);
 
@@ -88,22 +88,17 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
                         $scopeId = '0';
                     }
 
+                    //Config path depends on EE or CE
+                    $configPath = isset($eeFields[$key]) ? 'connector_data_mapping/enterprise_data/' :
+                        'connector_data_mapping/customer_data/';
+
                     //map the successfully created datafield
-                    if (isset($eeFields[$key])) {
-                        $this->data->saveConfigData(
-                            'connector_data_mapping/enterprise_data/' . $key,
-                            strtoupper($datafield['name']),
-                            $scope,
-                            $scopeId
-                        );
-                    } else {
-                        $this->data->saveConfigData(
-                            'connector_data_mapping/customer_data/' . $key,
-                            strtoupper($datafield['name']),
-                            $scope,
-                            $scopeId
-                        );
-                    }
+                    $this->data->saveConfigData(
+                        $configPath . $key,
+                        strtoupper($datafield['name']),
+                        $scope,
+                        $scopeId
+                    );
                     $this->data->log('successfully connected : ' . $datafield['name']);
                 }
             }

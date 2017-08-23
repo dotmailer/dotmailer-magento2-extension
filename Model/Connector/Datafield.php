@@ -280,7 +280,7 @@ class Datafield
             ],
         ];
 
-    public $contactEnterpriseDataFields
+    private $contactEnterpriseDataFields
         = [
             'reward_points' => [
                'name' => 'REWARD_POINTS',
@@ -379,5 +379,13 @@ class Datafield
         ];
 
         return $this->datafields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEnterpriseDataFields()
+    {
+        return $this->contactEnterpriseDataFields;
     }
 }
