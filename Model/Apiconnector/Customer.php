@@ -128,6 +128,9 @@ class Customer
      */
     private $dateTime;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Model\EnterpriseFactory
+     */
     private $enterpriseFactory;
 
     CONST EE_REWARD_HISTORY_COLLECTION = '\\Magento\Reward\\Model\\ResourceModel\\Reward\\History\\CollectionFactory';
