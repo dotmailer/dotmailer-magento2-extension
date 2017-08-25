@@ -820,7 +820,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string $eavAttribute
      * @param string $eavAttributeOptionValue
      *
-     * @return \Zend_Db_Expr
+     * @return string|\Zend_Db_Expr
      */
     private function buildMostData(
         $salesOrder,
@@ -838,7 +838,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         if ($rowIdExists) {
             $mostData = new \Zend_Db_Expr(
                 "(
-                    SELECT eaov.value from $salesOrder sfo
+                    SELECT eaov.option_id from $salesOrder sfo
                     LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                     LEFT JOIN $catalogProductEntityInt pei on pei.row_id = sfoi.product_id
                     LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
@@ -846,7 +846,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     WHERE sfo.customer_id = e.entity_id 
                     AND ea.attribute_code = 'manufacturer'
                     AND eaov.value is not null
-                    GROUP BY eaov.value
+                    GROUP BY eaov.option_id
                     HAVING count(*) > 0
                     ORDER BY count(*) DESC
                     LIMIT 1
@@ -855,7 +855,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         } else {
             $mostData = new \Zend_Db_Expr(
                 "(
-                    SELECT eaov.value from $salesOrder sfo
+                    SELECT eaov.option_id from $salesOrder sfo
                     LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                     LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
                     LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
@@ -863,7 +863,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     WHERE sfo.customer_id = e.entity_id
                     AND ea.attribute_code = 'manufacturer'
                     AND eaov.value is not null
-                    GROUP BY eaov.value
+                    GROUP BY eaov.option_id
                     HAVING count(*) > 0
                     ORDER BY count(*) DESC
                     LIMIT 1

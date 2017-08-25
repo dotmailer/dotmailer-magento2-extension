@@ -119,6 +119,11 @@ class Customer
     private $productResource;
 
     /**
+     * @var \Magento\Eav\Model\ConfigFactory
+     */
+    private $eavConfigFactory;
+
+    /**
      * Customer constructor.
      *
      * @param \Magento\Catalog\Model\ResourceModel\Product               $productResource
@@ -135,6 +140,7 @@ class Customer
      * @param \Magento\Newsletter\Model\SubscriberFactory                $subscriberFactory
      * @param \Magento\Catalog\Model\CategoryFactory                     $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
+     * @param \Magento\Eav\Model\ConfigFactory                           $eavConfigFactory
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -152,7 +158,8 @@ class Customer
         \Magento\Customer\Model\GroupFactory $groupFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Eav\Model\ConfigFactory $eavConfigFactory
     ) {
         $this->dateTime          = $dateTime;
         $this->_objectManager    = $objectManager;
@@ -168,6 +175,7 @@ class Customer
         $this->groupResource     = $groupResource;
         $this->categoryResource  = $categoryResource;
         $this->productResource = $productResource;
+        $this->eavConfigFactory = $eavConfigFactory;
     }
 
     /**
@@ -848,10 +856,10 @@ class Customer
     {
         $id = $this->customer->getMostCategoryId();
         if ($id) {
-            $category = $this->categoryFactory->create();
+            $category = $this->categoryFactory->create()
+                ->setStoreId($this->customer->getStoreId());
             $this->categoryResource->load($category, $id);
-            return $category->setStoreId($this->customer->getStoreId())
-                ->getName();
+            return $category->getName();
         }
 
         return '';
@@ -864,9 +872,28 @@ class Customer
      */
     public function getMostPurBrand()
     {
-        $brand = $this->customer->getMostBrand();
-        if ($brand) {
-            return $brand;
+        $optionId = $this->customer->getMostBrand();
+
+        //attribute mapped from the config
+        $attributeCode = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            $this->customer->getWebsiteId()
+        );
+
+        //if the id and attribute found
+        if ($optionId && $attributeCode) {
+
+            $attribute = $this->eavConfigFactory->create()
+                ->getAttribute(\Magento\Catalog\Model\Product::ENTITY, $attributeCode);
+
+            $value = $attribute->setStoreId($this->customer->getStoreId())
+                ->getSource()
+                ->getOptionText($optionId);
+
+            //check for brand text
+            if ($value) {
+                return $value;
+            }
         }
 
         return '';
@@ -911,10 +938,10 @@ class Customer
     {
         $id = $this->customer->getFirstCategoryId();
         if ($id) {
-            $category = $this->categoryFactory->create();
+            $category = $this->categoryFactory->create()
+                ->setStoreId($this->customer->getStoreId());
             $this->categoryResource->load($category, $id);
-            return $category->setStoreId($this->customer->getStoreId())
-                ->getName();
+            return $category->getName();
         }
 
         return '';
@@ -930,10 +957,9 @@ class Customer
         $categoryId = $this->customer->getLastCategoryId();
         //customer last category id
         if ($categoryId) {
-            $category = $this->categoryFactory->create();
-            $category->setStoreId($this->customer->getStoreId());
+            $category = $this->categoryFactory->create()
+                ->setStoreId($this->customer->getStoreId());
             $this->categoryResource->load($category, $categoryId);
-
             return $category->getName();
         }
 
@@ -949,7 +975,7 @@ class Customer
     {
         $id = $this->customer->getProductIdForFirstBrand();
 
-        return $this->_getBrandValue($id);
+        return $this->getBrandValue($id);
     }
 
     /**
@@ -961,30 +987,37 @@ class Customer
     {
         $id = $this->customer->getProductIdForLastBrand();
 
-        return $this->_getBrandValue($id);
+        return $this->getBrandValue($id);
     }
 
     /**
      * @param mixed $id
-     * @return void
+     * @return string
      */
-    public function _getBrandValue($id)
+    private function getBrandValue($id)
     {
         //attribute mapped from the config
-        $attribute = $this->helper->getWebsiteConfig(
+        $attributeCode = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
             $this->customer->getWebsiteId()
         );
+        $storeId = $this->customer->getStoreId();
+
         //if the id and attribute found
-        if ($id && $attribute) {
+        if ($id && $attributeCode) {
             $product = $this->productFactory->create();
-            $product = $product->setStoreId($this->customer->getStoreId());
+            $product = $product->setStoreId($storeId);
             $this->productResource->load($product, $id);
 
-            $text = $product->getAttributeText($attribute);
+            $value = $product->getResource()
+                ->getAttribute($attributeCode)
+                ->setStoreId($storeId)
+                ->getSource()
+                ->getOptionText($product->getData($attributeCode));
+
             //check for brand text
-            if ($text) {
-                return $text;
+            if ($value) {
+                return $value;
             }
         }
 
