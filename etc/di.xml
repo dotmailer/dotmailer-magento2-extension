@@ -21,6 +21,9 @@
     <type name="Magento\SalesRule\Model\ResourceModel\Rule\Collection">
         <plugin name="ddg_sales_rule_collection" type="Dotdigitalgroup\Email\Plugin\RuleCollectionPlugin"/>
     </type>
+    <type name="Magento\CustomerSegment\Model\ResourceModel\Segment">
+        <plugin name="ddg_customer_segment_resource" type="Dotdigitalgroup\Email\Plugin\SegmentPlugin" sortOrder="1" disabled="false" />
+    </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
             <argument name="prices" xsi:type="array">

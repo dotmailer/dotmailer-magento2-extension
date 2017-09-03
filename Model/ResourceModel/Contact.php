@@ -1034,4 +1034,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         return $executedAt;
     }
+
+    /**
+     * Set contacts to re-import by customer ids
+     *
+     * @param $customerIds
+     */
+    public function setNotImportedByCustomerIds($customerIds)
+    {
+        $this->getConnection()->update(
+            $this->getMainTable(),
+            ['email_imported' => new \Zend_Db_Expr('null')],
+            ["customer_id IN (?)" => $customerIds]
+        );
+    }
 }
