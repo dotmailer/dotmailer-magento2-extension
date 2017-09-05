@@ -277,7 +277,7 @@ class Books extends \Magento\Framework\View\Element\Template
             $contact = $this->_getApiClient()->postContacts(
                 $this->getCustomer()->getEmail()
             );
-            if ($contact->id) {
+            if (isset($contact->id)) {
                 $this->customerSession->setConnectorContactId($contact->id);
                 $this->contactId = $contact->id;
             }
