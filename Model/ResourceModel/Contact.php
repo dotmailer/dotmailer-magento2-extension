@@ -25,6 +25,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $schelduleFactory;
 
     /**
+     * @var string|boolean
+     */
+    private $brand;
+
+    /**
      * Initialize resource.
      *
      * @return null
@@ -829,6 +834,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $eavAttribute,
         $eavAttributeOptionValue
     ) {
+        if (! $this->brand) {
+            return new \Zend_Db_Expr('NULL');
+        }
+
         /**
          * CatalogStaging fix.
          * @todo this will fix https://github.com/magento/magento2/issues/6478
@@ -844,7 +853,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
                     LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
                     WHERE sfo.customer_id = e.entity_id 
-                    AND ea.attribute_code = 'manufacturer'
+                    AND ea.attribute_code = '$this->brand'
                     AND eaov.value is not null
                     GROUP BY eaov.option_id
                     HAVING count(*) > 0
@@ -861,7 +870,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
                     LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
                     WHERE sfo.customer_id = e.entity_id
-                    AND ea.attribute_code = 'manufacturer'
+                    AND ea.attribute_code = '$this->brand'
                     AND eaov.value is not null
                     GROUP BY eaov.option_id
                     HAVING count(*) > 0
@@ -871,6 +880,19 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         return $mostData;
+    }
+
+    /**
+     * Set brand attribute
+     *
+     * @param $brand
+     * @return $this
+     */
+    public function setBrandAttribute($brand)
+    {
+        $this->brand = $brand;
+
+        return $this;
     }
 
     /**

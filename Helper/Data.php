@@ -1736,4 +1736,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $quoteItems;
     }
+
+    /**
+     * Get brand attribute selected from config by website id
+     *
+     * @param $websiteId
+     * @return string|boolean
+     */
+    public function getBrandAttributeByWebsiteId($websiteId)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            $websiteId
+        );
+    }
 }
