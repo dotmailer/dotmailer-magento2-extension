@@ -854,15 +854,8 @@ class Customer
      */
     public function getMostPurCategory()
     {
-        $id = $this->customer->getMostCategoryId();
-        if ($id) {
-            $category = $this->categoryFactory->create()
-                ->setStoreId($this->customer->getStoreId());
-            $this->categoryResource->load($category, $id);
-            return $category->getName();
-        }
-
-        return '';
+        $categoryId = $this->customer->getMostCategoryId();
+        return $this->getCategoryValue($categoryId);
     }
 
     /**
@@ -936,15 +929,8 @@ class Customer
      */
     public function getFirstCategoryPur()
     {
-        $id = $this->customer->getFirstCategoryId();
-        if ($id) {
-            $category = $this->categoryFactory->create()
-                ->setStoreId($this->customer->getStoreId());
-            $this->categoryResource->load($category, $id);
-            return $category->getName();
-        }
-
-        return '';
+        $categoryId = $this->customer->getFirstCategoryId();
+        return $this->getCategoryValue($categoryId);
     }
 
     /**
@@ -955,7 +941,16 @@ class Customer
     public function getLastCategoryPur()
     {
         $categoryId = $this->customer->getLastCategoryId();
-        //customer last category id
+
+        return $this->getCategoryValue($categoryId);
+    }
+
+    /**
+     * @param $categoryId
+     * @return string
+     */
+    private function getCategoryValue($categoryId)
+    {
         if ($categoryId) {
             $category = $this->categoryFactory->create()
                 ->setStoreId($this->customer->getStoreId());
@@ -974,7 +969,6 @@ class Customer
     public function getFirstBrandPur()
     {
         $id = $this->customer->getProductIdForFirstBrand();
-
         return $this->getBrandValue($id);
     }
 
