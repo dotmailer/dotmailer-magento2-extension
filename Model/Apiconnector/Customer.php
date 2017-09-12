@@ -178,7 +178,7 @@ class Customer
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Dotdigitalgroup\Email\Model\EnterpriseFactory $enterpriseFactory
+        \Dotdigitalgroup\Email\Model\EnterpriseFactory $enterpriseFactory,
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory
     ) {
         $this->dateTime          = $dateTime;

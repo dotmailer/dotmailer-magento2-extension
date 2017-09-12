@@ -1781,7 +1781,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return false;
     }
-     * Get brand attribute selected from config by website id
+
+    /** Get brand attribute selected from config by website id
      *
      * @param $websiteId
      * @return string|boolean
