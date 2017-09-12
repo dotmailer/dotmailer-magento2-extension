@@ -23,6 +23,8 @@
     </type>
     <type name="Magento\CustomerSegment\Model\ResourceModel\Segment">
         <plugin name="ddg_customer_segment_resource" type="Dotdigitalgroup\Email\Plugin\SegmentPlugin" sortOrder="1" disabled="false" />
+    <type name="Magento\Reports\Model\ResourceModel\Product\Collection">
+        <plugin name="ddg_reports_product_collection" type="Dotdigitalgroup\Email\Plugin\ReportsProductCollectionPlugin"/>
     </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
