@@ -154,6 +154,7 @@ class SubscriberWithSalesExporter
         $statuses = explode(',', $statuses);
 
         return $this->emailContactResource->create()
+            ->setBrandAttribute($this->helper->getBrandAttributeByWebsiteId($websiteId))
             ->getCollectionForSubscribersByEmails($emails, $statuses);
     }
 }

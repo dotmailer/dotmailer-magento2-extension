@@ -148,7 +148,7 @@
         <connector_configuration>
             <data_fields>
                 <order_status>complete,pending</order_status>
-                <brand_attribute>0</brand_attribute>
+                <brand_attribute>manufacturer</brand_attribute>
             </data_fields>
             <transactional_data>
                 <order_statuses>complete,pending</order_statuses>
