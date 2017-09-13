@@ -27,16 +27,16 @@ class ReportsProductCollectionPlugin
     /**
      * @param \Magento\Reports\Model\ResourceModel\Product\Collection $collection
      * @param callable $proceed
-     * @param $from
-     * @param $to
+     * @param string $from
+     * @param string $to
      *
      * @return \Magento\Reports\Model\ResourceModel\Product\Collection
      */
     public function aroundAddViewsCount(
         \Magento\Reports\Model\ResourceModel\Product\Collection $collection,
         callable $proceed,
-        $from,
-        $to
+        $from = '',
+        $to = ''
     ){
         /**
          * Getting event type id for catalog_product_view event
