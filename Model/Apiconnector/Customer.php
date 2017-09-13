@@ -133,9 +133,9 @@ class Customer
      */
     private $enterpriseFactory;
 
-    CONST EE_REWARD_HISTORY_COLLECTION = '\\Magento\Reward\\Model\\ResourceModel\\Reward\\History\\CollectionFactory';
-    CONST EE_CUSTOMER_SEGMENT_RESOURCE = '\\Magento\\CustomerSegment\\Model\\ResourceModel\\Customer';
-    CONST EE_REWARD_DATA = '\\Magento\\Reward\\Helper\\Data';
+    const EE_REWARD_HISTORY_COLLECTION = '\\Magento\Reward\\Model\\ResourceModel\\Reward\\History\\CollectionFactory';
+    const EE_CUSTOMER_SEGMENT_RESOURCE = '\\Magento\\CustomerSegment\\Model\\ResourceModel\\Customer';
+    const EE_REWARD_DATA = '\\Magento\\Reward\\Helper\\Data';
     /**
      * @var \Magento\Eav\Model\ConfigFactory
      */
@@ -895,7 +895,6 @@ class Customer
 
         //if the id and attribute found
         if ($optionId && $attributeCode) {
-
             $attribute = $this->eavConfigFactory->create()
                 ->getAttribute(\Magento\Catalog\Model\Product::ENTITY, $attributeCode);
 

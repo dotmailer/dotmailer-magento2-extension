@@ -303,7 +303,6 @@ class Subscriber
 
         //if the id and attribute found
         if ($optionId && $attributeCode) {
-
             $attribute = $this->eavConfigFactory->create()
                 ->getAttribute(\Magento\Catalog\Model\Product::ENTITY, $attributeCode);
 
