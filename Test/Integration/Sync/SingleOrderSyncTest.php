@@ -195,5 +195,4 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
 
         $emailOrder->save();
     }
-
 }
