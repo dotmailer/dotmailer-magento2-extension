@@ -119,22 +119,49 @@ class Customer
     private $productResource;
 
     /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    private $store;
+
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime
+     */
+    private $dateTime;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\EnterpriseFactory
+     */
+    private $enterpriseFactory;
+
+    const EE_REWARD_HISTORY_COLLECTION = '\\Magento\Reward\\Model\\ResourceModel\\Reward\\History\\CollectionFactory';
+    const EE_CUSTOMER_SEGMENT_RESOURCE = '\\Magento\\CustomerSegment\\Model\\ResourceModel\\Customer';
+    const EE_REWARD_DATA = '\\Magento\\Reward\\Helper\\Data';
+    /**
+     * @var \Magento\Eav\Model\ConfigFactory
+     */
+    private $eavConfigFactory;
+
+    /**
      * Customer constructor.
-     *
-     * @param \Magento\Catalog\Model\ResourceModel\Product               $productResource
-     * @param \Magento\Catalog\Model\ResourceModel\Category              $categoryResource
-     * @param \Magento\Customer\Model\ResourceModel\Group                $groupResource
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory                $contactFactory
-     * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager
-     * @param \Magento\Framework\Stdlib\DateTime                         $dateTime
-     * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
+     * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
+     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
+     * @param \Magento\Customer\Model\ResourceModel\Group $groupResource
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Customer\Model\GroupFactory $groupFactory
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Dotdigitalgroup\Email\Model\EnterpriseFactory $enterpriseFactory
      * @param \Dotdigitalgroup\Email\Helper\Data                         $helper
      * @param \Magento\Customer\Model\GroupFactory                       $groupFactory
      * @param \Magento\Newsletter\Model\SubscriberFactory                $subscriberFactory
      * @param \Magento\Catalog\Model\CategoryFactory                     $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
+     * @param \Magento\Eav\Model\ConfigFactory                           $eavConfigFactory
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -142,23 +169,21 @@ class Customer
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
         \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
         \Magento\Customer\Model\ResourceModel\Group $groupResource,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Stdlib\DateTime $dateTime,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\GroupFactory $groupFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Dotdigitalgroup\Email\Model\EnterpriseFactory $enterpriseFactory,
+        \Magento\Eav\Model\ConfigFactory $eavConfigFactory
     ) {
         $this->dateTime          = $dateTime;
-        $this->_objectManager    = $objectManager;
         $this->helper            = $helper;
-        $this->_store            = $storeManager;
-        $this->_contactFactory   = $contactFactory;
+        $this->store             = $storeManager;
         $this->reviewCollection  = $reviewCollectionFactory;
         $this->orderCollection   = $collectionFactory;
         $this->groupFactory      = $groupFactory;
@@ -167,7 +192,10 @@ class Customer
         $this->productFactory    = $productFactory;
         $this->groupResource     = $groupResource;
         $this->categoryResource  = $categoryResource;
+        $this->productResource   = $productResource;
+        $this->enterpriseFactory = $enterpriseFactory;
         $this->productResource = $productResource;
+        $this->eavConfigFactory = $eavConfigFactory;
     }
 
     /**
@@ -691,7 +719,7 @@ class Customer
     public function _getWebsiteName()
     {
         $websiteId = $this->customer->getWebsiteId();
-        $website = $this->_store->getWebsite($websiteId);
+        $website = $this->store->getWebsite($websiteId);
         if ($website) {
             return $website->getName();
         }
@@ -705,7 +733,7 @@ class Customer
     public function _getStoreName()
     {
         $storeId = $this->customer->getStoreId();
-        $store = $this->_store->getStore($storeId);
+        $store = $this->store->getStore($storeId);
 
         if ($store) {
             return $store->getName();
@@ -801,14 +829,14 @@ class Customer
      */
     public function getCustomerSegments()
     {
-        $contactModel = $this->_contactFactory->create()
-            ->getCollection()
-            ->addFieldToFilter('customer_id', $this->getCustomerId())
-            ->addFieldToFilter('website_id', $this->customer->getWebsiteId())
-            ->setPageSize(1)
-            ->getFirstItem();
-        if ($contactModel) {
-            return $contactModel->getSegmentIds();
+        $customerSegmentResource = $this->enterpriseFactory->create(self::EE_CUSTOMER_SEGMENT_RESOURCE, []);
+        $segmentIds = $customerSegmentResource->getCustomerWebsiteSegments(
+            $this->getCustomerId(),
+            $this->customer->getWebsiteId()
+        );
+
+        if (! empty($segmentIds)) {
+            return implode(',', $segmentIds);
         }
 
         return '';
@@ -821,9 +849,9 @@ class Customer
      */
     public function getLastUsedDate()
     {
-        //last used from the reward history based on the points delta used
-        //enterprise module
-        $lastUsed = $this->historyFactory->create()
+        $historyCollectionFactory = $this->enterpriseFactory->create(self::EE_REWARD_HISTORY_COLLECTION, []);
+        //last used from the reward history based on the points delta used enterprise module
+        $lastUsed = $historyCollectionFactory->create()
             ->addCustomerFilter($this->customer->getId())
             ->addWebsiteFilter($this->customer->getWebsiteId())
             ->addFieldToFilter('points_delta', ['lt' => 0])
@@ -833,7 +861,7 @@ class Customer
             ->getCreatedAt();
         //for any valid date
         if ($lastUsed) {
-            return $this->helper->formatDate($lastUsed, 'short', true);
+            return $this->dateTime->formatDate($lastUsed, true);
         }
 
         return '';
@@ -846,15 +874,8 @@ class Customer
      */
     public function getMostPurCategory()
     {
-        $id = $this->customer->getMostCategoryId();
-        if ($id) {
-            $category = $this->categoryFactory->create();
-            $this->categoryResource->load($category, $id);
-            return $category->setStoreId($this->customer->getStoreId())
-                ->getName();
-        }
-
-        return '';
+        $categoryId = $this->customer->getMostCategoryId();
+        return $this->getCategoryValue($categoryId);
     }
 
     /**
@@ -864,9 +885,27 @@ class Customer
      */
     public function getMostPurBrand()
     {
-        $brand = $this->customer->getMostBrand();
-        if ($brand) {
-            return $brand;
+        $optionId = $this->customer->getMostBrand();
+
+        //attribute mapped from the config
+        $attributeCode = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            $this->customer->getWebsiteId()
+        );
+
+        //if the id and attribute found
+        if ($optionId && $attributeCode) {
+            $attribute = $this->eavConfigFactory->create()
+                ->getAttribute(\Magento\Catalog\Model\Product::ENTITY, $attributeCode);
+
+            $value = $attribute->setStoreId($this->customer->getStoreId())
+                ->getSource()
+                ->getOptionText($optionId);
+
+            //check for brand text
+            if ($value) {
+                return $value;
+            }
         }
 
         return '';
@@ -909,15 +948,8 @@ class Customer
      */
     public function getFirstCategoryPur()
     {
-        $id = $this->customer->getFirstCategoryId();
-        if ($id) {
-            $category = $this->categoryFactory->create();
-            $this->categoryResource->load($category, $id);
-            return $category->setStoreId($this->customer->getStoreId())
-                ->getName();
-        }
-
-        return '';
+        $categoryId = $this->customer->getFirstCategoryId();
+        return $this->getCategoryValue($categoryId);
     }
 
     /**
@@ -928,12 +960,20 @@ class Customer
     public function getLastCategoryPur()
     {
         $categoryId = $this->customer->getLastCategoryId();
-        //customer last category id
-        if ($categoryId) {
-            $category = $this->categoryFactory->create();
-            $category->setStoreId($this->customer->getStoreId());
-            $this->categoryResource->load($category, $categoryId);
 
+        return $this->getCategoryValue($categoryId);
+    }
+
+    /**
+     * @param $categoryId
+     * @return string
+     */
+    private function getCategoryValue($categoryId)
+    {
+        if ($categoryId) {
+            $category = $this->categoryFactory->create()
+                ->setStoreId($this->customer->getStoreId());
+            $this->categoryResource->load($category, $categoryId);
             return $category->getName();
         }
 
@@ -948,8 +988,7 @@ class Customer
     public function getFirstBrandPur()
     {
         $id = $this->customer->getProductIdForFirstBrand();
-
-        return $this->_getBrandValue($id);
+        return $this->getBrandValue($id);
     }
 
     /**
@@ -961,30 +1000,37 @@ class Customer
     {
         $id = $this->customer->getProductIdForLastBrand();
 
-        return $this->_getBrandValue($id);
+        return $this->getBrandValue($id);
     }
 
     /**
      * @param mixed $id
-     * @return void
+     * @return string
      */
-    public function _getBrandValue($id)
+    private function getBrandValue($id)
     {
         //attribute mapped from the config
-        $attribute = $this->helper->getWebsiteConfig(
+        $attributeCode = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
             $this->customer->getWebsiteId()
         );
+        $storeId = $this->customer->getStoreId();
+
         //if the id and attribute found
-        if ($id && $attribute) {
+        if ($id && $attributeCode) {
             $product = $this->productFactory->create();
-            $product = $product->setStoreId($this->customer->getStoreId());
+            $product = $product->setStoreId($storeId);
             $this->productResource->load($product, $id);
 
-            $text = $product->getAttributeText($attribute);
+            $value = $product->getResource()
+                ->getAttribute($attributeCode)
+                ->setStoreId($storeId)
+                ->getSource()
+                ->getOptionText($product->getData($attributeCode));
+
             //check for brand text
-            if ($text) {
-                return $text;
+            if ($value) {
+                return $value;
             }
         }
 
@@ -998,7 +1044,7 @@ class Customer
      */
     public function getRewardPoints()
     {
-        if (!$this->reward) {
+        if (! $this->reward) {
             $this->_setReward();
         }
 
@@ -1014,7 +1060,7 @@ class Customer
      *
      * @return mixed
      */
-    public function getRewardAmount()
+    public function getRewardAmmount()
     {
         if (!$this->reward) {
             $this->_setReward();
@@ -1061,12 +1107,12 @@ class Customer
      */
     public function _setReward()
     {
-        if ($rewardModel = $this->_objectManager->create('Magento\Reward\Model\Reward\History')) {
-            $enHelper = $this->_objectManager->create('Magento\Reward\Helper\Reward');
-            $collection = $rewardModel->getCollection()
+        $rewardData = $this->enterpriseFactory->create(self::EE_REWARD_DATA, []);
+        $historyCollectionFactory = $this->enterpriseFactory->create(self::EE_REWARD_HISTORY_COLLECTION, []);
+        $collection = $historyCollectionFactory->create()
                 ->addCustomerFilter($this->customer->getId())
                 ->addWebsiteFilter($this->customer->getWebsiteId())
-                ->setExpiryConfig($enHelper->getExpiryConfig())
+                ->setExpiryConfig($rewardData->getExpiryConfig())
                 ->addExpirationDate($this->customer->getWebsiteId())
                 ->skipExpiredDuplicates()
                 ->setDefaultOrder();
@@ -1076,9 +1122,6 @@ class Customer
                 ->getFirstItem();
 
             $this->reward = $item;
-        } else {
-            $this->reward = true;
-        }
     }
 
     /**

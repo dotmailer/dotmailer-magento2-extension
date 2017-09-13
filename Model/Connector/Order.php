@@ -201,9 +201,9 @@ class Order
         $payment = $orderData->getPayment();
 
         if ($payment) {
-            if($payment->getMethod()) {
+            if ($payment->getMethod()) {
                 $methodInstance = $payment->getMethodInstance($payment->getMethod());
-                if($methodInstance) {
+                if ($methodInstance) {
                     $this->payment = $methodInstance->getTitle();
                 }
             }

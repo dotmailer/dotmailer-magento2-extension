@@ -48,6 +48,11 @@ class Subscriber
     private $productResource;
 
     /**
+     * @var \Magento\Eav\Model\ConfigFactory
+     */
+    private $eavConfigFactory;
+
+    /**
      * Subscriber constructor.
      *
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
@@ -56,6 +61,7 @@ class Subscriber
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
@@ -63,7 +69,8 @@ class Subscriber
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Eav\Model\ConfigFactory $eavConfigFactory
     ) {
         $this->helper = $helper;
         $this->_store = $storeManager;
@@ -71,6 +78,7 @@ class Subscriber
         $this->productFactory = $productFactory;
         $this->categoryResource  = $categoryResource;
         $this->productResource = $productResource;
+        $this->eavConfigFactory = $eavConfigFactory;
     }
 
     /**
@@ -273,30 +281,42 @@ class Subscriber
      */
     public function getMostPurCategory()
     {
-        $id = $this->subscriber->getMostCategoryId();
-        if ($id) {
-            $category = $this->categoryFactory->create();
-            $this->categoryResource->load($category, $id);
-
-            return $category->setStoreId($this->subscriber->getStoreId())
-                ->getName();
-        }
-
-        return '';
+        $categoryId = $this->subscriber->getMostCategoryId();
+        return $this->getCategoryValue($categoryId);
     }
 
     /**
-     * get most purchased brand
+     * Get most purchased brand.
      *
      * @return string
      */
     public function getMostPurBrand()
     {
-        $brand = $this->subscriber->getMostBrand();
-        if ($brand) {
-            return $brand;
+        $optionId = $this->subscriber->getMostBrand();
+        $storeId = $this->subscriber->getStoreId();
+
+        //attribute mapped from the config
+        $attributeCode = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            $this->_store->getStore($storeId)->getWebsiteId()
+        );
+
+        //if the id and attribute found
+        if ($optionId && $attributeCode) {
+            $attribute = $this->eavConfigFactory->create()
+                ->getAttribute(\Magento\Catalog\Model\Product::ENTITY, $attributeCode);
+
+            $value = $attribute->setStoreId($storeId)
+                ->getSource()
+                ->getOptionText($optionId);
+
+            //check for brand text
+            if ($value) {
+                return $value;
+            }
         }
-        return "";
+
+        return '';
     }
 
     /**
@@ -334,16 +354,8 @@ class Subscriber
      */
     public function getFirstCategoryPur()
     {
-        $id = $this->subscriber->getFirstCategoryId();
-        if ($id) {
-            $category = $this->categoryFactory->create();
-            $this->categoryResource->load($category, $id);
-
-            return $category->setStoreId($this->subscriber->getStoreId())
-                ->getName();
-        }
-
-        return '';
+        $categoryId = $this->subscriber->getFirstCategoryId();
+        return $this->getCategoryValue($categoryId);
     }
 
     /**
@@ -354,63 +366,78 @@ class Subscriber
     public function getLastCategoryPur()
     {
         $categoryId = $this->subscriber->getLastCategoryId();
-        //customer last category id
-        if ($categoryId) {
-            $category = $this->categoryFactory->create();
-            $this->categoryResource->load($category, $categoryId);
+        return $this->getCategoryValue($categoryId);
+    }
 
-            return $category->setStoreId($this->subscriber->getStoreId())
-                ->getName();
+    /**
+     * Get category name from id
+     *
+     * @param $categoryId
+     * @return string
+     */
+    private function getCategoryValue($categoryId)
+    {
+        if ($categoryId) {
+            $category = $this->categoryFactory->create()
+                ->setStoreId($this->subscriber->getStoreId());
+            $this->categoryResource->load($category, $categoryId);
+            return $category->getName();
         }
 
         return '';
     }
 
     /**
-     * get first purchased brand
+     * Get first purchased brand.
      *
      * @return string
      */
     public function getFirstBrandPur()
     {
         $id = $this->subscriber->getProductIdForFirstBrand();
-        return $this->_getBrandValue($id);
+        return $this->getBrandValue($id);
     }
 
     /**
-     * get last purchased brand
+     * Get last purchased brand.
      *
      * @return string
      */
     public function getLastBrandPur()
     {
         $id = $this->subscriber->getProductIdForLastBrand();
-        return $this->_getBrandValue($id);
+        return $this->getBrandValue($id);
     }
 
     /**
      * @param mixed $id
-     * @return void
+     * @return string
      */
-    public function _getBrandValue($id)
+    private function getBrandValue($id)
     {
-        //attribute mapped from the config
-        $attribute = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
-            $this->_store->getStore(
-                $this->subscriber->getStoreId()
-            )->getWebsiteId()
-        );
-        //if the id and attribute found
-        if ($id && $attribute) {
-            $product = $this->productFactory->create();
-            $this->productResource->load($product, $id);
-            $product = $product->setStoreId($this->subscriber->getStoreId());
+        $storeId = $this->subscriber->getStoreId();
 
-            $text = $product->getAttributeText($attribute);
+        //attribute mapped from the config
+        $attributeCode = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            $this->_store->getStore($storeId)->getWebsiteId()
+        );
+
+        //if the id and attribute found
+        if ($id && $attributeCode) {
+            $product = $this->productFactory->create();
+            $product = $product->setStoreId($storeId);
+            $this->productResource->load($product, $id);
+
+            $value = $product->getResource()
+                ->getAttribute($attributeCode)
+                ->setStoreId($storeId)
+                ->getSource()
+                ->getOptionText($product->getData($attributeCode));
+
             //check for brand text
-            if ($text) {
-                return $text;
+            if ($value) {
+                return $value;
             }
         }
 

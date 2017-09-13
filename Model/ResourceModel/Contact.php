@@ -25,6 +25,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $schelduleFactory;
 
     /**
+     * @var string|boolean
+     */
+    private $brand;
+
+    /**
      * Initialize resource.
      *
      * @return null
@@ -274,45 +279,14 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         $columns = $this->buildCollectionColumns($salesOrder, $salesOrderItem, $catalogCategoryProductIndex);
 
-        /**
-         * CatalogStaging fix.
-         * @todo this will fix https://github.com/magento/magento2/issues/6478
-         */
-        $rowIdExists = $this->isRowIdExistsInCatalogProductEntityId();
-
-        if ($rowIdExists) {
-            $mostData = new \Zend_Db_Expr(
-                "(
-                    SELECT eaov.value from $salesOrder sfo
-                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    LEFT JOIN $catalogProductEntityInt pei on pei.row_id = sfoi.product_id
-                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
-                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                    WHERE sfo.customer_email = main_table.subscriber_email
-                    AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
-                    GROUP BY eaov.value
-                    HAVING count(*) > 0
-                    ORDER BY count(*) DESC
-                    LIMIT 1
-                )"
-            );
-        } else {
-            $mostData = new \Zend_Db_Expr(
-                "(
-                    SELECT eaov.value from $salesOrder sfo
-                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
-                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
-                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                    WHERE sfo.customer_email = main_table.subscriber_email
-                    AND ea.attribute_code = 'manufacturer' AND eaov.value is not null
-                    GROUP BY eaov.value
-                    HAVING count(*) > 0
-                    ORDER BY count(*) DESC
-                    LIMIT 1
-                )"
-            );
-        }
+        $mostData = $this->buildMostData(
+            $salesOrder,
+            $salesOrderItem,
+            $catalogProductEntityInt,
+            $eavAttribute,
+            $eavAttributeOptionValue,
+            true
+        );
 
         $columns['most_brand'] = $mostData;
         $collection->getSelect()->columns(
@@ -819,16 +793,25 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string $catalogProductEntityInt
      * @param string $eavAttribute
      * @param string $eavAttributeOptionValue
+     * @param boolean $forSubscriber
      *
-     * @return \Zend_Db_Expr
+     * @return string|\Zend_Db_Expr
      */
     private function buildMostData(
         $salesOrder,
         $salesOrderItem,
         $catalogProductEntityInt,
         $eavAttribute,
-        $eavAttributeOptionValue
+        $eavAttributeOptionValue,
+        $forSubscriber = false
     ) {
+        if (! $this->brand) {
+            return new \Zend_Db_Expr('NULL');
+        }
+
+        $where = $forSubscriber == true ?
+            'WHERE sfo.customer_email = main_table.subscriber_email' : 'WHERE sfo.customer_id = e.entity_id ';
+
         /**
          * CatalogStaging fix.
          * @todo this will fix https://github.com/magento/magento2/issues/6478
@@ -838,15 +821,15 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         if ($rowIdExists) {
             $mostData = new \Zend_Db_Expr(
                 "(
-                    SELECT eaov.value from $salesOrder sfo
+                    SELECT eaov.option_id from $salesOrder sfo
                     LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                     LEFT JOIN $catalogProductEntityInt pei on pei.row_id = sfoi.product_id
                     LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
                     LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                    WHERE sfo.customer_id = e.entity_id 
-                    AND ea.attribute_code = 'manufacturer'
+                    $where
+                    AND ea.attribute_code = '$this->brand'
                     AND eaov.value is not null
-                    GROUP BY eaov.value
+                    GROUP BY eaov.option_id
                     HAVING count(*) > 0
                     ORDER BY count(*) DESC
                     LIMIT 1
@@ -855,15 +838,15 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         } else {
             $mostData = new \Zend_Db_Expr(
                 "(
-                    SELECT eaov.value from $salesOrder sfo
+                    SELECT eaov.option_id from $salesOrder sfo
                     LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                     LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
                     LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
                     LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
                     WHERE sfo.customer_id = e.entity_id
-                    AND ea.attribute_code = 'manufacturer'
+                    AND ea.attribute_code = '$this->brand'
                     AND eaov.value is not null
-                    GROUP BY eaov.value
+                    GROUP BY eaov.option_id
                     HAVING count(*) > 0
                     ORDER BY count(*) DESC
                     LIMIT 1
@@ -871,6 +854,19 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         return $mostData;
+    }
+
+    /**
+     * Set brand attribute
+     *
+     * @param $brand
+     * @return $this
+     */
+    public function setBrandAttribute($brand)
+    {
+        $this->brand = $brand;
+
+        return $this;
     }
 
     /**
@@ -1033,5 +1029,19 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $executedAt = $collection->getFirstItem()->getExecutedAt();
 
         return $executedAt;
+    }
+
+    /**
+     * Set contacts to re-import by customer ids
+     *
+     * @param $customerIds
+     */
+    public function setNotImportedByCustomerIds($customerIds)
+    {
+        $this->getConnection()->update(
+            $this->getMainTable(),
+            ['email_imported' => new \Zend_Db_Expr('null')],
+            ["customer_id IN (?)" => $customerIds]
+        );
     }
 }

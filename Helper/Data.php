@@ -53,7 +53,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var \Magento\Framework\Module\ModuleListInterface
      */
-    public $moduleInterface;
+    public $fullModuleList;
 
     /**
      * @var \Magento\Customer\Model\CustomerFactory
@@ -160,7 +160,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->resourceConfig   = $resourceConfig;
         $this->storeManager     = $storeManager;
         $this->customerFactory  = $customerFactory;
-        $this->moduleInterface  = $moduleListInterface;
+        $this->fullModuleList   = $moduleListInterface;
         $this->store            = $store;
         $this->writer = $writer;
         $this->clientFactory = $clientFactory;
@@ -1235,13 +1235,42 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getId()
         );
+
         unset($mappedData['custom_attributes'], $mappedData['abandoned_prod_name']);
+
+        //Only if enterprise running
+        if ($this->isEnterprise()) {
+            $enterpriseMapping = $this->getEnterpriseAttributes($website);
+            if ($enterpriseMapping) {
+                $mappedData = array_merge($mappedData, $enterpriseMapping);
+            }
+        }
+
         //skip non mapped customer datafields
         foreach ($mappedData as $key => $value) {
             if (!$value) {
                 unset($mappedData[$key]);
             }
         }
+
+        return $mappedData;
+    }
+    /**
+     * Enterprise data datafields attributes.
+     *
+     * @param int $website
+     *
+     * @return array/null
+     *
+     */
+    public function getEnterpriseAttributes($website = 0)
+    {
+        $store = $website->getDefaultStore();
+        $mappedData = $this->scopeConfig->getValue(
+            'connector_data_mapping/enterprise_data',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store->getId()
+        );
 
         return $mappedData;
     }
@@ -1584,7 +1613,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getConnectorVersion()
     {
-        return $this->moduleInterface->getOne(self::MODULE_NAME)['setup_version'];
+        return $this->fullModuleList->getOne(self::MODULE_NAME)['setup_version'];
     }
 
     /**
@@ -1735,5 +1764,34 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $quoteItems = $quoteModel->getAllItems();
 
         return $quoteItems;
+    }
+
+    /**
+     * Check if running Magento edition is enterprise
+     *
+     * @return bool
+     */
+    public function isEnterprise()
+    {
+        $allModules = $this->fullModuleList->getAll();
+
+        if (isset($allModules['Magento_Reward']) && isset($allModules['Magento_GiftCard'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /** Get brand attribute selected from config by website id
+     *
+     * @param $websiteId
+     * @return string|boolean
+     */
+    public function getBrandAttributeByWebsiteId($websiteId)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            $websiteId
+        );
     }
 }
