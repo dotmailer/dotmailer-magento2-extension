@@ -310,7 +310,7 @@
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
                 </field>
             </group>
-            <group id="enterprise_data" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1">
+            <group id="enterprise_data" translate="label" sortOrder="20" showInDefault="0" showInWebsite="0">
                 <label>Enterprise Data</label>
                 <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Enterprise</frontend_model>
                 <field id="reward_points_heading" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
