@@ -37,7 +37,7 @@ class ReportsProductCollectionPlugin
         callable $proceed,
         $from = '',
         $to = ''
-    ){
+    ) {
         /**
          * Getting event type id for catalog_product_view event
          */
