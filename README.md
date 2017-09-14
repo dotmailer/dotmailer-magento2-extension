@@ -15,6 +15,12 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.3.4
+
+- Customer sales data fields could get mixed up when multiple store views existed under a single website; this has been fixed.
+- An error would occur due to the attempted retrieval of a non-object in the newsletter subscription section; this no longer happens.
+- Most viewed Dynamic Content used to only return products with default attributes - it now also includes products with custom attribute sets.
+
 ## V2.3.0
 
 ###### Improvements
