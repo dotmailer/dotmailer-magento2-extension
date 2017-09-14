@@ -30,7 +30,7 @@
     "magento/module-cron": "100.*",
     "magento/module-customer": "100.*",
     "magento/module-eav": "100.*",
-    "magento/module-catalog": "100.*",
+    "magento/module-catalog": "*",
     "magento/module-catalog-rule": "100.*",
     "magento/module-catalog-inventory": "100.*",
     "magento/module-quote": "100.*",
