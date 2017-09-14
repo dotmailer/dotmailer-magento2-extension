@@ -96,6 +96,18 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addIndexKeyForOrder($setup, $connection);
         }
 
+        if (version_compare($context->getVersion(), '2.3.4', '<')) {
+            $abandonedCartTable = $connection->newTable(
+                $setup->getTable('email_abandoned_cart')
+            );
+
+            $abandonedCartTable = $this->createAbandonedCartTable($abandonedCartTable);
+            $abandonedCartTable = $this->addIndexKeyForAbandonedCarts($setup, $abandonedCartTable);
+
+            $abandonedCartTable->setComment('Abandoned Carts Table');
+            $setup->getConnection()->createTable($abandonedCartTable);
+        }
+
         $setup->endSetup();
     }
 
@@ -332,4 +344,127 @@ class UpgradeSchema implements UpgradeSchemaInterface
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
         );
     }
+
+    /**
+     * @param $table
+     * @return mixed
+     */
+    private function createAbandonedCartTable($table)
+    {
+        return $table->addColumn(
+            'id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            10,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ],
+            'Primary Key'
+        )
+            ->addColumn(
+                'quote_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                10,
+                ['unsigned' => true, 'nullable' => true],
+                'Quote Id'
+            )
+            ->addColumn(
+                'store_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                10,
+                ['unsigned' => true, 'nullable' => true],
+                'Store Id'
+            )
+            ->addColumn(
+                'customer_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                10,
+                ['unsigned' => true, 'nullable' => false],
+                'Customer ID'
+            )
+            ->addColumn(
+                'email',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['nullable' => false, 'default' => ''],
+                'Email'
+            )
+            ->addColumn(
+                'is_active',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                5,
+                ['unsigned' => true, 'nullable' => false, 'default' => '1'],
+                'Quote Active'
+            )
+            ->addColumn(
+                'quote_updated_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                [],
+                'Quote updated at'
+            )
+            ->addColumn(
+                'abandoned_cart_number',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                ['unsigned' => true, 'nullable' => false, 'default' => 0],
+                'Abandoned Cart number'
+            )
+            ->addColumn(
+                'items_count',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                ['unsigned' => true, 'nullable' => true, 'default' => 0],
+                'Quote items count'
+            )
+            ->addColumn(
+                'items_ids',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => false],
+                'Quote item ids'
+            )
+            ->addColumn(
+                'created_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                [],
+                'Created At'
+            )
+            ->addColumn(
+                'updated_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                [],
+                'Updated at'
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $abandonedCartTable
+     * @return mixed
+     */
+    private function addIndexKeyForAbandonedCarts($installer, $abandonedCartTable)
+    {
+        return $abandonedCartTable->addIndex(
+            $installer->getIdxName('email_abandoned_cart', ['quote_id']),
+            ['quote_id']
+        )
+        ->addIndex(
+            $installer->getIdxName('email_abandoned_cart', ['store_id']),
+            ['store_id']
+        )
+        ->addIndex(
+            $installer->getIdxName('email_abandoned_cart', ['customer_id']),
+            ['customer_id']
+        )
+        ->addIndex(
+            $installer->getIdxName('email_abandoned_cart', ['email']),
+            ['email']
+        );
+    }
+
 }
