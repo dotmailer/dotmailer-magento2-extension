@@ -101,7 +101,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $setup->getTable('email_abandoned_cart')
             );
 
-            $abandonedCartTable = $this->createAbandonedCartTable($abandonedCartTable);
+            $abandonedCartTable = $this->addColumnForAbandonedCartTable($abandonedCartTable);
             $abandonedCartTable = $this->addIndexKeyForAbandonedCarts($setup, $abandonedCartTable);
 
             $abandonedCartTable->setComment('Abandoned Carts Table');
@@ -349,7 +349,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
      * @param $table
      * @return mixed
      */
-    private function createAbandonedCartTable($table)
+    private function addColumnForAbandonedCartTable($table)
     {
         return $table->addColumn(
             'id',

@@ -35,6 +35,9 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
     const SENT = 2;
     const FAILED = 3;
 
+    const CAMPAIGN_EVENT_ORDER_REVIEW = 'Order Review';
+    const CAMPAIGN_EVENT_LOST_BASKET = 'Lost Basket';
+
     //error messages
     const SEND_EMAIL_CONTACT_ID_MISSING = 'Error : missing contact id - will try later to send ';
 

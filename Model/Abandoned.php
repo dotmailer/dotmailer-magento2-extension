@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Model;
 class Abandoned extends \Magento\Framework\Model\AbstractModel
 {
     /**
+     * @var ResourceModel\Abandoned\Collection
+     */
+    public $abandonedCollectionFactory;
+    /**
      * @var ResourceModel\Automation
      */
     private $automationResource;
@@ -26,6 +30,7 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Abandoned constructor.
+     * @param ResourceModel\Abandoned\CollectionFactory $abandoned
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
@@ -34,6 +39,7 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
      * @param array $data
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $abandoned,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
@@ -41,6 +47,7 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->abandonedCollectionFactory = $abandoned;
         $this->dateTime     = $dateTime;
         parent::__construct(
             $context,
@@ -76,5 +83,18 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
         $this->setUpdatedAt($this->dateTime->formatDate(true));
 
         return $this;
+    }
+
+    /**
+     * @param $quoteId
+     * @return mixed
+     */
+    public function loadByQuoteId($quoteId)
+    {
+        $collection = $this->abandonedCollectionFactory->create()
+            ->addFieldToFilter('quote_id', $quoteId)
+            ->setPageSize(1);
+
+        return $collection->getFirstItem();
     }
 }

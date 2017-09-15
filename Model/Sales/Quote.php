@@ -33,10 +33,23 @@ class Quote
     const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2 = 'abandoned_carts/guests/campaign_2';
     const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3 = 'abandoned_carts/guests/campaign_3';
 
+    const CUSTOMER_LOST_BASKET_ONE = 1;
+    const CUSTOMER_LOST_BASKET_TWO = 2;
+    const CUSTOMER_LOST_BASKET_THREE = 3;
+
+    const GUEST_LOST_BASKET_ONE = 1;
+    const GUEST_LOST_BASKET_TWO = 2;
+    const GUEST_LOST_BASKET_THREE = 3;
+
     /**
      * @var object
      */
     public $quoteCollection;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Abandoned
+     */
+    public $abandonedFactory;
 
     /**
      * @var Campaign
@@ -122,6 +135,7 @@ class Quote
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
@@ -134,6 +148,7 @@ class Quote
     ) {
         $this->rulesFactory = $rulesFactory;
         $this->helper = $helper;
+        $this->abandonedFactory = $abandonedFactory;
         $this->campaignCollection = $campaignCollection;
         $this->campaignResource = $campaignResource;
         $this->campaignFactory = $campaignFactory;
@@ -146,29 +161,22 @@ class Quote
     /**
      * Proccess abandoned carts.
      *
-     * @param string $mode
-     *
      * @return $this
      */
-    public function proccessAbandonedCarts($mode = 'all')
+    public function proccessAbandonedCarts()
     {
-        /*
-         * Save lost baskets to be send in Send table.
-         */
+        $result = [];
         $stores = $this->helper->getStores();
 
         foreach ($stores as $store) {
             $storeId = $store->getId();
 
-            if ($mode == 'all' || $mode == 'customers') {
-                $this->searchForCustomerAbandonedCarts($storeId);
-            }
-            if ($mode == 'all' || $mode == 'guests') {
-                $this->searchForGuestAbandonedCarts($storeId);
-            }
+            $result[$storeId]['firstCustomer'] = $this->proccessCustomerFirstAbandonedCart($storeId);
+
+
         }
 
-        return $this;
+        return $result;
     }
 
     /**
@@ -550,4 +558,187 @@ class Quote
 
         return $interval;
     }
+
+    /**
+     * @param $storeId
+     * @return int|string
+     */
+    private function proccessCustomerFirstAbandonedCart($storeId)
+    {
+        $result = '0';
+        $abandonedNum = 1;
+        //customer enabled
+        if ($this->isLostBasketCustomerEnabled($abandonedNum, $storeId)) {
+            //hit the first AC using minutes
+            $interval = $this->getInterval($storeId, $abandonedNum);
+
+            $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
+            $fromTime->sub($interval);
+            $toTime = clone $fromTime;
+            $fromTime->sub(\DateInterval::createFromDateString('5 minutes'));
+
+            //format time
+            $fromDate = $fromTime->format('Y-m-d H:i:s');
+            $toDate = $toTime->format('Y-m-d H:i:s');
+
+            //active quotes
+            $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, false, $storeId);
+            //found abandoned carts
+            if ($quoteCollection->getSize()) {
+                $this->helper->log('Customer AC 1 ' . $fromDate . ' - ' . $toDate);
+            }
+
+            //campaign id for customers
+            $campaignId = $this->getLostBasketCustomerCampaignId(1, $storeId);
+
+            foreach ($quoteCollection as $quote) {
+                $quoteId = $quote->getId();
+                $items = $quote->getAllItems();
+                $email = $quote->getCustomerEmail();
+                $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+
+                //api - set the last quote id for customer
+                $this->helper->updateLastQuoteId($quoteId, $email, $websiteId);
+
+                $itemIds = $this->getQuoteItemIds($items);
+                if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
+                    $this->helper->updateAbandonedProductName(
+                        $mostExpensiveItem->getName(),
+                        $email,
+                        $websiteId
+                    );
+                }
+
+                $abandonedModel = $this->abandonedFactory->create()
+                    ->loadByQuoteId($quoteId);
+
+                // abandoned cart already sent and the items content are the same
+                if ($abandonedModel->getId() && ! $this->isItemsChanged($quote, $abandonedModel)) {
+                    continue;
+                }
+                //create abandoned cart
+                $this->createAbandonedCart($abandonedModel, $quote, $itemIds);
+
+                //send campaign
+                $this->sendEmailCampaign(
+                    $email,
+                    $quote,
+                    $campaignId,
+                    self::CUSTOMER_LOST_BASKET_ONE,
+                    $websiteId
+                );
+
+                $this->totalCustomers++;
+                $result = $this->totalCustomers;
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * @param $allItemsIds
+     * @return array
+     */
+    private function getQuoteItemIds($allItemsIds)
+    {
+        $itemIds = [];
+        foreach ($allItemsIds as $item) {
+            $itemIds[] = $item->getProductId();
+        }
+
+        return $itemIds;
+    }
+
+    /**
+     * @param $items
+     * @return bool|\Magento\Quote\Model\Quote\Item
+     */
+    private function getMostExpensiveItems($items)
+    {
+        $mostExpensiveItem = false;
+        foreach ($items as $item) {
+            /** @var $item \Magento\Quote\Model\Quote\Item */
+            if ($mostExpensiveItem == false) {
+                $mostExpensiveItem = $item;
+            } elseif ($item->getPrice() > $mostExpensiveItem->getPrice()) {
+                $mostExpensiveItem = $item;
+            }
+        }
+
+        return $mostExpensiveItem;
+    }
+
+    /**
+     * @param $quote
+     * @param $abandonedModel
+     * @return bool
+     */
+    private function isItemsChanged($quote, $abandonedModel)
+    {
+        if ($quote->getItemsCount() != $abandonedModel->getItemsCount()) {
+            return true;
+        } else {
+            //number of items matches
+            $quoteItemIds = $this->getQuoteItemIds($quote->getAllItems());
+            $abandonedItemIds = explode(',', $abandonedModel->getItemsIds());
+
+            //quote items not same
+            if (! $this->isItemsIdsSame($quoteItemIds, $abandonedItemIds)) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    /**
+     * @param $abandonedModel
+     * @param $quote
+     * @param $itemIds
+     */
+    private function createAbandonedCart($abandonedModel, $quote, $itemIds)
+    {
+        $abandonedModel->setStoreId($quote->getStoreId())
+            ->setCustomerId($quote->getCustomerId())
+            ->setEmail($quote->getCustomerEmail())
+            ->setQuoteId($quote->getId())
+            ->setQuoteUpdatedAt($quote->getUpdatedAt())
+            ->setAbandonedCartNumber(1)
+            ->setItemsCount($quote->getItemsCount())
+            ->setItemsIds(implode(',', $itemIds))
+            ->save();
+    }
+
+
+    /**
+     * @param $email
+     * @param $quote
+     * @param $campaignId
+     * @param $number
+     * @param $websiteId
+     */
+    private function sendEmailCampaign($email, $quote, $campaignId, $number, $websiteId)
+    {
+        $storeId = $quote->getStoreId();
+        //interval campaign found
+        if ($campignFound = $this->isIntervalCampaignFound($email, $storeId)) {
+            return;
+        }
+        $customerId = $quote->getCustomerId();
+        $message = ($customerId)? 'Abandoned Cart ' . $number : 'Guest Abandoned Cart ' . $number;
+        $this->campaignFactory->create()
+            ->setEmail($email)
+            ->setCustomerId($customerId)
+            ->setEventName(\Dotdigitalgroup\Email\Model\Campaign::CAMPAIGN_EVENT_LOST_BASKET)
+            ->setQuoteId($quote->getId())
+            ->setMessage($message)
+            ->setCampaignId($campaignId)
+            ->setStoreId($storeId)
+            ->setWebsiteId($websiteId)
+            ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::PENDING)
+            ->save();
+    }
+
 }
