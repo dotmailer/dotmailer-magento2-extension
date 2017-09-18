@@ -347,7 +347,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         $num = $conn->update(
-            $conn->getTableName('email_catalog'),
+            $this->_resources->getTableName('email_catalog'),
             [
                 'imported' => new \Zend_Db_Expr('null'),
                 'modified' => new \Zend_Db_Expr('null'),
@@ -370,7 +370,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $coreResource = $this->getConnection();
-            $tableName = $coreResource->getTableName('email_catalog');
+            $tableName = $this->_resources->getTableName('email_catalog');
 
             if ($modified) {
                 $coreResource->update(
@@ -406,7 +406,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function removeOrphanProducts()
     {
         $write = $this->getConnection();
-        $catalogTable = $write->getTableName('email_catalog');
+        $catalogTable = $this->_resources->getTableName('email_catalog');
         $select = $write->select();
         $select->reset()
             ->from(
@@ -415,7 +415,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             )
             ->joinLeft(
                 [
-                    'e' => $write->getTableName(
+                    'e' => $this->_resources->getTableName(
                         'catalog_product_entity'
                     ),
                 ],

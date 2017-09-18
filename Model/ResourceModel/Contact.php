@@ -95,7 +95,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $conn = $this->getConnection();
         $num = $conn->update(
-            $conn->getTableName('email_contact'),
+            $this->_resources->getTableName('email_contact'),
             ['email_imported' => new \Zend_Db_Expr('null')],
             $conn->quoteInto(
                 'email_imported is ?',
@@ -117,7 +117,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $conn = $this->getConnection();
 
         $num = $conn->update(
-            $conn->getTableName('email_contact'),
+            $this->_resources->getTableName('email_contact'),
             ['subscriber_imported' => new \Zend_Db_Expr('null')],
             $conn->quoteInto(
                 'subscriber_imported is ?',
@@ -240,12 +240,12 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getCollectionForSubscribersByEmails($emails, $statuses)
     {
-        $salesOrder = $this->getConnection()->getTableName('sales_order');
-        $salesOrderItem = $this->getConnection()->getTableName('sales_order_item');
-        $catalogProductEntityInt = $this->getConnection()->getTableName('catalog_product_entity_int');
-        $eavAttribute = $this->getConnection()->getTableName('eav_attribute');
-        $eavAttributeOptionValue = $this->getConnection()->getTableName('eav_attribute_option_value');
-        $catalogCategoryProductIndex = $this->getConnection()->getTableName('catalog_category_product');
+        $salesOrder = $this->_resources->getTableName('sales_order');
+        $salesOrderItem = $this->_resources->getTableName('sales_order_item');
+        $catalogProductEntityInt = $this->_resources->getTableName('catalog_product_entity_int');
+        $eavAttribute = $this->_resources->getTableName('eav_attribute');
+        $eavAttributeOptionValue = $this->_resources->getTableName('eav_attribute_option_value');
+        $catalogCategoryProductIndex = $this->_resources->getTableName('catalog_category_product');
 
         $collection = $this->subscribersCollection->create()
             ->addFieldToSelect([
@@ -540,7 +540,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $connection = $this->getConnection();
 
         return $connection->tableColumnExists(
-            $connection->getTableName('catalog_product_entity_int'),
+            $this->_resources->getTableName('catalog_product_entity_int'),
             'row_id'
         );
     }
@@ -559,31 +559,31 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $customerCollection = $this->buildCustomerCollection($customerIds);
 
-        $quote = $this->getConnection()->getTableName(
+        $quote = $this->_resources->getTableName(
             'quote'
         );
-        $salesOrder = $this->getConnection()->getTableName(
+        $salesOrder = $this->_resources->getTableName(
             'sales_order'
         );
-        $customerLog = $this->getConnection()->getTableName(
+        $customerLog = $this->_resources->getTableName(
             'customer_log'
         );
-        $eavAttribute = $this->getConnection()->getTableName(
+        $eavAttribute = $this->_resources->getTableName(
             'eav_attribute'
         );
-        $salesOrderGrid = $this->getConnection()->getTableName(
+        $salesOrderGrid = $this->_resources->getTableName(
             'sales_order_grid'
         );
-        $salesOrderItem = $this->getConnection()->getTableName(
+        $salesOrderItem = $this->_resources->getTableName(
             'sales_order_item'
         );
-        $catalogCategoryProductIndex = $this->getConnection()->getTableName(
+        $catalogCategoryProductIndex = $this->_resources->getTableName(
             'catalog_category_product'
         );
-        $eavAttributeOptionValue = $this->getConnection()->getTableName(
+        $eavAttributeOptionValue = $this->_resources->getTableName(
             'eav_attribute_option_value'
         );
-        $catalogProductEntityInt = $this->getConnection()->getTableName(
+        $catalogProductEntityInt = $this->_resources->getTableName(
             'catalog_product_entity_int'
         );
 
@@ -601,7 +601,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         // customer order information
         $alias = 'subselect';
 
-        $orderTable = $this->getConnection()->getTableName('sales_order');
+        $orderTable = $this->_resources->getTableName('sales_order');
         $connection = $this->getConnection();
         $subselect = $connection->select()
             ->from(
