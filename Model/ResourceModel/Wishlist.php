@@ -66,7 +66,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         $num = $conn->update(
-            $conn->getTableName('email_wishlist'),
+            $this->getTable('email_wishlist'),
             [
                 'wishlist_imported' => new \Zend_Db_Expr('null'),
                 'wishlist_modified' => new \Zend_Db_Expr('null'),
@@ -113,7 +113,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         $collection->getSelect()
             ->joinLeft(
-                ['c' => $this->getConnection()->getTableName('customer_entity')],
+                ['c' => $this->getTable('customer_entity')],
                 'c.entity_id = customer_id',
                 ['email', 'store_id']
             );
@@ -132,7 +132,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $coreResource = $this->getConnection();
-            $tableName = $coreResource->getTableName('email_wishlist');
+            $tableName = $this->getTable('email_wishlist');
 
             //mark imported modified wishlists
             if ($modified) {

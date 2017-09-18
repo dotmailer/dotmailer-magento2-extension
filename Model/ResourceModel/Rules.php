@@ -29,26 +29,26 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         if ($type == \Dotdigitalgroup\Email\Model\Rules::ABANDONED) {
             $collection->getSelect()
                 ->joinLeft(
-                    ['quote_address' => $this->_resources->getTableName('quote_address')],
+                    ['quote_address' => $this->getTable('quote_address')],
                     'main_table.entity_id = quote_address.quote_id',
                     ['shipping_method', 'country_id', 'city', 'region_id']
                 )->joinLeft(
-                    ['quote_payment' => $this->_resources->getTableName('quote_payment')],
+                    ['quote_payment' => $this->getTable('quote_payment')],
                     'main_table.entity_id = quote_payment.quote_id',
                     ['method']
                 )->where('address_type = ?', 'shipping');
         } elseif ($type == \Dotdigitalgroup\Email\Model\Rules::REVIEW) {
             $collection->getSelect()
                 ->join(
-                    ['order_address' => $this->_resources->getTableName('sales_order_address')],
+                    ['order_address' => $this->getTable('sales_order_address')],
                     'main_table.entity_id = order_address.parent_id',
                     ['country_id', 'city', 'region_id']
                 )->join(
-                    ['order_payment' => $this->_resources->getTableName('sales_order_payment')],
+                    ['order_payment' => $this->getTable('sales_order_payment')],
                     'main_table.entity_id = order_payment.parent_id',
                     ['method']
                 )->join(
-                    ['quote' => $this->_resources->getTableName('quote')],
+                    ['quote' => $this->getTable('quote')],
                     'main_table.quote_id = quote.entity_id',
                     ['items_qty']
                 )->where('order_address.address_type = ?', 'shipping');
