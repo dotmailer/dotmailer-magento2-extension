@@ -126,7 +126,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         $num = $conn->update(
-            $this->_resources->getTableName('email_review'),
+            $this->getTable('email_review'),
             ['review_imported' => new \Zend_Db_Expr('null')],
             $where
         );
@@ -201,7 +201,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $coreResource = $this->getConnection();
-            $tableName = $this->_resources->getTableName('email_review');
+            $tableName = $this->getTable('email_review');
             $coreResource->update(
                 $tableName,
                 ['review_imported' => 1, 'updated_at' => $nowDate],
@@ -230,7 +230,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         $reviews->getSelect()
             ->joinLeft(
-                ['c' => $this->_resources->getTableName('customer_entity')],
+                ['c' => $this->getTable('customer_entity')],
                 'c.entity_id = customer_id',
                 ['email', 'store_id']
             );

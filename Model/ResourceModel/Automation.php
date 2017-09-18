@@ -51,7 +51,7 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         ];
         $where = ['id IN(?)' => $contactIds];
         $num = $this->getConnection()->update(
-            $this->_resources->getTableName('email_automation'),
+            $this->getTable('email_automation'),
             $bind,
             $where
         );

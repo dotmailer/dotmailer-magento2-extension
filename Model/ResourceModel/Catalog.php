@@ -134,7 +134,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        ['ccpi' => $this->_resources->getTableName('catalog_category_product_index')],
+                        ['ccpi' => $this->getTable('catalog_category_product_index')],
                         'e.entity_id = ccpi.product_id',
                         ['category_id']
                     )
@@ -154,7 +154,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             if ($category->getId()) {
                 $reportProductCollection->getSelect()
                     ->joinLeft(
-                        ['ccpi' => $this->_resources->getTableName('catalog_category_product_index')],
+                        ['ccpi' => $this->getTable('catalog_category_product_index')],
                         'e.entity_id  = ccpi.product_id',
                         ['category_id']
                     )
@@ -347,7 +347,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         $num = $conn->update(
-            $this->_resources->getTableName('email_catalog'),
+            $this->getTable('email_catalog'),
             [
                 'imported' => new \Zend_Db_Expr('null'),
                 'modified' => new \Zend_Db_Expr('null'),
@@ -370,7 +370,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $coreResource = $this->getConnection();
-            $tableName = $this->_resources->getTableName('email_catalog');
+            $tableName = $this->getTable('email_catalog');
 
             if ($modified) {
                 $coreResource->update(
@@ -406,7 +406,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function removeOrphanProducts()
     {
         $write = $this->getConnection();
-        $catalogTable = $this->_resources->getTableName('email_catalog');
+        $catalogTable = $this->getTable('email_catalog');
         $select = $write->select();
         $select->reset()
             ->from(
@@ -415,7 +415,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             )
             ->joinLeft(
                 [
-                    'e' => $this->_resources->getTableName(
+                    'e' => $this->getTable(
                         'catalog_product_entity'
                     ),
                 ],
