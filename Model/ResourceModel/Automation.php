@@ -44,15 +44,14 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function updateStatus($contactIds, $status, $message, $updatedAt, $type)
     {
-        $conn = $this->getConnection();
         $bind = [
             'enrolment_status' => $status,
             'message' => $message,
             'updated_at' => $updatedAt,
         ];
         $where = ['id IN(?)' => $contactIds];
-        $num = $conn->update(
-            $conn->getTableName('email_automation'),
+        $num = $this->getConnection()->update(
+            $this->getTable('email_automation'),
             $bind,
             $where
         );

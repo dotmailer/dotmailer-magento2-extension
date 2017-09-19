@@ -39,7 +39,7 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         $num = $conn->update(
-            $conn->getTableName('email_order'),
+            $this->getTable('email_order'),
             [
                 'email_imported' => new \Zend_Db_Expr('null'),
                 'modified' => new \Zend_Db_Expr('null'),
@@ -63,7 +63,7 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             return;
         }
         $connection = $this->getConnection();
-        $tableName = $connection->getTableName('email_order');
+        $tableName = $this->getTable('email_order');
         $connection->update(
             $tableName,
             [
