@@ -2,17 +2,18 @@
 
 namespace Dotdigitalgroup\Email\Test\Integration\AbandonedCarts;
 
+include __DIR__ . DIRECTORY_SEPARATOR . '_files/abandonedCartOneHour.php';
 /**
  * @magentoDBIsolation disabled
  *
  */
 class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var object
      */
     public $objectManager;
+
     /**
      * @var
      */
@@ -25,6 +26,16 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->quote = $this->objectManager->create(\Magento\Quote\Model\Quote::class);
+    }
+
+    public function tearDown()
+    {
+        $abandonedCollection = $this->objectManager->create(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
+        );
+        foreach ($abandonedCollection as $abandoned) {
+            $abandoned->delete();
+        }
     }
 
     /**
@@ -51,9 +62,29 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
          */
         $result = $emailQuote->proccessAbandonedCarts();
 
-
         $this->assertEquals(1, $result[$storeId]['firstCustomer'], 'No Quotes found for store : ' . $storeId);
         $this->assertCampaignCreatedFor($customerAbandonedCart);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/quote_with_customer.php
+     * @magentoConfigFixture default_store abandoned_carts/customers/enabled_2 1
+     * @magentoConfigFixture default_store abandoned_carts/customers/send_after_2 1
+     * @magentoConfigFixture default_store abandoned_carts/customers/campaign_2 1234
+     */
+    public function testExistingCustomerAbandonedCart()
+    {
+        $emailQuote = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
+        $abandonedCollection = $this->objectManager->create(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
+        )->getFirstItem();
+        $campaignCollection = $this->objectManager->create(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection::class
+        );
+
+        $quote = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class);
+        $allIds = $campaignCollection->getAllIds();
+        $result = $emailQuote->proccessAbandonedCarts();
     }
 
 
@@ -70,8 +101,6 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
         $quote = $quoteCollection->addFieldToFilter('customer_email', $email)
             ->getFirstItem();
         $storeId = $quote->getStoreId();
-
-        $quoteResource = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote::class);
         $emailQuote = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
 
         $result = $emailQuote->proccessAbandonedCarts();
