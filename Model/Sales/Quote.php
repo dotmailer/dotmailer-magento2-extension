@@ -764,19 +764,19 @@ class Quote
             'date' => true
         ];
 
-        $abandoneCollection = $this->abandonedCollectionFactory->create()
+        $abandonedCollection = $this->abandonedCollectionFactory->create()
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('abandoned_cart_number', --$number)
             ->addFieldToFilter('store_id', $storeId)
             ->addFieldToFilter('quote_updated_at', $updated);
 
         if ($guest) {
-            $abandoneCollection->addFieldToFilter('customer_id', ['null' => true]);
+            $abandonedCollection->addFieldToFilter('customer_id', ['null' => true]);
         } else {
-            $abandoneCollection->addFieldToFilter('customer_id', ['notnull' => true]);
+            $abandonedCollection->addFieldToFilter('customer_id', ['notnull' => true]);
         }
 
-        return $abandoneCollection;
+        return $abandonedCollection;
     }
 
     /**

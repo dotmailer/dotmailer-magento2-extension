@@ -142,7 +142,6 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="sortOrder" xsi:type="number">100</item>
                     <item name="label" xsi:type="string" translate="true">Is Active</item>
                 </item>
             </argument>
@@ -153,7 +152,6 @@
                     <item name="filter" xsi:type="string">dateRange</item>
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
                     <item name="dataType" xsi:type="string">date</item>
-                    <item name="sortOrder" xsi:type="number">120</item>
                     <item name="label" xsi:type="string" translate="true">Quote Updated At</item>
                 </item>
             </argument>
@@ -162,7 +160,6 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="sortOrder" xsi:type="number">100</item>
                     <item name="label" xsi:type="string" translate="true">Abdndoned Cart Number</item>
                 </item>
             </argument>
@@ -183,11 +180,16 @@
                 </item>
             </argument>
         </column>
-        <column name="store_name">
+        <column name="store_id">
             <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Magento\Store\Model\ResourceModel\Store\Collection</item>
                 <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Store Name</item>
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="editor" xsi:type="string">select</item>
+                    <item name="sortOrder" xsi:type="number">100</item>
+                    <item name="label" xsi:type="string" translate="true">Store</item>
                 </item>
             </argument>
         </column>

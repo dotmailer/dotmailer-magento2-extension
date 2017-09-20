@@ -2,7 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Test\Integration\AbandonedCarts;
 
-include __DIR__ . DIRECTORY_SEPARATOR . '_files/abandonedCartOneHour.php';
+use Dotdigitalgroup\Email\Model\Abandoned;
+use Dotdigitalgroup\Email\Model\Sales\Quote;
+
 /**
  * @magentoDBIsolation disabled
  *
@@ -53,7 +55,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
         $quote = $quoteCollection->getFirstItem();
         $quoteId = $quote->getId();
         $storeId = $quote->getStoreId();
-        $emailQuote = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
+        $emailQuote = $this->objectManager->create(Quote::class);
         $customerAbandonedCart = $this->quote->loadActive($quoteId);
         /**
          * run the cron for abandoned carts
@@ -74,17 +76,33 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
      */
     public function testExistingCustomerAbandonedCart()
     {
-        $emailQuote = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
-        $abandonedCollection = $this->objectManager->create(
-            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
-        )->getFirstItem();
-        $campaignCollection = $this->objectManager->create(
-            \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection::class
-        );
+        $abandoned = $this->createAbandonedCart($hour = 1);
+        $quoteId = $abandoned->getQuoteId();
+        $storeId = $abandoned->getStoreId();
+        $abandonedCartNumber = $abandoned->getAbandonedCartNumber();
 
-        $quote = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class);
-        $allIds = $campaignCollection->getAllIds();
+        $emailQuote = $this->objectManager->create(Quote::class);
+        $quoteMock = $this->getMock(Quote::class, [], [], '', false);
+
+        $abandonedCollectionMock = $this->getMockBuilder(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
+        )->disableOriginalConstructor()
+            ->getMock();
+        $quoteMock->method('getAbandonedCartsForStore')->willReturn([]);
+        $abandonedCollectionMock->method('getColumnValues')->willReturn([1,2,3]);
+
+        $this->objectManager->addSharedInstance(
+            $abandonedCollectionMock,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
+        );
+        $this->objectManager->addSharedInstance($quoteMock, Quote::class);
+
         $result = $emailQuote->proccessAbandonedCarts();
+
+        $proccessedAbandonedCart = $this->objectManager->create(Abandoned::class)
+            ->loadByQuoteId($quoteId)->getAbandonedCartNumber();
+        $this->assertEquals(++$abandonedCartNumber, $proccessedAbandonedCart);
+        $this->assertEquals(1, $result[$storeId]['secondCustomer']);
     }
 
 
@@ -101,7 +119,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
         $quote = $quoteCollection->addFieldToFilter('customer_email', $email)
             ->getFirstItem();
         $storeId = $quote->getStoreId();
-        $emailQuote = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
+        $emailQuote = $this->objectManager->create(Quote::class);
 
         $result = $emailQuote->proccessAbandonedCarts();
 
@@ -123,6 +141,35 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
             $campaignCollection->getAllIds(),
             'Campaing missing for current quote : ' . $cartId
         );
+    }
+
+    /**
+     * @param $hour
+     * @return mixed
+     */
+    private function createAbandonedCart($hour)
+    {
+        $abandoned = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Abandoned::class);
+        $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
+        $fromTime->sub(\DateInterval::createFromDateString($hour . ' hours'));
+        $fromTime->sub(\DateInterval::createFromDateString('1 minutes'));
+
+        $quote = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class)
+            ->getFirstItem();
+        $abandoned->setQuoteId($quote->getId())
+            ->setStoreId($quote->getStoreId())
+            ->setCustomerId($quote->getCustomerId())
+            ->setEmail($quote->getCustomerEmail())
+            ->setIsActive(1)
+            ->setQuoteUpdatedAt($fromTime->format(\DateTime::ISO8601))
+            ->setAbandonedCartNumber(1)
+            ->setItemsCount(2)
+            ->setItemsIds('2,3')
+            ->setCreatedAt(time())
+            ->setUpdatedAt(time())
+            ->save();
+
+        return $abandoned;
     }
 
 }
