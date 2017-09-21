@@ -42,11 +42,6 @@ class Quote
     const GUEST_LOST_BASKET_THREE = 3;
 
     /**
-     * @var object
-     */
-    public $quoteCollection;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Abandoned
      */
     public $abandonedFactory;
@@ -199,12 +194,10 @@ class Quote
                 );
             }
 
-
             //guest
             if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_ONE, $storeId)) {
                 $result[$storeId]['firstGuest'] = $this->proccessGuestFirstAbandonedCart($storeId);
             }
-
 
         }
 
@@ -244,10 +237,10 @@ class Quote
     /**
      * @param mixed $from
      * @param mixed $to
-     * @param bool|false $guest
+     * @param bool $guest
      * @param int $storeId
      *
-     * @return $this
+     * @return mixed
      */
     public function getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
     {
@@ -268,8 +261,6 @@ class Quote
             \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
             $websiteId
         );
-
-        $this->quoteCollection = $salesCollection;
 
         return $salesCollection;
     }
@@ -396,6 +387,7 @@ class Quote
             $hours = (int)$this->getLostBasketCustomerInterval($num, $storeId);
             $interval = \DateInterval::createFromDateString($hours . ' hours');
         }
+
         return $interval;
     }
 
@@ -427,21 +419,17 @@ class Quote
     {
         $result = 0;
         $abandonedNum = 1;
-
-        //hit the first AC using minutes
         $interval = $this->getInterval($storeId, $abandonedNum);
-
         $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
         $fromTime->sub($interval);
         $toTime = clone $fromTime;
         $fromTime->sub(\DateInterval::createFromDateString('5 minutes'));
-
-        //format time
         $fromDate = $fromTime->format('Y-m-d H:i:s');
         $toDate = $toTime->format('Y-m-d H:i:s');
 
         //active quotes
         $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, false, $storeId);
+
         //found abandoned carts
         if ($quoteCollection->getSize()) {
             $this->helper->log('Customer AC 1 ' . $fromDate . ' - ' . $toDate);
@@ -798,5 +786,17 @@ class Quote
         );
 
         return $quoteCollection;
+    }
+
+    /**
+     * Compare items ids.
+     *
+     * @param $quoteItemIds
+     * @param $abandonedItemIds
+     * @return bool
+     */
+    private function isItemsIdsSame($quoteItemIds, $abandonedItemIds)
+    {
+        return $quoteItemIds == $abandonedItemIds;
     }
 }
