@@ -10,7 +10,8 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
-class Customer
+class Customer extends \Magento\Framework\Model\AbstractExtensibleModel
+    implements \Dotdigitalgroup\Email\Model\Apiconnector\CustomerInterface
 {
     /**
      * @var \Magento\Customer\Model\Customer
@@ -124,6 +125,13 @@ class Customer
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -140,7 +148,14 @@ class Customer
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Eav\Model\ConfigFactory $eavConfigFactory
+        \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
     ) {
         $this->dateTime          = $dateTime;
         $this->helper            = $helper;
@@ -156,18 +171,16 @@ class Customer
         $this->productResource   = $productResource;
         $this->productResource   = $productResource;
         $this->eavConfigFactory  = $eavConfigFactory;
-    }
 
-    /**
-     * Set key value data.
-     *
-     * @param mixed $data
-     *
-     * @return null
-     */
-    public function setData($data)
-    {
-        $this->customerData[] = $data;
+        parent::__construct(
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $resource,
+            $resourceCollection,
+            $data
+        );
     }
 
     /**
@@ -971,7 +984,35 @@ class Customer
     {
         return $this->customer->getBillingCompany();
     }
-    
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return \Dotdigitalgroup\Email\Model\Apiconnector\CustomerExtensionInterface|null
+     */
+    public function getExtensionAttributes()
+    {
+        $extensionAttributes = $this->_getExtensionAttributes();
+        if (!$extensionAttributes) {
+            return $this->extensionAttributesFactory->create(
+                'Dotdigitalgroup\Email\Model\Apiconnector\CustomerInterface'
+            );
+        }
+        return $extensionAttributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\CustomerExtensionInterface $extensionAttributes
+     * @return $this
+     */
+    public function setExtensionAttributes(
+        \Dotdigitalgroup\Email\Model\Apiconnector\CustomerExtensionInterface $extensionAttributes
+    ) {
+        return $this->_setExtensionAttributes($extensionAttributes);
+    }
+
     /**
      * Get shipping company name.
      *
@@ -984,26 +1025,61 @@ class Customer
 
     public function getLastUsedDate()
     {
-        return $this->customer->getLastUsedDate();
+        $lastUsedDate = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $lastUsedDate = $extendedAttributes->getLastUsedDate();
+        }
+
+        return $lastUsedDate;
     }
 
     public function getCustomerSegments()
     {
-        return $this->customer->getCustomerSegments();
+        $customerSegment = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $customerSegment = $extendedAttributes->getCustomerSegments();
+        }
+
+        return $customerSegment;
     }
 
     public function getExpirationDate()
     {
-        return $this->customer->getExpirationDate();
+        $expirationDate = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $expirationDate = $extendedAttributes->getExpirationDate();
+        }
+
+        return $expirationDate;
     }
 
     public function getRewardAmmount()
     {
-        return $this->customer->getRewardAmmount();
+        $rewardAmmount = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $rewardAmmount = $extendedAttributes->getRewardAmmount();
+        }
+
+        return $rewardAmmount;
     }
 
     public function getRewardPoints()
     {
-        return $this->customer->getRewardPoints();
+        $rewardPoints = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $rewardPoints = $extendedAttributes->getRewardPoints();
+        }
+
+        return $rewardPoints;
     }
 }
