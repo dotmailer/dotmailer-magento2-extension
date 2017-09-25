@@ -381,7 +381,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'customer_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 10,
-                ['unsigned' => true, 'nullable' => false],
+                ['unsigned' => true, 'nullable' => true, 'default' => null],
                 'Customer ID'
             )
             ->addColumn(
@@ -423,7 +423,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'items_ids',
                 \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                 255,
-                ['unsigned' => true, 'nullable' => false],
+                ['unsigned' => true, 'nullable' => true],
                 'Quote item ids'
             )
             ->addColumn(

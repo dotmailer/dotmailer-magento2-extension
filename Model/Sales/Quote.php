@@ -177,7 +177,7 @@ class Quote
             }
 
             if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_TWO, $storeId)) {
-                $result[$storeId]['secondCustomer'] = $this->processExistingAbandonedCart(
+                $result[$storeId]['secondCustomer'] = $this->proccessExistingAbandonedCart(
                     $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_TWO, $storeId),
                     $storeId,
                     $websiteId,
@@ -186,7 +186,7 @@ class Quote
             }
 
             if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_THREE, $storeId)) {
-                $result[$storeId]['thirdCustomer'] = $this->processExistingAbandonedCart(
+                $result[$storeId]['thirdCustomer'] = $this->proccessExistingAbandonedCart(
                     $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_THREE, $storeId),
                     $storeId,
                     $websiteId,
@@ -199,6 +199,25 @@ class Quote
                 $result[$storeId]['firstGuest'] = $this->proccessGuestFirstAbandonedCart($storeId);
             }
 
+            if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_TWO, $storeId)) {
+                $result[$storeId]['secondGuest'] = $this->proccessExistingAbandonedCart(
+                    $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_TWO, $storeId),
+                    $storeId,
+                    $websiteId,
+                    self::GUEST_LOST_BASKET_TWO,
+                    true
+                );
+            }
+
+            if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_THREE, $storeId)) {
+                $result[$storeId]['thirdGuest'] = $this->proccessExistingAbandonedCart(
+                    $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_THREE, $storeId),
+                    $storeId,
+                    $websiteId,
+                    self::GUEST_LOST_BASKET_THREE,
+                    true
+                );
+            }
         }
 
         return $result;
@@ -661,7 +680,7 @@ class Quote
      *
      * @return int
      */
-    private function processExistingAbandonedCart($campaignId, $storeId, $websiteId, $number, $guest = false)
+    private function proccessExistingAbandonedCart($campaignId, $storeId, $websiteId, $number, $guest = false)
     {
         $result = 0;
         $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
