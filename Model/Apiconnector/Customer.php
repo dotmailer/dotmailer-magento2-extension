@@ -983,52 +983,12 @@ class Customer
     }
 
     /**
-     * Get last used date for reward points
-     *
-     * @return string
+     * @param $method
+     * @param $args
+     * @return mixed
      */
-    public function getLastUsedDate()
+    public function __call($method, $args)
     {
-        return $this->customer->getLastUsedDate();
-    }
-
-    /**
-     * Get customer segments
-     *
-     * @return string
-     */
-    public function getCustomerSegments()
-    {
-        return $this->customer->getCustomerSegments();
-    }
-
-    /**
-     * Get expiration date for reward point
-     *
-     * @return string
-     */
-    public function getExpirationDate()
-    {
-        return $this->customer->getExpirationDate();
-    }
-
-    /**
-     * Get reward amount
-     *
-     * @return string
-     */
-    public function getRewardAmmount()
-    {
-        return $this->customer->getRewardAmmount();
-    }
-
-    /**
-     * Get reward points
-     *
-     * @return string
-     */
-    public function getRewardPoints()
-    {
-        return $this->customer->getRewardPoints();
+        return call_user_func_array([$this->customer, $method], $args);
     }
 }
