@@ -1238,39 +1238,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         unset($mappedData['custom_attributes'], $mappedData['abandoned_prod_name']);
 
-        //Only if enterprise running
-        if ($this->isEnterprise()) {
-            $enterpriseMapping = $this->getEnterpriseAttributes($website);
-            if ($enterpriseMapping) {
-                $mappedData = array_merge($mappedData, $enterpriseMapping);
-            }
-        }
-
         //skip non mapped customer datafields
         foreach ($mappedData as $key => $value) {
             if (!$value) {
                 unset($mappedData[$key]);
             }
         }
-
-        return $mappedData;
-    }
-    /**
-     * Enterprise data datafields attributes.
-     *
-     * @param int $website
-     *
-     * @return array/null
-     *
-     */
-    public function getEnterpriseAttributes($website = 0)
-    {
-        $store = $website->getDefaultStore();
-        $mappedData = $this->scopeConfig->getValue(
-            'connector_data_mapping/enterprise_data',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store->getId()
-        );
 
         return $mappedData;
     }
@@ -1764,25 +1737,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $quoteItems = $quoteModel->getAllItems();
 
         return $quoteItems;
-    }
-
-    /**
-     * Check if running Magento edition is enterprise
-     *
-     * @return bool
-     */
-    public function isEnterprise()
-    {
-        $allModules = $this->fullModuleList->getAll();
-
-        if (isset($allModules['Magento_Reward']) &&
-            isset($allModules['Magento_GiftCard']) &&
-            isset($allModules['Dotdigitalgroup_Enterprise'])
-        ) {
-            return true;
-        }
-
-        return false;
     }
 
     /** Get brand attribute selected from config by website id
