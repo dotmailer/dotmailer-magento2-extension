@@ -143,8 +143,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getAbandonedCartLimit()
     {
-        return ($this->data->getAbandonedCartLimit())?
-            '<span class="message message-warning">' . $this->escapeHtml($this->data->getAbandonedCartLimit()).
-            ' h</span>' : 'No limit';
+        return ($this->data->getAbandonedCartLimit())? $this->data->getAbandonedCartLimit() . ' h': __('No limit');
     }
 }
