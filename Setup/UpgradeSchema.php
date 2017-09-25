@@ -103,7 +103,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             $abandonedCartTable = $this->addColumnForAbandonedCartTable($abandonedCartTable);
             $abandonedCartTable = $this->addIndexKeyForAbandonedCarts($setup, $abandonedCartTable);
-
             $abandonedCartTable->setComment('Abandoned Carts Table');
             $setup->getConnection()->createTable($abandonedCartTable);
         }
@@ -354,7 +353,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         return $table->addColumn(
             'id',
             \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-            10,
+            null,
             [
                 'primary' => true,
                 'identity' => true,
@@ -365,8 +364,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
         )
             ->addColumn(
                 'quote_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                10,
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
                 ['unsigned' => true, 'nullable' => true],
                 'Quote Id'
             )

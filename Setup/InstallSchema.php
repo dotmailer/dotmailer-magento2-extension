@@ -1570,7 +1570,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $abandonedCartTable
+     * @param $abandonedCartTable Table
      * @return mixed
      */
     private function addColumnForAbandonedCartTable($abandonedCartTable)
@@ -1578,7 +1578,7 @@ class InstallSchema implements InstallSchemaInterface
         return $abandonedCartTable->addColumn(
             'id',
             \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-            10,
+            null,
             [
                 'primary' => true,
                 'identity' => true,
@@ -1589,8 +1589,8 @@ class InstallSchema implements InstallSchemaInterface
         )
             ->addColumn(
                 'quote_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                10,
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
                 ['unsigned' => true, 'nullable' => true],
                 'Quote Id'
             )
