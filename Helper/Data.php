@@ -1775,7 +1775,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $allModules = $this->fullModuleList->getAll();
 
-        if (isset($allModules['Magento_Reward']) && isset($allModules['Magento_GiftCard'])) {
+        if (isset($allModules['Magento_Reward']) &&
+            isset($allModules['Magento_GiftCard']) &&
+            isset($allModules['Dotdigitalgroup_Enterprise'])
+        ) {
             return true;
         }
 

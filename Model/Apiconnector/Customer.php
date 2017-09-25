@@ -982,26 +982,51 @@ class Customer
         return $this->customer->getShippingCompany();
     }
 
+    /**
+     * Get last used date for reward points
+     *
+     * @return string
+     */
     public function getLastUsedDate()
     {
         return $this->customer->getLastUsedDate();
     }
 
+    /**
+     * Get customer segments
+     *
+     * @return string
+     */
     public function getCustomerSegments()
     {
         return $this->customer->getCustomerSegments();
     }
 
+    /**
+     * Get expiration date for reward point
+     *
+     * @return string
+     */
     public function getExpirationDate()
     {
         return $this->customer->getExpirationDate();
     }
 
+    /**
+     * Get reward amount
+     *
+     * @return string
+     */
     public function getRewardAmmount()
     {
         return $this->customer->getRewardAmmount();
     }
 
+    /**
+     * Get reward points
+     *
+     * @return string
+     */
     public function getRewardPoints()
     {
         return $this->customer->getRewardPoints();
