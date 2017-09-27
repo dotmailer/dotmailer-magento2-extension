@@ -15,6 +15,11 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.3.5
+
+###### Bug fix
+- Errors would occur when trying to run contacts and orders sync with a database using table prefix - this has now been fixed.
+
 ## V2.3.4
 
 - Customer sales data fields could get mixed up when multiple store views existed under a single website; this has been fixed.
@@ -24,7 +29,6 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 ## V2.3.0
 
 ###### Improvements
-
  - We've done a large amount of code refactoring and have implemented main Magento extension best practices.
  
 ###### Bug fixes 
