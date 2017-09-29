@@ -22,6 +22,9 @@
         <add id="Dotdigitalgroup_Email::logviewer" title="Log Viewer" module="Dotdigitalgroup_Email" sortOrder="220"
              action="dotdigitalgroup_email/logviewer" resource="Dotdigitalgroup_Email::logviewer"
              parent="Dotdigitalgroup_Email::marketing_automation_report"/>
+        <add id="Dotdigitalgroup_Email::abandoned" title="Abandoned Carts" module="Dotdigitalgroup_Email" sortOrder="240"
+             action="dotdigitalgroup_email/abandoned" resource="Dotdigitalgroup_Email::abandoned"
+             parent="Dotdigitalgroup_Email::marketing_automation_report"/>
     </menu>
 </config>
 
