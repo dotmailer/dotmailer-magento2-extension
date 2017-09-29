@@ -15,7 +15,7 @@
     }
   ],
   "require": {
-    "magento/framework": "100.*",
+    "magento/framework": "*",
     "magento/module-newsletter": "100.*",
     "magento/module-review": "100.*",
     "magento/module-sales": "100.*",
