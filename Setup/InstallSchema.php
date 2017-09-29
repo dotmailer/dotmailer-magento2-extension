@@ -34,6 +34,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->createRuleTable($installer);
         $this->createImporterTable($installer);
         $this->createAutomationTable($installer);
+        $this->createAbandonedCartTable($installer);
 
         /**
          * Modify table
@@ -50,12 +51,10 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createContactTable($installer)
     {
-        $this->dropContactTableIfExists($installer);
+        $tableName = $installer->getTable('email_contact');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $contactTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_contact')
-        );
-
+        $contactTable = $installer->getConnection()->newTable($tableName);
         $contactTable = $this->addColumnsToContactTable($contactTable);
         $contactTable = $this->addIndexesToContactTable($installer, $contactTable);
 
@@ -74,23 +73,6 @@ class InstallSchema implements InstallSchemaInterface
 
         $contactTable->setComment('Connector Contacts');
         $installer->getConnection()->createTable($contactTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     *
-     * @return null
-     */
-    private function dropContactTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_contact')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_contact')
-            );
-        }
     }
 
     /**
@@ -250,15 +232,12 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createOrderTable($installer)
     {
-        $this->dropOrderTableIfExists($installer);
+        $tableName = $installer->getTable('email_order');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $orderTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_order')
-        );
-
+        $orderTable = $installer->getConnection()->newTable($tableName);
         $orderTable = $this->addColumnsToOrderTable($orderTable);
         $orderTable = $this->addIndexesToOrderTable($installer, $orderTable);
-
         $orderTable->addForeignKey(
             $installer->getFkName(
                 $installer->getTable('email_order'),
@@ -289,23 +268,6 @@ class InstallSchema implements InstallSchemaInterface
 
         $orderTable->setComment('Transactional Order Data');
         $installer->getConnection()->createTable($orderTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     *
-     * @return null
-     */
-    private function dropOrderTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_order')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_order')
-            );
-        }
     }
 
     /**
@@ -449,15 +411,12 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createCampaignTable($installer)
     {
-        $this->dropCampaignTableIfExists($installer);
+        $tableName = $installer->getTable('email_campaign');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $campaignTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_campaign')
-        );
-
+        $campaignTable = $installer->getConnection()->newTable($tableName);
         $campaignTable = $this->addColumnsToCampaignTable($campaignTable);
         $campaignTable = $this->addIndexesToCampaignTable($installer, $campaignTable);
-
         $campaignTable->addForeignKey(
             $installer->getFkName(
                 $installer->getTable('email_campaign'),
@@ -474,23 +433,6 @@ class InstallSchema implements InstallSchemaInterface
 
         $campaignTable->setComment('Connector Campaigns');
         $installer->getConnection()->createTable($campaignTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     *
-     * @return null
-     */
-    private function dropCampaignTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_campaign')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_campaign')
-            );
-        }
     }
 
     /**
@@ -712,34 +654,14 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createReviewTable($installer)
     {
-        $this->dropReviewTableIfExists($installer);
+        $tableName = $installer->getTable('email_review');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $reviewTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_review')
-        );
-
+        $reviewTable = $installer->getConnection()->newTable($tableName);
         $reviewTable = $this->addColumnsToReviewTable($reviewTable);
         $reviewTable = $this->addIndexesToReviewTable($installer, $reviewTable);
-
         $reviewTable->setComment('Connector Reviews');
         $installer->getConnection()->createTable($reviewTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     *
-     * @return null
-     */
-    private function dropReviewTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_review')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_review')
-            );
-        }
     }
 
     /**
@@ -862,34 +784,14 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createWishlistTable($installer)
     {
-        $this->dropWishlistTableIfExists($installer);
+        $tableName = $installer->getTable('email_wishlist');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $wishlistTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_wishlist')
-        );
-
+        $wishlistTable = $installer->getConnection()->newTable($tableName);
         $wishlistTable = $this->addColumnsToWishlistTable($wishlistTable);
         $wishlistTable = $this->addIndexesToWishlistTable($installer, $wishlistTable);
-
         $wishlistTable->setComment('Connector Wishlist');
         $installer->getConnection()->createTable($wishlistTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     *
-     * @return null
-     */
-    private function dropWishlistTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_wishlist')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_wishlist')
-            );
-        }
     }
 
     /**
@@ -1040,12 +942,10 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createCatalogTable($installer)
     {
-        $this->dropCatalogTableIfExists($installer);
+        $tableName = $installer->getTable('email_catalog');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $catalogTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_catalog')
-        );
-
+        $catalogTable = $installer->getConnection()->newTable($tableName);
         $catalogTable = $this->addColumnsToCatalogTable($catalogTable);
         $catalogTable = $this->addIndexesToCatalogTable($installer, $catalogTable);
         $catalogTable->addForeignKey(
@@ -1063,22 +963,6 @@ class InstallSchema implements InstallSchemaInterface
 
         $catalogTable->setComment('Connector Catalog');
         $installer->getConnection()->createTable($catalogTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     * @return null
-     */
-    private function dropCatalogTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_catalog')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_catalog')
-            );
-        }
     }
 
     /**
@@ -1187,33 +1071,13 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createRuleTable($installer)
     {
-        $this->dropRuleTableIfExists($installer);
+        $tableName = $installer->getTable('email_rules');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $ruleTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_rules')
-        );
-
+        $ruleTable = $installer->getConnection()->newTable($tableName);
         $ruleTable = $this->addColumnsToRulesTable($ruleTable);
-
         $ruleTable->setComment('Connector Rules');
         $installer->getConnection()->createTable($ruleTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     *
-     * @return null
-     */
-    private function dropRuleTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_rules')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_rules')
-            );
-        }
     }
 
     /**
@@ -1299,34 +1163,14 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createImporterTable($installer)
     {
-        $this->dropImporterTableIfExists($installer);
+        $tableName = $installer->getTable('email_importer');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $importerTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_importer')
-        );
-
+        $importerTable = $installer->getConnection()->newTable($tableName);
         $importerTable = $this->addColumnsToImporterTable($importerTable);
         $importerTable = $this->addIndexesToImporterTable($installer, $importerTable);
-
         $importerTable ->setComment('Email Importer');
         $installer->getConnection()->createTable($importerTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     *
-     * @return null
-     */
-    private function dropImporterTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_importer')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_importer')
-            );
-        }
     }
 
     /**
@@ -1512,34 +1356,14 @@ class InstallSchema implements InstallSchemaInterface
      */
     private function createAutomationTable($installer)
     {
-        $this->dropAutomationTableIfExists($installer);
+        $tableName = $installer->getTable('email_automation');
+        $this->dropTableIfExists($installer, $tableName);
 
-        $automationTable = $installer->getConnection()->newTable(
-            $installer->getTable('email_automation')
-        );
-
+        $automationTable = $installer->getConnection()->newTable($tableName);
         $automationTable = $this->addColumnsToAutomationTable($automationTable);
         $automationTable = $this->addIndexesToAutomationTable($installer, $automationTable);
-
         $automationTable->setComment('Automation Status');
         $installer->getConnection()->createTable($automationTable);
-    }
-
-    /**
-     * @param SchemaSetupInterface $installer
-     *
-     * @return null
-     */
-    private function dropAutomationTableIfExists($installer)
-    {
-        if ($installer->getConnection()->isTableExists(
-            $installer->getTable('email_automation')
-        )
-        ) {
-            $installer->getConnection()->dropTable(
-                $installer->getTable('email_automation')
-            );
-        }
     }
 
     /**
@@ -1715,5 +1539,155 @@ class InstallSchema implements InstallSchemaInterface
             'comment' => 'Email connector refresh token',
             ]
         );
+    }
+
+    /**
+     * @param $installer SchemaSetupInterface
+     */
+    private function createAbandonedCartTable($installer)
+    {
+        $tableName = $installer->getTable('email_abandoned_cart');
+        $this->dropTableIfExists($installer, $tableName);
+
+        $abandonedCartTable = $installer->getConnection()->newTable($installer->getTable($tableName));
+        $abandonedCartTable = $this->addColumnForAbandonedCartTable($abandonedCartTable);
+        $abandonedCartTable = $this->addIndexKeyForAbandonedCarts($installer, $abandonedCartTable);
+        $abandonedCartTable->setComment('Abandoned Carts Table');
+        $installer->getConnection()->createTable($abandonedCartTable);
+    }
+
+    /**
+     * @param $installer SchemaSetupInterface
+     * @param $table string
+     */
+    private function dropTableIfExists($installer, $table)
+    {
+        if ($installer->getConnection()->isTableExists($installer->getTable($table))) {
+            $installer->getConnection()->dropTable(
+                $installer->getTable($table)
+            );
+        }
+    }
+
+    /**
+     * @param $abandonedCartTable Table
+     * @return mixed
+     */
+    private function addColumnForAbandonedCartTable($abandonedCartTable)
+    {
+        return $abandonedCartTable->addColumn(
+            'id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'primary' => true,
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false
+            ],
+            'Primary Key'
+        )
+            ->addColumn(
+                'quote_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => true],
+                'Quote Id'
+            )
+            ->addColumn(
+                'store_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                10,
+                ['unsigned' => true, 'nullable' => true],
+                'Store Id'
+            )
+            ->addColumn(
+                'customer_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                10,
+                ['unsigned' => true, 'nullable' => true, 'default' => null],
+                'Customer ID'
+            )
+            ->addColumn(
+                'email',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['nullable' => false, 'default' => ''],
+                'Email'
+            )
+            ->addColumn(
+                'is_active',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                5,
+                ['unsigned' => true, 'nullable' => false, 'default' => '1'],
+                'Quote Active'
+            )
+            ->addColumn(
+                'quote_updated_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                [],
+                'Quote updated at'
+            )
+            ->addColumn(
+                'abandoned_cart_number',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                ['unsigned' => true, 'nullable' => false, 'default' => 0],
+                'Abandoned Cart number'
+            )
+            ->addColumn(
+                'items_count',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                ['unsigned' => true, 'nullable' => true, 'default' => 0],
+                'Quote items count'
+            )
+            ->addColumn(
+                'items_ids',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => true],
+                'Quote item ids'
+            )
+            ->addColumn(
+                'created_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                [],
+                'Created At'
+            )
+            ->addColumn(
+                'updated_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                [],
+                'Updated at'
+            );
+    }
+
+    /**
+     * @param $installer
+     * @param $abandonedCartTable
+     * @return mixed
+     */
+    private function addIndexKeyForAbandonedCarts($installer, $abandonedCartTable)
+    {
+        return $abandonedCartTable->addIndex(
+            $installer->getIdxName('email_abandoned_cart', ['quote_id']),
+            ['quote_id']
+        )
+            ->addIndex(
+                $installer->getIdxName('email_abandoned_cart', ['store_id']),
+                ['store_id']
+            )
+            ->addIndex(
+                $installer->getIdxName('email_abandoned_cart', ['customer_id']),
+                ['customer_id']
+            )
+            ->addIndex(
+                $installer->getIdxName('email_abandoned_cart', ['email']),
+                ['email']
+            );
     }
 }

@@ -60,5 +60,10 @@
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Wishlist</argument>
         </arguments>
     </virtualType>
-
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Abandoned\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_abandoned_cart</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Abandoned</argument>
+        </arguments>
+    </virtualType>
 </config>
