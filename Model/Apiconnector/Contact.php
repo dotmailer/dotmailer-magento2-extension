@@ -242,13 +242,13 @@ class Contact
                 foreach ($customAttributes as $data) {
                     $attribute = $data['attribute'];
                     $value = $customer->getData($attribute);
-                    $connectorCustomer->setData($value);
+                    $connectorCustomer->setCustomData($attribute, $value);
                 }
             }
 
             //contact email and email type
-            $connectorCustomer->setData($customer->getEmail());
-            $connectorCustomer->setData('Html');
+            $connectorCustomer->setEmail($customer->getEmail());
+            $connectorCustomer->setEmailType('Html');
 
             // save csv file data for customers
             $this->file->outputCSV(

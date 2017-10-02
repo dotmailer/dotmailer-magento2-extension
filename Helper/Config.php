@@ -92,13 +92,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CUSTOMER_BILLING_COMPANY_NAME = 'connector_data_mapping/customer_data/billing_company';
     const XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_COMPANY_NAME = 'connector_data_mapping/customer_data/delivery_company';
 
-    const XML_PATH_CONNECTOR_ENTERPRISE_CURRENT_BALANCE = 'connector_data_mapping/enterprise_data/reward_points';
-    const XML_PATH_CONNECTOR_ENTERPRISE_REWARD_AMOUNT = 'connector_data_mapping/enterprise_data/reward_amount';
-    const XML_PATH_CONNECTOR_ENTERPRISE_CREATED_DATE = 'connector_data_mapping/enterprise_data/created_date';
-    const XML_PATH_CONNECTOR_ENTERPRISE_EXPIRATION_DATE = 'connector_data_mapping/enterprise_data/expiration_date';
-    const XML_PATH_CONNECTOR_ENTERPIRSE_LAST_USED_DATE = 'connector_data_mapping/enterprise_data/last_used_date';
-    const XML_PATH_CONNECTOR_ENTERPRISE_CUSTOMER_SEGMENTS = 'connector_data_mapping/enterprise_data/customer_segment';
-
     /**
      * Dynamic Content.
      */

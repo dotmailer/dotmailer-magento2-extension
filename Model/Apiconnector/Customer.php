@@ -216,6 +216,20 @@ class Customer extends \Magento\Framework\Model\AbstractExtensibleModel
     }
 
     /**
+     * Set key value data.
+     *
+     * @param $key
+     * @param $value
+     * @return $this
+     */
+    public function setCustomData($key, $value)
+    {
+        $this->customerData[$key] = $value;
+
+        return $this;
+    }
+
+    /**
      * @param string $email
      *
      * @return null
@@ -1023,6 +1037,11 @@ class Customer extends \Magento\Framework\Model\AbstractExtensibleModel
         return $this->customer->getShippingCompany();
     }
 
+    /**
+     * Get last used date for reward points
+     *
+     * @return string
+     */
     public function getLastUsedDate()
     {
         $lastUsedDate = '';
@@ -1035,6 +1054,11 @@ class Customer extends \Magento\Framework\Model\AbstractExtensibleModel
         return $lastUsedDate;
     }
 
+    /**
+     * Get customer segments
+     *
+     * @return string
+     */
     public function getCustomerSegments()
     {
         $customerSegment = '';
@@ -1047,6 +1071,11 @@ class Customer extends \Magento\Framework\Model\AbstractExtensibleModel
         return $customerSegment;
     }
 
+    /**
+     * Get expiration date for reward point
+     *
+     * @return string
+     */
     public function getExpirationDate()
     {
         $expirationDate = '';
@@ -1059,6 +1088,11 @@ class Customer extends \Magento\Framework\Model\AbstractExtensibleModel
         return $expirationDate;
     }
 
+    /**
+     * Get reward amount
+     *
+     * @return string
+     */
     public function getRewardAmmount()
     {
         $rewardAmmount = '';
@@ -1071,6 +1105,11 @@ class Customer extends \Magento\Framework\Model\AbstractExtensibleModel
         return $rewardAmmount;
     }
 
+    /**
+     * Get reward points
+     *
+     * @return string
+     */
     public function getRewardPoints()
     {
         $rewardPoints = '';
