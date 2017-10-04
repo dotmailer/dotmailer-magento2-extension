@@ -280,36 +280,6 @@ class Datafield
             ],
         ];
 
-    private $contactEnterpriseDataFields
-        = [
-            'reward_points' => [
-               'name' => 'REWARD_POINTS',
-               'type' => 'numeric',
-               'visibility' => 'private'
-            ],
-            'reward_ammount' => [
-                'name' => 'REWARD_AMOUNT',
-                'type' => 'numeric',
-                'visibility' => 'private'
-            ],
-            'expiration_date' => [
-                'name' => 'REWARD_EXP_DATE',
-                'type' => 'date',
-                'visibility' => 'private'
-            ],
-            'last_used_date' => [
-                'name' => 'LAST_USED_DATE',
-                'type' => 'date',
-                'visibility' => 'private'
-            ],
-            'customer_segments' => [
-                'name' => 'CUSTOMER_SEGMENTS',
-                'type' => 'string',
-                'visibility' => 'private'
-            ],
-
-        ];
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -348,8 +318,9 @@ class Datafield
         $contactDataFields = $this->contactDatafields;
 
         //If enterprise merge enterprise data fields
-        if (! empty($this->getEnterpriseDataFields())) {
-            $contactDataFields = array_merge($this->contactEnterpriseDataFields, $contactDataFields);
+        $enterpriseDataFields = $this->getEnterpriseDataFields();
+        if (! empty($enterpriseDataFields)) {
+            $contactDataFields = array_merge($enterpriseDataFields, $contactDataFields);
         }
 
         return $contactDataFields;
@@ -386,10 +357,6 @@ class Datafield
      */
     public function getEnterpriseDataFields()
     {
-        if (! $this->helper->isEnterprise()) {
-            return [];
-        }
-
-        return $this->contactEnterpriseDataFields;
+        return [];
     }
 }

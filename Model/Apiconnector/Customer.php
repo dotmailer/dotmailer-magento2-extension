@@ -10,7 +10,8 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
-class Customer
+class Customer extends \Magento\Framework\Model\AbstractExtensibleModel
+    implements \Dotdigitalgroup\Email\Model\Apiconnector\CustomerInterface
 {
     /**
      * @var \Magento\Customer\Model\Customer
@@ -26,26 +27,6 @@ class Customer
      * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
     public $reviewCollection;
-
-    /**
-     * @var object
-     */
-    public $rewardCustomer;
-
-    /**
-     * @var string
-     */
-    public $rewardLastSpent = '';
-
-    /**
-     * @var string
-     */
-    public $rewardLastEarned = '';
-
-    /**
-     * @var string
-     */
-    public $rewardExpiry = '';
 
     /**
      * @var object
@@ -76,11 +57,6 @@ class Customer
      * @var \Magento\Catalog\Model\ProductFactory
      */
     public $productFactory;
-
-    /**
-     * @var object
-     */
-    public $reward;
 
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
@@ -129,20 +105,13 @@ class Customer
     private $dateTime;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\EnterpriseFactory
-     */
-    private $enterpriseFactory;
-
-    const EE_REWARD_HISTORY_COLLECTION = '\\Magento\Reward\\Model\\ResourceModel\\Reward\\History\\CollectionFactory';
-    const EE_CUSTOMER_SEGMENT_RESOURCE = '\\Magento\\CustomerSegment\\Model\\ResourceModel\\Customer';
-    const EE_REWARD_DATA = '\\Magento\\Reward\\Helper\\Data';
-    /**
      * @var \Magento\Eav\Model\ConfigFactory
      */
     private $eavConfigFactory;
 
     /**
      * Customer constructor.
+     *
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
      * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Magento\Customer\Model\ResourceModel\Group $groupResource
@@ -155,13 +124,14 @@ class Customer
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param \Dotdigitalgroup\Email\Model\EnterpriseFactory $enterpriseFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                         $helper
-     * @param \Magento\Customer\Model\GroupFactory                       $groupFactory
-     * @param \Magento\Newsletter\Model\SubscriberFactory                $subscriberFactory
-     * @param \Magento\Catalog\Model\CategoryFactory                     $categoryFactory
-     * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
-     * @param \Magento\Eav\Model\ConfigFactory                           $eavConfigFactory
+     * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -178,8 +148,14 @@ class Customer
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Dotdigitalgroup\Email\Model\EnterpriseFactory $enterpriseFactory,
-        \Magento\Eav\Model\ConfigFactory $eavConfigFactory
+        \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
     ) {
         $this->dateTime          = $dateTime;
         $this->helper            = $helper;
@@ -193,21 +169,18 @@ class Customer
         $this->groupResource     = $groupResource;
         $this->categoryResource  = $categoryResource;
         $this->productResource   = $productResource;
-        $this->enterpriseFactory = $enterpriseFactory;
-        $this->productResource = $productResource;
-        $this->eavConfigFactory = $eavConfigFactory;
-    }
+        $this->productResource   = $productResource;
+        $this->eavConfigFactory  = $eavConfigFactory;
 
-    /**
-     * Set key value data.
-     *
-     * @param mixed $data
-     *
-     * @return null
-     */
-    public function setData($data)
-    {
-        $this->customerData[] = $data;
+        parent::__construct(
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $resource,
+            $resourceCollection,
+            $data
+        );
     }
 
     /**
@@ -238,6 +211,20 @@ class Customer
             );
             $this->customerData[$key] = $value;
         }
+
+        return $this;
+    }
+
+    /**
+     * Set key value data.
+     *
+     * @param $key
+     * @param $value
+     * @return $this
+     */
+    public function setCustomData($key, $value)
+    {
+        $this->customerData[$key] = $value;
 
         return $this;
     }
@@ -823,51 +810,6 @@ class Customer
     }
 
     /**
-     * Customer segments id.
-     *
-     * @return string
-     */
-    public function getCustomerSegments()
-    {
-        $customerSegmentResource = $this->enterpriseFactory->create(self::EE_CUSTOMER_SEGMENT_RESOURCE, []);
-        $segmentIds = $customerSegmentResource->getCustomerWebsiteSegments(
-            $this->getCustomerId(),
-            $this->customer->getWebsiteId()
-        );
-
-        if (! empty($segmentIds)) {
-            return implode(',', $segmentIds);
-        }
-
-        return '';
-    }
-
-    /**
-     * Last used reward points.
-     *
-     * @return mixed
-     */
-    public function getLastUsedDate()
-    {
-        $historyCollectionFactory = $this->enterpriseFactory->create(self::EE_REWARD_HISTORY_COLLECTION, []);
-        //last used from the reward history based on the points delta used enterprise module
-        $lastUsed = $historyCollectionFactory->create()
-            ->addCustomerFilter($this->customer->getId())
-            ->addWebsiteFilter($this->customer->getWebsiteId())
-            ->addFieldToFilter('points_delta', ['lt' => 0])
-            ->setDefaultOrder()
-            ->setPageSize(1)
-            ->getFirstItem()
-            ->getCreatedAt();
-        //for any valid date
-        if ($lastUsed) {
-            return $this->dateTime->formatDate($lastUsed, true);
-        }
-
-        return '';
-    }
-
-    /**
      * Get most purchased category.
      *
      * @return string
@@ -1038,93 +980,6 @@ class Customer
     }
 
     /**
-     * Reward points balance.
-     *
-     * @return int
-     */
-    public function getRewardPoints()
-    {
-        if (! $this->reward) {
-            $this->_setReward();
-        }
-
-        if ($this->reward !== true) {
-            return $this->reward->getPointsBalance();
-        }
-
-        return '';
-    }
-
-    /**
-     * Currency amount points.
-     *
-     * @return mixed
-     */
-    public function getRewardAmmount()
-    {
-        if (!$this->reward) {
-            $this->_setReward();
-        }
-
-        if ($this->reward !== true) {
-            return $this->reward->getCurrencyAmount();
-        }
-
-        return '';
-    }
-
-    /**
-     * Expiration date to use the points.
-     *
-     * @return string
-     */
-    public function getExpirationDate()
-    {
-        //set reward for later use
-        if (!$this->reward) {
-            $this->_setReward();
-        }
-
-        if ($this->reward !== true) {
-            $expiredAt = $this->reward->getExpirationDate();
-
-            if ($expiredAt) {
-                $date = $this->dateTime->formatDate($expiredAt, true);
-            } else {
-                $date = '';
-            }
-
-            return $date;
-        }
-
-        return '';
-    }
-
-    /**
-     * Get the customer reward.
-     *
-     * @return null
-     */
-    public function _setReward()
-    {
-        $rewardData = $this->enterpriseFactory->create(self::EE_REWARD_DATA, []);
-        $historyCollectionFactory = $this->enterpriseFactory->create(self::EE_REWARD_HISTORY_COLLECTION, []);
-        $collection = $historyCollectionFactory->create()
-                ->addCustomerFilter($this->customer->getId())
-                ->addWebsiteFilter($this->customer->getWebsiteId())
-                ->setExpiryConfig($rewardData->getExpiryConfig())
-                ->addExpirationDate($this->customer->getWebsiteId())
-                ->skipExpiredDuplicates()
-                ->setDefaultOrder();
-
-            $item = $collection->setPageSize(1)
-                ->setCurPage(1)
-                ->getFirstItem();
-
-            $this->reward = $item;
-    }
-
-    /**
      * Get last increment id.
      *
      * @return mixed
@@ -1143,7 +998,35 @@ class Customer
     {
         return $this->customer->getBillingCompany();
     }
-    
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return \Dotdigitalgroup\Email\Model\Apiconnector\CustomerExtensionInterface|null
+     */
+    public function getExtensionAttributes()
+    {
+        $extensionAttributes = $this->_getExtensionAttributes();
+        if (!$extensionAttributes) {
+            return $this->extensionAttributesFactory->create(
+                'Dotdigitalgroup\Email\Model\Apiconnector\CustomerInterface'
+            );
+        }
+        return $extensionAttributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\CustomerExtensionInterface $extensionAttributes
+     * @return $this
+     */
+    public function setExtensionAttributes(
+        \Dotdigitalgroup\Email\Model\Apiconnector\CustomerExtensionInterface $extensionAttributes
+    ) {
+        return $this->_setExtensionAttributes($extensionAttributes);
+    }
+
     /**
      * Get shipping company name.
      *
@@ -1152,5 +1035,90 @@ class Customer
     public function getDeliveryCompany()
     {
         return $this->customer->getShippingCompany();
+    }
+
+    /**
+     * Get last used date for reward points
+     *
+     * @return string
+     */
+    public function getLastUsedDate()
+    {
+        $lastUsedDate = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $lastUsedDate = $extendedAttributes->getLastUsedDate();
+        }
+
+        return $lastUsedDate;
+    }
+
+    /**
+     * Get customer segments
+     *
+     * @return string
+     */
+    public function getCustomerSegments()
+    {
+        $customerSegment = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $customerSegment = $extendedAttributes->getCustomerSegments();
+        }
+
+        return $customerSegment;
+    }
+
+    /**
+     * Get expiration date for reward point
+     *
+     * @return string
+     */
+    public function getExpirationDate()
+    {
+        $expirationDate = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $expirationDate = $extendedAttributes->getExpirationDate();
+        }
+
+        return $expirationDate;
+    }
+
+    /**
+     * Get reward amount
+     *
+     * @return string
+     */
+    public function getRewardAmmount()
+    {
+        $rewardAmmount = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $rewardAmmount = $extendedAttributes->getRewardAmmount();
+        }
+
+        return $rewardAmmount;
+    }
+
+    /**
+     * Get reward points
+     *
+     * @return string
+     */
+    public function getRewardPoints()
+    {
+        $rewardPoints = '';
+
+        $extendedAttributes = $this->getExtensionAttributes();
+        if ($extendedAttributes !== null) {
+            $rewardPoints = $extendedAttributes->getRewardPoints();
+        }
+
+        return $rewardPoints;
     }
 }
