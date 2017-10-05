@@ -266,9 +266,7 @@ class Product
 
             foreach ($productAttributeOptions as $productAttribute) {
                 $count = 0;
-                $label = strtolower(
-                    str_replace(' ', '', $productAttribute['label'])
-                );
+                $label = $this->validateProductLabel($productAttribute);
                 $options = [];
                 foreach ($productAttribute['values'] as $attribute) {
                     $options[$count]['option'] = $attribute['default_label'];
@@ -337,5 +335,19 @@ class Product
      */
     public function __wakeup()
     {
+    }
+
+    /**
+     * @param $productAttribute array
+     * @return string
+     */
+    private function validateProductLabel($productAttribute)
+    {
+         $label = strtolower(str_replace(' ', '', $productAttribute['label']));
+
+         $regex = '/([a-zA-Z0-9_\-]+)$/';
+         preg_match($regex, $label, $matches);
+
+         return $matches[1];
     }
 }
