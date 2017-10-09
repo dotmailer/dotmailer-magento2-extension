@@ -10,6 +10,14 @@ class Productattributes implements \Magento\Framework\Data\OptionSourceInterface
     private $attributes;
 
     /**
+     * Exclude incompatible product attributes from the mapping.
+     * @var array
+     */
+    private $excluded = [
+        'quantity_and_stock_status'
+    ];
+
+    /**
      * Productattributes constructor.
      *
      * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $collectionFactory
@@ -38,12 +46,15 @@ class Productattributes implements \Magento\Framework\Data\OptionSourceInterface
         ];
 
         foreach ($attributes as $attribute) {
-            $attributeArray[] = [
-                'label' => $attribute->getFrontendLabel(),
-                'value' => $attribute->getAttributeCode(),
-            ];
-        }
+            $attributeCode = $attribute->getAttributeCode();
 
+            if (!in_array($attributeCode, $this->excluded)) {
+                $attributeArray[] = [
+                    'label' => $attribute->getFrontendLabel(),
+                    'value' => $attributeCode,
+                ];
+            }
+        }
         return $attributeArray;
     }
 }

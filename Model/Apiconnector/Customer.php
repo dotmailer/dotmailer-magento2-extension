@@ -30,26 +30,6 @@ class Customer
     /**
      * @var object
      */
-    public $rewardCustomer;
-
-    /**
-     * @var string
-     */
-    public $rewardLastSpent = '';
-
-    /**
-     * @var string
-     */
-    public $rewardLastEarned = '';
-
-    /**
-     * @var string
-     */
-    public $rewardExpiry = '';
-
-    /**
-     * @var object
-     */
     public $mappingHash;
 
     /**
@@ -76,11 +56,6 @@ class Customer
      * @var \Magento\Catalog\Model\ProductFactory
      */
     public $productFactory;
-
-    /**
-     * @var object
-     */
-    public $reward;
 
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
@@ -129,20 +104,13 @@ class Customer
     private $dateTime;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\EnterpriseFactory
-     */
-    private $enterpriseFactory;
-
-    const EE_REWARD_HISTORY_COLLECTION = '\\Magento\Reward\\Model\\ResourceModel\\Reward\\History\\CollectionFactory';
-    const EE_CUSTOMER_SEGMENT_RESOURCE = '\\Magento\\CustomerSegment\\Model\\ResourceModel\\Customer';
-    const EE_REWARD_DATA = '\\Magento\\Reward\\Helper\\Data';
-    /**
      * @var \Magento\Eav\Model\ConfigFactory
      */
     private $eavConfigFactory;
 
     /**
      * Customer constructor.
+     *
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
      * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Magento\Customer\Model\ResourceModel\Group $groupResource
@@ -155,13 +123,7 @@ class Customer
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param \Dotdigitalgroup\Email\Model\EnterpriseFactory $enterpriseFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                         $helper
-     * @param \Magento\Customer\Model\GroupFactory                       $groupFactory
-     * @param \Magento\Newsletter\Model\SubscriberFactory                $subscriberFactory
-     * @param \Magento\Catalog\Model\CategoryFactory                     $categoryFactory
-     * @param \Magento\Catalog\Model\ProductFactory                      $productFactory
-     * @param \Magento\Eav\Model\ConfigFactory                           $eavConfigFactory
+     * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -178,7 +140,6 @@ class Customer
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Dotdigitalgroup\Email\Model\EnterpriseFactory $enterpriseFactory,
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory
     ) {
         $this->dateTime          = $dateTime;
@@ -193,9 +154,8 @@ class Customer
         $this->groupResource     = $groupResource;
         $this->categoryResource  = $categoryResource;
         $this->productResource   = $productResource;
-        $this->enterpriseFactory = $enterpriseFactory;
-        $this->productResource = $productResource;
-        $this->eavConfigFactory = $eavConfigFactory;
+        $this->productResource   = $productResource;
+        $this->eavConfigFactory  = $eavConfigFactory;
     }
 
     /**
@@ -823,51 +783,6 @@ class Customer
     }
 
     /**
-     * Customer segments id.
-     *
-     * @return string
-     */
-    public function getCustomerSegments()
-    {
-        $customerSegmentResource = $this->enterpriseFactory->create(self::EE_CUSTOMER_SEGMENT_RESOURCE, []);
-        $segmentIds = $customerSegmentResource->getCustomerWebsiteSegments(
-            $this->getCustomerId(),
-            $this->customer->getWebsiteId()
-        );
-
-        if (! empty($segmentIds)) {
-            return implode(',', $segmentIds);
-        }
-
-        return '';
-    }
-
-    /**
-     * Last used reward points.
-     *
-     * @return mixed
-     */
-    public function getLastUsedDate()
-    {
-        $historyCollectionFactory = $this->enterpriseFactory->create(self::EE_REWARD_HISTORY_COLLECTION, []);
-        //last used from the reward history based on the points delta used enterprise module
-        $lastUsed = $historyCollectionFactory->create()
-            ->addCustomerFilter($this->customer->getId())
-            ->addWebsiteFilter($this->customer->getWebsiteId())
-            ->addFieldToFilter('points_delta', ['lt' => 0])
-            ->setDefaultOrder()
-            ->setPageSize(1)
-            ->getFirstItem()
-            ->getCreatedAt();
-        //for any valid date
-        if ($lastUsed) {
-            return $this->dateTime->formatDate($lastUsed, true);
-        }
-
-        return '';
-    }
-
-    /**
      * Get most purchased category.
      *
      * @return string
@@ -1038,93 +953,6 @@ class Customer
     }
 
     /**
-     * Reward points balance.
-     *
-     * @return int
-     */
-    public function getRewardPoints()
-    {
-        if (! $this->reward) {
-            $this->_setReward();
-        }
-
-        if ($this->reward !== true) {
-            return $this->reward->getPointsBalance();
-        }
-
-        return '';
-    }
-
-    /**
-     * Currency amount points.
-     *
-     * @return mixed
-     */
-    public function getRewardAmmount()
-    {
-        if (!$this->reward) {
-            $this->_setReward();
-        }
-
-        if ($this->reward !== true) {
-            return $this->reward->getCurrencyAmount();
-        }
-
-        return '';
-    }
-
-    /**
-     * Expiration date to use the points.
-     *
-     * @return string
-     */
-    public function getExpirationDate()
-    {
-        //set reward for later use
-        if (!$this->reward) {
-            $this->_setReward();
-        }
-
-        if ($this->reward !== true) {
-            $expiredAt = $this->reward->getExpirationDate();
-
-            if ($expiredAt) {
-                $date = $this->dateTime->formatDate($expiredAt, true);
-            } else {
-                $date = '';
-            }
-
-            return $date;
-        }
-
-        return '';
-    }
-
-    /**
-     * Get the customer reward.
-     *
-     * @return null
-     */
-    public function _setReward()
-    {
-        $rewardData = $this->enterpriseFactory->create(self::EE_REWARD_DATA, []);
-        $historyCollectionFactory = $this->enterpriseFactory->create(self::EE_REWARD_HISTORY_COLLECTION, []);
-        $collection = $historyCollectionFactory->create()
-                ->addCustomerFilter($this->customer->getId())
-                ->addWebsiteFilter($this->customer->getWebsiteId())
-                ->setExpiryConfig($rewardData->getExpiryConfig())
-                ->addExpirationDate($this->customer->getWebsiteId())
-                ->skipExpiredDuplicates()
-                ->setDefaultOrder();
-
-            $item = $collection->setPageSize(1)
-                ->setCurPage(1)
-                ->getFirstItem();
-
-            $this->reward = $item;
-    }
-
-    /**
      * Get last increment id.
      *
      * @return mixed
@@ -1152,5 +980,15 @@ class Customer
     public function getDeliveryCompany()
     {
         return $this->customer->getShippingCompany();
+    }
+
+    /**
+     * @param $method
+     * @param $args
+     * @return mixed
+     */
+    public function __call($method, $args)
+    {
+        return call_user_func_array([$this->customer, $method], $args);
     }
 }
