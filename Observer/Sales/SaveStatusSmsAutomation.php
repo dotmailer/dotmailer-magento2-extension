@@ -68,6 +68,16 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     private $serializer;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     */
+    private $contactResource;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
+     */
+    private $contactCollectionFactory;
+
+    /**
      * SaveStatusSmsAutomation constructor.
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param Automation $automationResource
@@ -80,6 +90,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -92,7 +104,9 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
-        \Dotdigitalgroup\Email\Helper\Data $data
+        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
     ) {
         $this->serializer = $serializer;
         $this->orderResource = $orderResource;
@@ -105,6 +119,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         $this->emulationFactory       = $emulationFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->helper                 = $data;
+        $this->contactResource = $contactResource;
+        $this->contactCollectionFactory = $contactCollectionFactory;
     }
 
     /**
@@ -156,6 +172,13 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
 
         $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName);
 
+        //Reset contact if found
+        $contactCollection = $this->contactCollectionFactory->create();
+        $contact = $contactCollection->loadByCustomerEmail($customerEmail, $websiteId);
+        if ($contact) {
+            $this->resetContact($contact);
+        }
+
         //If customer's first order, also order state is new
         if ($order->getCustomerId() && $order->getState() == \Magento\Sales\Model\Order::STATE_NEW) {
             $orders = $this->orderCollectionFactory->create()
@@ -186,6 +209,22 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         $this->registry->unregister('sales_order_status_before');
 
         return $this;
+    }
+
+    /**
+     * Reset contact based on type and status
+     *
+     * @param \Dotdigitalgroup\Email\Model\Contact $contact
+     */
+    private function resetContact($contact)
+    {
+        if ($contact->getCustomerId() && $contact->getEmailImported()) {
+            $contact->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED);
+            $this->contactResource->save($contact);
+        } elseif (! $contact->getCustomerId() && $contact->getIsSubscriber() && $contact->getSubscriberImported()) {
+            $contact->setSubscriberImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED);
+            $this->contactResource->save($contact);
+        }
     }
 
     /**
