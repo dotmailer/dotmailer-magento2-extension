@@ -15,6 +15,20 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.3.6
+
+###### Bug fix
+- It was possible for guests and customers to receive duplicate abandoned cart emails; this has been resolved.
+- EE data can now be synced.
+- An expiry days value of ‘0’ in the external dynamic content coupon code URL would set the coupon code’s expiration date and time to the coupon code’s creation date and time; this has been fixed.
+- Subscriber and customer sales data fields no longer get incorrectly synced when multiple store views exist under a single website.
+- Custom product attributes created by another extension no longer cause order syncs to fail.
+
+## V2.3.5
+
+###### Bug fix
+- Errors would occur when trying to run contacts and orders sync with a database using table prefix - this has now been fixed.
+
 ## V2.3.4
 
 - Customer sales data fields could get mixed up when multiple store views existed under a single website; this has been fixed.
@@ -24,7 +38,6 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 ## V2.3.0
 
 ###### Improvements
-
  - We've done a large amount of code refactoring and have implemented main Magento extension best practices.
  
 ###### Bug fixes 
