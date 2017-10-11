@@ -452,10 +452,7 @@ class Order
     {
         foreach ($configAttributes as $attributeCode) {
             //if config attribute is in attribute set
-            if (in_array(
-                $attributeCode,
-                $attributesFromAttributeSet
-            )) {
+            if (in_array($attributeCode, $attributesFromAttributeSet)) {
                 //attribute input type
                 $inputType = $this->productResource
                     ->getAttribute($attributeCode)
@@ -467,18 +464,14 @@ class Order
                     case 'multiselect':
                     case 'select':
                     case 'dropdown':
-                        $value = $productModel->getAttributeText(
-                            $attributeCode
-                        );
+                        $value = $productModel->getAttributeText($attributeCode);
                         break;
                     case 'date':
                         $value = $this->localeDate->date($productModel->getData($attributeCode))
                             ->format(\Zend_Date::ISO_8601);
                         break;
                     default:
-                        $value = $productModel->getData(
-                            $attributeCode
-                        );
+                        $value = $productModel->getData($attributeCode);
                         break;
                 }
 
@@ -499,14 +492,15 @@ class Order
     {
         if ($value && !is_array($value)) {
             // check limit on text and assign value to array
+            $attributes[][$attributeCode] = $this->_limitLength($value);
+        } elseif ($value && is_array($value)) {
+            $values = (isset($value['values']))? implode(',', $value['values']) : implode(',', $value);
 
-            $attributes[][$attributeCode]
-                = $this->_limitLength($value);
-        } elseif (is_array($value)) {
-            $value = implode($value, ', ');
-            $attributes[][$attributeCode]
-                = $this->_limitLength($value);
+            if ($values) {
+                $attributes[][$attributeCode] = $this->_limitLength($values);
+            }
         }
+
         return $attributes;
     }
 

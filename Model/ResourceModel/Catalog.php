@@ -376,7 +376,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $coreResource->update(
                     $tableName,
                     [
-                        'modified' => 'null',
+                        'modified' => new \Zend_Db_Expr('null'),
                         'updated_at' => gmdate('Y-m-d H:i:s'),
                     ],
                     ["product_id IN (?)" => $ids]

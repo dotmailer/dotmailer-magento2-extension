@@ -67,6 +67,7 @@
                 <item name="order_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Order\Collection</item>
                 <item name="review_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Review\Collection</item>
                 <item name="wishlist_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Wishlist\Collection</item>
+                <item name="abandoned_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Abandoned\Collection</item>
             </argument>
         </arguments>
     </type>
