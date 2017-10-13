@@ -843,7 +843,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
                     LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
                     LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                    WHERE sfo.customer_id = e.entity_id
+                    $where
                     AND ea.attribute_code = '$this->brand'
                     AND eaov.value is not null
                     GROUP BY eaov.option_id
