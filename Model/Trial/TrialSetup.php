@@ -201,6 +201,9 @@ class TrialSetup
             0
         );
 
+        //Clear config cache
+        $this->config->reinit();
+
         return true;
     }
 
