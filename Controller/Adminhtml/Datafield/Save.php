@@ -43,17 +43,17 @@ class Save extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $datafield = $this->getRequest()->getParam('name');
-        $type = $this->getRequest()->getParam('type');
-        $default = $this->getRequest()->getParam('default');
+        $datafield  = $this->getRequest()->getParam('name');
+        $type       = $this->getRequest()->getParam('type');
+        $default    = $this->getRequest()->getParam('default');
         $visibility = $this->getRequest()->getParam('visibility');
-
-        $website = (int) $this->getRequest()->getParam('website', 0);
-
-        $client = $this->dataHelper->getWebsiteApiClient($website);
+        $website    = (int) $this->getRequest()->getParam('website', 0);
 
         if (! empty($datafield)) {
-            $response = $client->postDataFields($datafield, $type, $visibility, $default);
+
+            $client = $this->dataHelper->getWebsiteApiClient($website);
+            $response = $this->createDatafield($client, $datafield, $type, $visibility, $default);
+
             if (isset($response->message)) {
                 $this->messageManager->addErrorMessage($response->message);
             } else {
@@ -68,5 +68,36 @@ class Save extends \Magento\Backend\App\AbstractAction
     protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::automation');
+    }
+
+    /**
+     * @param $client \Dotdigitalgroup\Email\Model\Client
+     * @param $datafield string
+     * @param $type string
+     * @param $visibility string
+     * @param $default mixed
+     * @return mixed
+     */
+    private function createDatafield($client, $datafield, $type, $visibility = 'Private', $default = 'String')
+    {
+        switch ($type) {
+            case 'Numeric' :
+                $default = (int)$default;
+                break;
+            case 'String' :
+                $default = (string)$default;
+                break;
+            case 'Date' :
+                $date = new \Zend_Date($default);
+                $default = $date->toString(\Zend_Date::ISO_8601);
+                break;
+            case 'Boolean' :
+                $default = (bool)$default;
+                break;
+
+        }
+        $response = $client->postDataFields($datafield, $type, $visibility, $default);
+
+        return $response;
     }
 }
