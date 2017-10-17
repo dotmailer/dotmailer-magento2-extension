@@ -25,23 +25,31 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     private $escaper;
 
     /**
+     * @var \Magento\Framework\App\Config\ReinitableConfigInterface
+     */
+    private $config;
+
+    /**
      * Automapdatafields constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data               $data
-     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $datafield
-     * @param \Magento\Backend\App\Action\Context              $context
-     * @param \Magento\Framework\Escaper                       $escaper
+     * @param \Dotdigitalgroup\Email\Helper\Data                        $data
+     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield          $datafield
+     * @param \Magento\Backend\App\Action\Context                       $context
+     * @param \Magento\Framework\Escaper                                $escaper
+     * @param \Magento\Framework\App\Config\ReinitableConfigInterface   $config
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $datafield,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Escaper $escaper
+        \Magento\Framework\Escaper $escaper,
+        \Magento\Framework\App\Config\ReinitableConfigInterface $config
     ) {
         $this->data           = $data;
         $this->datafield      = $datafield;
         $this->messageManager = $context->getMessageManager();
         $this->escaper        = $escaper;
+        $this->config         = $config;
         parent::__construct($context);
     }
 
@@ -107,6 +115,9 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
             } else {
                 $this->messageManager->addSuccessMessage('All Datafields Created And Mapped.');
             }
+
+            //Clear config cache
+            $this->config->reinit();
         }
 
         $this->_redirect($redirectUrl);
