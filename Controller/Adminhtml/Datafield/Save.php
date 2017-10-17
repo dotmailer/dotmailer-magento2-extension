@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Datafield;
 
+
 class Save extends \Magento\Backend\App\AbstractAction
 {
     /**
@@ -43,17 +44,17 @@ class Save extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $datafield = $this->getRequest()->getParam('name');
-        $type = $this->getRequest()->getParam('type');
-        $default = $this->getRequest()->getParam('default');
-        $visibility = $this->getRequest()->getParam('visibility');
-
-        $website = (int) $this->getRequest()->getParam('website', 0);
-
-        $client = $this->dataHelper->getWebsiteApiClient($website);
+        $datafield  = $this->getRequest()->getParam('name');
 
         if (! empty($datafield)) {
-            $response = $client->postDataFields($datafield, $type, $visibility, $default);
+            $response = $this->dataHelper->createDatafield(
+                (int) $this->getRequest()->getParam('website', 0),
+                $datafield,
+                $this->getRequest()->getParam('type'),
+                $this->getRequest()->getParam('visibility'),
+                $this->getRequest()->getParam('default')
+            );
+
             if (isset($response->message)) {
                 $this->messageManager->addErrorMessage($response->message);
             } else {
@@ -69,4 +70,5 @@ class Save extends \Magento\Backend\App\AbstractAction
     {
         return $this->_authorization->isAllowed('Dotdigitalgroup_Email::automation');
     }
+
 }
