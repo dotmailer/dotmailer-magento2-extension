@@ -1720,4 +1720,49 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $quoteItems;
     }
+
+    /** Get brand attribute selected from config by website id
+     *
+     * @param $websiteId
+     * @return string|boolean
+     */
+    public function getBrandAttributeByWebsiteId($websiteId)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            $websiteId
+        );
+    }
+
+    /**
+     * Create data fields in account by type.
+     *
+     * @param $website int
+     * @param $datafield string
+     * @param $type string
+     * @param $visibility string
+     * @param $default mixed
+     * @return mixed
+     */
+    public function createDatafield($website, $datafield, $type, $visibility = 'Private', $default = 'String')
+    {
+        $client = $this->getWebsiteApiClient($website);
+        switch ($type) {
+            case 'Numeric':
+                $default = (int)$default;
+                break;
+            case 'Date':
+                $default = $this->datetime->date(\Zend_Date::ISO_8601, $default);
+                break;
+            case 'Boolean':
+                $default = (bool)$default;
+                break;
+            default:
+                $default = (string)$default;
+        }
+
+        $response = $client->postDataFields($datafield, $type, $visibility, $default);
+
+        return $response;
+    }
 }
