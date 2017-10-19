@@ -15,7 +15,7 @@
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon">
         <plugin name="ddg_sales_coupon_expiration_date" type="Dotdigitalgroup\Email\Plugin\CouponPlugin" sortOrder="10" disabled="false"/>
     </type>
-    <type name="Magento\Framework\Mail\Transport">
+    <type name="Magento\Framework\Mail\TransportInterface">
         <plugin name="ddg_mail_transport" type="Dotdigitalgroup\Email\Plugin\TransportPlugin" sortOrder="1" disabled="false" />
     </type>
     <type name="Magento\SalesRule\Model\ResourceModel\Rule\Collection">
