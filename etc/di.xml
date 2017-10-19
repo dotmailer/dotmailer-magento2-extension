@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Magento\Sales\Model\Order\CustomerManagement">
+    <type name="Magento\Sales\Api\OrderCustomerManagementInterface">
         <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagementPlugin" sortOrder="1"/>
     </type>
     <type name="Magento\Newsletter\Model\Subscriber">
@@ -9,7 +9,7 @@
     <type name="Magento\Customer\Model\Customer">
         <plugin name="ddg_customer_sendNewAccountEmail_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerPlugin" sortOrder="1" disabled="false"/>
     </type>
-    <type name="Magento\Customer\Model\EmailNotification">
+    <type name="Magento\Customer\Model\EmailNotificationInterface">
         <plugin name="ddg_customer_email_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerEmailNotificationPlugin" sortOrder="1" disabled="false"/>
     </type>
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon">

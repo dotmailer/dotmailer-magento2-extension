@@ -26,12 +26,12 @@ class CustomerManagementPlugin
     /**
      * Plugin for create function.
      *
-     * @param \Magento\Sales\Model\Order\CustomerManagement $subject
+     * @param \Magento\Sales\Api\OrderCustomerManagementInterface $subject
      * @param mixed $customer
      * @return mixed
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function afterCreate(\Magento\Sales\Model\Order\CustomerManagement $subject, $customer)
+    public function afterCreate(\Magento\Sales\Api\OrderCustomerManagementInterface $subject, $customer)
     {
         //New Automation enrolment to queue
         $this->automation->newCustomerAutomation($customer);

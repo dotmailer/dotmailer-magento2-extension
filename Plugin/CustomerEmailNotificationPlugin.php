@@ -32,7 +32,7 @@ class CustomerEmailNotificationPlugin
     }
 
     /**
-     * @param \Magento\Customer\Model\EmailNotification $emailNotification
+     * @param \Magento\Customer\Model\EmailNotificationInterface $emailNotification
      * @param callable $proceed
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @param string $type
@@ -43,7 +43,7 @@ class CustomerEmailNotificationPlugin
      * @return mixed
      */
     public function aroundNewAccount(
-        \Magento\Customer\Model\EmailNotification $emailNotification,
+        \Magento\Customer\Model\EmailNotificationInterface $emailNotification,
         callable $proceed,
         \Magento\Customer\Api\Data\CustomerInterface $customer,
         $type = \Magento\Customer\Model\EmailNotificationInterface::NEW_ACCOUNT_EMAIL_REGISTERED,
