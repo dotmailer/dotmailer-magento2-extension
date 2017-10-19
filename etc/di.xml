@@ -9,7 +9,7 @@
     <type name="Magento\Customer\Model\Customer">
         <plugin name="ddg_customer_sendNewAccountEmail_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerPlugin" sortOrder="1" disabled="false"/>
     </type>
-    <type name="Magento\Customer\Model\EmailNotification">
+    <type name="Magento\Customer\Model\EmailNotificationInterface">
         <plugin name="ddg_customer_email_disabler" type="Dotdigitalgroup\Email\Plugin\CustomerEmailNotificationPlugin" sortOrder="1" disabled="false"/>
     </type>
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon">

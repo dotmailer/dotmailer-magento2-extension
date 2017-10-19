@@ -2,7 +2,7 @@
   "name": "dotmailer/dotmailer-magento2-extension",
   "description": "dotmailer integration for magento 2",
   "type": "magento2-module",
-  "version": "2.3.6.02",
+  "version": "2.3.6.03",
   "license": "MIT",
   "repositories": [
     {
