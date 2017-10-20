@@ -167,6 +167,10 @@ class Catalog
                     );
                 if ($check) {
                     $this->productIds[] = $product->getId();
+                } else {
+                    $pid = $product->getId();
+                    $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Product Ids($pid)";
+                    $this->helper->log($msg);
                 }
             }
         }
@@ -241,6 +245,10 @@ class Catalog
 
                         //set number of product imported
                         $this->countProducts += count($products);
+                    } else {
+                        $pid = implode(",", $this->productIds);
+                        $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Product Ids($pid)";
+                        $this->helper->log($msg);
                     }
                 }
 
@@ -275,6 +283,10 @@ class Catalog
 
                             //set number of product imported
                             $this->countProducts += count($products);
+                        } else {
+                            $pid = implode(",", $this->productIds);
+                            $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Product Ids($pid)";
+                            $this->helper->log($msg);
                         }
                     }
                     //using single api
