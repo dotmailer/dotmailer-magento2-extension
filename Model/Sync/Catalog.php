@@ -169,7 +169,7 @@ class Catalog
                     $this->productIds[] = $product->getId();
                 } else {
                     $pid = $product->getId();
-                    $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Product Ids($pid)";
+                    $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Single) / Product Ids($pid)";
                     $this->helper->log($msg);
                 }
             }
