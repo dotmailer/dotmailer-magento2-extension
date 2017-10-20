@@ -220,7 +220,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $file = false
     ) {
         try {
-            if (!empty($importData)) {
+            if (! empty($importData)) {
                 $importData = $this->serializer->serialize($importData);
             }
 
@@ -228,16 +228,24 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 $this->setImportFile($file);
             }
 
-            $this->setImportType($importType)
-                ->setImportData($importData)
-                ->setWebsiteId($websiteId)
-                ->setImportMode($importMode);
+            if ($importData) {
+                $this->setImportType($importType)
+                    ->setImportData($importData)
+                    ->setWebsiteId($websiteId)
+                    ->setImportMode($importMode);
 
-            $this->importerResource->save($this);
+                $this->importerResource->save($this);
 
-            return true;
+                return true;
+            }
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
+        }
+
+        if (json_last_error_msg() != "No error") {
+            $jle = json_last_error_msg();
+            $format = "Json error ($jle) for Import type ($importType) / mode ($importMode) for website ($websiteId)";
+            $this->helper->log($format);
         }
 
         return false;
