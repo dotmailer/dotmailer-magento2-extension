@@ -149,7 +149,7 @@ class Catalog
     {
         $this->productIds = [];
         $products         = $this->getProductsToExport($store, true);
-        if ($products) {
+        if (! empty($products)) {
             foreach ($products as $product) {
                 $connectorProduct = $this->connectorProductFactory->create();
                 $connectorProduct->setProduct($product);
@@ -158,18 +158,20 @@ class Catalog
                 );
 
                 //register in queue with importer
-                $this->importerFactory->create()
+                $check = $this->importerFactory->create()
                     ->registerQueue(
                         $collectionName,
                         $connectorProduct->expose(),
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
                         $websiteId
                     );
-                $this->productIds[] = $product->getId();
+                if ($check) {
+                    $this->productIds[] = $product->getId();
+                }
             }
         }
 
-        if (!empty($this->productIds)) {
+        if (! empty($this->productIds)) {
             $this->setImported($this->productIds, true);
             $this->countProducts += count($this->productIds);
         }
@@ -223,9 +225,9 @@ class Catalog
             if ($scope == 1) {
                 $products = $this->exportCatalog(\Magento\Store\Model\Store::DEFAULT_STORE_ID);
 
-                if ($products) {
+                if (! empty($products)) {
                     //register in queue with importer
-                    $this->importerFactory->create()
+                    $check = $this->importerFactory->create()
                         ->registerQueue(
                             'Catalog_Default',
                             $products,
@@ -233,12 +235,15 @@ class Catalog
                             \Magento\Store\Model\Store::DEFAULT_STORE_ID
                         );
 
-                    //set imported
-                    $this->setImported($this->productIds);
+                    if ($check) {
+                        //set imported
+                        $this->setImported($this->productIds);
 
-                    //set number of product imported
-                    $this->countProducts += count($products);
+                        //set number of product imported
+                        $this->countProducts += count($products);
+                    }
                 }
+
                 //using single api
                 $this->exportInSingle(
                     \Magento\Store\Model\Store::DEFAULT_STORE_ID,
@@ -253,9 +258,9 @@ class Catalog
                     $websiteCode = $store->getWebsite()->getCode();
                     $storeCode = $store->getCode();
                     $products = $this->exportCatalog($store);
-                    if ($products) {
+                    if (! empty($products)) {
                         //register in queue with importer
-                        $this->importerFactory->create()
+                        $check = $this->importerFactory->create()
                             ->registerQueue(
                                 'Catalog_' . $websiteCode . '_'
                                 . $storeCode,
@@ -263,11 +268,14 @@ class Catalog
                                 \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                                 $store->getWebsite()->getId()
                             );
-                        //set imported
-                        $this->setImported($this->productIds);
 
-                        //set number of product imported
-                        $this->countProducts += count($products);
+                        if ($check) {
+                            //set imported
+                            $this->setImported($this->productIds);
+
+                            //set number of product imported
+                            $this->countProducts += count($products);
+                        }
                     }
                     //using single api
                     $this->exportInSingle(
