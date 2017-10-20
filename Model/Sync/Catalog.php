@@ -109,15 +109,15 @@ class Catalog
     /**
      * Export catalog.
      *
-     * @param \Magento\Store\Model\Store $store
+     * @param \Magento\Store\Model\Store|int $store
      *
      * @return array|bool
      */
-    public function _exportCatalog($store)
+    public function exportCatalog($store)
     {
         $connectorProducts = [];
         //all products for export
-        $products = $this->_getProductsToExport($store);
+        $products = $this->getProductsToExport($store);
         //get products id's
         try {
             if ($products) {
@@ -139,17 +139,17 @@ class Catalog
     /**
      * Export in single.
      *
-     * @param \Magento\Store\Model\Store $store
+     * @param \Magento\Store\Model\Store|int $store
      * @param string $collectionName
      * @param int $websiteId
      *
      * @return null
      */
-    public function _exportInSingle($store, $collectionName, $websiteId)
+    public function exportInSingle($store, $collectionName, $websiteId)
     {
         $this->productIds = [];
-        $products         = $this->_getProductsToExport($store, true);
-        if ($products) {
+        $products         = $this->getProductsToExport($store, true);
+        if (! empty($products)) {
             foreach ($products as $product) {
                 $connectorProduct = $this->connectorProductFactory->create();
                 $connectorProduct->setProduct($product);
@@ -158,19 +158,21 @@ class Catalog
                 );
 
                 //register in queue with importer
-                $this->importerFactory->create()
+                $check = $this->importerFactory->create()
                     ->registerQueue(
                         $collectionName,
                         $connectorProduct->expose(),
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
                         $websiteId
                     );
-                $this->productIds[] = $product->getId();
+                if ($check) {
+                    $this->productIds[] = $product->getId();
+                }
             }
         }
 
-        if (!empty($this->productIds)) {
-            $this->_setImported($this->productIds, true);
+        if (! empty($this->productIds)) {
+            $this->setImported($this->productIds, true);
             $this->countProducts += count($this->productIds);
         }
     }
@@ -183,7 +185,7 @@ class Catalog
      *
      * @return mixed
      */
-    public function _getProductsToExport($store, $modified = false)
+    public function getProductsToExport($store, $modified = false)
     {
         $limit = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
@@ -200,7 +202,7 @@ class Catalog
      *
      * @return null
      */
-    public function _setImported($ids, $modified = false)
+    public function setImported($ids, $modified = false)
     {
         $this->catalogResourceFactory->create()
             ->setImportedByIds($ids, $modified);
@@ -221,13 +223,11 @@ class Catalog
             );
             //if only to pull default value
             if ($scope == 1) {
-                $products = $this->_exportCatalog(
-                    \Magento\Store\Model\Store::DEFAULT_STORE_ID
-                );
+                $products = $this->exportCatalog(\Magento\Store\Model\Store::DEFAULT_STORE_ID);
 
-                if ($products) {
+                if (! empty($products)) {
                     //register in queue with importer
-                    $this->importerFactory->create()
+                    $check = $this->importerFactory->create()
                         ->registerQueue(
                             'Catalog_Default',
                             $products,
@@ -235,14 +235,17 @@ class Catalog
                             \Magento\Store\Model\Store::DEFAULT_STORE_ID
                         );
 
-                    //set imported
-                    $this->_setImported($this->productIds);
+                    if ($check) {
+                        //set imported
+                        $this->setImported($this->productIds);
 
-                    //set number of product imported
-                    $this->countProducts += count($products);
+                        //set number of product imported
+                        $this->countProducts += count($products);
+                    }
                 }
+
                 //using single api
-                $this->_exportInSingle(
+                $this->exportInSingle(
                     \Magento\Store\Model\Store::DEFAULT_STORE_ID,
                     'Catalog_Default',
                     \Magento\Store\Model\Store::DEFAULT_STORE_ID
@@ -254,10 +257,10 @@ class Catalog
                 foreach ($stores as $store) {
                     $websiteCode = $store->getWebsite()->getCode();
                     $storeCode = $store->getCode();
-                    $products = $this->_exportCatalog($store);
-                    if ($products) {
+                    $products = $this->exportCatalog($store);
+                    if (! empty($products)) {
                         //register in queue with importer
-                        $this->importerFactory->create()
+                        $check = $this->importerFactory->create()
                             ->registerQueue(
                                 'Catalog_' . $websiteCode . '_'
                                 . $storeCode,
@@ -265,14 +268,17 @@ class Catalog
                                 \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
                                 $store->getWebsite()->getId()
                             );
-                        //set imported
-                        $this->_setImported($this->productIds);
 
-                        //set number of product imported
-                        $this->countProducts += count($products);
+                        if ($check) {
+                            //set imported
+                            $this->setImported($this->productIds);
+
+                            //set number of product imported
+                            $this->countProducts += count($products);
+                        }
                     }
                     //using single api
-                    $this->_exportInSingle(
+                    $this->exportInSingle(
                         $store,
                         'Catalog_' . $websiteCode . '_' . $storeCode,
                         $store->getWebsite()->getId()
