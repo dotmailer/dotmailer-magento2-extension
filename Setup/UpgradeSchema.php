@@ -96,7 +96,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addIndexKeyForOrder($setup, $connection);
         }
 
-        if (version_compare($context->getVersion(), '2.3.4', '<')) {
+        if (version_compare($context->getVersion(), '2.3.6', '<')) {
             $abandonedCartTable = $connection->newTable(
                 $setup->getTable('email_abandoned_cart')
             );
