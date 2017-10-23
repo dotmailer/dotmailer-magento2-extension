@@ -312,15 +312,15 @@
             </group>
             <group id="dynamic_datafield" translate="comment label" sortOrder="30" showInDefault="1" showInWebsite="1"
                    showInStore="0">
-                <label>Create Datafield</label>
+                <label>Create Data Field</label>
                 <field id="datafield_name" type="text" translate="label" sortOrder="10" showInDefault="1"
                        showInStore="0" showInWebsite="1">
-                    <label>Datafield Name</label>
+                    <label>Data Field Name</label>
                     <comment><![CDATA[(Maximum of 20 characters)]]></comment>
                 </field>
                 <field id="datafield_type" translate="label" sortOrder="20" type="select" showInDefault="1"
                        showInWebsite="1" showInStore="0">
-                    <label>Datafield Type</label>
+                    <label>Data Field Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafieldtype</source_model>
                 </field>
                 <field id="datafield_default" translate="comment label" type="text" sortOrder="30" showInDefault="1"
@@ -336,7 +336,7 @@
                 </field>
                 <field id="datafield_button" translate="button_label" sortOrder="50" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <button_label>Create New Datafield</button_label>
+                    <button_label>Create New Data Field</button_label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Createdatafield</frontend_model>
                 </field>
             </group>
@@ -440,7 +440,7 @@
                 <label>Create Address Book</label>
                 <field id="addressbook_name" type="text" sortOrder="10" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <label>Addressbook Name</label>
+                    <label>Address Book Name</label>
                 </field>
                 <field id="visibility" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Visibility</label>
@@ -1332,12 +1332,12 @@
                 </field>
                 <field id="can_show_fields" translate="label" sortOrder="30" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Show Datafields To Customer?</label>
+                    <label>Show Data Fields To Customer?</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="fields_to_show" translate="comment label" sortOrder="40" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Datafields To Show</label>
+                    <label>Data Fields To Show</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Publicdatafields</source_model>
                     <comment><![CDATA[Only data fields with visibility public can be shown to customers. You can create more data fields within the Data Mapping section.]]></comment>
                     <depends><field id="show_datafields">1</field></depends>
@@ -1381,9 +1381,9 @@
                 </field>
                 <field id="setup_data_fields" translate="comment label" type="button" sortOrder="20" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Automap Datafields</label>
+                    <label>Automap Data Fields</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Automapdatafields</frontend_model>
-                    <comment><![CDATA[Create Datafields In Connector And Map Them. Including Customer, Address And Sales Information.]]></comment>
+                    <comment><![CDATA[Create Data Fields In Connector And Map Them. Including Customer, Address And Sales Information.]]></comment>
                 </field>
                 <field id="delete_contact" translate="label" sortOrder="30" showInStore="0" showInWebsite="1"
                        showInDefault="1">
@@ -1542,7 +1542,7 @@
                 </field>
                 <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>catalog</label>
+                    <label>Catalog</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
                 <field id="review_wishlist" translate="label" sortOrder="50" type="select" showInStore="0"
