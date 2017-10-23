@@ -109,7 +109,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
             if ($result['errors']) {
                 $this->messageManager->addNoticeMessage($result['message']);
             } else {
-                $this->messageManager->addSuccessMessage('All Datafields Created And Mapped.');
+                $this->messageManager->addSuccessMessage('All Data Fields Created And Mapped.');
             }
 
             //Clear config cache
