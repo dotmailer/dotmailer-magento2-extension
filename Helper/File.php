@@ -244,6 +244,10 @@ class File
      */
     public function deleteDir($path)
     {
+        if (strpos($path, 'var') === false) {
+            return sprintf("Failed to delete directory - '%s'", $path);
+        }
+
         $classFunc = [__CLASS__, __FUNCTION__];
         return is_file($path)
             ?
