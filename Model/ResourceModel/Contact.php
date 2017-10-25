@@ -816,44 +816,25 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
          * CatalogStaging fix.
          * @todo this will fix https://github.com/magento/magento2/issues/6478
          */
-        $rowIdExists = $this->isRowIdExistsInCatalogProductEntityId();
+        $leftJoinOnSfoiProductId = $this->isRowIdExistsInCatalogProductEntityId() ?
+            'pei.row_id' : 'pei.entity_id';
 
-        if ($rowIdExists) {
-            $mostData = new \Zend_Db_Expr(
-                "(
-                    SELECT eaov.option_id from $salesOrder sfo
-                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    LEFT JOIN $catalogProductEntityInt pei on pei.row_id = sfoi.product_id
-                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
-                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                    $where
-                    AND ea.attribute_code = '$this->brand'
-                    AND eaov.value is not null
-                    GROUP BY eaov.option_id
-                    HAVING count(*) > 0
-                    ORDER BY count(*) DESC
-                    LIMIT 1
-                )"
-            );
-        } else {
-            $mostData = new \Zend_Db_Expr(
-                "(
-                    SELECT eaov.option_id from $salesOrder sfo
-                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    LEFT JOIN $catalogProductEntityInt pei on pei.entity_id = sfoi.product_id
-                    LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
-                    LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
-                    WHERE sfo.customer_id = e.entity_id
-                    AND ea.attribute_code = '$this->brand'
-                    AND eaov.value is not null
-                    GROUP BY eaov.option_id
-                    HAVING count(*) > 0
-                    ORDER BY count(*) DESC
-                    LIMIT 1
-                )"
-            );
-        }
-        return $mostData;
+        return $mostData = new \Zend_Db_Expr(
+            "(
+                SELECT eaov.option_id from $salesOrder sfo
+                LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
+                LEFT JOIN $catalogProductEntityInt pei on $leftJoinOnSfoiProductId = sfoi.product_id
+                LEFT JOIN $eavAttribute ea ON pei.attribute_id = ea.attribute_id
+                LEFT JOIN $eavAttributeOptionValue as eaov on pei.value = eaov.option_id
+                $where
+                AND ea.attribute_code = '$this->brand'
+                AND eaov.value is not null
+                GROUP BY eaov.option_id
+                HAVING count(*) > 0
+                ORDER BY count(*) DESC
+                LIMIT 1
+            )"
+        );
     }
 
     /**
