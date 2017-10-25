@@ -1324,22 +1324,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check if mailcheck feature is enabled for current store.
-     *
-     * @return bool
-     */
-    public function isMailCheckEnabledForCurrentStore()
-    {
-        $store = $this->storeManager->getStore();
-
-        return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_MAILCHECK_ENABLED,
-            'store',
-            $store
-        );
-    }
-
-    /**
      * Get url for email capture.
      *
      * @return mixed
