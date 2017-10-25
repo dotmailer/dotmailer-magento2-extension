@@ -15,6 +15,12 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.3.7
+
+###### Bug fix
+- We've fixed an error related to a column not found that could occur when trying to sync subscribers with sales data
+- Abandoned cart table couldn't be found when upgrading from 2.3.5 to 2.3.6 - this is now fixed.
+
 ## V2.3.6
 
 ###### Bug fix
