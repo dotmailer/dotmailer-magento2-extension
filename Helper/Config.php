@@ -173,8 +173,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         'connector_configuration/customer_addressbook/fields_to_show';
     //Dynamic Content
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT = 'connector_configuration/dynamic_content/link_text';
-    //Mailcheck
-    const XML_PATH_MAILCHECK_ENABLED = 'connector_configuration/mailcheck/enabled';
 
     /**
      * Automation studio.
