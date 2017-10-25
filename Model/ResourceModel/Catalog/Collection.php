@@ -5,6 +5,11 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
+     * @var string
+     */
+    protected $_idFieldName = 'id';
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     protected $helper;
