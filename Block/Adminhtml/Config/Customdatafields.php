@@ -78,7 +78,7 @@ class Customdatafields extends
         $this->addColumn(
             'datafield',
             [
-                'label' => __('DataField'),
+                'label' => __('Data Field'),
                 'style' => 'width:120px',
             ]
         );
