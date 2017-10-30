@@ -179,7 +179,7 @@ class Product
             $shortDescription = substr($shortDescription, 0, 250);
         }
 
-        $this->shortDescription = $shortDescription;
+        $this->shortDescription = mb_convert_encoding($shortDescription, "UTF-8");
 
         //category data
         $count = 0;
