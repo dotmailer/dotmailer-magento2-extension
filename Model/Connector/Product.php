@@ -175,8 +175,8 @@ class Product
 
         $shortDescription = $product->getShortDescription();
         //limit short description
-        if (strlen($shortDescription) > 250) {
-            $shortDescription = substr($shortDescription, 0, 250);
+        if (mb_strlen($shortDescription) > 250) {
+            $shortDescription = mb_substr($shortDescription, 0, 250);
         }
 
         $this->shortDescription = $shortDescription;
