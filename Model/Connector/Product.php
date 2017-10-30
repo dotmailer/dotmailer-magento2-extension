@@ -176,10 +176,10 @@ class Product
         $shortDescription = $product->getShortDescription();
         //limit short description
         if (strlen($shortDescription) > 250) {
-            $shortDescription = substr($shortDescription, 0, 250);
+            $shortDescription = mb_substr($shortDescription, 0, 250);
         }
 
-        $this->shortDescription = mb_convert_encoding($shortDescription, "UTF-8");
+        $this->shortDescription = $shortDescription;
 
         //category data
         $count = 0;
