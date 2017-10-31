@@ -150,16 +150,15 @@ class Studio extends \Magento\Backend\Block\Widget\Form
 
         if ($refreshToken) {
             $token = $this->client->getAccessToken(
-                $this->buildUrlParams($refreshToken),
-                $this->configFactory->getTokenUrl()
+                $this->configFactory->getTokenUrl(),
+                $this->buildUrlParams($refreshToken)
             );
 
             //save the refresh token to the admin user
             if (is_string($token)) {
                 $this->helper->setRefreshTokenForUser($adminUser, $token);
+                return $token;
             }
-
-            return $token;
         }
 
         return false;
