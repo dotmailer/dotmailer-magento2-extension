@@ -19,5 +19,15 @@ require(['jquery', 'fancybox', 'domReady!'], function ($) {
         $(document).on('click', 'a.fancybox-close', function () {
             location.reload();
         });
+
+        window.addEventListener("message", function(event) {
+            if (event.origin != 'https://magentosignup.dotmailer.com') {
+                return;
+            }
+
+            if (event.data === "close") {
+                location.reload();
+            }
+        });
     }
 });

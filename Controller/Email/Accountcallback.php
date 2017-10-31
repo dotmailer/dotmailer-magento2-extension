@@ -125,7 +125,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
                 <h2 class='center'>Congratulations your dotmailer account is now ready,
                  time to make your marketing awesome</h2>
                 <div class='center'>
-                    <input type='submit' class='center' value='Start making money' />
+                    <input id='btnStartMakingMoney' type='submit' class='center' value='Start making money'  />
                 </div>
             </div>";
     }
