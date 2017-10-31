@@ -448,7 +448,7 @@
                 </field>
                 <field id="addressbook_button" translate="button_label" sortOrder="30" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <button_label>Create New Addressbook</button_label>
+                    <button_label>Create New Address Book</button_label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Createaddressbook</frontend_model>
                 </field>
             </group>
