@@ -1365,31 +1365,27 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POST, count($params));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        curl_setopt(
-            $ch,
-            CURLOPT_HTTPHEADER,
-            ['Content-Type: application/x-www-form-urlencoded']
-        );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
         $response = json_decode(curl_exec($ch));
 
-        if (isset($response->error)) {
-            $this->helper->log(
-                'Token Error Number:' . curl_errno($ch)
-                . 'Error String:' . curl_error($ch)
-            );
+        if ($response === false) {
+            $this->helper->error('Error Number: ' . curl_errno($ch), []);
         }
-        curl_close($ch);
-
-        if (! isset($response->message) && isset($response->access_token)) {
+        if (isset($response->error)) {
+            $this->helper->error('OAUTH failed. Error - ' . $response->error, []);
+            if (isset($response->error_description)) {
+                $this->helper->error('OAUTH failed. Error description - ' . $response->error_description, []);
+            }
+        } elseif (isset($response->access_token)) {
             return $response->access_token;
         }
+
         return $response;
     }
 }

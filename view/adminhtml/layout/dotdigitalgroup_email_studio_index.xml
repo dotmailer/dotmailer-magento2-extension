@@ -8,7 +8,7 @@
     <update handle="styles" />
     <body>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Studio" name="mage.system.currencysymbol" template="Dotdigitalgroup_Email::automation/iframe.phtml"/>
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Studio" name="dotdigitalgroup_studio_disconnect" template="Dotdigitalgroup_Email::automation/iframe.phtml"/>
         </referenceContainer>
     </body>
 </page>
