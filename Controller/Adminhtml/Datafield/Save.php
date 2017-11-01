@@ -58,7 +58,7 @@ class Save extends \Magento\Backend\App\AbstractAction
             if (isset($response->message)) {
                 $this->messageManager->addErrorMessage($response->message);
             } else {
-                $this->messageManager->addSuccessMessage('Data field successfully created.');
+                $this->messageManager->addSuccessMessage(__('Data field successfully created.'));
             }
         }
     }
