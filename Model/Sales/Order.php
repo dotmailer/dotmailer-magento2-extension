@@ -54,11 +54,6 @@ class Order
     private $rulesFactory;
 
     /**
-     * @var \Zend_Date
-     */
-    private $date;
-
-    /**
      * Order constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
@@ -69,7 +64,6 @@ class Order
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime $datetime
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Zend_Date $date
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
@@ -79,8 +73,7 @@ class Order
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime $datetime,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Zend_Date $date
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->campaignResource = $campaignResource;
         $this->rulesFactory       = $rulesFactory;
@@ -90,7 +83,6 @@ class Order
         $this->helper             = $helper;
         $this->dateTime           = $datetime;
         $this->storeManager       = $storeManagerInterface;
-        $this->date = $date;
     }
 
     /**
@@ -161,7 +153,7 @@ class Order
             $apiEnabled = $this->helper->isEnabled($website);
             if ($apiEnabled
                 && $this->helper->getWebsiteConfig(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
+                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEWS_ENABLED,
                     $website
                 )
                 && $this->helper->getOrderStatus($website)
@@ -185,15 +177,15 @@ class Order
                 $campaignOrderIds = $campaignCollection->getColumnValues(
                     'order_increment_id'
                 );
-
-                $fromTime = $this->date;
-                $fromTime->subDay($delayInDays);
+                $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
+                $interval = \DateInterval::createFromDateString($delayInDays . ' days');
+                $fromTime->sub($interval);
                 $toTime = clone $fromTime;
-                $to = $toTime->toString('YYYY-MM-dd HH:mm:ss');
-                $from = $fromTime->subHour(2)
-                    ->toString('YYYY-MM-dd HH:mm:ss');
+                $fromTime->sub(\DateInterval::createFromDateString('2 hours'));
+                $fromDate = $fromTime->format('Y-m-d H:i:s');
+                $toDate = $toTime->format('Y-m-d H:i:s');
 
-                $created = ['from' => $from, 'to' => $to, 'date' => true];
+                $created = ['from' => $fromDate, 'to' => $toDate, 'date' => true];
 
                 $collection = $this->orderCollection->create()
                     ->getSalesCollectionForReviews(

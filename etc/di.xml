@@ -39,11 +39,6 @@
             <argument name="locale" xsi:type="null"/>
         </arguments>
     </virtualType>
-    <type name="Dotdigitalgroup\Email\Model\Sales\Order">
-        <arguments>
-            <argument name="date" xsi:type="object">dotdigitalgroupZendDate</argument>
-        </arguments>
-    </type>
     <type name="Dotdigitalgroup\Email\Helper\Recommended">
         <arguments>
             <argument name="date" xsi:type="object">dotdigitalgroupZendDate</argument>
