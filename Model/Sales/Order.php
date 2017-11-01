@@ -54,11 +54,6 @@ class Order
     private $rulesFactory;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    private $timezone;
-
-    /**
      * Order constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
@@ -69,7 +64,6 @@ class Order
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime $datetime
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
@@ -79,8 +73,7 @@ class Order
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime $datetime,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->campaignResource = $campaignResource;
         $this->rulesFactory       = $rulesFactory;
@@ -90,7 +83,6 @@ class Order
         $this->helper             = $helper;
         $this->dateTime           = $datetime;
         $this->storeManager       = $storeManagerInterface;
-        $this->timezone = $timezone;
     }
 
     /**
@@ -185,7 +177,7 @@ class Order
                 $campaignOrderIds = $campaignCollection->getColumnValues(
                     'order_increment_id'
                 );
-                $fromTime = $this->timezone->date();
+                $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
                 $interval = \DateInterval::createFromDateString($delayInDays . ' days');
                 $fromTime->sub($interval);
                 $toTime = clone $fromTime;
