@@ -359,10 +359,8 @@ class Order
                 foreach ($categoryCollection as $cat) {
                     $categories = [];
                     $categories[] = $cat->getName();
-                    $productCat[]['Name'] = substr(
-                        implode(', ', $categories),
-                        0,
-                        244
+                    $productCat[]['Name'] = $this->limitLength(
+                        implode(', ', $categories)
                     );
                 }
 
@@ -492,12 +490,12 @@ class Order
     {
         if ($value && !is_array($value)) {
             // check limit on text and assign value to array
-            $attributes[][$attributeCode] = $this->_limitLength($value);
+            $attributes[][$attributeCode] = $this->limitLength($value);
         } elseif ($value && is_array($value)) {
             $values = (isset($value['values']))? implode(',', $value['values']) : implode(',', $value);
 
             if ($values) {
-                $attributes[][$attributeCode] = $this->_limitLength($values);
+                $attributes[][$attributeCode] = $this->limitLength($values);
             }
         }
 
@@ -639,10 +637,10 @@ class Order
      *
      * @return string
      */
-    public function _limitLength($value)
+    private function limitLength($value)
     {
-        if (strlen($value) > 250) {
-            $value = substr($value, 0, 250);
+        if (mb_strlen($value) > 250) {
+            $value = mb_substr($value, 0, 250);
         }
 
         return $value;

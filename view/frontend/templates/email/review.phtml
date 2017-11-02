@@ -92,7 +92,7 @@ $website = $block->getWebsite();
         <td style="vertical-align: text-top; padding-right: 2px;">
             <?= $block->getImage($item, 'category_page_grid')->toHtml(); ?>
             <div class="product-name" align="center"><b>
-                    <?= substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
+                    <?= mb_substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
             <div align="center">
                 <?php $url = $block->getReviewItemUrl($item->getId()) . $helper->getReviewReminderAnchor($website); ?>
                 <a class="proudct-url" href="<?= $block->escapeUrl($url); ?>">

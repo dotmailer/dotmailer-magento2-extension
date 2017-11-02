@@ -98,7 +98,7 @@ $priceHelper = $block->priceHelper;
                 <?= $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
             </a>
             <div class="product-name" align="center"><b><?= $block->escapeHtml(
-                substr(
+                mb_substr(
                     $_product->getName(),
                     0,
                     40
