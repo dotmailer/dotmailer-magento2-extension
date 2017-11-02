@@ -228,7 +228,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 $this->setImportFile($file);
             }
 
-            if ($importData) {
+            if ($importData || $file) {
                 $this->setImportType($importType)
                     ->setImportData($importData)
                     ->setWebsiteId($websiteId)
