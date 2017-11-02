@@ -244,7 +244,7 @@ class File
      */
     public function deleteDir($path)
     {
-        if (strpos($path, 'var') === false) {
+        if (strpos($path, $this->directoryList->getPath('var')) === false) {
             return sprintf("Failed to delete directory - '%s'", $path);
         }
 
