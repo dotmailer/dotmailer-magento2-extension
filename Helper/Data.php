@@ -275,6 +275,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return true;
         }
 
+        $this->log(sprintf("Failed to authenticate IP address - %s", $ipAddress));
+
         return false;
     }
 
