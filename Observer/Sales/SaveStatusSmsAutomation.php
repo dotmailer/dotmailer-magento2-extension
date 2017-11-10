@@ -78,6 +78,11 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     private $contactCollectionFactory;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
+     */
+    private $emailAutomationFactory;
+
+    /**
      * SaveStatusSmsAutomation constructor.
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param Automation $automationResource
@@ -92,6 +97,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
+     * @parma \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $emailAutomationFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -106,7 +112,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $emailAutomationFactory
     ) {
         $this->serializer = $serializer;
         $this->orderResource = $orderResource;
@@ -121,6 +128,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         $this->helper                 = $data;
         $this->contactResource = $contactResource;
         $this->contactCollectionFactory = $contactCollectionFactory;
+        $this->emailAutomationFactory = $emailAutomationFactory;
     }
 
     /**
@@ -179,8 +187,8 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
             $this->resetContact($contact);
         }
 
-        //If customer's first order, also order state is new
-        if ($order->getCustomerId() && $order->getState() == \Magento\Sales\Model\Order::STATE_NEW) {
+        //If customer's first order
+        if ($order->getCustomerId()) {
             $orders = $this->orderCollectionFactory->create()
                 ->addFieldToFilter('customer_id', $order->getCustomerId());
             if ($orders->getSize() == 1) {
@@ -239,22 +247,27 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         //the program is not mapped
         if ($data['programId']) {
             try {
-                $automation = $this->automationFactory->create()
-                    ->setEmail($data['email'])
-                    ->setAutomationType($data['automationType'])
-                    ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
-                    ->setTypeId($data['order_id'])
-                    ->setWebsiteId($data['website_id'])
-                    ->setStoreName($data['store_name'])
-                    ->setProgramId($data['programId']);
-                $this->automationResource->save($automation);
+                $typeId = $data['order_id'];
+                $automationTypeId = $data['automationType'];
+                $exists = $this->emailAutomationFactory->create()
+                    ->hasAutomationEnrolmentExists($typeId, $automationTypeId);
+                //automation type, and type should be unique
+                if (! $exists) {
+                    $automation = $this->automationFactory->create()
+                        ->setEmail($data['email'])
+                        ->setAutomationType($data['automationType'])
+                        ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                        ->setTypeId($data['order_id'])
+                        ->setWebsiteId($data['website_id'])
+                        ->setStoreName($data['store_name'])
+                        ->setProgramId($data['programId']);
+                    $this->automationResource->save($automation);
+                }
             } catch (\Exception $e) {
                 $this->helper->debug((string)$e, []);
             }
         } else {
-            $this->helper->log(
-                'automation type : ' . $data['automationType'] . ' program id not found'
-            );
+            $this->helper->log('automation type : ' . $data['automationType'] . ' program id not found');
         }
     }
 
