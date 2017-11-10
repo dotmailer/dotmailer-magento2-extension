@@ -195,8 +195,9 @@ class Wishlist
                     ->setUpdatedAt($wishlist->getUpdatedAt())
                     ->setCustomerId($wishlist->getCustomerId())
                     ->setEmail($wishlist->getEmail());
-
-                $wishListItemCollection = $wishlist->getItemCollection();
+                
+                $wishListItemCollection = $this->itemCollection->create()
+                    ->addWishlistFilter($wishlist);
 
                 if ($wishListItemCollection->getSize()) {
                     foreach ($wishListItemCollection as $item) {
