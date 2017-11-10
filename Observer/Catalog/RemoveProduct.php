@@ -90,8 +90,6 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                 if ($item->getImported()) {
                     $this->deleteFromAccount($productId);
                 }
-                //delete from table
-                $this->catalogResource->delete($item);
             }
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
