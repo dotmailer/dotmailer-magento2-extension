@@ -30,6 +30,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_PROGRAM = '/v2/programs/';
     const REST_PROGRAM_ENROLMENTS = '/v2/programs/enrolments';
     const REST_TEMPLATES = '/v2/templates';
+    const REST_SEND_TRANSACTIONAL_EMAIL = '/v2/email';
 
     //rest error responces
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. 
@@ -1384,6 +1385,50 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             }
         } elseif (isset($response->access_token)) {
             return $response->access_token;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Sends a transactional email.
+     *
+     * @param $content
+     * @return mixed
+     */
+    public function sendApiTransactionalEmail($content)
+    {
+        $url = $this->getApiEndpoint() . self::REST_SEND_TRANSACTIONAL_EMAIL;
+
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($content);
+
+        $this->execute();
+    }
+
+    /**
+     * Gets transactional email reporting statistics for a specified time period.
+     *
+     * @param $date string
+     * @param null $endDate
+     * @param null $aggregatedBy 'AllTime', 'Month', 'Week', 'Day'
+     *
+     * @return mixed
+     */
+    public function getEmailStats($date, $endDate = null, $aggregatedBy = null)
+    {
+        $url = $this->getApiEndpoint() . '/v2/email/stats/since-date/' . $date;
+        if ($endDate && $aggregatedBy) {
+            $url .= '?endDate=' . $endDate . '&aggregatedBy=' . $aggregatedBy;
+        }
+
+        $response = $this->setUrl($url)
+            ->setVerb('GET')
+            ->execute();
+
+        if (isset($response->message)){
+            $this->helper->log('GET EMAIL STATS : ' . $response->message);
         }
 
         return $response;
