@@ -5,11 +5,6 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ContactFactory
-     */
-    private $contactFactory;
-
-    /**
      * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
      */
     public $subscribersCollection;
@@ -43,7 +38,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Contact constructor.
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
@@ -51,7 +45,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
         \Magento\Cron\Model\ScheduleFactory $schedule,
@@ -59,7 +52,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     ) {
         $this->schelduleFactory = $schedule;
         $this->customerCollection = $customerCollectionFactory;
-        $this->contactFactory = $contactFactory;
         $this->subscribersCollection = $subscriberCollection;
         parent::__construct($context, $connectionName);
     }
@@ -164,23 +156,30 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param array $data
+     * email, website_id, store_id, is_guest
+     * @param array $guests
      *
      * @return null
      */
-    public function insertGuest($data)
+    public function insertGuests($guests)
     {
-        $contacts = array_keys($data);
-        $contactModel = $this->contactFactory->create();
-        $emailsExistInTable = $contactModel->getCollection()
-            ->addFieldToFilter('email', ['in' => $contacts])
-            ->getColumnValues('email');
-
-        $guests = array_diff_key($data, array_flip($emailsExistInTable));
-
+        $write = $this->getConnection();
         if (! empty($guests)) {
-            $write = $this->getConnection();
             $write->insertMultiple($this->getMainTable(), $guests);
+        }
+    }
+
+    /**
+     * @param $guests
+     */
+    public function updateContactsAsGuests($guests)
+    {
+        $write = $this->getConnection();
+        if (! empty($guests)) {
+            //make sure the contact are marked as guests if already exists
+            $where = ['email IN (?)' => $guests, 'is_guest IS NULL'];
+            $data = ['is_guest' => 1];
+            $write->update($this->getMainTable(), $data, $where);
         }
     }
 

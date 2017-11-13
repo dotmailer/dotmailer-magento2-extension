@@ -8,6 +8,11 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 class Order
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
+     */
+    public $contactCollectionFactory;
+
+    /**
      * @var array
      */
     private $accounts = [];
@@ -86,16 +91,18 @@ class Order
 
     /**
      * Order constructor.
-     *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -103,6 +110,7 @@ class Order
         \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
         \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
@@ -117,6 +125,7 @@ class Order
         $this->helper                = $helper;
         $this->salesOrderFactory     = $salesOrderFactory;
         $this->storeManager          = $storeManagerInterface;
+        $this->contactCollectionFactory = $contactCollectionFactory;
     }
 
     /**
@@ -165,10 +174,18 @@ class Order
         }
 
         /**
-         * Add guest to contacts table.
+         * Add guests to contact table.
          */
-        if (!empty($this->guests)) {
-            $this->contactResource->insertGuest($this->guests);
+        if (! empty($this->guests)) {
+            $emailsForGuests = array_keys($this->guests);
+            $guestEmailsExist = $this->contactCollectionFactory->create()
+                ->addFieldToFilter('email', ['in' => $emailsForGuests])
+                ->getColumnValues('email');
+            $newGuests = array_diff_key($this->guests, array_flip($guestEmailsExist));
+            //insert new guests contacts
+            $this->contactResource->insertGuests($newGuests);
+            //update the contacts and mark them as a guest
+            $this->contactResource->updateContactsAsGuests($guestEmailsExist);
         }
 
         if ($this->countOrders) {
