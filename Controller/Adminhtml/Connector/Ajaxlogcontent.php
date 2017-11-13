@@ -49,7 +49,7 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
         $logFile = $this->getRequest()->getParam('log');
         switch ($logFile) {
             case "connector":
-                $header = 'Marketing Automation Logs';
+                $header = 'Marketing Automation Log';
                 break;
             case "system":
                 $header = 'Magento System Log';
@@ -61,7 +61,7 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
                 $header = 'Magento Debug Log';
                 break;
             default:
-                $header = 'Marketing Automation Logs';
+                $header = 'Marketing Automation Log';
         }
         $content = nl2br($this->escaper->escapeHtml($this->file->getLogFileContent($logFile)));
         $response = [
