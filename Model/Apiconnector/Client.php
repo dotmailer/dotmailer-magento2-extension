@@ -267,12 +267,15 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function deleteAddressBookContact($addressBookId, $contactId)
     {
-        $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS . $addressBookId
-            . '/contacts/' . $contactId;
-        $this->setUrl($url)
-            ->setVerb('DELETE');
-        $this->execute();
-        $this->helper->log(sprintf('Delete-contact %s from addressbook %s', $contactId, $addressBookId));
+        //Only if there is a contact id and address book id
+        if ($addressBookId && $contactId) {
+            $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS . $addressBookId
+                . '/contacts/' . $contactId;
+            $this->setUrl($url)
+                ->setVerb('DELETE');
+            $this->execute();
+            $this->helper->log(sprintf('Delete-contact %s from addressbook %s', $contactId, $addressBookId));
+        }
     }
 
     /**
@@ -528,18 +531,20 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function deleteContact($contactId)
     {
-        $url = $this->getApiEndpoint() . self::REST_CONTACTS . $contactId;
-        $this->setUrl($url)
-            ->setVerb('DELETE');
+        if ($contactId) {
+            $url = $this->getApiEndpoint() . self::REST_CONTACTS . $contactId;
+            $this->setUrl($url)
+                ->setVerb('DELETE');
 
-        $response = $this->execute();
+            $response = $this->execute();
 
-        if (isset($response->message)) {
-            $message = ' url : ' . $url . ', ' . $response->message;
-            $this->helper->debug('deleteContact', [$message]);
+            if (isset($response->message)) {
+                $message = ' url : ' . $url . ', ' . $response->message;
+                $this->helper->debug('deleteContact', [$message]);
+            }
+
+            return $response;
         }
-
-        return $response;
     }
 
     /**
@@ -841,12 +846,14 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $email,
         $collectionName = 'Orders'
     ) {
-        $url = $this->getApiEndpoint() . '/v2/contacts/' . $email
-            . '/transactional-data/' . $collectionName;
-        $this->setUrl($url)
-            ->setVerb('DELETE');
+        if ($email && $collectionName) {
+            $url = $this->getApiEndpoint() . '/v2/contacts/' . $email
+                . '/transactional-data/' . $collectionName;
+            $this->setUrl($url)
+                ->setVerb('DELETE');
 
-        return $this->execute();
+            return $this->execute();
+        }
     }
 
     /**
@@ -882,22 +889,24 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function deleteAddressBookContactsInbulk($addressBookId, $contactIds)
     {
-        $url = $this->getApiEndpoint() . '/v2/address-books/' . $addressBookId
-            . '/contacts/inbulk';
-        $data = ['ContactIds' => [$contactIds[0]]];
-        $this->setUrl($url)
-            ->setVerb('DELETE')
-            ->buildPostBody($data);
+        if ($addressBookId && $contactIds) {
+            $url = $this->getApiEndpoint() . '/v2/address-books/' . $addressBookId
+                . '/contacts/inbulk';
+            $data = ['ContactIds' => [$contactIds[0]]];
+            $this->setUrl($url)
+                ->setVerb('DELETE')
+                ->buildPostBody($data);
 
-        $response = $this->execute();
+            $response = $this->execute();
 
-        if (isset($response->message)) {
-            $message = 'deleteAddressBookContactsInbulk ' . $response->message
-                . ' address book ' . $addressBookId;
-            $this->helper->debug('deleteAddressBookContactsInbulk', [$message]);
+            if (isset($response->message)) {
+                $message = 'deleteAddressBookContactsInbulk ' . $response->message
+                    . ' address book ' . $addressBookId;
+                $this->helper->debug('deleteAddressBookContactsInbulk', [$message]);
+            }
+
+            return $response;
         }
-
-        return $response;
     }
 
     /**
@@ -1089,22 +1098,24 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $key,
         $collectionName = 'Orders'
     ) {
-        $url = $this->getApiEndpoint() . '/v2/contacts/transactional-data/'
-            . $collectionName . '/' . $key;
-        $this->setUrl($url)
-            ->setVerb('DELETE');
+        if ($key && $collectionName) {
+            $url = $this->getApiEndpoint() . '/v2/contacts/transactional-data/'
+                . $collectionName . '/' . $key;
+            $this->setUrl($url)
+                ->setVerb('DELETE');
 
-        $response = $this->execute();
+            $response = $this->execute();
 
-        if (isset($response->message)) {
-            $this->helper->debug(
-                'deleteContactsTransactionalData',
-                ['DELETE CONTACTS TRANSACTIONAL DATA : ' . $url
-                    . ' ' . $response->message]
-            );
+            if (isset($response->message)) {
+                $this->helper->debug(
+                    'deleteContactsTransactionalData',
+                    ['DELETE CONTACTS TRANSACTIONAL DATA : ' . $url
+                        . ' ' . $response->message]
+                );
+            }
+
+            return $response;
         }
-
-        return $response;
     }
 
     /**
