@@ -113,7 +113,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      */
     private function saveApiEndpoint($apiUsername, $apiPassword)
     {
-        $website = $this->helper->getWebsite();
+        $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
         $client = $this->helper->getWebsiteApiClient($website);
         $client->setApiUsername($apiUsername)
             ->setApiPassword($apiPassword);
