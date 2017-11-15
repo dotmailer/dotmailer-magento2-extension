@@ -336,8 +336,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsite()
     {
-        $websiteId = $this->_request->getParam('website', false);
-        if ($websiteId) {
+        //If website param does not exist then default value returned 0 "default scope"
+        $websiteId = $this->_request->getParam('website', 0);
+        if (is_int($websiteId)) {
             return $this->storeManager->getWebsite($websiteId);
         }
 
