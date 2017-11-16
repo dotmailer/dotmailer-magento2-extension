@@ -17,11 +17,6 @@ class InstallData implements InstallDataInterface
     private $config;
 
     /**
-     * @var \Magento\Sales\Model\Config\Source\Order\StatusFactory
-     */
-    private $statusFactory;
-
-    /**
      * @var \Magento\Catalog\Model\Product\TypeFactory
      */
     private $typefactory;
@@ -32,23 +27,28 @@ class InstallData implements InstallDataInterface
     private $visibilityFactory;
 
     /**
+     * @var \Magento\Sales\Model\Order\Config
+     */
+    private $orderConfigFactory;
+
+    /**
      * InstallData constructor.
      *
      * @param \Magento\Config\Model\ResourceModel\Config $config
-     * @param \Magento\Sales\Model\Config\Source\Order\StatusFactory $statusFactory
      * @param \Magento\Catalog\Model\Product\TypeFactory $typeFactory
      * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
+     * @param \Magento\Sales\Model\Order\Config $orderConfigFactory
      */
     public function __construct(
         \Magento\Config\Model\ResourceModel\Config $config,
-        \Magento\Sales\Model\Config\Source\Order\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\TypeFactory $typeFactory,
-        \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
+        \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
+        \Magento\Sales\Model\Order\Config $orderConfigFactory
     ) {
         $this->config = $config;
-        $this->statusFactory = $statusFactory;
         $this->typefactory = $typeFactory;
         $this->visibilityFactory = $visibilityFactory;
+        $this->orderConfigFactory = $orderConfigFactory;
     }
 
     /**
@@ -322,16 +322,7 @@ class InstallData implements InstallDataInterface
      */
     private function saveAllOrderStatusesAsString($configModel)
     {
-        $orderStatuses = $this->statusFactory
-            ->create()
-            ->toOptionArray();
-        if (count($orderStatuses) > 0 && $orderStatuses[0]['value'] == '') {
-            array_shift($orderStatuses);
-        }
-        $options = [];
-        foreach ($orderStatuses as $status) {
-            $options[] = $status['value'];
-        }
+        $options = array_keys($this->orderConfigFactory->getStatuses());
         $statusString = implode(',', $options);
         $configModel->saveConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,
