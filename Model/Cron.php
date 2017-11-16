@@ -367,6 +367,10 @@ class Cron
         $currentRunningJob = $this->cronCollection->create()
             ->getRunningJobByCode($jobCode);
 
+        if (!$currentRunningJob) {
+            return false;
+        }
+
         return $this->cronCollection->create()
             ->jobOfSameTypeAndScheduledAtDateAlreadyExecuted($jobCode, $currentRunningJob->getScheduledAt());
     }
