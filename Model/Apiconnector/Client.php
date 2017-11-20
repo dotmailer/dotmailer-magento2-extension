@@ -880,36 +880,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Deletes multiple contacts from an address book.
-     *
-     * @param string $addressBookId
-     * @param mixed $contactIds
-     *
-     * @return object
-     */
-    public function deleteAddressBookContactsInbulk($addressBookId, $contactIds)
-    {
-        if ($addressBookId && $contactIds) {
-            $url = $this->getApiEndpoint() . '/v2/address-books/' . $addressBookId
-                . '/contacts/inbulk';
-            $data = ['ContactIds' => [$contactIds[0]]];
-            $this->setUrl($url)
-                ->setVerb('DELETE')
-                ->buildPostBody($data);
-
-            $response = $this->execute();
-
-            if (isset($response->message)) {
-                $message = 'deleteAddressBookContactsInbulk ' . $response->message
-                    . ' address book ' . $addressBookId;
-                $this->helper->debug('deleteAddressBookContactsInbulk', [$message]);
-            }
-
-            return $response;
-        }
-    }
-
-    /**
      * Resubscribes a previously unsubscribed contact.
      *
      * @param mixed $apiContact

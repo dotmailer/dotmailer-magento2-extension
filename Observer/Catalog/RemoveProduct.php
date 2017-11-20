@@ -97,29 +97,6 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * Load product. return item otherwise create item.
-     *
-     * @param int $productId
-     *
-     * @return bool|\Dotdigitalgroup\Email\Model\Catalog
-     */
-    protected function loadProduct($productId)
-    {
-        $item = $this->catalogCollection->create()
-            ->loadProductById($productId);
-
-        if ($item) {
-            return $item;
-        } else {
-            $catalog = $this->catalogFactory->create();
-            $catalog->setProductId($productId);
-            $this->catalogResource->save($catalog);
-        }
-
-        return false;
-    }
-
-    /**
      * Delete piece of transactional data by key.
      *
      * @param int $key
