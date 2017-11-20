@@ -1362,6 +1362,12 @@
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>
+                <field id="subscriber_sales_data_enabled" type="select" sortOrder="40" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
+                    <label>Enable Subscribers Sales Data Sync</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enabling ability to sync subscribers sales data increases server load and overall sync times.]]></comment>
+                </field>
             </group>
             <group id="sync_settings" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1"
                    showInStore="0">
