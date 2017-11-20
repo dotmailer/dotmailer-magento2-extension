@@ -103,12 +103,16 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             $contactEmail = $this->contactFactory->create()
                 ->loadByCustomerEmail($email, $websiteId);
 
+            //update the contact
+            $contactEmail->setStoreId($storeId)
+                ->setSubscriberStatus($subscriberStatus);
+
             // only for subscribers
             if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED) {
                 //Set contact as subscribed
-                $contactEmail->setSubscriberStatus($subscriberStatus)
-                    ->setSubscriberImported(null)
+                $contactEmail->setSubscriberImported(null)
                     ->setIsSubscriber('1');
+
                 //Subscriber subscribed when it is suppressed in table then re-subscribe
                 if ($contactEmail->getSuppressed()) {
                     $this->importerFactory->registerQueue(
@@ -121,12 +125,21 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                     $contactEmail->setSubscriberImported(1)
                         ->setSuppressed(null);
                 }
+                //save contact
+                $this->contactResource->save($contactEmail);
+
                 //not subscribed
             } else {
                 //skip if contact is suppressed
                 if ($contactEmail->getSuppressed()) {
                     return $this;
                 }
+                $contactEmail->setSubscriberImported(1)
+                    ->setIsSubscriber(null);
+
+                //save contact
+                $this->contactResource->save($contactEmail);
+
                 //Add subscriber update to importer queue
                 $this->importerFactory->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
@@ -134,15 +147,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                     \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
                     $websiteId
                 );
-                $contactEmail->setIsSubscriber(null)
-                    ->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED);
             }
-
-            //update the contact
-            $contactEmail->setStoreId($storeId);
-
-            //update contact
-            $this->contactResource->save($contactEmail);
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
             $emailReg = $this->registry->registry($email . '_subscriber_save');
