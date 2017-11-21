@@ -255,7 +255,8 @@ class Wishlist
 
         foreach ($wishlistCollection as $wishlist) {
             $wishlistId = $wishlist->getid();
-            $wishlistItems = $wishlist->getItemCollection();
+            $wishlistItems = $this->itemCollection->create()
+                ->addWishlistFilter($wishlist);
 
             $connectorWishlist = $this->wishlistFactory->create();
             $connectorWishlist->setId($wishlistId)
