@@ -48,7 +48,7 @@ class Test
             return false;
         }
 
-        $website = $this->helper->getWebsite();
+        $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
         $client = $this->helper->getWebsiteApiClient($website);
         if ($apiUsername && $apiPassword) {
             $client->setApiUsername($apiUsername)
