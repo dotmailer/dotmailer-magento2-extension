@@ -98,7 +98,7 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
                     //register in queue with importer
                     $this->importerFactory->create()->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_WISHLIST,
-                        [$item->getId()],
+                        [$item->getWishlistId()],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
                         $website->getId()
                     );
