@@ -153,8 +153,9 @@ class Cron
     public function contactSync()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_customer_subscriber_guest_sync')) {
-            $this->helper->log('Skipping ddg_automation_customer_subscriber_guest_sync job run');
-            return;
+            $message = 'Skipping ddg_automation_customer_subscriber_guest_sync job run';
+            $this->helper->log($message);
+            return ['message' => $message];
         }
 
         //run the sync for contacts
@@ -199,8 +200,9 @@ class Cron
     public function catalogSync()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_catalog_sync')) {
-            $this->helper->log('Skipping ddg_automation_catalog_sync job run');
-            return;
+            $message = 'Skipping ddg_automation_catalog_sync job run';
+            $this->helper->log($message);
+            return ['message' => $message];
         }
 
         $result = $this->catalogFactory->create()
@@ -315,8 +317,9 @@ class Cron
     public function orderSync()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_order_sync')) {
-            $this->helper->log('Skipping ddg_automation_order_sync job run');
-            return;
+            $message = 'Skipping ddg_automation_order_sync job run';
+            $this->helper->log($message);
+            return ['message' => $message];
         }
 
         // send order
@@ -334,8 +337,9 @@ class Cron
     public function cleaning()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_cleaner')) {
-            $this->helper->log('Skipping ddg_automation_cleaner job run');
-            return;
+            $message = 'Skipping ddg_automation_cleaner job run';
+            $this->helper->log($message);
+            return $message;
         }
 
         //Clean tables
