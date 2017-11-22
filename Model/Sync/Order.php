@@ -177,15 +177,19 @@ class Order
          * Add guests to contact table.
          */
         if (! empty($this->guests)) {
-            $emailsForGuests = array_keys($this->guests);
-            $guestEmailsExist = $this->contactCollectionFactory->create()
-                ->addFieldToFilter('email', ['in' => $emailsForGuests])
+            $orderEmails = array_keys($this->guests);
+            $guestsEmailFound = $this->contactCollectionFactory->create()
+                ->addFieldToFilter('email', ['in' => $orderEmails])
                 ->getColumnValues('email');
-            $newGuests = array_diff_key($this->guests, array_flip($guestEmailsExist));
+            //remove the contacts that already exists
+            foreach ($guestsEmailFound as $email) {
+                unset($this->guests[strtolower($email)]);
+            }
+
             //insert new guests contacts
-            $this->contactResource->insertGuests($newGuests);
-            //update the contacts and mark them as a guest
-            $this->contactResource->updateContactsAsGuests($guestEmailsExist);
+            $this->contactResource->insertGuests($this->guests);
+            //mark the existing contacts with is guest in bulk
+            $this->contactResource->updateContactsAsGuests($guestsEmailFound);
         }
 
         if ($this->countOrders) {
@@ -330,18 +334,14 @@ class Order
                 /**
                  * Add guest to array to add to contacts table.
                  */
-                if ($order->getCustomerIsGuest()
-                    && $order->getCustomerEmail()
-                ) {
-                    //add guest to the list
-                    if (!isset($this->guests[$order->getCustomerEmail()])) {
-                        $this->guests[$order->getCustomerEmail()] = [
-                            'email' => $order->getCustomerEmail(),
-                            'website_id' => $websiteId,
-                            'store_id' => $storeId,
-                            'is_guest' => 1
-                        ];
-                    }
+                if ($order->getCustomerIsGuest() && $order->getCustomerEmail()) {
+                    $email = $order->getCustomerEmail();
+                    $this->guests[strtolower($email)] = [
+                        'email' => $email,
+                        'website_id' => $websiteId,
+                        'store_id' => $storeId,
+                        'is_guest' => 1
+                    ];
                 }
 
                 $connectorOrder = $this->connectorOrderFactory->create();
