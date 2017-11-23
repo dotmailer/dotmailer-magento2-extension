@@ -123,16 +123,15 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Unsubscribe a contact from email_contact/newsletter table.
      *
-     * @param array $data
+     * @param array $emails
      * @return int
      */
-    public function unsubscribe($data)
+    public function unsubscribe($emails)
     {
-        if (empty($data)) {
+        if (empty($emails) && ! is_array($emails)) {
             return 0;
         }
         $write = $this->getConnection();
-        $emails = '"' . implode('","', $data) . '"';
 
         //un-subscribe from the email contact table.
         $updated = $write->update(
