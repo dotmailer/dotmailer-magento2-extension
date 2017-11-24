@@ -428,6 +428,27 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
+     * @param $campaignId
+     * @return mixed
+     */
+    public function getCampaignById($campaignId)
+    {
+        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS_CAMPAIGNS . '/' . $campaignId;
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = 'GET CAMPAIGN BY ID ' . $response->message;
+            $this->helper->log($this->getApiUsername() . ' : ' . $this->getApiPassword());
+            $this->helper->log('getCampaigns' . $message);
+        }
+
+        return $response;
+    }
+
+    /**
      * Creates a data field within the account.
      *
      * @param        $data         string/array

@@ -989,7 +989,7 @@
                 </field>
             </group>
         </section>
-        <section id="transactional_emails" translate="label" sortOrder="190" showInStore="0" showInWebsite="1"
+        <section id="transactional_emails" translate="label" sortOrder="190" showInStore="1" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Transactional Emails</label>
@@ -1029,6 +1029,17 @@
                        showInDefault="1">
                     <label>Debug</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="email_templates" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Email Templates</label>
+                <field id="customer_create_account_email_template" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>New Account</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="customer_create_account_email_confirmation_template" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>New Account Confirmation Key</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
             </group>
         </section>

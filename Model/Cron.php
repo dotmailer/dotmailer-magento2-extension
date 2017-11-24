@@ -374,4 +374,12 @@ class Cron
         return $this->cronCollection->create()
             ->jobOfSameTypeAndScheduledAtDateAlreadyExecuted($jobCode, $currentRunningJob->getScheduledAt());
     }
+
+    /**
+     * Sync the email templates from dotmailer.
+     */
+    public function syncEmailTemplates()
+    {
+
+    }
 }
