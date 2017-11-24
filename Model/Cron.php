@@ -83,23 +83,29 @@ class Cron
     private $importerResource;
 
     /**
+     * @var ResourceModel\Cron\CollectionFactory
+     */
+    private $cronCollection;
+
+    /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory               $campaignFactory
-     * @param Sync\OrderFactory                  $syncOrderFactory
-     * @param Sales\QuoteFactory                 $quoteFactory
-     * @param Sync\ReviewFactory                 $reviewFactory
-     * @param Sales\OrderFactory                 $orderFactory
-     * @param Sync\WishlistFactory               $wishlistFactory
-     * @param Customer\GuestFactory              $guestFactory
-     * @param Newsletter\SubscriberFactory       $subscriberFactory
-     * @param Sync\CatalogFactory                $catalogFactorty
-     * @param ImporterFactory                    $importerFactory
-     * @param Sync\AutomationFactory             $automationFactory
-     * @param Apiconnector\ContactFactory        $contact
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param ResourceModel\Importer             $importerResource
+     * @param Sync\CampaignFactory                     $campaignFactory
+     * @param Sync\OrderFactory                        $syncOrderFactory
+     * @param Sales\QuoteFactory                       $quoteFactory
+     * @param Sync\ReviewFactory                       $reviewFactory
+     * @param Sales\OrderFactory                       $orderFactory
+     * @param Sync\WishlistFactory                     $wishlistFactory
+     * @param Customer\GuestFactory                    $guestFactory
+     * @param Newsletter\SubscriberFactory             $subscriberFactory
+     * @param Sync\CatalogFactory                      $catalogFactorty
+     * @param ImporterFactory                          $importerFactory
+     * @param Sync\AutomationFactory                   $automationFactory
+     * @param Apiconnector\ContactFactory              $contact
+     * @param \Dotdigitalgroup\Email\Helper\Data       $helper
+     * @param \Dotdigitalgroup\Email\Helper\File       $fileHelper
+     * @param ResourceModel\Importer                   $importerResource
+     * @param ResourceModel\Cron\CollectionFactory     $cronCollection
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -118,7 +124,8 @@ class Cron
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
@@ -132,9 +139,10 @@ class Cron
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
         $this->contactFactory    = $contact;
-        $this->helper           = $helper;
-        $this->fileHelper       = $fileHelper;
-        $this->importerResource = $importerResource;
+        $this->helper            = $helper;
+        $this->fileHelper        = $fileHelper;
+        $this->importerResource  = $importerResource;
+        $this->cronCollection    = $cronCollection;
     }
 
     /**
@@ -144,6 +152,11 @@ class Cron
      */
     public function contactSync()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_customer_subscriber_guest_sync')) {
+            $message = 'Skipping ddg_automation_customer_subscriber_guest_sync job run';
+            $this->helper->log($message);
+            return ['message' => $message];
+        }
 
         //run the sync for contacts
         $result = $this->contactFactory->create()
@@ -186,6 +199,12 @@ class Cron
      */
     public function catalogSync()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_catalog_sync')) {
+            $message = 'Skipping ddg_automation_catalog_sync job run';
+            $this->helper->log($message);
+            return ['message' => $message];
+        }
+
         $result = $this->catalogFactory->create()
             ->sync();
 
@@ -199,6 +218,11 @@ class Cron
      */
     public function emailImporter()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_importer')) {
+            $this->helper->log('Skipping ddg_automation_importer job run');
+            return;
+        }
+
         $this->importerFactory->create()->processQueue();
     }
 
@@ -209,6 +233,11 @@ class Cron
      */
     public function reviewsAndWishlist()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_reviews_and_wishlist')) {
+            $this->helper->log('Skipping ddg_automation_reviews_and_wishlist job run');
+            return;
+        }
+
         //sync reviews
         $this->reviewSync();
         //sync wishlist
@@ -240,6 +269,11 @@ class Cron
      */
     public function abandonedCarts()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_abandonedcarts')) {
+            $this->helper->log('Skipping ddg_automation_abandonedcarts job run');
+            return;
+        }
+
         $this->quoteFactory->create()->proccessAbandonedCarts();
     }
 
@@ -250,6 +284,11 @@ class Cron
      */
     public function syncAutomation()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_status')) {
+            $this->helper->log('Skipping ddg_automation_status job run');
+            return;
+        }
+
         $this->automationFactory->create()->sync();
     }
 
@@ -262,6 +301,11 @@ class Cron
      */
     public function sendCampaigns()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_campaign')) {
+            $this->helper->log('Skipping ddg_automation_campaign job run');
+            return;
+        }
+
         $this->campaignFactory->create()->sendCampaigns();
     }
 
@@ -272,6 +316,12 @@ class Cron
      */
     public function orderSync()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_order_sync')) {
+            $message = 'Skipping ddg_automation_order_sync job run';
+            $this->helper->log($message);
+            return ['message' => $message];
+        }
+
         // send order
         $orderResult = $this->syncOrderFactory->create()
             ->sync();
@@ -286,6 +336,12 @@ class Cron
      */
     public function cleaning()
     {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_cleaner')) {
+            $message = 'Skipping ddg_automation_cleaner job run';
+            $this->helper->log($message);
+            return $message;
+        }
+
         //Clean tables
         $tables = [
             'automation' => 'email_automation',
@@ -304,5 +360,26 @@ class Cron
         $this->helper->log($message);
 
         return $message;
+    }
+
+    /**
+     * @param $jobCode
+     * @return bool
+     */
+    private function jobHasAlreadyBeenRun($jobCode)
+    {
+        $currentRunningJob = $this->cronCollection->create()
+            ->getRunningJobByCode($jobCode);
+
+        return $this->cronCollection->create()
+            ->jobOfSameTypeAndScheduledAtDateAlreadyExecuted($jobCode, $currentRunningJob->getScheduledAt());
+    }
+
+    /**
+     * Sync the email templates from dotmailer.
+     */
+    public function syncEmailTemplates()
+    {
+
     }
 }

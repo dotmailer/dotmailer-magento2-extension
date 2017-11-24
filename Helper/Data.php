@@ -390,6 +390,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @param $path
+     * @param $scope
+     * @param $scopeId
+     */
+    public function deleteConfigData($path, $scope, $scopeId)
+    {
+        $this->resourceConfig->deleteConfig(
+            $path,
+            $scope,
+            $scopeId
+        );
+    }
+
+    /**
      * Disable wishlist sync.
      *
      * @param string $scope
