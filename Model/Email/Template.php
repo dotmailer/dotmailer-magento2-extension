@@ -85,4 +85,11 @@ class Template extends \Magento\Framework\DataObject
         }
     }
 
+    public function sync()
+    {
+        $result['message'] = 'Done';
+
+        return $result;
+    }
+
 }

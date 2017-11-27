@@ -31,21 +31,18 @@ class Templatesync extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     *
-     * @return null
+     * @return \Magento\Framework\App\ResponseInterface
      */
     public function execute()
     {
         $result = $this->emailTemplatesFactory->create()
             ->sync();
 
-
         if (isset($result['message'])) {
             $this->messageManager->addSuccessMessage($result['message']);
         }
 
-        $redirectBack = $this->_redirect->getRefererUrl();
-        $this->_redirect($redirectBack);
+        $this->_redirect($this->_redirect->getRefererUrl());
     }
 
     /**
@@ -53,6 +50,6 @@ class Templatesync extends \Magento\Backend\App\AbstractAction
      */
     protected function _isAllowed()
     {
-        return true; //$this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }
 }
