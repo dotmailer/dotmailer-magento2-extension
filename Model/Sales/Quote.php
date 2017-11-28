@@ -171,12 +171,20 @@ class Quote
         foreach ($stores as $store) {
             $storeId = $store->getId();
             $websiteId = $store->getWebsiteId();
+            $secondCustomerEnabled = $this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_TWO, $storeId);
+            $thirdCustomerEnabled = $this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_THREE, $storeId);
+            $secondGuestEnabled = $this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_TWO, $storeId);
+            $thirdGuestEnabled = $this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_THREE, $storeId);
             //customer
-            if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_ONE, $storeId)) {
+            if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_ONE, $storeId) ||
+                $secondCustomerEnabled ||
+                $thirdCustomerEnabled
+            ) {
                 $result[$storeId]['firstCustomer'] = $this->proccessCustomerFirstAbandonedCart($storeId);
             }
 
-            if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_TWO, $storeId)) {
+            //second customer
+            if ($secondCustomerEnabled) {
                 $result[$storeId]['secondCustomer'] = $this->proccessExistingAbandonedCart(
                     $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_TWO, $storeId),
                     $storeId,
@@ -185,7 +193,8 @@ class Quote
                 );
             }
 
-            if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_THREE, $storeId)) {
+            //third customer
+            if ($thirdCustomerEnabled) {
                 $result[$storeId]['thirdCustomer'] = $this->proccessExistingAbandonedCart(
                     $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_THREE, $storeId),
                     $storeId,
@@ -195,11 +204,14 @@ class Quote
             }
 
             //guest
-            if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_ONE, $storeId)) {
+            if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_ONE, $storeId) ||
+                $secondGuestEnabled ||
+                $thirdGuestEnabled
+            ) {
                 $result[$storeId]['firstGuest'] = $this->proccessGuestFirstAbandonedCart($storeId);
             }
-
-            if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_TWO, $storeId)) {
+            //second guest
+            if ($secondGuestEnabled) {
                 $result[$storeId]['secondGuest'] = $this->proccessExistingAbandonedCart(
                     $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_TWO, $storeId),
                     $storeId,
@@ -208,8 +220,8 @@ class Quote
                     true
                 );
             }
-
-            if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_THREE, $storeId)) {
+            //third guest
+            if ($thirdGuestEnabled) {
                 $result[$storeId]['thirdGuest'] = $this->proccessExistingAbandonedCart(
                     $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_THREE, $storeId),
                     $storeId,
@@ -456,7 +468,6 @@ class Quote
 
         //campaign id for customers
         $campaignId = $this->getLostBasketCustomerCampaignId($abandonedNum, $storeId);
-
         foreach ($quoteCollection as $quote) {
             $quoteId = $quote->getId();
             $items = $quote->getAllItems();
@@ -588,7 +599,7 @@ class Quote
     {
         $storeId = $quote->getStoreId();
         //interval campaign found
-        if ($campignFound = $this->isIntervalCampaignFound($email, $storeId)) {
+        if ($this->isIntervalCampaignFound($email, $storeId) || ! $campaignId) {
             return;
         }
         $customerId = $quote->getCustomerId();
@@ -626,8 +637,7 @@ class Quote
         $fromDate   = $fromTime->format('Y-m-d H:i:s');
         $toDate     = $toTime->format('Y-m-d H:i:s');
 
-        $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, $guest = true, $storeId);
-
+        $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, true, $storeId);
         if ($quoteCollection->getSize()) {
             $this->helper->log('Guest AC 1 ' . $fromDate . ' - ' . $toDate);
         }
@@ -697,7 +707,6 @@ class Quote
         $fromTime->sub(\DateInterval::createFromDateString('5 minutes'));
         $fromDate   = $fromTime->format('Y-m-d H:i:s');
         $toDate     = $toTime->format('Y-m-d H:i:s');
-
         //get abandoned carts already sent
         $abandonedCollection = $this->getAbandonedCartsForStore(
             $number,

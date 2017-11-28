@@ -71,7 +71,7 @@ class Cron
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
