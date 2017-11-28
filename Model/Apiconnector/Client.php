@@ -111,7 +111,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * @return void
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiEndpoint()
     {
@@ -439,8 +440,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         if (isset($response->message)) {
             $message = 'GET CAMPAIGN BY ID ' . $response->message;
-            $this->helper->log($this->getApiUsername() . ' : ' . $this->getApiPassword());
-            $this->helper->log('getCampaigns' . $message);
+            $this->helper->log($message);
         }
 
         return $response;

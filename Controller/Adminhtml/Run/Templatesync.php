@@ -36,10 +36,11 @@ class Templatesync extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
+        //run sync
         $result = $this->emailTemplatesFactory->create()
             ->sync();
 
-
+        //add sync message
         if (isset($result['message'])) {
             $this->messageManager->addSuccessMessage($result['message']);
         }
@@ -53,6 +54,6 @@ class Templatesync extends \Magento\Backend\App\AbstractAction
      */
     protected function _isAllowed()
     {
-        return true; //$this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
+        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }
 }
