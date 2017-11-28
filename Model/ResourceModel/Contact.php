@@ -123,36 +123,36 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Unsubscribe a contact from email_contact/newsletter table.
      *
-     * @param array $data
+     * @param array $emails
      * @return int
      */
-    public function unsubscribe($data)
+    public function unsubscribe($emails)
     {
-        if (empty($data)) {
-            return 0;
+        if (! empty($emails) && is_array($emails)) {
+            $write = $this->getConnection();
+
+            //un-subscribe from the email contact table.
+            $updated = $write->update(
+                $this->getMainTable(),
+                [
+                    'is_subscriber' => new \Zend_Db_Expr('null'),
+                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
+                    'suppressed' => '1',
+                ],
+                ["email IN (?)" => $emails]
+            );
+
+            // un-subscribe newsletter subscribers
+            $write->update(
+                $this->getTable('newsletter_subscriber'),
+                ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
+                ["subscriber_email IN (?)" => $emails]
+            );
+
+            return $updated;
         }
-        $write = $this->getConnection();
-        $emails = '"' . implode('","', $data) . '"';
 
-        //un-subscribe from the email contact table.
-        $updated = $write->update(
-            $this->getMainTable(),
-            [
-                'is_subscriber' => new \Zend_Db_Expr('null'),
-                'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
-                'suppressed' => '1',
-            ],
-            ["email IN (?)" => $emails]
-        );
-
-        // un-subscribe newsletter subscribers
-        $write->update(
-            $this->getTable('newsletter_subscriber'),
-            ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
-            ["subscriber_email IN (?)" => $emails]
-        );
-
-        return $updated;
+        return 0;
     }
 
     /**

@@ -248,8 +248,10 @@ class Subscriber
             // Contacts to un-subscribe
             foreach ($contacts as $apiContact) {
                 if (isset($apiContact->suppressedContact)) {
-                    $suppressedContact = $apiContact->suppressedContact;
-                    $suppressedEmails[] = $suppressedContact->email;
+                    $suppressedContactEmail = $apiContact->suppressedContact->email;
+                    if (!in_array($suppressedContactEmail, $suppressedEmails)) {
+                        $suppressedEmails[] = $suppressedContactEmail;
+                    }
                 }
             }
         }
