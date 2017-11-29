@@ -10,6 +10,11 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     public $templateFactory;
 
     /**
+     * @var \Magento\Framework\App\Config\ReinitableConfigInterface
+     */
+    public $config;
+
+    /**
      * @var int
      */
     private $websiteId = 0;
@@ -50,10 +55,12 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\App\Config\ReinitableConfigInterface $config,
         \Magento\Email\Model\ResourceModel\Template $templateResource,
         \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory
     ) {
         $this->helper         = $data;
+        $this->config           = $config;
         $this->context        = $context;
         $this->templateFactory = $templateFactory;
         $this->templateResource= $templateResource;
@@ -181,7 +188,8 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             $scopeId
         );
 
-        //@todo clear the config cache to pick up new changes
+        //clean the config cache
+        $this->config->reinit();
     }
 
     /**
