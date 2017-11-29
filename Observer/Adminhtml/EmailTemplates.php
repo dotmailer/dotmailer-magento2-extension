@@ -2,8 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
-
-class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
+class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
 {
     /**
      * @var \Magento\Email\Model\Template
@@ -114,7 +113,7 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
      */
     private function createNewEmailTemplate($templateCode, $campaignId)
     {
-        $message = sprintf('Template code %s, campaign id  %s', $templateCode, $campaignId);
+        $message = sprintf('Template created %s', $campaignId);
         $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode];
         $emailTemplate = $this->templateFactory->create();
         $template = $emailTemplate->loadBytemplateCode($templateCodeToName);
@@ -125,7 +124,7 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
         $client = $this->helper->getWebsiteApiClient($this->websiteId);
         $dmCampaign = $client->getCampaignById($campaignId);
         if (isset($dmCampaign->message)) {
-            $message = $dmCampaign->message;
+            $message = 'Failed to get api template : ' . $dmCampaign->message;
         }
 
         $fromName = $dmCampaign->fromName;
@@ -133,14 +132,18 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
         $templateSubject = $dmCampaign->subject;
         $templateBody = $emailTemplate->convertContent($dmCampaign->htmlContent);
 
-        $template->setOrigTemplateCode($templateCode)
-            ->setTemplateCode($templateCodeToName)
-            ->setTemplateSubject($templateSubject)
-            ->setTemplateText($templateBody)
-            ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
-            ->setTemplateSenderName($fromName)
-            ->setTemplateSenderEmail($fromEmail);
-        $this->templateResource->save($template);
+        try {
+            $template->setOrigTemplateCode($templateCode)
+                ->setTemplateCode($templateCodeToName)
+                ->setTemplateSubject($templateSubject)
+                ->setTemplateText($templateBody)
+                ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
+                ->setTemplateSenderName($fromName)
+                ->setTemplateSenderEmail($fromEmail);
+            $this->templateResource->save($template);
+        } catch (\Exception $e) {
+            $this->helper->log($e->getMessage());
+        }
 
         //save successul created new email template with the default config value for template.
         $this->saveConfigForEmailTemplate($templateConfigPath, $template->getId());
