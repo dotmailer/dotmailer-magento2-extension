@@ -1064,7 +1064,11 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
                 <field id="newsletter_subscription_confirm_email_template" translate="label" sortOrder="220" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Success Email Template</label>
+                    <label>Subscription Confirmation</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="newsletter_subscription_un_email_template" translate="label" sortOrder="230" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Unsubscribe Success</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
                 <field id="sales_title" translate="label" sortOrder="300" showInStore="1" showInWebsite="1" showInDefault="1">
