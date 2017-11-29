@@ -19,4 +19,35 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $this->_init(\Magento\Cron\Model\Schedule::class, \Magento\Cron\Model\ResourceModel\Schedule::class);
     }
+
+    /**
+     * @param $jobCode
+     * @return \Magento\Framework\DataObject
+     */
+    public function getRunningJobByCode($jobCode)
+    {
+        return $this->addFieldToFilter('job_code', $jobCode)
+            ->addFieldToFilter('status', 'running')
+            ->setPageSize(1)
+            ->getFirstItem();
+    }
+
+    /**
+     * @param $jobCode
+     * @param $scheduledAt
+     *
+     * @return bool
+     */
+    public function jobOfSameTypeAndScheduledAtDateAlreadyExecuted($jobCode, $scheduledAt)
+    {
+        $collection = $this->addFieldToFilter('job_code', $jobCode)
+            ->addFieldToFilter('scheduled_at', $scheduledAt)
+            ->addFieldToFilter('status', ['in' => ['success', 'failed']]);
+
+        if ($collection->getSize()) {
+            return true;
+        }
+
+        return false;
+    }
 }

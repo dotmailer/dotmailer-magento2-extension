@@ -20,6 +20,9 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
      */
     public $templateResource;
 
+    /**
+     * @var int
+     */
     private $storeId = 0;
 
     /**
@@ -39,6 +42,7 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * UpdateTemplates constructor.
+     *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Email\Model\ResourceModel\Template $templateResource
@@ -69,7 +73,7 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
     {
         $this->websiteId = (empty($observer->getWebsite()))? '0' : $observer->getWebsite();
         $this->storeId = (empty($observer->getStore()))? '0' : $observer->getStore();
-        $this->helper->log($this->websiteId . ', store ' . $this->storeId);
+        $this->helper->log('website id: ' . $this->websiteId . ', store id: ' . $this->storeId);
         $groups = $this->context->getRequest()->getPost('groups');
         //nothing was saved on lower level, parent options was selected
         //@todo check each template for the change
@@ -80,12 +84,11 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
         }
 
         foreach ($groups['email_templates']['fields'] as $templateCode => $emailValue) {
-
             if (isset($emailValue['value'])) {
                 $campaingId = $emailValue['value'];
                 if ($campaingId) {
                     //new email template mapped
-                    $result = $this->checkNewEmailTemplate($templateCode, $campaingId);
+                    $this->createNewEmailTemplate($templateCode, $campaingId);
                 } else {
                     $template = $this->templateFactory->create();
                     //reset to default email template
@@ -99,20 +102,18 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
             }
         }
 
-
         return $this;
     }
 
     /**
      * @todo strip the unsubscribe link from body;
      *
+     *
      * @param $templateCode
      * @param $campaignId
      */
-    private function checkNewEmailTemplate($templateCode, $campaignId)
+    private function createNewEmailTemplate($templateCode, $campaignId)
     {
-        $this->helper->log('template code : ' . $templateCode);
-
         $message = sprintf('Template code %s, campaign id  %s', $templateCode, $campaignId);
         $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode];
         $emailTemplate = $this->templateFactory->create();
@@ -120,17 +121,17 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
 
         $templateConfigPath = $emailTemplate->templateConfigMapping[$templateCode];
 
-
         //get the template from api
         $client = $this->helper->getWebsiteApiClient($this->websiteId);
         $dmCampaign = $client->getCampaignById($campaignId);
         if (isset($dmCampaign->message)) {
             $message = $dmCampaign->message;
         }
+
         $fromName = $dmCampaign->fromName;
         $fromEmail = $dmCampaign->fromAddress->email;
         $templateSubject = $dmCampaign->subject;
-        $templateBody = $this->convertContent($dmCampaign->htmlContent);
+        $templateBody = $emailTemplate->convertContent($dmCampaign->htmlContent);
 
         $template->setOrigTemplateCode($templateCode)
             ->setTemplateCode($templateCodeToName)
@@ -149,25 +150,20 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
         return;
     }
 
-    private function convertContent($htmlContent)
-    {
-        return $htmlContent;
-    }
-
     /**
      * @param $templateConfigPath
      * @param $templateId
      */
-    private function saveConfigForEmailTemplate($templateConfigPath, $templateId): void
+    private function saveConfigForEmailTemplate($templateConfigPath, $templateId)
     {
         if ($this->websiteId) {
-            $scope = 'website';
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
             $scopeId = $this->websiteId;
         } elseif ($this->storeId) {
-            $scope = 'store';
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
             $scopeId = $this->storeId;
         } else {
-            $scope = 'default';
+            $scope = \Magento\Framework\App\ScopeInterface::SCOPE_DEFAULT;
             $scopeId = '0';
         }
 
@@ -185,13 +181,13 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
     private function resetToDefaultTemplate($templateConfigPath)
     {
         if ($this->websiteId) {
-            $scope = 'website';
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
             $scopeId = $this->websiteId;
         } elseif ($this->storeId) {
-            $scope = 'store';
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
             $scopeId = $this->storeId;
         } else {
-            $scope = 'default';
+            $scope = \Magento\Framework\App\ScopeInterface::SCOPE_DEFAULT;
             $scopeId = '0';
         }
 
@@ -203,3 +199,4 @@ class UpdateTemplates implements \Magento\Framework\Event\ObserverInterface
     }
 
 }
+
