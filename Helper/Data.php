@@ -1349,25 +1349,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->storeManager->getStore()->getUrl(
             'connector/ajax/emailcapture',
-            ['_secure' => $this->isWebsiteSecure()]
+            ['_secure' => $this->storeManager->getStore()->isCurrentlySecure()]
         );
-    }
-
-    /**
-     * Check if website is secure.
-     *
-     * @return bool
-     */
-    public function isWebsiteSecure()
-    {
-        $isFrontendSecure  = $this->storeManager->getStore()->isFrontUrlSecure();
-        $isCurrentlySecure = $this->storeManager->getStore()->isCurrentlySecure();
-
-        if ($isFrontendSecure && $isCurrentlySecure) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
