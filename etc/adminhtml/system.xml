@@ -1051,31 +1051,35 @@
                     <label>New Account Confirmation Key</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="newsletter_title" translate="label" sortOrder="100" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="customer_create_account_email_confirmed_template" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>New Account Confirmation</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="newsletter_title" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Newsletter</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="newsletter_subscription_success_email_template" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="newsletter_subscription_success_email_template" translate="label" sortOrder="210" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Success Email Template</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_title" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_title" translate="label" sortOrder="300" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Sales</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="sales_email_order_template" translate="label" sortOrder="210" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_order_template" translate="label" sortOrder="310" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Order Confirmation</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_order_guest_template" translate="label" sortOrder="220" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_order_guest_template" translate="label" sortOrder="320" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Order Confirmation For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_shipment_template" translate="label" sortOrder="230" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_shipment_template" translate="label" sortOrder="330" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Shippment</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_shipment_guest_template" translate="label" sortOrder="240" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_shipment_guest_template" translate="label" sortOrder="340" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Shippment For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
