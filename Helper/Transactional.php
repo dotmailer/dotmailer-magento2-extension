@@ -14,11 +14,6 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_DDG_TRANSACTIONAL_PORT       = 'transactional_emails/ddg_transactional/port';
     const XML_PATH_DDG_TRANSACTIONAL_DEBUG      = 'transactional_emails/ddg_transactional/debug';
 
-    const XML_PATH_DDG_TRANSACTIONAL_NEW_ACCCOUNT =
-        'transactional_emails/email_templates/customer_create_account_email_template';
-    const XML_PATH_DDG_TRANSACTIONAL_NEW_ACCCOUNT_CONFIRMATION_KEY =
-        'transactional_emails/email_templates/customer_create_account_email_confirmation_template';
-
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */

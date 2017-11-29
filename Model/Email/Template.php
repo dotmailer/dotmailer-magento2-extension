@@ -4,7 +4,17 @@ namespace Dotdigitalgroup\Email\Model\Email;
 
 class Template extends \Magento\Framework\DataObject
 {
+    /**
+     * HTML template type.
+     */
     const TEMPLATE_TYPE = 1;
+
+    const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT =
+        'dotmailer_email_templates/email_templates/customer_create_account_email_template';
+    const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY =
+        'dotmailer_email_templates/email_templates/customer_create_account_email_confirmation_template';
+    const XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS =
+        'dotmailer_email_templates/email_templates/newsletter_subscription_success_email_template';
 
     /**
      * Mapping from template code = template name.
@@ -13,7 +23,8 @@ class Template extends \Magento\Framework\DataObject
      */
     static public $defaultEmailTemplateCode = [
         'customer_create_account_email_template' => 'New Account (dotmailer)',
-        'customer_create_account_email_confirmation_template' => 'New Account Confirmation Key (dotmailer)'
+        'customer_create_account_email_confirmation_template' => 'New Account Confirmation Key (dotmailer)',
+        'newsletter_subscription_success_email_template' => 'Subscription Success (dotmailer)'
     ];
 
     /**
@@ -24,7 +35,9 @@ class Template extends \Magento\Framework\DataObject
         'customer_create_account_email_template' =>
             \Magento\Customer\Model\EmailNotification::XML_PATH_REGISTER_EMAIL_TEMPLATE,
         'customer_create_account_email_confirmation_template' =>
-            \Magento\Customer\Model\EmailNotification::XML_PATH_CONFIRM_EMAIL_TEMPLATE
+            \Magento\Customer\Model\EmailNotification::XML_PATH_CONFIRM_EMAIL_TEMPLATE,
+        'newsletter_subscription_success_email_template' =>
+            \Magento\Newsletter\Model\Subscriber::XML_PATH_SUCCESS_EMAIL_TEMPLATE
     ];
 
     /**
@@ -33,10 +46,10 @@ class Template extends \Magento\Framework\DataObject
      * @var array
      */
     public $templateEmailConfigMapping = [
-        'customer_create_account_email_template' =>
-            \Dotdigitalgroup\Email\Helper\Transactional::XML_PATH_DDG_TRANSACTIONAL_NEW_ACCCOUNT,
+        'customer_create_account_email_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT,
         'customer_create_account_email_confirmation_template' =>
-            \Dotdigitalgroup\Email\Helper\Transactional::XML_PATH_DDG_TRANSACTIONAL_NEW_ACCCOUNT_CONFIRMATION_KEY
+            self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY,
+        'newsletter_subscription_success_email_template' => self::XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS
     ];
 
     /**
@@ -163,8 +176,8 @@ class Template extends \Magento\Framework\DataObject
     /**
      * @param $campaignId
      * @param $templateCode
-     * @param $store
-     * @return string
+     * @param $store \Magento\Store\Model\Store
+     * @return mixed
      */
     private function syncEmailTemplate($campaignId, $templateCode, $store)
     {
@@ -198,7 +211,6 @@ class Template extends \Magento\Framework\DataObject
         $htmlContent = str_replace('Forward this email', '', $htmlContent);
         $htmlContent = str_replace('http://$forward$/', '', $htmlContent);
 
-
         return $htmlContent;
     }
 
@@ -216,14 +228,18 @@ class Template extends \Magento\Framework\DataObject
 
         $template = $this->loadByTemplateCode($templateCodeToName);
 
-        $template->setOrigTemplateCode($templateCode)
-            ->setTemplateCode($templateCodeToName)
-            ->setTemplateSubject($templateSubject)
-            ->setTemplateText($templateBody)
-            ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
-            ->setTemplateSenderName($fromName)
-            ->setTemplateSenderEmail($fromEmail);
-        $this->templateResource->save($template);
+        try {
+            $template->setOrigTemplateCode($templateCode)
+                ->setTemplateCode($templateCodeToName)
+                ->setTemplateSubject($templateSubject)
+                ->setTemplateText($templateBody)
+                ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
+                ->setTemplateSenderName($fromName)
+                ->setTemplateSenderEmail($fromEmail);
+            $this->templateResource->save($template);
+        } catch (\Exception $e) {
+            $this->helper->log($e->getMessage());
+        }
     }
 
 }

@@ -572,7 +572,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $username
      * @param string $password
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
      *
      * @return \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */

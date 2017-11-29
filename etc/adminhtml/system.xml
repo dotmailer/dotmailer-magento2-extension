@@ -1039,14 +1039,55 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="email_templates" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Email Templates</label>
-                <field id="customer_create_account_email_template" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="customer_title" translate="label" sortOrder="10" showInStore="1" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Customer</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="customer_create_account_email_template" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Account</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="customer_create_account_email_confirmation_template" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="customer_create_account_email_confirmation_template" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Account Confirmation Key</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
+                <field id="newsletter_title" translate="label" sortOrder="30" showInStore="1" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Newsletter</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="newsletter_subscription_success_email_template" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Success Email Template</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="checkout_title" translate="label" sortOrder="140" showInStore="1" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Checkout</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="contact_title" translate="label" sortOrder="150" showInStore="1" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Contact</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="email_title" translate="label" sortOrder="160" showInStore="1" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Email</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+
+                <field id="product_title" translate="label" sortOrder="180" showInStore="1" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Product Alerts</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="sales_title" translate="label" sortOrder="190" showInStore="1" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Sales</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+
             </group>
         </section>
         <section id="connector_configuration" translate="label" sortOrder="200" showInStore="0" showInWebsite="1"
