@@ -3,9 +3,15 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Cron\Collection;
+use Dotdigitalgroup\Email\Model\Config\Json;
 
 class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
+    /**
+     * @var Json
+     */
+    protected $serializer;
+
     /**
      * Initialize resource.
      *
@@ -14,6 +20,32 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function _construct()
     {
         $this->_init('email_rules', 'id');
+    }
+
+    /**
+     * Rules constructor.
+     *
+     * @param Json $serializer
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param null $connectionName
+     */
+    public function __construct(
+        Json $serializer,
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        $connectionName = null
+    ) {
+        $this->serializer = $serializer;
+        parent::__construct(
+            $context,
+            $connectionName
+        );
+    }
+
+    protected function _afterLoad(\Magento\Framework\Model\AbstractModel $object)
+    {
+        $object->setCondition($this->serializer->unserialize($object->getConditions()));
+
+        return parent::_afterLoad($object);
     }
 
     /**
