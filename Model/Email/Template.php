@@ -17,6 +17,8 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/newsletter_subscription_success_email_template';
     const XML_PATH_DGG_TEMPLATE_NEW_ORDER_CONFIRMATION =
         'dotmailer_email_templates/email_templates/sales_email_order_template';
+    const XML_PATH_DDG_TEMPLATE_NEW_ORDER_CONFIRMATION_GUEST =
+        'dotmailer_email_templates/email_templates/sales_email_order_guest_template';
 
     /**
      * Mapping from template code = template name.
@@ -27,7 +29,9 @@ class Template extends \Magento\Framework\DataObject
         'customer_create_account_email_template' => 'New Account (dotmailer)',
         'customer_create_account_email_confirmation_template' => 'New Account Confirmation Key (dotmailer)',
         'newsletter_subscription_success_email_template' => 'Subscription Success (dotmailer)',
-        'sales_email_order_template' => 'New Order Confirmation (dotmailer)'
+        'sales_email_order_template' => 'New Order Confirmation (dotmailer)',
+        'sales_email_order_guest_template' => 'New Order Confirmation For Guest (dotmailer)'
+
     ];
 
     /**
@@ -42,7 +46,9 @@ class Template extends \Magento\Framework\DataObject
         'newsletter_subscription_success_email_template' =>
             \Magento\Newsletter\Model\Subscriber::XML_PATH_SUCCESS_EMAIL_TEMPLATE,
         'sales_email_order_template' =>
-            \Magento\Sales\Model\Order\Email\Container\OrderIdentity::XML_PATH_EMAIL_TEMPLATE
+            \Magento\Sales\Model\Order\Email\Container\OrderIdentity::XML_PATH_EMAIL_TEMPLATE,
+        'sales_email_order_guest_template' =>
+            \Magento\Sales\Model\Order\Email\Container\OrderIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE
     ];
 
     /**
@@ -55,7 +61,8 @@ class Template extends \Magento\Framework\DataObject
         'customer_create_account_email_confirmation_template' =>
             self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY,
         'newsletter_subscription_success_email_template' => self::XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS,
-        'sales_email_order_template' => self::XML_PATH_DGG_TEMPLATE_NEW_ORDER_CONFIRMATION
+        'sales_email_order_template' => self::XML_PATH_DGG_TEMPLATE_NEW_ORDER_CONFIRMATION,
+        'sales_email_order_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ORDER_CONFIRMATION_GUEST
     ];
 
     /**
@@ -114,7 +121,6 @@ class Template extends \Magento\Framework\DataObject
 
         parent::__construct($data);
     }
-
 
     /**
      * Load email_template by code/name.

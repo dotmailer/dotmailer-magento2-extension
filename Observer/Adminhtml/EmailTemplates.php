@@ -69,6 +69,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * Execute method.
+     * @todo remove the logging
      *
      * @param \Magento\Framework\Event\Observer $observer
      *
