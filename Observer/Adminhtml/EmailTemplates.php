@@ -72,24 +72,27 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     {
         $this->websiteId = (empty($observer->getWebsite()))? '0' : $observer->getWebsite();
         $this->storeId = (empty($observer->getStore()))? '0' : $observer->getStore();
-        $this->helper->log('website id: ' . $this->websiteId . ', store id: ' . $this->storeId);
         $groups = $this->context->getRequest()->getPost('groups');
-        //nothing was saved on lower level, parent options was selected
-        //@todo check each template for the change
-        if (isset($groups['email_templates']['fields']['customer_create_account_email_template']['inherit']) ||
-            isset($groups['email_templates']['fields']['new_account_confirmation_key']['inherit'])
-        ) {
-            return $this;
-        }
 
         foreach ($groups['email_templates']['fields'] as $templateCode => $emailValue) {
+            //inherit option was selected for the child config value - skip
+            if (isset($groups['email_templates']['fields'][$templateCode]['inherit'])) {
+                $this->helper->log('template mapping inherit ' . $templateCode);
+                continue;
+            }
+
             if (isset($emailValue['value'])) {
                 $campaingId = $emailValue['value'];
+
+                //new email template mapped
                 if ($campaingId) {
-                    //new email template mapped
+                    $this->helper->log('value is set ' . $emailValue['value'] . ' ' . $templateCode);
                     $this->createNewEmailTemplate($templateCode, $campaingId);
                 } else {
+                    $this->helper->log('value is not set ' . $templateCode);
+
                     $template = $this->templateFactory->create();
+                    $this->helper->log('Reset config data for website : ' . $this->websiteId . ' store ' . $this->storeId);
                     //reset to default email template
                     $this->resetToDefaultTemplate($template->templateConfigMapping[$templateCode]);
                     $this->resetToDefaultTemplate($template->templateEmailConfigMapping[$templateCode]);
@@ -97,7 +100,6 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
                         \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode]
                     );
                 }
-
             }
         }
 
@@ -125,6 +127,8 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
         $dmCampaign = $client->getCampaignById($campaignId);
         if (isset($dmCampaign->message)) {
             $message = 'Failed to get api template : ' . $dmCampaign->message;
+            $this->messageManager->addErrorMessage($message);
+            return;
         }
 
         $fromName = $dmCampaign->fromName;
@@ -176,6 +180,8 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             $scope,
             $scopeId
         );
+
+        //@todo clear the config cache to pick up new changes
     }
 
     /**
