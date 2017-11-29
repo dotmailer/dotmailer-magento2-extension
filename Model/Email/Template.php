@@ -23,6 +23,8 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/sales_email_order_template';
     const XML_PATH_DDG_TEMPLATE_NEW_ORDER_CONFIRMATION_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_order_guest_template';
+    const XML_PATH_DDG_TEMPLATE_ORDER_UPDATE =
+        'dotmailer_email_templates/email_templates/sales_email_order_comment_template';
     const XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT =
         'dotmailer_email_templates/email_templates/sales_email_shipment_template';
     const XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT_GUEST =
@@ -44,6 +46,7 @@ class Template extends \Magento\Framework\DataObject
         'newsletter_subscription_un_email_template' => 'Unsubscribe Success (dotmailer)',
         'sales_email_order_template' => 'New Order Confirmation (dotmailer)',
         'sales_email_order_guest_template' => 'New Order Confirmation For Guest (dotmailer)',
+        'sales_email_order_comment_template' => 'Order Update (dotmailer)',
         'sales_email_shipment_template' => 'New Shipment (dotmailer)',
         'sales_email_shipment_guest_template' => 'New Shipment For Guest (dotmailer)'
 
@@ -70,6 +73,8 @@ class Template extends \Magento\Framework\DataObject
             \Magento\Sales\Model\Order\Email\Container\OrderIdentity::XML_PATH_EMAIL_TEMPLATE,
         'sales_email_order_guest_template' =>
             \Magento\Sales\Model\Order\Email\Container\OrderIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE,
+        'sales_email_order_comment_template' =>
+            \Magento\Sales\Model\Order\Email\Container\OrderCommentIdentity::XML_PATH_EMAIL_TEMPLATE,
         'sales_email_shipment_template' =>
             \Magento\Sales\Model\Order\Email\Container\ShipmentIdentity::XML_PATH_EMAIL_TEMPLATE,
         'sales_email_shipment_guest_template' =>
@@ -91,6 +96,7 @@ class Template extends \Magento\Framework\DataObject
         'newsletter_subscription_un_email_template' => self::XML_PATH_DDG_TEMPLATE_UNSUBSCRIBE_SUCCESS,
         'sales_email_order_template' => self::XML_PATH_DGG_TEMPLATE_NEW_ORDER_CONFIRMATION,
         'sales_email_order_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ORDER_CONFIRMATION_GUEST,
+        'sales_email_order_comment_template' => self::XML_PATH_DDG_TEMPLATE_ORDER_UPDATE,
         'sales_email_shipment_template' => self::XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT,
         'sales_email_shipment_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT_GUEST
     ];
