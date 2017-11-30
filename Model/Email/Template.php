@@ -57,6 +57,8 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/contact_email_email_template';
     const XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_creditmemo_comment_guest_template';
+    const XML_PATH_DDG_TEMPLATE_SEND_PRODUCT_TO_FRIEND =
+        'dotmailer_email_templates/email_templates/sendfriend_email_template';
 
     /**
      * Mapping from template code = template name.
@@ -88,6 +90,7 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_creditmemo_comment_template' => 'Credit Memo Update (dotmailer)',
         'sales_email_creditmemo_comment_guest_template' => 'Credit Memo Update Guest (dotmailer)',
         'contact_email_email_template' => 'Contact Form (dotmailer)',
+        'sendfriend_email_template' => 'Send Product Link To Friend (dotmailer)'
 
     ];
 
@@ -141,7 +144,8 @@ class Template extends \Magento\Framework\DataObject
             \Magento\Sales\Model\Order\Email\Container\CreditmemoCommentIdentity::XML_PATH_EMAIL_TEMPLATE,
         'sales_email_creditmemo_comment_guest_template' =>
             \Magento\Sales\Model\Order\Email\Container\CreditmemoCommentIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE,
-        'contact_email_email_template' => \Magento\Contact\Model\ConfigInterface::XML_PATH_EMAIL_TEMPLATE
+        'contact_email_email_template' => \Magento\Contact\Model\ConfigInterface::XML_PATH_EMAIL_TEMPLATE,
+        'sendfriend_email_template' => \Magento\SendFriend\Helper\Data::XML_PATH_EMAIL_TEMPLATE
 
     ];
 
@@ -175,7 +179,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_creditmemo_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO_GUEST,
         'sales_email_creditmemo_comment_template' => self::XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE,
         'sales_email_creditmemo_comment_guest_template' => self::XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE_GUEST,
-        'contact_email_email_template' => self::XML_PATH_DDG_TEMPLATE_CONTACT_FORM
+        'contact_email_email_template' => self::XML_PATH_DDG_TEMPLATE_CONTACT_FORM,
+        'sendfriend_email_template' => self::XML_PATH_DDG_TEMPLATE_SEND_PRODUCT_TO_FRIEND
     ];
 
     /**

@@ -1151,16 +1151,19 @@
                     <label>New Contact Form</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-
                 <field id="checkout_title" translate="label" sortOrder="500" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Checkout</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-
                 <field id="email_title" translate="label" sortOrder="600" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Email</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
+                <field id="sendfriend_email_template" translate="label" sortOrder="375" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Send Product To Friend</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+
                 <field id="product_title" translate="label" sortOrder="700" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Product Alerts</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
