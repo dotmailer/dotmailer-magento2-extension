@@ -1059,7 +1059,11 @@
                     <label>Forgot Password</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="admin_emails_forgot_email_template" translate="label" sortOrder="60" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="customer_password_remind_email_template" translate="label" sortOrder="60" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Remind Password</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="admin_emails_forgot_email_template" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Forgot Admin Password</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
