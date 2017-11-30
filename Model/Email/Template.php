@@ -49,6 +49,8 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/sales_email_creditmemo_template';
     const XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_creditmemo_guest_template';
+    const XML_PATH_DDG_TEMPLATE_CONTACT_FORM =
+        'dotmailer_email_templates/email_templates/contact_email_email_template';
 
     /**
      * Mapping from template code = template name.
@@ -75,7 +77,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_invoice_template' => 'New Invoice (dotmailer)',
         'sales_email_invoice_guest_template' => 'New Invoice Guest (dotmailer)',
         'sales_email_creditmemo_template' => 'New Credit Memo (dotmailer)',
-        'sales_email_creditmemo_guest_template' => 'New Credit Memo Guest (dotmailer)'
+        'sales_email_creditmemo_guest_template' => 'New Credit Memo Guest (dotmailer)',
+        'contact_email_email_template' => 'Contact Form (dotmailer)',
 
     ];
 
@@ -122,7 +125,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_creditmemo_template' =>
             \Magento\Sales\Model\Order\Email\Container\CreditmemoIdentity::XML_PATH_EMAIL_TEMPLATE,
         'sales_email_creditmemo_guest_template' =>
-            \Magento\Sales\Model\Order\Email\Container\CreditmemoIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE
+            \Magento\Sales\Model\Order\Email\Container\CreditmemoIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE,
+        'contact_email_email_template' => \Magento\Contact\Model\ConfigInterface::XML_PATH_EMAIL_TEMPLATE
 
     ];
 
@@ -152,7 +156,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_invoice_template' => self::XML_PATH_DDG_TEMPLATE_NEW_INVOICE,
         'sales_email_invoice_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_INVOICE_GUEST,
         'sales_email_creditmemo_template' => self::XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO,
-        'sales_email_creditmemo_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO_GUEST
+        'sales_email_creditmemo_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO_GUEST,
+        'contact_email_email_template' => self::XML_PATH_DDG_TEMPLATE_CONTACT_FORM
     ];
 
     /**
