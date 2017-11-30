@@ -1135,6 +1135,10 @@
                     <label>Credit Memo Update</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
+                <field id="sales_email_creditmemo_comment_guest_template" translate="label" sortOrder="380" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Credit Memo Update Guest</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
                 <field id="contact_title" translate="label" sortOrder="400" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Contact</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
