@@ -35,6 +35,8 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/sales_email_shipment_template';
     const XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_shipment_guest_template';
+    const XML_PATH_DDG_TEMPLATE_INVOICE_UPDATE =
+        'dotmailer_email_templates/email_templates/sales_email_invoice_comment_template';
     const XML_PATH_DDG_TEMPLATE_UNSUBSCRIBE_SUCCESS =
         'dotmailer_email_templates/email_templates/newsletter_subscription_un_email_template';
 
@@ -57,7 +59,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_order_comment_template' => 'Order Update (dotmailer)',
         'sales_email_order_comment_guest_template' => 'Order Update For Guest (dotmailer)',
         'sales_email_shipment_template' => 'New Shipment (dotmailer)',
-        'sales_email_shipment_guest_template' => 'New Shipment For Guest (dotmailer)'
+        'sales_email_shipment_guest_template' => 'New Shipment For Guest (dotmailer)',
+        'sales_email_invoice_comment_template' => 'Invoice Update (dotmailer)'
 
     ];
 
@@ -92,7 +95,9 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_shipment_template' =>
             \Magento\Sales\Model\Order\Email\Container\ShipmentIdentity::XML_PATH_EMAIL_TEMPLATE,
         'sales_email_shipment_guest_template' =>
-            \Magento\Sales\Model\Order\Email\Container\ShipmentIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE
+            \Magento\Sales\Model\Order\Email\Container\ShipmentIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE,
+        'sales_email_invoice_comment_template' =>
+            \Magento\Sales\Model\Order\Email\Container\InvoiceCommentIdentity::XML_PATH_EMAIL_TEMPLATE
     ];
 
     /**
@@ -115,7 +120,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_order_comment_template' => self::XML_PATH_DDG_TEMPLATE_ORDER_UPDATE,
         'sales_email_order_comment_guest_template' => self::XML_PATH_DDG_TEMPLATE_ORDER_UPDATE_GUEST,
         'sales_email_shipment_template' => self::XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT,
-        'sales_email_shipment_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT_GUEST
+        'sales_email_shipment_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT_GUEST,
+        'sales_email_invoice_comment_template' => self::XML_PATH_DDG_TEMPLATE_INVOICE_UPDATE
     ];
 
     /**
@@ -240,7 +246,7 @@ class Template extends \Magento\Framework\DataObject
     /**
      * @param $campaignId
      * @param $templateCode
-     * @param $store \Magento\Store\Model\Store
+     * @param $store \Magento\Store\Api\Data\StoreInterface
      * @return mixed
      */
     private function syncEmailTemplate($campaignId, $templateCode, $store)
@@ -269,11 +275,13 @@ class Template extends \Magento\Framework\DataObject
     {
         $htmlContent = str_replace('/vedimage', 'https://i.emlfiles.com', $htmlContent);
 
-        //@todo remove whole nodes
+        //@todo remove whole nodes?!?
         $htmlContent = str_replace('Unsubscribe', '', $htmlContent);
         $htmlContent = str_replace('http://$unsub$/', '', $htmlContent);
         $htmlContent = str_replace('Forward this email', '', $htmlContent);
         $htmlContent = str_replace('http://$forward$/', '', $htmlContent);
+        $htmlContent = str_replace('View in browser', '', $htmlContent);
+        $htmlContent = str_replace('http://$cantread$/', '', $htmlContent);
 
         return $htmlContent;
     }
