@@ -15,6 +15,10 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/customer_create_account_email_confirmation_template';
     const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION =
         'dotmailer_email_templates/email_templates/customer_create_account_email_confirmed_template';
+    const XML_PATH_DDG_TEMPLATE_FORGOT_PASSWORD =
+        'dotmailer_email_templates/email_templates/customer_password_forgot_email_template';
+    const XML_PATH_DDG_TEMPLATE_FORGOT_ADMIN_PASSWORD =
+        'dotmailer_email_templates/email_templates/admin_emails_forgot_email_template';
     const XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS =
         'dotmailer_email_templates/email_templates/newsletter_subscription_success_email_template';
     const XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_CONFIRMATION =
@@ -43,6 +47,8 @@ class Template extends \Magento\Framework\DataObject
         'customer_create_account_email_template' => 'New Account (dotmailer)',
         'customer_create_account_email_confirmed_template' => 'New Account Confirmation (dotmailer)',
         'customer_create_account_email_confirmation_template' => 'New Account Confirmation Key (dotmailer)',
+        'customer_password_forgot_email_template' => 'Forgot Password (dotmailer)',
+        'admin_emails_forgot_email_template' => 'Forgot Admin Password (dotmailer)',
         'newsletter_subscription_success_email_template' => 'Subscription Success (dotmailer)',
         'newsletter_subscription_confirm_email_template' => 'Subscription Confirmation (dotmailer)',
         'newsletter_subscription_un_email_template' => 'Unsubscribe Success (dotmailer)',
@@ -66,6 +72,9 @@ class Template extends \Magento\Framework\DataObject
             \Magento\Customer\Model\EmailNotification::XML_PATH_CONFIRMED_EMAIL_TEMPLATE,
         'customer_create_account_email_confirmation_template' =>
             \Magento\Customer\Model\EmailNotification::XML_PATH_CONFIRM_EMAIL_TEMPLATE,
+        'customer_password_forgot_email_template' =>
+            \Magento\Customer\Model\EmailNotification::XML_PATH_FORGOT_EMAIL_TEMPLATE,
+        'admin_emails_forgot_email_template' => \Magento\User\Model\User::XML_PATH_FORGOT_EMAIL_TEMPLATE,
         'newsletter_subscription_success_email_template' =>
             \Magento\Newsletter\Model\Subscriber::XML_PATH_SUCCESS_EMAIL_TEMPLATE,
         'newsletter_subscription_confirm_email_template' =>
@@ -96,6 +105,8 @@ class Template extends \Magento\Framework\DataObject
         'customer_create_account_email_confirmation_template' =>
             self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY,
         'customer_create_account_email_confirmed_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION,
+        'customer_password_forgot_email_template' => self::XML_PATH_DDG_TEMPLATE_FORGOT_PASSWORD,
+        'admin_emails_forgot_email_template' => self::XML_PATH_DDG_TEMPLATE_FORGOT_ADMIN_PASSWORD,
         'newsletter_subscription_success_email_template' => self::XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS,
         'newsletter_subscription_confirm_email_template' => self::XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_CONFIRMATION,
         'newsletter_subscription_un_email_template' => self::XML_PATH_DDG_TEMPLATE_UNSUBSCRIBE_SUCCESS,
@@ -136,7 +147,6 @@ class Template extends \Magento\Framework\DataObject
      * @var array
      */
     public $proccessedCampaings = [];
-
 
     /**
      * Template constructor.

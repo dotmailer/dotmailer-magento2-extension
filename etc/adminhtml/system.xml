@@ -1055,6 +1055,14 @@
                     <label>New Account Confirmation</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
+                <field id="customer_password_forgot_email_template" translate="label" sortOrder="50" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Forgot Password</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="admin_emails_forgot_email_template" translate="label" sortOrder="60" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Forgot Admin Password</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
                 <field id="newsletter_title" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Newsletter</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
