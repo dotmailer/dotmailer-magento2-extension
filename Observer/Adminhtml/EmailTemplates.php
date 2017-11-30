@@ -69,7 +69,6 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * Execute method.
-     * @todo remove the logging
      *
      * @param \Magento\Framework\Event\Observer $observer
      *
@@ -85,7 +84,6 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
         foreach ($groups['email_templates']['fields'] as $templateCode => $emailValue) {
             //inherit option was selected for the child config value - skip
             if (isset($groups['email_templates']['fields'][$templateCode]['inherit'])) {
-                $this->helper->log('template mapping inherit ' . $templateCode);
                 continue;
             }
 
@@ -94,13 +92,9 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
 
                 //new email template mapped
                 if ($campaingId) {
-                    $this->helper->log('value is set ' . $emailValue['value'] . ' ' . $templateCode);
                     $this->createNewEmailTemplate($templateCode, $campaingId);
                 } else {
-                    $this->helper->log('value is not set ' . $templateCode);
-
                     $template = $this->templateFactory->create();
-                    $this->helper->log('Reset config data for website : ' . $this->websiteId . ' store ' . $this->storeId);
                     //reset to default email template
                     $this->resetToDefaultTemplate($template->templateConfigMapping[$templateCode]);
                     $this->resetToDefaultTemplate($template->templateEmailConfigMapping[$templateCode]);
@@ -159,8 +153,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
 
         //save successul created new email template with the default config value for template.
         $this->saveConfigForEmailTemplate($templateConfigPath, $template->getId());
-
-        $this->messageManager->addSuccessMessage($message);
+        $this->helper->log($message);
 
         return;
     }
