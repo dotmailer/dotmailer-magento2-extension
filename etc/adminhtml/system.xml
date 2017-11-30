@@ -1063,7 +1063,11 @@
                     <label>Remind Password</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="admin_emails_forgot_email_template" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="wishlist_email_email_template" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Wish List Sharing</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="admin_emails_forgot_email_template" translate="label" sortOrder="80" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Forgot Admin Password</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>

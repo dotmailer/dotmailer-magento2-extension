@@ -9,6 +9,8 @@ class Template extends \Magento\Framework\DataObject
      */
     const TEMPLATE_TYPE = 1;
 
+    const XML_PATH_WISHLIST_EMAIL_EMAIL_TEMPLATE = 'wishlist/email/email_template';
+
     const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT =
         'dotmailer_email_templates/email_templates/customer_create_account_email_template';
     const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY =
@@ -19,6 +21,8 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/customer_password_forgot_email_template';
     const XML_PATH_DDG_TEMPLATE_REMIND_PASSWORD =
         'dotmailer_email_templates/email_templates/customer_password_remind_email_template';
+    const XML_PATH_DDG_TEMPLATE_WISHLIST_PRODUCT_SHARE =
+        'dotmailer_email_templates/email_templates/wishlist_email_email_template';
     const XML_PATH_DDG_TEMPLATE_FORGOT_ADMIN_PASSWORD =
         'dotmailer_email_templates/email_templates/admin_emails_forgot_email_template';
     const XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS =
@@ -71,6 +75,7 @@ class Template extends \Magento\Framework\DataObject
         'customer_create_account_email_confirmation_template' => 'New Account Confirmation Key (dotmailer)',
         'customer_password_forgot_email_template' => 'Forgot Password (dotmailer)',
         'customer_password_remind_email_template' => 'Remind Password (dotmailer)',
+        'wishlist_email_email_template' => 'Wishlist Product Share (dotmailer)',
         'admin_emails_forgot_email_template' => 'Forgot Admin Password (dotmailer)',
         'newsletter_subscription_success_email_template' => 'Subscription Success (dotmailer)',
         'newsletter_subscription_confirm_email_template' => 'Subscription Confirmation (dotmailer)',
@@ -109,6 +114,7 @@ class Template extends \Magento\Framework\DataObject
             \Magento\Customer\Model\EmailNotification::XML_PATH_FORGOT_EMAIL_TEMPLATE,
         'customer_password_remind_email_template' =>
             \Magento\Customer\Model\EmailNotification::XML_PATH_REMIND_EMAIL_TEMPLATE,
+        'wishlist_email_email_template' => self::XML_PATH_WISHLIST_EMAIL_EMAIL_TEMPLATE,
         'admin_emails_forgot_email_template' => \Magento\User\Model\User::XML_PATH_FORGOT_EMAIL_TEMPLATE,
         'newsletter_subscription_success_email_template' =>
             \Magento\Newsletter\Model\Subscriber::XML_PATH_SUCCESS_EMAIL_TEMPLATE,
@@ -180,7 +186,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_creditmemo_comment_template' => self::XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE,
         'sales_email_creditmemo_comment_guest_template' => self::XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE_GUEST,
         'contact_email_email_template' => self::XML_PATH_DDG_TEMPLATE_CONTACT_FORM,
-        'sendfriend_email_template' => self::XML_PATH_DDG_TEMPLATE_SEND_PRODUCT_TO_FRIEND
+        'sendfriend_email_template' => self::XML_PATH_DDG_TEMPLATE_SEND_PRODUCT_TO_FRIEND,
+        'wishlist_email_email_template' => self::XML_PATH_DDG_TEMPLATE_WISHLIST_PRODUCT_SHARE
     ];
 
     /**
