@@ -45,6 +45,8 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/sales_email_invoice_template';
     const XML_PATH_DDG_TEMPLATE_NEW_INVOICE_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_invoice_guest_template';
+    const XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO =
+        'dotmailer_email_templates/email_templates/sales_email_creditmemo_template';
 
     /**
      * Mapping from template code = template name.
@@ -69,7 +71,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_invoice_comment_template' => 'Invoice Update (dotmailer)',
         'sales_email_invoice_comment_guest_template' => 'Invoice Update Guest (dotmailer)',
         'sales_email_invoice_template' => 'New Invoice (dotmailer)',
-        'sales_email_invoice_guest_template' => 'New Invoice Guest (dotmailer)'
+        'sales_email_invoice_guest_template' => 'New Invoice Guest (dotmailer)',
+        'sales_email_creditmemo_template' => 'New Credit Memo (dotmailer)'
 
     ];
 
@@ -113,6 +116,8 @@ class Template extends \Magento\Framework\DataObject
             \Magento\Sales\Model\Order\Email\Container\InvoiceIdentity::XML_PATH_EMAIL_TEMPLATE,
         'sales_email_invoice_guest_template' =>
             \Magento\Sales\Model\Order\Email\Container\InvoiceIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE,
+        'sales_email_creditmemo_template' =>
+            \Magento\Sales\Model\Order\Email\Container\CreditmemoIdentity::XML_PATH_EMAIL_TEMPLATE
 
     ];
 
@@ -140,7 +145,8 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_invoice_comment_template' => self::XML_PATH_DDG_TEMPLATE_INVOICE_UPDATE,
         'sales_email_invoice_comment_guest_template' => self::XML_PATH_DDG_TEMPLATE_INVOICE_UPDATE_GUEST,
         'sales_email_invoice_template' => self::XML_PATH_DDG_TEMPLATE_NEW_INVOICE,
-        'sales_email_invoice_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_INVOICE_GUEST
+        'sales_email_invoice_guest_template' => self::XML_PATH_DDG_TEMPLATE_NEW_INVOICE_GUEST,
+        'sales_email_creditmemo_template' => self::XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO
     ];
 
     /**
