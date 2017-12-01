@@ -1107,11 +1107,11 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
                 <field id="sales_email_shipment_template" translate="label" sortOrder="330" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>New Shippment</label>
+                    <label>New Shipment</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
                 <field id="sales_email_shipment_guest_template" translate="label" sortOrder="340" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>New Shippment For Guest</label>
+                    <label>New Shipment For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
                 <field id="sales_email_invoice_comment_template" translate="label" sortOrder="345" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
