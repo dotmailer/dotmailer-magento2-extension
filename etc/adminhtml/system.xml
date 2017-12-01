@@ -1090,19 +1090,19 @@
                     <label>Sales</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="sales_email_order_template" translate="label" sortOrder="310" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_order_template" translate="label" sortOrder="305" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Order Confirmation</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_order_guest_template" translate="label" sortOrder="320" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_order_guest_template" translate="label" sortOrder="310" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Order Confirmation For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_order_comment_template" translate="label" sortOrder="330" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_order_comment_template" translate="label" sortOrder="315" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Order Update</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_order_comment_guest_template" translate="label" sortOrder="340" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_order_comment_guest_template" translate="label" sortOrder="320" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Order Update For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
@@ -1110,24 +1110,28 @@
                     <label>New Shipment</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_shipment_guest_template" translate="label" sortOrder="340" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_shipment_guest_template" translate="label" sortOrder="335" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Shipment For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_invoice_comment_template" translate="label" sortOrder="345" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Invoice Update</label>
+                <field id="sales_email_shipment_comment_template" translate="label" sortOrder="340" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Shipment Update</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_invoice_comment_guest_template" translate="label" sortOrder="350" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Invoice Update Guest</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
-                </field>
-                <field id="sales_email_invoice_template" translate="label" sortOrder="355" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_invoice_template" translate="label" sortOrder="345" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Invoice</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="sales_email_invoice_guest_template" translate="label" sortOrder="360" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                <field id="sales_email_invoice_guest_template" translate="label" sortOrder="350" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Invoice Guest</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="sales_email_invoice_comment_template" translate="label" sortOrder="355" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Invoice Update</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="sales_email_invoice_comment_guest_template" translate="label" sortOrder="360" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Invoice Update Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
                 <field id="sales_email_creditmemo_template" translate="label" sortOrder="365" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
@@ -1144,10 +1148,6 @@
                 </field>
                 <field id="sales_email_creditmemo_comment_guest_template" translate="label" sortOrder="380" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Credit Memo Update Guest</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
-                </field>
-                <field id="sales_email_shipment_comment_template" translate="label" sortOrder="385" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Shipment Update</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
                 <field id="contact_title" translate="label" sortOrder="400" showInStore="1" showInWebsite="1" showInDefault="1">
