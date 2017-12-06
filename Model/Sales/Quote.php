@@ -496,14 +496,10 @@ class Quote
             //create abandoned cart
             $this->createAbandonedCart($abandonedModel, $quote, $itemIds);
 
-            //send campaign
-            $this->sendEmailCampaign(
-                $email,
-                $quote,
-                $campaignId,
-                self::CUSTOMER_LOST_BASKET_ONE,
-                $websiteId
-            );
+            //send campaign; check if valid to be sent
+            if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_ONE, $storeId)) {
+                $this->sendEmailCampaign($email, $quote, $campaignId, self::CUSTOMER_LOST_BASKET_ONE, $websiteId);
+            }
 
             $this->totalCustomers++;
             $result = $this->totalCustomers;
@@ -670,8 +666,10 @@ class Quote
             //create abandoned cart
             $this->createAbandonedCart($abandonedModel, $quote, $itemIds);
 
-            //send campaign
-            $this->sendEmailCampaign($email, $quote, $guestCampaignId, self::GUEST_LOST_BASKET_ONE, $websiteId);
+            //send campaign; check if still valid to be sent
+            if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_ONE, $storeId)) {
+                $this->sendEmailCampaign($email, $quote, $guestCampaignId, self::GUEST_LOST_BASKET_ONE, $websiteId);
+            }
 
             $this->totalGuests++;
             $result = $this->totalGuests;
