@@ -15,6 +15,40 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.4.0
+
+###### Improvements
+- We’ve introduced new validation when deleting cron job CSV files
+- Subscriber's sales data is now synced only if the sales data option is enabled in config
+
+###### Bug fix
+- We’ve removed the MailCheck feature
+- We’ve fixed an encoding issue for the product short description
+- We’ve fixed generating a token for an admin user
+- Magento guests are now getting imported into the 'Guests' address book in dotmailer as expected
+- Counts of imported catalogs and reviews weren’t changing in dotmailer when products and reviews were deleted in Magento; they are now
+- Subscribers are now added to the ‘Subscribers’ address book when they resubscribe
+- Wishlists weren’t batching; this has been fixed
+- We’ve implemented a fix to prevent duplications for first customer order automation programs
+- We’ve implemented a fix to prevent duplicate cron jobs running at the same time
+- We now use getStatuses to prevent errors on upgrade to v2.2.2
+- We’ve fixed an importer error when a contact doesn’t have an ID; they now register with the importer after they’re saved and will have an ID
+- We’ve fixed single deletes for wishlists when adding or removing products to a wishlist
+- We’ve fixed duplication of emails, including those sent when updating the guest on an order sync
+- Using a table prefix for the cleaner cron job now works; previously it was showing the error that the table didn’t exist
+- We now force the default type for data field values to match the type
+- A customer’s import status wasn’t getting reset after making an order; it is now
+- We’ve fixed the process for abandoned carts when the first one is disabled
+- It wasn’t possible to save a condition in exclusion rules in Magento lower than v2.1.6
+- Malconfigured stores can no longer cause email capture scripts to make POST requests over an incorrect HTTP protocol; it’s now made over HTTPS
+- When saving API credentials, the value in config for connector/API/endpoint was getting saved for ‘website’ scope and not ‘default’ scope; this is no longer the case
+- Subscriber status wasn’t getting updated in Magento when changed in dotmailer; it is now
+- Catalog report mass delete action no longer shows an exception.
+- An expiry days value of ‘0’ in the external dynamic content coupon code URL would set the coupon code’s expiration date and time to the coupon code’s creation date and time; this has been fixed 
+- We've fixed various typos throughout the extension UI
+- A success message is now displayed when clicking Disconnect OAUTH credentials successfully
+- We've fixed the way OAUTH refresh token was stored and used for the Automation Studio
+
 ## V2.3.6
 
 ###### Bug fix
