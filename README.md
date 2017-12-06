@@ -49,6 +49,12 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - A success message is now displayed when clicking Disconnect OAUTH credentials successfully
 - We've fixed the way OAUTH refresh token was stored and used for the Automation Studio
 
+## V2.3.7
+
+###### Bug fix
+- We've fixed an error related to a column not found that could occur when trying to sync subscribers with sales data
+- Abandoned cart table couldn't be found when upgrading from 2.3.5 to 2.3.6 - this is now fixed.
+
 ## V2.3.6
 
 ###### Bug fix
