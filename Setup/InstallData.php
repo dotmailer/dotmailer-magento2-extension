@@ -158,7 +158,6 @@ class InstallData implements InstallDataInterface
         $customerIds = $select->getConnection()->fetchCol($select);
 
         if (!empty($customerIds)) {
-            $customerIds = implode(', ', $customerIds);
             $installer->getConnection()->update(
                 $installer->getTable('email_contact'),
                 [

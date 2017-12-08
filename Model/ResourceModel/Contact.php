@@ -218,7 +218,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             return 0;
         }
         $write = $this->getConnection();
-        $ids = implode(', ', $ids);
         //update subscribers imported
         $updated = $write->update(
             $this->getMainTable(),
