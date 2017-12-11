@@ -144,7 +144,6 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function setMessage($ids, $message)
     {
-        $ids = implode(", ", $ids);
         $conn = $this->getConnection();
         $conn->update(
             $this->getMainTable(),
@@ -208,7 +207,6 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function setProcessing($ids, $sendId)
     {
-        $ids = implode(', ', $ids);
         $bind = [
             'send_status' => \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
             'send_id' => $sendId

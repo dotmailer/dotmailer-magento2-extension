@@ -15,6 +15,11 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.4.1
+- We've fixed an issue which caused duplicate campaign sends to go out
+- We've fixed an issue which caused subscribers to not be marked as imported
+- We've fixed an issue which caused entries in our email_contact table to not be correctly marked as subscribers on installation of the module.
+
 ## V2.4.0
 
 ###### Improvements
