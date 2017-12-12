@@ -1448,7 +1448,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ->setVerb('GET')
             ->execute();
 
-        if (isset($response->message)){
+        if (isset($response->message)) {
             $this->helper->log('GET EMAIL STATS : ' . $response->message);
         }
 
