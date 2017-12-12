@@ -345,6 +345,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get website for selected scope in admin
+     *
+     * @return \Magento\Store\Api\Data\WebsiteInterface
+     */
+    public function getWebsiteForSelectedScopeInAdmin()
+    {
+        //If website param does not exist then default value returned 0 "default scope"
+        //This is because there is no website param in default scope
+        $websiteId = $this->_request->getParam('website', 0);
+        return $this->storeManager->getWebsite($websiteId);
+    }
+
+    /**
      * Get passcode from config.
      *
      * @return string
@@ -1349,25 +1362,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->storeManager->getStore()->getUrl(
             'connector/ajax/emailcapture',
-            ['_secure' => $this->isWebsiteSecure()]
+            ['_secure' => $this->storeManager->getStore()->isCurrentlySecure()]
         );
-    }
-
-    /**
-     * Check if website is secure.
-     *
-     * @return bool
-     */
-    public function isWebsiteSecure()
-    {
-        $isFrontendSecure  = $this->storeManager->getStore()->isFrontUrlSecure();
-        $isCurrentlySecure = $this->storeManager->getStore()->isCurrentlySecure();
-
-        if ($isFrontendSecure && $isCurrentlySecure) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

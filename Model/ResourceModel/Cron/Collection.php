@@ -22,7 +22,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     /**
      * @param $jobCode
-     * @return \Magento\Framework\DataObject
+     * @return \Magento\Cron\Model\ResourceModel\Schedule\
      */
     public function getRunningJobByCode($jobCode)
     {

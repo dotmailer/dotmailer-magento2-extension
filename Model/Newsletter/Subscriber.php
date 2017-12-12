@@ -135,6 +135,11 @@ class Subscriber
      */
     public function exportSubscribersPerWebsite($website)
     {
+        $isSubscriberSalesDataEnabled = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA,
+            $website
+        );
+
         $updated = 0;
         $limit = $this->helper->getSyncLimit($website->getId());
         //subscriber collection to import
@@ -145,9 +150,12 @@ class Subscriber
         $subscribersAreGuest = $emailContactModel->getSubscribersToImport($website, $limit, false);
         $subscribersGuestEmails = $subscribersAreGuest->getColumnValues('email');
         $existInSales = [];
-        if (! empty($subscribersGuestEmails)) {
+
+        //Only if subscriber with sales data enabled
+        if ($isSubscriberSalesDataEnabled && ! empty($subscribersGuestEmails)) {
             $existInSales = $this->checkInSales($subscribersGuestEmails);
         }
+
         $emailsNotInSales = array_diff($subscribersGuestEmails, $existInSales);
         $customerSubscribers = $subscribersAreCustomers->getColumnValues('email');
         $emailsWithNoSaleData = array_merge($emailsNotInSales, $customerSubscribers);
@@ -240,8 +248,10 @@ class Subscriber
             // Contacts to un-subscribe
             foreach ($contacts as $apiContact) {
                 if (isset($apiContact->suppressedContact)) {
-                    $suppressedContact = $apiContact->suppressedContact;
-                    $suppressedEmails[] = $suppressedContact->email;
+                    $suppressedContactEmail = $apiContact->suppressedContact->email;
+                    if (!in_array($suppressedContactEmail, $suppressedEmails)) {
+                        $suppressedEmails[] = $suppressedContactEmail;
+                    }
                 }
             }
         }

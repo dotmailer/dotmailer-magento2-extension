@@ -161,20 +161,6 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * After load.
-     *
-     * @return $this
-     */
-    public function _afterLoad()
-    {
-        parent::_afterLoad();
-
-        $this->setCondition($this->serializer->unserialize($this->getConditions()));
-
-        return $this;
-    }
-
-    /**
      * Check if rule already exist for website.
      *
      * @param int $websiteId

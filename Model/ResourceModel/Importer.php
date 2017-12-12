@@ -70,7 +70,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $date = $this->localeDate->date()->sub($interval)->format('Y-m-d H:i:s');
             $conn = $this->getConnection();
             $num = $conn->delete(
-                $tableName,
+                $this->getTable($tableName),
                 ['created_at < ?' => $date]
             );
 

@@ -95,31 +95,10 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
             $this->helper->log('----VALIDATING ACCOUNT---');
             $isValid = $this->test->validate($apiUsername, $apiPassword);
             if ($isValid) {
-                $this->saveApiEndpoint($apiUsername, $apiPassword);
                 $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));
             } else {
                 $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
             }
-        }
-    }
-
-    /**
-     * Save api endpoint
-     *
-     * @param string $apiUsername
-     * @param string $apiPassword
-     *
-     * @return null
-     */
-    private function saveApiEndpoint($apiUsername, $apiPassword)
-    {
-        $website = $this->helper->getWebsite();
-        $client = $this->helper->getWebsiteApiClient($website);
-        $client->setApiUsername($apiUsername)
-            ->setApiPassword($apiPassword);
-        $apiEndpoint = $this->helper->getApiEndPointFromApi($client);
-        if ($apiEndpoint) {
-            $this->helper->saveApiEndpoint($apiEndpoint, $website->getId());
         }
     }
 }

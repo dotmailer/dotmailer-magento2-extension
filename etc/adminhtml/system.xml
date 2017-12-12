@@ -486,7 +486,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
                 <field id="send_after_2" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Send After (min)</label>
+                    <label>Send After</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
                 <field id="campaign_2" translate="label" sortOrder="80" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -502,7 +502,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
                 <field id="send_after_3" translate="label" sortOrder="110" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
-                    <label>Send After (min)</label>
+                    <label>Send After</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
                 <field id="campaign_3" translate="label" sortOrder="120" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -545,7 +545,7 @@
                 </field>
                 <field id="send_after_2" translate="label" sortOrder="70" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Send After (min)</label>
+                    <label>Send After</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
                 <field id="campaign_2" translate="label" sortOrder="80" type="select" showInDefault="1"
@@ -565,7 +565,7 @@
                 </field>
                 <field id="send_after_3" translate="label" sortOrder="110" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Send After (min)</label>
+                    <label>Send After</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
                 <field id="campaign_3" translate="label" sortOrder="120" type="select" showInDefault="1"
@@ -1498,6 +1498,12 @@
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>
+                <field id="subscriber_sales_data_enabled" type="select" sortOrder="40" showInDefault="1" showInStore="0"
+                       showInWebsite="1">
+                    <label>Enable Subscribers Sales Data Sync</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enabling ability to sync subscribers sales data increases server load and overall sync times.]]></comment>
+                </field>
             </group>
             <group id="sync_settings" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1"
                    showInStore="0">
@@ -1634,7 +1640,7 @@
                 </field>
                 <field id="custom_domain" translate="comment label" sortOrder="40" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Custom OAUTH domain.</label>
+                    <label>Custom OAUTH Domain</label>
                     <comment><![CDATA[Enter the custom domain for authorization. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
                 </field>
                 <field id="custom_authorization" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"

@@ -492,14 +492,16 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     private function processResponse($response, $item, $websiteId)
     {
-        if ($response) {
+        if (isset($response->message)) {
+            $item->setImportStatus(self::FAILED)
+                ->setMessage($response->message);
+        } else {
             if ($response->status == 'Finished') {
                 $now = gmdate('Y-m-d H:i:s');
 
                 $item->setImportStatus(self::IMPORTED)
                     ->setImportFinished($now)
                     ->setMessage('');
-                $this->saveItem($item);
 
                 if ($item->getImportType()
                     == self::IMPORT_TYPE_CONTACT or
@@ -529,12 +531,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                         'Import failed with status '
                         . $response->status
                     );
-                $this->saveItem($item);
             } else {
                 //Not finished
                 $this->totalItems += 1;
             }
         }
+        //Save item
+        $this->saveItem($item);
     }
 
     /**

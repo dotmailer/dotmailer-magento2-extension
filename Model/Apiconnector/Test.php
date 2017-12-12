@@ -44,12 +44,13 @@ class Test
         //Clear config cache
         $this->config->reinit();
 
-        if (!$this->helper->isEnabled()) {
+        $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
+
+        if (!$this->helper->isEnabled($website)) {
             return false;
         }
 
-        $website = $this->helper->getWebsite();
-        $client = $this->helper->getWebsiteApiClient($website);
+        $client = $this->helper->clientFactory->create();
         if ($apiUsername && $apiPassword) {
             $client->setApiUsername($apiUsername)
                 ->setApiPassword($apiPassword);
@@ -62,9 +63,31 @@ class Test
                 return false;
             }
 
+            // If api endpoint then force save
+            if ($apiEndpoint = $this->getApiEndPoint($accountInfo)) {
+                $this->helper->saveApiEndpoint($apiEndpoint, $website->getId());
+            }
             return $accountInfo;
         }
 
         return false;
+    }
+
+    /**
+     * Get api endpoint
+     *
+     * @param $accountInfo
+     * @return mixed
+     */
+    private function getApiEndPoint($accountInfo)
+    {
+        if (is_object($accountInfo)) {
+            //save endpoint for account
+            foreach ($accountInfo->properties as $property) {
+                if ($property->name == 'ApiEndpoint' && !empty($property->value)) {
+                    return $property->value;
+                }
+            }
+        }
     }
 }
