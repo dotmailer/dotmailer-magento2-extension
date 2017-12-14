@@ -28,8 +28,9 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="password" translate="label" type="password" sortOrder="3" showInDefault="1" showInStore="0" showInWebsite="1">
+                <field id="password" translate="label" type="obscure" sortOrder="3" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>API Password</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -1016,9 +1017,10 @@
                        showInDefault="1">
                     <label>Username</label>
                 </field>
-                <field id="password" translate="label" sortOrder="50" type="password" showInStore="0" showInWebsite="1"
+                <field id="password" translate="label" sortOrder="50" type="obscure" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Password</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
                 <field id="port" translate="label" sortOrder="60" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">

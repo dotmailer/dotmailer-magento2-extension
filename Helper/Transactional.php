@@ -20,16 +20,24 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     private $storeManager;
 
     /**
+     * @var \Magento\Framework\Encryption\EncryptorInterface
+     */
+    private $encryptor;
+
+    /**
      * Transactional constructor.
      *
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @var \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         $this->storeManager = $storeManager;
+        $this->encryptor = $encryptor;
 
         parent::__construct($context);
     }
@@ -78,8 +86,8 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     private function getSmtpPassword()
     {
         $store = $this->storeManager->getStore();
-
-        return $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_PASSWORD, 'store', $store);
+        $value = $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_PASSWORD, 'store', $store);
+        return $this->encryptor->decrypt($value);
     }
 
     /**
