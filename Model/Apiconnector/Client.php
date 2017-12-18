@@ -884,7 +884,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param mixed $apiContact
      *
-     * @return null
+     * @return object
      *
      * @throws \Exception
      */
@@ -905,6 +905,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $this->helper->debug('postContactsResubscribe', [$message]);
             $this->helper->debug('postContactsResubscriber', $data);
         }
+
+        return $response;
     }
 
     /**
