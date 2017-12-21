@@ -228,11 +228,6 @@ class Template extends \Magento\Framework\DataObject
     public $templateResource;
 
     /**
-     * @var array
-     */
-    public $proccessedCampaings = [];
-
-    /**
      * Template constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -301,11 +296,9 @@ class Template extends \Magento\Framework\DataObject
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                     $store->getId()
                 );
-                if ($campaignId && ! in_array($campaignId, $this->proccessedCampaings)) {
+                if ($campaignId) {
                     $this->helper->log(sprintf('Campaign %s for store %s', $campaignId, $store->getid()));
                     $this->syncEmailTemplate($campaignId, $templateCode, $store);
-
-                    $this->proccessedCampaings[] = $campaignId;
                     $result['store'] .= ', ' . $store->getCode();
                     $result['message'] .= ' : ' . $campaignId;
                 }
