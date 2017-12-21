@@ -117,7 +117,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
      */
     private function createNewEmailTemplate($templateCode, $campaignId)
     {
-        $message = sprintf('Template created %s', $campaignId);
+        $message = sprintf('Template updated/created %s', $campaignId);
         $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode];
         $emailTemplate = $this->templateFactory->create();
         $template = $emailTemplate->loadBytemplateCode($templateCodeToName);
@@ -133,11 +133,10 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             return;
         }
 
-        $fromName = $dmCampaign->fromName;
-        $fromEmail = $dmCampaign->fromAddress->email;
+        $fromName   = $dmCampaign->fromName;
+        $fromEmail  = $dmCampaign->fromAddress->email;
         $templateSubject = $dmCampaign->subject;
-        $templateBody = $emailTemplate->convertContent($dmCampaign->htmlContent);
-
+        $templateBody   = $emailTemplate->convertContent($dmCampaign->htmlContent);
         try {
             $template->setOrigTemplateCode($templateCode)
                 ->setTemplateCode($templateCodeToName)
@@ -146,6 +145,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
                 ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
                 ->setTemplateSenderName($fromName)
                 ->setTemplateSenderEmail($fromEmail);
+
             $this->templateResource->save($template);
         } catch (\Exception $e) {
             $this->helper->log($e->getMessage());

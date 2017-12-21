@@ -331,7 +331,6 @@ class Template extends \Magento\Framework\DataObject
     {
         $websiteId = $store->getWebsiteId();
         $client = $this->helper->getWebsiteApiClient($websiteId);
-
         $dmCampaign = $client->getCampaignById($campaignId);
 
         if (isset($dmCampaign->message)) {
@@ -352,8 +351,6 @@ class Template extends \Magento\Framework\DataObject
     public function convertContent($htmlContent)
     {
         $htmlContent = str_replace('/vedimage', 'https://i.emlfiles.com', $htmlContent);
-
-        //@todo remove whole nodes?!?
         $htmlContent = str_replace('Unsubscribe', '', $htmlContent);
         $htmlContent = str_replace('http://$unsub$/', '', $htmlContent);
         $htmlContent = str_replace('Forward this email', '', $htmlContent);
@@ -373,19 +370,18 @@ class Template extends \Magento\Framework\DataObject
         $fromName       = $dmCampaign->fromName;
         $fromEmail      = $dmCampaign->fromAddress->email;
         $templateSubject = $dmCampaign->subject;
-        $templateBody   = $this->convertContent($dmCampaign->htmlContent);
+        $templateText   = $this->convertContent($dmCampaign->htmlContent);
         $templateCodeToName = self::$defaultEmailTemplateCode[$templateCode];
-
         $template = $this->loadByTemplateCode($templateCodeToName);
-
         try {
             $template->setOrigTemplateCode($templateCode)
                 ->setTemplateCode($templateCodeToName)
                 ->setTemplateSubject($templateSubject)
-                ->setTemplateText($templateBody)
+                ->setTemplateText($templateText)
                 ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
                 ->setTemplateSenderName($fromName)
                 ->setTemplateSenderEmail($fromEmail);
+
             $this->templateResource->save($template);
         } catch (\Exception $e) {
             $this->helper->log($e->getMessage());
