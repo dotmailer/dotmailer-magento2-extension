@@ -288,7 +288,7 @@ class Template extends \Magento\Framework\DataObject
      */
     public function sync()
     {
-        $result = ['store' => 'Stores : ', 'message' => 'Campaign id\'s '];
+        $result = ['store' => 'Stores : ', 'message' => 'Done.'];
         foreach ($this->storeManager->getStores() as $store) {
             foreach ($this->templateEmailConfigMapping as $templateCode => $configPath) {
                 $campaignId = $this->scopeConfig->getValue(
@@ -296,19 +296,13 @@ class Template extends \Magento\Framework\DataObject
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                     $store->getId()
                 );
+
                 if ($campaignId) {
                     $this->helper->log(sprintf('Campaign %s for store %s', $campaignId, $store->getid()));
                     $this->syncEmailTemplate($campaignId, $templateCode, $store);
                     $result['store'] .= ', ' . $store->getCode();
-                    $result['message'] .= ' : ' . $campaignId;
                 }
             }
-        }
-
-        if (! isset($result['message'])) {
-            $result['message'] = 'Done.';
-        } else {
-            $this->helper->log('Email Template Sync ' . $result['message']);
         }
 
         return $result;
@@ -362,7 +356,7 @@ class Template extends \Magento\Framework\DataObject
     {
         $fromName       = $dmCampaign->fromName;
         $fromEmail      = $dmCampaign->fromAddress->email;
-        $templateSubject = $dmCampaign->subject;
+        $templateSubject = utf8_encode($dmCampaign->subject);
         $templateText   = $this->convertContent($dmCampaign->htmlContent);
         $templateCodeToName = self::$defaultEmailTemplateCode[$templateCode];
         $template = $this->loadByTemplateCode($templateCodeToName);

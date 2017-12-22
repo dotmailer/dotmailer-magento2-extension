@@ -135,7 +135,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
 
         $fromName   = $dmCampaign->fromName;
         $fromEmail  = $dmCampaign->fromAddress->email;
-        $templateSubject = $dmCampaign->subject;
+        $templateSubject = utf8_encode($dmCampaign->subject);
         $templateBody   = $emailTemplate->convertContent($dmCampaign->htmlContent);
         try {
             $template->setOrigTemplateCode($templateCode)

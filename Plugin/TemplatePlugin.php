@@ -49,6 +49,7 @@ class TemplatePlugin
             //preview/other/load
             if (empty($args)) {
                 $templateText = $result['template_text'];
+                $result['template_subject'] = utf8_decode($result['template_subject']);
                 if ( $this->isStringCompressed($templateText)) {
                     $result['template_text'] = $this->decompresString($templateText);
                 }
@@ -57,6 +58,10 @@ class TemplatePlugin
                 //check for correct field
                 if ($field == 'template_text' && $this->isStringCompressed($result)) {
                     $result = $this->decompresString($result);
+                }
+                //decode encoded subject
+                if ($field == 'template_subject') {
+                    $result = utf8_decode($result);
                 }
             }
         }
