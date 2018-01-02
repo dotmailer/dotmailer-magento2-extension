@@ -50,7 +50,7 @@ class TemplatePlugin
             if (empty($args)) {
                 $templateText = $result['template_text'];
                 $result['template_subject'] = utf8_decode($result['template_subject']);
-                if ( $this->isStringCompressed($templateText)) {
+                if ($this->isStringCompressed($templateText)) {
                     $result['template_text'] = $this->decompresString($templateText);
                 }
             } else {
@@ -89,8 +89,10 @@ class TemplatePlugin
     private function isStringCompressed($string)
     {
         //check if the data is compressed
-        if (substr_count($string, '%9') > 20)
+        if (substr($string, 0, 1) == 'e') {
             return true;
+        }
+
         return false;
     }
 
@@ -100,7 +102,7 @@ class TemplatePlugin
      */
     private function compresString($templateText): string
     {
-        return urlencode(gzcompress($templateText));
+        return base64_encode(gzcompress($templateText, 9));
     }
 
     /**
@@ -109,7 +111,7 @@ class TemplatePlugin
      */
     private function decompresString($templateText): string
     {
-        return gzuncompress(urldecode($templateText));
+        return gzuncompress(base64_decode($templateText));
     }
 }
 
