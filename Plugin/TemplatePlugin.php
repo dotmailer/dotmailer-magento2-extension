@@ -31,6 +31,7 @@ class TemplatePlugin
         if ($this->registry->registry('dotmailer_saving_data')) {
             //saving array values
             if (empty($args)) {
+                $this->saveTemplateIdInRegistry($result['template_id']);
                 $templateText = $result['template_text'];
                 //compress text
                 if (! $this->isStringCompressed($templateText)) {
@@ -44,10 +45,15 @@ class TemplatePlugin
                 if ($field == 'template_text' && ! $this->isStringCompressed($templateText)) {
                     $result = $this->compresString($templateText);
                 }
+                if ($field == 'template_id') {
+                    $this->saveTemplateIdInRegistry($result);
+                }
             }
         } else {
             //preview/other/load
             if (empty($args)) {
+                //
+                $this->saveTemplateIdInRegistry($result['template_id']);
                 $templateText = $result['template_text'];
                 $result['template_subject'] = utf8_decode($result['template_subject']);
                 if ($this->isStringCompressed($templateText)) {
@@ -63,6 +69,10 @@ class TemplatePlugin
                 if ($field == 'template_subject') {
                     $result = utf8_decode($result);
                 }
+                if ($field == 'template_id') {
+                    $this->saveTemplateIdInRegistry($result);
+                }
+
             }
         }
 
@@ -112,6 +122,17 @@ class TemplatePlugin
     private function decompresString($templateText): string
     {
         return gzuncompress(base64_decode($templateText));
+    }
+
+    /**
+     * Template id register for email sending.
+     * @param $templateId
+     */
+    private function saveTemplateIdInRegistry($templateId)
+    {
+        if (! $this->registry->registry('dotmailer_current_template_id')) {
+             $this->registry->register('dotmailer_current_template_id', $templateId);
+        }
     }
 }
 
