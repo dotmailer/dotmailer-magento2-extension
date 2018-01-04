@@ -152,10 +152,20 @@ class Campaign
                     $websiteId
                 );
                 if (is_numeric($contactId)) {
-                    //update data fields for order review camapigns
+                    //update data fields
                     if ($campaign->getEventName() == 'Order Review') {
                         $this->updateDataFieldsForORderReviewCampaigns($campaign, $websiteId, $client, $email);
+                    } elseif (
+                        $campaign->getEventName() == \Dotdigitalgroup\Email\Model\Campaign::CAMPAIGN_EVENT_LOST_BASKET
+                    ) {
+                        $campaignCollection = $this->campaignCollection->create();
+                        // If AC campaigns found with status processing for given email then skip for current cron run
+                        if ($campaignCollection->getNumberOfAcCampaignsWithStatusProcessingExistForContact($email)) {
+                            continue;
+                        }
+                        $this->helper->updateLastQuoteId($campaign->getQuoteId(), $email, $websiteId);
                     }
+
                     $campaignsToSend[$campaignId]['contacts'][] = $contactId;
                     $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
                 } else {
