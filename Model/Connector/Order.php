@@ -41,12 +41,12 @@ class Order
     /**
      * @var array
      */
-    public $deliveryAddress = [];
+    public $deliveryAddress;
 
     /**
      * @var array
      */
-    public $billingAddress = [];
+    public $billingAddress;
 
     /**
      * @var array
@@ -98,7 +98,7 @@ class Order
     /**
      * @var array
      */
-    public $custom = [];
+    public $custom;
 
     /**
      * @var string
@@ -188,7 +188,6 @@ class Order
         $this->quoteId = $orderData->getQuoteId();
         $this->email = $orderData->getCustomerEmail();
         $this->storeName = $orderData->getStoreName();
-
         $this->purchaseDate = $this->localeDate->date($orderData->getCreatedAt())->format(\Zend_Date::ISO_8601);
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float)number_format(
@@ -339,6 +338,7 @@ class Order
      * @param mixed $syncCustomOption
      *
      * @return null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function processOrderItems($orderData, $syncCustomOption)
     {
@@ -525,12 +525,13 @@ class Order
 
     /**
      * Exposes the class as an array of objects.
+     * Return any exposed data that will included into the import as transactinoal data for Orders.
      *
      * @return array
      */
     public function expose()
     {
-        return array_diff_key(
+        $properties = array_diff_key(
             get_object_vars($this),
             array_flip([
                 '_storeManager',
@@ -540,9 +541,14 @@ class Order
                 'productFactory',
                 'attributeCollection',
                 'setFactory',
-                'attributeSet'
+                'attributeSet',
+                'productResource'
             ])
         );
+        //remove null/0/false values
+        $properties = array_filter($properties);
+
+        return $properties;
     }
 
     /**
@@ -688,49 +694,9 @@ class Order
     }
 
     /**
-     * @return string
-     */
-    public function __sleep()
-    {
-        $properties = array_keys(get_object_vars($this));
-        $properties = array_diff(
-            $properties,
-            [
-                '_storeManager',
-                'localeDate',
-                'helper',
-                'customerFactory',
-                'productFactory',
-                'attributeCollection',
-                'setFactory',
-                'attributeSet'
-            ]
-        );
-
-        if (! $this->couponCode) {
-            $properties = array_diff($properties, ['couponCode']);
-        }
-
-        if (! $this->custom) {
-            $properties = array_diff($properties, ['custom']);
-        }
-
-        return $properties;
-    }
-
-    /**
-     * Init not serializable fields.
-     *
-     * @return null
-     */
-    public function __wakeup()
-    {
-    }
-
-    /**
      * @param mixed $product
-     *
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getAttributeSetName($product)
     {
