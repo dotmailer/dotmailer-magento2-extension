@@ -15,11 +15,6 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_DDG_TRANSACTIONAL_DEBUG = 'transactional_emails/ddg_transactional/debug';
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @var \Magento\Framework\Encryption\EncryptorInterface
      */
     private $encryptor;
@@ -28,15 +23,12 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      * Transactional constructor.
      *
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @var \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
-        $this->storeManager = $storeManager;
         $this->encryptor = $encryptor;
 
         parent::__construct($context);
@@ -45,91 +37,118 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Is transactional email enabled.
      *
+     * @param int $storeId
+     *
      * @return bool
      */
-    public function isEnabled()
+    public function isEnabled($storeId)
     {
-        $store = $this->storeManager->getStore();
-
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_DDG_TRANSACTIONAL_ENABLED, 'store', $store);
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_DDG_TRANSACTIONAL_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     /**
      * Get transactional email host.
      *
+     * @param int $storeId
+     *
      * @return mixed
      */
-    public function getSmtpHost()
+    public function getSmtpHost($storeId)
     {
-        $store = $this->storeManager->getStore();
-
-        return $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_HOST, 'store', $store);
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_DDG_TRANSACTIONAL_HOST,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     /**
      * Get smtp username.
      *
+     * @param int $storeId
+     *
      * @return mixed
      */
-    private function getSmtpUsername()
+    private function getSmtpUsername($storeId = null)
     {
-        $store = $this->storeManager->getStore();
-
-        return $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_USERNAME, 'store', $store);
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_DDG_TRANSACTIONAL_USERNAME,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     /**
      * Get smtp password.
      *
+     * @param int $storeId
+     *
      * @return mixed
      */
-    private function getSmtpPassword()
+    private function getSmtpPassword($storeId = null)
     {
-        $store = $this->storeManager->getStore();
-        $value = $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_PASSWORD, 'store', $store);
+        $value = $this->scopeConfig->getValue(
+            self::XML_PATH_DDG_TRANSACTIONAL_PASSWORD,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
         return $this->encryptor->decrypt($value);
     }
 
     /**
      * Get smtp port.
      *
+     * @param int $storeId
+     *
      * @return mixed
      */
-    private function getSmtpPort()
+    private function getSmtpPort($storeId)
     {
-        $store = $this->storeManager->getStore();
-
-        return $this->scopeConfig->getValue(self::XML_PATH_DDG_TRANSACTIONAL_PORT, 'store', $store);
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_DDG_TRANSACTIONAL_PORT,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     /**
      * Get transactional log enabled.
      *
+     * @param int $storeId
+     *
      * @return bool
      */
-    private function isDebugEnabled()
+    private function isDebugEnabled($storeId)
     {
-        $store = $this->storeManager->getStore();
-
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_DDG_TRANSACTIONAL_DEBUG, 'store', $store);
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_DDG_TRANSACTIONAL_DEBUG,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     /**
      * Get config values for transport.
      *
+     * @param int $storeId
+     *
      * @return array
      */
-    public function getTransportConfig()
+    public function getTransportConfig($storeId)
     {
         $config = [
-            'port' => $this->getSmtpPort(),
+            'port' => $this->getSmtpPort($storeId),
             'auth' => 'login',
-            'username' => $this->getSmtpUsername(),
-            'password' => $this->getSmtpPassword(),
+            'username' => $this->getSmtpUsername($storeId),
+            'password' => $this->getSmtpPassword($storeId),
             'ssl' => 'tls',
         ];
 
-        if ($this->isDebugEnabled()) {
+        if ($this->isDebugEnabled($storeId)) {
             $this->_logger->debug('Mail transport config : ' . implode(',', $config));
         }
 
