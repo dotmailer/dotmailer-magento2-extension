@@ -106,11 +106,6 @@ class Order
     public $orderStatus;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    public $localeDate;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
@@ -151,7 +146,6 @@ class Order
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helperData
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
@@ -161,8 +155,7 @@ class Order
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->attributeSet        = $attributeSet;
         $this->setFactory          = $setFactory;
@@ -170,7 +163,6 @@ class Order
         $this->productFactory      = $productFactory;
         $this->customerFactory     = $customerFactory;
         $this->helper              = $helperData;
-        $this->localeDate          = $localeDate;
         $this->productResource     = $productResource;
         $this->_storeManager       = $storeManagerInterface;
     }
@@ -465,8 +457,7 @@ class Order
                         $value = $productModel->getAttributeText($attributeCode);
                         break;
                     case 'date':
-                        $value = $this->localeDate->date($productModel->getData($attributeCode))
-                            ->format(\Zend_Date::ISO_8601);
+                        $value = $productModel->getData($attributeCode);
                         break;
                     default:
                         $value = $productModel->getData($attributeCode);
@@ -535,7 +526,6 @@ class Order
             get_object_vars($this),
             array_flip([
                 '_storeManager',
-                'localeDate',
                 'helper',
                 'customerFactory',
                 'productFactory',
@@ -589,7 +579,7 @@ class Order
                 case 'timestamp':
                 case 'datetime':
                 case 'date':
-                    $value = $this->localeDate->date($orderData->$function())->format(\Zend_Date::ISO_8601);
+                    $value = $orderData->$function();
                     break;
 
                 default:
