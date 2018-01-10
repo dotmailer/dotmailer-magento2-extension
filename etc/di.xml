@@ -67,5 +67,4 @@
         </arguments>
     </type>
     <preference for="Dotdigitalgroup\Email\Model\Mail\AdapterInterface" type="Dotdigitalgroup\Email\Model\Mail\Transport" />
-    <preference for="Magento\Framework\Module\ModuleListInterface" type="Magento\Framework\Module\FullModuleList" />
 </config>
