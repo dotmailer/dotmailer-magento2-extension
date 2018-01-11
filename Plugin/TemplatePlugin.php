@@ -31,7 +31,9 @@ class TemplatePlugin
         if ($this->registry->registry('dotmailer_saving_data')) {
             //saving array values
             if (empty($args)) {
-                $this->saveTemplateIdInRegistry($result['template_id']);
+                if (isset($result['template_id'])) {
+                    $this->saveTemplateIdInRegistry($result['template_id']);
+                }
                 $templateText = $result['template_text'];
                 //compress text
                 if (! $this->isStringCompressed($templateText)) {
@@ -52,8 +54,9 @@ class TemplatePlugin
         } else {
             //preview/other/load
             if (empty($args)) {
-                //
-                $this->saveTemplateIdInRegistry($result['template_id']);
+                if (isset($result['template_id'])) {
+                    $this->saveTemplateIdInRegistry($result['template_id']);
+                }
                 $templateText = $result['template_text'];
                 $result['template_subject'] = utf8_decode($result['template_subject']);
                 if ($this->isStringCompressed($templateText)) {
