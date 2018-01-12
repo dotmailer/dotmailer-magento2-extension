@@ -75,7 +75,7 @@ class UpgradeData implements UpgradeDataInterface
     {
         $installer = $setup;
         $installer->startSetup();
-        if (version_compare($context->getVersion(), '2.4.2', '<')) {
+        if (version_compare($context->getVersion(), '2.4.4', '<')) {
             //Encrypt api & transactional password for all websites
             $this->encryptAllPasswords();
 
