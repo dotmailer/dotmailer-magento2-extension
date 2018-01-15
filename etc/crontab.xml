@@ -28,5 +28,8 @@
         <job name="ddg_automation_catalog_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="catalogSync">
             <config_path>connector_developer_settings/cron_schedules/catalog</config_path>
         </job>
+        <job name="ddg_automation_email_templates" instance="Dotdigitalgroup\Email\Model\Cron" method="syncEmailTemplates">
+            <config_path>0 */6 * * *</config_path>
+        </job>
     </group>
 </config>
