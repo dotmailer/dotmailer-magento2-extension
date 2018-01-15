@@ -102,4 +102,17 @@ class Collection extends
             ->addFieldToFilter('sent_at', $updated)
             ->count();
     }
+
+    /**
+     * @param $email
+     *
+     * @return int
+     */
+    public function getNumberOfAcCampaignsWithStatusProcessingExistForContact($email)
+    {
+        return $this->addFieldToFilter('email', $email)
+            ->addFieldToFilter('event_name', \Dotdigitalgroup\Email\Model\Campaign::CAMPAIGN_EVENT_LOST_BASKET)
+            ->addFieldToFilter('send_status', \Dotdigitalgroup\Email\Model\Campaign::PROCESSING)
+            ->getSize();
+    }
 }

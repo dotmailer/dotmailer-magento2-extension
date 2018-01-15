@@ -473,11 +473,8 @@ class Quote
             $items = $quote->getAllItems();
             $email = $quote->getCustomerEmail();
             $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-
-            //api - set the last quote id for customer
-            $this->helper->updateLastQuoteId($quoteId, $email, $websiteId);
-
             $itemIds = $this->getQuoteItemIds($items);
+
             if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
                 $this->helper->updateAbandonedProductName(
                     $mostExpensiveItem->getName(),
@@ -644,10 +641,8 @@ class Quote
             $items = $quote->getAllItems();
             $email = $quote->getCustomerEmail();
             $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-            // update last quote id for the contact
-            $this->helper->updateLastQuoteId($quoteId, $email, $websiteId);
-
             $itemIds = $this->getQuoteItemIds($items);
+
             if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
                 $this->helper->updateAbandonedProductName(
                     $mostExpensiveItem->getName(),
@@ -732,8 +727,6 @@ class Quote
         foreach ($quoteCollection as $quote) {
             $quoteId = $quote->getId();
             $email = $quote->getCustomerEmail();
-            // update last quote id for the contact
-            $this->helper->updateLastQuoteId($quoteId, $email, $websiteId);
 
             if ($mostExpensiveItem = $this->getMostExpensiveItems($quote->getAllItems())) {
                 $this->helper->updateAbandonedProductName(

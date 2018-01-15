@@ -111,6 +111,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $userResource;
 
     /**
+     * @var \Magento\Framework\Encryption\EncryptorInterface
+     */
+    public $encryptor;
+
+    /**
      * Data constructor.
      * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
@@ -131,6 +136,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\User\Model\ResourceModel\User $userResource
+     * @var \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -151,7 +157,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
-        \Magento\User\Model\ResourceModel\User $userResource
+        \Magento\User\Model\ResourceModel\User $userResource,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         $this->serializer       = $serilizer;
         $this->adapter          = $adapter;
@@ -170,6 +177,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->quoteFactory = $quoteFactory;
         $this->userResource = $userResource;
         $this->contactResource = $contactResource;
+        $this->encryptor = $encryptor;
 
         parent::__construct($context);
         $this->fileHelper = $fileHelper;
@@ -728,10 +736,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiPassword($website = 0)
     {
-        return $this->getWebsiteConfig(
+        $value = $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
             $website
         );
+        return $this->encryptor->decrypt($value);
     }
 
     /**
