@@ -41,12 +41,12 @@ class Order
     /**
      * @var array
      */
-    public $deliveryAddress;
+    public $deliveryAddress = [];
 
     /**
      * @var array
      */
-    public $billingAddress;
+    public $billingAddress = [];
 
     /**
      * @var array
@@ -98,7 +98,7 @@ class Order
     /**
      * @var array
      */
-    public $custom;
+    public $custom = [];
 
     /**
      * @var string
@@ -177,10 +177,10 @@ class Order
     public function setOrderData($orderData)
     {
         $this->id = $orderData->getIncrementId();
-        $this->quoteId = $orderData->getQuoteId();
         $this->email = $orderData->getCustomerEmail();
+        $this->quoteId = $orderData->getQuoteId();
         $this->storeName = $orderData->getStoreName();
-        $this->purchaseDate = $this->localeDate->date($orderData->getCreatedAt())->format(\Zend_Date::ISO_8601);
+        $this->purchaseDate = $orderData->getCreatedAt();
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float)number_format(
             $orderData->getShippingAmount(),
@@ -330,7 +330,6 @@ class Order
      * @param mixed $syncCustomOption
      *
      * @return null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function processOrderItems($orderData, $syncCustomOption)
     {
@@ -686,7 +685,6 @@ class Order
     /**
      * @param mixed $product
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getAttributeSetName($product)
     {
