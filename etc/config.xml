@@ -294,7 +294,7 @@
             </sync_settings>
             <debug>
                 <debug_enabled>1</debug_enabled>
-                <api_request_time_limit>60</api_request_time_limit>
+                <api_log_time>60</api_log_time>
             </debug>
             <feed_configuration>
                 <feed_enabled>1</feed_enabled>
