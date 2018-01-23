@@ -114,6 +114,14 @@
                 </item>
             </argument>
         </selectionsColumn>
+        <column name="id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Id</item>
+                </item>
+            </argument>
+        </column>
         <column name="quote_id">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -160,7 +168,7 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Abdndoned Cart Number</item>
+                    <item name="label" xsi:type="string" translate="true">Abandoned Cart Number</item>
                 </item>
             </argument>
         </column>
@@ -168,7 +176,7 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Items Count</item>
+                    <item name="label" xsi:type="string" translate="true">Item Count</item>
                 </item>
             </argument>
         </column>
@@ -176,7 +184,7 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Items Ids</item>
+                    <item name="label" xsi:type="string" translate="true">Item Ids</item>
                 </item>
             </argument>
         </column>
