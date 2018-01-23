@@ -1,9 +1,9 @@
 var config = {
     'paths': {
-        'trackingCode': 'Dotdigitalgroup_Email/js/trackingCode'
+        'dmpt': 'Dotdigitalgroup_Email/js/dmpt'
     },
     'shim': {
-        'trackingCode': {
+        'dmpt': {
             exports: '_dmTrack'
         }
     }
