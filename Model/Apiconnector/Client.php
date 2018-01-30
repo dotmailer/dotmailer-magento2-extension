@@ -31,6 +31,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_PROGRAM_ENROLMENTS = '/v2/programs/enrolments';
     const REST_TEMPLATES = '/v2/templates';
     const REST_SEND_TRANSACTIONAL_EMAIL = '/v2/email';
+    const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
 
     //rest error responces
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. 
@@ -443,6 +444,28 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         if (isset($response->message)) {
             $message = 'GET CAMPAIGN BY ID ' . $response->message;
+            $this->helper->log($message);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param $campaignId
+     * @return mixed
+     */
+    public function getCampaignByIdWithPreparedContent($campaignId)
+    {
+        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS_CAMPAIGNS
+            . '/' . $campaignId
+            . '/' . self::REST_CAMPAIGNS_WITH_PREPARED_CONTENT;
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = 'GET CAMPAIGN BY ID WITH PREPARED CONTENT' . $response->message;
             $this->helper->log($message);
         }
 

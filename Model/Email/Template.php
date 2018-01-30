@@ -290,15 +290,20 @@ class Template extends \Magento\Framework\DataObject
     {
         $result = ['store' => 'Stores : ', 'message' => 'Done.'];
         foreach ($this->storeManager->getStores() as $store) {
+            $storeId = $store->getId();
+            if (!$this->helper->isStoreEnabled($storeId)) {
+                continue;
+            }
+
             foreach ($this->templateEmailConfigMapping as $templateCode => $configPath) {
                 $campaignId = $this->scopeConfig->getValue(
                     $configPath,
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                    $store->getId()
+                    $storeId
                 );
 
                 if ($campaignId) {
-                    $this->helper->log(sprintf('Campaign %s for store %s', $campaignId, $store->getid()));
+                    $this->helper->log(sprintf('Campaign %s for store %s', $campaignId, $storeId));
                     $this->syncEmailTemplate($campaignId, $templateCode, $store);
                     $result['store'] .= ', ' . $store->getCode();
                 }
@@ -318,7 +323,7 @@ class Template extends \Magento\Framework\DataObject
     {
         $websiteId = $store->getWebsiteId();
         $client = $this->helper->getWebsiteApiClient($websiteId);
-        $dmCampaign = $client->getCampaignById($campaignId);
+        $dmCampaign = $client->getCampaignByIdWithPreparedContent($campaignId);
 
         if (isset($dmCampaign->message)) {
             $message = $dmCampaign->message;
@@ -357,7 +362,7 @@ class Template extends \Magento\Framework\DataObject
         $fromName       = $dmCampaign->fromName;
         $fromEmail      = $dmCampaign->fromAddress->email;
         $templateSubject = utf8_encode($dmCampaign->subject);
-        $templateText   = $this->convertContent($dmCampaign->htmlContent);
+        $templateText   = $this->convertContent($dmCampaign->preparedHtmlContent);
         $templateCodeToName = self::$defaultEmailTemplateCode[$templateCode];
         $template = $this->loadByTemplateCode($templateCodeToName);
         try {
