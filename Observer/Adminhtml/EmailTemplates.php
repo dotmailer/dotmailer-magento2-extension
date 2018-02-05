@@ -17,7 +17,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var int
      */
-    private $websiteId = 0;
+    private $websiteId;
 
     /**
      * @var \Magento\Email\Model\ResourceModel\Template
@@ -27,7 +27,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var int
      */
-    private $storeId = 0;
+    private $storeId;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -77,6 +77,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        $template = $this->templateFactory->create();
         $this->websiteId = (empty($observer->getWebsite()))? '0' : $observer->getWebsite();
         $this->storeId = (empty($observer->getStore()))? '0' : $observer->getStore();
         $groups = $this->context->getRequest()->getPost('groups');
@@ -84,22 +85,25 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
         foreach ($groups['email_templates']['fields'] as $templateCode => $emailValue) {
             //inherit option was selected for the child config value - skip
             if (isset($groups['email_templates']['fields'][$templateCode]['inherit'])) {
-                continue;
+                //remove the config value if the parent inherit was selected
+                $this->removeConfigValue($template->templateConfigMapping[$templateCode]);
             }
 
             if (isset($emailValue['value'])) {
-                $campaingId = $emailValue['value'];
-
-                //new email template mapped
-                if ($campaingId) {
-                    $this->createNewEmailTemplate($templateCode, $campaingId);
+                $campaignId = $emailValue['value'];
+                //email template mapped found
+                if ($campaignId) {
+                    $this->createOrUpdateNewEmailTemplate($templateCode, $campaignId);
                 } else {
-                    $template = $this->templateFactory->create();
-                    //reset to default email template
-                    $this->resetToDefaultTemplate($template->templateConfigMapping[$templateCode]);
-                    $this->resetToDefaultTemplate($template->templateEmailConfigMapping[$templateCode]);
+                    //remove the config for core email template
+                    $this->removeConfigValue($template->templateConfigMapping[$templateCode]);
+                    //remove the config for dotmailer template
+                    $this->removeConfigValue($template->templateEmailConfigMapping[$templateCode]);
+                    //delete the dotmailer template when it's unmapped
                     $template->deleteTemplateByCode(
-                        \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode]
+                        \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[
+                            $templateCode
+                        ] . '__' . $this->storeId
                     );
                 }
             }
@@ -109,24 +113,26 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * @todo strip the unsubscribe link from body;
-     *
      *
      * @param $templateCode
      * @param $campaignId
      */
-    private function createNewEmailTemplate($templateCode, $campaignId)
+    private function createOrUpdateNewEmailTemplate($templateCode, $campaignId)
     {
-        $message = sprintf('Template updated/created %s', $campaignId);
+
         $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode];
+        $templateCodeWithStoreCode = $templateCodeToName . '__' . $this->storeId;
         $emailTemplate = $this->templateFactory->create();
-        $template = $emailTemplate->loadBytemplateCode($templateCodeToName);
-
+        $template = $emailTemplate->loadBytemplateCode($templateCodeWithStoreCode);
         $templateConfigPath = $emailTemplate->templateConfigMapping[$templateCode];
-
         //get the template from api
         $client = $this->helper->getWebsiteApiClient($this->websiteId);
-        $dmCampaign = $client->getCampaignById($campaignId);
+        $dmCampaign = $client->getCampaignByIdWithPreparedContent($campaignId);
+        $message = sprintf(
+            'Template %s, dm campaign id %s',
+            $templateCodeWithStoreCode,
+            $campaignId
+        );
         if (isset($dmCampaign->message)) {
             $message = 'Failed to get api template : ' . $dmCampaign->message;
             $this->messageManager->addErrorMessage($message);
@@ -136,10 +142,10 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
         $fromName   = $dmCampaign->fromName;
         $fromEmail  = $dmCampaign->fromAddress->email;
         $templateSubject = utf8_encode($dmCampaign->subject);
-        $templateBody   = $emailTemplate->convertContent($dmCampaign->htmlContent);
+        $templateBody   = $emailTemplate->convertContent($dmCampaign->preparedHtmlContent);
         try {
             $template->setOrigTemplateCode($templateCode)
-                ->setTemplateCode($templateCodeToName)
+                ->setTemplateCode($templateCodeWithStoreCode)
                 ->setTemplateSubject($templateSubject)
                 ->setTemplateText($templateBody)
                 ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
@@ -151,33 +157,33 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             $this->helper->log($e->getMessage());
         }
 
-        //save successul created new email template with the default config value for template.
-        $this->saveConfigForEmailTemplate($templateConfigPath, $template->getId());
+        //save successful created new email template with the default config value for template.
+        $this->saveConfigValue($templateConfigPath, $template->getId());
         $this->helper->log($message);
 
         return;
     }
 
     /**
-     * @param $templateConfigPath
-     * @param $templateId
+     * @param $configPath
+     * @param $configValue
      */
-    private function saveConfigForEmailTemplate($templateConfigPath, $templateId)
+    private function saveConfigValue($configPath, $configValue)
     {
-        if ($this->websiteId) {
-            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
-            $scopeId = $this->websiteId;
-        } elseif ($this->storeId) {
+        if ($this->storeId) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
             $scopeId = $this->storeId;
+        } elseif ($this->websiteId) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
+            $scopeId = $this->websiteId;
         } else {
             $scope = \Magento\Framework\App\ScopeInterface::SCOPE_DEFAULT;
             $scopeId = '0';
         }
 
         $this->helper->saveConfigData(
-            $templateConfigPath,
-            $templateId,
+            $configPath,
+            $configValue,
             $scope,
             $scopeId
         );
@@ -189,14 +195,14 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     /**
      * @param $templateConfigPath
      */
-    private function resetToDefaultTemplate($templateConfigPath)
+    private function removeConfigValue($templateConfigPath)
     {
-        if ($this->websiteId) {
-            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
-            $scopeId = $this->websiteId;
-        } elseif ($this->storeId) {
+        if ($this->storeId) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
             $scopeId = $this->storeId;
+        } elseif ($this->websiteId) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
+            $scopeId = $this->websiteId;
         } else {
             $scope = \Magento\Framework\App\ScopeInterface::SCOPE_DEFAULT;
             $scopeId = '0';

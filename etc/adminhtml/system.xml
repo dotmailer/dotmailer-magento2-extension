@@ -1169,6 +1169,18 @@
                     <label>Send Product To Friend</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
+                <field id="product_alerts_title" translate="label" sortOrder="700" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Alerts</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="product_stock_alert_template" translate="label" sortOrder="710" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Stock Alert</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
+                <field id="product_price_alert_template" translate="label" sortOrder="720" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Price Alert</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                </field>
             </group>
         </section>
         <section id="connector_configuration" translate="label" sortOrder="200" showInStore="0" showInWebsite="1"

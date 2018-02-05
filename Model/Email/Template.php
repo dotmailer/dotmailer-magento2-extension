@@ -10,7 +10,6 @@ class Template extends \Magento\Framework\DataObject
     const TEMPLATE_TYPE = 1;
 
     const XML_PATH_WISHLIST_EMAIL_EMAIL_TEMPLATE = 'wishlist/email/email_template';
-
     const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT =
         'dotmailer_email_templates/email_templates/customer_create_account_email_template';
     const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY =
@@ -67,6 +66,10 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/sales_email_creditmemo_comment_guest_template';
     const XML_PATH_DDG_TEMPLATE_SEND_PRODUCT_TO_FRIEND =
         'dotmailer_email_templates/email_templates/sendfriend_email_template';
+    const XML_PATH_DDG_TEMPLATE_PRODUCT_STOCK_ALERT =
+        'dotmailer_email_templates/email_templates/product_stock_alert_template';
+    const XML_PATH_DDG_TEMPLATE_PRODUCT_PRICE_ALERT =
+        'dotmailer_email_templates/email_templates/product_price_alert_template';
 
     /**
      * Mapping from template code = template name.
@@ -101,8 +104,9 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_shipment_comment_template' => 'Shipment Update (dotmailer)',
         'sales_email_shipment_comment_guest_template' => 'Shipment Update Guest(dotmailer)',
         'contact_email_email_template' => 'Contact Form (dotmailer)',
-        'sendfriend_email_template' => 'Send Product Link To Friend (dotmailer)'
-
+        'sendfriend_email_template' => 'Send Product Link To Friend (dotmailer)',
+        'product_stock_alert_template' => 'Stock Alert (dotmailer)',
+        'product_price_alert_template' => 'Price Alert (dotmailer)'
     ];
 
     /**
@@ -161,7 +165,9 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_shipment_comment_guest_template' =>
             \Magento\Sales\Model\Order\Email\Container\ShipmentCommentIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE,
         'contact_email_email_template' => \Magento\Contact\Model\ConfigInterface::XML_PATH_EMAIL_TEMPLATE,
-        'sendfriend_email_template' => \Magento\SendFriend\Helper\Data::XML_PATH_EMAIL_TEMPLATE
+        'sendfriend_email_template' => \Magento\SendFriend\Helper\Data::XML_PATH_EMAIL_TEMPLATE,
+        'product_stock_alert_template' => \Magento\ProductAlert\Model\Email::XML_PATH_EMAIL_STOCK_TEMPLATE,
+        'product_price_alert_template' => \Magento\ProductAlert\Model\Email::XML_PATH_EMAIL_PRICE_TEMPLATE,
 
     ];
 
@@ -199,7 +205,9 @@ class Template extends \Magento\Framework\DataObject
         'sales_email_shipment_comment_guest_template' => self::XML_PATH_DDG_TEMPLATE_SHIPMENT_UPDATE_GUEST,
         'contact_email_email_template' => self::XML_PATH_DDG_TEMPLATE_CONTACT_FORM,
         'sendfriend_email_template' => self::XML_PATH_DDG_TEMPLATE_SEND_PRODUCT_TO_FRIEND,
-        'wishlist_email_email_template' => self::XML_PATH_DDG_TEMPLATE_WISHLIST_PRODUCT_SHARE
+        'wishlist_email_email_template' => self::XML_PATH_DDG_TEMPLATE_WISHLIST_PRODUCT_SHARE,
+        'product_stock_alert_template' => self::XML_PATH_DDG_TEMPLATE_PRODUCT_STOCK_ALERT,
+        'product_price_alert_template' => self::XML_PATH_DDG_TEMPLATE_PRODUCT_PRICE_ALERT
     ];
 
     /**
