@@ -17,7 +17,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var int
      */
-    private $websiteId;
+    private $websiteId = 0;
 
     /**
      * @var \Magento\Email\Model\ResourceModel\Template
@@ -27,7 +27,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var int
      */
-    private $storeId;
+    private $storeId = 0;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -119,46 +119,29 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
      */
     private function createOrUpdateNewEmailTemplate($templateCode, $campaignId)
     {
-
-        $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode];
-        $templateCodeWithStoreCode = $templateCodeToName . '__' . $this->storeId;
         $emailTemplate = $this->templateFactory->create();
-        $template = $emailTemplate->loadBytemplateCode($templateCodeWithStoreCode);
         $templateConfigPath = $emailTemplate->templateConfigMapping[$templateCode];
+
         //get the template from api
         $client = $this->helper->getWebsiteApiClient($this->websiteId);
         $dmCampaign = $client->getCampaignByIdWithPreparedContent($campaignId);
-        $message = sprintf(
-            'Template %s, dm campaign id %s',
-            $templateCodeWithStoreCode,
-            $campaignId
-        );
+
         if (isset($dmCampaign->message)) {
             $message = 'Failed to get api template : ' . $dmCampaign->message;
             $this->messageManager->addErrorMessage($message);
             return;
         }
 
-        $fromName   = $dmCampaign->fromName;
-        $fromEmail  = $dmCampaign->fromAddress->email;
-        $templateSubject = utf8_encode($dmCampaign->subject);
-        $templateBody   = $emailTemplate->convertContent($dmCampaign->preparedHtmlContent);
-        try {
-            $template->setOrigTemplateCode($templateCode)
-                ->setTemplateCode($templateCodeWithStoreCode)
-                ->setTemplateSubject($templateSubject)
-                ->setTemplateText($templateBody)
-                ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
-                ->setTemplateSenderName($fromName)
-                ->setTemplateSenderEmail($fromEmail);
-
-            $this->templateResource->save($template);
-        } catch (\Exception $e) {
-            $this->helper->log($e->getMessage());
-        }
+        $template = $emailTemplate->updateTemplateFromDmCampaign($dmCampaign, $templateCode, $this->storeId);
 
         //save successful created new email template with the default config value for template.
         $this->saveConfigValue($templateConfigPath, $template->getId());
+
+        $message = sprintf(
+            'Template %s, dm campaign id %s',
+            $template->getTemplateCode(),
+            $campaignId
+        );
         $this->helper->log($message);
 
         return;

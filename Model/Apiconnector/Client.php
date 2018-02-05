@@ -458,7 +458,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     {
         $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS_CAMPAIGNS
             . '/' . $campaignId
-            . '/' . self::REST_CAMPAIGNS_WITH_PREPARED_CONTENT;
+            . '/' . self::REST_CAMPAIGNS_WITH_PREPARED_CONTENT
+            . '/' . 'anonymouscontact@emailsim.io';
         $this->setUrl($url)
             ->setVerb('GET');
 

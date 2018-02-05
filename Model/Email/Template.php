@@ -339,43 +339,29 @@ class Template extends \Magento\Framework\DataObject
             return $message;
         }
 
-        $this->updateTemplate($dmCampaign, $templateCode);
-    }
-
-    /**
-     * 1. Replace the img source url; /vedimage with https://i.emlfiles.com
-     * 2. remove unscbsribe, forward links http://$unsub$/ , http://$forward$/
-     * @param $htmlContent
-     * @return mixed
-     */
-    public function convertContent($htmlContent)
-    {
-        $htmlContent = str_replace('/vedimage', 'https://i.emlfiles.com', $htmlContent);
-        $htmlContent = str_replace('Unsubscribe', '', $htmlContent);
-        $htmlContent = str_replace('http://$unsub$/', '', $htmlContent);
-        $htmlContent = str_replace('Forward this email', '', $htmlContent);
-        $htmlContent = str_replace('http://$forward$/', '', $htmlContent);
-        $htmlContent = str_replace('View in browser', '', $htmlContent);
-        $htmlContent = str_replace('http://$cantread$/', '', $htmlContent);
-
-        return $htmlContent;
+        $this->updateTemplateFromDmCampaign($dmCampaign, $templateCode, $store->getId());
     }
 
     /**
      * @param $dmCampaign
      * @param $templateCode
+     * @param $storeId
+     * @return mixed
      */
-    private function updateTemplate($dmCampaign, $templateCode)
+    public function updateTemplateFromDmCampaign($dmCampaign, $templateCode, $storeId)
     {
-        $fromName       = $dmCampaign->fromName;
-        $fromEmail      = $dmCampaign->fromAddress->email;
+        $fromName   = $dmCampaign->fromName;
+        $fromEmail  = $dmCampaign->fromAddress->email;
         $templateSubject = utf8_encode($dmCampaign->subject);
-        $templateText   = $this->convertContent($dmCampaign->preparedHtmlContent);
-        $templateCodeToName = self::$defaultEmailTemplateCode[$templateCode];
-        $template = $this->loadByTemplateCode($templateCodeToName);
+        $templateText = $dmCampaign->processedHtmlContent;
+        //default email templates mapped with the template code
+        $templateCodeName = self::$defaultEmailTemplateCode[$templateCode];
+        $template = $this->loadByTemplateCode($templateCodeName);
+        $templateCodeWithStoreId = $this->getTemplateCodeWithStoreId($templateCode, $storeId);
         try {
+            //save email template with new data
             $template->setOrigTemplateCode($templateCode)
-                ->setTemplateCode($templateCodeToName)
+                ->setTemplateCode($templateCodeWithStoreId)
                 ->setTemplateSubject($templateSubject)
                 ->setTemplateText($templateText)
                 ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
@@ -386,6 +372,20 @@ class Template extends \Magento\Framework\DataObject
         } catch (\Exception $e) {
             $this->helper->log($e->getMessage());
         }
+
+        return $template;
     }
 
+    /**
+     * Get the email template name with store id. This will keep the template unique for each store.
+     *
+     * @param $templateCode
+     * @param $storeId
+     * @return string
+     */
+    public function getTemplateCodeWithStoreId($templateCode, $storeId)
+    {
+        $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode];
+        return  $templateCodeToName . '__' . $storeId;
+    }
 }
