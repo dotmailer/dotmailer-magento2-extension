@@ -368,6 +368,8 @@ class Template extends \Magento\Framework\DataObject
                 ->setTemplateSenderName($fromName)
                 ->setTemplateSenderEmail($fromEmail);
 
+            //fix the duplicate template name issue when setting the same template code
+            $this->deleteTemplateByCode($templateCodeWithStoreId);
             $this->templateResource->save($template);
         } catch (\Exception $e) {
             $this->helper->log($e->getMessage());
