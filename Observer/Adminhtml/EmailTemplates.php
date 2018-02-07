@@ -15,6 +15,11 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     public $config;
 
     /**
+     * @var \Magento\Store\Model\StoreManager
+     */
+    public $storeManager;
+
+    /**
      * @var int
      */
     private $websiteId = 0;
@@ -28,6 +33,11 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
      * @var int
      */
     private $storeId = 0;
+
+    /**
+     * @var mixed
+     */
+    private $storeCode;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -55,13 +65,15 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\App\Action\Context $context,
+        \Magento\Store\Model\StoreManager $storeManager,
         \Magento\Framework\App\Config\ReinitableConfigInterface $config,
         \Magento\Email\Model\ResourceModel\Template $templateResource,
         \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory
     ) {
         $this->helper         = $data;
-        $this->config           = $config;
+        $this->config         = $config;
         $this->context        = $context;
+        $this->storeManager   = $storeManager;
         $this->templateFactory = $templateFactory;
         $this->templateResource= $templateResource;
         $this->messageManager = $context->getMessageManager();
@@ -78,8 +90,19 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $template = $this->templateFactory->create();
-        $this->websiteId = (empty($observer->getWebsite()))? '0' : $observer->getWebsite();
-        $this->storeId = (empty($observer->getStore()))? '0' : $observer->getStore();
+        $website = $observer->getWebsite();
+        $store = $observer->getStore();
+        $this->websiteId = (empty($website))? '0' : $website;
+        $this->storeId = (empty($store))? '0' : $store;
+        //important use default, website or store when it's present as an appendix to the template code
+        if (! is_numeric($website) && ! is_numeric($store)) {
+            $this->storeCode = 'default';
+        } elseif (! is_numeric($store)) {
+            $this->storeCode =  $this->storeManager->getWebsite($this->websiteId)->getCode();
+        } else {
+            $this->storeCode = $this->storeManager->getStore($this->storeId)->getCode();
+        }
+
         $groups = $this->context->getRequest()->getPost('groups');
 
         foreach ($groups['email_templates']['fields'] as $templateCode => $emailValue) {
@@ -100,11 +123,8 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
                     //remove the config for dotmailer template
                     $this->removeConfigValue($template->templateEmailConfigMapping[$templateCode]);
                     //delete the dotmailer template when it's unmapped
-                    $template->deleteTemplateByCode(
-                        \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[
-                            $templateCode
-                        ] . '__' . $this->storeId
-                    );
+                    $templateCodeWithStoreId = $template->getTemplateCodeWithCodeName($templateCode, $this->storeCode);
+                    $template->deleteTemplateByCode($templateCodeWithStoreId);
                 }
             }
         }
@@ -132,7 +152,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             return;
         }
 
-        $template = $emailTemplate->updateTemplateFromDmCampaign($dmCampaign, $templateCode, $this->storeId);
+        $template = $emailTemplate->updateTemplateFromDmCampaign($dmCampaign, $templateCode, $this->storeCode);
 
         //save successful created new email template with the default config value for template.
         $this->saveConfigValue($templateConfigPath, $template->getId());

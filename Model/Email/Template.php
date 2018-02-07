@@ -345,19 +345,17 @@ class Template extends \Magento\Framework\DataObject
     /**
      * @param $dmCampaign
      * @param $templateCode
-     * @param $storeId
+     * @param $codeName
      * @return mixed
      */
-    public function updateTemplateFromDmCampaign($dmCampaign, $templateCode, $storeId)
+    public function updateTemplateFromDmCampaign($dmCampaign, $templateCode, $codeName)
     {
         $fromName   = $dmCampaign->fromName;
         $fromEmail  = $dmCampaign->fromAddress->email;
         $templateSubject = utf8_encode($dmCampaign->subject);
         $templateText = $dmCampaign->processedHtmlContent;
-        //default email templates mapped with the template code
-        $templateCodeName = self::$defaultEmailTemplateCode[$templateCode];
-        $template = $this->loadByTemplateCode($templateCodeName);
-        $templateCodeWithStoreId = $this->getTemplateCodeWithStoreId($templateCode, $storeId);
+        $templateCodeWithStoreId = $this->getTemplateCodeWithCodeName($templateCode, $codeName);
+        $template = $this->loadByTemplateCode($templateCodeWithStoreId);
         try {
             //save email template with new data
             $template->setOrigTemplateCode($templateCode)
@@ -368,8 +366,6 @@ class Template extends \Magento\Framework\DataObject
                 ->setTemplateSenderName($fromName)
                 ->setTemplateSenderEmail($fromEmail);
 
-            //fix the duplicate template name issue when setting the same template code
-            $this->deleteTemplateByCode($templateCodeWithStoreId);
             $this->templateResource->save($template);
         } catch (\Exception $e) {
             $this->helper->log($e->getMessage());
@@ -379,15 +375,17 @@ class Template extends \Magento\Framework\DataObject
     }
 
     /**
-     * Get the email template name with store id. This will keep the template unique for each store.
+     * Get the email template name with code name. This will keep the template unique for each level.
      *
      * @param $templateCode
-     * @param $storeId
+     * @param mixed $codeName
      * @return string
      */
-    public function getTemplateCodeWithStoreId($templateCode, $storeId)
+    public function getTemplateCodeWithCodeName($templateCode, $codeName)
     {
-        $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode];
-        return  $templateCodeToName . '__' . $storeId;
+        $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode] .
+            '__' . $codeName;
+
+        return $templateCodeToName;
     }
 }
