@@ -14,28 +14,26 @@ define(['jquery', 'domReady!'], function ($) {
     }
 
     /**
-     * Email capture for checkout.
-     *
+     * Email capture for checkout
      * @param {String} url
+     *
      */
     function emailCaptureCheckout(url) {
-        var currentEmail = '';
-        var input = '#customer-email';
-        var customerEmail_blur = function (event) {
-            $('body').off('blur', input);
-            var email = event.currentTarget.value;
-            if (email && validateEmail(email) && currentEmail !== email) {
-                currentEmail = email;
-                $.post(url, {
-                    email: email
-                }).then(emailBlurHandler.bind(this));
+        var previousEmail = '';
+        $('body').on('blur', 'input[id=customer-email]', function () {
+            var email = $(this).val();
+
+            if (email === previousEmail) {
                 return false;
             }
-        };
-        var emailBlurHandler = function () {
-            $('body').on('blur', input, customerEmail_blur.bind(this));
-        };
-        emailBlurHandler();
+
+            if (email && validateEmail(email)) {
+                previousEmail = email;
+                $.post(url, {
+                    email: email
+                });
+            }
+        });
     }
 
     /**
