@@ -5,6 +5,10 @@ namespace Dotdigitalgroup\Email\Plugin;
 class TemplatePlugin
 {
     /**
+     * @var
+     */
+    private $templateCode;
+    /**
      * @var \Magento\Framework\Registry
      */
     private $registry;
@@ -27,25 +31,35 @@ class TemplatePlugin
      */
     public function afterGetData(\Magento\Email\Model\Template $subject, $result, ...$args)
     {
+        //get the template code value
+        if (! empty($args)) {
+            if ($args[0] == 'template_code') {
+                $this->templateCode = $result;
+            }
+        }
+
         //get data before saving
         if ($this->registry->registry('dotmailer_saving_data')) {
             //saving array values
             if (empty($args)) {
+                //save template id for email sending to update the sender name and sender email saved on template level.
                 if (isset($result['template_id'])) {
                     $this->saveTemplateIdInRegistry($result['template_id']);
                 }
                 $templateText = $result['template_text'];
                 //compress text
-                if (! $this->isStringCompressed($templateText)) {
+                if (!$this->isStringCompressed($templateText) && $this->isDotmailerTemplate($result['template_code'])) {
                     $result['template_text'] = $this->compresString($templateText);
                 }
             } else {
                 //saving string value
-                $templateText = $result;
                 $field = $args[0];
-                //check for correct field
-                if ($field == 'template_text' && ! $this->isStringCompressed($templateText)) {
-                    $result = $this->compresString($templateText);
+
+                //compress the text body when is a dotmailer template
+                if ($field == 'template_text' && ! $this->isStringCompressed($result)
+                    && $this->isDotmailerTemplate($this->templateCode)
+                ) {
+                    $result = $this->compresString($result);
                 }
                 if ($field == 'template_id') {
                     $this->saveTemplateIdInRegistry($result);
@@ -102,7 +116,7 @@ class TemplatePlugin
     private function isStringCompressed($string)
     {
         //check if the data is compressed
-        if (substr($string, 0, 1) == 'e') {
+        if (substr($string, 0, 1) == 'e' && substr_count($string, ' ') == 0) {
             return true;
         }
 
@@ -136,6 +150,23 @@ class TemplatePlugin
         if (! $this->registry->registry('dotmailer_current_template_id')) {
              $this->registry->register('dotmailer_current_template_id', $templateId);
         }
+    }
+
+    /**
+     * Check if the template code is containing dotmailer.
+     *
+     * @param $templateCode
+     * @return bool
+     */
+    private function isDotmailerTemplate($templateCode)
+    {
+        preg_match("/\(dotmailer\)/", $templateCode, $matches);
+
+        if (count($matches)) {
+            return true;
+        }
+
+        return false;
     }
 }
 

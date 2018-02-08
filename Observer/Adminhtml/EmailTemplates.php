@@ -96,7 +96,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
         $this->storeId = (empty($store))? '0' : $store;
         //important use default, website or store when it's present as an appendix to the template code
         if (! is_numeric($website) && ! is_numeric($store)) {
-            $this->storeCode = 'default';
+            $this->storeCode = 'admin';
         } elseif (! is_numeric($store)) {
             $this->storeCode =  $this->storeManager->getWebsite($this->websiteId)->getCode();
         } else {
@@ -123,8 +123,9 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
                     //remove the config for dotmailer template
                     $this->removeConfigValue($template->templateEmailConfigMapping[$templateCode]);
                     //delete the dotmailer template when it's unmapped
-                    $templateCodeWithStoreId = $template->getTemplateCodeWithCodeName($templateCode, $this->storeCode);
-                    $template->deleteTemplateByCode($templateCodeWithStoreId);
+                    $templateCodeWithStoreCode =
+                        $template->getTemplateCodeWithCodeName($templateCode, $this->storeCode);
+                    $template->deleteTemplateByCode($templateCodeWithStoreCode);
                 }
             }
         }
