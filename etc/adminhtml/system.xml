@@ -327,7 +327,7 @@
                 <field id="datafield_default" translate="comment label" type="text" sortOrder="30" showInDefault="1"
                        showInStore="0" showInWebsite="1">
                     <label>Default Value</label>
-                    <comment><![CDATA[When sending a campaign that uses template personalisation, a default value ensures that a value is alwasy displayed even if a data field is blank.]]></comment>
+                    <comment><![CDATA[When sending a campaign that uses template personalisation, a default value ensures that a value is always displayed even if a data field is blank.]]></comment>
                 </field>
                 <field id="datafield_access" translate="comment label" sortOrder="40" type="select" showInDefault="1"
                        showInWebsite="1" showInStore="0">
