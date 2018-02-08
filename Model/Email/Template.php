@@ -350,6 +350,8 @@ class Template extends \Magento\Framework\DataObject
      */
     public function updateTemplateFromDmCampaign($dmCampaign, $templateCode, $codeName)
     {
+        //swap the code name for store/website 0
+        $codeName  = ($codeName)? $codeName : 'admin';
         $fromName   = $dmCampaign->fromName;
         $fromEmail  = $dmCampaign->fromAddress->email;
         $templateSubject = utf8_encode($dmCampaign->subject);

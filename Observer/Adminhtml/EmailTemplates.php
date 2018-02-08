@@ -110,6 +110,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             if (isset($groups['email_templates']['fields'][$templateCode]['inherit'])) {
                 //remove the config value if the parent inherit was selected
                 $this->removeConfigValue($template->templateConfigMapping[$templateCode]);
+                continue;
             }
 
             if (isset($emailValue['value'])) {
