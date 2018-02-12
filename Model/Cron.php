@@ -8,6 +8,11 @@ namespace Dotdigitalgroup\Email\Model;
 class Cron
 {
     /**
+     * @var Email\TemplateFactory
+     */
+    private $templateFactory;
+
+    /**
      * @var Apiconnector\ContactFactory
      */
     private $contactFactory;
@@ -71,7 +76,7 @@ class Cron
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-
+    
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
@@ -125,6 +130,7 @@ class Cron
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
+        \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection
     ) {
         $this->campaignFactory   = $campaignFactory;
@@ -143,6 +149,7 @@ class Cron
         $this->fileHelper        = $fileHelper;
         $this->importerResource  = $importerResource;
         $this->cronCollection    = $cronCollection;
+        $this->templateFactory   = $templateFactory;
     }
 
     /**
@@ -373,5 +380,20 @@ class Cron
 
         return $this->cronCollection->create()
             ->jobOfSameTypeAndScheduledAtDateAlreadyExecuted($jobCode, $currentRunningJob->getScheduledAt());
+    }
+
+    /**
+     * Sync the email templates from dotmailer.
+     */
+    public function syncEmailTemplates()
+    {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_email_templates')) {
+            $message = 'Skipping ddg_automation_email_templates job run';
+            $this->helper->log($message);
+            return $message;
+        }
+
+        return $this->templateFactory->create()
+            ->sync();
     }
 }

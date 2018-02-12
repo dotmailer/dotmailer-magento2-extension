@@ -16,12 +16,19 @@ define(['jquery', 'domReady!'], function ($) {
     /**
      * Email capture for checkout
      * @param {String} url
+     *
      */
     function emailCaptureCheckout(url) {
+        var previousEmail = '';
         $('body').on('blur', 'input[id=customer-email]', function () {
             var email = $(this).val();
 
+            if (email === previousEmail) {
+                return false;
+            }
+
             if (email && validateEmail(email)) {
+                previousEmail = email;
                 $.post(url, {
                     email: email
                 });

@@ -12,8 +12,32 @@ Full support documentation and setup guides available here - https://support.dot
 
 You are welcome to contribute to dotmailer for Magento! You can either:
 - Report a bug: create a [GitHub issue](https://github.com/dotmailer/dotmailer-magento2-extension/issues/new) including description, repro steps, Magento and extension version numbers
-- Fix a bug: please clone and use our [Testing branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/testing) to submit your Pull Request
+- Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
+
+## V2.4.4
+
+###### New Features
+- Transactional email templates: You're now able to create, edit, translate and test Magento transactional emails in dotmailer and map them at default, website or store level.
+- Transactional email settings can now be set at the website level
+
+###### Improvements
+- We've improved the password encryption using Magento's encryption framework
+
+###### Bug fix
+- We've fixed an issue related to email capture causing an infinite loop during checkout when form field is auto filled by browser
+- Date type attributes in transactional data were using the wrong locale time;this is now fixed
+- We've fixed an error related to importing orders having both virtual and physical products
+- In the case where Magento's double opt-in setting ('Need to confirm') was enabled, we used to import subscribers before they confirmed; this is now fixed
+- We now update send status in the email campaign report which prevents the processing of them multiple times
+- Unset attributes are now excluded from the imported record for all transactional entities
+- The update of the last quote ID from the abandoned cart cron has been moved to campaign cron
+- The importer didn't have any transactional data limit set for the initial sync upon a fresh installation; we now set a default limit of 50
+- An exception would occur when clicking on the 'Link to cart' in the abandoned cart external dynamic content block; this has been fixed
+- We've corrected some typos in the abandoned cart report section
+- We've fixed an uncaught JS error that would occur when using ad blocking extensions
+- When 'Developer' > 'Debug Mode' is enabled, we now set a default threshold value and only log any API calls that take longer than 60 seconds
+- An exception would occur because the subscriber cron job was attempting to initialise the API client without checking whether it was enabled; this no longer happens #495
 
 ## V2.4.3
 - Disabling a module using a command line would generate different dependency errors related to a non-existing class - we've now fixed this problem

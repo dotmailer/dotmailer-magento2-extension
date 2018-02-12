@@ -64,9 +64,11 @@ class TrialSetup
             'default',
             0
         );
+
+        //Save encrypted password
         $this->helper->saveConfigData(
             Config::XML_PATH_CONNECTOR_API_PASSWORD,
-            $apiPass,
+            $this->helper->encryptor->encrypt($apiPass),
             'default',
             0
         );

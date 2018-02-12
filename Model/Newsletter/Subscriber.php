@@ -223,15 +223,16 @@ class Subscriber
          * Sync all suppressed for each store
          */
         $websites = $this->helper->getWebsites(true);
-        foreach ($websites as $website) {
-            $client = $this->helper->getWebsiteApiClient($website);
-            $skip = $i = 0;
-            $contacts = [];
 
-            // Not enabled and valid credentials
-            if (! $client) {
+        foreach ($websites as $website) {
+            //not enabled
+            if (! $this->helper->isEnabled($website)) {
                 continue;
             }
+
+            $skip = $i = 0;
+            $contacts = [];
+            $client = $this->helper->getWebsiteApiClient($website);
 
             //there is a maximum of request we need to loop to get more suppressed contacts
             for ($i=0; $i<= $limit; $i++) {

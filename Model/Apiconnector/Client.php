@@ -30,6 +30,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_PROGRAM = '/v2/programs/';
     const REST_PROGRAM_ENROLMENTS = '/v2/programs/enrolments';
     const REST_TEMPLATES = '/v2/templates';
+    const REST_SEND_TRANSACTIONAL_EMAIL = '/v2/email';
+    const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
 
     //rest error responces
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. 
@@ -110,7 +112,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * @return void
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiEndpoint()
     {
@@ -422,6 +425,49 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $message = 'GET CAMPAIGNS ' . $response->message . ' api user : '
                 . $this->getApiUsername();
             $this->helper->debug('getCampaigns', [$message]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param $campaignId
+     * @return mixed
+     */
+    public function getCampaignById($campaignId)
+    {
+        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS_CAMPAIGNS . '/' . $campaignId;
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = 'GET CAMPAIGN BY ID ' . $response->message;
+            $this->helper->log($message);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param $campaignId
+     * @return mixed
+     */
+    public function getCampaignByIdWithPreparedContent($campaignId)
+    {
+        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS_CAMPAIGNS
+            . '/' . $campaignId
+            . '/' . self::REST_CAMPAIGNS_WITH_PREPARED_CONTENT
+            . '/' . 'anonymouscontact@emailsim.io';
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = 'GET CAMPAIGN BY ID WITH PREPARED CONTENT' . $response->message;
+            $this->helper->log($message);
         }
 
         return $response;
@@ -1367,6 +1413,50 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             }
         } elseif (isset($response->access_token)) {
             return $response->access_token;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Sends a transactional email.
+     *
+     * @param $content
+     * @return mixed
+     */
+    public function sendApiTransactionalEmail($content)
+    {
+        $url = $this->getApiEndpoint() . self::REST_SEND_TRANSACTIONAL_EMAIL;
+
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($content);
+
+        $this->execute();
+    }
+
+    /**
+     * Gets transactional email reporting statistics for a specified time period.
+     *
+     * @param $date string
+     * @param null $endDate
+     * @param null $aggregatedBy 'AllTime', 'Month', 'Week', 'Day'
+     *
+     * @return mixed
+     */
+    public function getEmailStats($date, $endDate = null, $aggregatedBy = null)
+    {
+        $url = $this->getApiEndpoint() . '/v2/email/stats/since-date/' . $date;
+        if ($endDate && $aggregatedBy) {
+            $url .= '?endDate=' . $endDate . '&aggregatedBy=' . $aggregatedBy;
+        }
+
+        $response = $this->setUrl($url)
+            ->setVerb('GET')
+            ->execute();
+
+        if (isset($response->message)) {
+            $this->helper->log('GET EMAIL STATS : ' . $response->message);
         }
 
         return $response;

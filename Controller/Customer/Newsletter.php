@@ -61,8 +61,6 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         //if enabled
         if ($this->helper->isEnabled($website)) {
             $client = $this->helper->getWebsiteApiClient($website);
-            $client->setApiUsername($this->helper->getApiUsername($website))
-                ->setApiPassword($this->helper->getApiPassword($website));
 
             $contact = $client->getContactById($customerId);
             if (isset($contact->id)) {

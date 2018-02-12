@@ -50,6 +50,10 @@ class Test
             return false;
         }
 
+        if ($apiPassword == '******') {
+            $apiPassword = $this->helper->getApiPassword($website);
+        }
+
         $client = $this->helper->clientFactory->create();
         if ($apiUsername && $apiPassword) {
             $client->setApiUsername($apiUsername)

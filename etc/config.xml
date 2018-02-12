@@ -277,7 +277,7 @@
         <connector_developer_settings>
             <import_settings>
                 <batch_size>500</batch_size>
-                <orders>50</orders>
+                <transactional_data>50</transactional_data>
                 <importer_bulk_limit>1</importer_bulk_limit>
                 <subscriber_sales_data_enabled>0</subscriber_sales_data_enabled>
             </import_settings>
@@ -294,7 +294,7 @@
             </sync_settings>
             <debug>
                 <debug_enabled>1</debug_enabled>
-                <api_request_time_limit>60</api_request_time_limit>
+                <api_log_time>60</api_log_time>
             </debug>
             <feed_configuration>
                 <feed_enabled>1</feed_enabled>

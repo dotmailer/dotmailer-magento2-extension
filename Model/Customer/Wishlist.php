@@ -40,22 +40,6 @@ class Wishlist
     public $updatedAt;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    public $localeDate;
-
-    /**
-     * Wishlist constructor.
-     *
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
-     */
-    public function __construct(
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
-    ) {
-        $this->localeDate = $localeDate;
-    }
-
-    /**
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return $this
@@ -142,7 +126,7 @@ class Wishlist
      */
     public function setUpdatedAt($date)
     {
-        $this->updatedAt = $this->localeDate->date($date)->format(\Zend_Date::ISO_8601);
+        $this->updatedAt = $date;
 
         return $this;
     }

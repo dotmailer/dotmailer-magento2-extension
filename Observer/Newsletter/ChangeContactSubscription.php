@@ -94,6 +94,14 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         $subscriberStatus = $subscriber->getSubscriberStatus();
         $websiteId = $this->storeManager->getStore($subscriber->getStoreId())
             ->getWebsiteId();
+
+        //If not confirmed or not active
+        if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE ||
+            $subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED
+        ) {
+            return $this;
+        }
+
         //check if enabled
         if (!$this->helper->isEnabled($websiteId)) {
             return $this;

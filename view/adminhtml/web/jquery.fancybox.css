@@ -53,6 +53,7 @@
 
 .fancybox-type-iframe .fancybox-inner {
     -webkit-overflow-scrolling: touch;
+    min-height: 668px;
 }
 
 .fancybox-error {
