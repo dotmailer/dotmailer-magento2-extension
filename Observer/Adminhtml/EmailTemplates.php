@@ -35,11 +35,6 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     private $storeId = 0;
 
     /**
-     * @var mixed
-     */
-    private $storeCode;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -80,93 +75,55 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * Execute method.
-     *
      * @param \Magento\Framework\Event\Observer $observer
-     *
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $template = $this->templateFactory->create();
+        $dotTemplate = $this->templateFactory->create();
         $website = $observer->getWebsite();
         $store = $observer->getStore();
         $this->websiteId = (empty($website))? '0' : $website;
         $this->storeId = (empty($store))? '0' : $store;
-        //important use default, website or store when it's present as an appendix to the template code
-        if (! is_numeric($website) && ! is_numeric($store)) {
-            $this->storeCode = 'admin';
-        } elseif (! is_numeric($store)) {
-            $this->storeCode =  $this->storeManager->getWebsite($this->websiteId)->getCode();
-        } else {
-            $this->storeCode = $this->storeManager->getStore($this->storeId)->getCode();
-        }
-
         $groups = $this->context->getRequest()->getPost('groups');
 
-        foreach ($groups['email_templates']['fields'] as $templateCode => $emailValue) {
-            //inherit option was selected for the child config value - skip
-            if (isset($groups['email_templates']['fields'][$templateCode]['inherit'])) {
-                //remove the config value if the parent inherit was selected
-                $this->removeConfigValue($template->templateConfigMapping[$templateCode]);
+        foreach ($groups['email_templates']['fields'] as $templateConfigId => $campaignId) {
+            //remove the config value if the parent inherit was selected and - continue
+            if (isset($groups['email_templates']['fields'][$templateConfigId]['inherit'])) {
+                $this->removeConfigValue($dotTemplate->templateConfigMapping[$templateConfigId]);
                 continue;
             }
 
-            if (isset($emailValue['value'])) {
-                $campaignId = $emailValue['value'];
-                //email template mapped found
-                if ($campaignId) {
-                    $this->createOrUpdateNewEmailTemplate($templateCode, $campaignId);
+            if (isset($campaignId['value'])) {
+                //email template mapped
+                if ($campaignId = $campaignId['value']) {
+                    $templateConfigPath = $dotTemplate->templateConfigMapping[$templateConfigId];
+                    $template = $dotTemplate->saveTemplateWithConfigPath(
+                        $templateConfigId,
+                        $campaignId,
+                        $store,
+                        $website
+                    );
+                    //save successful created new email template with the default config value for template.
+                    if ($template) {
+                        $this->saveConfigValue($templateConfigPath, $template->getId());
+                    }
+
                 } else {
                     //remove the config for core email template
-                    $this->removeConfigValue($template->templateConfigMapping[$templateCode]);
+                    $this->removeConfigValue($dotTemplate->templateConfigMapping[$templateConfigId]);
                     //remove the config for dotmailer template
-                    $this->removeConfigValue($template->templateEmailConfigMapping[$templateCode]);
-                    //delete the dotmailer template when it's unmapped
-                    $templateCodeWithStoreCode =
-                        $template->getTemplateCodeWithCodeName($templateCode, $this->storeCode);
-                    $template->deleteTemplateByCode($templateCodeWithStoreCode);
+                    $this->removeConfigValue(
+                        $dotTemplate->templateConfigIdToDotmailerConfigPath[$templateConfigId]
+                    );
                 }
             }
         }
 
-        return $this;
-    }
-
-    /**
-     *
-     * @param $templateCode
-     * @param $campaignId
-     */
-    private function createOrUpdateNewEmailTemplate($templateCode, $campaignId)
-    {
-        $emailTemplate = $this->templateFactory->create();
-        $templateConfigPath = $emailTemplate->templateConfigMapping[$templateCode];
-
-        //get the template from api
-        $client = $this->helper->getWebsiteApiClient($this->websiteId);
-        $dmCampaign = $client->getCampaignByIdWithPreparedContent($campaignId);
-
-        if (isset($dmCampaign->message)) {
-            $message = 'Failed to get api template : ' . $dmCampaign->message;
-            $this->messageManager->addErrorMessage($message);
-            return;
-        }
-
-        $template = $emailTemplate->updateTemplateFromDmCampaign($dmCampaign, $templateCode, $this->storeCode);
-
-        //save successful created new email template with the default config value for template.
-        $this->saveConfigValue($templateConfigPath, $template->getId());
-
-        $message = sprintf(
-            'Template %s, dm campaign id %s',
-            $template->getTemplateCode(),
-            $campaignId
-        );
-        $this->helper->log($message);
-
-        return;
+        //clean only after after all configs changed
+        $this->config->reinit();
     }
 
     /**
@@ -192,9 +149,6 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             $scope,
             $scopeId
         );
-
-        //clean the config cache
-        $this->config->reinit();
     }
 
     /**

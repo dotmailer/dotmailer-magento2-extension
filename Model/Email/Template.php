@@ -72,44 +72,6 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/product_price_alert_template';
 
     /**
-     * Mapping from template code = template name.
-     *
-     * @var array
-     */
-    static public $defaultEmailTemplateCode = [
-        'customer_create_account_email_template' => 'New Account (dotmailer)',
-        'customer_create_account_email_confirmed_template' => 'New Account Confirmation (dotmailer)',
-        'customer_create_account_email_confirmation_template' => 'New Account Confirmation Key (dotmailer)',
-        'customer_password_forgot_email_template' => 'Forgot Password (dotmailer)',
-        'customer_password_remind_email_template' => 'Remind Password (dotmailer)',
-        'wishlist_email_email_template' => 'Wishlist Product Share (dotmailer)',
-        'admin_emails_forgot_email_template' => 'Forgot Admin Password (dotmailer)',
-        'newsletter_subscription_success_email_template' => 'Subscription Success (dotmailer)',
-        'newsletter_subscription_confirm_email_template' => 'Subscription Confirmation (dotmailer)',
-        'newsletter_subscription_un_email_template' => 'Unsubscribe Success (dotmailer)',
-        'sales_email_order_template' => 'New Order Confirmation (dotmailer)',
-        'sales_email_order_guest_template' => 'New Order Confirmation For Guest (dotmailer)',
-        'sales_email_order_comment_template' => 'Order Update (dotmailer)',
-        'sales_email_order_comment_guest_template' => 'Order Update For Guest (dotmailer)',
-        'sales_email_shipment_template' => 'New Shipment (dotmailer)',
-        'sales_email_shipment_guest_template' => 'New Shipment For Guest (dotmailer)',
-        'sales_email_invoice_comment_template' => 'Invoice Update (dotmailer)',
-        'sales_email_invoice_comment_guest_template' => 'Invoice Update Guest (dotmailer)',
-        'sales_email_invoice_template' => 'New Invoice (dotmailer)',
-        'sales_email_invoice_guest_template' => 'New Invoice Guest (dotmailer)',
-        'sales_email_creditmemo_template' => 'New Credit Memo (dotmailer)',
-        'sales_email_creditmemo_guest_template' => 'New Credit Memo Guest (dotmailer)',
-        'sales_email_creditmemo_comment_template' => 'Credit Memo Update (dotmailer)',
-        'sales_email_creditmemo_comment_guest_template' => 'Credit Memo Update Guest (dotmailer)',
-        'sales_email_shipment_comment_template' => 'Shipment Update (dotmailer)',
-        'sales_email_shipment_comment_guest_template' => 'Shipment Update Guest(dotmailer)',
-        'contact_email_email_template' => 'Contact Form (dotmailer)',
-        'sendfriend_email_template' => 'Send Product Link To Friend (dotmailer)',
-        'product_stock_alert_template' => 'Stock Alert (dotmailer)',
-        'product_price_alert_template' => 'Price Alert (dotmailer)'
-    ];
-
-    /**
      * Mapping from template code = config path for templates.
      * @var array
      */
@@ -172,11 +134,11 @@ class Template extends \Magento\Framework\DataObject
     ];
 
     /**
-     * Mapping for template code = dotmailer path templates.
+     * Config path id to dotmialer config.
      *
      * @var array
      */
-    public $templateEmailConfigMapping = [
+    public $templateConfigIdToDotmailerConfigPath = [
         'customer_create_account_email_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT,
         'customer_create_account_email_confirmation_template' =>
             self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY,
@@ -236,6 +198,16 @@ class Template extends \Magento\Framework\DataObject
     public $templateResource;
 
     /**
+     * @var \Magento\Email\Model\TempalteFactory
+     */
+    public $templateFactory;
+
+    /**
+     * @var array
+     */
+    public $proccessedCampaings = [];
+
+    /**
      * Template constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -248,6 +220,7 @@ class Template extends \Magento\Framework\DataObject
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Store\Model\StoreManagerInterface $store,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Email\Model\TemplateFactory $templateFactory,
         \Magento\Email\Model\ResourceModel\Template $templateResource,
         \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templateCollectionFactory
     ) {
@@ -255,6 +228,7 @@ class Template extends \Magento\Framework\DataObject
         $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $store;
+        $this->templateFactory = $templateFactory;
         $this->templateResource = $templateResource;
         $this->templateCollectionFactory  = $templateCollectionFactory;
 
@@ -267,7 +241,7 @@ class Template extends \Magento\Framework\DataObject
      * @param $templateCode
      * @return mixed
      */
-    public function loadByTemplateCode($templateCode)
+    public function loadByTemplateByCode($templateCode)
     {
         $template = $this->templateCollectionFactory->create()
             ->addFieldToFilter('template_code', $templateCode)
@@ -283,7 +257,7 @@ class Template extends \Magento\Framework\DataObject
      */
     public function deleteTemplateByCode($templatecode)
     {
-        $template = $this->loadByTemplateCode($templatecode);
+        $template = $this->loadByTemplateByCode($templatecode);
         if ($template->getId()) {
             $template->delete();
         }
@@ -297,23 +271,31 @@ class Template extends \Magento\Framework\DataObject
     public function sync()
     {
         $result = ['store' => 'Stores : ', 'message' => 'Done.'];
-        foreach ($this->storeManager->getStores() as $store) {
+        $lastWebsiteId = '0';
+        foreach ($this->storeManager->getStores(true) as $store) {
             $storeId = $store->getId();
-            if (!$this->helper->isStoreEnabled($storeId)) {
+            //store not enabled to sync
+            if (! $this->helper->isStoreEnabled($storeId)) {
                 continue;
             }
+            //reset the campaign ids for each website
+            $websiteId = $store->getWebsiteId();
+            if ($websiteId != $lastWebsiteId) {
+                $this->proccessedCampaings = [];
+                $lastWebsiteId = $websiteId;
+            }
 
-            foreach ($this->templateEmailConfigMapping as $templateCode => $configPath) {
-                $campaignId = $this->scopeConfig->getValue(
-                    $configPath,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                    $storeId
-                );
+            foreach ($this->templateConfigIdToDotmailerConfigPath as $configTemplateId => $dotConfigPath) {
+                $campaignId = $this->getConfigValue($dotConfigPath, $storeId);
+                $configPath = $this->templateConfigMapping[$configTemplateId];
+                $emailTemplateId = $this->getConfigValue($configPath, $storeId);
 
-                if ($campaignId) {
-                    $this->helper->log(sprintf('Campaign %s for store %s', $campaignId, $storeId));
-                    $this->syncEmailTemplate($campaignId, $templateCode, $store);
+                if ($campaignId && $emailTemplateId && ! in_array($campaignId, $this->proccessedCampaings)) {
+                    //sync template for store
+                    $this->syncEmailTemplate($campaignId, $emailTemplateId, $store);
                     $result['store'] .= ', ' . $store->getCode();
+
+                    $this->proccessedCampaings[$campaignId] = $campaignId;
                 }
             }
         }
@@ -322,12 +304,26 @@ class Template extends \Magento\Framework\DataObject
     }
 
     /**
+     * @param $config
+     * @param $storeId
+     * @return mixed
+     */
+    public function getConfigValue($config, $storeId)
+    {
+        return $this->scopeConfig->getValue(
+            $config,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
      * @param $campaignId
-     * @param $templateCode
+     * @param $emailTemplateId
      * @param $store \Magento\Store\Api\Data\StoreInterface
      * @return mixed
      */
-    private function syncEmailTemplate($campaignId, $templateCode, $store)
+    private function syncEmailTemplate($campaignId, $emailTemplateId, $store)
     {
         $websiteId = $store->getWebsiteId();
         $client = $this->helper->getWebsiteApiClient($websiteId);
@@ -339,34 +335,65 @@ class Template extends \Magento\Framework\DataObject
             return $message;
         }
 
-        $this->updateTemplateFromDmCampaign($dmCampaign, $templateCode, $store->getId());
+        $template = $this->templateFactory->create();
+        $this->templateResource->load($template, $emailTemplateId);
+        //check if is a dotmailer template
+        if ($template->getId() || $template->getTemplateCode()) {
+            return $this->saveTemplate($template, $dmCampaign, $campaignId);
+        }
     }
 
     /**
+     * @param $templateConfigPath
+     * @param $campaignId
+     * @param $storeId
+     * @param $websiteId
+     * @return bool|mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function saveTemplateWithConfigPath($templateConfigPath, $campaignId, $storeId, $websiteId)
+    {
+        if ($storeId) {
+            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+        } elseif ($websiteId) {
+            $websiteId = $this->storeManager->getWebsite($websiteId)->getId();
+        } else {
+            $websiteId = '0';
+        }
+
+        //get the campaign from api
+        $client = $this->helper->getWebsiteApiClient($websiteId);
+        $dmCampaign = $client->getCampaignByIdWithPreparedContent($campaignId);
+        if (isset($dmCampaign->message)) {
+            $this->helper->log('Failed to get api template : ' . $dmCampaign->message);
+            return false;
+        }
+
+        $templateName = $dmCampaign->name . '_' . $campaignId;
+        $template = $this->loadByTemplateByCode($templateName);
+
+        return $this->saveTemplate($template, $dmCampaign, $campaignId, $templateConfigPath);
+    }
+
+    /**
+     * @param \Magento\Email\Model\Template $template
      * @param $dmCampaign
-     * @param $templateCode
-     * @param $codeName
+     * @param $campaignId
+     * @param string $origTemplateCode
      * @return mixed
      */
-    public function updateTemplateFromDmCampaign($dmCampaign, $templateCode, $codeName)
+    public function saveTemplate($template, $dmCampaign, $campaignId, $origTemplateCode = '')
     {
-        //swap the code name for store/website 0
-        $codeName  = ($codeName)? $codeName : 'admin';
-        $fromName   = $dmCampaign->fromName;
-        $fromEmail  = $dmCampaign->fromAddress->email;
-        $templateSubject = utf8_encode($dmCampaign->subject);
-        $templateText = $dmCampaign->processedHtmlContent;
-        $templateCodeWithStoreId = $this->getTemplateCodeWithCodeName($templateCode, $codeName);
-        $template = $this->loadByTemplateCode($templateCodeWithStoreId);
+        $templateName = $dmCampaign->name . '_' . $campaignId;
+
         try {
-            //save email template with new data
-            $template->setOrigTemplateCode($templateCode)
-                ->setTemplateCode($templateCodeWithStoreId)
-                ->setTemplateSubject($templateSubject)
-                ->setTemplateText($templateText)
+            $template->setTemplateCode($templateName)
+                ->setOrigTemplateCode($origTemplateCode)
+                ->setTemplateSubject(utf8_encode($dmCampaign->subject))
+                ->setTemplateText($dmCampaign->processedHtmlContent)
                 ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
-                ->setTemplateSenderName($fromName)
-                ->setTemplateSenderEmail($fromEmail);
+                ->setTemplateSenderName($dmCampaign->fromName)
+                ->setTemplateSenderEmail($dmCampaign->fromAddress->email);
 
             $this->templateResource->save($template);
         } catch (\Exception $e) {
@@ -376,18 +403,4 @@ class Template extends \Magento\Framework\DataObject
         return $template;
     }
 
-    /**
-     * Get the email template name with code name. This will keep the template unique for each level.
-     *
-     * @param $templateCode
-     * @param mixed $codeName
-     * @return string
-     */
-    public function getTemplateCodeWithCodeName($templateCode, $codeName)
-    {
-        $templateCodeToName = \Dotdigitalgroup\Email\Model\Email\Template::$defaultEmailTemplateCode[$templateCode] .
-            '__' . $codeName;
-
-        return $templateCodeToName;
-    }
 }

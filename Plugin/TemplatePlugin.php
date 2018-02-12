@@ -160,7 +160,7 @@ class TemplatePlugin
      */
     private function isDotmailerTemplate($templateCode)
     {
-        preg_match("/\(dotmailer\)/", $templateCode, $matches);
+        preg_match("/\_\d{1,10}$/", $templateCode, $matches);
 
         if (count($matches)) {
             return true;
