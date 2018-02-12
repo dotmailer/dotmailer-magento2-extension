@@ -25,6 +25,7 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - We've improved the password encryption using Magento's encryption framework
 
 ###### Bug fix
+- We've fixed an issue related to email capture causing an infinite loop during checkout when form field is auto filled by browser
 - Date type attributes in transactional data were using the wrong locale time;this is now fixed
 - We've fixed an error related to importing orders having both virtual and physical products
 - In the case where Magento's double opt-in setting ('Need to confirm') was enabled, we used to import subscribers before they confirmed; this is now fixed
