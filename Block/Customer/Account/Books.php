@@ -88,8 +88,6 @@ class Books extends \Magento\Framework\View\Element\Template
         if (empty($this->client)) {
             $website = $this->getCustomer()->getStore()->getWebsite();
             $client = $this->helper->getWebsiteApiClient($website);
-            $client->setApiUsername($this->helper->getApiUsername($website))
-                ->setApiPassword($this->helper->getApiPassword($website));
             $this->client = $client;
         }
 

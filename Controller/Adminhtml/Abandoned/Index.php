@@ -48,7 +48,7 @@ class Index extends \Magento\Backend\App\AbstractAction
         $resultPage->setActiveMenu('Dotdigitalgroup_Email::abandoned');
         $resultPage->addBreadcrumb(__('Abandoned'), __('Abandoned'));
         $resultPage->addBreadcrumb(__('Reports'), __('Reports'));
-        $resultPage->getConfig()->getTitle()->prepend(__('Abandoned Report'));
+        $resultPage->getConfig()->getTitle()->prepend(__('Abandoned Cart Report'));
 
         return $resultPage;
     }

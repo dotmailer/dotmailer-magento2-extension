@@ -24,6 +24,15 @@
     <type name="Magento\Reports\Model\ResourceModel\Product\Collection">
         <plugin name="ddg_reports_product_collection" type="Dotdigitalgroup\Email\Plugin\ReportsProductCollectionPlugin"/>
     </type>
+    <type name="Magento\Framework\Mail\Template\TransportBuilder">
+        <plugin name="Ddg_TransportBuilderPlugin" type="Dotdigitalgroup\Email\Plugin\TransportBuilderPlugin" sortOrder="1" disabled="false" />
+    </type>
+    <type name="Magento\Email\Model\Template">
+        <plugin name="dotmailer_template_plugin" type="Dotdigitalgroup\Email\Plugin\TemplatePlugin" sortOrder="100" disabled="false"/>
+    </type>
+    <type name="Magento\Framework\Mail\MessageInterface">
+        <plugin name="dotmailer_message_plugin" type="Dotdigitalgroup\Email\Plugin\MessagePlugin" sortOrder="1" disabled="false" />
+    </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
             <argument name="prices" xsi:type="array">

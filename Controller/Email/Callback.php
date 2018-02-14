@@ -124,7 +124,9 @@ class Callback extends \Magento\Framework\App\Action\Action
                 $this->helper->error('OAUTH failed ' . $response->error, []);
             } elseif (isset($response->refresh_token)) {
                 //save the refresh token to the admin user
-                $adminUser->setRefreshToken($response->refresh_token);
+                $adminUser->setRefreshToken(
+                    $this->helper->encryptor->encrypt($response->refresh_token)
+                );
 
                 $this->userResource->save($adminUser);
             }

@@ -106,11 +106,6 @@ class Order
     public $orderStatus;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    public $localeDate;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
@@ -151,7 +146,6 @@ class Order
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helperData
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
@@ -161,8 +155,7 @@ class Order
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
         $this->attributeSet        = $attributeSet;
         $this->setFactory          = $setFactory;
@@ -170,7 +163,6 @@ class Order
         $this->productFactory      = $productFactory;
         $this->customerFactory     = $customerFactory;
         $this->helper              = $helperData;
-        $this->localeDate          = $localeDate;
         $this->productResource     = $productResource;
         $this->_storeManager       = $storeManagerInterface;
     }
@@ -185,11 +177,10 @@ class Order
     public function setOrderData($orderData)
     {
         $this->id = $orderData->getIncrementId();
-        $this->quoteId = $orderData->getQuoteId();
         $this->email = $orderData->getCustomerEmail();
+        $this->quoteId = $orderData->getQuoteId();
         $this->storeName = $orderData->getStoreName();
-
-        $this->purchaseDate = $this->localeDate->date($orderData->getCreatedAt())->format(\Zend_Date::ISO_8601);
+        $this->purchaseDate = $orderData->getCreatedAt();
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float)number_format(
             $orderData->getShippingAmount(),
@@ -465,8 +456,7 @@ class Order
                         $value = $productModel->getAttributeText($attributeCode);
                         break;
                     case 'date':
-                        $value = $this->localeDate->date($productModel->getData($attributeCode))
-                            ->format(\Zend_Date::ISO_8601);
+                        $value = $productModel->getData($attributeCode);
                         break;
                     default:
                         $value = $productModel->getData($attributeCode);
@@ -525,24 +515,29 @@ class Order
 
     /**
      * Exposes the class as an array of objects.
+     * Return any exposed data that will included into the import as transactinoal data for Orders.
      *
      * @return array
      */
     public function expose()
     {
-        return array_diff_key(
+        $properties = array_diff_key(
             get_object_vars($this),
             array_flip([
                 '_storeManager',
-                'localeDate',
                 'helper',
                 'customerFactory',
                 'productFactory',
                 'attributeCollection',
                 'setFactory',
-                'attributeSet'
+                'attributeSet',
+                'productResource'
             ])
         );
+        //remove null/0/false values
+        $properties = array_filter($properties);
+
+        return $properties;
     }
 
     /**
@@ -583,7 +578,7 @@ class Order
                 case 'timestamp':
                 case 'datetime':
                 case 'date':
-                    $value = $this->localeDate->date($orderData->$function())->format(\Zend_Date::ISO_8601);
+                    $value = $orderData->$function();
                     break;
 
                 default:
@@ -688,48 +683,7 @@ class Order
     }
 
     /**
-     * @return string
-     */
-    public function __sleep()
-    {
-        $properties = array_keys(get_object_vars($this));
-        $properties = array_diff(
-            $properties,
-            [
-                '_storeManager',
-                'localeDate',
-                'helper',
-                'customerFactory',
-                'productFactory',
-                'attributeCollection',
-                'setFactory',
-                'attributeSet'
-            ]
-        );
-
-        if (! $this->couponCode) {
-            $properties = array_diff($properties, ['couponCode']);
-        }
-
-        if (! $this->custom) {
-            $properties = array_diff($properties, ['custom']);
-        }
-
-        return $properties;
-    }
-
-    /**
-     * Init not serializable fields.
-     *
-     * @return null
-     */
-    public function __wakeup()
-    {
-    }
-
-    /**
      * @param mixed $product
-     *
      * @return string
      */
     public function getAttributeSetName($product)
