@@ -67,7 +67,11 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         $params = $this->getRequest()->getParams();
 
         //if no value to any of the required params send error response
-        if (empty($params['apiUser']) or empty($params['pass'])) {
+        if (empty($params['apiUser']) ||
+            empty($params['pass']) ||
+            empty($params['code']) ||
+            ! $this->helper->isCodeValid($params['code'])
+        ) {
             $this->sendAjaxResponse(true, $this->getErrorHtml());
         } else {
             //Save api end point
