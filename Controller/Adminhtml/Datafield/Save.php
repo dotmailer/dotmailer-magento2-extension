@@ -6,6 +6,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Datafield;
 class Save extends \Magento\Backend\App\AbstractAction
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation';
+
+    /**
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
@@ -62,13 +69,4 @@ class Save extends \Magento\Backend\App\AbstractAction
             }
         }
     }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::automation');
-    }
-
 }

@@ -19,6 +19,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
     const MODULE_NAME = 'Dotdigitalgroup_Email';
+    const DM_FIELD_LIMIT = 250;
 
     /**
      * @var \Magento\Config\Model\ResourceModel\Config

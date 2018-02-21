@@ -370,6 +370,8 @@ class Cron
     }
 
     /**
+     * Check if already ran for same time
+     *
      * @param $jobCode
      * @return bool
      */

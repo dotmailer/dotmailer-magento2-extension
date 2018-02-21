@@ -250,7 +250,7 @@ class Subscriber
             foreach ($contacts as $apiContact) {
                 if (isset($apiContact->suppressedContact)) {
                     $suppressedContactEmail = $apiContact->suppressedContact->email;
-                    if (!in_array($suppressedContactEmail, $suppressedEmails)) {
+                    if (!in_array($suppressedContactEmail, $suppressedEmails, true)) {
                         $suppressedEmails[] = $suppressedContactEmail;
                     }
                 }

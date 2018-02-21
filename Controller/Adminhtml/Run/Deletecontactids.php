@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 class Deletecontactids extends \Magento\Backend\App\AbstractAction
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+
+    /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
@@ -43,13 +50,5 @@ class Deletecontactids extends \Magento\Backend\App\AbstractAction
         $this->messageManager->addSuccessMessage('Contact id\'s reseted ' . $result);
 
         $this->_redirect($redirectUrl);
-    }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }
 }

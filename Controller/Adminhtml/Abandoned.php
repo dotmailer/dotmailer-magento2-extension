@@ -5,10 +5,9 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 abstract class Abandoned extends \Magento\Backend\App\Action
 {
     /**
-     * @return bool
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
      */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::abandoned');
-    }
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::abandoned';
 }

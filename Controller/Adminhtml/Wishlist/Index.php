@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 class Index extends \Magento\Backend\App\Action
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::wishlist';
+
+    /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
     private $resultPageFactory;
@@ -21,16 +28,6 @@ class Index extends \Magento\Backend\App\Action
     ) {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
-    }
-
-    /**
-     * Check the permission to run it.
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::wishlist');
     }
 
     /**

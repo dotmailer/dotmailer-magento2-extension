@@ -8,6 +8,13 @@ use Magento\Framework\Controller\ResultFactory;
 class MassResend extends ImporterController
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::importer';
+
+    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
     private $importerResource;
@@ -55,15 +62,5 @@ class MassResend extends ImporterController
         $resultRedirect->setPath('*/*/');
 
         return $resultRedirect;
-    }
-
-    /**
-     * Check the permission to run it.
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::importer');
     }
 }

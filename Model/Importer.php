@@ -242,8 +242,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             $this->helper->debug((string)$e, []);
         }
 
-        if (json_last_error_msg() != "No error") {
-            $jle = json_last_error_msg();
+        if ($this->serializer->jsonError) {
+            $jle = $this->serializer->jsonError;
             $format = "Json error ($jle) for Import type ($importType) / mode ($importMode) for website ($websiteId)";
             $this->helper->log($format);
         }

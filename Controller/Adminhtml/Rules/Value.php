@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 class Value extends \Magento\Backend\App\AbstractAction
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
+
+    /**
      * @var \Magento\Framework\App\Response\Http
      */
     private $http;
@@ -45,16 +52,6 @@ class Value extends \Magento\Backend\App\AbstractAction
         $this->http = $http;
         $this->escaper = $escaper;
         parent::__construct($context);
-    }
-
-    /**
-     * Check the permission to run it.
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::exclusion_rules');
     }
 
     /**

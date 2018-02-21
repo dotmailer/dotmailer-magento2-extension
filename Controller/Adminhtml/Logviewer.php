@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 class Logviewer extends \Magento\Backend\App\Action
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::logviewer';
+
+    /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
     private $resultPageFactory;
@@ -36,13 +43,5 @@ class Logviewer extends \Magento\Backend\App\Action
         $resultPage->getConfig()->getTitle()->prepend(__('Log Viewer'));
 
         return $resultPage;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::logviewer');
     }
 }
