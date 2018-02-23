@@ -31,10 +31,10 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Books constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data               $helper
-     * @param \Magento\Customer\Model\Session                  $customerSession
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param array                                            $data
+     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
+     * @param \Magento\Customer\Model\Session                               $customerSession
+     * @param \Magento\Framework\View\Element\Template\Context              $context
+     * @param array                                                         $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -101,8 +101,7 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function getCanShowAdditionalBooks()
     {
-        return $this->_getWebsiteConfigFromHelper(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS,
+        return $this->helper->getCanShowAdditionalSubscriptions(
             $this->getCustomer()->getStore()->getWebsite()
         );
     }
@@ -115,18 +114,10 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getAdditionalBooksToShow()
     {
         $additionalBooksToShow = [];
-        $additionalFromConfig = $this->_getWebsiteConfigFromHelper(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS,
-            $this->getCustomer()->getStore()->getWebsite()
-        );
+        $additionalFromConfig = $this->helper->getAddressBookIdsToShow(
+            $this->getCustomer()->getStore()->getWebsite());
 
         if (! empty($additionalFromConfig)) {
-            $additionalFromConfig = explode(',', $additionalFromConfig);
-            //unset the default option - for multi select
-            if ($additionalFromConfig[0] == '0') {
-                unset($additionalFromConfig[0]);
-            }
-
             $this->getConnectorContact();
             if ($this->contactId) {
                 $addressBooks = $this->_getApiClient()
@@ -169,8 +160,7 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function getCanShowDataFields()
     {
-        return $this->_getWebsiteConfigFromHelper(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS,
+        return $this->helper->getCanShowDataFields(
             $this->getCustomer()->getStore()->getWebsite()
         );
     }

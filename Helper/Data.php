@@ -1788,4 +1788,57 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $response;
     }
+
+    /**
+     * Can show additional books?
+     *
+     * @param $website
+     * @return mixed
+     */
+    public function getCanShowAdditionalSubscriptions($website)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS,
+            $website
+        );
+    }
+
+    /**
+     * Can show data fields?
+     *
+     * @param $website
+     * @return mixed
+     */
+    public function getCanShowDataFields($website)
+    {
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS,
+            $website
+        );
+    }
+
+    /**
+     * Address book ids to display
+     *
+     * @param $website
+     * @return array
+     */
+    public function getAddressBookIdsToShow($website)
+    {
+        $bookIds = $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS,
+            $website
+        );
+
+        if (empty($bookIds))
+            return array();
+
+        $additionalFromConfig = explode(',', $bookIds);
+        //unset the default option - for multi select
+        if ($additionalFromConfig[0] == '0') {
+            unset($additionalFromConfig[0]);
+        }
+
+        return $additionalFromConfig;
+    }
 }
