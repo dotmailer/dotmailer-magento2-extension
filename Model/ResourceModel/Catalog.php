@@ -69,8 +69,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Catalog constructor.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\Product\Index\Collection $productIndexCollection
      * @param \Magento\Catalog\Model\Config $config
@@ -82,8 +82,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param null $connectionName
      */
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\Product\Index\Collection $productIndexCollection,
         \Magento\Catalog\Model\Config $config,

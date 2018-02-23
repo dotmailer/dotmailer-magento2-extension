@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Most viewed block
+ *
+ * @api
+ */
 class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -26,16 +31,17 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Mostviewed constructor.
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Catalog\Block\Product\Context $context,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,

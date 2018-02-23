@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Dashboard;
 
+/**
+ * Dashboard information block
+ *
+ * @api
+ */
 class Information extends \Magento\Backend\Block\Widget\Grid\Extended
 {
 
@@ -31,17 +36,17 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Information constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Backend\Helper\Data $backendHelper
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\App\ProductMetadataFactory $productMetadata
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
+        \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\ProductMetadataFactory $productMetadata,
         array $data = []

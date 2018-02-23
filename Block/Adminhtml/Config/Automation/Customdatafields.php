@@ -28,15 +28,15 @@ class Customdatafields extends
     /**
      * Customdatafields constructor.
      *
-     * @param \Magento\Framework\Data\Form\Element\Factory                         $elementFactory
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Framework\Data\Form\Element\Factory $elementFactory
      * @param \Dotdigitalgroup\Email\Model\Config\Source\Automation\ProgramFactory $programFactory
-     * @param \Magento\Backend\Block\Template\Context                              $context
-     * @param array                                                                $data
+     * @param array $data
      */
     public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Data\Form\Element\Factory $elementFactory,
         \Dotdigitalgroup\Email\Model\Config\Source\Automation\ProgramFactory $programFactory,
-        \Magento\Backend\Block\Template\Context $context,
         array $data = []
     ) {
         $this->elementFactory = $elementFactory;

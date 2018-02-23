@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
+/**
+ * Exclusion rules main tab block
+ *
+ * @api
+ */
 class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**
@@ -12,16 +17,16 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
     /**
      * Main constructor.
      *
-     * @param \Magento\Framework\Data\FormFactory   $formFactory
-     * @param \Magento\Framework\Registry           $registry
      * @param \Magento\Backend\Block\Widget\Context $context
-     * @param \Magento\Store\Model\System\Store     $systemStore
-     * @param array                                 $data
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Data\FormFactory $formFactory
+     * @param \Magento\Store\Model\System\Store $systemStore
+     * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Data\FormFactory $formFactory,
-        \Magento\Framework\Registry $registry,
         \Magento\Backend\Block\Widget\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Data\FormFactory $formFactory,
         \Magento\Store\Model\System\Store $systemStore,
         array $data = []
     ) {

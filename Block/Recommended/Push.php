@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Push block
+ *
+ * @api
+ */
 class Push extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -27,19 +32,19 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Push constructor.
      *
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
-     * @param \Dotdigitalgroup\Email\Helper\Data                        $helper
-     * @param \Magento\Framework\Pricing\Helper\Data                    $priceHelper
-     * @param \Dotdigitalgroup\Email\Helper\Recommended                 $recommended
-     * @param \Magento\Catalog\Block\Product\Context                    $context
-     * @param array                                                     $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
+     * @param array $data
      */
     public function __construct(
+        \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
-        \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
         parent::__construct($context, $data);

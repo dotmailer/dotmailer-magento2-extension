@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Customer\Account;
 
+/**
+ * Books block
+ *
+ * @api
+ */
 class Books extends \Magento\Framework\View\Element\Template
 {
     /**
@@ -31,15 +36,15 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Books constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Magento\Customer\Model\Session                               $customerSession
-     * @param \Magento\Framework\View\Element\Template\Context              $context
-     * @param array                                                         $data
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param array $data
      */
     public function __construct(
+        \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\Session $customerSession,
-        \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
         $this->helper          = $helper;

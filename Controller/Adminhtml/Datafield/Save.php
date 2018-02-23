@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Datafield;
 
-
 class Save extends \Magento\Backend\App\AbstractAction
 {
     /**
