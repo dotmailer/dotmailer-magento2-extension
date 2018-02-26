@@ -4,13 +4,12 @@ define(['domReady!'], function () {
     /**
      * Create script tag
      */
-    function createTag() {
+    function createTag(regionPrefix) {
         var connector = document.createElement('script'),
             s = document.getElementsByTagName('script')[0];
 
         connector.type = 'text/javascript';
-        connector.src =
-            (document.location.protocol === 'https:' ? 'https://' : 'http://') + 't.trackedlink.net/_dmpt.js';
+        connector.src = '//' + regionPrefix + 't.trackedlink.net/_dmpt.js';
         s.parentNode.insertBefore(connector, s);
     }
 
@@ -20,7 +19,7 @@ define(['domReady!'], function () {
      */
     return function (trackingCode) {
         if (trackingCode.isEnabled) {
-            createTag();
+            createTag(trackingCode.regionPrefix);
         }
     };
 });

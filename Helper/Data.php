@@ -1841,4 +1841,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $additionalFromConfig;
     }
+
+    /**
+     * @return string
+     */
+    public function getRegionPrefix()
+    {
+        $websiteId = $this->getWebsite()->getId();
+        $apiEndpoint = $this->getApiEndPointFromConfig($websiteId);
+
+        if (empty($apiEndpoint))
+            return '';
+
+        preg_match("/https:\/\/(.*)api.dotmailer.com/", $apiEndpoint, $matches);
+        return $matches[1];
+    }
 }
