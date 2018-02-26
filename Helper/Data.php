@@ -258,7 +258,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function authIpAddress()
+    public function isAllowed()
     {
         if ($ipString = $this->getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES,

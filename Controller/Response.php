@@ -41,18 +41,11 @@ class Response extends \Magento\Framework\App\Action\Action
      */
     public function authenticate()
     {
-        //authenticate ip address
-        $authIp = $this->helper->authIpAddress();
-        if (!$authIp) {
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __('You are not authorised to view content of this page.')
-            );
-        }
-
-        //authenticate
+        $authIp = $this->helper->isAllowed();
         $code = $this->getRequest()->getParam('code');
         $auth = $this->helper->auth($code);
-        if (!$auth) {
+
+        if (! $authIp || ! $auth) {
             return $this->sendResponse();
         }
 
