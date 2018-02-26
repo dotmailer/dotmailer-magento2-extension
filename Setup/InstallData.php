@@ -390,7 +390,7 @@ class InstallData implements InstallDataInterface
      */
     private function generateAndSaveCode()
     {
-        $code = $this->randomMath->getRandomString(8);
+        $code = $this->randomMath->getRandomString(32);
         $this->config->saveConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
             $code,
