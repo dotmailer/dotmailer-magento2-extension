@@ -281,7 +281,7 @@ class Cron
             return;
         }
 
-        $this->quoteFactory->create()->proccessAbandonedCarts();
+        $this->quoteFactory->create()->processAbandonedCarts();
     }
 
     /**
