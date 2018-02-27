@@ -106,7 +106,8 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
             $objectManager->create(\Magento\Framework\Stdlib\DateTime\DateTime::class),
             $objectManager->create(\Magento\Quote\Model\ResourceModel\Quote::class),
             $objectManager->create(\Magento\Quote\Model\QuoteFactory::class),
-            $objectManager->create(\Magento\User\Model\ResourceModel\User::class)
+            $objectManager->create(\Magento\User\Model\ResourceModel\User::class),
+            $objectManager->create(\Magento\Framework\Encryption\EncryptorInterface::class)
         );
         $apiEndpoint = $helper->getApiEndpoint($website, $mockClient);
         $this->assertEquals(

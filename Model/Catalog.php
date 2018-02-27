@@ -27,24 +27,24 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     /**
      * Catalog constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
-     * @param ResourceModel\Catalog\CollectionFactory $catalogCollection
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param ResourceModel\Catalog $catalogResource
+     * @param ResourceModel\Catalog\CollectionFactory $catalogCollection
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,
         \Magento\Framework\Stdlib\DateTime $dateTime,
+        array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = []
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
         $this->catalogResource = $catalogResource;
         $this->catalogCollection = $catalogCollection;

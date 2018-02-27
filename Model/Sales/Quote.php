@@ -113,6 +113,11 @@ class Quote
      */
     public $totalGuests = 0;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned
+     */
+    private $abandonedResource;
+
 
     /**
      * Quote constructor.
@@ -124,6 +129,7 @@ class Quote
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $abandonedCollectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
@@ -138,6 +144,7 @@ class Quote
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $abandonedCollectionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
@@ -148,6 +155,7 @@ class Quote
         $this->helper = $helper;
         $this->abandonedFactory = $abandonedFactory;
         $this->abandonedCollectionFactory = $abandonedCollectionFactory;
+        $this->abandonedResource = $abandonedResource;
         $this->campaignCollection = $campaignCollection;
         $this->campaignResource = $campaignResource;
         $this->campaignFactory = $campaignFactory;
@@ -159,11 +167,11 @@ class Quote
     }
 
     /**
-     * Proccess abandoned carts.
+     * Process abandoned carts.
      *
      * @return array
      */
-    public function proccessAbandonedCarts()
+    public function processAbandonedCarts()
     {
         $result = [];
         $stores = $this->helper->getStores();
@@ -180,12 +188,12 @@ class Quote
                 $secondCustomerEnabled ||
                 $thirdCustomerEnabled
             ) {
-                $result[$storeId]['firstCustomer'] = $this->proccessCustomerFirstAbandonedCart($storeId);
+                $result[$storeId]['firstCustomer'] = $this->processCustomerFirstAbandonedCart($storeId);
             }
 
             //second customer
             if ($secondCustomerEnabled) {
-                $result[$storeId]['secondCustomer'] = $this->proccessExistingAbandonedCart(
+                $result[$storeId]['secondCustomer'] = $this->processExistingAbandonedCart(
                     $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_TWO, $storeId),
                     $storeId,
                     $websiteId,
@@ -195,7 +203,7 @@ class Quote
 
             //third customer
             if ($thirdCustomerEnabled) {
-                $result[$storeId]['thirdCustomer'] = $this->proccessExistingAbandonedCart(
+                $result[$storeId]['thirdCustomer'] = $this->processExistingAbandonedCart(
                     $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_THREE, $storeId),
                     $storeId,
                     $websiteId,
@@ -208,11 +216,11 @@ class Quote
                 $secondGuestEnabled ||
                 $thirdGuestEnabled
             ) {
-                $result[$storeId]['firstGuest'] = $this->proccessGuestFirstAbandonedCart($storeId);
+                $result[$storeId]['firstGuest'] = $this->processGuestFirstAbandonedCart($storeId);
             }
             //second guest
             if ($secondGuestEnabled) {
-                $result[$storeId]['secondGuest'] = $this->proccessExistingAbandonedCart(
+                $result[$storeId]['secondGuest'] = $this->processExistingAbandonedCart(
                     $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_TWO, $storeId),
                     $storeId,
                     $websiteId,
@@ -222,7 +230,7 @@ class Quote
             }
             //third guest
             if ($thirdGuestEnabled) {
-                $result[$storeId]['thirdGuest'] = $this->proccessExistingAbandonedCart(
+                $result[$storeId]['thirdGuest'] = $this->processExistingAbandonedCart(
                     $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_THREE, $storeId),
                     $storeId,
                     $websiteId,
@@ -446,7 +454,7 @@ class Quote
      * @param $storeId
      * @return int|string
      */
-    private function proccessCustomerFirstAbandonedCart($storeId)
+    private function processCustomerFirstAbandonedCart($storeId)
     {
         $result = 0;
         $abandonedNum = 1;
@@ -486,10 +494,14 @@ class Quote
             $abandonedModel = $this->abandonedFactory->create()
                 ->loadByQuoteId($quoteId);
 
-            // abandoned cart already sent and the items content are the same
-            if ($abandonedModel->getId() && ! $this->isItemsChanged($quote, $abandonedModel)) {
+            if ($this->abandonedCartAlreadyExists($abandonedModel) &&
+                $this->shouldNotSendACAgain($abandonedModel, $quote)) {
+                if ($this->shouldDeleteAbandonedCart($quote)) {
+                    $this->deleteAbandonedCart($abandonedModel);
+                }
                 continue;
             }
+
             //create abandoned cart
             $this->createAbandonedCart($abandonedModel, $quote, $itemIds);
 
@@ -504,7 +516,6 @@ class Quote
 
         return $result;
     }
-
 
     /**
      * @param $allItemsIds
@@ -615,7 +626,7 @@ class Quote
      * @param $storeId
      * @return int
      */
-    private function proccessGuestFirstAbandonedCart($storeId)
+    private function processGuestFirstAbandonedCart($storeId)
     {
         $result = 0;
         $abandonedNum = 1;
@@ -654,8 +665,11 @@ class Quote
             $abandonedModel = $this->abandonedFactory->create()
                 ->loadByQuoteId($quoteId);
 
-            // abandoned cart already sent and the items content are the same
-            if ($abandonedModel->getId() && !$this->isItemsChanged($quote, $abandonedModel)) {
+            if ($this->abandonedCartAlreadyExists($abandonedModel) &&
+                $this->shouldNotSendACAgain($abandonedModel, $quote)) {
+                if ($this->shouldDeleteAbandonedCart($quote)) {
+                    $this->deleteAbandonedCart($abandonedModel);
+                }
                 continue;
             }
             //create abandoned cart
@@ -673,6 +687,48 @@ class Quote
         return $result;
     }
 
+    /**
+     * @param $abandonedModel
+     *
+     * @return mixed
+     */
+    private function abandonedCartAlreadyExists($abandonedModel)
+    {
+        return $abandonedModel->getId();
+    }
+
+    /**
+     * @param $abandonedModel
+     * @param $quote
+     *
+     * @return bool
+     */
+    private function shouldNotSendACAgain($abandonedModel, $quote)
+    {
+        return
+            !$quote->getIsActive() ||
+            $quote->getItemsCount() == 0 ||
+            !$this->isItemsChanged($quote, $abandonedModel);
+    }
+
+    /**
+     * @param $quote
+     *
+     * @return bool
+     */
+    private function shouldDeleteAbandonedCart($quote)
+    {
+        return !$quote->getIsActive() || $quote->getItemsCount() == 0;
+    }
+
+    /**
+     * @param $abandonedModel
+     * @throws \Exception
+     */
+    private function deleteAbandonedCart($abandonedModel)
+    {
+        $this->abandonedResource->delete($abandonedModel);
+    }
 
     /**
      * @param $campaignId
@@ -683,7 +739,7 @@ class Quote
      *
      * @return int
      */
-    private function proccessExistingAbandonedCart($campaignId, $storeId, $websiteId, $number, $guest = false)
+    private function processExistingAbandonedCart($campaignId, $storeId, $websiteId, $number, $guest = false)
     {
         $result = 0;
         $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
@@ -714,7 +770,7 @@ class Quote
         if (empty($quoteIds)) {
             return $result;
         }
-        $quoteCollection = $this->getProccessedQuoteByIds($quoteIds, $storeId);
+        $quoteCollection = $this->getProcessedQuoteByIds($quoteIds, $storeId);
 
         //found abandoned carts
         if ($quoteCollection->getSize()) {
@@ -739,16 +795,19 @@ class Quote
             $abandonedModel = $this->abandonedFactory->create()
                 ->loadByQuoteId($quoteId);
 
-            $isActive = $quote->getIsActive();
+            if ($this->shouldNotSendACAgain($abandonedModel, $quote)) {
+                if ($this->shouldDeleteAbandonedCart($quote)) {
+                    $this->deleteAbandonedCart($abandonedModel);
+                }
+                continue;
+            }
+
             $abandonedModel->setAbandonedCartNumber($number)
-                ->setIsActive($isActive)
                 ->setQuoteUpdatedAt($quote->getUpdatedAt())
                 ->save();
-            //send the email campaign if is still active
-            if ($isActive) {
-                $this->sendEmailCampaign($email, $quote, $campaignId, $number, $websiteId);
-                $result++;
-            }
+
+            $this->sendEmailCampaign($email, $quote, $campaignId, $number, $websiteId);
+            $result++;
         }
 
         return $result;
@@ -791,7 +850,7 @@ class Quote
      * @param $storeId
      * @return mixed
      */
-    private function getProccessedQuoteByIds($quoteIds, $storeId)
+    private function getProcessedQuoteByIds($quoteIds, $storeId)
     {
         $quoteCollection = $this->quoteCollectionFactory->create()
             ->addFieldToFilter('entity_id', ['in' => $quoteIds]);

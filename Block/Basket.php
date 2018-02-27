@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+/**
+ * Basket block
+ *
+ * @api
+ */
 class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
@@ -33,17 +38,17 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Basket constructor.
      *
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
-     * @param \Magento\Quote\Model\QuoteFactory         $quoteFactory
-     * @param \Magento\Catalog\Block\Product\Context    $context
-     * @param \Dotdigitalgroup\Email\Helper\Data        $helper
-     * @param \Magento\Framework\Pricing\Helper\Data    $priceHelper
-     * @param array                                     $data
+     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param array $data
      */
     public function __construct(
+        \Magento\Catalog\Block\Product\Context $context,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
-        \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []

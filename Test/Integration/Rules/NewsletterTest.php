@@ -43,7 +43,7 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
     }
 
     /**
-     * @return void
+     *
      */
     public function testContactDataFieldsAreUpdatedByEmail()
     {
@@ -107,14 +107,15 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $mockStore->method('getWebsite')->willReturn('0');
         $mockHelper->method('isEnabled')->willReturn('1');
         $mockHelper->method('getWebsiteApiClient')->willReturn($mockClient);
+        $mockHelper->method('getCanShowDataFields')->willReturn(true);
         $mockClient->method('getContactById')->willReturn((object) ['id' => '111']);
         $mockClient->method('setApiUsername')->willReturn($mockClient);
         $mockClient->method('getDataFields')->willReturn([]);
         $mockClient->method('setApipassword')->willReturn($mockClient);
         $mockClient->method('getContactById')->willReturn((object) ['id' => '111']);
-        $mockClient->expects($this->atLeastOnce())->method('updateContactDatafieldsByEmail')->willReturn(true);
+        $mockClient->expects($this->atLeastOnce())->method('updateContactDatafieldsByEmail')->willReturn([]);
 
-        $this->getRequest()->setParam('data_fields', []);
+        $this->getRequest()->setParam('data_fields', ['key' => 'dummy']);
 
         $this->dispatch('connector/customer/newsletter');
     }

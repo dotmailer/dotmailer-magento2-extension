@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+/**
+ * Wishlist block
+ *
+ * @api
+ */
 class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 {
 
@@ -32,19 +37,20 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Wishlist constructor.
+     *
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
-     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param array $data
      */
     public function __construct(
+        \Magento\Catalog\Block\Product\Context $context,
         \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
-        \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []

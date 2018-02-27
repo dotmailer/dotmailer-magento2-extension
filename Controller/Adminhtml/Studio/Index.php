@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 class Index extends \Magento\Backend\App\AbstractAction
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::studio';
+
+    /**
      * Execute method.
      */
     public function execute()
@@ -25,15 +32,5 @@ class Index extends \Magento\Backend\App\AbstractAction
         //Load and render layout if there is $refreshToken
         $this->_view->loadLayout();
         $this->_view->renderLayout();
-    }
-
-    /**
-     * Check the permission to run it.
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::studio');
     }
 }

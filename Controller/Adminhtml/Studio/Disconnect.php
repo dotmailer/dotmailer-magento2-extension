@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 class Disconnect extends \Magento\Backend\App\AbstractAction
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::studio';
+
+    /**
      * Disconnect and remote the refresh token.
      *
      * @return void
@@ -24,15 +31,5 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
         }
 
         $this->_redirect('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
-    }
-
-    /**
-     * Check the permission to run it.
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::studio');
     }
 }

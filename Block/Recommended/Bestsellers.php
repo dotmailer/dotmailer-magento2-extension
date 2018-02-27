@@ -4,6 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 use Magento\Store\Model\Store;
 
+/**
+ * Bestsellers block
+ *
+ * @api
+ */
 class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -28,18 +33,19 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Bestsellers constructor.
+     *
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param array $data
      */
     public function __construct(
+        \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
-        \Magento\Catalog\Block\Product\Context $context,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         array $data = []
     ) {

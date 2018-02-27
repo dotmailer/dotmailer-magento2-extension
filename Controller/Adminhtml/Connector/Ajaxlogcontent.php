@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Connector;
 class Ajaxlogcontent extends \Magento\Backend\App\Action
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     private $file;
@@ -69,13 +76,5 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
             'header' => $header
         ];
         $this->getResponse()->representJson($this->jsonHelper->jsonEncode($response));
-    }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }
 }

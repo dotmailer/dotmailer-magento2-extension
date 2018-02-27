@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Wishlist products block
+ *
+ * @api
+ */
 class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -41,6 +46,8 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Wishlistproducts constructor.
+     *
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
@@ -48,10 +55,10 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Magento\Catalog\Block\Product\Context $context
      * @param array $data
      */
     public function __construct(
+        \Magento\Catalog\Block\Product\Context $context,
         \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
@@ -59,7 +66,6 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
-        \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
         parent::__construct($context, $data);

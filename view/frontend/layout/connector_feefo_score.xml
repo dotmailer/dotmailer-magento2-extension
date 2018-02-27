@@ -5,6 +5,6 @@
     <update handle="formkey"/>
     <container name="root">
         <block class="Dotdigitalgroup\Email\Block\Feefo"
-               name="ddg.feefo.service.score" template="Dotdigitalgroup_Email::feefo/score.phtml"/>
+               name="ddg.feefo.service.score" template="Dotdigitalgroup_Email::feefo/score.phtml" cacheable="false"/>
     </container>
 </layout>

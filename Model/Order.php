@@ -25,20 +25,20 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * Order constructor.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesCollection
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesCollection
+     * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param array $data
      */
     public function __construct(
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesCollection,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesCollection,
+        array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = []
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
     
         $this->salesCollection = $salesCollection;

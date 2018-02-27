@@ -71,6 +71,11 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     public $orderResource;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory | \PHPUnit_Framework_MockObject_MockObject
+     */
+    public $contactCollectionFactory;
+
+    /**
      * @return void
      */
     public function setUp()
@@ -94,13 +99,16 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->helper = $this->getMock(\Dotdigitalgroup\Email\Helper\Data::class, [], [], '', false);
         $this->salesOrderFactory = $this->getMock('Magento\Sales\Model\OrderFactory', [], [], '', false);
         $this->storeManager = ObjectManager::getInstance()->get(\Magento\Store\Model\StoreManagerInterface::class);
-
+        $this->contactCollectionFactory = ObjectManager::getInstance()->get(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class
+        );
         $this->_orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
             $this->importerFactory,
             $this->orderFactory,
             $this->account,
             $this->connectorOrderFactory,
             $this->contactResource,
+            $this->contactCollectionFactory,
             $this->orderResource,
             $this->helper,
             $this->salesOrderFactory,

@@ -15,6 +15,21 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.4.5
+
+###### Improvements
+- We've done some code refactoring to comply with Magento extension best practices
+- On installation, we now auto generate a unique secret key used to access extension dynamic content
+- We now inject x-forward-for alternative headers to the RemoteAddress for compatibility with load balancers
+- We've changed our dynamic content blocks to be non-cacheable
+
+
+###### Bug fix
+- We've fixed an issue in the upgrade script whereby the abandoned cart report table was not created for version 2.3.8
+- Page Tracking data wasn't sent to dotmailer accounts located in region 2 or 3 ; this is now fixed 
+- The abandoned cart process wasn't stop when all items had been removed from the cart ; this no longer happens
+- We've fixed some issues related to saving the "Customer Addressbook Preference" setting (#501, #502)
+
 ## V2.4.4
 
 ###### New Features

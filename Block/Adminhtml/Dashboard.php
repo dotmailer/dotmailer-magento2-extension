@@ -3,7 +3,9 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Dashboard.
+ * Dashboard block
+ *
+ * @api
  */
 class Dashboard extends \Magento\Backend\Block\Widget\Container
 {

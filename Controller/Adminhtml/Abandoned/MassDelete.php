@@ -8,6 +8,13 @@ use Magento\Ui\Component\MassAction\Filter;
 class MassDelete extends \Magento\Backend\App\Action
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::abandoned';
+
+    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned
      */
     public $abandonedResource;
@@ -69,13 +76,5 @@ class MassDelete extends \Magento\Backend\App\Action
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
         return $resultRedirect->setPath('*/*/');
-    }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::abandoned');
     }
 }

@@ -250,9 +250,12 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
                 $typeId = $data['order_id'];
                 $automationTypeId = $data['automationType'];
                 $exists = $this->emailAutomationFactory->create()
-                    ->hasAutomationEnrolmentExists($typeId, $automationTypeId);
+                    ->addFieldToFilter('type_id', $typeId)
+                    ->addFieldToFilter('automation_type', $automationTypeId)
+                    ->setPageSize(1);
+
                 //automation type, and type should be unique
-                if (! $exists) {
+                if (! $exists->getSize()) {
                     $automation = $this->automationFactory->create()
                         ->setEmail($data['email'])
                         ->setAutomationType($data['automationType'])

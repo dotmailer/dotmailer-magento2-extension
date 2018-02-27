@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
+/**
+ * Exclusion rules conditions tab block
+ *
+ * @api
+ */
 class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
     \Magento\Backend\Block\Widget\Tab\TabInterface
 {
@@ -13,16 +18,16 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
     /**
      * Conditions constructor.
      *
-     * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Magento\Framework\Registry $registry
      * @param \Magento\Backend\Block\Widget\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Data\FormFactory $formFactory
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $options
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Data\FormFactory $formFactory,
-        \Magento\Framework\Registry $registry,
         \Magento\Backend\Block\Widget\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Data\FormFactory $formFactory,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $options,
         array $data = []
     ) {

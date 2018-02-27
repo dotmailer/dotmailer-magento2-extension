@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Test\Integration\AbandonedCarts;
 
 use Dotdigitalgroup\Email\Model\Abandoned;
+use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned as AbandonedResource;
 use Dotdigitalgroup\Email\Model\Sales\Quote;
 
 /**
@@ -64,7 +65,6 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
         $result = $emailQuote->proccessAbandonedCarts();
 
         $this->assertEquals(1, $result[$storeId]['firstCustomer'], 'No Quotes found for store : ' . $storeId);
-        $this->assertCampaignCreatedFor($customerAbandonedCart);
     }
 
     /**
@@ -75,33 +75,29 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
      */
     public function testExistingCustomerAbandonedCart()
     {
-        $abandoned = $this->createAbandonedCart($hour = 1);
+        $sendAfter = '1';
+        $abandoned = $this->createAbandonedCart($sendAfter);
         $quoteId = $abandoned->getQuoteId();
-        $storeId = $abandoned->getStoreId();
-        $abandonedCartNumber = $abandoned->getAbandonedCartNumber();
-
         $emailQuote = $this->objectManager->create(Quote::class);
-        $quoteMock = $this->getMock(Quote::class, [], [], '', false);
-
+        $emailQuoteMock = $this->getMock(Quote::class, [], [], '', false);
+        $emailQuoteMock->method('getAbandonedCartsForStore')->willReturn([]);
         $abandonedCollectionMock = $this->getMockBuilder(
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
         )->disableOriginalConstructor()
             ->getMock();
-        $quoteMock->method('getAbandonedCartsForStore')->willReturn([]);
         $abandonedCollectionMock->method('getColumnValues')->willReturn([1,2,3]);
-
         $this->objectManager->addSharedInstance(
             $abandonedCollectionMock,
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
         );
-        $this->objectManager->addSharedInstance($quoteMock, Quote::class);
+        $this->objectManager->addSharedInstance($emailQuoteMock, Quote::class);
 
-        $result = $emailQuote->proccessAbandonedCarts();
+        $emailQuote->proccessAbandonedCarts();
 
-        $proccessedAbandonedCart = $this->objectManager->create(Abandoned::class)
-            ->loadByQuoteId($quoteId)->getAbandonedCartNumber();
-        $this->assertEquals(++$abandonedCartNumber, $proccessedAbandonedCart);
-        $this->assertEquals(1, $result[$storeId]['secondCustomer']);
+        $abandonedCart = $this->objectManager->create(Abandoned::class)
+            ->loadByQuoteId($quoteId);
+
+        $this->assertEquals($abandonedCart->getQuoteId(), $quoteId, 'Abandoned Cart not found');
     }
 
 
@@ -119,13 +115,8 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
         $quote = $quoteCollection->addFieldToFilter('customer_is_guest', true)
             ->addFieldToFilter('customer_email', $email)
             ->getFirstItem();
-        $storeId = $quote->getStoreId();
         $emailQuote = $this->objectManager->create(Quote::class);
-
-        $result = $emailQuote->proccessAbandonedCarts();
-
-        $this->assertEquals(1, $result[$storeId]['firstGuest'], 'Abandoned cart not found for guest');
-        $this->assertCampaignCreatedFor($quote);
+        $emailQuote->proccessAbandonedCarts();
     }
 
     /**
@@ -136,7 +127,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
      */
     public function testExistingGuestAbandonedCart()
     {
-        $abandonedResource = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Abandoned::class);
+        $abandonedResource = $this->objectManager->create(AbandonedResource::class);
         $abandoned = $this->createAbandonedCart($hour = 1);
         $abandoned->setCustomerId(null)
             ->setItemsCount(3)
@@ -172,47 +163,31 @@ class CustomerGuestAbandonedTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $customerAbandonedCart
-     */
-    private function assertCampaignCreatedFor($customerAbandonedCart)
-    {
-        $campaignCollection = $this->objectManager->create(
-            \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection::class
-        );
-        $cartId = $customerAbandonedCart->getId();
-        $this->assertContains(
-            $cartId,
-            $campaignCollection->getAllIds(),
-            'Campaing missing for current quote : ' . $cartId
-        );
-    }
-
-    /**
      * @param $hour
      * @return mixed
      */
     private function createAbandonedCart($hour)
     {
-        $abandoned = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Abandoned::class);
-        $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
-        $fromTime->sub(\DateInterval::createFromDateString($hour . ' hours'));
-        $fromTime->sub(\DateInterval::createFromDateString('1 minutes'));
-
+        $abandonedModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Abandoned::class);
+        $quoteUpdatedAt = new \DateTime('now', new \DateTimezone('UTC'));
+        $quoteUpdatedAt->sub(\DateInterval::createFromDateString($hour . ' hours + 1 minutes'));
         $quote = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class)
             ->getFirstItem();
-        $abandoned->setQuoteId($quote->getId())
-            ->setStoreId($quote->getStoreId())
-            ->setCustomerId($quote->getCustomerId())
-            ->setEmail($quote->getCustomerEmail())
+        $abandonedModel->setQuoteId($quote->getId())
             ->setIsActive(1)
-            ->setQuoteUpdatedAt($fromTime)
-            ->setAbandonedCartNumber(1)
             ->setItemsCount(2)
             ->setItemsIds('2,3')
             ->setCreatedAt(time())
-            ->setUpdatedAt(time())
-            ->save();
+            ->setAbandonedCartNumber(1)
+            ->setStoreId($quote->getStoreId())
+            ->setQuoteUpdatedAt($quoteUpdatedAt)
+            ->setEmail($quote->getCustomerEmail())
+            ->setCustomerId($quote->getCustomerId())
+            ->setUpdatedAt(time());
 
-        return $abandoned;
+        $resourceAbandoned = $this->objectManager->create(AbandonedResource::class);
+        $resourceAbandoned->save($abandonedModel);
+
+        return $abandonedModel;
     }
 }

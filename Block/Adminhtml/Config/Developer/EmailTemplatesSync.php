@@ -30,7 +30,7 @@ class EmailTemplatesSync extends \Magento\Config\Block\System\Config\Form\Field
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/templatesync');
 

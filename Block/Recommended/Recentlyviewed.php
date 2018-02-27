@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Recently viewed block
+ *
+ * @api
+ */
 class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -37,21 +42,21 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Recentlyviewed constructor.
      *
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Magento\Customer\Model\SessionFactory $sessionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Magento\Catalog\Block\Product\Context $context
      * @param array $data
      */
     public function __construct(
+        \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Magento\Customer\Model\SessionFactory $sessionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
-        \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
         parent::__construct($context, $data);

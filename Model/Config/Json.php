@@ -9,12 +9,22 @@ namespace Dotdigitalgroup\Email\Model\Config;
 class Json
 {
     /**
+     * @var null|string
+     */
+    public $jsonError;
+
+    /**
      * @param array|bool|float|int|null|string $data
      * @return string
      */
     public function serialize($data)
     {
-        return json_encode($data);
+        $json = json_encode($data);
+        $this->jsonError = null;
+        if (json_last_error_msg() != "No error") {
+            $this->jsonLastError = json_last_error_msg();
+        }
+        return $json;
     }
 
     /**
@@ -23,6 +33,11 @@ class Json
      */
     public function unserialize($string)
     {
-        return json_decode($string, true);
+        $data = json_decode($string, true);
+        $this->jsonError = null;
+        if (json_last_error_msg() != "No error") {
+            $this->jsonLastError = json_last_error_msg();
+        }
+        return $data;
     }
 }

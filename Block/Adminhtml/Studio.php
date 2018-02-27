@@ -4,6 +4,11 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 
+/**
+ * Automation studio block
+ *
+ * @api
+ */
 class Studio extends \Magento\Backend\Block\Widget\Form
 {
 

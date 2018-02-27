@@ -65,8 +65,8 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Review constructor.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\Review\Model\ReviewFactory $reviewFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
@@ -77,8 +77,8 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param null $connectionName
      */
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,

@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 class Contact extends \Magento\Backend\App\Action
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::contact';
+
+    /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
     private $resultPageFactory;
@@ -38,13 +45,5 @@ class Contact extends \Magento\Backend\App\Action
         $resultPage->getConfig()->getTitle()->prepend(__('Contacts'));
 
         return $resultPage;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::contact');
     }
 }

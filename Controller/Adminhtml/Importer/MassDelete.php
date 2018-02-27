@@ -9,6 +9,13 @@ use Magento\Ui\Component\MassAction\Filter;
 class MassDelete extends ImporterController
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::importer';
+
+    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory
      */
     private $collectionFactory;
@@ -66,15 +73,5 @@ class MassDelete extends ImporterController
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
         return $resultRedirect->setPath('*/*/');
-    }
-
-    /**
-     * Check the permission to run it.
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::importer');
     }
 }

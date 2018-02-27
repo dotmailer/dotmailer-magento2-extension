@@ -3,7 +3,9 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 /**
- * Class Dashboard.
+ * Log viewer block
+ *
+ * @api
  */
 class Logviewer extends \Magento\Backend\Block\Widget\Container
 {
@@ -19,15 +21,16 @@ class Logviewer extends \Magento\Backend\Block\Widget\Container
     public $file;
 
     /**
+     * /**
      * Logviewer constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Magento\Backend\Block\Widget\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\File $file,
         \Magento\Backend\Block\Widget\Context $context,
+        \Dotdigitalgroup\Email\Helper\File $file,
         array $data = []
     ) {
         $this->file = $file;

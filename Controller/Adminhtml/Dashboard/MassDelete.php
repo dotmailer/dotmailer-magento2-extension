@@ -6,6 +6,12 @@ use Magento\Framework\Controller\ResultFactory;
 
 class MassDelete extends \Magento\Backend\App\Action
 {
+    /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::dashboard';
 
     /**
      * @var \Magento\Cron\Model\ScheduleFactory
@@ -68,13 +74,5 @@ class MassDelete extends \Magento\Backend\App\Action
         $resultRedirect->setPath('*/*/');
 
         return $resultRedirect;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::dashboard');
     }
 }

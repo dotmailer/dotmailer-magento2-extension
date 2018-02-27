@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+/**
+ * Product block
+ *
+ * @api
+ */
 class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -41,6 +46,8 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Product constructor.
+     *
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
@@ -48,10 +55,10 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context $context
      * @param array $data
      */
     public function __construct(
+        \Magento\Catalog\Block\Product\Context $context,
         \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
@@ -59,7 +66,6 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
         parent::__construct($context, $data);

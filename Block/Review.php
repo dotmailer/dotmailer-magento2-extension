@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+/**
+ * Review block
+ *
+ * @api
+ */
 class Review extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
@@ -31,21 +36,22 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
 
     /**
      * Review constructor.
+     *
+     * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-     * @param \Magento\Catalog\Block\Product\Context $context
      * @param array $data
      */
     public function __construct(
+        \Magento\Catalog\Block\Product\Context $context,
         \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Magento\Catalog\Block\Product\Context $context,
         array $data = []
     ) {
         $this->review     = $review;

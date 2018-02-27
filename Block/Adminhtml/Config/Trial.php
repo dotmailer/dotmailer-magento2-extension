@@ -530,6 +530,10 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
         $company = $this->helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
         $callback = $this->storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
+        $secret = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
+        );
+
         //query params
         $params = [
             'callback' => $callback,
@@ -537,6 +541,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
             'culture' => $culture,
             'timezone' => $timezone,
             'ip' => $ipAddress,
+            'code' => $secret
         ];
         $url = $formUrl . '?' . http_build_query($params);
 

@@ -4,7 +4,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/layout_generic.xsd">
     <update handle="formkey"/>
     <container name="root">
-        <block class="Dotdigitalgroup\Email\Block\Recommended\Product" name="ddg.crosssell.container" template="Dotdigitalgroup_Email::product/list.phtml" >
+        <block class="Dotdigitalgroup\Email\Block\Recommended\Product" name="ddg.crosssell.container" template="Dotdigitalgroup_Email::product/list.phtml" cacheable="false">
             <block class="Magento\Framework\Pricing\Render" name="ddg.product.price.render.default">
                 <arguments>
                     <argument name="price_render_handle" xsi:type="string">catalog_product_prices</argument>
