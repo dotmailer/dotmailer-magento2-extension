@@ -139,7 +139,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
             $scopeId = $this->websiteId;
         } else {
-            $scope = \Magento\Framework\App\ScopeInterface::SCOPE_DEFAULT;
+            $scope = 'default';
             $scopeId = '0';
         }
 
@@ -163,7 +163,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
             $scopeId = $this->websiteId;
         } else {
-            $scope = \Magento\Framework\App\ScopeInterface::SCOPE_DEFAULT;
+            $scope = 'default';
             $scopeId = '0';
         }
 
