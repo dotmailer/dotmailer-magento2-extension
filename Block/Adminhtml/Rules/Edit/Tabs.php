@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit;
 
+/**
+ * Exclusion rules tabs block
+ *
+ * @api
+ */
 class Tabs extends \Magento\Backend\Block\Widget\Tabs
 {
     /**

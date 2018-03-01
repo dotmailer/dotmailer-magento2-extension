@@ -4,6 +4,6 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/layout_generic.xsd">
     <update handle="formkey"/>
     <container name="root">
-        <block class="Dotdigitalgroup\Email\Block\Coupon" name="ddg.coupon.container" template="Dotdigitalgroup_Email::email/coupon.phtml"/>
+        <block class="Dotdigitalgroup\Email\Block\Coupon" name="ddg.coupon.container" template="Dotdigitalgroup_Email::email/coupon.phtml" cacheable="false"/>
     </container>
 </layout>

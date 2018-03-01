@@ -136,6 +136,11 @@ class Order
     private $productResource;
 
     /**
+     * @var \Magento\Framework\Stdlib\StringUtils
+     */
+    private $stringUtils;
+
+    /**
      * Order constructor.
      *
      * @param \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory
@@ -146,6 +151,7 @@ class Order
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helperData
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Framework\Stdlib\StringUtils $stringUtils
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
@@ -155,7 +161,8 @@ class Order
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        \Magento\Framework\Stdlib\StringUtils $stringUtils
     ) {
         $this->attributeSet        = $attributeSet;
         $this->setFactory          = $setFactory;
@@ -165,6 +172,7 @@ class Order
         $this->helper              = $helperData;
         $this->productResource     = $productResource;
         $this->_storeManager       = $storeManagerInterface;
+        $this->stringUtils         = $stringUtils;
     }
 
     /**
@@ -634,8 +642,8 @@ class Order
      */
     private function limitLength($value)
     {
-        if (mb_strlen($value) > 250) {
-            $value = mb_substr($value, 0, 250);
+        if ($this->stringUtils->strlen($value) > \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT) {
+            $value = mb_substr($value, 0, \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT);
         }
 
         return $value;

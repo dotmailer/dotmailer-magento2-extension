@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Rules;
+namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Model\Config\Json;
 use Dotdigitalgroup\Email\Model\ResourceModel\Rules as RulesResource;

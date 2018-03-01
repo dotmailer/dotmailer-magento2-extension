@@ -4,6 +4,12 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Dashboard;
 
 class Index extends \Magento\Backend\App\Action
 {
+    /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::dashboard';
 
     /**
      * @var \Magento\Framework\View\Result\PageFactory
@@ -22,14 +28,6 @@ class Index extends \Magento\Backend\App\Action
     ) {
         $this->resultPageFactory = $resultPageFactory;
         parent::__construct($context);
-    }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::dashboard');
     }
 
     /**

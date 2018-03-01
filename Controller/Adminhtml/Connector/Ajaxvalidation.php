@@ -5,6 +5,13 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Connector;
 class Ajaxvalidation extends \Magento\Backend\App\Action
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $data;
@@ -55,13 +62,5 @@ class Ajaxvalidation extends \Magento\Backend\App\Action
 
             $this->getResponse()->representJson($this->jsonHelper->jsonEncode($resonseData));
         }
-    }
-
-    /**
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::config');
     }
 }

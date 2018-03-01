@@ -282,8 +282,8 @@ class Contact
             $websiteId
         );
         $statuses = explode(',', $statuses);
+        $brand = $this->helper->getBrandAttributeByWebsiteId($websiteId);
 
-        return $this->contactResource->setBrandAttribute($this->helper->getBrandAttributeByWebsiteId($websiteId))
-            ->getCustomerCollectionByIds($customerIds, $statuses);
+        return $this->contactResource->getCustomerCollectionByIds($customerIds, $statuses, $brand);
     }
 }

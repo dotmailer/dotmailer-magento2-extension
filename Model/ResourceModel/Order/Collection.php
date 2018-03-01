@@ -259,7 +259,7 @@ class Collection extends
     }
 
     /**
-     * Get store quotes.
+     * Get store quotes excluding inactive and empty.
      *
      * @param int $storeId
      * @param mixed $updated

@@ -281,7 +281,7 @@ class Cron
             return;
         }
 
-        $this->quoteFactory->create()->proccessAbandonedCarts();
+        $this->quoteFactory->create()->processAbandonedCarts();
     }
 
     /**
@@ -370,16 +370,28 @@ class Cron
     }
 
     /**
+     * Check if already ran for same time
+     *
      * @param $jobCode
      * @return bool
      */
     private function jobHasAlreadyBeenRun($jobCode)
     {
         $currentRunningJob = $this->cronCollection->create()
-            ->getRunningJobByCode($jobCode);
+            ->addFieldToFilter('job_code', $jobCode)
+            ->addFieldToFilter('status', 'running')
+            ->setPageSize(1);
 
-        return $this->cronCollection->create()
-            ->jobOfSameTypeAndScheduledAtDateAlreadyExecuted($jobCode, $currentRunningJob->getScheduledAt());
+        if ($currentRunningJob->getSize()) {
+            $jobOfSameTypeAndScheduledAtDateAlreadyExecuted =  $this->cronCollection->create()
+                ->addFieldToFilter('job_code', $jobCode)
+                ->addFieldToFilter('scheduled_at', $currentRunningJob->getFirstItem()->getScheduledAt())
+                ->addFieldToFilter('status', ['in' => ['success', 'failed']]);
+
+            return ($jobOfSameTypeAndScheduledAtDateAlreadyExecuted->getSize()) ? true : false;
+        }
+
+        return false;
     }
 
     /**

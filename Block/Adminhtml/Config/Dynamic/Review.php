@@ -13,12 +13,12 @@ class Review extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Review constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data      $dataHelper
      * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $dataHelper,
-        \Magento\Backend\Block\Template\Context $context
+        \Magento\Backend\Block\Template\Context $context,
+        \Dotdigitalgroup\Email\Helper\Data $dataHelper
     ) {
         $this->dataHelper = $dataHelper;
 

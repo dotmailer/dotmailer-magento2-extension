@@ -9,6 +9,13 @@ use Magento\Ui\Component\MassAction\Filter;
 class MassDelete extends OrderController
 {
     /**
+     * Authorization level of a basic admin session
+     *
+     * @see _isAllowed()
+     */
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::order';
+
+    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
     private $collectionFactory;
@@ -66,15 +73,5 @@ class MassDelete extends OrderController
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
         return $resultRedirect->setPath('*/*/');
-    }
-
-    /**
-     * Check the permission to run it.
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Dotdigitalgroup_Email::order');
     }
 }

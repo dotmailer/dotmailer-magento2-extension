@@ -101,7 +101,7 @@
                 <wishlist_display_type>grid</wishlist_display_type>
             </products>
             <external_dynamic_content_urls>
-                <passcode>secret</passcode>
+                <passcode></passcode>
                 <lost_basket_url></lost_basket_url>
                 <review_url></review_url>
                 <coupon_code_url></coupon_code_url>

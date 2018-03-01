@@ -3,7 +3,9 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules;
 
 /**
- * Shopping cart rule edit form block.
+ * Exclusion rules edit block
+ *
+ * @api
  */
 class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
@@ -17,12 +19,12 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
      * Add standard buttons
      * Add "Save and Continue" button.
      *
-     * @param \Magento\Framework\Registry $registry
      * @param \Magento\Backend\Block\Widget\Context $context
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
-        \Magento\Framework\Registry $registry,
-        \Magento\Backend\Block\Widget\Context $context
+        \Magento\Backend\Block\Widget\Context $context,
+        \Magento\Framework\Registry $registry
     ) {
         $this->registry    = $registry;
         $this->_objectId   = 'id';

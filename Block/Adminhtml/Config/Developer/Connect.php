@@ -33,17 +33,17 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Connect constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data      $helper
-     * @param \Dotdigitalgroup\Email\Helper\Config    $configHelper
-     * @param \Magento\Backend\Model\Auth             $auth
      * @param \Magento\Backend\Block\Template\Context $context
-     * @param array                                   $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
+     * @param \Magento\Backend\Model\Auth $auth
+     * @param array $data
      */
     public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         \Magento\Backend\Model\Auth $auth,
-        \Magento\Backend\Block\Template\Context $context,
         $data = []
     ) {
         $this->helper       = $helper;

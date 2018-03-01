@@ -32,23 +32,31 @@ class InstallData implements InstallDataInterface
     private $orderConfigFactory;
 
     /**
+     * @var \Magento\Framework\Math\Random
+     */
+    private $randomMath;
+
+    /**
      * InstallData constructor.
      *
      * @param \Magento\Config\Model\ResourceModel\Config $config
      * @param \Magento\Catalog\Model\Product\TypeFactory $typeFactory
      * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
      * @param \Magento\Sales\Model\Order\Config $orderConfigFactory
+     * @param \Magento\Framework\Math\Random $random
      */
     public function __construct(
         \Magento\Config\Model\ResourceModel\Config $config,
         \Magento\Catalog\Model\Product\TypeFactory $typeFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
-        \Magento\Sales\Model\Order\Config $orderConfigFactory
+        \Magento\Sales\Model\Order\Config $orderConfigFactory,
+        \Magento\Framework\Math\Random $random
     ) {
         $this->config = $config;
         $this->typefactory = $typeFactory;
         $this->visibilityFactory = $visibilityFactory;
         $this->orderConfigFactory = $orderConfigFactory;
+        $this->randomMath = $random;
     }
 
     /**
@@ -77,6 +85,7 @@ class InstallData implements InstallDataInterface
         $this->saveAllOrderStatusesAsString($this->config);
         $this->saveAllProductTypesAsString($this->config);
         $this->saveAllProductVisibilitiesAsString($this->config);
+        $this->generateAndSaveCode();
 
         $installer->endSetup();
     }
@@ -372,6 +381,20 @@ class InstallData implements InstallDataInterface
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY,
             $visibilityString,
             'website',
+            '0'
+        );
+    }
+
+    /**
+     * Generate and save code
+     */
+    private function generateAndSaveCode()
+    {
+        $code = $this->randomMath->getRandomString(32);
+        $this->config->saveConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
+            $code,
+            'default',
             '0'
         );
     }

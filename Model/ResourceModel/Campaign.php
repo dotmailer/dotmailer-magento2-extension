@@ -46,18 +46,18 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Campaign constructor.
      *
-     * @param \Magento\SalesRule\Model\ResourceModel\Rule          $ruleResouce
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context    $context
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime          $dateTime
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Magento\SalesRule\Model\ResourceModel\Rule $rulesResource
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory
-     * @param \Magento\SalesRule\Model\CouponFactory               $couponFactory
-     * @param \Magento\SalesRule\Model\ResourceModel\Coupon        $coupon
-     * @param \Magento\SalesRule\Model\RuleFactory                 $ruleFactory
+     * @param \Magento\SalesRule\Model\CouponFactory $couponFactory
+     * @param \Magento\SalesRule\Model\ResourceModel\Coupon $coupon
+     * @param \Magento\SalesRule\Model\RuleFactory $ruleFactory
      * @param null $connectionName
      */
     public function __construct(
-        \Magento\SalesRule\Model\ResourceModel\Rule             $rulesResource,
         \Magento\Framework\Model\ResourceModel\Db\Context       $context,
+        \Magento\SalesRule\Model\ResourceModel\Rule             $rulesResource,
         \Magento\Framework\Stdlib\DateTime\DateTime             $dateTime,
         \Magento\SalesRule\Model\Coupon\MassgeneratorFactory    $massgeneratorFactory,
         \Magento\SalesRule\Model\CouponFactory                  $couponFactory,

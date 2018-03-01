@@ -71,7 +71,7 @@ class TransportPlugin
                 $this->mailAdapter->send($property->getValue($subject));
             }
         } else {
-            $proceed();
+            return $proceed();
         }
     }
 }

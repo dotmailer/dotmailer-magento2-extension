@@ -8,6 +8,11 @@ use XSLTProcessor;
 
 const FEEFO_URL = 'http://www.feefo.com/feefo/xmlfeed.jsp?';
 
+/**
+ * Feefo block
+ *
+ * @api
+ */
 class Feefo extends \Magento\Framework\View\Element\Template
 {
     /**
@@ -53,22 +58,22 @@ class Feefo extends \Magento\Framework\View\Element\Template
     /**
      * Feefo constructor.
      *
+     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param XSLTProcessor $processor
      * @param DOMDocument $document
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param Quote $quoteResource
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param array $data
      */
     public function __construct(
+        \Magento\Framework\View\Element\Template\Context $context,
         XSLTProcessor $processor,
         DOMDocument $document,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,

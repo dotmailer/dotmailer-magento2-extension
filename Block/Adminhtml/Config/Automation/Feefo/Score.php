@@ -12,12 +12,12 @@ class Score extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Score constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data      $data
      * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Backend\Block\Template\Context $context
+        \Magento\Backend\Block\Template\Context $context,
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->helper = $data;
 

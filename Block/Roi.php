@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+/**
+ * Roi block
+ *
+ * @api
+ */
 class Roi extends \Magento\Framework\View\Element\Template
 {
 
@@ -18,15 +23,15 @@ class Roi extends \Magento\Framework\View\Element\Template
     /**
      * Roi constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data               $helper
-     * @param \Magento\Checkout\Model\Session                  $session
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param array                                            $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Checkout\Model\Session $session
+     * @param array $data
      */
     public function __construct(
+        \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Checkout\Model\Session $session,
-        \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
         $this->helper = $helper;

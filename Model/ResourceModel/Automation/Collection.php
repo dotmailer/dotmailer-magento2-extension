@@ -66,22 +66,4 @@ class Collection extends
 
         return $collection;
     }
-
-    /**
-     * @param $typeId
-     * @param $automationTypeId
-     * @return bool
-     */
-    public function hasAutomationEnrolmentExists($typeId, $automationTypeId)
-    {
-        $collection = $this->addFieldToFilter('type_id', $typeId)
-            ->addFieldToFilter('automation_type', $automationTypeId)
-            ->setPageSize(1);
-
-        if ($collection->getSize()) {
-            return true;
-        }
-
-        return false;
-    }
 }

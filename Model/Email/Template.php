@@ -126,7 +126,7 @@ class Template extends \Magento\Framework\DataObject
             \Magento\Sales\Model\Order\Email\Container\ShipmentCommentIdentity::XML_PATH_EMAIL_TEMPLATE,
         'sales_email_shipment_comment_guest_template' =>
             \Magento\Sales\Model\Order\Email\Container\ShipmentCommentIdentity::XML_PATH_EMAIL_GUEST_TEMPLATE,
-        'contact_email_email_template' => \Magento\Contact\Model\ConfigInterface::XML_PATH_EMAIL_TEMPLATE,
+        'contact_email_email_template' => 'contact/email/email_template',//interface don't exist on lower versions 2.2.2
         'sendfriend_email_template' => \Magento\SendFriend\Helper\Data::XML_PATH_EMAIL_TEMPLATE,
         'product_stock_alert_template' => \Magento\ProductAlert\Model\Email::XML_PATH_EMAIL_STOCK_TEMPLATE,
         'product_price_alert_template' => \Magento\ProductAlert\Model\Email::XML_PATH_EMAIL_PRICE_TEMPLATE,

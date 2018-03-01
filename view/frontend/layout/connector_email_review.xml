@@ -4,6 +4,6 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/layout_generic.xsd">
     <update handle="formkey"/>
     <container name="root">
-        <block class="Dotdigitalgroup\Email\Block\Review" name="ddg.review.container" template="Dotdigitalgroup_Email::email/review.phtml" />
+        <block class="Dotdigitalgroup\Email\Block\Review" name="ddg.review.container" template="Dotdigitalgroup_Email::email/review.phtml" cacheable="false"/>
     </container>
 </layout>

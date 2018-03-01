@@ -4,6 +4,6 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/layout_generic.xsd">
     <update handle="formkey"/>
     <container name="root">
-        <block class="Dotdigitalgroup\Email\Block\Wishlist" name="ddg.wishlist.container" template="Dotdigitalgroup_Email::email/wishlist.phtml"/>
+        <block class="Dotdigitalgroup\Email\Block\Wishlist" name="ddg.wishlist.container" template="Dotdigitalgroup_Email::email/wishlist.phtml" cacheable="false"/>
     </container>
 </layout>
