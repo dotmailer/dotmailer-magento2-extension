@@ -20,7 +20,6 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 ###### Improvements
 - We've done some code refactoring to comply with Magento extension best practices
 - On installation, we now auto generate a unique secret key used to access extension dynamic content
-- We now inject x-forward-for alternative headers to the RemoteAddress for compatibility with load balancers
 - We've changed our dynamic content blocks to be non-cacheable
 
 
