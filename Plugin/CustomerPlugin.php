@@ -34,9 +34,9 @@ class CustomerPlugin
     public function aroundSendNewAccountEmail(
         \Magento\Customer\Model\Customer $customer,
         callable $proceed,
-        $type,
-        $backUrl,
-        $storeId
+        $type = 'registered',
+        $backUrl = '',
+        $storeId = '0'
     ) {
         $storeId = $customer->getStoreId();
 
