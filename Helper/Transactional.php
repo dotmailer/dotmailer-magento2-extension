@@ -154,4 +154,21 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $config;
     }
+
+    /**
+     * Check if the template code is containing dotmailer.
+     *
+     * @param $templateCode
+     * @return bool
+     */
+    public function isDotmailerTemplate($templateCode)
+    {
+        preg_match("/\_\d{1,10}$/", $templateCode, $matches);
+
+        if (count($matches)) {
+            return true;
+        }
+
+        return false;
+    }
 }
