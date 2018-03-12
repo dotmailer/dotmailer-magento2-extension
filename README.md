@@ -15,6 +15,14 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.4.6
+
+###### Bug fix
+- We've fixed a regression whereby the email from address was empty in the message object when email templates were not mapped in the extension
+- We've fixed a compatibility issue which caused fatal email template errors when using Magento 2.1.9 and below with the version 2.4.4 of the extension
+- An error would occur while sending registration email to customer created via script in Magento 2.2.3 - this is no longer happens [#13888](https://github.com/magento/magento2/issues/13888)
+- We've fixed an issue which caused any default email template settings to not display properly in the configuration panel
+
 ## V2.4.5
 
 ###### Improvements
