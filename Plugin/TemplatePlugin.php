@@ -2,12 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
+use Dotdigitalgroup\Email\Helper\Transactional;
+
 class TemplatePlugin
 {
+    /**
+     * @var Transactional
+     */
+    public $transactionalHelper;
+
     /**
      * @var
      */
     private $templateCode;
+
     /**
      * @var \Magento\Framework\Registry
      */
@@ -15,11 +23,14 @@ class TemplatePlugin
 
     /**
      * TemplatePlugin constructor.
+     * @param Transactional $transactionalHelper
      * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
+        \Dotdigitalgroup\Email\Helper\Transactional $transactionalHelper,
         \Magento\Framework\Registry $registry
     ) {
+        $this->transactionalHelper = $transactionalHelper;
         $this->registry = $registry;
     }
 
@@ -46,18 +57,21 @@ class TemplatePlugin
                 if (isset($result['template_id'])) {
                     $this->saveTemplateIdInRegistry($result['template_id']);
                 }
-                $templateText = $result['template_text'];
-                //compress text
-                if (!$this->isStringCompressed($templateText) && $this->isDotmailerTemplate($result['template_code'])) {
-                    $result['template_text'] = $this->compresString($templateText);
+                if (isset($result['template_text'])) {
+                    $templateText = $result['template_text'];
+                    //compress text
+                    if (!$this->isStringCompressed($templateText) &&
+                        $this->transactionalHelper->isDotmailerTemplate($result['template_code'])) {
+                        $result['template_text'] = $this->compresString($templateText);
+                    }
                 }
             } else {
                 //saving string value
                 $field = $args[0];
 
                 //compress the text body when is a dotmailer template
-                if ($field == 'template_text' && ! $this->isStringCompressed($result)
-                    && $this->isDotmailerTemplate($this->templateCode)
+                if ($field == 'template_text' && ! $this->isStringCompressed($result) &&
+                    $this->transactionalHelper->isDotmailerTemplate($this->templateCode)
                 ) {
                     $result = $this->compresString($result);
                 }
@@ -71,23 +85,28 @@ class TemplatePlugin
                 if (isset($result['template_id'])) {
                     $this->saveTemplateIdInRegistry($result['template_id']);
                 }
-                $templateText = $result['template_text'];
-                $result['template_subject'] = utf8_decode($result['template_subject']);
-                if ($this->isStringCompressed($templateText)) {
-                    $result['template_text'] = $this->decompresString($templateText);
+                if (isset($result['template_text'])) {
+                    $templateText = $result['template_text'];
+                    $result['template_subject'] = utf8_decode($result['template_subject']);
+                    if ($this->isStringCompressed($templateText)) {
+                        $result['template_text'] = $this->decompresString($templateText);
+                    }
                 }
             } else {
-                $field = $args[0];
-                //check for correct field
-                if ($field == 'template_text' && $this->isStringCompressed($result)) {
-                    $result = $this->decompresString($result);
-                }
-                //decode encoded subject
-                if ($field == 'template_subject') {
-                    $result = utf8_decode($result);
-                }
-                if ($field == 'template_id') {
-                    $this->saveTemplateIdInRegistry($result);
+
+                if (isset($args[0])) {
+                    $field = $args[0];
+                    //check for correct field
+                    if ($field == 'template_text' && $this->isStringCompressed($result)) {
+                        $result = $this->decompresString($result);
+                    }
+                    //decode encoded subject
+                    if ($field == 'template_subject') {
+                        $result = utf8_decode($result);
+                    }
+                    if ($field == 'template_id') {
+                        $this->saveTemplateIdInRegistry($result);
+                    }
                 }
 
             }
@@ -152,21 +171,5 @@ class TemplatePlugin
         }
     }
 
-    /**
-     * Check if the template code is containing dotmailer.
-     *
-     * @param $templateCode
-     * @return bool
-     */
-    private function isDotmailerTemplate($templateCode)
-    {
-        preg_match("/\_\d{1,10}$/", $templateCode, $matches);
-
-        if (count($matches)) {
-            return true;
-        }
-
-        return false;
-    }
 }
 

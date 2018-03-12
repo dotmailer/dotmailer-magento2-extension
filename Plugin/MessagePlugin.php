@@ -6,6 +6,11 @@ namespace Dotdigitalgroup\Email\Plugin;
 class MessagePlugin
 {
     /**
+     * @var \Dotdigitalgroup\Email\Helper\Transactional
+     */
+    private $transactionalHelper;
+
+    /**
      * @var \Magento\Email\Model\ResourceModel\Template
      */
     private $templateResource;
@@ -21,18 +26,22 @@ class MessagePlugin
     private $registry;
 
     /**
-     * TransportBuilderPlugin constructor.
-     *
+     * MessagePlugin constructor.
      * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Helper\Transactional $transactionalHelper
+     * @param \Magento\Email\Model\ResourceModel\Template $templateResource
+     * @param \Magento\Email\Model\TemplateFactory $template
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
+        \Dotdigitalgroup\Email\Helper\Transactional $transactionalHelper,
         \Magento\Email\Model\ResourceModel\Template $templateResource,
         \Magento\Email\Model\TemplateFactory $template
     ) {
         $this->registry = $registry;
         $this->templateFactory = $template;
         $this->templateResource = $templateResource;
+        $this->transactionalHelper = $transactionalHelper;
     }
 
     /**
@@ -50,7 +59,9 @@ class MessagePlugin
             $template = $this->templateFactory->create();
             $this->templateResource->load($template, $templateId);
             //clear from as it trows an exception if alredy set
-            if ($message->getFrom()) {
+            if ($message->getFrom() &&
+                $this->transactionalHelper->isDotmailerTemplate($template->getTemplateCode())
+            ) {
                 $message->clearFrom();
                 $message->setFrom($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
             }
