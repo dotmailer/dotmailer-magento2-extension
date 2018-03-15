@@ -25,13 +25,13 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Rules constructor.
      *
-     * @param Json $serializer
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param Json $serializer
      * @param null $connectionName
      */
     public function __construct(
-        Json $serializer,
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        Json $serializer,
         $connectionName = null
     ) {
         $this->serializer = $serializer;
