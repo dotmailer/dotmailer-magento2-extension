@@ -698,9 +698,7 @@ class Quote
     }
 
     /**
-     * @param $abandonedModel
      * @param $quote
-     *
      * @return bool
      */
     private function shouldNotSendACAgain($abandonedModel, $quote)
@@ -794,8 +792,8 @@ class Quote
 
             $abandonedModel = $this->abandonedFactory->create()
                 ->loadByQuoteId($quoteId);
-
-            if ($this->shouldNotSendACAgain($abandonedModel, $quote)) {
+            //number of items changed or not active anymore
+            if ($this->isItemsChanged($quote, $abandonedModel)) {
                 if ($this->shouldDeleteAbandonedCart($quote)) {
                     $this->deleteAbandonedCart($abandonedModel);
                 }
