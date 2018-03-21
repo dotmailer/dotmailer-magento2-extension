@@ -8,14 +8,19 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
+     */
+    private $emailWishlistResource;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
+     */
+    private $emailWishlistCollection;
+
+    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
      */
     private $automationResource;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
-     */
-    private $wishlistResource;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -44,26 +49,28 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * RegisterWishlist constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory           $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation    $automationResource
-     * @param \Magento\Customer\Api\CustomerRepositoryInterface        $customer
-     * @param \Dotdigitalgroup\Email\Model\WishlistFactory             $wishlistFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist      $wishlistResource
-     * @param \Dotdigitalgroup\Email\Helper\Data                       $data
-     * @param \Magento\Store\Model\StoreManagerInterface               $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
+     * @param \Magento\Customer\Api\CustomerRepositoryInterface $customer
+     * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
         \Magento\Customer\Api\CustomerRepositoryInterface $customer,
         \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlistResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
+        $this->emailWishlistCollection = $emailWishlistCollection;
         $this->automationResource = $automationResource;
-        $this->wishlistResource = $wishlistResource;
+        $this->emailWishlistResource = $emailWishlistResource;
         $this->automationFactory = $automationFactory;
         $this->customer   = $customer;
         $this->wishlistFactory   = $wishlistFactory;
@@ -73,61 +80,63 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         //wishlist
-        $wishlist = $observer->getEvent()->getObject();
-
-        if ($wishlist->getCustomerId() && $wishlist->getWishlistId()) {
-            $itemsCount = $wishlist->getItemsCount();
-            //wishlist items found
-            if ($itemsCount) {
-                //save wishlist info in the table
-                $this->registerWishlist($wishlist);
+        $wishlist = $observer->getEvent()->getWishlist();
+        $wishlistId = $wishlist->getId();
+        $itemCount = count($wishlist->getItemCollection());
+        $emailWishlist = $this->getEmailWishlistBy($wishlistId);
+        //update wishlist
+        if ($emailWishlist) {
+            //update the items count and reset the sync
+            $this->updateWishlistAndReset($emailWishlist, $itemCount);
+        } else {
+            //new wishlist with items
+            if ($wishlist->getCustomerId() && $wishlist->getWishlistId()) {
+                $this->registerWishlist($wishlist, $itemCount);
             }
         }
     }
 
     /**
-     * Automation new wishlist program.
+     * Register new wishlist.
      *
-     * @param \Magento\Wishlist\Model\Wishlist $wishlist
-     *
-     * @return null
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param $wishlist
+     * @param $itemCount
+     * @return $this
      */
-    private function registerWishlist($wishlist)
+    private function registerWishlist($wishlist, $itemCount)
     {
         try {
             $emailWishlist = $this->wishlistFactory->create();
-
             //if wishlist exist not to save again
-            if (!$emailWishlist->getWishlist($wishlist->getWishlistId())) {
+            $wishlistId = $wishlist->getWishlistId();
+
+            if (! $emailWishlist->getWishlist($wishlistId)) {
                 $customer = $this->customer->getById($wishlist->getCustomerId());
                 $email = $customer->getEmail();
                 $websiteId = $customer->getWebsiteId();
-                $emailWishlist->setWishlistId($wishlist->getWishlistId())
-                    ->setCustomerId($wishlist->getCustomerId())
-                    ->setStoreId($customer->getStoreId());
-                $this->wishlistResource->save($emailWishlist);
-
-                $store
-                           = $this->storeManager->getStore($customer->getStoreId());
+                $store = $this->storeManager->getStore($customer->getStoreId());
                 $storeName = $store->getName();
 
+                $emailWishlist->setWishlistId($wishlistId)
+                    ->setCustomerId($wishlist->getCustomerId())
+                    ->setStoreId($customer->getStoreId())
+                    ->setItemCount($itemCount);
+
+                $this->emailWishlistResource->save($emailWishlist);
+
                 //if api is not enabled
-                if (!$this->helper->isEnabled($websiteId)) {
+                if (! $this->helper->isEnabled($websiteId)) {
                     return $this;
                 }
-                $programId
-                    = $this->helper->getWebsiteConfig(
-                        'connector_automation/visitor_automation/wishlist_automation',
-                        $websiteId
-                    );
+                $programId = $this->helper->getWebsiteConfig(
+                    'connector_automation/visitor_automation/wishlist_automation',
+                    $websiteId
+                );
+
                 //wishlist program mapped
                 if ($programId) {
                     $automation = $this->automationFactory->create();
@@ -135,7 +144,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                     $automation->setEmail($email)
                         ->setAutomationType(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_WISHLIST)
                         ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
-                        ->setTypeId($wishlist->getWishlistId())
+                        ->setTypeId($wishlistId)
                         ->setWebsiteId($websiteId)
                         ->setStoreName($storeName)
                         ->setProgramId($programId);
@@ -147,5 +156,40 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @param $wishlistId
+     * @return bool|\Magento\Framework\DataObject
+     */
+    private function getEmailWishlistBy($wishlistId)
+    {
+         return $this->emailWishlistCollection->create()
+            ->getWishlistById($wishlistId);
+    }
+
+    /**
+     * @param $emailWishlist
+     * @param $itemCount
+     */
+    private function updateWishlistAndReset($emailWishlist, $itemCount)
+    {
+        if ($emailWishlist) {
+            try {
+                $originalItemCount = $emailWishlist->getItemCount();
+                $emailWishlist->setItemCount($itemCount);
+
+                //first item added to wishlist
+                if ($itemCount == 1 && $originalItemCount == 0) {
+                    $emailWishlist->setWishlistImported(null);
+                } elseif ($emailWishlist->getWishlistImported()) {
+                    $emailWishlist->setWishlistModified(1);
+                }
+
+                $this->emailWishlistResource->save($emailWishlist);
+            } catch (\Exception $e) {
+                $this->helper->error((string)$e, []);
+            }
+        }
     }
 }

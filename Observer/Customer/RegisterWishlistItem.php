@@ -3,10 +3,15 @@
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
 /**
- * Register new wishlist items automation.
+ * Update wishlist items count.
  */
 class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
 {
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
+     */
+    private $emailWishlistCollection;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
      */
@@ -23,36 +28,30 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\WishlistFactory
-     */
-    private $wishlistFactory;
-    
-    /**
      * @var \Magento\Wishlist\Model\WishlistFactory
      */
     private $wishlist;
 
     /**
      * RegisterWishlistItem constructor.
-     *
      * @param \Magento\Wishlist\Model\ResourceModel\Wishlist $wishlistResource
      * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
-     * @param \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Wishlist $wishlistResource,
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
-        \Dotdigitalgroup\Email\Model\WishlistFactory $wishlistFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollection,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->wishlist        = $wishlist;
-        $this->wishlistFactory = $wishlistFactory;
         $this->wishlistResource = $wishlistResource;
         $this->helper          = $data;
         $this->emailWishlistResource = $emailWishlistResource;
+        $this->emailWishlistCollection = $emailWishlistCollection;
     }
 
     /**
@@ -67,11 +66,12 @@ class RegisterWishlistItem implements \Magento\Framework\Event\ObserverInterface
         $wishlistItem = $observer->getEvent()->getItem();
         $wishlist = $this->wishlist->create();
         $this->wishlistResource->load($wishlist, $wishlistItem->getWishlistId());
-        $emailWishlist = $this->wishlistFactory->create();
+
         try {
             if ($wishlistItem->getWishlistId()) {
                 $itemCount = count($wishlist->getItemCollection());
-                $item = $emailWishlist->getWishlist($wishlistItem->getWishlistId());
+                $item = $this->emailWishlistCollection->create()
+                    ->getWishlistById($wishlistItem->getWishlistId());
 
                 if ($item && $item->getId()) {
                     $preSaveItemCount = $item->getItemCount();

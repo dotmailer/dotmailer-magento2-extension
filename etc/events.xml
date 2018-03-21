@@ -6,11 +6,8 @@
     <event name="review_save_after">
         <observer name="ddg_save_review" instance="Dotdigitalgroup\Email\Observer\Customer\ReviewSaveAutomation"/>
     </event>
-    <event name="wishlist_save_before">
-        <observer name="ddg_new_wishlist" instance="Dotdigitalgroup\Email\Observer\Customer\RegisterWishlist"/>
-    </event>
-    <event name="wishlist_item_save_after">
-        <observer name="ddg_wishlist_save_item" instance="Dotdigitalgroup\Email\Observer\Customer\RegisterWishlistItem"/>
+    <event name="wishlist_add_product">
+        <observer name="ddg_add_product_wishlist" instance="Dotdigitalgroup\Email\Observer\Customer\RegisterWishlist"/>
     </event>
     <event name="wishlist_delete_after">
         <observer name="ddg_wishlist_delete" instance="Dotdigitalgroup\Email\Observer\Customer\RemoveWishlist"/>

@@ -49,18 +49,6 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Get the collection first item.
-     *
-     * @param int $wishListId
-     *
-     * @return bool|\Magento\Framework\DataObject
-     */
-    public function getWishlist($wishListId)
-    {
-        return $this->getCollection()->getWishlistById($wishListId);
-    }
-
-    /**
      * Prepare data to be saved to database.
      *
      * @return $this

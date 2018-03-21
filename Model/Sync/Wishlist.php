@@ -203,7 +203,8 @@ class Wishlist
                     foreach ($wishListItemCollection as $item) {
                         $product      = $item->getProduct();
                         $wishlistItem = $this->itemFactory->create();
-                        $wishlistItem->setQty($item->getQty())
+                        $wishlistItem->setProduct($product)
+                            ->setQty($item->getQty())
                             ->setPrice($product);
                         //store for wishlists
                         $connectorWishlist->setItem($wishlistItem);
