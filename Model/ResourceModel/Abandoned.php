@@ -30,5 +30,4 @@ class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->helper = $data;
         parent::__construct($context);
     }
-
 }

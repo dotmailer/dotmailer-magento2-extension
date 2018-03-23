@@ -80,8 +80,15 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $quoteId = $abandoned->getQuoteId();
 
         $emailQuote = $this->objectManager->create(Quote::class);
-        $emailQuoteMock = $this->getMockForAbstractClass(Quote::class, [], '',
-            false, false, true, ['getAbandonedCartsForStore']);
+        $emailQuoteMock = $this->getMockForAbstractClass(
+            Quote::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            ['getAbandonedCartsForStore']
+        );
         $emailQuoteMock->method('getAbandonedCartsForStore')->willReturn([]);
         $abandonedCollectionMock = $this->getMockBuilder(
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
@@ -101,7 +108,6 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($abandonedCart->getQuoteId(), $quoteId, 'Abandoned Cart not found');
     }
-
 
     /**
      * @magentoDBIsolation enabled
@@ -141,8 +147,15 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $abandonedCartNumber = $abandoned->getAbandonedCartNumber();
 
         $emailQuote = $this->objectManager->create(Quote::class);
-        $quoteMock = $this->getMockForAbstractClass(Quote::class, [], '',
-            false, false, true, ['getAbandonedCartsForStore']);
+        $quoteMock = $this->getMockForAbstractClass(
+            Quote::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            ['getAbandonedCartsForStore']
+        );
 
         $abandonedCollectionMock = $this->getMockBuilder(
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
@@ -192,8 +205,15 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $abandonedCartNumber = $abandoned->getAbandonedCartNumber();
 
         $emailQuote = $this->objectManager->create(Quote::class);
-        $quoteMock = $this->getMockForAbstractClass(Quote::class, [], '',
-            false, false, true, ['getAbandonedCartsForStore']);
+        $quoteMock = $this->getMockForAbstractClass(
+            Quote::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            ['getAbandonedCartsForStore']
+        );
 
         $abandonedCollectionMock = $this->getMockBuilder(
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class

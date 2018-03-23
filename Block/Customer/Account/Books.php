@@ -119,8 +119,8 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getAdditionalBooksToShow()
     {
         $additionalBooksToShow = [];
-        $additionalFromConfig = $this->helper->getAddressBookIdsToShow(
-            $this->getCustomer()->getStore()->getWebsite());
+        $website = $this->getCustomer()->getStore()->getWebsite();
+        $additionalFromConfig = $this->helper->getAddressBookIdsToShow($website);
 
         if (! empty($additionalFromConfig)) {
             $this->getConnectorContact();

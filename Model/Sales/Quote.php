@@ -118,7 +118,6 @@ class Quote
      */
     private $abandonedResource;
 
-
     /**
      * Quote constructor.
      *
@@ -591,7 +590,6 @@ class Quote
             ->save();
     }
 
-
     /**
      * @param $email
      * @param $quote
@@ -810,7 +808,6 @@ class Quote
 
         return $result;
     }
-
 
     /**
      * @param $number

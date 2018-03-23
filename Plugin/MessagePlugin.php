@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
-
 class MessagePlugin
 {
     /**
