@@ -35,9 +35,11 @@ class SubscriberExporter
     private $contactResource;
 
     /**
+     * SubscriberExporter constructor.
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -46,16 +48,18 @@ class SubscriberExporter
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\Config $configHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
+        $this->file            = $file;
+        $this->helper          = $helper;
+        $this->configHelper    = $configHelper;
+        $this->storeManager    = $storeManager;
         $this->contactResource = $contactResource;
-        $this->importerFactory   = $importerFactory;
-        $this->file              = $file;
-        $this->helper            = $helper;
+        $this->importerFactory = $importerFactory;
         $this->subscriberFactory = $subscriberFactory;
-        $this->storeManager      = $storeManager;
     }
 
     /**
@@ -73,9 +77,10 @@ class SubscriberExporter
         //get mapped storename
         $subscriberStorename = $this->helper->getMappedStoreName($website);
         //file headers
+        $headers = ['Email', 'EmailType', $subscriberStorename, 'OptInType'];
         $this->file->outputCSV(
             $this->file->getFilePath($subscribersFilename),
-            ['Email', 'emailType', $subscriberStorename]
+            $headers
         );
         $subscriberFactory = $this->subscriberFactory->create();
         $subscribersData = $subscriberFactory->getCollection()
@@ -91,11 +96,14 @@ class SubscriberExporter
                 $email,
                 $subscribersData['items']
             );
-            $storeName = $this->storeManager->getStore($storeId)->getName();
+            $store = $this->storeManager->getStore($storeId);
+            $storeName = $store->getName();
+            $optInType = $this->configHelper->getOptInType($store);
             // save data for subscribers
+            $outputData = [$email, 'Html', $storeName, $optInType];
             $this->file->outputCSV(
                 $this->file->getFilePath($subscribersFilename),
-                [$email, 'Html', $storeName]
+                $outputData
             );
             $subscriber->setSubscriberImported(1);
             $this->contactResource->save($subscriber);
