@@ -518,7 +518,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
                 ' alt="Open Trial Account"></a>';
         } else {
             $html = '<a class="ddg-fancyBox fancybox.iframe" data-fancybox-type="iframe" href=' .
-                $this->_getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
+                $this->escapeUrl($this->_getIframeFormUrl()) . '><img style="margin-bottom:15px;" src=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
         }
