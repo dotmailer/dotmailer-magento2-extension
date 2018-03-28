@@ -8,10 +8,6 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
      * @var ResourceModel\Abandoned\Collection
      */
     public $abandonedCollectionFactory;
-    /**
-     * @var ResourceModel\Automation
-     */
-    private $automationResource;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime
@@ -19,33 +15,24 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
     private $dateTime;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * Abandoned constructor.
-     * @param ResourceModel\Abandoned\CollectionFactory $abandoned
+     *
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param ResourceModel\Abandoned\CollectionFactory $abandoned
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $abandoned,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $abandoned,
         \Magento\Framework\Stdlib\DateTime $dateTime,
+        array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = []
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
         $this->abandonedCollectionFactory = $abandoned;
         $this->dateTime     = $dateTime;

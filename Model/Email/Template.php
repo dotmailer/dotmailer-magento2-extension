@@ -402,5 +402,4 @@ class Template extends \Magento\Framework\DataObject
 
         return $template;
     }
-
 }

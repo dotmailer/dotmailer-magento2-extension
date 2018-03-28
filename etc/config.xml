@@ -140,11 +140,11 @@
                 <product_list></product_list>
             </fallback_products>
         </connector_dynamic_content>
-        <connector_transactional_emails>
+        <transactional_emails>
             <ddg_transactional>
                 <enabled>0</enabled>
             </ddg_transactional>
-        </connector_transactional_emails>
+        </transactional_emails>
         <connector_configuration>
             <data_fields>
                 <order_status>complete,pending</order_status>

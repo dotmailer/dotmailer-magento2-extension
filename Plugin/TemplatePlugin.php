@@ -93,7 +93,6 @@ class TemplatePlugin
                     }
                 }
             } else {
-
                 if (isset($args[0])) {
                     $field = $args[0];
                     //check for correct field
@@ -108,7 +107,6 @@ class TemplatePlugin
                         $this->saveTemplateIdInRegistry($result);
                     }
                 }
-
             }
         }
 
@@ -126,7 +124,6 @@ class TemplatePlugin
             $this->registry->register('dotmailer_saving_data', 'saving');
         }
     }
-
 
     /**
      * @param $string
@@ -170,6 +167,4 @@ class TemplatePlugin
              $this->registry->register('dotmailer_current_template_id', $templateId);
         }
     }
-
 }
-

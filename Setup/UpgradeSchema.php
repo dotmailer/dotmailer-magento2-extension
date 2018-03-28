@@ -465,5 +465,4 @@ class UpgradeSchema implements UpgradeSchemaInterface
             ['email']
         );
     }
-
 }

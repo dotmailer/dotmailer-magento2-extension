@@ -4,14 +4,15 @@
 ?>
 <?php $helper = $this->helper(\Dotdigitalgroup\Email\Helper\Data::class); ?>
 
-<script type="text/x-magento-init">
-{
-    "*": {
-        "Dotdigitalgroup_Email/js/emailCapture":{
-            "isEnabled":"<?= $block->escapeHtml($helper->isEasyEmailCaptureForNewsletterEnabled()); ?>",
-            "type":"newsletter",
-            "url":"<?= $block->escapeHtml($helper->getEmailCaptureUrl()); ?>"
+<?php if ($helper->isEasyEmailCaptureForNewsletterEnabled()) : ?>
+    <script type="text/x-magento-init">
+    {
+        "*": {
+            "Dotdigitalgroup_Email/js/emailCapture":{
+                "type":"newsletter",
+                "url":"<?= $block->escapeHtml($helper->getEmailCaptureUrl()); ?>"
+            }
         }
     }
-}
-</script>
+    </script>
+<?php endif; ?>

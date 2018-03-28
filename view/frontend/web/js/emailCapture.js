@@ -60,11 +60,11 @@ define(['jquery', 'domReady!'], function ($) {
      * @param {Object} emailCapture
      */
     return function (emailCapture) {
-        if (emailCapture.isEnabled && emailCapture.type === 'checkout') {
+        if (emailCapture.type === 'checkout') {
             emailCaptureCheckout(emailCapture.url);
         }
 
-        if (emailCapture.isEnabled && emailCapture.type === 'newsletter') {
+        if (emailCapture.type === 'newsletter') {
             emailCaptureNewsletter(emailCapture.url);
         }
     };

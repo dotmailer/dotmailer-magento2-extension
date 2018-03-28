@@ -1830,8 +1830,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $website
         );
 
-        if (empty($bookIds))
-            return array();
+        if (empty($bookIds)) {
+            return [];
+        }
 
         $additionalFromConfig = explode(',', $bookIds);
         //unset the default option - for multi select
@@ -1850,8 +1851,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $websiteId = $this->getWebsite()->getId();
         $apiEndpoint = $this->getApiEndPointFromConfig($websiteId);
 
-        if (empty($apiEndpoint))
+        if (empty($apiEndpoint)) {
             return '';
+        }
 
         preg_match("/https:\/\/(.*)api.dotmailer.com/", $apiEndpoint, $matches);
         return $matches[1];

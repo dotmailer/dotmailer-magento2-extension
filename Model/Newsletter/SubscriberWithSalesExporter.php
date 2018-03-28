@@ -40,30 +40,47 @@ class SubscriberWithSalesExporter
     public $emailContactResource;
 
     /**
+     * @var \Dotdigitalgroup\Email\Helper\Config
+     */
+    public $configHelper;
+
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * SubscriberWithSalesExporter constructor.
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
      * @param \Magento\Framework\App\ResourceConnection $resource
      * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\Config $configHelper,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
     ) {
         $this->importerFactory   = $importerFactory;
         $this->file              = $file;
         $this->helper            = $helper;
         $this->resource          = $resource;
-        $this->subscribersCollection = $subscriberCollection;
+        $this->configHelper      = $configHelper;
+        $this->storeManager = $storeManager;
         $this->emailSubscriber = $emailSubscriber;
         $this->emailContactResource = $contactResource;
+        $this->subscribersCollection = $subscriberCollection;
     }
 
     /**
@@ -76,7 +93,6 @@ class SubscriberWithSalesExporter
     {
         $updated = 0;
         $subscriberIds = $headers = $emailContactIdEmail = [];
-
         foreach ($subscribers as $emailContact) {
             $emailContactIdEmail[$emailContact->getId()] = $emailContact->getEmail();
         }
@@ -91,13 +107,17 @@ class SubscriberWithSalesExporter
         if ($collection->getSize() == 0) {
             return 0;
         }
+
         $mappedHash = $this->helper->getWebsiteSalesDataFields($website);
         $headers = $mappedHash;
         $headers[] = 'Email';
         $headers[] = 'EmailType';
+        $headers[] = 'OptInType';
         $this->file->outputCSV($this->file->getFilePath($subscribersFile), $headers);
         //subscriber data
         foreach ($collection as $subscriber) {
+            $store = $this->storeManager->getStore($subscriber->getStoreId());
+            $optInType = $this->configHelper->getOptInType($store);
             $connectorSubscriber = $this->emailSubscriber->create();
             $connectorSubscriber->setMappingHash($mappedHash);
             $connectorSubscriber->setSubscriberData($subscriber);
@@ -110,7 +130,9 @@ class SubscriberWithSalesExporter
             $connectorSubscriber->setData($subscriber->getSubscriberEmail());
             $connectorSubscriber->setData('Html');
             // save csv file data
-            $this->file->outputCSV($this->file->getFilePath($subscribersFile), $connectorSubscriber->toCSVArray());
+            $outputData = $connectorSubscriber->toCSVArray();
+            $outputData[] = $optInType;
+            $this->file->outputCSV($this->file->getFilePath($subscribersFile), $outputData);
             //clear collection and free memory
             $subscriber->clearInstance();
             $updated++;

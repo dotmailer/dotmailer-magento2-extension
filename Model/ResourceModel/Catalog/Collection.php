@@ -77,7 +77,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function getProductsToExportByStore($store, $limit, $modified = false)
     {
-
         $connectorCollection = $this;
 
         //for modified catalog
@@ -92,13 +91,10 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 ['null' => 'true']
             );
         }
-        //set limit for collection
-        $connectorCollection->setPageSize($limit);
         //check number of products
         if ($connectorCollection->getSize()) {
-            $productIds = $connectorCollection->getColumnValues(
-                'product_id'
-            );
+            $productIds = $connectorCollection->getColumnValues('product_id');
+
             $productCollection = $this->productCollection->create()
                 ->addAttributeToSelect('*')
                 ->addStoreFilter($store)
@@ -113,6 +109,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             )
             ) {
                 $visibility = explode(',', $visibility);
+                //remove the default option from values
+                $visibility = array_filter($visibility);
                 $productCollection->addAttributeToFilter(
                     'visibility',
                     ['in' => $visibility]
@@ -133,6 +131,10 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             $productCollection->addWebsiteNamesToResult()
                 ->addCategoryIds()
                 ->addOptionsToResult();
+            //clear the loaded data and set the limit
+            $productCollection->clear();
+            //set the limit of the join collection
+            $productCollection->getSelect()->limit($limit);
 
             return $productCollection;
         }

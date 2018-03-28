@@ -22,5 +22,4 @@ class Collection extends
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned::class
         );
     }
-
 }
