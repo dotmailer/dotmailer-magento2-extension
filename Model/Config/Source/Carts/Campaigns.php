@@ -71,7 +71,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
                     if (isset($campaign->name)) {
                         $fields[] = [
                             'value' => $campaign->id,
-                            'label' => __($campaign->name),
+                            'label' => $campaign->name,
                         ];
                     }
                 }
