@@ -22,7 +22,6 @@ class EmailTemplatesSyncTest extends \Magento\TestFramework\TestCase\AbstractBac
      */
     public $url = 'backend/dotdigitalgroup_email/run/templatesync';
 
-
     public function setUp()
     {
         parent::setUp();
@@ -40,4 +39,3 @@ class EmailTemplatesSyncTest extends \Magento\TestFramework\TestCase\AbstractBac
         $this->assertEquals(302, $this->getResponse()->getHttpResponseCode());
     }
 }
-

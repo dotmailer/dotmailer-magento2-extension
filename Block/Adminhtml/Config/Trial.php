@@ -2,12 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+use Magento\Framework\HTTP\PhpEnvironment\ServerAddress;
+
 class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
-    /**
-     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
-     */
-    public $remoteAddress;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
@@ -23,6 +21,16 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
+
+    /**
+     * @var \Magento\Framework\App\Request\Http
+     */
+    private $request;
+
+    /**
+     * @var ServerAddress
+     */
+    private $serverAddress;
 
     /**
      * @var array
@@ -465,11 +473,11 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
 
     /**
      * Trial constructor.
-     *
      * @param \Magento\Backend\Block\Context $context
      * @param \Magento\Backend\Model\Auth\Session $authSession
      * @param \Magento\Framework\View\Helper\Js $jsHelper
-     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
+     * @param ServerAddress $serverAddress
+     * @param \Magento\Framework\App\Request\Http $request
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Stdlib\DateTime\Timezone $localeDate
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -479,13 +487,15 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
         \Magento\Backend\Block\Context $context,
         \Magento\Backend\Model\Auth\Session $authSession,
         \Magento\Framework\View\Helper\Js $jsHelper,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
+        \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress,
+        \Magento\Framework\App\Request\Http $request,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Stdlib\DateTime\Timezone $localeDate,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         array $data = []
     ) {
-        $this->remoteAddress = $remoteAddress;
+        $this->request = $request;
+        $this->serverAddress = $serverAddress;
         $this->storeManager  = $storeManager;
         $this->localeDate    = $localeDate;
         $this->helper        = $helper;
@@ -508,7 +518,7 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
                 ' alt="Open Trial Account"></a>';
         } else {
             $html = '<a class="ddg-fancyBox fancybox.iframe" data-fancybox-type="iframe" href=' .
-                $this->_getIframeFormUrl() . '><img style="margin-bottom:15px;" src=' .
+                $this->escapeUrl($this->_getIframeFormUrl()) . '><img style="margin-bottom:15px;" src=' .
                 $this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png') .
                 ' alt="Open Trial Account"></a>';
         }
@@ -524,7 +534,18 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     public function _getIframeFormUrl()
     {
         $formUrl = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_URL;
-        $ipAddress = $this->remoteAddress->getRemoteAddress();
+
+        $ipAddress = $this->serverAddress->getServerAddress();
+        //get the forward ip address for the request
+        if ($ipAddress) {
+            $ipAddress = $this->request->getServer('HTTP_X_FORWARDED_FOR', $ipAddress);
+            //get the first ip
+            if (strpos($ipAddress, ',') !== false) {
+                $ipList = explode(',', $ipAddress);
+                $ipAddress = trim(reset($ipList));
+            }
+        }
+
         $timezone = $this->_getTimeZoneId();
         $culture = $this->_getCultureId();
         $company = $this->helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);

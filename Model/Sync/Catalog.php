@@ -228,7 +228,6 @@ class Catalog
             //if only to pull default value
             if ($scope == 1) {
                 $products = $this->exportCatalog(\Magento\Store\Model\Store::DEFAULT_STORE_ID);
-
                 if (! empty($products)) {
                     //register in queue with importer
                     $check = $this->importerFactory->create()

@@ -71,7 +71,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     public $orderResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory | \PHPUnit_Framework_MockObject_MockObject
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory |
+     * \PHPUnit_Framework_MockObject_MockObject
      */
     public $contactCollectionFactory;
 

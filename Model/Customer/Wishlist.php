@@ -40,6 +40,20 @@ class Wishlist
     public $updatedAt;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
+     */
+    private $localeDate;
+
+    /**
+     * Wishlist constructor.
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     */
+    public function __construct(
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+    ) {
+        $this->localeDate = $localeDate;
+    }
+    /**
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return $this
@@ -111,10 +125,15 @@ class Wishlist
      */
     public function expose()
     {
-        return array_diff_key(
+        $properties = array_diff_key(
             get_object_vars($this),
             array_flip(['localeDate'])
         );
+
+        //remove null/0/false values
+        $properties = array_filter($properties);
+
+        return $properties;
     }
 
     /**
@@ -126,6 +145,8 @@ class Wishlist
      */
     public function setUpdatedAt($date)
     {
+        $date = $this->localeDate->date($date)
+            ->format(\Zend_Date::ISO_8601);
         $this->updatedAt = $date;
 
         return $this;
@@ -151,17 +172,6 @@ class Wishlist
         $this->email = $email;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function __sleep()
-    {
-        $properties = array_keys(get_object_vars($this));
-        $properties = array_diff($properties, ['localeDate']);
-
-        return $properties;
     }
 
     /**

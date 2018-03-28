@@ -15,6 +15,21 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.4.8
+
+###### Improvements
+- We now import new subscribers with the correct opt-in type (single or double) depending upon Magento's "Need to confirm" setting
+- We've changed the observed wishlist events to comply with upcoming Magento versions
+- We no longer load any scripts on Magento's customer view when the tracking settings are disabled
+
+
+###### Bug fix
+- We've fixed a regression issue which caused the second and third abandoned cart emails to be skipped
+- Some products with individual visibilities were getting ignored by the importer; this has been fixed
+- We've fixed a configuration issue which caused the transactional email settings to be enabled by default
+- As a security update, we now provide the correct public IP as part of the request when creating a new trial account from the extension
+- Campaign and program names with special characters would display incorrectly in the Magento store configuration; this has been fixed
+
 ## V2.4.7
 
 ###### Bug fix

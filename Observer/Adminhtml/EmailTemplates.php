@@ -110,7 +110,6 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
                     if ($template) {
                         $this->saveConfigValue($templateConfigPath, $template->getId());
                     }
-
                 } else {
                     //remove the config for core email template
                     $this->removeConfigValue($dotTemplate->templateConfigMapping[$templateConfigId]);
@@ -173,6 +172,4 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
             $scopeId
         );
     }
-
 }
-

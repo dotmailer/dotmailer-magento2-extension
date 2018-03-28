@@ -18,9 +18,7 @@ define(['domReady!'], function () {
      * @param {Object} trackingCode
      */
     return function (trackingCode) {
-        if (trackingCode.isEnabled) {
-            createTag(trackingCode.regionPrefix);
-        }
+        createTag(trackingCode.regionPrefix);
     };
 });
 
