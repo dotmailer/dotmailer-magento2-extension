@@ -92,7 +92,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                     if (isset($program->id) && $program->status == 'Active') {
                         $fields[] = [
                             'value' => $program->id,
-                            'label' => $this->escaper->escapeQuote($program->name),
+                            'label' => $program->name,
                         ];
                     }
                 }
