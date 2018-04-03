@@ -40,7 +40,7 @@
     "magento/module-user": ">=100 <102",
     "magento/module-reports": "100.*",
     "magento/module-email": "100.*",
-    "magento/module-sendfriend": "100.*",
+    "magento/module-send-friend": "100.*",
     "magento/module-product-alert": "100.*",
     "magento/module-theme": "100.*"
   },
