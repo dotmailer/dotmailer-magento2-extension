@@ -149,6 +149,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_REVIEW_CAMPAIGN = 'connector_automation/review_settings/campaign';
     const XML_PATH_REVIEW_ANCHOR = 'connector_automation/review_settings/anchor';
     const XML_PATH_REVIEW_DISPLAY_TYPE = 'connector_dynamic_content/products/review_display_type';
+    const XML_PATH_REVIEW_ALLOW_NON_SUBSCRIBERS = 'connector_automation/review_settings/allow_non_subscribers';
 
     //Catalog
     const XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES = 'connector_configuration/catalog_sync/catalog_values';
@@ -163,6 +164,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CONTENT_LINK_TEXT = 'connector_configuration/abandoned_carts/link_text';
     const XML_PATH_CONNECTOR_CONTENT_CART_URL = 'connector_configuration/abandoned_carts/cart_url';
     const XML_PATH_CONNECTOR_CONTENT_LOGIN_URL = 'connector_configuration/abandoned_carts/login_url';
+    const XML_PATH_CONNECTOR_CONTENT_ALLOW_NON_SUBSCRIBERS = 'connector_configuration/abandoned_carts/allow_non_subscribers';
     // Address Book Pref
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS =
         'connector_configuration/customer_addressbook/can_change';
