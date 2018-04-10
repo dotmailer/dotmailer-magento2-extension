@@ -18,8 +18,8 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 ## V2.5.0
 
 ###### Improvements:
- - We've added a new option in 'Configuration' > 'Abandoned Carts' that allows to send abandoned cart emails to subscribed contacts only.
- - We've added a new option in 'Automation' > 'Review Settings' that allows to send review reminder emails to subscribed contacts only.
+ - We've added a new option in 'Configuration' > 'Abandoned Carts' that allows to send abandoned cart emails to subscribed contacts only. On fresh installation contacts who haven't opted in will no longer be included.
+ - We've added a new option in 'Automation' > 'Review Settings' that allows to send review reminder emails to subscribed contacts only. On fresh installation contacts who haven't opted in will no longer be included.
 
 ## V2.4.9
 
