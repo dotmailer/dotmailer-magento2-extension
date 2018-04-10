@@ -191,7 +191,7 @@ class Order
                     ->getSalesCollectionForReviews(
                         $orderStatusFromConfig,
                         $created,
-                        $storeIds,
+                        $website,
                         $campaignOrderIds
                     );
 

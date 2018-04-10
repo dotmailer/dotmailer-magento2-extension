@@ -640,6 +640,12 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="allow_non_subscribers" translate="label" type="select" sortOrder="15" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Allow review reminder for non-subscribed contacts</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enable this if you want to allow review reminder email to be sent also to contacts who haven't opted in (This will always exclude unsubscribed contacts).]]></comment>
+                </field>
                 <field id="status" translate="label" type="select" sortOrder="20" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Order Status</label>
@@ -1260,6 +1266,12 @@
                     <label>Easy Email Capture (Newsletter)</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enable this if you would like to update update quote table with email entered in Newsletter Email Field.]]></comment>
+                </field>
+                <field id="allow_non_subscribers" translate="label" sortOrder="25" type="select" showInStore="0"
+                       showInWebsite="1" showInDefault="1">
+                    <label>Allow abandoned cart for non-subscribed contacts</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enable this if you want to allow abandoned cart emails to be sent also to contacts who haven't opted in (This will always exclude unsubscribed contacts)]]></comment>
                 </field>
                 <field id="cart_limit" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
