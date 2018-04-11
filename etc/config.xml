@@ -52,7 +52,7 @@
                 <campaign_3></campaign_3>
             </guests>
         </connector_lost_baskets>
-        <connector_automation_studio>
+        <connector_automation>
             <visitor_automation>
                 <customer_automation>0</customer_automation>
                 <subscriber_automation>0</subscriber_automation>
@@ -72,6 +72,7 @@
                 <new_product></new_product>
                 <campaign></campaign>
                 <anchor></anchor>
+                <allow_non_subscribers>0</allow_non_subscribers>
             </review_settings>
             <feefo_feedback_engine>
                 <logon></logon>
@@ -80,7 +81,7 @@
                 <service_score_url></service_score_url>
                 <product_reviews_url></product_reviews_url>
             </feefo_feedback_engine>
-        </connector_automation_studio>
+        </connector_automation>
         <connector_dynamic_content>
             <products>
                 <related_display_type>grid</related_display_type>
@@ -164,6 +165,7 @@
                 <link_text></link_text>
                 <cart_url></cart_url>
                 <login_url></login_url>
+                <allow_non_subscribers>0</allow_non_subscribers>
             </abandoned_carts>
             <tracking>
                 <roi_enabled>0</roi_enabled>
