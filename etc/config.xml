@@ -8,12 +8,12 @@
                 <password></password>
             </api>
         </connector_api_credentials>
-        <connector_sync_settings>
-            <address_book>
+        <sync_settings>
+            <addressbook>
                 <customers>0</customers>
                 <subscribers>0</subscribers>
                 <guests>0</guests>
-            </address_book>
+            </addressbook>
             <sync>
                 <contact_enabled>0</contact_enabled>
                 <guest_enabled>0</guest_enabled>
@@ -27,8 +27,8 @@
                 <addressbook_name></addressbook_name>
                 <visibility></visibility>
             </dynamic_addressbook>
-        </connector_sync_settings>
-        <connector_lost_baskets>
+        </sync_settings>
+        <abandoned_carts>
             <customers>
                 <enabled_1>0</enabled_1>
                 <send_after_1></send_after_1>
@@ -51,7 +51,7 @@
                 <send_after_3></send_after_3>
                 <campaign_3></campaign_3>
             </guests>
-        </connector_lost_baskets>
+        </abandoned_carts>
         <connector_automation>
             <visitor_automation>
                 <customer_automation>0</customer_automation>
@@ -132,11 +132,11 @@
                 <shipment_update_guest_url></shipment_update_guest_url>
                 <wishlist_url></wishlist_url>
             </external_dynamic_content_urls>
-            <manual_product_search>
+            <manual_product_push>
                 <display_type>list</display_type>
                 <items_to_display>2</items_to_display>
                 <products_push_items></products_push_items>
-            </manual_product_search>
+            </manual_product_push>
             <fallback_products>
                 <product_list></product_list>
             </fallback_products>
@@ -193,9 +193,9 @@
                 <coupon_font_picker><![CDATA[Arial, Helvetica, sans-serif]]></coupon_font_picker>
                 <coupon_background_color><![CDATA[#FFFFFF]]></coupon_background_color>
             </dynamic_content_style>
-            <dynamic_content_edit>
+            <dynamic_content>
                 <link_text></link_text>
-            </dynamic_content_edit>
+            </dynamic_content>
             <admin>
                 <disable_newsletter_success>0</disable_newsletter_success>
                 <disable_customer_success>0</disable_customer_success>
@@ -268,14 +268,6 @@
                 <datafield_access></datafield_access>
             </dynamic_datafield>
         </connector_data_mapping>
-        <connector_roi_tracking>
-            <page_tracking>
-                <enabled>0</enabled>
-            </page_tracking>
-            <roi_tracking>
-                <enabled>0</enabled>
-            </roi_tracking>
-        </connector_roi_tracking>
         <connector_developer_settings>
             <import_settings>
                 <batch_size>500</batch_size>
