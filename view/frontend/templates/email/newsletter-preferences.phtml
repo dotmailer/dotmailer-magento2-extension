@@ -29,7 +29,7 @@
                                     checked="checked"
                                 <?php endif; ?> class="checkbox" />
                             <label
-                                for="additional_subscription"><?= $block->escapeHtml($books["name"]) ?></label>
+                                for="<?= $block->escapeHtml($books["name"]); ?>"><?= $block->escapeHtml($books["name"]) ?></label>
                         </li>
                     <?php endforeach; ?>
                 <?php endif; ?>
