@@ -219,7 +219,7 @@ class Collection extends
             );
         }
 
-        if ($this->helper->onlySubscribersForReview($website->getWebsiteId())) {
+        if ($this->helper->isOnlySubscribersForReview($website->getWebsiteId())) {
             $collection = $this->joinSubscribersOnCollection($collection);
         }
 
@@ -298,7 +298,7 @@ class Collection extends
             $salesCollection->addFieldToFilter('main_table.customer_id', ['notnull' => true]);
         }
 
-        if ($this->helper->onlySubscribersForAC($storeId)) {
+        if ($this->helper->isOnlySubscribersForAC($storeId)) {
             $salesCollection = $this->joinSubscribersOnCollection($salesCollection);
         }
 
@@ -323,18 +323,18 @@ class Collection extends
      * Join subscriber on collection
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+     * @param string $emailColumn
      * @return mixed
      */
-    private function joinSubscribersOnCollection($collection)
+    public function joinSubscribersOnCollection($collection, $emailColumn = "main_table.customer_email")
     {
         $subscriberTable = $this->getTable('newsletter_subscriber');
-        $subscribedStatus = \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED;
         $collection->getSelect()
             ->joinInner(
-                $subscriberTable,
-                "subscriber_email = customer_email"
-            )->where("subscriber_status = {$subscribedStatus}");
-
+                ["st" => $subscriberTable],
+                "st.subscriber_email = {$emailColumn}",
+                []
+            )->where("st.subscriber_status = ?", \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED);
         return $collection;
     }
 }

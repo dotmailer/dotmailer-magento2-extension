@@ -1864,7 +1864,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function onlySubscribersForAC($storeId)
+    public function isOnlySubscribersForAC($storeId)
     {
         $value = $this->scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_ALLOW_NON_SUBSCRIBERS,
@@ -1879,10 +1879,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function onlySubscribersForReview($websiteId)
+    public function isOnlySubscribersForReview($websiteId)
     {
         $value = $this->scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_ALLOW_NON_SUBSCRIBERS,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
+        );
+        return ($value) ? false : true;
+    }
+
+    /**
+     * @param int $websiteId
+     *
+     * @return bool
+     */
+    public function isOnlySubscribersForContactSync($websiteId)
+    {
+        $value = $this->scopeConfig->isSetFlag(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ALLOW_NON_SUBSCRIBERS,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );

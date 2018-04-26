@@ -180,15 +180,24 @@ class Collection extends
     /**
      * Get all not imported guests for a website.
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param int $websiteId
+     * @param boolean $onlySubscriber
      *
      * @return $this
      */
-    public function getGuests(\Magento\Store\Model\Website $website)
+    public function getGuests($websiteId, $onlySubscriber = false)
     {
         $guestCollection = $this->addFieldToFilter('is_guest', ['notnull' => true])
             ->addFieldToFilter('email_imported', ['null' => true])
-            ->addFieldToFilter('website_id', $website->getId());
+            ->addFieldToFilter('website_id', $websiteId);
+
+        if ($onlySubscriber) {
+            $guestCollection->addFieldToFilter('is_subscriber', 1)
+                ->addFieldToFilter(
+                    'subscriber_status',
+                    \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED
+                );
+        }
 
         return $guestCollection->load();
     }
@@ -308,14 +317,25 @@ class Collection extends
      *
      * @param int $websiteId
      * @param int $syncLimit
+     * @param boolean $onlySubscriber
      * @return $this
      */
-    public function getContactsToImportByWebsite($websiteId, $syncLimit)
+    public function getContactsToImportByWebsite($websiteId, $syncLimit, $onlySubscriber = false)
     {
-        return $this->addFieldToSelect('*')
+        $collection = $this->addFieldToSelect('*')
             ->addFieldToFilter('customer_id', ['neq' => '0'])
             ->addFieldToFilter('email_imported', ['null' => true])
             ->addFieldToFilter('website_id', $websiteId)
             ->setPageSize($syncLimit);
+
+        if ($onlySubscriber) {
+            $collection->addFieldToFilter('is_subscriber', 1)
+                ->addFieldToFilter(
+                    'subscriber_status',
+                    \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED
+                );
+        }
+
+        return $collection;
     }
 }

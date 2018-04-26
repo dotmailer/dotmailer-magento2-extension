@@ -828,13 +828,18 @@ class Quote
         $abandonedCollection = $this->abandonedCollectionFactory->create()
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('abandoned_cart_number', --$number)
-            ->addFieldToFilter('store_id', $storeId)
+            ->addFieldToFilter('main_table.store_id', $storeId)
             ->addFieldToFilter('quote_updated_at', $updated);
 
         if ($guest) {
-            $abandonedCollection->addFieldToFilter('customer_id', ['null' => true]);
+            $abandonedCollection->addFieldToFilter('main_table.customer_id', ['null' => true]);
         } else {
-            $abandonedCollection->addFieldToFilter('customer_id', ['notnull' => true]);
+            $abandonedCollection->addFieldToFilter('main_table.customer_id', ['notnull' => true]);
+        }
+
+        if ($this->helper->isOnlySubscribersForAC($storeId)) {
+            $abandonedCollection = $this->orderCollection->create()
+                ->joinSubscribersOnCollection($abandonedCollection, "main_table.email");
         }
 
         return $abandonedCollection;

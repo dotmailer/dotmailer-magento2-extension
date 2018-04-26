@@ -10,6 +10,7 @@
         </connector_api_credentials>
         <sync_settings>
             <addressbook>
+                <allow_non_subscribers>0</allow_non_subscribers>
                 <customers>0</customers>
                 <subscribers>0</subscribers>
                 <guests>0</guests>
