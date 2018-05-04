@@ -49,6 +49,11 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     private $importerFactory;
 
     /**
+     * @var bool
+     */
+    private $isSubscriberNew;
+
+    /**
      * ChangeContactSubscription constructor.
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
@@ -89,6 +94,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $subscriber = $observer->getEvent()->getSubscriber();
+        $this->isSubscriberNew = $subscriber->isObjectNew();
         $email = $subscriber->getEmail();
         $storeId = $subscriber->getStoreId();
         $subscriberStatus = $subscriber->getSubscriberStatus();
@@ -190,37 +196,25 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             'connector_automation/visitor_automation/subscriber_automation',
             $websiteId
         );
-        //not mapped ignore
-        if (!$programId) {
+
+        //not mapped or subscriber is not new then ignore
+        if (! $programId || ! $this->isSubscriberNew) {
             return;
         }
-        //check the subscriber alredy exists
-        $enrolmentCollection = $this->automationFactory->create()
-            ->getCollection()
-            ->addFieldToFilter('email', $email)
-            ->addFieldToFilter(
-                'automation_type',
+
+        //save subscriber to the queue
+        $automation = $this->automationFactory->create()
+            ->setEmail($email)
+            ->setAutomationType(
                 \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
             )
-            ->addFieldToFilter('website_id', $websiteId)
-            ->setPageSize(1);
-        $enrolment = $enrolmentCollection->getFirstItem();
-        //add new subscriber to automation
-        if (!$enrolment->getId()) {
-            //save subscriber to the queue
-            $automation = $this->automationFactory->create()
-                ->setEmail($email)
-                ->setAutomationType(
-                    \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
-                )
-                ->setEnrolmentStatus(
-                    \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING
-                )
-                ->setTypeId($subscriber->getId())
-                ->setWebsiteId($websiteId)
-                ->setStoreName($store->getName())
-                ->setProgramId($programId);
-            $this->automationResource->save($automation);
-        }
+            ->setEnrolmentStatus(
+                \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING
+            )
+            ->setTypeId($subscriber->getId())
+            ->setWebsiteId($websiteId)
+            ->setStoreName($store->getName())
+            ->setProgramId($programId);
+        $this->automationResource->save($automation);
     }
 }

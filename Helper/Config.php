@@ -28,6 +28,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID = 'sync_settings/addressbook/customers';
     const XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID = 'sync_settings/addressbook/subscribers';
     const XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID = 'sync_settings/addressbook/guests';
+    const XML_PATH_CONNECTOR_SYNC_ALLOW_NON_SUBSCRIBERS = 'sync_settings/addressbook/allow_non_subscribers';
     // Mapping
     const XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID = 'connector_data_mapping/customer_data/last_order_id';
     const XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID = 'connector_data_mapping/customer_data/last_quote_id';
@@ -164,7 +165,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CONTENT_LINK_TEXT = 'connector_configuration/abandoned_carts/link_text';
     const XML_PATH_CONNECTOR_CONTENT_CART_URL = 'connector_configuration/abandoned_carts/cart_url';
     const XML_PATH_CONNECTOR_CONTENT_LOGIN_URL = 'connector_configuration/abandoned_carts/login_url';
-    const XML_PATH_CONNECTOR_CONTENT_ALLOW_NON_SUBSCRIBERS = 'connector_configuration/abandoned_carts/allow_non_subscribers';
+    const XML_PATH_CONNECTOR_CONTENT_ALLOW_NON_SUBSCRIBERS
+        = 'connector_configuration/abandoned_carts/allow_non_subscribers';
     // Address Book Pref
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS =
         'connector_configuration/customer_addressbook/can_change';

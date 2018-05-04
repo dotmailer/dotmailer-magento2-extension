@@ -352,6 +352,10 @@
                    showInStore="0">
                 <label>Address Book Mapping</label>
                 <attribute type="expanded">1</attribute>
+                <field id="allow_non_subscribers" translate="label" type="select" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Allow non-subscribed contacts to be imported</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Add Customers To</label>
@@ -1189,7 +1193,7 @@
                 </field>
             </group>
         </section>
-        <section id="connector_configuration" translate="label" sortOrder="200" showInStore="0" showInWebsite="1"
+        <section id="connector_configuration" translate="label" sortOrder="200" showInStore="1" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Configuration</label>
@@ -1252,7 +1256,7 @@
                 </field>
             </group>
             <group id="abandoned_carts" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+                   showInStore="1">
                 <label>Abandoned Carts</label>
                 <field id="email_capture" translate="comment label" sortOrder="10" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">
@@ -1267,7 +1271,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enable this if you would like to update update quote table with email entered in Newsletter Email Field.]]></comment>
                 </field>
-                <field id="allow_non_subscribers" translate="label" sortOrder="25" type="select" showInStore="0"
+                <field id="allow_non_subscribers" translate="label" sortOrder="25" type="select" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Allow abandoned cart for non-subscribed contacts</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

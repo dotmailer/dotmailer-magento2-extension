@@ -124,14 +124,15 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Get all not imported guests for a website.
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param int $websiteId
+     * @param boolean $onlySubscriber
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
      */
-    public function getGuests(\Magento\Store\Model\Website $website)
+    public function getGuests($websiteId, $onlySubscriber = false)
     {
         return $this->getCollection()
-            ->getGuests($website);
+            ->getGuests($websiteId, $onlySubscriber);
     }
 
     /**

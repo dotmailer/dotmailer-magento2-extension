@@ -121,7 +121,7 @@ class Catalog
         //get products id's
         try {
             if ($products) {
-                $this->productIds = $products->getColumnValues('entity_id');
+                $this->productIds = array_merge($this->productIds, $products->getColumnValues('entity_id'));
 
                 foreach ($products as $product) {
                     $connProduct = $this->connectorProductFactory->create()
@@ -147,7 +147,7 @@ class Catalog
      */
     public function exportInSingle($store, $collectionName, $websiteId)
     {
-        $this->productIds = [];
+        $productIds = [];
         $products         = $this->getProductsToExport($store, true);
         if (! empty($products)) {
             foreach ($products as $product) {
@@ -166,7 +166,7 @@ class Catalog
                         $websiteId
                     );
                 if ($check) {
-                    $this->productIds[] = $product->getId();
+                    $productIds[] = $product->getId();
                 } else {
                     $pid = $product->getId();
                     $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Single) / Product Ids($pid)";
@@ -175,9 +175,9 @@ class Catalog
             }
         }
 
-        if (! empty($this->productIds)) {
-            $this->setImported($this->productIds, true);
-            $this->countProducts += count($this->productIds);
+        if (! empty($productIds)) {
+            $this->setImported($productIds, true);
+            $this->countProducts += count($productIds);
         }
     }
 
@@ -273,18 +273,13 @@ class Catalog
                                 . $storeCode,
                                 $products,
                                 \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                                $store->getWebsite()->getId()
+                                $store->getWebsiteId()
                             );
 
-                        if ($check) {
-                            //set imported
-                            $this->setImported($this->productIds);
-
-                            //set number of product imported
-                            $this->countProducts += count($products);
-                        } else {
+                        if (! $check) {
                             $pid = implode(",", $this->productIds);
-                            $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Product Ids($pid)";
+                            $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Store($store) 
+                            / Product Ids($pid)";
                             $this->helper->log($msg);
                         }
                     }
@@ -292,8 +287,16 @@ class Catalog
                     $this->exportInSingle(
                         $store,
                         'Catalog_' . $websiteCode . '_' . $storeCode,
-                        $store->getWebsite()->getId()
+                        $store->getWebsiteId()
                     );
+                }
+
+                if (! empty($this->productIds)) {
+                    //set imported
+                    $this->setImported(array_unique($this->productIds));
+
+                    //set number of product imported
+                    $this->countProducts += count($this->productIds);
                 }
             }
         } catch (\Exception $e) {
