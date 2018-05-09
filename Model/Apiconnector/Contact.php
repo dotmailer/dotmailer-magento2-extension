@@ -28,11 +28,6 @@ class Contact
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ContactFactory
-     */
-    public $contactModel;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Customer
      */
     private $emailCustomer;
@@ -48,6 +43,11 @@ class Contact
     public $contactImportQueueExport;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
+     */
+    private $contactCollectionFactory;
+
+    /**
      * Contact constructor.
      *
      * @param CustomerFactory $customerFactory
@@ -56,6 +56,7 @@ class Contact
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param ContactImportQueueExport $contactImportQueueExport
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
@@ -63,16 +64,16 @@ class Contact
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport $contactImportQueueExport
+        \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport $contactImportQueueExport,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
     ) {
-        $this->file            = $file;
-        $this->helper          = $helper;
+        $this->file = $file;
+        $this->helper = $helper;
         //email contact
-        $this->emailCustomer      = $customerFactory;
-        //email contact collection
-        $this->contactModel = $contactFactory;
+        $this->emailCustomer = $customerFactory;
         $this->contactResource = $contactResource;
         $this->contactImportQueueExport = $contactImportQueueExport;
+        $this->contactCollectionFactory = $contactCollectionFactory;
     }
 
     /**
@@ -139,10 +140,10 @@ class Contact
             return 0;
         }
 
-        //contacts ready for website
-        $contacts = $this->contactModel->create()
-            ->getCollection()
-            ->getContactsToImportByWebsite($website->getId(), $syncLimit);
+        $onlySubscribers = $this->helper->isOnlySubscribersForContactSync($website->getId());
+        $contacts = $this->contactCollectionFactory->create();
+        $contacts = ($onlySubscribers) ? $contacts->getContactsToImportByWebsite($website->getId(), $syncLimit, true) :
+            $contacts->getContactsToImportByWebsite($website->getId(), $syncLimit);
 
         // no contacts found
         if (!$contacts->getSize()) {

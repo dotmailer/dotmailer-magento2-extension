@@ -103,8 +103,11 @@ class Guest
      */
     public function exportGuestPerWebsite($website)
     {
-        $guests = $this->contactFactory->create()
-            ->getGuests($website);
+        $onlySubscribers = $this->helper->isOnlySubscribersForContactSync($website->getWebsiteId());
+        $contact = $this->contactFactory->create();
+        $guests = ($onlySubscribers) ? $contact->getGuests($website->getId(), true) :
+            $contact->getGuests($website->getId());
+
         //found some guests
         if ($guests->getSize()) {
             $guestFilename = strtolower(
