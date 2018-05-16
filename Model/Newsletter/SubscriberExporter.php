@@ -30,6 +30,16 @@ class SubscriberExporter
     public $storeManager;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Consent
+     */
+    private $consentResource;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ConsentFactory
+     */
+    private $consentFactory;
+
+    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
@@ -40,6 +50,8 @@ class SubscriberExporter
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
+     * @param \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -49,6 +61,8 @@ class SubscriberExporter
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
+        \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -57,6 +71,8 @@ class SubscriberExporter
         $this->helper          = $helper;
         $this->configHelper    = $configHelper;
         $this->storeManager    = $storeManager;
+        $this->consentFactory  = $consentFactory;
+        $this->consentResource = $consentResource;
         $this->contactResource = $contactResource;
         $this->importerFactory = $importerFactory;
         $this->subscriberFactory = $subscriberFactory;
@@ -66,49 +82,63 @@ class SubscriberExporter
      * Export subscribers
      *
      * @param \Magento\Store\Model\Website $website
-     * @param  \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection $subscribers
+     * @param  \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection $emailContactCollection
      *
      * @return int
      */
-    public function exportSubscribers($website, $subscribers)
+    public function exportSubscribers($website, $emailContactCollection)
     {
         $updated = 0;
+        $websiteId = $website->getId();
         $subscribersFilename = strtolower($website->getCode() . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
         //get mapped storename
         $subscriberStorename = $this->helper->getMappedStoreName($website);
         //file headers
         $headers = ['Email', 'EmailType', $subscriberStorename, 'OptInType'];
-        $this->file->outputCSV(
-            $this->file->getFilePath($subscribersFilename),
-            $headers
-        );
+        //contentinsight is enabled include additional headers
+        $isConsentSubscriberEnabled = $this->configHelper->isConsentSubscriberEnabled($website->getId());
+        $isConsentCustomerEnabled = $this->configHelper->isConsentCustomerEnabled($website->getId());
+        if ($isConsentSubscriberEnabled || $isConsentCustomerEnabled) {
+            $headers = array_merge($headers, \Dotdigitalgroup\Email\Model\Consent::$bulkFields);
+        }
+
+        $this->file->outputCSV($this->file->getFilePath($subscribersFilename), $headers);
         $subscriberFactory = $this->subscriberFactory->create();
         $subscribersData = $subscriberFactory->getCollection()
             ->addFieldToFilter(
                 'subscriber_email',
-                ['in' => $subscribers->getColumnValues('email')]
+                ['in' => $emailContactCollection->getColumnValues('email')]
             )
-            ->addFieldToSelect(['subscriber_email', 'store_id'])
-            ->toArray();
-        foreach ($subscribers as $subscriber) {
-            $email = $subscriber->getEmail();
+            ->addFieldToSelect(['subscriber_email', 'store_id']);
+
+        foreach ($emailContactCollection as $contact) {
+            $email = $contact->getEmail();
             $storeId = $this->getStoreIdForSubscriber(
                 $email,
-                $subscribersData['items']
+                $subscribersData->getItems()
             );
             $store = $this->storeManager->getStore($storeId);
             $storeName = $store->getName();
             $optInType = $this->configHelper->getOptInType($store);
+
             // save data for subscribers
             $outputData = [$email, 'Html', $storeName, $optInType];
+            //check for any subscribe or customer consent enabled
+            if ($isConsentSubscriberEnabled || $isConsentCustomerEnabled) {
+                $consentModel = $this->consentFactory->create();
+                $this->consentResource->load($consentModel, $contact->getId(), 'email_contact_id');
+                $consentData = $consentModel->getConsentDataByContact($websiteId, $email);
+                $outputData = array_merge($outputData, $consentData);
+            }
             $this->file->outputCSV(
                 $this->file->getFilePath($subscribersFilename),
                 $outputData
             );
-            $subscriber->setSubscriberImported(1);
-            $this->contactResource->save($subscriber);
+            $contact->setSubscriberImported(1);
+            $this->contactResource->save($contact);
             $updated++;
         }
+
         $this->helper->log('Subscriber filename: ' . $subscribersFilename);
         //register in queue with importer
         $this->importerFactory->create()
@@ -116,7 +146,7 @@ class SubscriberExporter
                 \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBERS,
                 '',
                 \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                $website->getId(),
+                $websiteId,
                 $subscribersFilename
             );
 
