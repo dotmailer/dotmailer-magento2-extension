@@ -96,8 +96,8 @@ class SubscriberExporter
         //file headers
         $headers = ['Email', 'EmailType', $subscriberStorename, 'OptInType'];
         //contentinsight is enabled include additional headers
-        $isConsentSubscriberEnabled = $this->configHelper->isConsentSubscriberEnabled($website->getId());
-        $isConsentCustomerEnabled = $this->configHelper->isConsentCustomerEnabled($website->getId());
+        $isConsentSubscriberEnabled = $this->configHelper->isConsentSubscriberEnabled($websiteId);
+        $isConsentCustomerEnabled = $this->configHelper->isConsentCustomerEnabled($websiteId);
         if ($isConsentSubscriberEnabled || $isConsentCustomerEnabled) {
             $headers = array_merge($headers, \Dotdigitalgroup\Email\Model\Consent::$bulkFields);
         }

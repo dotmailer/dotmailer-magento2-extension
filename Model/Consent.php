@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Consent extends \Magento\Framework\Model\AbstractModel
 {
-    const CONSENT_TEXT_LIMIT = '10000';
+    const CONSENT_TEXT_LIMIT = '1000';
 
     /**
      * Single fields for the consent contact.
@@ -30,6 +30,11 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         'CONSENTIP',
         'CONSENTUSERAGENT'
     ];
+
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    private $dateTime;
 
     /**
      * @var ResourceModel\Consent
@@ -71,10 +76,12 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         \Dotdigitalgroup\Email\Helper\Config $config,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consent,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCoollectionFactory,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->dateTime = $dateTime;
         $this->configHelper = $config;
         $this->consentResource = $consent;
         $this->contactCollectionFacotry = $contactCoollectionFactory;
@@ -111,10 +118,11 @@ class Consent extends \Magento\Framework\Model\AbstractModel
             $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
         }
 
+        $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
         return $consentData = [
             $consentText,
             $this->getConsentUrl(),
-            $this->getConsentDatetime(),
+            $consentDatetime,
             $this->getConsentIp(),
             $this->getConsentUserAgent()
         ];

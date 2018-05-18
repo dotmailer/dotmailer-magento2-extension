@@ -131,14 +131,13 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
                 return $this;
             }
 
-            $consentUrl = $this->redirect->getRefererUrl();
-            $consendDatetime = $this->timezone->date();
             $consentIp = $this->http->getClientIp();
+            $consentUrl = $this->redirect->getRefererUrl();
             $consentUserAgent = $this->header->getHttpUserAgent();
             //save the consent data against the contact
             $consentModel->setEmailContactId($emailContactId)
                 ->setConsentUrl($consentUrl)
-                ->setConsentDatetime($consendDatetime->format('Y-m-d H:i:s'))
+                ->setConsentDatetime($this->timezone->date())
                 ->setConsentIp($consentIp)
                 ->setConsentUserAgent($consentUserAgent);
 
