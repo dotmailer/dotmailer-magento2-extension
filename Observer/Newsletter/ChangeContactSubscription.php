@@ -101,14 +101,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         $websiteId = $this->storeManager->getStore($subscriber->getStoreId())
             ->getWebsiteId();
 
-        //If not confirmed or not active
-        if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE ||
-            $subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED
-        ) {
-            return $this;
-        }
-
-        //check if enabled
+        //api is enabled
         if (!$this->helper->isEnabled($websiteId)) {
             return $this;
         }
@@ -150,9 +143,14 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 }
                 $contactEmail->setSubscriberImported(1)
                     ->setIsSubscriber(null);
-
                 //save contact
                 $this->contactResource->save($contactEmail);
+
+                //need to confirm enabled, to keep before the subscription data for contentinsight.
+                if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED ||
+                    $subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE) {
+                    return $this;
+                }
 
                 //Add subscriber update to importer queue
                 $this->importerFactory->registerQueue(

@@ -159,7 +159,7 @@ class Customer
     }
 
     /**
-     * Set key value data.
+     * Set single key value data.
      *
      * @param mixed $data
      *
@@ -637,7 +637,7 @@ class Customer
     {
         $result = $this->customerData;
 
-        return $result;
+        return array_values($result);
     }
 
     /**

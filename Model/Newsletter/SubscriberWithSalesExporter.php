@@ -45,6 +45,16 @@ class SubscriberWithSalesExporter
     public $configHelper;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Consent
+     */
+    private $consentResource;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ConsentFactory
+     */
+    private $consentFactory;
+
+    /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
@@ -55,6 +65,8 @@ class SubscriberWithSalesExporter
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
+     * @param \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
      * @param \Magento\Framework\App\ResourceConnection $resource
      * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber
@@ -66,17 +78,21 @@ class SubscriberWithSalesExporter
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
+        \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
     ) {
-        $this->importerFactory   = $importerFactory;
-        $this->file              = $file;
-        $this->helper            = $helper;
-        $this->resource          = $resource;
-        $this->configHelper      = $configHelper;
+        $this->importerFactory  = $importerFactory;
+        $this->file             = $file;
+        $this->helper           = $helper;
+        $this->resource         = $resource;
+        $this->configHelper     = $configHelper;
+        $this->consentFactory   = $consentFactory;
+        $this->consentResource  = $consentResource;
         $this->storeManager = $storeManager;
         $this->emailSubscriber = $emailSubscriber;
         $this->emailContactResource = $contactResource;
@@ -92,6 +108,7 @@ class SubscriberWithSalesExporter
     public function exportSubscribersWithSales($website, $subscribers)
     {
         $updated = 0;
+        $websiteId = $website->getId();
         $subscriberIds = $headers = $emailContactIdEmail = [];
         foreach ($subscribers as $emailContact) {
             $emailContactIdEmail[$emailContact->getId()] = $emailContact->getEmail();
@@ -102,7 +119,7 @@ class SubscriberWithSalesExporter
         $emails = $subscribers->getColumnValues('email');
 
         //subscriber collection
-        $collection = $this->getCollection($emails, $website->getId());
+        $collection = $this->getCollection($emails, $websiteId);
         //no subscribers found
         if ($collection->getSize() == 0) {
             return 0;
@@ -113,6 +130,13 @@ class SubscriberWithSalesExporter
         $headers[] = 'Email';
         $headers[] = 'EmailType';
         $headers[] = 'OptInType';
+
+        //contentinsight is enabled include additional headers
+        $isConsentSubscriberEnabled = $this->configHelper->isConsentSubscriberEnabled($websiteId);
+        if ($isConsentSubscriberEnabled) {
+            $headers = array_merge($headers, \Dotdigitalgroup\Email\Model\Consent::$bulkFields);
+        }
+
         $this->file->outputCSV($this->file->getFilePath($subscribersFile), $headers);
         //subscriber data
         foreach ($collection as $subscriber) {
@@ -132,6 +156,16 @@ class SubscriberWithSalesExporter
             // save csv file data
             $outputData = $connectorSubscriber->toCSVArray();
             $outputData[] = $optInType;
+
+            $email = $subscriber->getEmail();
+            //check for any consent subscriber enabled
+            if ($isConsentSubscriberEnabled) {
+                $consentModel = $this->consentFactory->create();
+                $this->consentResource->load($consentModel, $subscriber->getId(), 'email_contact_id');
+                $consentData = $consentModel->getConsentDataByContact($websiteId, $email);
+                $outputData = array_merge($outputData, $consentData);
+            }
+
             $this->file->outputCSV($this->file->getFilePath($subscribersFile), $outputData);
             //clear collection and free memory
             $subscriber->clearInstance();
@@ -147,7 +181,7 @@ class SubscriberWithSalesExporter
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBERS,
                         '',
                         \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                        $website->getId(),
+                        $websiteId,
                         $subscribersFile
                     );
                 //set imported

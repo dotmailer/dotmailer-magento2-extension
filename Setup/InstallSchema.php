@@ -35,6 +35,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->createImporterTable($installer);
         $this->createAutomationTable($installer);
         $this->createAbandonedCartTable($installer);
+        $this->createConsentTable($installer);
 
         /**
          * Modify table
@@ -1689,5 +1690,108 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getIdxName('email_abandoned_cart', ['email']),
                 ['email']
             );
+    }
+
+    /**
+     * @param $installer
+     */
+    private function createConsentTable($installer)
+    {
+        $tableName = $installer->getTable('email_contact_consent');
+        $this->dropTableIfExists($installer, $tableName);
+
+        $emailContactConsentTable = $installer->getConnection()->newTable($installer->getTable($tableName));
+        $emailContactConsentTable = $this->addColumnForConsentTable($emailContactConsentTable);
+        $emailContactConsentTable = $this->addIndexToConsentTable($installer, $emailContactConsentTable);
+        $emailContactConsentTable = $this->addKeyForConsentTable($installer, $emailContactConsentTable);
+        $emailContactConsentTable->setComment('Email contact consent table.');
+        $installer->getConnection()->createTable($emailContactConsentTable);
+    }
+
+    /**
+     * @param $emailContactConsentTable
+     * @return mixed
+     */
+    private function addColumnForConsentTable($emailContactConsentTable)
+    {
+        $emailContactConsentTable
+            ->addColumn(
+                'id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                10,
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ],
+                'Primary Key'
+            )
+            ->addColumn(
+                'email_contact_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => true],
+                'Email Contact Id'
+            )
+            ->addColumn(
+                'consent_url',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => true],
+                'Contact consent url'
+            )
+            ->addColumn(
+                'consent_datetime',
+                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+                null,
+                [],
+                'Contact consent datetime'
+            )
+            ->addColumn(
+                'consent_ip',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => true],
+                'Contact consent ip'
+            )
+            ->addColumn(
+                'consent_user_agent',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => true],
+                'Contact consent user agent'
+            );
+
+        return $emailContactConsentTable;
+    }
+
+    /**
+     * @param $installer
+     * @param $emailContactConsentTable
+     * @return mixed
+     */
+    private function addKeyForConsentTable($installer, $emailContactConsentTable)
+    {
+        return $emailContactConsentTable->addForeignKey(
+            $installer->getFkName('email_contact_consent', 'email_contact_id', 'email_contact', 'email_contact_id'),
+            'email_contact_id',
+            $installer->getTable('email_contact'),
+            'email_contact_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+    }
+
+    /**
+     * @param $installer
+     * @param $table
+     * @return mixed]
+     */
+    private function addIndexToConsentTable($installer, $table)
+    {
+        return $table->addIndex(
+            $installer->getIdxName($installer->getTable('email_contact_consent'), ['email_contact_id']),
+            ['email_contact_id']
+        );
     }
 }

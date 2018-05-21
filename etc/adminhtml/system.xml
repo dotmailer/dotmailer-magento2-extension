@@ -1228,6 +1228,27 @@
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
             </group>
+            <group id="consent" translate="label" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Consent</label>
+                <field id="dotmailer_consent_customer_enabled" translate="comment label" sortOrder="10" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Import customers with their consent information</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable this is you want to store and import consent insight data when your guests and customers subscribe during registration or checkout.</comment>
+                </field>
+                <field id="dotmailer_consent_customer_text" translate="comment label" sortOrder="20" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Consent text provided to your customers on registration and checkout</label>
+                    <comment>Please provide the text that is currently displayed on your registration and checkout form to get the consent from your customers/guests to receive marketing messages.</comment>
+                </field>
+                <field id="dotmailer_consent_subscriber_enabled" translate="comment label" sortOrder="30" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Import subscribers with their consent information</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable this is you want to store and import consent insight data when customsers subscribe via the newsletter signup form.</comment>
+                </field>
+                <field id="dotmailer_consent_subscriber_text" translate="comment label" sortOrder="40" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Consent text provided to your subscribers above the newsletter signup</label>
+                    <comment>Please provide the text that is currently displayed above your newsletter signup form</comment>
+                </field>
+            </group>
             <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
                    showInStore="0">
                 <label>Transactional Data</label>

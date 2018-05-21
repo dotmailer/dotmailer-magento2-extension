@@ -3,4 +3,7 @@
     <event name="customer_register_success">
         <observer name="ddg_customer_register_success" instance="Dotdigitalgroup\Email\Observer\Customer\NewAutomation"/>
     </event>
+    <event name="newsletter_subscriber_save_after">
+        <observer name="ddg_observer_subscriber_save_after" instance="Dotdigitalgroup\Email\Observer\Newsletter\NewsletterSubscriberSaveAfter"/>
+    </event>
 </config>
