@@ -8,6 +8,11 @@ namespace Dotdigitalgroup\Email\Observer\Newsletter;
 class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Dotdigitalgroup\Email\Helper\Config
+     */
+    private $configHelper;
+
+    /**
      * @var \Magento\Framework\App\Response\RedirectInterface
      */
     private $redirect;
@@ -87,7 +92,7 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
         $this->header = $header;
         $this->redirect = $redirect;
         $this->helper = $data;
-        $this->config = $config;
+        $this->configHelper = $config;
         $this->timezone = $timezone;
         $this->storeManager   = $storeManagerInterface;
         $this->consentFactory = $consentFactory;
@@ -110,6 +115,10 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
         //If not confirmed or not enabled.
         if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED ||
             !$this->helper->isEnabled($websiteId)
+        ) {
+            return $this;
+        } elseif (!$this->configHelper->isConsentCustomerEnabled($websiteId) &&
+            !$this->configHelper->isConsentSubscriberEnabled($websiteId)
         ) {
             return $this;
         }
