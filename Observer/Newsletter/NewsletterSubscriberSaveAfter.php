@@ -114,10 +114,7 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
 
         //If not confirmed or not enabled.
         if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED ||
-            !$this->helper->isEnabled($websiteId)
-        ) {
-            return $this;
-        } elseif (!$this->configHelper->isConsentCustomerEnabled($websiteId) &&
+            !$this->helper->isEnabled($websiteId) ||
             !$this->configHelper->isConsentSubscriberEnabled($websiteId)
         ) {
             return $this;
@@ -146,7 +143,7 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
             //save the consent data against the contact
             $consentModel->setEmailContactId($emailContactId)
                 ->setConsentUrl($consentUrl)
-                ->setConsentDatetime($this->timezone->date())
+                ->setConsentDatetime(time())
                 ->setConsentIp($consentIp)
                 ->setConsentUserAgent($consentUserAgent);
 

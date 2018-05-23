@@ -202,14 +202,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * CONSENT SECTION.
      */
-    const XML_PATH_DOTMAILER_CONSENT_CUSTOMER_ENABLED =
-        'connector_configuration/consent/dotmailer_consent_customer_enabled';
-    const XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT =
-        'connector_configuration/consent/dotmailer_consent_customer_text';
     const XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_ENABLED =
         'connector_configuration/consent/dotmailer_consent_subscriber_enabled';
     const XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_TEXT =
         'connector_configuration/consent/dotmailer_consent_subscriber_text';
+    const XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT =
+        'connector_configuration/consent/dotmailer_consent_customer_text';
 
     /**
      * OAUTH.
@@ -424,15 +422,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             $scope,
             $website
         );
-    }
-
-    /**
-     * @param int $websiteId
-     * @return mixed
-     */
-    public function isConsentCustomerEnabled($websiteId = 0)
-    {
-        return $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_CUSTOMER_ENABLED, $websiteId);
     }
 
     /**
