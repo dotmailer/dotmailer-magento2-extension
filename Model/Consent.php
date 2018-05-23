@@ -105,19 +105,17 @@ class Consent extends \Magento\Framework\Model\AbstractModel
                 $this->consentResource->load($this, $contactModel->getEmailContactId(), 'email_contact_id');
             }
         }
-        //consent from the customer registration page or checkout
-        if ($this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl())) {
-            if (! $this->configHelper->isConsentCustomerEnabled($websiteId)) {
-                return [];
-            }
-            $consentText = $this->configHelper->getConsentCustomerText($websiteId);
-        } else {
-            if (! $this->configHelper->isConsentSubscriberEnabled($websiteId)) {
-                return [];
-            }
-            $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
+        //not enabled
+        if (! $this->configHelper->isConsentSubscriberEnabled($websiteId)) {
+            return array();
         }
 
+        $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
+        $customerConentText = $this->configHelper->getConsentCustomerText($websiteId);
+        //customer checkout and registration if consent text not empty
+        if ($this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl()) && strlen($customerConentText)) {
+            $consentText = $customerConentText;
+        }
         $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
         return $consentData = [
             $consentText,

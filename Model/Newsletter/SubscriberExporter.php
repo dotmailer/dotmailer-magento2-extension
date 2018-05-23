@@ -97,8 +97,7 @@ class SubscriberExporter
         $headers = ['Email', 'EmailType', $subscriberStorename, 'OptInType'];
         //contentinsight is enabled include additional headers
         $isConsentSubscriberEnabled = $this->configHelper->isConsentSubscriberEnabled($websiteId);
-        $isConsentCustomerEnabled = $this->configHelper->isConsentCustomerEnabled($websiteId);
-        if ($isConsentSubscriberEnabled || $isConsentCustomerEnabled) {
+        if ($isConsentSubscriberEnabled) {
             $headers = array_merge($headers, \Dotdigitalgroup\Email\Model\Consent::$bulkFields);
         }
 
@@ -124,7 +123,7 @@ class SubscriberExporter
             // save data for subscribers
             $outputData = [$email, 'Html', $storeName, $optInType];
             //check for any subscribe or customer consent enabled
-            if ($isConsentSubscriberEnabled || $isConsentCustomerEnabled) {
+            if ($isConsentSubscriberEnabled) {
                 $consentModel = $this->consentFactory->create();
                 $this->consentResource->load($consentModel, $contact->getId(), 'email_contact_id');
                 $consentData = $consentModel->getConsentDataByContact($websiteId, $email);
