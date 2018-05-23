@@ -95,12 +95,11 @@ class Subscriber
         $websites    = $this->helper->getWebsites(true);
 
         foreach ($websites as $website) {
+            $websiteId = $website->getId();
             //if subscriber is enabled and mapped
-            $apiEnabled = $this->helper->isEnabled($website->getid());
-            $subscriberEnabled
-                = $this->helper->isSubscriberSyncEnabled($website->getid());
-            $addressBook
-                = $this->helper->getSubscriberAddressBook($website->getId());
+            $apiEnabled = $this->helper->isEnabled($websiteId);
+            $addressBook = $this->helper->getSubscriberAddressBook($websiteId);
+            $subscriberEnabled = $this->helper->isSubscriberSyncEnabled($websiteId);
             //enabled and mapped
             if ($apiEnabled && $addressBook && $subscriberEnabled) {
                 //ready to start sync
@@ -150,7 +149,6 @@ class Subscriber
         $subscribersAreGuest = $emailContactModel->getSubscribersToImport($website, $limit, false);
         $subscribersGuestEmails = $subscribersAreGuest->getColumnValues('email');
         $existInSales = [];
-
         //Only if subscriber with sales data enabled
         if ($isSubscriberSalesDataEnabled && ! empty($subscribersGuestEmails)) {
             $existInSales = $this->checkInSales($subscribersGuestEmails);

@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Setup;
 
+use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
@@ -105,6 +106,15 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $abandonedCartTable = $this->addIndexKeyForAbandonedCarts($setup, $abandonedCartTable);
             $abandonedCartTable->setComment('Abandoned Carts Table');
             $setup->getConnection()->createTable($abandonedCartTable);
+        }
+
+        if (version_compare($context->getVersion(), '2.5.2', '<')) {
+            $emailContactConsentTable = $connection->newTable($setup->getTable('email_contact_consent'));
+            $emailContactConsentTable = $this->addColumnForConsentTable($emailContactConsentTable);
+            $emailContactConsentTable = $this->addIndexForConsenTable($setup, $emailContactConsentTable);
+            $emailContactConsentTable = $this->addKeyForConsentTable($setup, $emailContactConsentTable);
+            $emailContactConsentTable->setComment('Email contact consent table.');
+            $setup->getConnection()->createTable($emailContactConsentTable);
         }
 
         $setup->endSetup();
@@ -442,7 +452,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param $installer SchemaSetupInterface
      * @param $abandonedCartTable
      * @return mixed
      */
@@ -463,6 +473,94 @@ class UpgradeSchema implements UpgradeSchemaInterface
         ->addIndex(
             $installer->getIdxName('email_abandoned_cart', ['email']),
             ['email']
+        );
+    }
+
+    /**
+     * @param $emailContactConsentTable
+     * @return mixed
+     */
+    private function addColumnForConsentTable($emailContactConsentTable)
+    {
+        $emailContactConsentTable
+            ->addColumn(
+                'id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                10,
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ],
+                'Primary Key'
+            )
+            ->addColumn(
+                'email_contact_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => true],
+                'Email Contact Id'
+            )
+            ->addColumn(
+                'consent_url',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => true],
+                'Contact consent url'
+            )
+            ->addColumn(
+                'consent_datetime',
+                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+                null,
+                [],
+                'Contact consent datetime'
+            )
+            ->addColumn(
+                'consent_ip',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => true],
+                'Contact consent ip'
+            )
+            ->addColumn(
+                'consent_user_agent',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => true],
+                'Contact consent user agent'
+            );
+
+        return $emailContactConsentTable;
+    }
+
+    /**
+     * @param $installer
+     * @param $emailContactConsentTable
+     * @return mixed
+     */
+    private function addKeyForConsentTable($installer, $emailContactConsentTable)
+    {
+        return $emailContactConsentTable->addForeignKey(
+            $installer->getFkName('email_contact_consent', 'email_contact_id', 'email_contact', 'email_contact_id'),
+            'email_contact_id',
+            $installer->getTable('email_contact'),
+            'email_contact_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+    }
+
+    /**
+     * @param $setup SchemaSetupInterface
+     * @param $table Table
+     * @return mixed
+     */
+    private function addIndexForConsenTable($setup, $table)
+    {
+
+        return $table->addIndex(
+            $setup->getIdxName($setup->getTable('email_contact_consent'), ['email_contact_id']),
+            ['email_contact_id']
         );
     }
 }

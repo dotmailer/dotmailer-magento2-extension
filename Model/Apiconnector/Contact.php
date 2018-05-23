@@ -11,7 +11,7 @@ class Contact
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
-    
+
     /**
      * @var mixed
      */

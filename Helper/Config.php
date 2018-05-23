@@ -200,6 +200,16 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED = 'connector_configuration/tracking/page_enabled';
 
     /**
+     * CONSENT SECTION.
+     */
+    const XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_ENABLED =
+        'connector_configuration/consent/dotmailer_consent_subscriber_enabled';
+    const XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_TEXT =
+        'connector_configuration/consent/dotmailer_consent_subscriber_text';
+    const XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT =
+        'connector_configuration/consent/dotmailer_consent_customer_text';
+
+    /**
      * OAUTH.
      */
     const API_CONNECTOR_OAUTH_URL_AUTHORISE = 'OAuth2/authorise.aspx?';
@@ -248,27 +258,29 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';
 
+    /**
+     * @var \Magento\Framework\Stdlib\StringUtils
+     */
+    private $stringUtils;
+
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     private $storeManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
-
-    /**
      * Config constructor.
-     *
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Stdlib\StringUtils $stringUtils
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Magento\Framework\Stdlib\StringUtils $stringUtils,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
+        $this->stringUtils = $stringUtils;
         $this->storeManager = $storeManager;
-        $this->helper       = $data;
         parent::__construct($context);
     }
 
@@ -283,7 +295,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         //base url, check for custom oauth domain
         if ($this->isAuthorizeCustomDomain($website)) {
-            $baseUrl = $this->helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
+            $baseUrl = $this->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
                 . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         } else {
             $baseUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
@@ -320,7 +332,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $website = $this->storeManager->getWebsite($website);
 
-        $apiEndpoint = $this->helper->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website) . '/';
+        $apiEndpoint = $this->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website) . '/';
         //replace the api with the app prefix from the domain name
         $regionBaseUrl = str_replace('api', 'app', $apiEndpoint);
 
@@ -334,10 +346,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getCallbackUrl()
     {
-        if ($callback = $this->scopeConfig->getValue(
-            self::XML_PATH_CONNECTOR_CUSTOM_AUTHORIZATION
-        )
-        ) {
+        if ($callback = $this->scopeConfig->getValue(self::XML_PATH_CONNECTOR_CUSTOM_AUTHORIZATION)) {
             return $callback;
         }
 
@@ -358,7 +367,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         if ($this->isAuthorizeCustomDomain($website)) {
             $website = $this->storeManager->getWebsite($website);
-
             $tokenUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) .
                 self::API_CONNECTOR_OAUTH_URL_TOKEN;
         } else {
@@ -378,7 +386,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public function getLogUserUrl($website = 0)
     {
         if ($this->isAuthorizeCustomDomain($website)) {
-            $logUserUrl = $this->helper->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
+            $logUserUrl = $this->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
                 . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
         } else {
             $logUserUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
@@ -399,5 +407,64 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         $optInType = ($needToConfirm)? 'Double' : 'Single';
 
         return $optInType;
+    }
+
+    /**
+     * @param $path
+     * @param int $website
+     * @param string $scope
+     * @return mixed
+     */
+    public function getWebsiteConfig($path, $website = 0, $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE)
+    {
+        return $this->scopeConfig->getValue(
+            $path,
+            $scope,
+            $website
+        );
+    }
+
+    /**
+     * @param $websiteId
+     * @return mixed
+     */
+    public function getConsentCustomerText($websiteId)
+    {
+        return $this->limitLength(
+            $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT, $websiteId)
+        );
+    }
+
+    /**
+     * @param $websiteId
+     * @return mixed
+     */
+    public function isConsentSubscriberEnabled($websiteId)
+    {
+        return $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_ENABLED, $websiteId);
+    }
+
+    /**
+     * @param $websiteId
+     * @return mixed
+     */
+    public function getConsentSubscriberText($websiteId)
+    {
+        return $this->limitLength(
+            $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_TEXT, $websiteId)
+        );
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    private function limitLength($value)
+    {
+        if ($this->stringUtils->strlen($value) > \Dotdigitalgroup\Email\Model\Consent::CONSENT_TEXT_LIMIT) {
+            $value = $this->stringUtils->substr($value, 0, \Dotdigitalgroup\Email\Model\Consent::CONSENT_TEXT_LIMIT);
+        }
+
+        return $value;
     }
 }
