@@ -241,7 +241,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function auth($authRequest)
+    public function isPasscodeValid($authRequest)
     {
         if ($authRequest != $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
@@ -258,7 +258,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function isAllowed()
+    public function isIpAllowed()
     {
         if ($ipString = $this->getConfigValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES,

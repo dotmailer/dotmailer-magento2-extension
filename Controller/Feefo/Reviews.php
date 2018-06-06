@@ -15,7 +15,7 @@ class Reviews extends \Dotdigitalgroup\Email\Controller\Response
         if ($this->authenticate()) {
             $quote = $this->getRequest()->getParam('quote_id');
             if (!$this->helper->getFeefoLogon() or !$quote) {
-                return $this->sendResponse();
+                return $this->sendNoContentResponse();
             }
 
             $this->_view->loadLayout();

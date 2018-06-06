@@ -36,6 +36,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->createAutomationTable($installer);
         $this->createAbandonedCartTable($installer);
         $this->createConsentTable($installer);
+        $this->createFailedAuth($installer);
 
         /**
          * Modify table
@@ -1793,5 +1794,92 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getIdxName($installer->getTable('email_contact_consent'), ['email_contact_id']),
             ['email_contact_id']
         );
+    }
+
+    /**
+     * @param $installer
+     */
+    private function createFailedAuth($installer)
+    {
+        $tableName = $installer->getTable('email_failed_auth');
+        $this->dropTableIfExists($installer, $tableName);
+
+        $emailAuthEdc = $installer->getConnection()->newTable($installer->getTable($tableName));
+        $emailAuthEdc = $this->addColumnForFailedAuthTable($emailAuthEdc);
+        $emailAuthEdc = $this->addIndexToFailedAuthTable($installer, $emailAuthEdc);
+        $emailAuthEdc->setComment('Email Failed Auth Table.');
+        $installer->getConnection()->createTable($emailAuthEdc);
+    }
+
+    /**
+     * @param $table
+     * @return mixed
+     */
+    private function addColumnForFailedAuthTable($table)
+    {
+        $table
+            ->addColumn(
+                'id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                10,
+                [
+                    'primary' => true,
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false
+                ],
+                'Primary Key'
+            )
+            ->addColumn(
+                'failures_num',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => true],
+                'Number of fails'
+            )
+            ->addColumn(
+                'first_attempt_date',
+                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+                null,
+                [],
+                'First attempt date'
+            )
+            ->addColumn(
+                'last_attempt_date',
+                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
+                null,
+                [],
+                'Last attempt date'
+            )
+            ->addColumn(
+                'url',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['unsigned' => true, 'nullable' => true],
+                'URL'
+            )
+            ->addColumn(
+                'store_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => true],
+                'Store Id'
+            );
+
+        return $table;
+    }
+
+    /**
+     * @param $installer
+     * @param $emailAuthEdc
+     * @return mixed
+     */
+    private function addIndexToFailedAuthTable($installer, $emailAuthEdc)
+    {
+        return $emailAuthEdc
+            ->addIndex(
+                $installer->getIdxName('email_auth_edc', ['store_id']),
+                ['store_id']
+            );
     }
 }
