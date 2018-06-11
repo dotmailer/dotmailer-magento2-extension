@@ -150,20 +150,20 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
         $websiteId  = $store->getWebsiteId();
         // start app emulation
         $appEmulation = $this->emulationFactory->create();
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
+        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($store->getId());
         $emailOrder = $this->emailOrderFactory->create()
             ->loadByOrderId($order->getEntityId(), $order->getQuoteId());
         //reimport email order
         $emailOrder->setUpdatedAt($order->getUpdatedAt())
             ->setCreatedAt($order->getUpdatedAt())
-            ->setStoreId($storeId)
+            ->setStoreId($store->getId())
             ->setOrderStatus($status);
 
         if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
             $emailOrder->setEmailImported(null);
         }
 
-        $isEnabled = $this->helper->isStoreEnabled($storeId);
+        $isEnabled = $this->helper->isStoreEnabled($store->getId());
 
         //api not enabled, stop emulation and exit
         if (! $isEnabled) {
