@@ -3,8 +3,10 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="before.body.end">
-            <block class="Dotdigitalgroup\Email\Block\Roi" name="ddg.checkout.roi"
-                   template="Dotdigitalgroup_Email::email/roi_code.phtml"/>
+            <block class="Dotdigitalgroup\Email\Block\Roi"
+                   name="ddg.checkout.roi"
+                   template="Dotdigitalgroup_Email::email/roi_code.phtml"
+                   ifconfig="connector_configuration/tracking/roi_enabled"/>
         </referenceContainer>
     </body>
 </page>

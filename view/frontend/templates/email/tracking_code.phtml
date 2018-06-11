@@ -4,15 +4,20 @@
 ?>
 <?php $helper = $this->helper(\Dotdigitalgroup\Email\Helper\Data::class); ?>
 
-<?php if ($helper->isPageTrackingEnabled()) : ?>
+<?php if (! in_array('checkout_onepage_success', $block->getLayout()->getUpdate()->getHandles()) ||
+    ! $helper->isRoiTrackingEnabled()) : ?>
+    <script>
+        require.config({
+            paths: {
+                'dmpt':  "<?= $block->escapeUrl($helper->getPageTrackingUrl()) ?>"
+           }
+       });
+    </script>
     <script type="text/x-magento-init">
         {
             "*": {
-                "dmpt": {
-                    "regionPrefix": "<?= /* @noEscape */ $helper->getRegionPrefix(); ?>"
-                }
+                "dmpt": {}
             }
         }
     </script>
 <?php endif; ?>
-

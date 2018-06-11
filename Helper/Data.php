@@ -1860,6 +1860,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @return string
+     */
+    public function getPageTrackingUrl()
+    {
+        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmpt';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPageTrackingUrlForSuccessPage()
+    {
+        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmmpt';
+    }
+
+    /**
      * @param int $storeId
      *
      * @return bool

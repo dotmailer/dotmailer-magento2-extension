@@ -1,4 +1,4 @@
-define(['dmpt', 'domReady!'], function (_dmTrack) {
+define(['dmmpt', 'domReady!'], function () {
     'use strict';
 
     /**
@@ -11,9 +11,10 @@ define(['dmpt', 'domReady!'], function (_dmTrack) {
             i = 0;
 
         for (i; i < fLen; i++) {
-            _dmTrack('product', items[i]);
+            window._dmTrack('product', items[i]);
         }
-        _dmTrack('CheckOutAmount', total);
+        window._dmTrack('CheckOutAmount', total);
+        window._dmCallHandler();
     }
 
     /**
@@ -21,9 +22,7 @@ define(['dmpt', 'domReady!'], function (_dmTrack) {
      * @param {Object} roiCode
      */
     return function (roiCode) {
-        if (roiCode.isEnabled) {
-            init(roiCode.items, roiCode.total);
-        }
+        init(roiCode.items, roiCode.total);
     };
 });
 
