@@ -70,10 +70,17 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         if (empty($params['apiUser']) ||
             empty($params['pass']) ||
             empty($params['code']) ||
-            ! $this->helper->isCodeValid($params['code'])
+            ! $this->isCodeValid($params['code'])
         ) {
-            $this->sendAjaxResponse(true, $this->getErrorHtml());
+            $this->sendAjaxResponse(true);
         } else {
+            //Remove temporary passcode
+            $this->helper->resourceConfig->deleteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE,
+                'default',
+                0
+            );
+
             //Save api end point
             if (isset($params['apiEndpoint'])) {
                 $this->trialSetup->saveApiEndPoint($params['apiEndpoint']);
@@ -87,9 +94,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             $syncStatus = $this->trialSetup->enableSyncForTrial();
 
             if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
-                $this->sendAjaxResponse(false, $this->getSuccessHtml());
+                $this->sendAjaxResponse(false);
             } else {
-                $this->sendAjaxResponse(true, $this->getErrorHtml());
+                $this->sendAjaxResponse(true);
             }
         }
     }
@@ -101,54 +108,32 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @param string $msg
      * @return void
      */
-    private function sendAjaxResponse($error, $msg)
+    private function sendAjaxResponse($error)
     {
         $message = [
-            'err' => $error,
-            'message' => $msg,
+            'err' => $error
         ];
-        $callback = $this->getRequest()->getParam('callback');
+
         $this->getResponse()
             ->setHeader('Content-type', 'application/javascript', true)
             ->setBody(
-                $callback . '(' . $this->jsonHelper->jsonEncode($message) . ')'
+                'signupCallback(' . $this->jsonHelper->jsonEncode($message) . ')'
             )
             ->sendResponse();
     }
 
     /**
-     * Get success html.
+     * Validate code
      *
-     * @return string
+     * @param mixed $code
+     * @return bool
      */
-    private function getSuccessHtml()
+    public function isCodeValid($code)
     {
-        return
-            "<div class='modal-page'>
-                <div class='success'></div>
-                <h2 class='center'>Congratulations your dotmailer account is now ready,
-                 time to make your marketing awesome</h2>
-                <div class='center'>
-                    <input id='btnStartMakingMoney' type='submit' class='center' value='Start making money'  />
-                </div>
-            </div>";
-    }
+        $codeFromConfig = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE
+        );
 
-    /**
-     * Get error html.
-     *
-     * @return string
-     */
-    private function getErrorHtml()
-    {
-        return
-            "<div class='modal-page'>
-                <div class='fail'></div>
-                <h2 class='center'>Sorry, something went wrong whilst trying to create your new dotmailer account</h2>
-                <div class='center'>
-                    <a class='submit secondary center' href='mailto:support@dotmailer.com'>
-                    Contact support@dotmailer.com</a>
-                </div>
-            </div>";
+        return $codeFromConfig === $code;
     }
 }
