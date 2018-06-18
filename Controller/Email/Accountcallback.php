@@ -130,6 +130,15 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      */
     public function isCodeValid($code)
     {
+        $now = new \DateTime('now', new \DateTimezone('UTC'));
+        $expiryDateString = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY
+        );
+        $expiryDate = \DateTime::createFromFormat(\DateTime::ATOM, $expiryDateString);
+
+        if ($now >= $expiryDate)
+            return false;
+
         $codeFromConfig = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE
         );

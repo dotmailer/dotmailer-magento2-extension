@@ -525,11 +525,21 @@ class Trial extends \Magento\Backend\App\Action
     {
         $code = $this->randomMath->getRandomString(32);
         $this->helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE,
+	        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE,
             $code,
             'default',
             0
         );
+
+        $expiryDate = new \DateTime('now', new \DateTimezone('UTC'));
+        $expiryDate->add(\DateInterval::createFromDateString(30 . 'minutes'));
+        $this->helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY,
+            $expiryDate->format(\DateTime::ATOM),
+            'default',
+            0
+        );
+
         //Clear config cache
         $this->config->reinit();
 
