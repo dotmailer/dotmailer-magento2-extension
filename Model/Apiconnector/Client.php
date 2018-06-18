@@ -1334,19 +1334,18 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getContactImportReportFaults($id)
     {
+        $this->isNotJson = true;
         $url = $this->getApiEndpoint() . self::REST_CONTACTS_IMPORT . $id . '/report-faults';
         $this->setUrl($url)
             ->setVerb('GET');
 
-        $this->setIsNotJsonTrue();
         $response = $this->execute();
 
         //if string is JSON than there is a error message
         if (json_decode($response)) {
             //log error
             if (isset($response->message)) {
-                $message = 'GET CONTACT IMPORT REPORT FAULTS: '
-                    . $response->message;
+                $message = 'GET CONTACT IMPORT REPORT FAULTS: ' . $response->message;
                 $this->helper->log($message);
             }
 
