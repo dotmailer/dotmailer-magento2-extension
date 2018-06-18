@@ -1,11 +1,21 @@
-<?php /** @var \Dotdigitalgroup\Email\Block\Roi $block */?>
-<?php $isEnabled = $block->isRoiTrackingEnabled() ?>
+<?php
+    /** @var \Dotdigitalgroup\Email\Block\Roi $block */
+    /** @var \Dotdigitalgroup\Email\Helper\Data $helper */
+    $helper = $this->helper(\Dotdigitalgroup\Email\Helper\Data::class);
+?>
 
+<script>
+    require.config({
+        paths: {
+            'dmmpt':  "<?= $block->escapeUrl($helper->getPageTrackingUrlForSuccessPage()) ?>"
+        }
+    });
+</script>
 <script type="text/x-magento-init">
     {
         "*": {
+            "dmmpt": {},
             "Dotdigitalgroup_Email/js/roiCode": {
-                "isEnabled": "<?= $block->escapeHtml($isEnabled) ?>",
                 "total": "<?= $block->escapeHtml($block->getTotal()); ?>",
                 "items": <?= /* @noEscape */ $block->getProductNames(); ?>
             }

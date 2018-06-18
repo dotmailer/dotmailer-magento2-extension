@@ -27,10 +27,26 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?= $block->escapeHtml(__('Abandoned Cart limit time')) ?>:
+                <?= $block->escapeHtml(__('Abandoned cart limit time')) ?>:
             </strong>
         </th>
         <td><?= $block->escapeHtml($block->getAbandonedCartLimit()) ?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label">
+                <?= $block->escapeHtml(__('Auth')) ?>:
+            </strong>
+        </th>
+        <td><?= $block->escapeHtml($block->getAuthStatus()) ?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label">
+                <?= $block->escapeHtml(__('Last failed auth')) ?>:
+            </strong>
+        </th>
+        <td><?= $block->escapeHtml($block->getLastFailedAuth()) ?></td>
     </tr>
 </table>
     

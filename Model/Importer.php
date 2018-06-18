@@ -457,7 +457,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     public function _checkImportStatus()
     {
-        if ($items = $this->_getImportingItems($this->bulkSyncLimit)) {
+        if ($items = $this->getImportingItems($this->bulkSyncLimit)) {
             foreach ($items as $item) {
                 $websiteId = $item->getWebsiteId();
                 $client = false;
@@ -523,10 +523,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                     }
 
                     if ($item->getImportId()) {
-                        $this->_processContactImportReportFaults(
-                            $item->getImportId(),
-                            $websiteId
-                        );
+                        $this->processContactImportReportFaults($item->getImportId(), $websiteId);
                     }
                 }
             } elseif (in_array($response->status, $this->importStatuses)) {
@@ -558,7 +555,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection|bool
      */
-    public function _getImportingItems($limit)
+    public function getImportingItems($limit)
     {
         return $this->getCollection()
             ->getItemsWithImportingStatus($limit);
@@ -574,26 +571,28 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return null
      */
-    public function _processContactImportReportFaults($id, $websiteId)
+    public function processContactImportReportFaults($id, $websiteId)
     {
         $client = $this->helper->getWebsiteApiClient($websiteId);
-        $response = $client->getContactImportReportFaults($id);
+        $report = $client->getContactImportReportFaults($id);
 
-        if ($response) {
-            $data = $this->_removeUtf8Bom($response);
-            $fileName = $this->directoryList->getPath('var')
-                . DIRECTORY_SEPARATOR . 'DmTempCsvFromApi.csv';
-            $this->file->open();
-            $check = $this->file->write($fileName, $data);
+        if ($report) {
+            $reportData = explode(PHP_EOL, $this->removeUtf8Bom($report));
+            //unset header
+            unset($reportData[0]);
+            //no data in report
+            if (! empty($reportData)) {
+                foreach ($reportData as $row) {
+                    $row = explode(',', $row);
+                    //reason
+                    if (in_array($row[0], $this->reasons)) {
+                        //email
+                        $contacts[] = $row[1];
+                    }
+                }
 
-            if ($check) {
-                $csvArray = $this->_csvToArray($fileName);
-                $this->file->rm($fileName);
-                $this->contact->unsubscribe($csvArray);
-            } else {
-                $this->helper->log(
-                    '_processContactImportReportFaults: cannot save data to CSV file.'
-                );
+                //unsubscribe from email contact and newsletter subscriber tables
+                $this->contact->unsubscribe($contacts);
             }
         }
     }
@@ -605,48 +604,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return string
      */
-    public function _removeUtf8Bom($text)
+    public function removeUtf8Bom($text)
     {
         $bom = pack('H*', 'EFBBBF');
         $text = preg_replace("/^$bom/", '', $text);
 
         return $text;
-    }
-
-    /**
-     * Convert csv data to array.
-     *
-     * @param string $filename
-     *
-     * @return array|bool
-     */
-    public function _csvToArray($filename)
-    {
-        if (!file_exists($filename) || !is_readable($filename)) {
-            return false;
-        }
-
-        $header = null;
-        $data = [];
-        if (($handle = fopen($filename, 'r')) !== false) {
-            while (($row = fgetcsv($handle)) !== false) {
-                if (!$header) {
-                    $header = $row;
-                } else {
-                    $data[] = array_combine($header, $row);
-                }
-            }
-            fclose($handle);
-        }
-
-        $contacts = [];
-        foreach ($data as $item) {
-            if (in_array($item['Reason'], $this->reasons)) {
-                $contacts[] = $item['email'];
-            }
-        }
-
-        return $contacts;
     }
 
     /**

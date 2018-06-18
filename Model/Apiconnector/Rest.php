@@ -65,7 +65,7 @@ class Rest
     /**
      * @var bool
      */
-    private $isNotJson = false;
+    protected $isNotJson = false;
 
     /**
      * Rest constructor.
@@ -599,13 +599,4 @@ class Rest
         return false;
     }
 
-    /**
-     * @return $this
-     */
-    public function setIsNotJsonTrue()
-    {
-        $this->isNotJson = true;
-
-        return $this;
-    }
 }
