@@ -15,6 +15,16 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V2.5.3
+
+###### Improvements
+- We've implemented prevention against cross-site scripting in the TrialController.php
+- We've implemented an improved retry process after a failed attempt to access EDC
+
+###### Bug fix
+- ROI reporting is working again 
+- We've fixed an error that was being caused by the importer 
+
 ## V2.5.2
 
 ###### New Features
