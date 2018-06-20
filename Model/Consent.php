@@ -75,7 +75,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Config $config,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consent,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCoollectionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
@@ -84,7 +84,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         $this->dateTime = $dateTime;
         $this->configHelper = $config;
         $this->consentResource = $consent;
-        $this->contactCollectionFacotry = $contactCoollectionFactory;
+        $this->contactCollectionFacotry = $contactCollectionFactory;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -107,7 +107,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         }
         //not enabled
         if (! $this->configHelper->isConsentSubscriberEnabled($websiteId)) {
-            return array();
+            return [];
         }
 
         $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
