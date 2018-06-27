@@ -429,4 +429,23 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         //run query
         $write->query($deleteSql);
     }
+
+    /**
+     * Set modified if already imported
+     *
+     * @param array $ids
+     */
+    public function setModified($ids)
+    {
+        $write     = $this->getConnection();
+        $tableName = $this->getTable('email_catalog');
+        $write->update(
+            $tableName,
+            ['modified' => 1],
+            [
+                $write->quoteInto("product_id IN (?)", $ids),
+                $write->quoteInto("imported = ?", 1)
+            ]
+        );
+    }
 }
