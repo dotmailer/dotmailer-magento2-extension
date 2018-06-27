@@ -20,6 +20,7 @@ define(['jquery', 'domReady!'], function ($) {
      */
     function emailCaptureCheckout(url) {
         var previousEmail = '';
+        
         $('body').on('blur', 'input[id=customer-email]', function () {
             var email = $(this).val();
 
