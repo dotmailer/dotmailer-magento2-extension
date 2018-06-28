@@ -302,7 +302,7 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 ## V2.1.4
 ###### Bugs fixes
  - InvalidContactIdentifier for single orders.
- - Compatibility with catalogStaging for enterprise.
+ - Compatibility with catalogStaging.
  - Fix admin configuration fancybox error.
 
 ## V2.1.0

@@ -84,7 +84,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
         } else {
             // get all possible datatifileds
             $datafields = $this->datafield->getContactDatafields();
-            $eeFields = $this->datafield->getEnterpriseDataFields();
+            $eeFields = $this->datafield->getExtraDataFields();
             foreach ($datafields as $key => $datafield) {
                 $response = $client->postDataFields($datafield);
 
@@ -104,7 +104,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
                     }
 
                     //Config path depends on EE or CE
-                    $configPath = isset($eeFields[$key]) ? 'connector_data_mapping/enterprise_data/' :
+                    $configPath = isset($eeFields[$key]) ? 'connector_data_mapping/extra_data/' :
                         'connector_data_mapping/customer_data/';
 
                     //map the successfully created datafield

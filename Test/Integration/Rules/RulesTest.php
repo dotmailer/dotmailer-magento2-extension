@@ -308,7 +308,7 @@ class RulesTest extends \PHPUnit_Framework_TestCase
     /**
      * @return void
      */
-    public function testRuleWithCustomerSegmentANDPaymentMethod()
+    public function testRuleWithCustomerGroupANDPaymentMethod()
     {
         $attribute1  = 'method';
         $attribute2 = 'customer_group_id';
