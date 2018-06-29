@@ -582,6 +582,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             unset($reportData[0]);
             //no data in report
             if (! empty($reportData)) {
+                $contacts = [];
                 foreach ($reportData as $row) {
                     $row = explode(',', $row);
                     //reason
