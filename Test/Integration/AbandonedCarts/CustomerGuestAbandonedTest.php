@@ -28,6 +28,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->quote = $this->objectManager->create(\Magento\Quote\Model\Quote::class);
+        $this->loadCustomerQuoteTextureFile();
     }
 
     public function tearDown()
@@ -35,28 +36,27 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $abandonedCollection = $this->objectManager->create(
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
         );
-        foreach ($abandonedCollection as $abandoned) {
-            $abandoned->delete();
-        }
+        $abandonedCollection->walk('delete');
+
+        $quoteCollection = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class);
+        $quoteCollection->walk('delete');
     }
 
     /**
-     * @magentoDataFixture Magento/Sales/_files/quote_with_customer.php
      * @magentoConfigFixture default_store abandoned_carts/customers/enabled_1 1
      * @magentoConfigFixture default_store abandoned_carts/customers/send_after_1 0
      * @magentoConfigFixture default_store abandoned_carts/customers/campaign_1 1234
-     *
-     * customer email customer@example.com, customerid 1, storeid 1
      */
     public function testCustomerAbandonedCartOne()
     {
+        $numExpectedAC = 1;
         //create a quote for customer for AC 1
         $quoteCollection = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class);
         $quote = $quoteCollection->getFirstItem();
         $quoteId = $quote->getId();
         $storeId = $quote->getStoreId();
         $emailQuote = $this->objectManager->create(Quote::class);
-        $customerAbandonedCart = $this->quote->loadActive($quoteId);
+        $this->quote->loadActive($quoteId);
         /**
          * run the cron for abandoned carts
          *
@@ -64,11 +64,14 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
          */
         $result = $emailQuote->processAbandonedCarts();
 
-        $this->assertEquals(1, $result[$storeId]['firstCustomer'], 'No Quotes found for store : ' . $storeId);
+        $this->assertEquals(
+            $numExpectedAC,
+            $result[$storeId]['firstCustomer'],
+            'Abandoned cart was not found for store : ' . $storeId . ', quote id : ' . $quoteId
+        );
     }
 
     /**
-     * @magentoDataFixture Magento/Sales/_files/quote_with_customer.php
      * @magentoConfigFixture default_store abandoned_carts/customers/enabled_2 1
      * @magentoConfigFixture default_store abandoned_carts/customers/send_after_2 1
      * @magentoConfigFixture default_store abandoned_carts/customers/campaign_2 1234
@@ -76,37 +79,21 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     public function testExistingCustomerAbandonedCart()
     {
         $sendAfter = '1';
-        $abandoned = $this->createAbandonedCart($sendAfter);
+        $abandoned = $this->createExistingAbandonedCart($sendAfter);
         $quoteId = $abandoned->getQuoteId();
 
         $emailQuote = $this->objectManager->create(Quote::class);
-        $emailQuoteMock = $this->getMockForAbstractClass(
-            Quote::class,
-            [],
-            '',
-            false,
-            false,
-            true,
-            ['getAbandonedCartsForStore']
-        );
-        $emailQuoteMock->method('getAbandonedCartsForStore')->willReturn([]);
-        $abandonedCollectionMock = $this->getMockBuilder(
-            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
-        )->disableOriginalConstructor()
-            ->getMock();
-        $abandonedCollectionMock->method('getColumnValues')->willReturn([1,2,3]);
-        $this->objectManager->addSharedInstance(
-            $abandonedCollectionMock,
-            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
-        );
-        $this->objectManager->addSharedInstance($emailQuoteMock, Quote::class);
-
+        $this->createEmailQuoteMockInstance();
         $emailQuote->processAbandonedCarts();
 
         $abandonedCart = $this->objectManager->create(Abandoned::class)
             ->loadByQuoteId($quoteId);
 
-        $this->assertEquals($abandonedCart->getQuoteId(), $quoteId, 'Abandoned Cart not found');
+        $this->assertEquals(
+            $abandonedCart->getQuoteId(),
+            $quoteId,
+            'Abandoned Cart not found, quote_id :  ' . $quoteId
+        );
     }
 
     /**
@@ -120,7 +107,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     {
         $email = 'test@test.magento.com';
         $quoteCollection = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class);
-        $quote = $quoteCollection->addFieldToFilter('customer_is_guest', true)
+        $quoteCollection->addFieldToFilter('customer_is_guest', true)
             ->addFieldToFilter('customer_email', $email)
             ->getFirstItem();
         $emailQuote = $this->objectManager->create(Quote::class);
@@ -128,73 +115,40 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @magentoDataFixture Magento/Sales/_files/quote.php
+     * @magentoDBIsolation enabled
      * @magentoConfigFixture default_store abandoned_carts/guests/enabled_2 1
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1
      * @magentoConfigFixture default_store abandoned_carts/guests/campaign_2 1234
      */
     public function testExistingGuestAbandonedCart()
     {
+        $this->loadGuestQuoteTextureFile();
+        $this->createEmailQuoteMockInstance();
         $abandonedResource = $this->objectManager->create(AbandonedResource::class);
-        $abandoned = $this->createAbandonedCart($hour = 1);
-        $abandoned->setCustomerId(null)
-            ->setItemsCount(1)
+        $abandoned = $this->createExistingAbandonedCart($hour = 1, 'dotguesttest02');
+        $abandoned->setItemsCount(1)
             ->setItemsIds('1');
         $abandonedResource->save($abandoned);
-
-        $quoteId = $abandoned->getQuoteId();
         $storeId = $abandoned->getStoreId();
-        $abandonedCartNumber = $abandoned->getAbandonedCartNumber();
 
         $emailQuote = $this->objectManager->create(Quote::class);
-        $quoteMock = $this->getMockForAbstractClass(
-            Quote::class,
-            [],
-            '',
-            false,
-            false,
-            true,
-            ['getAbandonedCartsForStore']
-        );
-
-        $abandonedCollectionMock = $this->getMockBuilder(
-            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
-        )->disableOriginalConstructor()
-            ->getMock();
-        $quoteMock->method('getAbandonedCartsForStore')->willReturn([]);
-        $abandonedCollectionMock->method('getColumnValues')->willReturn([1,2,3]);
-
-        $this->objectManager->addSharedInstance(
-            $abandonedCollectionMock,
-            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
-        );
-        $this->objectManager->addSharedInstance($quoteMock, Quote::class);
-
         $result = $emailQuote->processAbandonedCarts();
 
-        $proccessedAbandonedCart = $this->objectManager->create(Abandoned::class)
-            ->loadByQuoteId($quoteId)->getAbandonedCartNumber();
-        $this->assertEquals(++$abandonedCartNumber, $proccessedAbandonedCart);
         $this->assertEquals(1, $result[$storeId]['secondGuest']);
     }
 
     /**
-     * @magentoDataFixture Magento/Sales/_files/quote.php
+     * @magentoDBIsolation enabled
      * @magentoConfigFixture default_store abandoned_carts/guests/enabled_2 1
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1
      * @magentoConfigFixture default_store abandoned_carts/guests/campaign_2 1234
      */
     public function testExistingGuestAbandonedCartItemsChanged()
     {
-        $quote = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\CollectionFactory::class)
-            ->create()
-            ->getFirstItem();
-        $quoteResource = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote::class);
-        $quote->setIsActive(0);
-        $quoteResource->save($quote);
+        $this->loadQuestQuoteTextureFile();
 
         $abandonedResource = $this->objectManager->create(AbandonedResource::class);
-        $abandoned = $this->createAbandonedCart($hour = 1);
+        $abandoned = $this->createExistingAbandonedCart($hour = 1, 'dottest02');
         $abandoned->setCustomerId(null)
             ->setItemsCount(10)
             ->setItemsIds('1,2,3');
@@ -202,34 +156,14 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
 
         $quoteId = $abandoned->getQuoteId();
         $storeId = $abandoned->getStoreId();
-        $abandonedCartNumber = $abandoned->getAbandonedCartNumber();
 
         $emailQuote = $this->objectManager->create(Quote::class);
-        $quoteMock = $this->getMockForAbstractClass(
-            Quote::class,
-            [],
-            '',
-            false,
-            false,
-            true,
-            ['getAbandonedCartsForStore']
-        );
+        //create a mock and add a instance to shared env
+        $this->createEmailQuoteMockInstance();
 
-        $abandonedCollectionMock = $this->getMockBuilder(
-            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
-        )->disableOriginalConstructor()
-            ->getMock();
-        $quoteMock->method('getAbandonedCartsForStore')->willReturn([]);
-        $abandonedCollectionMock->method('getColumnValues')->willReturn([1,2,3]);
-
-        $this->objectManager->addSharedInstance(
-            $abandonedCollectionMock,
-            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
-        );
-        $this->objectManager->addSharedInstance($quoteMock, Quote::class);
-
+        //run the abandoned carts
         $result = $emailQuote->processAbandonedCarts();
-
+        //try to load the email abandoned by quote id what it should be removed not sent
         $proccessedAbandonedCart = $this->objectManager->create(Abandoned::class)
             ->loadByQuoteId($quoteId);
 
@@ -240,12 +174,13 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
      * @param $hour
      * @return mixed
      */
-    private function createAbandonedCart($hour)
+    private function createExistingAbandonedCart($hour, $reservedOrderId = 'dottet01')
     {
         $abandonedModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Abandoned::class);
         $quoteUpdatedAt = new \DateTime('now', new \DateTimezone('UTC'));
         $quoteUpdatedAt->sub(\DateInterval::createFromDateString($hour . ' hours + 1 minutes'));
         $quote = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class)
+            ->addFieldToFilter('reserved_order_id', $reservedOrderId)
             ->getFirstItem();
         $abandonedModel->setQuoteId($quote->getId())
             ->setIsActive(1)
@@ -263,5 +198,46 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $resourceAbandoned->save($abandonedModel);
 
         return $abandonedModel;
+    }
+
+    private function loadCustomerQuoteTextureFile()
+    {
+        include __DIR__ . '/../_files/customer_quote.php';
+    }
+
+    private function loadGuestQuoteTextureFile()
+    {
+        include __DIR__ . '/../_files/guest_quote.php';
+    }
+    private function loadQuestQuoteTextureFile()
+    {
+        include __DIR__ . '/../_files/guest_inactive_quote.php';
+    }
+
+    private function createEmailQuoteMockInstance()
+    {
+        $quoteMock = $this->getMockForAbstractClass(
+            Quote::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            ['getAbandonedCartsForStore']
+        );
+
+        $abandonedCollectionMock = $this->getMockBuilder(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
+        )->disableOriginalConstructor()
+            ->getMock();
+
+        $quoteMock->method('getAbandonedCartsForStore')->willReturn([]);
+        $abandonedCollectionMock->method('getColumnValues')->willReturn([1,2,3]);
+
+        $this->objectManager->addSharedInstance(
+            $abandonedCollectionMock,
+            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
+        );
+        $this->objectManager->addSharedInstance($quoteMock, Quote::class);
     }
 }

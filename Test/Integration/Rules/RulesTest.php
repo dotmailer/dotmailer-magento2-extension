@@ -23,7 +23,7 @@ use Magento\TestFramework\ObjectManager;
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-class RulesTest extends \PHPUnit_Framework_TestCase
+class RulesTest extends \PHPUnit\Framework\TestCase
 {
     const RULE_OPERATOR_AND = 1;
     const RULE_OPERATOR_OR = 2;

@@ -11,7 +11,7 @@ use Dotdigitalgroup\Email\Helper\Data;
  * @magentoAdminConfigFixture connector_api_credentials/api/username dummyusername
  * @magentoAdminConfigFixture connector_api_credentials/api/password dummypassword
  */
-class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
+class CreateUpdateContactTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Magento\TestFramework\ObjectManager

@@ -8,7 +8,7 @@ namespace Dotdigitalgroup\Email\Test\Integration\Automation;
  *
  * @magentoDBIsolation disabled
  */
-class FirstOrderTest extends \PHPUnit_Framework_TestCase
+class FirstOrderTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

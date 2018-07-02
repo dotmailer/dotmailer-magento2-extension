@@ -6,7 +6,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection as CampaignCol
 use Magento\Framework\App\ResourceConnection;
 use Magento\TestFramework\ObjectManager;
 
-class CampaignORMTest extends \PHPUnit_Framework_TestCase
+class CampaignORMTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign

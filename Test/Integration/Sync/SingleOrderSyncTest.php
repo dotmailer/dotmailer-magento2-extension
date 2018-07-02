@@ -9,7 +9,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
  * @magentoDBIsolation enabled
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
+class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Magento\Framework\ObjectManagerInterface
@@ -51,7 +51,9 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
         $store = $this->objectManager->create(\Magento\Store\Model\Store::class);
         $store->load($this->storeId);
 
-        $helper = $this->getMock(\Dotdigitalgroup\Email\Helper\Data::class, [], [], '', false);
+        $helper = $this->getMockBuilder(\Dotdigitalgroup\Email\Helper\Data::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $helper->method('isEnabled')->willReturn(true);
         $helper->method('getWebsites')->willReturn([$store->getWebsite()]);
         $helper->method('getApiUsername')->willReturn('apiuser-dummy@apiconnector.com');

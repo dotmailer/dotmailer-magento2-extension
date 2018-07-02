@@ -11,7 +11,7 @@ use Magento\TestFramework\ObjectManager;
  * @magentoDBIsolation enabled
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class ApiEndpointTest extends \PHPUnit_Framework_TestCase
+class ApiEndpointTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void
@@ -66,23 +66,19 @@ class ApiEndpointTest extends \PHPUnit_Framework_TestCase
         $accountInfo = new \stdClass();
         $accountInfo->properties = [$property];
 
-        $mockClient = $this->getMock(
-            \Dotdigitalgroup\Email\Model\Apiconnector\Client::class,
-            [],
-            [],
-            '',
-            false
-        );
+        $mockClient = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\Apiconnector\Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $mockClient->method('getAccountInfo')
             ->willReturn($accountInfo);
 
-        $mockClientFactory = $this->getMock(
-            \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory::class,
-            [],
-            [],
-            '',
-            false
-        );
+        $mockClientFactory = $this->getMockBuilder(
+            \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory::class
+        )
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $mockClientFactory->method('create')
             ->willReturn($mockClient);
 

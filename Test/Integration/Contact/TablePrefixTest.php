@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Magento\TestFramework\ObjectManager;
 
-class TablePrefixTest extends \PHPUnit_Framework_TestCase
+class TablePrefixTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Magento\TestFramework\ObjectManager
