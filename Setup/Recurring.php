@@ -16,7 +16,7 @@ class Recurring implements InstallSchemaInterface
     /**
      * @var ExternalFKSetup
      */
-    protected $externalFKSetup;
+    private $externalFKSetup;
 
     /**
      * @param ExternalFKSetup $externalFKSetup

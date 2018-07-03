@@ -10,7 +10,7 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @var Json
      */
-    protected $serializer;
+    public $serializer;
 
     /**
      * Initialize resource.

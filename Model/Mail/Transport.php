@@ -7,7 +7,7 @@ class Transport implements \Dotdigitalgroup\Email\Model\Mail\AdapterInterface
     /**
      * @var \Zend_Mail_Transport_Smtp
      */
-    protected $smtp;
+    private $smtp;
 
     /**
      * @param string $host

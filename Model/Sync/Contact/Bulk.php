@@ -10,17 +10,17 @@ class Bulk
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
-    protected $importerResource;
+    public $importerResource;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $helper;
+    public $helper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
-    protected $client;
+    public $client;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory

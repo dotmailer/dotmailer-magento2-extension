@@ -9,7 +9,7 @@ class Collection extends
     /**
      * @var string
      */
-    protected $_idFieldName = 'id';
+    public $_idFieldName = 'id';
 
     /**
      * Initialize resource collection.

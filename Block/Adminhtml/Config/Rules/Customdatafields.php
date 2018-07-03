@@ -61,7 +61,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * @return void
      */
-    protected function _prepareToRender()
+    public function _prepareToRender()
     {
         $this->getConditionsRenderer = null;
         $this->getAttributeRenderer  = null;
@@ -135,7 +135,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @return null
      */
-    protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
+    public function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
         $options = [];
 
@@ -217,7 +217,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
      *
      * @throws \Exception
      */
-    protected function _toHtml()
+    public function _toHtml()
     {
         return '<input type="hidden" id="' . $this->getElement()->getHtmlId()
         . '"/>' . parent::_toHtml();

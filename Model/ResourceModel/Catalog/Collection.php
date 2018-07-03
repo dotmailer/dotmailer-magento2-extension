@@ -7,12 +7,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * @var string
      */
-    protected $_idFieldName = 'id';
+    public $_idFieldName = 'id';
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    protected $helper;
+    private $helper;
 
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory

@@ -14,7 +14,7 @@ class Contactsync extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\CronFactory

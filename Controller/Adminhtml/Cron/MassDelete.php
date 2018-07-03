@@ -22,7 +22,7 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
 
     /**
      * @var \Magento\Cron\Model\ResourceModel\Schedule

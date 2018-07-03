@@ -19,7 +19,7 @@ class Templatesync extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
 
     /**
      * Templatesync constructor.

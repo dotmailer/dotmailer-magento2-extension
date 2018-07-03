@@ -103,7 +103,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @return null
      */
-    protected function deleteFromAccount($key)
+    private function deleteFromAccount($key)
     {
         $apiEnabled = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED
