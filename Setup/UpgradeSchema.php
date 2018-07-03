@@ -125,6 +125,51 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $setup->getConnection()->createTable($emailFailedAuth);
         }
 
+        if (version_compare($context->getVersion(), '2.5.4','<')) {
+            $connection = $setup->getConnection();
+            $emailWishlistTable = $setup->getTable('email_wishlist');
+
+            if ($connection->tableColumnExists($emailWishlistTable, 'customer_id')) {
+                $connection->changeColumn(
+                    $emailWishlistTable,
+                    'customer_id',
+                    'customer_id',[
+                        'type' => \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                        'unsigned' => true,
+                        'nullable' => true,
+                        'comment' => 'Customer ID'
+                    ]
+                );
+            }
+
+            $connection->addForeignKey(
+                $setup->getFkName(
+                    'email_wishlist',
+                    'customer_id',
+                    'customer_entity',
+                    'entity_id'
+                ),
+                $setup->getTable('email_wishlist'),
+                'customer_id',
+                $setup->getTable('customer_entity'),
+                'entity_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            );
+            $connection->addForeignKey(
+                $setup->getFkName(
+                    'email_wishlist',
+                    'wishlist_id',
+                    'wishlist',
+                    'wishlist_id'
+                ),
+                $setup->getTable('email_wishlist'),
+                'wishlist_id',
+                $setup->getTable('wishlist'),
+                'wishlist_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            );
+        }
+
         $setup->endSetup();
     }
 

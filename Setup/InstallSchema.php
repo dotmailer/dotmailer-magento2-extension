@@ -792,6 +792,21 @@ class InstallSchema implements InstallSchemaInterface
         $wishlistTable = $installer->getConnection()->newTable($tableName);
         $wishlistTable = $this->addColumnsToWishlistTable($wishlistTable);
         $wishlistTable = $this->addIndexesToWishlistTable($installer, $wishlistTable);
+        $wishlistTable->addForeignKey(
+            $installer->getFkName('email_wishlist', 'customer_id', 'customer_entity', 'entity_id'),
+            'customer_id',
+            $installer->getTable('customer_entity'),
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        )->addForeignKey(
+            $installer->getFkName('email_wishlist', 'wishlist_id', 'wishlist', 'wishlist_id'),
+            'wishlist_id',
+            $installer->getTable('wishlist'),
+            'wishlist_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+
         $wishlistTable->setComment('Connector Wishlist');
         $installer->getConnection()->createTable($wishlistTable);
     }
@@ -830,9 +845,9 @@ class InstallSchema implements InstallSchemaInterface
         )
         ->addColumn(
             'customer_id',
-            \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
             11,
-            ['unsigned' => true, 'nullable' => false],
+            ['unsigned' => true, 'nullable' => true],
             'Customer ID'
         )
         ->addColumn(
