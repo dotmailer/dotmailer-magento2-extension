@@ -57,6 +57,16 @@ class Subscriber
     private $subscriberWithSalesExporter;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     */
+    private $dateIntervalFactory;
+
+    /**
+     * @var SubscriberExporter
+     */
+    private $subscriberExporter;
+
+    /**
      * Subscriber constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
@@ -66,6 +76,7 @@ class Subscriber
      * @param SubscriberWithSalesExporter $subscriberWithSalesExporter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
@@ -74,8 +85,10 @@ class Subscriber
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberExporter $subscriberExporter,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
     ) {
+        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper            = $helper;
         $this->contactFactory    = $contactFactory;
         $this->orderCollection   = $orderCollection;
@@ -211,7 +224,7 @@ class Subscriber
         $limit = 5;
         $maxToSelect = 1000;
         $result['customers'] = 0;
-        $date = $this->timezone->date()->sub(\DateInterval::createFromDateString('24 hours'));
+        $date = $this->timezone->date()->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT24H']));
         $suppressedEmails = [];
 
         // Datetime format string

@@ -22,19 +22,27 @@ class Coupon extends \Magento\Framework\View\Element\Template
     private $campaign;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     */
+    private $dateIntervalFactory;
+
+    /**
      * Coupon constructor.
      *
      * @param \Magento\Framework\View\Element\Template\Context              $context
      * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign    $campaign
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign           $campaign
+     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory              $dateIntervalFactory
      * @param array                                                         $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaign,
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
         array $data = []
     ) {
+        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper = $helper;
         $this->campaign = $campaign;
         parent::__construct($context, $data);
@@ -63,7 +71,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
         if (isset($params['expire_days']) && is_numeric($params['expire_days']) && $params['expire_days'] > 0) {
             $days = (int) $params['expire_days'];
             $expireDate = $this->_localeDate->date()
-                ->add(\DateInterval::createFromDateString(sprintf('%s day', $days)));
+                ->add($this->dateIntervalFactory->create(['interval_spec' => sprintf('P%sD', $days)]));
         }
 
         return $this->campaign->generateCoupon($couponCodeId, $expireDate);

@@ -10,15 +10,23 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $localeDate;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     */
+    private $dateIntervalFactory;
+
+    /**
      * Importer constructor.
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
     ) {
+        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->localeDate = $localeDate;
         parent::__construct($context);
     }
@@ -66,7 +74,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function cleanup($tableName)
     {
         try {
-            $interval = \DateInterval::createFromDateString('30 day');
+            $interval = $this->dateIntervalFactory->create(['interval_spec' => 'P30D']);
             $date = $this->localeDate->date()->sub($interval)->format('Y-m-d H:i:s');
             $conn = $this->getConnection();
             $num = $conn->delete(
