@@ -9,7 +9,7 @@ use Dotdigitalgroup\Email\Model\Apiconnector\Client;
  *
  * @api
  */
-class Studio extends \Magento\Backend\Block\Widget\Form
+class Studio extends \Magento\Backend\Block\Template
 {
 
     /**

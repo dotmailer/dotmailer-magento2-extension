@@ -7,14 +7,8 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Dashboard;
  *
  * @api
  */
-class Information extends \Magento\Backend\Block\Widget\Grid\Extended
+class Information extends \Magento\Backend\Block\Template
 {
-
-    /**
-     * @var string
-     */
-    public $_template = 'dashboard/information.phtml';
-
     /**
      * Helper.
      *
@@ -46,7 +40,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
     /**
      * Information constructor.
      * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\App\ProductMetadataFactory $productMetadata
@@ -56,7 +49,6 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
         \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\ProductMetadataFactory $productMetadata,
@@ -67,7 +59,7 @@ class Information extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->test = $test;
         $this->helper = $helper;
         $this->failedAuthCollectionFactory = $failedAuthCollectionFactory;
-        parent::__construct($context, $backendHelper, $data);
+        parent::__construct($context, $data);
         $this->getStoreIdParam();
     }
 
