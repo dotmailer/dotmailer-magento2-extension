@@ -12,7 +12,7 @@ class TrialSetup
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    private $helper;
+    public $helper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
@@ -22,21 +22,28 @@ class TrialSetup
     /**
      * @var \Magento\Framework\App\Config\ReinitableConfigInterface
      */
-    private $config;
+    public $config;
+
+    /**
+     * @var \Magento\Framework\Math\Random
+     */
+    private $randomMath;
 
     /**
      * TrialSetup constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Framework\Math\Random $randomMath
      * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
      * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Magento\Framework\Math\Random $randomMath,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
         \Magento\Framework\App\Config\ReinitableConfigInterface $config
     ) {
-    
+        $this->randomMath = $randomMath;
         $this->helper = $helper;
         $this->dataField = $dataField;
         $this->config = $config;
@@ -264,5 +271,34 @@ class TrialSetup
         }
 
         return $error;
+    }
+
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function generateTemporaryPasscode()
+    {
+        $code = $this->randomMath->getRandomString(32);
+        $this->helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE,
+            $code,
+            'default',
+            0
+        );
+
+        $expiryDate = new \DateTime('now', new \DateTimezone('UTC'));
+        $expiryDate->add(\DateInterval::createFromDateString(30 . 'minutes'));
+        $this->helper->saveConfigData(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY,
+            $expiryDate->format(\DateTime::ATOM),
+            'default',
+            0
+        );
+
+        //Clear config cache
+        $this->config->reinit();
+
+        return $code;
     }
 }

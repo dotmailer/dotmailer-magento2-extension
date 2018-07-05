@@ -7,11 +7,6 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @var Consent\CollectionFactory
      */
-    public $contactCollectionFactory;
-
-    /**
-     * @var Consent\CollectionFactory
-     */
     public $consentCollectionFactory;
 
     /**
@@ -26,11 +21,9 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent\CollectionFactory $consentCollectionFactory,
         $connectionName = null
     ) {
-        $this->contactCollectionFactory = $consentCollectionFactory;
         $this->consentCollectionFactory = $consentCollectionFactory;
         parent::__construct($context, $connectionName);
     }

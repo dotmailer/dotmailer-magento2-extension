@@ -36,16 +36,6 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     const SYNC_SINGLE_LIMIT_NUMBER = 100;
 
     /**
-     * @var ResourceModel\Consent\CollectionFactory
-     */
-    private $consentResource;
-
-    /**
-     * @var \Magento\Framework\File\Csv
-     */
-    private $csv;
-
-    /**
      * @var ResourceModel\Importer
      */
     private $importerResource;
@@ -109,31 +99,11 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @var \Magento\Framework\Stdlib\DateTime
      */
     public $dateTime;
-
-    /**
-     * @var \Magento\Framework\Filesystem\Io\File
-     */
-    public $file;
-
-    /**
-     * @var ResourceModel\Contact
-     */
-    public $contact;
     
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
-
-    /**
-     * @var \Magento\Framework\App\Filesystem\DirectoryList
-     */
-    public $directoryList;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\File
-     */
-    public $fileHelper;
 
     /**
      * @var Config\Json
@@ -145,15 +115,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param ResourceModel\Contact $contact
-     * @param ResourceModel\Consent $consentResource
      * @param ResourceModel\Importer $importerResource
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param Config\Json $serializer
-     * @param \Magento\Framework\File\Csv $csv
-     * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param \Magento\Framework\Filesystem\Io\File $file
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
@@ -163,31 +126,18 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contact,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
-        \Magento\Framework\File\Csv $csv,
-        \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Filesystem\Io\File $file,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
-        $this->csv  = $csv;
-        $this->file          = $file;
         $this->helper        = $helper;
         $this->importerResource = $importerResource;
-        $this->directoryList = $directoryList;
-        $this->consentResource = $consentResource;
         $this->objectManager = $objectManager;
-        $this->contact       = $contact;
         $this->dateTime      = $dateTime;
-        $this->fileHelper    = $fileHelper;
-        $this->serializer    = $serializer;
+        $this->serializer    = $this->helper->serializer;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -505,27 +455,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 ->setMessage($response->message);
         } else {
             if ($response->status == 'Finished') {
-                $now = gmdate('Y-m-d H:i:s');
-
-                $item->setImportStatus(self::IMPORTED)
-                    ->setImportFinished($now)
-                    ->setMessage('');
-
-                if ($item->getImportType() == self::IMPORT_TYPE_CONTACT ||
-                    $item->getImportType() == self::IMPORT_TYPE_SUBSCRIBERS ||
-                    $item->getImportType() == self::IMPORT_TYPE_GUEST
-                ) {
-                    //if file
-                    if ($file = $item->getImportFile()) {
-                        //remove the consent data for contacts before arhiving the file
-                        $this->cleanProcessedConsent($this->fileHelper->getFilePath($file));
-                        $this->fileHelper->archiveCSV($file);
-                    }
-
-                    if ($item->getImportId()) {
-                        $this->processContactImportReportFaults($item->getImportId(), $websiteId);
-                    }
-                }
+                $item = $this->processFinishedItem($item, $websiteId);
             } elseif (in_array($response->status, $this->importStatuses)) {
                 $item->setImportStatus(self::FAILED)
                     ->setMessage('Import failed with status ' . $response->status);
@@ -536,6 +466,46 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         }
         //Save item
         $this->saveItem($item);
+    }
+
+    /**
+     * @param $item
+     * @param $websiteId
+     *
+     * @return mixed
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function processFinishedItem($item, $websiteId)
+    {
+        $now = gmdate('Y-m-d H:i:s');
+
+        $item->setImportStatus(self::IMPORTED)
+            ->setImportFinished($now)
+            ->setMessage('');
+
+        if ($item->getImportType() == self::IMPORT_TYPE_CONTACT ||
+            $item->getImportType() == self::IMPORT_TYPE_SUBSCRIBERS ||
+            $item->getImportType() == self::IMPORT_TYPE_GUEST
+        ) {
+            //if file
+            if ($file = $item->getImportFile()) {
+                //remove the consent data for contacts before arhiving the file
+                $log = $this->helper->fileHelper->cleanProcessedConsent(
+                    $this->helper->fileHelper->getFilePath($file)
+                );
+                if ($log) {
+                    $this->helper->log($log);
+                }
+                $this->helper->fileHelper->archiveCSV($file);
+            }
+
+            if ($item->getImportId()) {
+                $this->processContactImportReportFaults($item->getImportId(), $websiteId);
+            }
+        }
+
+        return $item;
     }
 
     /**
@@ -593,7 +563,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 }
 
                 //unsubscribe from email contact and newsletter subscriber tables
-                $this->contact->unsubscribe($contacts);
+                $this->helper->contactResource->unsubscribe($contacts);
             }
         }
     }
@@ -626,27 +596,5 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     {
         return $this->getCollection()
             ->getQueueByTypeAndMode($importType, $importMode, $limit);
-    }
-
-    /**
-     * @param $file string full path to the csv file.
-     */
-    private function cleanProcessedConsent($file)
-    {
-        //read file and get the email addresses
-        $index = $this->csv->getDataPairs($file, 0, 0);
-        //remove header data for Email
-        unset($index['Email']);
-        $emails = array_values($index);
-
-        try {
-            $result = $this->consentResource
-                ->deleteConsentByEmails($emails);
-            if ($count = count($result)) {
-                $this->helper->log('Consent data removed : ' . $count);
-            }
-        } catch (\Exception $e) {
-            $this->helper->log($e);
-        }
     }
 }

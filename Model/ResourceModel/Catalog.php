@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -94,7 +95,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
         $connectionName = null
     ) {
-    
         $this->helper                   = $helper;
         $this->productIndexcollection = $productIndexCollection;
         $this->config = $config;

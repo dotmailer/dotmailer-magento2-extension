@@ -39,13 +39,31 @@ class File
     private $directoryList;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Consent
+     */
+    private $consentResource;
+
+    /**
+     * @var \Magento\Framework\File\Csv
+     */
+    private $csv;
+
+    /**
      * File constructor.
      *
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
+     * @param \Magento\Framework\File\Csv $csv
+     *
+     * @throws \Magento\Framework\Exception\FileSystemException
      */
     public function __construct(
-        \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+        \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
+        \Magento\Framework\File\Csv $csv
     ) {
+        $this->csv = $csv;
+        $this->consentResource = $consentResource;
         $this->directoryList       = $directoryList;
         $varPath                   = $directoryList->getPath('var');
         $this->outputFolder        = $varPath . DIRECTORY_SEPARATOR . 'export' . DIRECTORY_SEPARATOR . 'email';
@@ -326,5 +344,31 @@ class File
     public function debug($message, $extra)
     {
         $this->connectorLogger->debug($message, $extra);
+    }
+
+    /**
+     * @param $file string full path to the csv file.
+     * @return bool|string
+     */
+    public function cleanProcessedConsent($file)
+    {
+        //read file and get the email addresses
+        $index = $this->csv->getDataPairs($file, 0, 0);
+        //remove header data for Email
+        unset($index['Email']);
+        $emails = array_values($index);
+        $log = false;
+
+        try {
+            $result = $this->consentResource
+                ->deleteConsentByEmails($emails);
+            if ($count = count($result)) {
+                $log = 'Consent data removed : ' . $count;
+            }
+        } catch (\Exception $e) {
+            $log = $e->getMessage();
+        }
+
+        return $log;
     }
 }

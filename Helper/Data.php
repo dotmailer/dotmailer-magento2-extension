@@ -94,7 +94,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
-    private $contactResource;
+    public $contactResource;
 
     /**
      * @var \Magento\Quote\Model\ResourceModel\Quote
@@ -1918,5 +1918,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $websiteId
         );
         return ($value) ? false : true;
+    }
+
+    /**
+     * @return ScopeConfigInterface
+     */
+    public function getScopeConfig()
+    {
+        return $this->scopeConfig;
     }
 }

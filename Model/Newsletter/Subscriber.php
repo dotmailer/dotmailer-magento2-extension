@@ -221,14 +221,9 @@ class Subscriber
      */
     public function unsubscribe()
     {
-        $limit = 5;
-        $maxToSelect = 1000;
         $result['customers'] = 0;
         $date = $this->timezone->date()->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT24H']));
         $suppressedEmails = [];
-
-        // Datetime format string
-        $dateString = $date->format(\DateTime::W3C);
 
         /**
          * Sync all suppressed for each store
@@ -241,36 +236,52 @@ class Subscriber
                 continue;
             }
 
-            $skip = $i = 0;
-            $contacts = [];
-            $client = $this->helper->getWebsiteApiClient($website);
-
-            //there is a maximum of request we need to loop to get more suppressed contacts
-            for ($i=0; $i<= $limit; $i++) {
-                $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect, $skip);
-
-                // skip no more contacts or the api request failed
-                if (empty($apiContacts) || isset($apiContacts->message)) {
-                    break;
-                }
-                $contacts = array_merge($contacts, $apiContacts);
-                $skip += 1000;
-            }
-
-            // Contacts to un-subscribe
-            foreach ($contacts as $apiContact) {
-                if (isset($apiContact->suppressedContact)) {
-                    $suppressedContactEmail = $apiContact->suppressedContact->email;
-                    if (!in_array($suppressedContactEmail, $suppressedEmails, true)) {
-                        $suppressedEmails[] = $suppressedContactEmail;
-                    }
-                }
-            }
+            $suppressedEmails = $this->getSuppressedContacts($website);
         }
         //Mark suppressed contacts
         if (! empty($suppressedEmails)) {
-            $this->emailContactResource->unsubscribe($suppressedEmails);
+            $result['customers'] = $this->emailContactResource->unsubscribe($suppressedEmails);
         }
         return $result;
+    }
+
+    /**
+     * @param $website
+     * @return array
+     */
+    private function getSuppressedContacts($website)
+    {
+        $limit = 5;
+        $maxToSelect = 1000;
+        $skip = $i = 0;
+        $contacts = [];
+        $suppressedEmails = [];
+        $date = $this->timezone->date()->sub(\DateInterval::createFromDateString('24 hours'));
+        $dateString = $date->format(\DateTime::W3C);
+        $client = $this->helper->getWebsiteApiClient($website);
+
+        //there is a maximum of request we need to loop to get more suppressed contacts
+        for ($i=0; $i<= $limit; $i++) {
+            $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect, $skip);
+
+            // skip no more contacts or the api request failed
+            if (empty($apiContacts) || isset($apiContacts->message)) {
+                break;
+            }
+            $contacts = array_merge($contacts, $apiContacts);
+            $skip += 1000;
+        }
+
+        // Contacts to un-subscribe
+        foreach ($contacts as $apiContact) {
+            if (isset($apiContact->suppressedContact)) {
+                $suppressedContactEmail = $apiContact->suppressedContact->email;
+                if (!in_array($suppressedContactEmail, $suppressedEmails, true)) {
+                    $suppressedEmails[] = $suppressedContactEmail;
+                }
+            }
+        }
+
+        return $suppressedEmails;
     }
 }

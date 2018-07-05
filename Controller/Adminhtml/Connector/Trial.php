@@ -12,21 +12,6 @@ class Trial extends \Magento\Backend\App\Action
     const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
-     * @var \Magento\Framework\Math\Random
-     */
-    private $randomMath;
-
-    /**
-     * @var \Magento\Framework\App\Config\ReinitableConfigInterface
-     */
-    private $config;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    public $storeManager;
-
-    /**
      * @var \Magento\Framework\Stdlib\DateTime\Timezone
      */
     public $localeDate;
@@ -40,6 +25,11 @@ class Trial extends \Magento\Backend\App\Action
      * @var \Magento\Framework\HTTP\PhpEnvironment\ServerAddress
      */
     private $serverAddress;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Trial\TrialSetup
+     */
+    private $trialSetup;
 
     /**
      * @var array
@@ -482,28 +472,20 @@ class Trial extends \Magento\Backend\App\Action
      * Trial constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Math\Random $randomMath
-     * @param \Magento\Framework\App\Config\ReinitableConfigInterface $reinitableConfig
      * @param \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Stdlib\DateTime\Timezone $localeDate
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory $trialFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Math\Random $randomMath,
-        \Magento\Framework\App\Config\ReinitableConfigInterface $reinitableConfig,
         \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Stdlib\DateTime\Timezone $localeDate,
-        \Dotdigitalgroup\Email\Helper\Data $helper
+        \Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory $trialFactory
     ) {
-        $this->randomMath    = $randomMath;
-        $this->config        = $reinitableConfig;
+        $this->trialSetup    = $trialFactory->create();
         $this->serverAddress = $serverAddress;
-        $this->storeManager  = $storeManager;
         $this->localeDate    = $localeDate;
-        $this->helper        = $helper;
+        $this->helper        = $this->trialSetup->helper;
         parent::__construct($context);
     }
 
@@ -515,35 +497,6 @@ class Trial extends \Magento\Backend\App\Action
     public function execute()
     {
         return $this->resultRedirectFactory->create()->setUrl($this->_getIframeFormUrl());
-    }
-
-    /**
-     * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function generateTemporaryPasscode()
-    {
-        $code = $this->randomMath->getRandomString(32);
-        $this->helper->saveConfigData(
-	        \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE,
-            $code,
-            'default',
-            0
-        );
-
-        $expiryDate = new \DateTime('now', new \DateTimezone('UTC'));
-        $expiryDate->add(\DateInterval::createFromDateString(30 . 'minutes'));
-        $this->helper->saveConfigData(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY,
-            $expiryDate->format(\DateTime::ATOM),
-            'default',
-            0
-        );
-
-        //Clear config cache
-        $this->config->reinit();
-
-        return $code;
     }
 
     /**
@@ -570,7 +523,7 @@ class Trial extends \Magento\Backend\App\Action
         $timezone = $this->_getTimeZoneId();
         $culture = $this->_getCultureId();
         $company = $this->helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
-        $callback = $this->storeManager->getStore()
+        $callback = $this->helper->storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
 
         //query params
@@ -580,7 +533,7 @@ class Trial extends \Magento\Backend\App\Action
             'culture' => $culture,
             'timezone' => $timezone,
             'ip' => $ipAddress,
-            'code' => $this->generateTemporaryPasscode()
+            'code' => $this->trialSetup->generateTemporaryPasscode()
         ];
         $url = $formUrl . '?' . http_build_query($params);
 

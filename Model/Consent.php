@@ -117,7 +117,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
             $consentText = $customerConentText;
         }
         $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
-        return $consentData = [
+        return [
             $consentText,
             $this->getConsentUrl(),
             $consentDatetime,

@@ -134,18 +134,7 @@ class Campaign
                 $client = $this->helper->getWebsiteApiClient($websiteId);
             }
             //Only if valid client is returned
-            if ($client) {
-                if (!$campaignId) {
-                    $campaign->setMessage('Missing campaign id: ' . $campaignId)
-                        ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
-                    $this->campaignResourceModel->saveItem($campaign);
-                    continue;
-                } elseif (!$email) {
-                    $campaign->setMessage('Missing email')
-                        ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
-                    $this->campaignResourceModel->saveItem($campaign);
-                    continue;
-                }
+            if ($client && $this->isCampaignValid($campaign)) {
                 $campaignsToSend[$campaignId]['client'] = $client;
                 $contactId = $this->helper->getContactId(
                     $campaign->getEmail(),
@@ -178,6 +167,29 @@ class Campaign
         }
 
         return $campaignsToSend;
+    }
+
+    /**
+     * Check if campaign item is valid
+     *
+     * @param $campaign
+     *
+     * @return bool
+     */
+    private function isCampaignValid($campaign)
+    {
+        if (! $campaign->getCampaignId()) {
+            $campaign->setMessage('Missing campaign id: ' . $campaign->getCampaignId())
+                ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
+            $this->campaignResourceModel->saveItem($campaign);
+            return false;
+        } elseif (! $campaign->getEmail()) {
+            $campaign->setMessage('Missing email')
+                ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
+            $this->campaignResourceModel->saveItem($campaign);
+            return false;
+        }
+        return true;
     }
 
     /**

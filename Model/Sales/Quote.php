@@ -72,11 +72,6 @@ class Quote
     private $scopeConfig;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
     private $orderCollection;
@@ -128,30 +123,22 @@ class Quote
      *
      * @param \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
-     * @param Campaign\CollectionFactory $campaignCollection
      * @param Campaign $campaignResource
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $abandonedCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory,
+        \Dotdigitalgroup\Email\Model\Abandoned $abandonedFactory,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignCollection,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $abandonedCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
@@ -161,15 +148,14 @@ class Quote
         $this->rulesFactory = $rulesFactory;
         $this->helper = $helper;
         $this->abandonedFactory = $abandonedFactory;
-        $this->abandonedCollectionFactory = $abandonedCollectionFactory;
+        $this->abandonedCollectionFactory = $abandonedFactory->abandonedCollectionFactory;
         $this->abandonedResource = $abandonedResource;
-        $this->campaignCollection = $campaignCollection;
+        $this->campaignCollection = $campaignFactory->create()->campaignCollection;
         $this->campaignResource = $campaignResource;
         $this->campaignFactory = $campaignFactory;
-        $this->storeManager = $storeManager;
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->orderCollection = $collectionFactory;
-        $this->scopeConfig = $scopeConfig;
+        $this->scopeConfig = $this->helper->getScopeConfig();
         $this->timeZone = $timezone;
     }
 
@@ -186,65 +172,99 @@ class Quote
         foreach ($stores as $store) {
             $storeId = $store->getId();
             $websiteId = $store->getWebsiteId();
-            $secondCustomerEnabled = $this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_TWO, $storeId);
-            $thirdCustomerEnabled = $this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_THREE, $storeId);
-            $secondGuestEnabled = $this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_TWO, $storeId);
-            $thirdGuestEnabled = $this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_THREE, $storeId);
-            //customer
-            if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_ONE, $storeId) ||
-                $secondCustomerEnabled ||
-                $thirdCustomerEnabled
-            ) {
-                $result[$storeId]['firstCustomer'] = $this->processCustomerFirstAbandonedCart($storeId);
-            }
 
-            //second customer
-            if ($secondCustomerEnabled) {
-                $result[$storeId]['secondCustomer'] = $this->processExistingAbandonedCart(
-                    $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_TWO, $storeId),
-                    $storeId,
-                    $websiteId,
-                    self::CUSTOMER_LOST_BASKET_TWO
-                );
-            }
+            $result = $this->processAbandonedCartsForCustomers($storeId, $websiteId, $result);
+            $result = $this->processAbandonedCartsForGuests($storeId, $websiteId, $result);
+        }
 
-            //third customer
-            if ($thirdCustomerEnabled) {
-                $result[$storeId]['thirdCustomer'] = $this->processExistingAbandonedCart(
-                    $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_THREE, $storeId),
-                    $storeId,
-                    $websiteId,
-                    self::CUSTOMER_LOST_BASKET_THREE
-                );
-            }
+        return $result;
+    }
 
-            //guest
-            if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_ONE, $storeId) ||
-                $secondGuestEnabled ||
-                $thirdGuestEnabled
-            ) {
-                $result[$storeId]['firstGuest'] = $this->processGuestFirstAbandonedCart($storeId);
-            }
-            //second guest
-            if ($secondGuestEnabled) {
-                $result[$storeId]['secondGuest'] = $this->processExistingAbandonedCart(
-                    $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_TWO, $storeId),
-                    $storeId,
-                    $websiteId,
-                    self::GUEST_LOST_BASKET_TWO,
-                    true
-                );
-            }
-            //third guest
-            if ($thirdGuestEnabled) {
-                $result[$storeId]['thirdGuest'] = $this->processExistingAbandonedCart(
-                    $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_THREE, $storeId),
-                    $storeId,
-                    $websiteId,
-                    self::GUEST_LOST_BASKET_THREE,
-                    true
-                );
-            }
+    /**
+     * Process abandoned carts for customer
+     *
+     * @param int $storeId
+     * @param int $websiteId
+     * @param array $result
+     *
+     * @return array
+     */
+    private function processAbandonedCartsForCustomers($storeId, $websiteId, $result)
+    {
+        $secondCustomerEnabled = $this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_TWO, $storeId);
+        $thirdCustomerEnabled = $this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_THREE, $storeId);
+
+        //first customer
+        if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_ONE, $storeId) ||
+            $secondCustomerEnabled ||
+            $thirdCustomerEnabled
+        ) {
+            $result[$storeId]['firstCustomer'] = $this->processCustomerFirstAbandonedCart($storeId);
+        }
+
+        //second customer
+        if ($secondCustomerEnabled) {
+            $result[$storeId]['secondCustomer'] = $this->processExistingAbandonedCart(
+                $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_TWO, $storeId),
+                $storeId,
+                $websiteId,
+                self::CUSTOMER_LOST_BASKET_TWO
+            );
+        }
+
+        //third customer
+        if ($thirdCustomerEnabled) {
+            $result[$storeId]['thirdCustomer'] = $this->processExistingAbandonedCart(
+                $this->getLostBasketCustomerCampaignId(self::CUSTOMER_LOST_BASKET_THREE, $storeId),
+                $storeId,
+                $websiteId,
+                self::CUSTOMER_LOST_BASKET_THREE
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Process abandoned carts for guests
+     *
+     * @param int $storeId
+     * @param int $websiteId
+     * @param array $result
+     *
+     * @return array
+     */
+    private function processAbandonedCartsForGuests($storeId, $websiteId, $result)
+    {
+        $secondGuestEnabled = $this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_TWO, $storeId);
+        $thirdGuestEnabled = $this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_THREE, $storeId);
+
+        //first guest
+        if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_ONE, $storeId) ||
+            $secondGuestEnabled ||
+            $thirdGuestEnabled
+        ) {
+            $result[$storeId]['firstGuest'] = $this->processGuestFirstAbandonedCart($storeId);
+        }
+        //second guest
+        if ($secondGuestEnabled) {
+            $result[$storeId]['secondGuest'] = $this->processExistingAbandonedCart(
+                $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_TWO, $storeId),
+                $storeId,
+                $websiteId,
+                self::GUEST_LOST_BASKET_TWO,
+                true
+            );
+        }
+        //third guest
+        if ($thirdGuestEnabled) {
+            $result[$storeId]['thirdGuest'] = $this->processExistingAbandonedCart(
+                $this->getLostBasketGuestCampaignId(self::GUEST_LOST_BASKET_THREE, $storeId),
+                $storeId,
+                $websiteId,
+                self::GUEST_LOST_BASKET_THREE,
+                true
+            );
         }
 
         return $result;
@@ -300,7 +320,7 @@ class Quote
 
         //process rules on collection
         $ruleModel = $this->rulesFactory->create();
-        $websiteId = $this->storeManager->getStore($storeId)
+        $websiteId = $this->helper->storeManager->getStore($storeId)
             ->getWebsiteId();
         $salesCollection = $ruleModel->process(
             $salesCollection,
@@ -494,6 +514,11 @@ class Quote
         //campaign id for customers
         $campaignId = $this->getLostBasketCustomerCampaignId($abandonedNum, $storeId);
         foreach ($quoteCollection as $quote) {
+            $quoteId = $quote->getId();
+            $items = $quote->getAllItems();
+            $email = $quote->getCustomerEmail();
+            $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
+            $itemIds = $this->getQuoteItemIds($items);
             $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
             if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)){
                 continue;
@@ -684,6 +709,28 @@ class Quote
 
         $guestCampaignId = $this->getLostBasketGuestCampaignId($abandonedNum, $storeId);
         foreach ($quoteCollection as $quote) {
+            $quoteId = $quote->getId();
+            $items = $quote->getAllItems();
+            $email = $quote->getCustomerEmail();
+            $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
+            $itemIds = $this->getQuoteItemIds($items);
+
+            if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
+                $this->helper->updateAbandonedProductName(
+                    $mostExpensiveItem->getName(),
+                    $email,
+                    $websiteId
+                );
+            }
+
+            $abandonedModel = $this->abandonedFactory->create()
+                ->loadByQuoteId($quoteId);
+
+            if ($this->abandonedCartAlreadyExists($abandonedModel) &&
+                $this->shouldNotSendACAgain($abandonedModel, $quote)) {
+                if ($this->shouldDeleteAbandonedCart($quote)) {
+                    $this->deleteAbandonedCart($abandonedModel);
+                }
             $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
             if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)){
                 continue;
@@ -881,7 +928,7 @@ class Quote
         $quoteCollection = $ruleModel->process(
             $quoteCollection,
             \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
-            $this->storeManager->getStore($storeId)->getWebsiteId()
+            $this->helper->storeManager->getStore($storeId)->getWebsiteId()
         );
 
         return $quoteCollection;

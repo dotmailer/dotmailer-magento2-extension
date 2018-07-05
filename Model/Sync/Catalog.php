@@ -221,86 +221,100 @@ class Catalog
             //remove product with product id set and no product
             $this->catalogResourceFactory->create()
                 ->removeOrphanProducts();
-
             $scope = $this->scopeConfig->getValue(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES
             );
-            //if only to pull default value
+
             if ($scope == 1) {
-                $products = $this->exportCatalog(\Magento\Store\Model\Store::DEFAULT_STORE_ID);
-                if (! empty($products)) {
-                    //register in queue with importer
-                    $check = $this->importerFactory->create()
-                        ->registerQueue(
-                            'Catalog_Default',
-                            $products,
-                            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                            \Magento\Store\Model\Store::DEFAULT_STORE_ID
-                        );
-
-                    if ($check) {
-                        //set imported
-                        $this->setImported($this->productIds);
-
-                        //set number of product imported
-                        $this->countProducts += count($products);
-                    } else {
-                        $pid = implode(",", $this->productIds);
-                        $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Product Ids($pid)";
-                        $this->helper->log($msg);
-                    }
-                }
-
-                //using single api
-                $this->exportInSingle(
-                    \Magento\Store\Model\Store::DEFAULT_STORE_ID,
-                    'Catalog_Default',
-                    \Magento\Store\Model\Store::DEFAULT_STORE_ID
-                );
-                //if to pull store values. will be pulled for each store
+                $this->batchDefaultLevelValues();
             } elseif ($scope == 2) {
-                $stores = $this->helper->getStores();
-
-                foreach ($stores as $store) {
-                    $websiteCode = $store->getWebsite()->getCode();
-                    $storeCode = $store->getCode();
-                    $products = $this->exportCatalog($store);
-                    if (! empty($products)) {
-                        //register in queue with importer
-                        $check = $this->importerFactory->create()
-                            ->registerQueue(
-                                'Catalog_' . $websiteCode . '_'
-                                . $storeCode,
-                                $products,
-                                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                                $store->getWebsiteId()
-                            );
-
-                        if (! $check) {
-                            $pid = implode(",", $this->productIds);
-                            $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Store($store) 
-                            / Product Ids($pid)";
-                            $this->helper->log($msg);
-                        }
-                    }
-                    //using single api
-                    $this->exportInSingle(
-                        $store,
-                        'Catalog_' . $websiteCode . '_' . $storeCode,
-                        $store->getWebsiteId()
-                    );
-                }
-
-                if (! empty($this->productIds)) {
-                    //set imported
-                    $this->setImported(array_unique($this->productIds));
-
-                    //set number of product imported
-                    $this->countProducts += count($this->productIds);
-                }
+                $this->batchStoreLevelValues();
             }
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
+        }
+    }
+
+    /**
+     * Batch default level values for catalog
+     */
+    private function batchDefaultLevelValues()
+    {
+        $products = $this->exportCatalog(\Magento\Store\Model\Store::DEFAULT_STORE_ID);
+        if (! empty($products)) {
+            //register in queue with importer
+            $check = $this->importerFactory->create()
+                ->registerQueue(
+                    'Catalog_Default',
+                    $products,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                    \Magento\Store\Model\Store::DEFAULT_STORE_ID
+                );
+
+            if ($check) {
+                //set imported
+                $this->setImported($this->productIds);
+
+                //set number of product imported
+                $this->countProducts += count($products);
+            } else {
+                $pid = implode(",", $this->productIds);
+                $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Product Ids($pid)";
+                $this->helper->log($msg);
+            }
+        }
+
+        //using single api
+        $this->exportInSingle(
+            \Magento\Store\Model\Store::DEFAULT_STORE_ID,
+            'Catalog_Default',
+            \Magento\Store\Model\Store::DEFAULT_STORE_ID
+        );
+    }
+
+    /**
+     * Batch store level values for catalog
+     */
+    private function batchStoreLevelValues()
+    {
+        $stores = $this->helper->getStores();
+
+        foreach ($stores as $store) {
+            $websiteCode = $store->getWebsite()->getCode();
+            $storeCode = $store->getCode();
+            $products = $this->exportCatalog($store);
+            if (! empty($products)) {
+                //register in queue with importer
+                $check = $this->importerFactory->create()
+                    ->registerQueue(
+                        'Catalog_' . $websiteCode . '_'
+                        . $storeCode,
+                        $products,
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                        $store->getWebsiteId()
+                    );
+
+                if (! $check) {
+                    $pid = implode(",", $this->productIds);
+                    $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Store($store) 
+                            / Product Ids($pid)";
+                    $this->helper->log($msg);
+                }
+            }
+            //using single api
+            $this->exportInSingle(
+                $store,
+                'Catalog_' . $websiteCode . '_' . $storeCode,
+                $store->getWebsiteId()
+            );
+        }
+
+        if (! empty($this->productIds)) {
+            //set imported
+            $this->setImported(array_unique($this->productIds));
+
+            //set number of product imported
+            $this->countProducts += count($this->productIds);
         }
     }
 }

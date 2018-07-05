@@ -829,7 +829,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         $brand = $this->getConnection()->quote($brand);
 
-        return $mostData = $this->expressionFactory->create(
+        return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT eaov.option_id from $salesOrder sfo
                 LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id

@@ -53,7 +53,6 @@ class Contact
      * @param CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param ContactImportQueueExport $contactImportQueueExport
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
@@ -62,7 +61,6 @@ class Contact
         \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport $contactImportQueueExport,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory

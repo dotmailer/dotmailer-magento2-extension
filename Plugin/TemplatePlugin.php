@@ -4,6 +4,11 @@ namespace Dotdigitalgroup\Email\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
 
+/**
+ * Class TemplatePlugin
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ */
 class TemplatePlugin
 {
     /**
@@ -49,64 +54,115 @@ class TemplatePlugin
             }
         }
 
-        //get data before saving
         if ($this->registry->registry('dotmailer_saving_data')) {
-            //saving array values
-            if (empty($args)) {
-                //save template id for email sending to update the sender name and sender email saved on template level.
-                if (isset($result['template_id'])) {
-                    $this->saveTemplateIdInRegistry($result['template_id']);
-                }
-                if (isset($result['template_text'])) {
-                    $templateText = $result['template_text'];
-                    //compress text
-                    if (!$this->isStringCompressed($templateText) &&
-                        $this->transactionalHelper->isDotmailerTemplate($result['template_code'])) {
-                        $result['template_text'] = $this->compresString($templateText);
-                    }
-                }
-            } else {
-                //saving string value
-                $field = $args[0];
+            $result = $this->getProcessedTemplateBeforeSave($result);
+        } else {
+            $result = $this->getProcessedTemplatePreviewAndOther($result, $args);
+        }
 
-                //compress the text body when is a dotmailer template
-                if ($field == 'template_text' && ! $this->isStringCompressed($result) &&
-                    $this->transactionalHelper->isDotmailerTemplate($this->templateCode)
-                ) {
-                    $result = $this->compresString($result);
+        return $result;
+    }
+
+    /**
+     * Get data before saving
+     *
+     * @param mixed $result
+     *
+     * @return mixed
+     */
+    private function getProcessedTemplateBeforeSave($result)
+    {
+        //saving array values
+        if (empty($args)) {
+            $this->getResultIfArgsEmptyForBeforeSave($result);
+        } else {
+            //saving string value
+            $field = $args[0];
+
+            //compress the text body when is a dotmailer template
+            if ($field == 'template_text' && ! $this->isStringCompressed($result) &&
+                $this->transactionalHelper->isDotmailerTemplate($this->templateCode)
+            ) {
+                $result = $this->compresString($result);
+            }
+            if ($field == 'template_id') {
+                $this->saveTemplateIdInRegistry($result);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $result
+     *
+     * @return mixed
+     */
+    private function getResultIfArgsEmptyForBeforeSave($result)
+    {
+        //save template id for email sending to update the sender name and sender email saved on template level.
+        if (isset($result['template_id'])) {
+            $result = $this->saveTemplateIdInRegistry($result['template_id']);
+        }
+        if (isset($result['template_text'])) {
+            $templateText = $result['template_text'];
+            //compress text
+            if (!$this->isStringCompressed($templateText) &&
+                $this->transactionalHelper->isDotmailerTemplate($result['template_code'])) {
+                $result['template_text'] = $this->compresString($templateText);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * preview/other/load
+     *
+     * @param mixed $result
+     * @param array $args
+     *
+     * @return mixed
+     */
+    private function getProcessedTemplatePreviewAndOther($result, $args)
+    {
+        if (empty($args)) {
+            $result = $this->getResultIfArgsEmptyForPreviewAndOther($result);
+        } else {
+            if (isset($args[0])) {
+                $field = $args[0];
+                //check for correct field
+                if ($field == 'template_text' && $this->isStringCompressed($result)) {
+                    $result = $this->decompresString($result);
+                }
+                //decode encoded subject
+                if ($field == 'template_subject') {
+                    $result = utf8_decode($result);
                 }
                 if ($field == 'template_id') {
                     $this->saveTemplateIdInRegistry($result);
                 }
             }
-        } else {
-            //preview/other/load
-            if (empty($args)) {
-                if (isset($result['template_id'])) {
-                    $this->saveTemplateIdInRegistry($result['template_id']);
-                }
-                if (isset($result['template_text'])) {
-                    $templateText = $result['template_text'];
-                    $result['template_subject'] = utf8_decode($result['template_subject']);
-                    if ($this->isStringCompressed($templateText)) {
-                        $result['template_text'] = $this->decompresString($templateText);
-                    }
-                }
-            } else {
-                if (isset($args[0])) {
-                    $field = $args[0];
-                    //check for correct field
-                    if ($field == 'template_text' && $this->isStringCompressed($result)) {
-                        $result = $this->decompresString($result);
-                    }
-                    //decode encoded subject
-                    if ($field == 'template_subject') {
-                        $result = utf8_decode($result);
-                    }
-                    if ($field == 'template_id') {
-                        $this->saveTemplateIdInRegistry($result);
-                    }
-                }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $result
+     *
+     * @return mixed
+     */
+    private function getResultIfArgsEmptyForPreviewAndOther($result)
+    {
+        if (isset($result['template_id'])) {
+            $this->saveTemplateIdInRegistry($result['template_id']);
+        }
+        if (isset($result['template_text'])) {
+            $templateText = $result['template_text'];
+            $result['template_subject'] = utf8_decode($result['template_subject']);
+            if ($this->isStringCompressed($templateText)) {
+                $result['template_text'] = $this->decompresString($templateText);
             }
         }
 

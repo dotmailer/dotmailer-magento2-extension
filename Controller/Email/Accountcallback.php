@@ -74,30 +74,38 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         ) {
             $this->sendAjaxResponse(true);
         } else {
-            //Remove temporary passcode
-            $this->helper->resourceConfig->deleteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE,
-                'default',
-                0
-            );
+            $this->processAccountCallback($params);
+        }
+    }
 
-            //Save api end point
-            if (isset($params['apiEndpoint'])) {
-                $this->trialSetup->saveApiEndPoint($params['apiEndpoint']);
-            } else { //Save empty value to endpoint. New endpoint will be fetched when first api call made.
-                $this->trialSetup->saveApiEndPoint('');
-            }
+    /**
+     * @param array $params
+     */
+    private function processAccountCallback($params)
+    {
+        //Remove temporary passcode
+        $this->helper->resourceConfig->deleteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE,
+            'default',
+            0
+        );
 
-            $apiConfigStatus = $this->trialSetup->saveApiCreds($params['apiUser'], $params['pass']);
-            $dataFieldsStatus = $this->trialSetup->setupDataFields($params['apiUser'], $params['pass']);
-            $addressBookStatus = $this->trialSetup->createAddressBooks($params['apiUser'], $params['pass']);
-            $syncStatus = $this->trialSetup->enableSyncForTrial();
+        //Save api end point
+        if (isset($params['apiEndpoint'])) {
+            $this->trialSetup->saveApiEndPoint($params['apiEndpoint']);
+        } else { //Save empty value to endpoint. New endpoint will be fetched when first api call made.
+            $this->trialSetup->saveApiEndPoint('');
+        }
 
-            if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
-                $this->sendAjaxResponse(false);
-            } else {
-                $this->sendAjaxResponse(true);
-            }
+        $apiConfigStatus = $this->trialSetup->saveApiCreds($params['apiUser'], $params['pass']);
+        $dataFieldsStatus = $this->trialSetup->setupDataFields($params['apiUser'], $params['pass']);
+        $addressBookStatus = $this->trialSetup->createAddressBooks($params['apiUser'], $params['pass']);
+        $syncStatus = $this->trialSetup->enableSyncForTrial();
+
+        if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
+            $this->sendAjaxResponse(false);
+        } else {
+            $this->sendAjaxResponse(true);
         }
     }
 

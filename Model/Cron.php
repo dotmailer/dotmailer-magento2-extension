@@ -43,21 +43,6 @@ class Cron
     private $guestFactory;
 
     /**
-     * @var Sync\Wishlist
-     */
-    private $wishlistFactory;
-
-    /**
-     * @var Sales\OrderFactory
-     */
-    private $orderFactory;
-
-    /**
-     * @var Sync\ReviewFactory
-     */
-    private $reviewFactory;
-
-    /**
      * @var Sales\QuoteFactory
      */
     private $quoteFactory;
@@ -76,7 +61,7 @@ class Cron
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
@@ -93,14 +78,16 @@ class Cron
     private $cronCollection;
 
     /**
+     * @var Cron\CronSub
+     */
+    private $cronHelper;
+
+    /**
      * Cron constructor.
      *
      * @param Sync\CampaignFactory                     $campaignFactory
      * @param Sync\OrderFactory                        $syncOrderFactory
      * @param Sales\QuoteFactory                       $quoteFactory
-     * @param Sync\ReviewFactory                       $reviewFactory
-     * @param Sales\OrderFactory                       $orderFactory
-     * @param Sync\WishlistFactory                     $wishlistFactory
      * @param Customer\GuestFactory                    $guestFactory
      * @param Newsletter\SubscriberFactory             $subscriberFactory
      * @param Sync\CatalogFactory                      $catalogFactorty
@@ -111,6 +98,7 @@ class Cron
      * @param \Dotdigitalgroup\Email\Helper\File       $fileHelper
      * @param ResourceModel\Importer                   $importerResource
      * @param ResourceModel\Cron\CollectionFactory     $cronCollection
+     * @param Cron\CronSubFactory                      $cronSubFactory
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -118,9 +106,6 @@ class Cron
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Model\Sync\OrderFactory $syncOrderFactory,
         \Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
-        \Dotdigitalgroup\Email\Model\Sync\ReviewFactory $reviewFactory,
-        \Dotdigitalgroup\Email\Model\Sales\OrderFactory $orderFactory,
-        \Dotdigitalgroup\Email\Model\Sync\WishlistFactory $wishlistFactory,
         \Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
@@ -131,14 +116,12 @@ class Cron
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection
+        \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection,
+        Cron\CronSubFactory $cronSubFactory
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
         $this->quoteFactory      = $quoteFactory;
-        $this->reviewFactory     = $reviewFactory;
-        $this->orderFactory      = $orderFactory;
-        $this->wishlistFactory   = $wishlistFactory;
         $this->guestFactory      = $guestFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->catalogFactory    = $catalogFactorty;
@@ -150,6 +133,7 @@ class Cron
         $this->importerResource  = $importerResource;
         $this->cronCollection    = $cronCollection;
         $this->templateFactory   = $templateFactory;
+        $this->cronHelper        = $cronSubFactory->create();
     }
 
     /**
@@ -248,8 +232,7 @@ class Cron
         //sync reviews
         $this->reviewSync();
         //sync wishlist
-        $this->wishlistFactory->create()
-            ->sync();
+        $this->cronHelper->wishlistSync();
     }
 
     /**
@@ -259,14 +242,7 @@ class Cron
      */
     public function reviewSync()
     {
-        //find orders to review and register campaign
-        $this->orderFactory->create()
-            ->createReviewCampaigns();
-        //sync reviews
-        $result = $this->reviewFactory->create()
-            ->sync();
-
-        return $result;
+        return $this->cronHelper->reviewSync();
     }
 
     /**

@@ -55,45 +55,33 @@ class SubscriberWithSalesExporter
     private $consentFactory;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * SubscriberWithSalesExporter constructor.
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
      * @param \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
      * @param \Magento\Framework\App\ResourceConnection $resource
      * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\Config $configHelper,
         \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory $emailSubscriber,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory $contactResource
     ) {
         $this->importerFactory  = $importerFactory;
-        $this->file             = $file;
         $this->helper           = $helper;
+        $this->file             = $this->helper->fileHelper;
         $this->resource         = $resource;
-        $this->configHelper     = $configHelper;
+        $this->configHelper     = $this->helper->configHelperFactory->create();
         $this->consentFactory   = $consentFactory;
         $this->consentResource  = $consentResource;
-        $this->storeManager = $storeManager;
         $this->emailSubscriber = $emailSubscriber;
         $this->emailContactResource = $contactResource;
         $this->subscribersCollection = $subscriberCollection;
@@ -140,7 +128,7 @@ class SubscriberWithSalesExporter
         $this->file->outputCSV($this->file->getFilePath($subscribersFile), $headers);
         //subscriber data
         foreach ($collection as $subscriber) {
-            $store = $this->storeManager->getStore($subscriber->getStoreId());
+            $store = $this->helper->storeManager->getStore($subscriber->getStoreId());
             $optInType = $this->configHelper->getOptInType($store);
             $connectorSubscriber = $this->emailSubscriber->create();
             $connectorSubscriber->setMappingHash($mappedHash);
@@ -172,6 +160,20 @@ class SubscriberWithSalesExporter
             $updated++;
         }
 
+        $this->registerWithImporter($subscriberIds, $subscribersFile, $websiteId);
+
+        return $updated;
+    }
+
+    /**
+     * Register data with importer
+     *
+     * @param $subscriberIds
+     * @param $subscribersFile
+     * @param $websiteId
+     */
+    private function registerWithImporter($subscriberIds, $subscribersFile, $websiteId)
+    {
         $subscriberNum = count($subscriberIds);
         if (is_file($this->file->getFilePath($subscribersFile))) {
             if ($subscriberNum > 0) {
@@ -191,8 +193,6 @@ class SubscriberWithSalesExporter
                 }
             }
         }
-
-        return $updated;
     }
 
     /**
