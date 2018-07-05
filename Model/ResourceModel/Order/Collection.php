@@ -15,7 +15,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     public $_idFieldName = 'email_order_id';
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     * @var \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory
      */
     private $orderCollection;
 
@@ -50,7 +50,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+     * @param \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory $orderCollection
      * @param \Dotdigitalgroup\Email\Helper\Data; $helper
      * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
      * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null $resource
@@ -61,7 +61,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
         \Magento\Framework\Event\ManagerInterface $eventManager,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
+        \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory $orderCollection,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
         \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null

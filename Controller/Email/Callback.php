@@ -10,12 +10,12 @@ class Callback extends \Magento\Framework\App\Action\Action
     private $helper;
 
     /**
-     * @var \Magento\User\Model\UserFactory
+     * @var \Magento\User\Api\Data\UserInterfaceFactory
      */
     private $adminUser;
 
     /**
-     * @var \Magento\Store\Model\StoreManager
+     * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
 
@@ -51,18 +51,19 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @param \Magento\Backend\Helper\Data $backendData
      * @param \Dotdigitalgroup\Email\Helper\Config $config
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-     * @param \Magento\Store\Model\StoreManager $storeManager
-     * @param \Magento\User\Model\UserFactory $adminUser
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\User\Api\Data\UserInterfaceFactory $adminUser
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper,
+     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      */
     public function __construct(
         \Magento\User\Model\ResourceModel\User $userResource,
         \Magento\Backend\Helper\Data $backendData,
         \Dotdigitalgroup\Email\Helper\Config $config,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface,
-        \Magento\Store\Model\StoreManager $storeManager,
-        \Magento\User\Model\UserFactory $adminUser,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\User\Api\Data\UserInterfaceFactory $adminUser,
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory

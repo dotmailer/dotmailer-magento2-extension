@@ -10,7 +10,7 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
 {
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var \Magento\Sales\Api\Data\OrderInterfaceFactory
      */
     public $orderFactory;
 
@@ -20,7 +20,7 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
     public $clientFactory;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order
+     * @var \Magento\Sales\Model\Spi\OrderResourceInterface
      */
     private $orderResource;
 
@@ -28,8 +28,8 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
      * Product constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
-     * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
+     * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
@@ -39,8 +39,8 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
-        \Magento\Sales\Model\ResourceModel\Order $orderResource,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
+        \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,

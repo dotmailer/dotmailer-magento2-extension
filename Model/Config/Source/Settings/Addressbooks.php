@@ -15,27 +15,17 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
     private $registry;
 
     /**
-     * Configuration structure.
-     *
-     * @var \Magento\Config\Model\Config\Structure
-     */
-    private $configStructure;
-
-    /**
      * Addressbooks constructor.
      *
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Config\Model\Config\Structure $configStructure
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Config\Model\Config\Structure $configStructure
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->registry        = $registry;
         $this->helper          = $data;
-        $this->configStructure = $configStructure;
     }
 
     /**

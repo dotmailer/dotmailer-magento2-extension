@@ -76,4 +76,7 @@
         </arguments>
     </type>
     <preference for="Dotdigitalgroup\Email\Model\Mail\AdapterInterface" type="Dotdigitalgroup\Email\Model\Mail\Transport" />
+    <preference for="Magento\Config\Model\Config\Structure\SearchInterface" type="Magento\Config\Model\Config\Structure" />
+    <preference for="Magento\Sales\Api\Data\OrderSearchResultInterface" type="Magento\Sales\Model\ResourceModel\Order\Collection" />
+    <preference for="Magento\SalesRule\Model\Coupon\CodegeneratorInterface" type="Magento\SalesRule\Model\Coupon\Massgenerator" />
 </config>

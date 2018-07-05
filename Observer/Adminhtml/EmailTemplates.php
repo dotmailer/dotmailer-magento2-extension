@@ -15,7 +15,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     public $config;
 
     /**
-     * @var \Magento\Store\Model\StoreManager
+     * @var \Magento\Store\Model\StoreManagerInterface
      */
     public $storeManager;
 
@@ -50,17 +50,19 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     private $messageManager;
 
     /**
-     * UpdateTemplates constructor.
+     * EmailTemplates constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
      * @param \Magento\Email\Model\ResourceModel\Template $templateResource
      * @param \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Store\Model\StoreManager $storeManager,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\Config\ReinitableConfigInterface $config,
         \Magento\Email\Model\ResourceModel\Template $templateResource,
         \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory

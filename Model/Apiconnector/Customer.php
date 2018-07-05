@@ -48,12 +48,12 @@ class Customer
     public $subscriberFactory;
 
     /**
-     * @var \Magento\Catalog\Model\CategoryFactory
+     * @var \Magento\Catalog\Api\Data\CategoryInterfaceFactory
      */
     public $categoryFactory;
 
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var \Magento\Catalog\Api\Data\ProductInterfaceFactory
      */
     public $productFactory;
 
@@ -121,8 +121,8 @@ class Customer
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Customer\Model\GroupFactory $groupFactory
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
-     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory
+     * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
      * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -138,8 +138,8 @@ class Customer
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\GroupFactory $groupFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
-        \Magento\Catalog\Model\CategoryFactory $categoryFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory,
+        \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory,
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory
     ) {
         $this->dateTime          = $dateTime;

@@ -19,12 +19,12 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
      * Configuration constructor.
      *
      * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Config\Model\Config\Structure  $configStructure
+     * @param \Magento\Config\Model\Config\Structure\SearchInterface  $configStructure
      * @param array                                   $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \Magento\Config\Model\Config\Structure $configStructure,
+        \Magento\Config\Model\Config\Structure\SearchInterface $configStructure,
         array $data = []
     ) {
         parent::__construct($context, $configStructure, $data);

@@ -13,25 +13,25 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
     private $registry;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var \Magento\Sales\Api\Data\OrderInterfaceFactory
      */
     private $orderFactory;
     
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order
+     * @var \Magento\Sales\Model\Spi\OrderResourceInterface
      */
     private $orderResource;
 
     /**
      * SaveRegisterOrderStatusBefore constructor.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
+     * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
      * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
-        \Magento\Sales\Model\ResourceModel\Order $orderResource,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
+        \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
         \Magento\Framework\Registry $registry
     ) {
         $this->orderResource = $orderResource;
