@@ -494,37 +494,19 @@ class Quote
         //campaign id for customers
         $campaignId = $this->getLostBasketCustomerCampaignId($abandonedNum, $storeId);
         foreach ($quoteCollection as $quote) {
-            $quoteId = $quote->getId();
-            $items = $quote->getAllItems();
-            $email = $quote->getCustomerEmail();
             $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-            $itemIds = $this->getQuoteItemIds($items);
-
-            if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
-                $this->helper->updateAbandonedProductName(
-                    $mostExpensiveItem->getName(),
-                    $email,
-                    $websiteId
-                );
-            }
-
-            $abandonedModel = $this->abandonedFactory->create()
-                ->loadByQuoteId($quoteId);
-
-            if ($this->abandonedCartAlreadyExists($abandonedModel) &&
-                $this->shouldNotSendACAgain($abandonedModel, $quote)) {
-                if ($this->shouldDeleteAbandonedCart($quote)) {
-                    $this->deleteAbandonedCart($abandonedModel);
-                }
+            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)){
                 continue;
             }
 
-            //create abandoned cart
-            $this->createAbandonedCart($abandonedModel, $quote, $itemIds);
-
             //send campaign; check if valid to be sent
             if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_ONE, $storeId)) {
-                $this->sendEmailCampaign($email, $quote, $campaignId, self::CUSTOMER_LOST_BASKET_ONE, $websiteId);
+                $this->sendEmailCampaign(
+                    $quote->getCustomerEmail(),
+                    $quote, $campaignId,
+                    self::CUSTOMER_LOST_BASKET_ONE,
+                    $websiteId
+                );
             }
 
             $this->totalCustomers++;
@@ -532,6 +514,44 @@ class Quote
         }
 
         return $result;
+    }
+
+    /**
+     * @param $quote
+     * @param $websiteId
+     *
+     * @return bool
+     */
+    private function updateDataFieldAndCreateAc($quote, $websiteId)
+    {
+        $quoteId = $quote->getId();
+        $items = $quote->getAllItems();
+        $email = $quote->getCustomerEmail();
+        $itemIds = $this->getQuoteItemIds($items);
+
+        if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
+            $this->helper->updateAbandonedProductName(
+                $mostExpensiveItem->getName(),
+                $email,
+                $websiteId
+            );
+        }
+
+        $abandonedModel = $this->abandonedFactory->create()
+            ->loadByQuoteId($quoteId);
+
+        if ($this->abandonedCartAlreadyExists($abandonedModel) &&
+            $this->shouldNotSendACAgain($abandonedModel, $quote)) {
+            if ($this->shouldDeleteAbandonedCart($quote)) {
+                $this->deleteAbandonedCart($abandonedModel);
+            }
+            return false;
+        } else {
+            //create abandoned cart
+            $this->createAbandonedCart($abandonedModel, $quote, $itemIds);
+        }
+
+        return true;
     }
 
     /**
@@ -664,36 +684,19 @@ class Quote
 
         $guestCampaignId = $this->getLostBasketGuestCampaignId($abandonedNum, $storeId);
         foreach ($quoteCollection as $quote) {
-            $quoteId = $quote->getId();
-            $items = $quote->getAllItems();
-            $email = $quote->getCustomerEmail();
             $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-            $itemIds = $this->getQuoteItemIds($items);
-
-            if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
-                $this->helper->updateAbandonedProductName(
-                    $mostExpensiveItem->getName(),
-                    $email,
-                    $websiteId
-                );
-            }
-
-            $abandonedModel = $this->abandonedFactory->create()
-                ->loadByQuoteId($quoteId);
-
-            if ($this->abandonedCartAlreadyExists($abandonedModel) &&
-                $this->shouldNotSendACAgain($abandonedModel, $quote)) {
-                if ($this->shouldDeleteAbandonedCart($quote)) {
-                    $this->deleteAbandonedCart($abandonedModel);
-                }
+            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)){
                 continue;
             }
-            //create abandoned cart
-            $this->createAbandonedCart($abandonedModel, $quote, $itemIds);
 
             //send campaign; check if still valid to be sent
             if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_ONE, $storeId)) {
-                $this->sendEmailCampaign($email, $quote, $guestCampaignId, self::GUEST_LOST_BASKET_ONE, $websiteId);
+                $this->sendEmailCampaign($quote->getCustomerEmail(),
+                    $quote,
+                    $guestCampaignId,
+                    self::GUEST_LOST_BASKET_ONE,
+                    $websiteId
+                );
             }
 
             $this->totalGuests++;

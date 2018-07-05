@@ -118,7 +118,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Get products to display
      *
-     * @param array $quoteItems
+     * @param array $items
      * @param string $mode
      * @param int $productsToDisplayCounter
      * @param int $limit
@@ -126,14 +126,13 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    private function getProductsToDisplay($quoteItems, $mode, &$productsToDisplayCounter, $limit, $maxPerChild)
+    public function getProductsToDisplay($items, $mode, &$productsToDisplayCounter, $limit, $maxPerChild)
     {
         $productsToDisplay = [];
 
-        foreach ($quoteItems as $item) {
+        foreach ($items as $item) {
             //parent product
             $productModel = $item->getProduct();
-
             //check for product exists
             if ($productModel->getId()) {
                 //get single product for current mode
@@ -153,6 +152,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
                 break;
             }
         }
+
         return $productsToDisplay;
     }
 
@@ -167,7 +167,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return null
      */
-    private function addRecommendedProducts(
+    public function addRecommendedProducts(
         &$productsToDisplayCounter,
         $limit,
         $maxPerChild,
@@ -195,14 +195,15 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * Fill products to display
      *
      * @param array $productsToDisplay
-     * @param int $productsToDisplayCounter
+     * @param array $productsToDisplayCounter
      * @param int $limit
      *
      * @return mixed
      */
-    private function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
+    public function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
     {
         $fallbackIds = $this->recommendedHelper->getFallbackIds();
+
         $productCollection = $this->catalog->getProductCollectionFromIds($fallbackIds);
 
         foreach ($productCollection as $product) {
@@ -211,12 +212,11 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
                 $productsToDisplayCounter++;
             }
 
-            //stop the limit was reached
+            //the limit was reached
             if ($productsToDisplayCounter == $limit) {
                 break;
             }
         }
-
         return $productsToDisplay;
     }
 
@@ -228,7 +228,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @return array
      */
-    private function getRecommendedProduct($productModel, $mode)
+    public function getRecommendedProduct($productModel, $mode)
     {
         //array of products to display
         $products = [];
@@ -258,16 +258,15 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * Number of the colums.
+     * Number of the columns.
      *
      * @return int|mixed
-     *
-     * @throws \Exception
      */
     public function getColumnCount()
     {
         return $this->recommendedHelper->getDisplayLimitByMode(
-            $this->getRequest()->getActionName()
+            $this->getRequest()
+                ->getActionName()
         );
     }
 

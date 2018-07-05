@@ -20,12 +20,21 @@ class UpgradeSchema implements UpgradeSchemaInterface
     public $json;
 
     /**
+     * @var Schema\Shared
+     */
+    private $shared;
+
+    /**
      * UpgradeSchema constructor.
+     *
      * @param \Dotdigitalgroup\Email\Model\Config\Json $json
+     * @param Schema\Shared $shared
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Config\Json $json
+        \Dotdigitalgroup\Email\Model\Config\Json $json,
+        Schema\Shared $shared
     ) {
+        $this->shared = $shared;
         $this->json = $json;
     }
 
@@ -98,31 +107,18 @@ class UpgradeSchema implements UpgradeSchemaInterface
         }
 
         if (version_compare($context->getVersion(), '2.3.6', '<')) {
-            $abandonedCartTable = $connection->newTable(
-                $setup->getTable('email_abandoned_cart')
-            );
-
-            $abandonedCartTable = $this->addColumnForAbandonedCartTable($abandonedCartTable);
-            $abandonedCartTable = $this->addIndexKeyForAbandonedCarts($setup, $abandonedCartTable);
-            $abandonedCartTable->setComment('Abandoned Carts Table');
-            $setup->getConnection()->createTable($abandonedCartTable);
+            $tableName = $setup->getTable('email_abandoned_cart');
+            $this->shared->createAbandonedCartTable($setup, $tableName);
         }
 
         if (version_compare($context->getVersion(), '2.5.2', '<')) {
-            $emailContactConsentTable = $connection->newTable($setup->getTable('email_contact_consent'));
-            $emailContactConsentTable = $this->addColumnForConsentTable($emailContactConsentTable);
-            $emailContactConsentTable = $this->addIndexForConsenTable($setup, $emailContactConsentTable);
-            $emailContactConsentTable = $this->addKeyForConsentTable($setup, $emailContactConsentTable);
-            $emailContactConsentTable->setComment('Email contact consent table.');
-            $setup->getConnection()->createTable($emailContactConsentTable);
+            $tableName = $setup->getTable('email_contact_consent');
+            $this->shared->createConsentTable($setup, $tableName);
         }
 
         if (version_compare($context->getVersion(), '2.5.3','<')) {
-            $emailFailedAuth = $connection->newTable($setup->getTable('email_failed_auth'));
-            $emailFailedAuth = $this->addColumnForFailedAuthTable($emailFailedAuth);
-            $emailFailedAuth = $this->addIndexToFailedAuthTable($setup, $emailFailedAuth);
-            $emailFailedAuth->setComment('Email Failed Auth Table.');
-            $setup->getConnection()->createTable($emailFailedAuth);
+            $tableName = $setup->getTable('email_failed_auth');
+            $this->shared->createFailedAuthTable($setup, $tableName);
         }
 
         if (version_compare($context->getVersion(), '2.5.4','<')) {
@@ -406,301 +402,4 @@ class UpgradeSchema implements UpgradeSchemaInterface
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
         );
     }
-
-    /**
-     * @param $table
-     * @return mixed
-     */
-    private function addColumnForAbandonedCartTable($table)
-    {
-        return $table->addColumn(
-            'id',
-            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-            null,
-            [
-                'primary' => true,
-                'identity' => true,
-                'unsigned' => true,
-                'nullable' => false
-            ],
-            'Primary Key'
-        )
-            ->addColumn(
-                'quote_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                null,
-                ['unsigned' => true, 'nullable' => true],
-                'Quote Id'
-            )
-            ->addColumn(
-                'store_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                10,
-                ['unsigned' => true, 'nullable' => true],
-                'Store Id'
-            )
-            ->addColumn(
-                'customer_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                10,
-                ['unsigned' => true, 'nullable' => true, 'default' => null],
-                'Customer ID'
-            )
-            ->addColumn(
-                'email',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                255,
-                ['nullable' => false, 'default' => ''],
-                'Email'
-            )
-            ->addColumn(
-                'is_active',
-                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                5,
-                ['unsigned' => true, 'nullable' => false, 'default' => '1'],
-                'Quote Active'
-            )
-            ->addColumn(
-                'quote_updated_at',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null,
-                [],
-                'Quote updated at'
-            )
-            ->addColumn(
-                'abandoned_cart_number',
-                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                null,
-                ['unsigned' => true, 'nullable' => false, 'default' => 0],
-                'Abandoned Cart number'
-            )
-            ->addColumn(
-                'items_count',
-                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                null,
-                ['unsigned' => true, 'nullable' => true, 'default' => 0],
-                'Quote items count'
-            )
-            ->addColumn(
-                'items_ids',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                255,
-                ['unsigned' => true, 'nullable' => true],
-                'Quote item ids'
-            )
-            ->addColumn(
-                'created_at',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null,
-                [],
-                'Created At'
-            )
-            ->addColumn(
-                'updated_at',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null,
-                [],
-                'Updated at'
-            );
-    }
-
-    /**
-     * @param $installer SchemaSetupInterface
-     * @param $abandonedCartTable
-     * @return mixed
-     */
-    private function addIndexKeyForAbandonedCarts($installer, $abandonedCartTable)
-    {
-        return $abandonedCartTable->addIndex(
-            $installer->getIdxName('email_abandoned_cart', ['quote_id']),
-            ['quote_id']
-        )
-        ->addIndex(
-            $installer->getIdxName('email_abandoned_cart', ['store_id']),
-            ['store_id']
-        )
-        ->addIndex(
-            $installer->getIdxName('email_abandoned_cart', ['customer_id']),
-            ['customer_id']
-        )
-        ->addIndex(
-            $installer->getIdxName('email_abandoned_cart', ['email']),
-            ['email']
-        );
-    }
-
-    /**
-     * @param $emailContactConsentTable
-     * @return mixed
-     */
-    private function addColumnForConsentTable($emailContactConsentTable)
-    {
-        $emailContactConsentTable
-            ->addColumn(
-                'id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                10,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ],
-                'Primary Key'
-            )
-            ->addColumn(
-                'email_contact_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                null,
-                ['unsigned' => true, 'nullable' => true],
-                'Email Contact Id'
-            )
-            ->addColumn(
-                'consent_url',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                255,
-                ['unsigned' => true, 'nullable' => true],
-                'Contact consent url'
-            )
-            ->addColumn(
-                'consent_datetime',
-                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
-                null,
-                [],
-                'Contact consent datetime'
-            )
-            ->addColumn(
-                'consent_ip',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                255,
-                ['unsigned' => true, 'nullable' => true],
-                'Contact consent ip'
-            )
-            ->addColumn(
-                'consent_user_agent',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                255,
-                ['unsigned' => true, 'nullable' => true],
-                'Contact consent user agent'
-            );
-
-        return $emailContactConsentTable;
-    }
-
-    /**
-     * @param $installer
-     * @param $emailContactConsentTable
-     * @return mixed
-     */
-    private function addKeyForConsentTable($installer, $emailContactConsentTable)
-    {
-        return $emailContactConsentTable->addForeignKey(
-            $installer->getFkName('email_contact_consent', 'email_contact_id', 'email_contact', 'email_contact_id'),
-            'email_contact_id',
-            $installer->getTable('email_contact'),
-            'email_contact_id',
-            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-        );
-    }
-
-    /**
-     * @param $setup SchemaSetupInterface
-     * @param $table Table
-     * @return mixed
-     */
-    private function addIndexForConsenTable($setup, $table)
-    {
-
-        return $table->addIndex(
-            $setup->getIdxName($setup->getTable('email_contact_consent'), ['email_contact_id']),
-            ['email_contact_id']
-        );
-    }
-    /**
-     * @param $installer
-     */
-    private function createFailedAuth($installer)
-    {
-        $tableName = $installer->getTable('email_failed_auth');
-        $this->dropTableIfExists($installer, $tableName);
-
-        $emailAuthEdc = $installer->getConnection()->newTable($installer->getTable($tableName));
-        $emailAuthEdc = $this->addColumnForFailedAuthTable($emailAuthEdc);
-        $emailAuthEdc = $this->addIndexToFailedAuthTable($installer, $emailAuthEdc);
-        $emailAuthEdc->setComment('Email Failed Auth Table.');
-        $installer->getConnection()->createTable($emailAuthEdc);
-    }
-
-    /**
-     * @param $table
-     * @return mixed
-     */
-    private function addColumnForFailedAuthTable($table)
-    {
-        $table
-            ->addColumn(
-                'id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                10,
-                [
-                    'primary' => true,
-                    'identity' => true,
-                    'unsigned' => true,
-                    'nullable' => false
-                ],
-                'Primary Key'
-            )
-            ->addColumn(
-                'failures_num',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                null,
-                ['unsigned' => true, 'nullable' => true],
-                'Number of fails'
-            )
-            ->addColumn(
-                'first_attempt_date',
-                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
-                null,
-                [],
-                'First attempt date'
-            )
-            ->addColumn(
-                'last_attempt_date',
-                \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
-                null,
-                [],
-                'Last attempt date'
-            )
-            ->addColumn(
-                'url',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                255,
-                ['unsigned' => true, 'nullable' => true],
-                'URL'
-            )
-            ->addColumn(
-                'store_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                null,
-                ['unsigned' => true, 'nullable' => true],
-                'Store Id'
-            );
-
-        return $table;
-    }
-
-    /**
-     * @param $installer
-     * @param $emailAuthEdc
-     * @return mixed
-     */
-    private function addIndexToFailedAuthTable($installer, $emailAuthEdc)
-    {
-        return $emailAuthEdc
-            ->addIndex(
-                $installer->getIdxName('email_auth_edc', ['store_id']),
-                ['store_id']
-            );
-    }
-
 }
