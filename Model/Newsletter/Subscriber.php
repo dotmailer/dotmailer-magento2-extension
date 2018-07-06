@@ -222,7 +222,6 @@ class Subscriber
     public function unsubscribe()
     {
         $result['customers'] = 0;
-        $date = $this->timezone->date()->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT24H']));
         $suppressedEmails = [];
 
         /**
@@ -256,7 +255,7 @@ class Subscriber
         $skip = $i = 0;
         $contacts = [];
         $suppressedEmails = [];
-        $date = $this->timezone->date()->sub(\DateInterval::createFromDateString('24 hours'));
+        $date = $this->timezone->date()->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT24H']));
         $dateString = $date->format(\DateTime::W3C);
         $client = $this->helper->getWebsiteApiClient($website);
 

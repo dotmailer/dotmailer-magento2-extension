@@ -514,12 +514,7 @@ class Quote
         //campaign id for customers
         $campaignId = $this->getLostBasketCustomerCampaignId($abandonedNum, $storeId);
         foreach ($quoteCollection as $quote) {
-            $quoteId = $quote->getId();
-            $items = $quote->getAllItems();
-            $email = $quote->getCustomerEmail();
             $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
-            $itemIds = $this->getQuoteItemIds($items);
-            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
             if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)){
                 continue;
             }
@@ -709,29 +704,7 @@ class Quote
 
         $guestCampaignId = $this->getLostBasketGuestCampaignId($abandonedNum, $storeId);
         foreach ($quoteCollection as $quote) {
-            $quoteId = $quote->getId();
-            $items = $quote->getAllItems();
-            $email = $quote->getCustomerEmail();
             $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
-            $itemIds = $this->getQuoteItemIds($items);
-
-            if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
-                $this->helper->updateAbandonedProductName(
-                    $mostExpensiveItem->getName(),
-                    $email,
-                    $websiteId
-                );
-            }
-
-            $abandonedModel = $this->abandonedFactory->create()
-                ->loadByQuoteId($quoteId);
-
-            if ($this->abandonedCartAlreadyExists($abandonedModel) &&
-                $this->shouldNotSendACAgain($abandonedModel, $quote)) {
-                if ($this->shouldDeleteAbandonedCart($quote)) {
-                    $this->deleteAbandonedCart($abandonedModel);
-                }
-            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
             if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)){
                 continue;
             }
