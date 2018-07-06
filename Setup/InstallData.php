@@ -302,6 +302,7 @@ class InstallData implements InstallDataInterface
      */
     private function populateEmailCatalogTable($installer)
     {
+        $emailCatalogTable = $installer->getTable('email_catalog');
         $select = $installer->getConnection()->select()
             ->from(
                 [
@@ -313,10 +314,14 @@ class InstallData implements InstallDataInterface
                     'product_id' => 'catalog.entity_id',
                     'created_at' => 'catalog.created_at'
                 ]
+            )
+            ->where(
+                'catalog.entity_id NOT IN (?)',
+                $installer->getConnection()->select()->from($emailCatalogTable, ['id'])
             );
         $insertArray = ['product_id', 'created_at'];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_catalog'),
+            $emailCatalogTable,
             $insertArray,
             false
         );
