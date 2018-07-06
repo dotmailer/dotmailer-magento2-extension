@@ -125,7 +125,6 @@ class Quote
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param Campaign $campaignResource
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
@@ -137,7 +136,6 @@ class Quote
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
@@ -146,7 +144,7 @@ class Quote
     ) {
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->rulesFactory = $rulesFactory;
-        $this->helper = $helper;
+        $this->helper = $abandonedResource->helper;
         $this->abandonedFactory = $abandonedFactory;
         $this->abandonedCollectionFactory = $abandonedFactory->abandonedCollectionFactory;
         $this->abandonedResource = $abandonedResource;

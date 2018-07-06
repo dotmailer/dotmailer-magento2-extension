@@ -125,7 +125,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $this->loadGuestQuoteTextureFile();
         $this->createEmailQuoteMockInstance();
         $abandonedResource = $this->objectManager->create(AbandonedResource::class);
-        $abandoned = $this->createExistingAbandonedCart($hour = 1, 'dotguesttest02');
+        $abandoned = $this->createExistingAbandonedCart(1, 'dotguesttest02');
         $abandoned->setItemsCount(1)
             ->setItemsIds('1');
         $abandonedResource->save($abandoned);
@@ -148,7 +148,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $this->loadQuestQuoteTextureFile();
 
         $abandonedResource = $this->objectManager->create(AbandonedResource::class);
-        $abandoned = $this->createExistingAbandonedCart($hour = 1, 'dottest02');
+        $abandoned = $this->createExistingAbandonedCart(1, 'dottest02');
         $abandoned->setCustomerId(null)
             ->setItemsCount(10)
             ->setItemsIds('1,2,3');
