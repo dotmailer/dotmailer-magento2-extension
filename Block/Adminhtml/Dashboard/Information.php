@@ -154,7 +154,8 @@ class Information extends \Magento\Backend\Block\Template
      */
     public function getAbandonedCartLimit()
     {
-        return ($this->helper->getAbandonedCartLimit())? __('%1 h', $this->helper->getAbandonedCartLimit()): __('No limit');
+        return ($this->helper->getAbandonedCartLimit()) ? __('%1 h', $this->helper->getAbandonedCartLimit()) :
+            __('No limit');
     }
 
     /**

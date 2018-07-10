@@ -28,7 +28,6 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         parent::__construct($context, $connectionName);
     }
 
-
     /**
      * Delete Consent for contact.
      *
@@ -52,5 +51,4 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         return $collection->walk('delete');
     }
-
 }

@@ -100,7 +100,6 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-
     /**
      *
      *

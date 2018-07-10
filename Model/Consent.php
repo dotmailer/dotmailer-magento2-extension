@@ -138,5 +138,4 @@ class Consent extends \Magento\Framework\Model\AbstractModel
 
         return false;
     }
-
 }

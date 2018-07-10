@@ -13,5 +13,4 @@ class FailedAuth extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->_init('email_failed_auth', 'id');
     }
-
 }

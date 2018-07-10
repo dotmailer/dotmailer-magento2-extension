@@ -42,7 +42,6 @@ class Response extends \Magento\Framework\App\Action\Action
      */
     private $configHelper;
 
-
     /**
      * Response constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $data
@@ -63,8 +62,7 @@ class Response extends \Magento\Framework\App\Action\Action
         \Dotdigitalgroup\Email\Model\FailedAuthFactory $failedAuthFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth $failedAuthResource,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
-    )
-    {
+    ) {
         $this->helper = $data;
         $this->escaper = $escaper;
         $this->timezone = $timezone;

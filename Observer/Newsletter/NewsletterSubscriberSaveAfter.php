@@ -57,7 +57,6 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
      */
     private $contactFactory;
 
-
     /**
      * NewsletterSubscriberSaveAfter constructor.
      * @param \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory
@@ -142,7 +141,6 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
 
             //save contact
             $this->consentResource->save($consentModel);
-
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

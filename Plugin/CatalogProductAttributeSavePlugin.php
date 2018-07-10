@@ -10,7 +10,7 @@ namespace Dotdigitalgroup\Email\Plugin;
 class CatalogProductAttributeSavePlugin
 {
     /**
-     *  @var \Magento\Catalog\Helper\Product\Edit\Action\Attribute
+     * @var \Magento\Catalog\Helper\Product\Edit\Action\Attribute
      */
     private $attributeHelper;
 

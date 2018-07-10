@@ -55,6 +55,4 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
 
         return $html;
     }
-
-
 }

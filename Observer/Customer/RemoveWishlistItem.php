@@ -44,7 +44,7 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        try{
+        try {
             $wishlistItem = $observer->getEvent()->getItem();
             $emailWishlist = $this->emailWishlistCollection->create()
                 ->getWishlistById($wishlistItem->getWishlistId());
@@ -59,6 +59,5 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
         } catch (\Exception $e) {
             $this->helper->log((string)$e, []);
         }
-
     }
 }

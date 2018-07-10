@@ -14,9 +14,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_API_USERNAME = 'connector_api_credentials/api/username';
     const XML_PATH_CONNECTOR_API_PASSWORD = 'connector_api_credentials/api/password';
     const XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE =
-	    'connector_api_credentials/api/trial_temporary_passcode';
+        'connector_api_credentials/api/trial_temporary_passcode';
     const XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY =
-	    'connector_api_credentials/api/trial_temporary_passcode_expiry';
+        'connector_api_credentials/api/trial_temporary_passcode_expiry';
 
     /**
      * SYNC SECTION.

@@ -513,7 +513,7 @@ class Quote
         $campaignId = $this->getLostBasketCustomerCampaignId($abandonedNum, $storeId);
         foreach ($quoteCollection as $quote) {
             $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
-            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)){
+            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)) {
                 continue;
             }
 
@@ -521,7 +521,8 @@ class Quote
             if ($this->isLostBasketCustomerEnabled(self::CUSTOMER_LOST_BASKET_ONE, $storeId)) {
                 $this->sendEmailCampaign(
                     $quote->getCustomerEmail(),
-                    $quote, $campaignId,
+                    $quote,
+                    $campaignId,
                     self::CUSTOMER_LOST_BASKET_ONE,
                     $websiteId
                 );
@@ -703,13 +704,14 @@ class Quote
         $guestCampaignId = $this->getLostBasketGuestCampaignId($abandonedNum, $storeId);
         foreach ($quoteCollection as $quote) {
             $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
-            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)){
+            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)) {
                 continue;
             }
 
             //send campaign; check if still valid to be sent
             if ($this->isLostBasketGuestEnabled(self::GUEST_LOST_BASKET_ONE, $storeId)) {
-                $this->sendEmailCampaign($quote->getCustomerEmail(),
+                $this->sendEmailCampaign(
+                    $quote->getCustomerEmail(),
                     $quote,
                     $guestCampaignId,
                     self::GUEST_LOST_BASKET_ONE,

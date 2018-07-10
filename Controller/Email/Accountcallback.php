@@ -144,8 +144,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         );
         $expiryDate = \DateTime::createFromFormat(\DateTime::ATOM, $expiryDateString);
 
-        if ($now >= $expiryDate)
+        if ($now >= $expiryDate) {
             return false;
+        }
 
         $codeFromConfig = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE

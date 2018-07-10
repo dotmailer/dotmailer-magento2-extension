@@ -361,7 +361,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $connection->changeColumn(
                 $emailWishlistTable,
                 'customer_id',
-                'customer_id', [
+                'customer_id',
+                [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                     'unsigned' => true,
                     'nullable' => true,
@@ -405,7 +406,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
      */
     private function upgradeOneOneZeoToTwoTwoOne(
         SchemaSetupInterface $setup,
-        ModuleContextInterface $context, $connection
+        ModuleContextInterface $context,
+        $connection
     ) {
         if (version_compare($context->getVersion(), '1.1.0', '<')) {
             //remove quote table
