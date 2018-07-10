@@ -12,7 +12,7 @@ use Dotdigitalgroup\Email\Model\Sales\Quote;
 class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var object
+     * @var \Magento\Framework\ObjectManagerInterface
      */
     public $objectManager;
 
@@ -22,12 +22,18 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     public $quote;
 
     /**
+     * @var \Dotdigitalgroup\Email\Test\Integration\AbandonedCarts\Fixture
+     */
+    public $fixture;
+
+    /**
      * @return void
      */
     public function setUp()
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->quote = $this->objectManager->create(\Magento\Quote\Model\Quote::class);
+        $this->fixture = $this->objectManager->create(Fixture::class);
         $this->loadCustomerQuoteTextureFile();
     }
 
@@ -202,16 +208,17 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
 
     private function loadCustomerQuoteTextureFile()
     {
-        include __DIR__ . '/../_files/customer_quote.php';
+        include __DIR__ . '/../_files/customer.php';
+        $this->fixture->createQuote($this->objectManager, 1, 'dottest01', true);
     }
 
     private function loadGuestQuoteTextureFile()
     {
-        include __DIR__ . '/../_files/guest_quote.php';
+        $this->fixture->createQuote($this->objectManager, 1, 'dotguesttest02');
     }
     private function loadQuestQuoteTextureFile()
     {
-        include __DIR__ . '/../_files/guest_inactive_quote.php';
+        $this->fixture->createQuote($this->objectManager, 0, 'dottest02');
     }
 
     private function createEmailQuoteMockInstance()

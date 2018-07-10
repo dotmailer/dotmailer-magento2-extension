@@ -42,7 +42,7 @@ class Quote
     const GUEST_LOST_BASKET_THREE = 3;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Abandoned
+     * @var \Dotdigitalgroup\Email\Model\AbandonedFactory
      */
     public $abandonedFactory;
 
@@ -132,7 +132,7 @@ class Quote
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Abandoned $abandonedFactory,
+        \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
@@ -146,7 +146,7 @@ class Quote
         $this->rulesFactory = $rulesFactory;
         $this->helper = $abandonedResource->helper;
         $this->abandonedFactory = $abandonedFactory;
-        $this->abandonedCollectionFactory = $abandonedFactory->abandonedCollectionFactory;
+        $this->abandonedCollectionFactory = $abandonedFactory->create()->abandonedCollectionFactory;
         $this->abandonedResource = $abandonedResource;
         $this->campaignCollection = $campaignFactory->create()->campaignCollection;
         $this->campaignResource = $campaignResource;
