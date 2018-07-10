@@ -7,6 +7,17 @@ namespace Dotdigitalgroup\Email\Observer\Html;
  */
 class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
 {
+	/**
+	 * @var \Dotdigitalgroup\Email\Model\Sales\CouponGridFilterer
+	 */
+	private $couponGridFiltererFactory;
+
+	public function __construct(
+		\Dotdigitalgroup\Email\Model\Sales\CouponGridFiltererFactory $couponGridFiltererFactory
+	) {
+		$this->couponGridFiltererFactory = $couponGridFiltererFactory;
+	}
+
     /**
      * @param \Magento\Framework\Event\Observer $observer
      *
@@ -41,30 +52,11 @@ class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
                     'options' => ['null' => 'No', '1' => 'Yes'],
                     'width' => '30',
                     'align' => 'center',
-                    'filter_condition_callback' => [$this, 'filterCallbackContact']
+                    'filter_condition_callback' =>
+	                    [$this->couponGridFiltererFactory->create(), 'filterByGeneratedByDotmailer']
                 ],
                 'expiration_date'
             );
-        }
-    }
-
-    /**
-     * Callback action for .
-     *
-     * @param mixed $collection
-     * @param mixed $column
-     *
-     * @return null
-     */
-    public function filterCallbackContact($collection, $column)
-    {
-        $field = $column->getFilterIndex() ? $column->getFilterIndex()
-            : $column->getIndex();
-        $value = $column->getFilter()->getValue();
-        if ($value == 'null') {
-            $collection->addFieldToFilter($field, ['null' => true]);
-        } else {
-            $collection->addFieldToFilter($field, ['notnull' => true]);
         }
     }
 }
