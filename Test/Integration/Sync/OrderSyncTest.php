@@ -21,11 +21,6 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     public $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManager|\PHPUnit_Framework_MockObject_MockObject
-     */
-    public $storeManager;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     public $importerFactory;
@@ -111,7 +106,9 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->salesOrderFactory = $this->getMockBuilder(\Magento\Sales\Model\OrderFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->storeManager = ObjectManager::getInstance()->get(\Magento\Store\Model\StoreManagerInterface::class);
+        $this->helper->storeManager = ObjectManager::getInstance()->get(
+            \Magento\Store\Model\StoreManagerInterface::class
+        );
         $this->contactCollectionFactory = ObjectManager::getInstance()->get(
             \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class
         );
@@ -124,8 +121,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             $this->contactCollectionFactory,
             $this->orderResource,
             $this->helper,
-            $this->salesOrderFactory,
-            $this->storeManager
+            $this->salesOrderFactory
         );
     }
 

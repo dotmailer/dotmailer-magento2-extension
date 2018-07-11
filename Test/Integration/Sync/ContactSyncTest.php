@@ -62,7 +62,6 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Helper\File::class),
             $helper,
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ContactFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class)
@@ -80,7 +79,7 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
      */
     public function testContactBulkImportCreated()
     {
-        ///run this if the contacts data is missing $this->createSingleModifiedContact();
+        $this->createSingleModifiedContact();
         $this->prep();
 
         $item = $this->importerCollection
@@ -109,7 +108,7 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
      */
     public function testContatctWithConsentDataCreated()
     {
-        ///run this if the contacts data is missing $this->createSingleModifiedContact();
+        $this->createSingleModifiedContact();
         $this->prep();
 
         $item = $this->importerCollection
@@ -134,7 +133,9 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
      */
     public function createSingleModifiedContact()
     {
-        $customerCollection = $this->objectManager->create(\Magento\Customer\Model\ResourceModel\Customer::class);
+        $customerCollection = $this->objectManager->create(
+            \Magento\Customer\Model\ResourceModel\Customer\Collection::class
+        );
         $customer = $customerCollection->getFirstItem();
         $this->storeId = $customer->getStoreId();
 

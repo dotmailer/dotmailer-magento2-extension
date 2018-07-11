@@ -51,6 +51,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $store = $this->objectManager->create(\Magento\Store\Model\Store::class);
         $store->load($this->storeId);
 
+        /** @var \Dotdigitalgroup\Email\Helper\Data|\PHPUnit_Framework_MockObject_MockObject $helper */
         $helper = $this->getMockBuilder(\Dotdigitalgroup\Email\Helper\Data::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -60,7 +61,9 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $helper->method('getApiPassword')->willReturn('dummypass');
         $helper->method('getWebsiteConfig')->willReturn('1');
         $helper->method('getConfigSelectedStatus')->willReturn($this->orderStatus);
-
+        $helper->storeManager = $this->objectManager->create(
+        \Magento\Store\Model\StoreManagerInterface::class
+        );
         $orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ImporterFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\OrderFactory::class),
@@ -70,8 +73,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class),
             $helper,
-            $this->objectManager->create(\Magento\Sales\Model\OrderFactory::class),
-            $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class)
+            $this->objectManager->create(\Magento\Sales\Model\OrderFactory::class)
         );
 
         return $orderSync->sync();
