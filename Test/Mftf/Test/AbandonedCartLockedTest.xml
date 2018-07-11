@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Test/etc/testSchema.xsd">
+    <test name="AbandonedCartUrlLockedTest">
+        <annotations>
+            <title value="You should not be able to access the edc page with invalid code."/>
+            <description value="You should not be able to see the edc page having invalid passcode."/>
+            <severity value="CRITICAL"/>
+            <testCaseId value="Hacker block"/>
+            <group value="dotmailer-edc-locked"/>
+            <group value="dotmailer"/>
+        </annotations>
+        <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        <amOnPage url="{{DotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettings"/>
+        <grabValueFrom selector="#connector_developer_settings_ip_restriction_ip_addresses" stepKey="beforeIps"/>
+        <clearField selector="#connector_developer_settings_ip_restriction_ip_addresses" stepKey="noIpLimit"/>
+        <click selector="#save" stepKey="click1"/>
+        <amOnPage url="{{AbandonedCartSettingPage.url}}" stepKey="amOnConfigurationPage"/>
+        <grabValueFrom selector="#connector_dynamic_content_external_dynamic_content_urls_passcode" stepKey="passcode"/>
+        <amOnPage url="{{AbandonedCartPage.url}}$passcode" stepKey="amOnAbandonedCartPage"/>
+        <seeInCurrentUrl url="connector" stepKey="abandonedCartPage"/>
+        <dontSee userInput="401 Unauthorized" selector="h1" stepKey="dontSeeUnauthorized"/>
+        <amOnPage url="{{AbandonedCartPage.url}}hacked" stepKey="amOnACHackedPage"/>
+        <see selector="h1" userInput="401" stepKey="seeUnauthorized"/>
+        <amOnPage url="{{DotmailerDashboardPage.url}}" stepKey="amOnDashboardPage"/>
+        <seeInCurrentUrl url="{{DotmailerDashboardPage.url}}" stepKey="seeDashboard"/>
+        <grabTextFrom selector=".dashboard-container" stepKey="grabTextFrom"/>
+        <assertContains stepKey="assertEquals1" message="edc has been locked cannot continue">
+            <expectedResult type="string">Not Locked.</expectedResult>
+            <actualResult type="variable">grabTextFrom</actualResult>
+        </assertContains>
+        <amOnPage url="{{AbandonedCartPage.url}}hacked" stepKey="amOnAbandonedCartPage_1"/>
+        <amOnPage url="{{AbandonedCartPage.url}}hacked" stepKey="amOnAbandonedCartPage_2"/>
+        <amOnPage url="{{AbandonedCartPage.url}}hacked" stepKey="amOnAbandonedCartPage_3"/>
+        <amOnPage url="{{AbandonedCartPage.url}}hacked" stepKey="amOnAbandonedCartPage_4"/>
+        <amOnPage url="{{AbandonedCartPage.url}}hacked" stepKey="amOnAbandonedCartPage_5"/>
+        <amOnPage url="{{DotmailerDashboardPage.url}}" stepKey="amBackOnDashboard"/>
+        <grabTextFrom selector=".dashboard-container" stepKey="grabTextFrom2"/>
+        <assertNotContains stepKey="assertEquals2" message="Auth is locked">
+            <expectedResult type="string">Not Locked.</expectedResult>
+            <actualResult type="variable">grabTextFrom2</actualResult>
+        </assertNotContains>
+        <amOnPage url="{{DotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettingsBack"/>
+        <fillField selector="#connector_developer_settings_ip_restriction_ip_addresses" userInput="$beforeIps" stepKey="noIpLimitBack"/>
+        <click selector="#save" stepKey="click2"/>
+    </test>
+</tests>
