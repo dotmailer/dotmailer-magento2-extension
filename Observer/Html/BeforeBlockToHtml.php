@@ -7,16 +7,16 @@ namespace Dotdigitalgroup\Email\Observer\Html;
  */
 class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
 {
-	/**
-	 * @var \Dotdigitalgroup\Email\Model\Sales\CouponGridFilterer
-	 */
-	private $couponGridFiltererFactory;
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Sales\CouponGridFilterer
+     */
+    private $couponGridFiltererFactory;
 
-	public function __construct(
-		\Dotdigitalgroup\Email\Model\Sales\CouponGridFiltererFactory $couponGridFiltererFactory
-	) {
-		$this->couponGridFiltererFactory = $couponGridFiltererFactory;
-	}
+    public function __construct(
+        \Dotdigitalgroup\Email\Model\Sales\CouponGridFiltererFactory $couponGridFiltererFactory
+    ) {
+        $this->couponGridFiltererFactory = $couponGridFiltererFactory;
+    }
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
@@ -53,7 +53,7 @@ class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
                     'width' => '30',
                     'align' => 'center',
                     'filter_condition_callback' =>
-	                    [$this->couponGridFiltererFactory->create(), 'filterByGeneratedByDotmailer']
+                        [$this->couponGridFiltererFactory->create(), 'filterByGeneratedByDotmailer']
                 ],
                 'expiration_date'
             );

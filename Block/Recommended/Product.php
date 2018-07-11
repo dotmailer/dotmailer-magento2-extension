@@ -24,28 +24,28 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
      */
     private $orderResource;
 
-	/**
-	 * Product constructor.
-	 *
-	 * @param \Magento\Catalog\Block\Product\Context $context
-	 * @param \Dotdigitalgroup\Email\Helper\Data $helper
-	 * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
-	 * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
-	 * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-	 * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
-	 * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
-	 * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
-	 * @param array $data
-	 */
+    /**
+     * Product constructor.
+     *
+     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
+     * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
+     * @param array $data
+     */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
-	    \Dotdigitalgroup\Email\Helper\Data $helper,
-	    \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
-	    \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
-	    \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
+        \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
-	    \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
+        \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
         array $data = []
     ) {
         parent::__construct($context, $helper, $catalog, $recommendedHelper, $priceHelper, $data);
