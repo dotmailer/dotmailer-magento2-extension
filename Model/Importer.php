@@ -118,6 +118,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param ResourceModel\Importer $importerResource
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param Config\Json $serializer
      * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
@@ -129,15 +130,16 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Stdlib\DateTime $dateTime,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
         $this->helper        = $helper;
-        $this->importerResource = $importerResource;
-        $this->objectManager = $objectManager;
         $this->dateTime      = $dateTime;
-        $this->serializer    = $this->helper->serializer;
+        $this->serializer    = $serializer;
+        $this->objectManager = $objectManager;
+        $this->importerResource = $importerResource;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 

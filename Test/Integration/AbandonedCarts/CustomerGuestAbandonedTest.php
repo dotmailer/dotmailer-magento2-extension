@@ -7,7 +7,8 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned as AbandonedResource;
 use Dotdigitalgroup\Email\Model\Sales\Quote;
 
 /**
- * @magentoDBIsolation disabled
+ * Class CustomerGuestAbandonedTest
+ * @package Dotdigitalgroup\Email\Test\Integration\AbandonedCarts
  */
 class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
 {
@@ -17,7 +18,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     public $objectManager;
 
     /**
-     * @var
+     * @var \Magento\Quote\Model\Quote
      */
     public $quote;
 
@@ -43,7 +44,6 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
         );
         $abandonedCollection->walk('delete');
-
         $quoteCollection = $this->objectManager->create(\Magento\Quote\Model\ResourceModel\Quote\Collection::class);
         $quoteCollection->walk('delete');
     }
@@ -79,7 +79,8 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @magentoConfigFixture default_store abandoned_carts/customers/enabled_2 1
-     * @magentoConfigFixture default_store abandoned_carts/customers/send_after_2 1
+     * @magentoConfigFixture default_store abandoned_carts/customers/send_after_2 60
+     * @magentoConfigFixture default_store abandoned_carts/customers/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/customers/campaign_2 1234
      */
     public function testExistingCustomerAbandonedCart()
@@ -103,7 +104,6 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @magentoDBIsolation enabled
      * @magentoDataFixture Magento/Sales/_files/quote_with_bundle.php
      * @magentoConfigFixture default_store abandoned_carts/guests/enabled_1 1
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_1 0
@@ -123,7 +123,9 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoDBIsolation enabled
      * @magentoConfigFixture default_store abandoned_carts/guests/enabled_2 1
+     * @magentoConfigFixture default_store abandoned_carts/guests/send_after_3 2
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1
+     * @magentoConfigFixture default_store abandoned_carts/guests/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/guests/campaign_2 1234
      */
     public function testExistingGuestAbandonedCart()
@@ -146,7 +148,9 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoDBIsolation enabled
      * @magentoConfigFixture default_store abandoned_carts/guests/enabled_2 1
+     * @magentoConfigFixture default_store abandoned_carts/guests/send_after_3 2
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1
+     * @magentoConfigFixture default_store abandoned_carts/guests/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/guests/campaign_2 1234
      */
     public function testExistingGuestAbandonedCartItemsChanged()
