@@ -87,7 +87,7 @@ class File
      */
     private function getOutputFolder()
     {
-        $this->pathExists($this->outputFolder);
+        $this->createDirectoryIfNotExists($this->outputFolder);
 
         return $this->outputFolder;
     }
@@ -97,7 +97,7 @@ class File
      */
     public function getArchiveFolder()
     {
-        $this->pathExists($this->outputArchiveFolder);
+        $this->createDirectoryIfNotExists($this->outputArchiveFolder);
 
         return $this->outputArchiveFolder;
     }
@@ -198,7 +198,7 @@ class File
      *
      * @return null
      */
-    private function pathExists($path)
+    private function createDirectoryIfNotExists($path)
     {
         if (!is_dir($path)) {
             mkdir($path, 0750, true);
