@@ -1,7 +1,8 @@
 require([
     'jquery',
     'Magento_Ui/js/modal/confirm',
-    'domReady!'
+    'domReady!',
+    'mage/translate'
 ], function ($, confirmation) {
     'use strict';
 
@@ -23,7 +24,7 @@ require([
 
         confirmation({
             title: $("label[for='" + element.attr("id") + "'] span").text(),
-            content: content,
+            content: $.mage.__(content),
             actions: {
                 confirm: function () {
                     element.val(1);
