@@ -10,6 +10,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public $subscribersCollection;
 
     /**
+     * @var Contact\CollectionFactory
+     */
+    public $contactCollectionFactory;
+
+    /**
      * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
      */
     private $customerCollection;
@@ -36,12 +41,12 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Contact constructor.
-     *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
      * @param \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory
+     * @param Contact\CollectionFactory $contactCollectionFactory
      * @param null $connectionName
      */
     public function __construct(
@@ -50,12 +55,14 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
         \Magento\Cron\Model\ScheduleFactory $schedule,
         \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         $connectionName = null
     ) {
         $this->expressionFactory = $expressionFactory;
         $this->schelduleFactory = $schedule;
         $this->customerCollection = $customerCollectionFactory;
         $this->subscribersCollection = $subscriberCollection;
+        $this->contactCollectionFactory = $contactCollectionFactory;
         parent::__construct($context, $connectionName);
     }
 
@@ -212,12 +219,12 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Update subscriber imported.
      *
-     * @param $ids array
+     * @param $emailContactIds array
      * @return int
      */
-    public function updateSubscribers($ids)
+    public function updateSubscribers($emailContactIds)
     {
-        if (empty($ids)) {
+        if (empty($emailContactIds)) {
             return 0;
         }
         $write = $this->getConnection();
@@ -225,7 +232,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $updated = $write->update(
             $this->getMainTable(),
             ['subscriber_imported' => 1],
-            ["email_contact_id IN (?)" => $ids]
+            ["email_contact_id IN (?)" => $emailContactIds]
         );
 
         return $updated;
@@ -235,12 +242,12 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Get collection for subscribers by emails.
      *
      * @param array $emails
-     * @param array $statuses
+     * @param array $orderStatuses
      * @param string|boolean $brand
      *
      * @return \Magento\Newsletter\Model\ResourceModel\Subscriber\Collection
      */
-    public function getCollectionForSubscribersByEmails($emails, $statuses, $brand)
+    public function getContactSubscribersWithOrderStatusesAndBrand($emails, $orderStatuses, $brand)
     {
         $salesOrder = $this->getTable('sales_order');
         $salesOrderItem = $this->getTable('sales_order_item');
@@ -249,21 +256,20 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $eavAttributeOptionValue = $this->getTable('eav_attribute_option_value');
         $catalogCategoryProductIndex = $this->getTable('catalog_category_product');
 
-        $collection = $this->subscribersCollection->create()
+        $contactCollection = $this->contactCollectionFactory->create()
             ->addFieldToSelect([
-                'subscriber_email',
+                'email',
                 'store_id',
                 'subscriber_status'
             ]);
 
         //only when subscriber emails are set
         if (! empty($emails)) {
-            $collection->addFieldToFilter('subscriber_email', $emails);
+            $contactCollection->addFieldToFilter('email', $emails);
         }
 
         $alias = 'subselect';
-        $connection = $this->getConnection();
-        $subselect = $connection->select()
+        $subselect = $this->getConnection()->select()
             ->from(
                 $salesOrder,
                 [
@@ -275,8 +281,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             )
             ->group('customer_email');
         //any order statuses selected
-        if (! empty($statuses)) {
-            $subselect->where('status in (?)', $statuses);
+        if (! empty($orderStatuses)) {
+            $subselect->where('status in (?)', $orderStatuses);
         }
 
         $columns = $this->buildCollectionColumns($salesOrder, $salesOrderItem, $catalogCategoryProductIndex);
@@ -292,16 +298,15 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         );
 
         $columns['most_brand'] = $mostData;
-        $collection->getSelect()->columns(
-            $columns
-        );
+        $contactCollection->getSelect()->columns($columns);
 
-        $collection->getSelect()
+        $contactCollection->getSelect()
             ->joinLeft(
                 [$alias => $subselect],
-                "{$alias}.s_customer_email = main_table.subscriber_email"
+                "{$alias}.s_customer_email = main_table.email"
             );
-        return $collection;
+
+        return $contactCollection;
     }
 
     /**
@@ -351,7 +356,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT created_at FROM $salesOrder 
-                WHERE customer_email = main_table.subscriber_email 
+                WHERE customer_email = main_table.email 
                 ORDER BY created_at DESC 
                 LIMIT 1
             )"]
@@ -368,7 +373,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT entity_id FROM $salesOrder
-                WHERE customer_email = main_table.subscriber_email 
+                WHERE customer_email = main_table.email 
                 ORDER BY created_at DESC 
                 LIMIT 1
             )"]
@@ -385,7 +390,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT increment_id FROM $salesOrder
-                WHERE customer_email = main_table.subscriber_email 
+                WHERE customer_email = main_table.email 
                 ORDER BY created_at DESC 
                 LIMIT 1
             )"]
@@ -406,7 +411,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 SELECT ccpi.category_id FROM $salesOrder as sfo
                 left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                 left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                WHERE sfo.customer_email = main_table.subscriber_email
+                WHERE sfo.customer_email = main_table.email
                 ORDER BY sfo.created_at ASC, sfoi.price DESC
                 LIMIT 1
             )"]
@@ -427,7 +432,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 SELECT ccpi.category_id FROM $salesOrder as sfo
                 left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                 left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                WHERE sfo.customer_email = main_table.subscriber_email
+                WHERE sfo.customer_email = main_table.email
                 ORDER BY sfo.created_at DESC, sfoi.price DESC
                 LIMIT 1
             )"]
@@ -446,7 +451,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ["expression" => "(
                 SELECT sfoi.product_id FROM $salesOrder as sfo
                 left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                WHERE sfo.customer_email = main_table.subscriber_email and sfoi.product_type = 'simple'
+                WHERE sfo.customer_email = main_table.email and sfoi.product_type = 'simple'
                 ORDER BY sfo.created_at ASC, sfoi.price DESC
                 LIMIT 1
             )"]
@@ -465,7 +470,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ["expression" => "(
                 SELECT sfoi.product_id FROM $salesOrder as sfo
                 left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                WHERE sfo.customer_email = main_table.subscriber_email and sfoi.product_type = 'simple'
+                WHERE sfo.customer_email = main_table.email and sfoi.product_type = 'simple'
                 ORDER BY sfo.created_at DESC, sfoi.price DESC
                 LIMIT 1
             )"]
@@ -483,7 +488,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ["expression" => "(
                 SELECT dayname(created_at) as week_day
                 FROM $salesOrder
-                WHERE customer_email = main_table.subscriber_email
+                WHERE customer_email = main_table.email
                 GROUP BY week_day
                 HAVING COUNT(*) > 0
                 ORDER BY (COUNT(*)) DESC
@@ -503,7 +508,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ["expression" => "(
                 SELECT monthname(created_at) as month_day
                 FROM $salesOrder
-                WHERE customer_email = main_table.subscriber_email
+                WHERE customer_email = main_table.email
                 GROUP BY month_day
                 HAVING COUNT(*) > 0
                 ORDER BY (COUNT(*)) DESC
@@ -526,7 +531,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 SELECT ccpi.category_id FROM $salesOrder as sfo
                 LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                 LEFT JOIN $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                WHERE sfo.customer_email = main_table.subscriber_email AND ccpi.category_id is not null
+                WHERE sfo.customer_email = main_table.email AND ccpi.category_id is not null
                 GROUP BY category_id
                 HAVING COUNT(sfoi.product_id) > 0
                 ORDER BY COUNT(sfoi.product_id) DESC
@@ -817,8 +822,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             return $this->expressionFactory->create(["expression" => 'NULL']);
         }
 
-        $where = $forSubscriber == true ?
-            'WHERE sfo.customer_email = main_table.subscriber_email' : 'WHERE sfo.customer_id = e.entity_id ';
+        $where = ($forSubscriber == true)?
+            'WHERE sfo.customer_email = main_table.email' : 'WHERE sfo.customer_id = e.entity_id ';
 
         /**
          * CatalogStaging fix.

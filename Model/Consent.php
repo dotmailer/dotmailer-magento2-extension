@@ -128,6 +128,23 @@ class Consent extends \Magento\Framework\Model\AbstractModel
 
     /**
      * @param $consentUrl
+     * @param $websiteId
+     * @return mixed
+     */
+    public function getConsenTextForWebsite($consentUrl, $websiteId)
+    {
+        $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
+        $customerConentText = $this->configHelper->getConsentCustomerText($websiteId);
+        //customer checkout and registration if consent text not empty
+        if ($this->isLinkMatchCustomerRegistrationOrCheckout($consentUrl) && strlen($customerConentText)) {
+            $consentText = $customerConentText;
+        }
+
+        return $consentText;
+    }
+
+    /**
+     * @param $consentUrl
      * @return bool
      */
     private function isLinkMatchCustomerRegistrationOrCheckout($consentUrl)
