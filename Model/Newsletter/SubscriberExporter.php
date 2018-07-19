@@ -162,9 +162,7 @@ class SubscriberExporter
             $this->contactIds[] = $contact->getId();
             //csv subscriber data
             $this->file->outputCSV($this->file->getFilePath($subscribersFilename), $outputData);
-            //mark contact subscriber imported
-            $contact->setSubscriberImported(1);
-            //$this->contactResource->save($contact);
+
             $updated++;
         }
         //mark is subscriber imported for contacts
