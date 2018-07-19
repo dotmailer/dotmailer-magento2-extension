@@ -23,7 +23,7 @@ class MassDelete extends OrderController
     /**
      * @var object
      */
-    public $messageManager;
+    protected $messageManager;
 
     /**
      * @var Filter

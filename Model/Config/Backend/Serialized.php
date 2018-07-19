@@ -41,7 +41,7 @@ class Serialized extends \Magento\Framework\App\Config\Value
     /**
      * @return null
      */
-    public function _afterLoad()
+    protected function _afterLoad()
     {
         $value = $this->getValue();
         if (!is_array($value)) {

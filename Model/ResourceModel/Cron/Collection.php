@@ -8,7 +8,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * @var string
      */
-    public $_idFieldName = 'schedule_id';
+    protected $_idFieldName = 'schedule_id';
 
     /**
      * Initialize resource collection

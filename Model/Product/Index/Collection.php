@@ -8,7 +8,7 @@ class Collection extends \Magento\Reports\Model\ResourceModel\Product\Index\Coll
     /**
      * @return string
      */
-    public function _getTableName()
+    protected function _getTableName()
     {
         return $this->getTable('report_viewed_product_index');
     }

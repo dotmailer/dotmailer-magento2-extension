@@ -5,6 +5,11 @@ namespace Dotdigitalgroup\Email\Model;
 class Catalog extends \Magento\Framework\Model\AbstractModel
 {
     /**
+     * @var string
+     */
+    protected $_idFieldName = 'id';
+
+    /**
      * @var ResourceModel\Catalog
      */
     public $catalogResource;

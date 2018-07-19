@@ -277,7 +277,7 @@ class Order
      *
      * @return array
      */
-    private function getModifiedOrders($website, $limit)
+    protected function getModifiedOrders($website, $limit)
     {
         $orders =  [];
         $storeIds = $website->getStoreIds();

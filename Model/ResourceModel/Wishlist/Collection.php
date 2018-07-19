@@ -2,12 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Wishlist;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends
+ \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
      * @var string
      */
-    public $_idFieldName = 'id';
+    protected $_idFieldName = 'id';
 
     /**
      * Initialize resource collection.

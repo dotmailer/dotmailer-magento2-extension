@@ -7,12 +7,14 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel\Order;
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends
+ \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
+
     /**
      * @var string
      */
-    public $_idFieldName = 'email_order_id';
+    protected $_idFieldName = 'email_order_id';
 
     /**
      * @var \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory

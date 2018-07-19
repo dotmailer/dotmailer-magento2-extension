@@ -8,7 +8,7 @@ class Collection extends
     /**
      * @var string
      */
-    public $_idFieldName = 'email_contact_id';
+    protected $_idFieldName = 'email_contact_id';
 
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory

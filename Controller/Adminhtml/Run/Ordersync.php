@@ -14,7 +14,7 @@ class Ordersync extends \Magento\Backend\App\AbstractAction
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    public $messageManager;
+    protected $messageManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\CronFactory

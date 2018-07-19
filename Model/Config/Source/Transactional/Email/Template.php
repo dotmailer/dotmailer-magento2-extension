@@ -17,7 +17,7 @@ class Template extends \Magento\Framework\DataObject implements \Magento\Framewo
     /**
      * @var \Magento\Email\Model\ResourceModel\Template\CollectionFactory
      */
-    private $templatesFactory;
+    protected $templatesFactory;
 
     /**
      * @param \Magento\Framework\Registry $coreRegistry

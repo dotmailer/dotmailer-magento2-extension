@@ -23,7 +23,7 @@ class MassDelete extends ImporterController
     /**
      * @var object
      */
-    public $messageManager;
+    protected $messageManager;
 
     /**
      * @var Filter

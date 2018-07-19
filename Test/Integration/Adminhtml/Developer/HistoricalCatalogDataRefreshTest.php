@@ -231,7 +231,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
     {
         $collection = $this->objectManager->create($this->model)
                                           ->getCollection();
-        foreach($collection as $collectionItem) {
+        foreach ($collection as $collectionItem) {
             $collectionItem->delete();
         }
     }

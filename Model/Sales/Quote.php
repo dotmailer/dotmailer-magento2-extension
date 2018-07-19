@@ -467,7 +467,7 @@ class Quote
      *
      * @return \DateInterval
      */
-    public function getSendAfterIntervalForGuest($storeId, $num)
+    protected function getSendAfterIntervalForGuest($storeId, $num)
     {
         $timeInterval = $this->getLostBasketSendAfterForGuest($num, $storeId);
 

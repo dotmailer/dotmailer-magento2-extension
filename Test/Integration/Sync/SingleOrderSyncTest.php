@@ -61,9 +61,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $helper->method('getApiPassword')->willReturn('dummypass');
         $helper->method('getWebsiteConfig')->willReturn('1');
         $helper->method('getConfigSelectedStatus')->willReturn($this->orderStatus);
-        $helper->storeManager = $this->objectManager->create(
-        \Magento\Store\Model\StoreManagerInterface::class
-        );
+        $helper->storeManager = $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class);
         $orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ImporterFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\OrderFactory::class),
