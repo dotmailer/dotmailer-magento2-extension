@@ -30,19 +30,35 @@ class TrialSetup
     private $randomMath;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\Timezone
+     */
+    private $timezone;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     */
+    private $dateIntervalFactory;
+
+    /**
      * TrialSetup constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Math\Random $randomMath
      * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
      * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
+     * @param \Magento\Framework\Stdlib\DateTime\Timezone $timezone,
+     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Math\Random $randomMath,
         \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
-        \Magento\Framework\App\Config\ReinitableConfigInterface $config
+        \Magento\Framework\App\Config\ReinitableConfigInterface $config,
+        \Magento\Framework\Stdlib\DateTime\Timezone $timezone,
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
     ) {
+        $this->dateIntervalFactory = $dateIntervalFactory;
+        $this->timezone = $timezone;
         $this->randomMath = $randomMath;
         $this->helper = $helper;
         $this->dataField = $dataField;
@@ -287,8 +303,8 @@ class TrialSetup
             0
         );
 
-        $expiryDate = new \DateTime('now', new \DateTimezone('UTC'));
-        $expiryDate->add(\DateInterval::createFromDateString(30 . 'minutes'));
+        $expiryDate = $this->timezone->date();
+        $expiryDate->add($this->dateIntervalFactory->create(['interval_spec' => 'PT30M']));
         $this->helper->saveConfigData(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY,
             $expiryDate->format(\DateTime::ATOM),

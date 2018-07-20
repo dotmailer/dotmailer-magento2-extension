@@ -31,6 +31,11 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     private $remoteAddress;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\Timezone
+     */
+    private $timezone;
+
+    /**
      * Accountcallback constructor.
      *
      * @param \Magento\Framework\App\Action\Context                   $context
@@ -39,6 +44,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * @param \Magento\Store\Model\StoreManagerInterface              $storeManager
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress    $remoteAddress
      * @param \Dotdigitalgroup\Email\Model\Trial\TrialSetup           $trialSetup
+     * @param \Magento\Framework\Stdlib\DateTime\Timezone             $timezone
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -46,8 +52,10 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
-        \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup
+        \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup,
+        \Magento\Framework\Stdlib\DateTime\Timezone $timezone
     ) {
+        $this->timezone      = $timezone;
         $this->helper        = $helper;
         $this->jsonHelper    = $jsonHelper;
         $this->storeManager  = $storeManager;
@@ -138,13 +146,12 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      */
     public function isCodeValid($code)
     {
-        $now = new \DateTime('now', new \DateTimezone('UTC'));
+        $now = $this->timezone->date()->format(\DateTime::ATOM);
         $expiryDateString = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY
         );
-        $expiryDate = \DateTime::createFromFormat(\DateTime::ATOM, $expiryDateString);
 
-        if ($now >= $expiryDate) {
+        if ($now >= $expiryDateString) {
             return false;
         }
 
