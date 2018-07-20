@@ -149,7 +149,7 @@ class Contact
         }
         //customer filename
         $customersFile = strtolower(
-            $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
+            $website->getCode() . '_customers_' . date('d_m_Y_His') . '.csv'
         );
         $this->helper->log('Customers file : ' . $customersFile);
         //get customers ids

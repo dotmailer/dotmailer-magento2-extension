@@ -109,8 +109,8 @@ class SubscriberExporter
     {
         $updated = 0;
         $websiteId = $website->getId();
+        $subscribersFilename = strtolower($website->getCode() . '_subscribers_' . date('d_m_Y_His') . '.csv');
         $consentModel = $this->consentFactory->create();
-        $subscribersFilename = strtolower($website->getCode() . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
         //get mapped storename
         $subscriberStorename = $this->helper->getMappedStoreName($website);
         //file headers

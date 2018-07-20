@@ -371,4 +371,39 @@ class File
 
         return $log;
     }
+
+    /**
+     * Return the full file path with checking in archive as fallback.
+     *
+     * @param string $filename
+     * @return string
+     */
+    public function getFilePathWithFallback($filename)
+    {
+        $emailPath = $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
+        $archivePath = $this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename;
+        return is_file($emailPath) ? $emailPath : $archivePath;
+    }
+
+    /**
+     * Check if file exist in email or archive folder
+     *
+     * @param string $filename
+     * @return boolean
+     */
+    public function isFilePathExistWithFallback($filename)
+    {
+        $emailPath = $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
+        $archivePath = $this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename;
+        return is_file($emailPath) ? true : (is_file($archivePath) ? true : false);
+    }
+
+    /**
+     * @param $filename
+     * @return bool
+     */
+    public function isFileAlreadyArchived($filename)
+    {
+       return is_file($this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename);
+    }
 }

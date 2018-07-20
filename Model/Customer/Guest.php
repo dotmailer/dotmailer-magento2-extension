@@ -112,7 +112,7 @@ class Guest
         if ($guests->getSize()) {
             $guestFilename = strtolower(
                 $website->getCode() . '_guest_'
-                . date('d_m_Y_Hi') . '.csv'
+                . date('d_m_Y_His') . '.csv'
             );
             $this->helper->log('Guest file: ' . $guestFilename);
             $storeName = $this->helper->getMappedStoreName($website);

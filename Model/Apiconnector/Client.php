@@ -204,14 +204,14 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         if (function_exists('curl_file_create')) {
             $args['file']
                 = curl_file_create(
-                    $this->fileHelper->getFilePath($filename),
+                    $this->fileHelper->getFilePathWithFallback($filename),
                     'text/csv'
                 );
             curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
         } else {
             //standart use of curl file
             curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                'file' => '@' . $this->fileHelper->getFilePath($filename),
+                'file' => '@' . $this->fileHelper->getFilePathWithFallback($filename),
             ]);
         }
 

@@ -107,7 +107,7 @@ class SubscriberWithSalesExporter
         $isConsentSubscriberEnabled = $this->configHelper->isConsentSubscriberEnabled($websiteId);
         $emails = $contactSubscribers->getColumnValues('email');
         $emailContactIds = $contactSubscribers->getColumnValues('email_contact_id');
-        $subscribersFile = strtolower($website->getCode() . '_subscribers_with_sales_' . date('d_m_Y_Hi') . '.csv');
+        $subscribersFile = strtolower($website->getCode() . '_subscribers_with_sales_' . date('d_m_Y_His') . '.csv');
         $this->helper->log('Subscriber file with sales : ' . $subscribersFile);
         $orderStatuses = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,

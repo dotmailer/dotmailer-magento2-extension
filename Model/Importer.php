@@ -494,12 +494,14 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             if ($file = $item->getImportFile()) {
                 //remove the consent data for contacts before arhiving the file
                 $log = $this->helper->fileHelper->cleanProcessedConsent(
-                    $this->helper->fileHelper->getFilePath($file)
+                    $this->helper->fileHelper->getFilePathWithFallback($file)
                 );
                 if ($log) {
                     $this->helper->log($log);
                 }
-                $this->helper->fileHelper->archiveCSV($file);
+                if (! $this->helper->fileHelper->isFileAlreadyArchived($file)) {
+                    $this->helper->fileHelper->archiveCSV($file);
+                }
             }
 
             if ($item->getImportId()) {
