@@ -111,10 +111,10 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         }
 
         $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
-        $customerConentText = $this->configHelper->getConsentCustomerText($websiteId);
+        $customerConsentText = $this->configHelper->getConsentCustomerText($websiteId);
         //customer checkout and registration if consent text not empty
-        if ($this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl()) && strlen($customerConentText)) {
-            $consentText = $customerConentText;
+        if ($this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl()) && strlen($customerConsentText)) {
+            $consentText = $customerConsentText;
         }
         $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
         return [
@@ -131,13 +131,13 @@ class Consent extends \Magento\Framework\Model\AbstractModel
      * @param $websiteId
      * @return mixed
      */
-    public function getConsenTextForWebsite($consentUrl, $websiteId)
+    public function getConsentTextForWebsite($consentUrl, $websiteId)
     {
         $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
-        $customerConentText = $this->configHelper->getConsentCustomerText($websiteId);
+        $customerConsentText = $this->configHelper->getConsentCustomerText($websiteId);
         //customer checkout and registration if consent text not empty
-        if ($this->isLinkMatchCustomerRegistrationOrCheckout($consentUrl) && strlen($customerConentText)) {
-            $consentText = $customerConentText;
+        if ($this->isLinkMatchCustomerRegistrationOrCheckout($consentUrl) && strlen($customerConsentText)) {
+            $consentText = $customerConsentText;
         }
 
         return $consentText;

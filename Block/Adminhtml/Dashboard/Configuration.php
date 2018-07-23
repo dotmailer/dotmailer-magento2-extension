@@ -37,7 +37,7 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     /**
      * @return $this
      */
-    public function _prepareLayout()
+    protected function _prepareLayout()
     {
         $this->_prepareRequestParams();
         parent::_prepareLayout();

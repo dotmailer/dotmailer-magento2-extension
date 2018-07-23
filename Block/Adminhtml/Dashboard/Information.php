@@ -14,23 +14,23 @@ class Information extends \Magento\Backend\Block\Template
      *
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * Test class.
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
      */
-    public $test;
+    private $test;
 
     /**
      * @var \Magento\Framework\App\ProductMetadata
      */
-    public $productMetadata;
+    private $productMetadata;
 
     /*
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\Collection
      */
-    public $failedAuthCollectionFactory;
+    private $failedAuthCollectionFactory;
 
     /**
      * @var int

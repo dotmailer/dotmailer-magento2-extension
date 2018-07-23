@@ -149,7 +149,7 @@ class SubscriberExporter
             $consentUrl = $contact->getConsentUrl();
             //check for any subscribe or customer consent enabled
             if ($isConsentSubscriberEnabled && $consentUrl) {
-                $consentText = $consentModel->getConsenTextForWebsite($consentUrl, $websiteId);
+                $consentText = $consentModel->getConsentTextForWebsite($consentUrl, $websiteId);
                 $consentData = [
                     $consentText,
                     $consentUrl,

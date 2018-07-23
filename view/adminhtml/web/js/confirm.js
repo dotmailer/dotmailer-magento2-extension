@@ -1,9 +1,9 @@
 require([
     'jquery',
     'Magento_Ui/js/modal/confirm',
-    'domReady!',
-    'mage/translate'
-], function ($, confirmation) {
+    'mage/translate',
+    'domReady!'
+], function ($, confirmation, $t) {
     'use strict';
 
     /**
@@ -14,17 +14,14 @@ require([
         var content;
 
         if (element.attr('id') === 'sync_settings_addressbook_allow_non_subscribers') {
-            content = 'You are about to allow dotmailer to import customers that haven\'t explicitly opted into ' +
-                'your emails. This means Customers and Guests address book will contain contacts that you might not ' +
-                'be able to reach out, depending on the applicable regulations. Do you wish to continue?';
+            content = $t('You are about to allow dotmailer to import customers that haven\'t explicitly opted into your emails. This means Customers and Guests address book will contain contacts that you might not be able to reach out, depending on the applicable regulations. Do you wish to continue?');
         } else {
-            content = 'You are about to enable this feature for customers that haven\'t explicitly opted into your ' +
-                'emails. Do you wish to continue?';
+            content = $t('You are about to enable this feature for customers that haven\'t explicitly opted into your emails. Do you wish to continue?');
         }
 
         confirmation({
             title: $("label[for='" + element.attr("id") + "'] span").text(),
-            content: $.mage.__(content),
+            content: content,
             actions: {
                 confirm: function () {
                     element.val(1);
