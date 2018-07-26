@@ -7,20 +7,25 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
  *
  * @api
  */
-class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
+class Product extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
-     * @var \Magento\Sales\Api\Data\OrderInterfaceFactory
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
+    public $helper;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Recommended
+     */
+    public $recommendedHelper;
+
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
      */
     public $orderFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
-     */
-    public $clientFactory;
-
-    /**
-     * @var \Magento\Sales\Model\Spi\OrderResourceInterface
+     * @var \Magento\Sales\Model\ResourceModel\Order
      */
     private $orderResource;
 
@@ -28,30 +33,25 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
      * Product constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
-     * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
-     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-     * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
-     * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
      * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        \Magento\Sales\Model\ResourceModel\Order $orderResource,
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
-        \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
-        \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
-        \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
         array $data = []
     ) {
-        parent::__construct($context, $helper, $catalog, $recommendedHelper, $priceHelper, $data);
-        $this->orderFactory  = $orderFactory;
-        $this->clientFactory = $clientFactory;
-        $this->orderResource = $orderResource;
+        parent::__construct($context, $data);
+        $this->orderFactory      = $orderFactory;
+        $this->recommendedHelper = $recommended;
+        $this->helper            = $helper;
+        $this->orderResource     = $orderResource;
     }
 
     /**
@@ -98,7 +98,7 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
         );
 
         $productsToDisplayCounter = 0;
-        $productsToDisplay = $this->getProductsToDisplay(
+        $productsToDisplay = $this->recommendedHelper->getProductsToDisplay(
             $orderItems,
             $mode,
             $productsToDisplayCounter,
@@ -108,11 +108,52 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended\Quoteproducts
 
         //check for more space to fill up the table with fallback products
         if ($productsToDisplayCounter < $limit) {
-            $productsToDisplay = $this->fillProductsToDisplay($productsToDisplay, $productsToDisplayCounter, $limit);
+            $productsToDisplay = $this->recommendedHelper->fillProductsToDisplay(
+                $productsToDisplay,
+                $productsToDisplayCounter,
+                $limit
+            );
         }
 
         $this->helper->log('loaded product to display ' . count($productsToDisplay));
 
         return $productsToDisplay;
+    }
+
+    /**
+     * Diplay mode type.
+     *
+     * @return mixed|string
+     */
+    public function getMode()
+    {
+        return $this->recommendedHelper->getDisplayType();
+    }
+
+    /**
+     * Number of the columns.
+     *
+     * @return int|mixed
+     */
+    public function getColumnCount()
+    {
+        return $this->recommendedHelper->getDisplayLimitByMode(
+            $this->getRequest()
+                 ->getActionName()
+        );
+    }
+
+    /**
+     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
+     *
+     * @return string
+     */
+    public function getTextForUrl($store)
+    {
+        $store = $this->_storeManager->getStore($store);
+
+        return $store->getConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
+        );
     }
 }

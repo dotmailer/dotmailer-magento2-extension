@@ -54,6 +54,11 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     private $date;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     */
+    public $catalog;
+
+    /**
      * Recommended constructor.
      *
      * @param \Magento\Framework\App\ResourceConnection $adapter
@@ -67,13 +72,15 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Zend_Date $date
+        \Zend_Date $date,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
     ) {
         $this->adapter      = $adapter;
         $this->helper       = $data;
         $this->context      = $context;
         $this->storeManager = $storeManager;
         $this->date = $date;
+        $this->catalog    = $catalog;
 
         parent::__construct($context);
     }
@@ -349,5 +356,137 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         );
 
         return explode(',', $productIds);
+    }
+
+    /**
+     * Get products to display
+     *
+     * @param array $items
+     * @param string $mode
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     *
+     * @return array
+     */
+    public function getProductsToDisplay($items, $mode, &$productsToDisplayCounter, $limit, $maxPerChild)
+    {
+        $productsToDisplay = [];
+
+        foreach ($items as $item) {
+            //parent product
+            $productModel = $item->getProduct();
+            //check for product exists
+            if ($productModel->getId()) {
+                //get single product for current mode
+                $recommendedProductIds = $this->getRecommendedProduct($productModel, $mode);
+                $recommendedProducts = $this->catalog->getProductCollectionFromIds($recommendedProductIds);
+
+                $this->addRecommendedProducts(
+                    $productsToDisplayCounter,
+                    $limit,
+                    $maxPerChild,
+                    $recommendedProducts,
+                    $productsToDisplay
+                );
+            }
+            //have reached the limit don't loop for more
+            if ($productsToDisplayCounter == $limit) {
+                break;
+            }
+        }
+
+        return $productsToDisplay;
+    }
+
+    /**
+     * Add recommended products
+     *
+     * @param int $productsToDisplayCounter
+     * @param int $limit
+     * @param int $maxPerChild
+     * @param array $recommendedProducts
+     * @param array $productsToDisplay
+     *
+     * @return null
+     */
+    private function addRecommendedProducts(
+        &$productsToDisplayCounter,
+        $limit,
+        $maxPerChild,
+        $recommendedProducts,
+        &$productsToDisplay
+    ) {
+        $i = 0;
+
+        foreach ($recommendedProducts as $product) {
+            //check if still exists
+            if ($product->getId() && $productsToDisplayCounter < $limit
+                && $i <= $maxPerChild
+                && $product->isSaleable()
+                && !$product->getParentId()
+            ) {
+                //we have a product to display
+                $productsToDisplay[$product->getId()] = $product;
+                $i++;
+                $productsToDisplayCounter++;
+            }
+        }
+    }
+
+    /**
+     * Fill products to display
+     *
+     * @param array $productsToDisplay
+     * @param array $productsToDisplayCounter
+     * @param int $limit
+     *
+     * @return array
+     */
+    public function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
+    {
+        $fallbackIds = $this->getFallbackIds();
+
+        $productCollection = $this->catalog->getProductCollectionFromIds($fallbackIds);
+
+        foreach ($productCollection as $product) {
+            if ($product->isSaleable()) {
+                $productsToDisplay[$product->getId()] = $product;
+                $productsToDisplayCounter++;
+            }
+
+            //the limit was reached
+            if ($productsToDisplayCounter == $limit) {
+                break;
+            }
+        }
+        return $productsToDisplay;
+    }
+
+    /**
+     * Product related items.
+     *
+     * @param \Magento\Catalog\Model\Product $productModel
+     * @param string $mode
+     *
+     * @return array
+     */
+    private function getRecommendedProduct($productModel, $mode)
+    {
+        //array of products to display
+        $products = [];
+        switch ($mode) {
+            case 'related':
+                $products = $productModel->getRelatedProductIds();
+                break;
+            case 'upsell':
+                $products = $productModel->getUpSellProductIds();
+                break;
+            case 'crosssell':
+                $products = $productModel->getCrossSellProductIds();
+                break;
+        }
+
+        return $products;
     }
 }

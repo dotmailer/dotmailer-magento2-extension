@@ -15,43 +15,27 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     public $helper;
 
     /**
-     * @var \Magento\Framework\Pricing\Helper\Data
-     */
-    public $priceHelper;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
     public $recommendedHelper;
-    
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
-     */
-    public $catalog;
 
     /**
      * Quoteproducts constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
-     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->helper            = $helper;
         $this->recommendedHelper = $recommendedHelper;
-        $this->catalog           = $catalog;
-        $this->priceHelper       = $priceHelper;
     }
 
     /**
@@ -71,7 +55,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
             return [];
         }
 
-        //products to be diplayd for recommended pages
+        //products to be displayed for recommended pages
         $quoteId = (int) $this->getRequest()->getParam('quote_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
@@ -95,7 +79,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
         );
 
         $productsToDisplayCounter = 0;
-        $productsToDisplay = $this->getProductsToDisplay(
+        $productsToDisplay = $this->recommendedHelper->getProductsToDisplay(
             $quoteItems,
             $mode,
             $productsToDisplayCounter,
@@ -105,7 +89,11 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
 
         //check for more space to fill up the table with fallback products
         if ($productsToDisplayCounter < $limit) {
-            $productsToDisplay = $this->fillProductsToDisplay($productsToDisplay, $productsToDisplayCounter, $limit);
+            $productsToDisplay = $this->recommendedHelper->fillProductsToDisplay(
+                $productsToDisplay,
+                $productsToDisplayCounter,
+                $limit
+            );
         }
 
         $this->helper->log(
@@ -116,141 +104,9 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * Get products to display
-     *
-     * @param array $items
-     * @param string $mode
-     * @param int $productsToDisplayCounter
-     * @param int $limit
-     * @param int $maxPerChild
-     *
-     * @return array
-     */
-    public function getProductsToDisplay($items, $mode, &$productsToDisplayCounter, $limit, $maxPerChild)
-    {
-        $productsToDisplay = [];
-
-        foreach ($items as $item) {
-            //parent product
-            $productModel = $item->getProduct();
-            //check for product exists
-            if ($productModel->getId()) {
-                //get single product for current mode
-                $recommendedProductIds = $this->getRecommendedProduct($productModel, $mode);
-                $recommendedProducts = $this->catalog->getProductCollectionFromIds($recommendedProductIds);
-
-                $this->addRecommendedProducts(
-                    $productsToDisplayCounter,
-                    $limit,
-                    $maxPerChild,
-                    $recommendedProducts,
-                    $productsToDisplay
-                );
-            }
-            //have reached the limit don't loop for more
-            if ($productsToDisplayCounter == $limit) {
-                break;
-            }
-        }
-
-        return $productsToDisplay;
-    }
-
-    /**
-     * Add recommended products
-     *
-     * @param int $productsToDisplayCounter
-     * @param int $limit
-     * @param int $maxPerChild
-     * @param array $recommendedProducts
-     * @param array $productsToDisplay
-     *
-     * @return null
-     */
-    public function addRecommendedProducts(
-        &$productsToDisplayCounter,
-        $limit,
-        $maxPerChild,
-        $recommendedProducts,
-        &$productsToDisplay
-    ) {
-        $i = 0;
-
-        foreach ($recommendedProducts as $product) {
-            //check if still exists
-            if ($product->getId() && $productsToDisplayCounter < $limit
-                && $i <= $maxPerChild
-                && $product->isSaleable()
-                && !$product->getParentId()
-            ) {
-                //we have a product to display
-                $productsToDisplay[$product->getId()] = $product;
-                $i++;
-                $productsToDisplayCounter++;
-            }
-        }
-    }
-
-    /**
-     * Fill products to display
-     *
-     * @param array $productsToDisplay
-     * @param array $productsToDisplayCounter
-     * @param int $limit
-     *
-     * @return array
-     */
-    public function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
-    {
-        $fallbackIds = $this->recommendedHelper->getFallbackIds();
-
-        $productCollection = $this->catalog->getProductCollectionFromIds($fallbackIds);
-
-        foreach ($productCollection as $product) {
-            if ($product->isSaleable()) {
-                $productsToDisplay[$product->getId()] = $product;
-                $productsToDisplayCounter++;
-            }
-
-            //the limit was reached
-            if ($productsToDisplayCounter == $limit) {
-                break;
-            }
-        }
-        return $productsToDisplay;
-    }
-
-    /**
-     * Product related items.
-     *
-     * @param \Magento\Catalog\Model\Product $productModel
-     * @param string $mode
-     *
-     * @return array
-     */
-    public function getRecommendedProduct($productModel, $mode)
-    {
-        //array of products to display
-        $products = [];
-        switch ($mode) {
-            case 'related':
-                $products = $productModel->getRelatedProductIds();
-                break;
-            case 'upsell':
-                $products = $productModel->getUpSellProductIds();
-                break;
-            case 'crosssell':
-                $products = $productModel->getCrossSellProductIds();
-                break;
-        }
-
-        return $products;
-    }
-
-    /**
      * Diplay mode type.
      *
-     * @return string|boolean
+     * @return mixed|string
      */
     public function getMode()
     {
@@ -266,14 +122,14 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         return $this->recommendedHelper->getDisplayLimitByMode(
             $this->getRequest()
-                ->getActionName()
+                 ->getActionName()
         );
     }
 
     /**
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
-     * @return string|boolean
+     * @return string
      */
     public function getTextForUrl($store)
     {
