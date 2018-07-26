@@ -141,7 +141,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     /**
      * Validate code
      *
-     * @param mixed $code
+     * @param string $code
      * @return bool
      */
     public function isCodeValid($code)

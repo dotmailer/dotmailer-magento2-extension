@@ -107,7 +107,7 @@ class Response extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @return mixed
+     * @return \Zend\Http\PhpEnvironment\Response
      */
     public function sendUnauthorizedResponse()
     {
@@ -126,7 +126,7 @@ class Response extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @return mixed
+     * @return \Zend\Http\PhpEnvironment\Response
      */
     public function sendNoContentResponse()
     {

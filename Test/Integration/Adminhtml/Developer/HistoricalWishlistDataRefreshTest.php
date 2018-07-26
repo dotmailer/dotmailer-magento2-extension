@@ -182,7 +182,7 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     }
 
     /**
-     * @return mixed
+     * @return \Dotdigitalgroup\Email\Model\Wishlist
      */
     private function createWishlistDataAndGetCollection()
     {

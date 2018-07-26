@@ -198,7 +198,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $productsToDisplayCounter
      * @param int $limit
      *
-     * @return mixed
+     * @return array
      */
     public function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
     {
@@ -250,7 +250,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Diplay mode type.
      *
-     * @return mixed|string
+     * @return string|boolean
      */
     public function getMode()
     {
@@ -273,7 +273,7 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getTextForUrl($store)
     {

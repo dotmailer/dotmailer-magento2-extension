@@ -127,7 +127,7 @@ class Subscriber
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getMappingHash()
     {
@@ -137,7 +137,7 @@ class Subscriber
     /**
      * export to CSV.
      *
-     * @return mixed
+     * @return array
      */
     public function toCSVArray()
     {
@@ -168,7 +168,7 @@ class Subscriber
     /**
      * get numbser of orders.
      *
-     * @return mixed
+     * @return string|int
      */
     public function getNumberOfOrders()
     {
@@ -181,7 +181,7 @@ class Subscriber
     /**
      * get average order value.
      *
-     * @return mixed
+     * @return float|string
      */
     public function getAverageOrderValue()
     {
@@ -194,7 +194,7 @@ class Subscriber
     /**
      * get total spend.
      *
-     * @return mixed
+     * @return float|string
      */
     public function getTotalSpend()
     {
@@ -207,7 +207,7 @@ class Subscriber
     /**
      * get last order date.
      *
-     * @return mixed
+     * @return string
      */
     public function getLastOrderDate()
     {
@@ -220,7 +220,7 @@ class Subscriber
     /**
      * get last order id.
      *
-     * @return mixed
+     * @return int|string
      */
     public function getLastOrderId()
     {
@@ -233,7 +233,7 @@ class Subscriber
     /**
      * get last increment id
      *
-     * @return mixed
+     * @return int|string
      */
     public function getLastIncrementId()
     {
@@ -372,7 +372,7 @@ class Subscriber
     /**
      * Get category name from id
      *
-     * @param $categoryId
+     * @param int $categoryId
      * @return string
      */
     private function getCategoryValue($categoryId)

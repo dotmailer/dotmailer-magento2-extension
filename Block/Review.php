@@ -102,7 +102,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @param string $mode
      *
-     * @return mixed|string
+     * @return boolean|string
      */
     public function getMode($mode = 'list')
     {
@@ -122,7 +122,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $items
      * @param int   $websiteId
      *
-     * @return mixed
+     * @return boolean|array
      */
     public function filterItemsForReview($items, $websiteId)
     {

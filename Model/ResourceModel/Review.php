@@ -105,8 +105,8 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset the email reviews for re-import.
      *
-     * @param mixed $from
-     * @param mixed $to
+     * @param string $from
+     * @param string $to
      *
      * @return int
      */
@@ -139,7 +139,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $items
      * @param int $customerId
-     * @param mixed $order
+     * @param \Magento\Sales\Model\Order $order
      *
      * @return mixed
      */
@@ -193,7 +193,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Set imported in bulk query.
      *
      * @param array $ids
-     * @param mixed $nowDate
+     * @param string $nowDate
      *
      * @return null
      */

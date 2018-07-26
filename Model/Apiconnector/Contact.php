@@ -213,11 +213,11 @@ class Contact
 
     /**
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param mixed $customerCollection
-     * @param mixed $mappedHash
-     * @param mixed $customAttributes
-     * @param mixed $customersFile
-     * @param mixed $customerIds
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection $customerCollection
+     * @param array $mappedHash
+     * @param array $customAttributes
+     * @param string $customersFile
+     * @param array $customerIds
      *
      * @return int
      */
@@ -270,9 +270,10 @@ class Contact
     /**
      * Customer collection with all data ready for export.
      *
-     * @param mixed $customerIds
+     * @param array $customerIds
      * @param int $websiteId
-     * @return mixed
+     *
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private function getCustomerCollection($customerIds, $websiteId = 0)
     {

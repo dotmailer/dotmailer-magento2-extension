@@ -26,7 +26,7 @@ class Colorpicker extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
-     * @return mixed|string
+     * @return string
      */
     public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element

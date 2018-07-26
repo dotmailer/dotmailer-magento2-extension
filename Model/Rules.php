@@ -193,11 +193,13 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process rule on collection.
      *
-     * @param mixed $collection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
      * @param string $type
      * @param int $websiteId
      *
-     * @return mixed
+     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
      */
     public function process($collection, $type, $websiteId)
     {
@@ -239,11 +241,13 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * process And combination on collection.
      *
-     * @param mixed $collection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collectio $collection
      * @param array $conditions
      * @param string $type
      *
-     * @return mixed
+     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
      */
     public function _processAndCombination($collection, $conditions, $type)
     {
@@ -284,7 +288,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param mixed $collection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collectio $collection
      * @param string $cond
      * @param string $value
      * @param string $attribute
@@ -327,11 +332,13 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * process Or combination on collection.
      *
-     * @param mixed $collection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collectio $collection
      * @param array $conditions
      * @param string $type
      *
-     * @return mixed
+     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
      *
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -417,9 +424,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process product attributes on collection.
      *
-     * @param mixed $collection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collectio $collection
      *
-     * @return mixed
+     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
      */
     public function _processProductAttributes($collection)
     {
@@ -465,9 +474,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process product attributes on collection.
      *
-     * @param mixed $collection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collectio $collection
      *
-     * @return mixed
+     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
+     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */

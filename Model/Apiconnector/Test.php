@@ -80,8 +80,8 @@ class Test
     /**
      * Get api endpoint
      *
-     * @param $accountInfo
-     * @return mixed
+     * @param Object|null $accountInfo
+     * @return string
      */
     private function getApiEndPoint($accountInfo)
     {

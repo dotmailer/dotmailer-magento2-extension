@@ -6,9 +6,9 @@ class Fixture
 {
     /**
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param $isActive
-     * @param $reservedOrderId
-     * @param $forCustomer
+     * @param int $isActive
+     * @param int $reservedOrderId
+     * @param boolean $forCustomer
      */
     public function createQuote($objectManager, $isActive, $reservedOrderId, $forCustomer = false)
     {

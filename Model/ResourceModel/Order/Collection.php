@@ -87,7 +87,7 @@ class Collection extends
      * @param int $orderId
      * @param int $quoteId
      *
-     * @return mixed
+     * @return boolean|\Dotdigitalgroup\Email\Model\Order
      */
     public function loadByOrderIdAndQuoteId($orderId, $quoteId)
     {
@@ -109,7 +109,7 @@ class Collection extends
      * @param int $quoteId
      * @param int $storeId
      *
-     * @return mixed
+     * @return boolean|\Dotdigitalgroup\Email\Model\Order
      */
     public function getEmailOrderRow($orderId, $quoteId, $storeId)
     {
@@ -188,7 +188,7 @@ class Collection extends
      * Get sales collection for review.
      *
      * @param string $orderStatusFromConfig
-     * @param mixed $created
+     * @param string $created
      * @param \Magento\Store\Model\Website $website
      * @param array $campaignOrderIds
      *
@@ -232,7 +232,7 @@ class Collection extends
      * @param \Magento\Customer\Model\Customer $customer
      * @param array $storeIds
      *
-     * @return mixed
+     * @return boolean|\Magento\Sales\Model\Order
      */
     public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer, $storeIds)
     {
@@ -255,7 +255,7 @@ class Collection extends
      * @param \Magento\Customer\Model\Customer $customer
      * @param array $storeIds
      *
-     * @return mixed
+     * @return boolean|\Magento\Quote\Model\Quote
      */
     public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer, $storeIds)
     {
@@ -276,7 +276,7 @@ class Collection extends
      * Get store quotes excluding inactive and empty.
      *
      * @param int $storeId
-     * @param mixed $updated
+     * @param string $updated
      * @param bool $guest
      *
      * @return \Magento\Quote\Model\ResourceModel\Quote\Collection
@@ -324,7 +324,7 @@ class Collection extends
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @param string $emailColumn
-     * @return mixed
+     * @return \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
      */
     public function joinSubscribersOnCollection($collection, $emailColumn = "main_table.customer_email")
     {

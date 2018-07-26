@@ -44,8 +44,8 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset the email wishlist for re-import.
      *
-     * @param mixed $from
-     * @param mixed $to
+     * @param string|null $from
+     * @param string|null $to
      *
      * @return int
      *
@@ -123,7 +123,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param array $ids
-     * @param mixed $updatedAt
+     * @param string $updatedAt
      * @param bool $modified
      *
      * @return null

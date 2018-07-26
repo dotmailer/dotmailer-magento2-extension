@@ -181,8 +181,8 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(0, $result[$storeId]['secondGuest']);
     }
     /**
-     * @param $hour
-     * @return mixed
+     * @param int $hour
+     * @return \Dotdigitalgroup\Email\Model\Abandoned
      */
     private function createExistingAbandonedCart($hour, $reservedOrderId = 'dottet01')
     {

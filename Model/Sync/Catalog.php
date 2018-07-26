@@ -184,7 +184,7 @@ class Catalog
     /**
      * Get product collection to export.
      *
-     * @param mixed $store
+     * @param \Magento\Store\Model\Store|int $store
      * @param bool $modified
      *
      * @return mixed

@@ -1575,7 +1575,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer SchemaSetupInterface
+     * @param SchemaSetupInterface $installer
      */
     private function createAbandonedCartTable($installer)
     {
@@ -1585,8 +1585,8 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer SchemaSetupInterface
-     * @param $table string
+     * @param SchemaSetupInterface $installer
+     * @param string $table
      */
     private function dropTableIfExists($installer, $table)
     {
@@ -1598,7 +1598,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createConsentTable($installer)
     {
@@ -1608,7 +1608,7 @@ class InstallSchema implements InstallSchemaInterface
     }
 
     /**
-     * @param $installer
+     * @param SchemaSetupInterface $installer
      */
     private function createFailedAuth($installer)
     {

@@ -57,7 +57,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Get the products to display for table.
      *
-     * @return mixed
+     * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     public function getLoadedProductCollection()
     {
@@ -79,7 +79,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Display  type mode.
      *
-     * @return mixed|string
+     * @return boolean|string
      */
     public function getMode()
     {
@@ -89,7 +89,7 @@ class Push extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getTextForUrl($store)
     {

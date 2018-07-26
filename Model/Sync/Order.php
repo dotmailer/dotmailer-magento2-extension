@@ -239,7 +239,7 @@ class Order
     }
 
     /**
-     * @param mixed $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      * @param int $limit
      *
      * @return array
@@ -272,7 +272,7 @@ class Order
     }
 
     /**
-     * @param mixed $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      * @param int $limit
      *
      * @return array
@@ -349,7 +349,7 @@ class Order
 
     /**
      * @param array $ordersForSingleSync
-     * @param mixed $website
+     * @param array $website
      *
      * @return null
      */

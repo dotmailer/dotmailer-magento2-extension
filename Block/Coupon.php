@@ -103,7 +103,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
     /**
      * Coupon font size from config.
      *
-     * @return mixed
+     * @return int|boolean
      */
     public function getFontSize()
     {
@@ -115,7 +115,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
     /**
      * Coupon Font from config.
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getFont()
     {
@@ -127,7 +127,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
     /**
      * Coupon background color from config.
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getBackgroundColor()
     {

@@ -170,7 +170,7 @@ class Studio extends \Magento\Backend\Block\Template
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getCode()
     {

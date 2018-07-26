@@ -34,10 +34,10 @@ class ContactImportQueueExport
 
     /**
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param mixed $customersFile
-     * @param mixed $customerNum
-     * @param mixed $customerIds
-     * @param mixed $resource
+     * @param string $customersFile
+     * @param int $customerNum
+     * @param array $customerIds
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $resource
      *
      * @return null
      */

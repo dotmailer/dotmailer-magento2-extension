@@ -563,7 +563,7 @@ class Trial extends \Magento\Backend\App\Action
     /**
      * Get culture id needed for trial account.
      *
-     * @return mixed
+     * @return array
      */
     private function _getCultureId()
     {

@@ -28,7 +28,7 @@ class Customer
     public $reviewCollection;
 
     /**
-     * @var object
+     * @var array
      */
     public $mappingHash;
 
@@ -161,7 +161,7 @@ class Customer
     /**
      * Set single key value data.
      *
-     * @param mixed $data
+     * @param string|int|boolean $data
      *
      * @return null
      */
@@ -270,7 +270,7 @@ class Customer
     /**
      * Get customer id.
      *
-     * @return mixed
+     * @return int
      */
     public function getCustomerId()
     {
@@ -280,7 +280,7 @@ class Customer
     /**
      * Get first name.
      *
-     * @return mixed
+     * @return string
      */
     public function getFirstname()
     {
@@ -290,7 +290,7 @@ class Customer
     /**
      * Get last name.
      *
-     * @return mixed
+     * @return string
      */
     public function getLastname()
     {
@@ -300,7 +300,7 @@ class Customer
     /**
      * Get date of birth.
      *
-     * @return mixed
+     * @return string
      */
     public function getDob()
     {
@@ -320,7 +320,7 @@ class Customer
     /**
      * Get customer prefix.
      *
-     * @return mixed
+     * @return string
      */
     public function getPrefix()
     {
@@ -330,7 +330,7 @@ class Customer
     /**
      * Get customer suffix.
      *
-     * @return mixed
+     * @return string
      */
     public function getSuffix()
     {
@@ -360,7 +360,7 @@ class Customer
     /**
      * Get customer created at date.
      *
-     * @return mixed
+     * @return string
      */
     public function getCreatedAt()
     {
@@ -370,7 +370,7 @@ class Customer
     /**
      * Get customer last logged in date.
      *
-     * @return mixed
+     * @return string
      */
     public function getLastLoggedDate()
     {
@@ -410,7 +410,7 @@ class Customer
     /**
      * Get billing city.
      *
-     * @return mixed
+     * @return string
      */
     public function getBillingCity()
     {
@@ -420,7 +420,7 @@ class Customer
     /**
      * Get billing country.
      *
-     * @return mixed
+     * @return string
      */
     public function getBillingCountry()
     {
@@ -430,7 +430,7 @@ class Customer
     /**
      * Get billing state.
      *
-     * @return mixed
+     * @return string
      */
     public function getBillingState()
     {
@@ -440,7 +440,7 @@ class Customer
     /**
      * Get billing postcode.
      *
-     * @return mixed
+     * @return string
      */
     public function getBillingPostcode()
     {
@@ -450,7 +450,7 @@ class Customer
     /**
      * Get billing phone.
      *
-     * @return mixed
+     * @return strngi
      */
     public function getBillingTelephone()
     {
@@ -480,7 +480,7 @@ class Customer
     /**
      * Get delivery city.
      *
-     * @return mixed
+     * @return string
      */
     public function getDeliveryCity()
     {
@@ -490,7 +490,7 @@ class Customer
     /**
      * Get delivery country.
      *
-     * @return mixed
+     * @return string
      */
     public function getDeliveryCountry()
     {
@@ -500,7 +500,7 @@ class Customer
     /**
      * Get delivery state.
      *
-     * @return mixed
+     * @return string
      */
     public function getDeliveryState()
     {
@@ -510,7 +510,7 @@ class Customer
     /**
      * Get delivery postcode.
      *
-     * @return mixed
+     * @return string
      */
     public function getDeliveryPostcode()
     {
@@ -520,7 +520,7 @@ class Customer
     /**
      * Get delivery phone.
      *
-     * @return mixed
+     * @return string
      */
     public function getDeliveryTelephone()
     {
@@ -530,7 +530,7 @@ class Customer
     /**
      * Get numbser of orders.
      *
-     * @return mixed
+     * @return int
      */
     public function getNumberOfOrders()
     {
@@ -540,7 +540,7 @@ class Customer
     /**
      * Get average order value.
      *
-     * @return mixed
+     * @return float
      */
     public function getAverageOrderValue()
     {
@@ -550,7 +550,7 @@ class Customer
     /**
      * Get total spend.
      *
-     * @return mixed
+     * @return float
      */
     public function getTotalSpend()
     {
@@ -560,7 +560,7 @@ class Customer
     /**
      * Get last order date.
      *
-     * @return mixed
+     * @return string
      */
     public function getLastOrderDate()
     {
@@ -570,7 +570,7 @@ class Customer
     /**
      * Get last order id.
      *
-     * @return mixed
+     * @return int
      */
     public function getLastOrderId()
     {
@@ -580,7 +580,7 @@ class Customer
     /**
      * Get last quote id.
      *
-     * @return mixed
+     * @return int
      */
     public function getLastQuoteId()
     {
@@ -590,7 +590,7 @@ class Customer
     /**
      * Get cutomer id.
      *
-     * @return mixed
+     * @return int
      */
     public function getId()
     {
@@ -598,9 +598,9 @@ class Customer
     }
 
     /**
-     * Get customer title.
+     * Get customer string.
      *
-     * @return mixed
+     * @return string
      */
     public function getTitle()
     {
@@ -631,7 +631,7 @@ class Customer
     /**
      * export to CSV.
      *
-     * @return mixed
+     * @return array
      */
     public function toCSVArray()
     {
@@ -659,8 +659,8 @@ class Customer
     }
 
     /**
-     * @param mixed $street
-     * @param mixed $line
+     * @param string $street
+     * @param int $line
      * @return void
      */
     public function _getStreet($street, $line)
@@ -703,7 +703,7 @@ class Customer
     }
 
     /**
-     * @param mixed $mapping_hash
+     * @param array $mapping_hash
      *
      * @return $this
      */
@@ -715,7 +715,7 @@ class Customer
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getMappingHash()
     {
@@ -768,7 +768,7 @@ class Customer
     /**
      * Subscriber status for Customer.
      *
-     * @return mixed
+     * @return boolean|string
      */
     public function getSubscriberStatus()
     {
@@ -880,7 +880,7 @@ class Customer
     }
 
     /**
-     * @param $categoryId
+     * @param int $categoryId
      * @return string
      */
     private function getCategoryValue($categoryId)
@@ -919,7 +919,7 @@ class Customer
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      * @return string
      */
     private function getBrandValue($id)
@@ -955,7 +955,7 @@ class Customer
     /**
      * Get last increment id.
      *
-     * @return mixed
+     * @return int
      */
     public function getLastIncrementId()
     {
@@ -965,7 +965,7 @@ class Customer
     /**
      * Get billing company name.
      *
-     * @return mixed
+     * @return string
      */
     public function getBillingCompany()
     {
@@ -975,7 +975,7 @@ class Customer
     /**
      * Get shipping company name.
      *
-     * @return mixed
+     * @return string
      */
     public function getDeliveryCompany()
     {
@@ -983,8 +983,8 @@ class Customer
     }
 
     /**
-     * @param $method
-     * @param $args
+     * @param string $method
+     * @param array $args
      * @return mixed
      */
     public function __call($method, $args)

@@ -348,7 +348,7 @@ class Product
     /**
      * Transform attribute label to acceptable format
      *
-     * @param $productAttribute array
+     * @param array $productAttribute
      * @return string
      */
     private function transformProductLabel($productAttribute)

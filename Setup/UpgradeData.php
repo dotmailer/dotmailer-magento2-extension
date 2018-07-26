@@ -140,7 +140,7 @@ class UpgradeData implements UpgradeDataInterface
     /**
      * Encrypt token and save
      *
-     * @param $user
+     * @param \Magento\User\Model\User $user
      */
     private function encryptAndSaveRefreshToken($user)
     {

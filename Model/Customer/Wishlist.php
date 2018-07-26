@@ -139,7 +139,7 @@ class Wishlist
     /**
      * Set wishlist date.
      *
-     * @param mixed $date
+     * @param string $date
      *
      * @return $this;
      */

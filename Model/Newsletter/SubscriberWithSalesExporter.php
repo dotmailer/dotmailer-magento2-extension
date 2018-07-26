@@ -178,8 +178,8 @@ class SubscriberWithSalesExporter
     /**
      * Register data with importer
      *
-     * @param $emailContactIds
-     * @param $subscribersFile
+     * @param array $emailContactIds
+     * @param string $subscribersFile
      * @param $websiteId
      */
     private function registerWithImporter($emailContactIds, $subscribersFile, $websiteId)

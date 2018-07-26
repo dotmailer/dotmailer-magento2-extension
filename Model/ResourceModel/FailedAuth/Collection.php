@@ -23,7 +23,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * @param $storeId
+     * @param int $storeId
      * @return $this
      */
     public function loadByStoreId($storeId)

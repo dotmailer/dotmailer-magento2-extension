@@ -97,7 +97,7 @@ class Campaign extends \Magento\Framework\Model\AbstractModel
      * @param int $quoteId
      * @param int $storeId
      *
-     * @return mixed
+     * @return $this
      */
     public function loadByQuoteId($quoteId, $storeId)
     {

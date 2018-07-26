@@ -166,7 +166,7 @@ class Cron
     /**
      * CRON FOR SUBSCRIBERS AND GUEST CONTACTS.
      *
-     * @return mixed
+     * @return array
      */
     public function subscribersAndGuestSync()
     {
@@ -348,7 +348,7 @@ class Cron
     /**
      * Check if already ran for same time
      *
-     * @param $jobCode
+     * @param string $jobCode
      * @return bool
      */
     private function jobHasAlreadyBeenRun($jobCode)

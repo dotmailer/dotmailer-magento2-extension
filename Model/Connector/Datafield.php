@@ -327,8 +327,8 @@ class Datafield
     /**
      * Set a single datafield.
      *
-     * @param mixed $name
-     * @param mixed $value
+     * @param string $name
+     * @param string|int|boolean $value
      * @param string $type
      * @param string $visibility
      *

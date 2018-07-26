@@ -41,7 +41,7 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     /**
      * Easy email capture for Newsletter and Checkout.
      *
-     * @return mixed
+     * @return null
      */
     public function execute()
     {

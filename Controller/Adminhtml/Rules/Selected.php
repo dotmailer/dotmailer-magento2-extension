@@ -90,7 +90,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
     /**
      * Execute method.
      *
-     * @return mixed
+     * @return \Magento\Framework\App\Response\HttpInterface
      */
     public function execute()
     {
@@ -140,12 +140,12 @@ class Selected extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @param mixed $elmType
-     * @param mixed $selectedConditions
-     * @param mixed $attribute
-     * @param mixed $selectedValues
-     * @param mixed $valueName
-     * @param mixed $response
+     * @param string $elmType
+     * @param string $selectedConditions
+     * @param string $attribute
+     * @param string $selectedValues
+     * @param string $valueName
+     * @param string $response
      *
      * @return null
      */

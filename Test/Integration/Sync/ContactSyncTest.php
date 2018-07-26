@@ -37,7 +37,7 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Run the preparation for the test with already existing data.
-     * @return mixed
+     * @return array
      */
     public function prep()
     {

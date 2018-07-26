@@ -44,7 +44,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset importer items.
      *
-     * @param mixed $ids
+     * @param array $ids
      *
      * @return int|string
      */
@@ -91,7 +91,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Save item
      *
-     * @param mixed $item
+     * @param \Dotdigitalgroup\Email\Model\\Importer $item
      *
      * @return $this
      */

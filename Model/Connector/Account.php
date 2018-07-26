@@ -87,7 +87,7 @@ class Account
     /**
      * Set api password.
      *
-     * @param mixed $apiPassword
+     * @param string $apiPassword
      *
      * @return $this
      */
@@ -183,7 +183,7 @@ class Account
     /**
      * Set customers filename.
      *
-     * @param mixed $customersFilename
+     * @param string $customersFilename
      *
      * @return null
      */
@@ -193,7 +193,7 @@ class Account
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCustomersFilename()
     {
@@ -201,7 +201,7 @@ class Account
     }
 
     /**
-     * @param mixed $limit
+     * @param int $limit
      *
      * @return string
      */
@@ -219,9 +219,7 @@ class Account
     }
 
     /**
-     * @param mixed $mappingHash
-     *
-     * @return array
+     * @param array $mappingHash
      */
     public function setMappingHash($mappingHash)
     {

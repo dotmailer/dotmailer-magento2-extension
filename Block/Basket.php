@@ -64,7 +64,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Basket items.
      *
-     * @return mixed
+     * @return array
      */
     public function getBasketItems()
     {
@@ -147,7 +147,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Grand total.
      *
-     * @return mixed
+     * @return float
      */
     public function getGrandTotal()
     {
@@ -180,7 +180,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * @return mixed
+     * @return string|boolean
      */
     public function takeMeToCartTextForUrl()
     {

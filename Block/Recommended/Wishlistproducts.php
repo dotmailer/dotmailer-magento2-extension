@@ -258,7 +258,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param int $productsToDisplayCounter
      * @param int $limit
      *
-     * @return mixed
+     * @return array
      */
     private function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
     {
@@ -309,7 +309,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Diplay mode type.
      *
-     * @return mixed|string
+     * @return string|boolean
      */
     public function getMode()
     {
@@ -332,7 +332,7 @@ class Wishlistproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * AC link to dynamic content.
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getTextForUrl($store)
     {

@@ -29,7 +29,7 @@ class Collection extends
      * @param int $quoteId
      * @param int $storeId
      *
-     * @return mixed
+     * @return \Dotdigitalgroup\Email\Model\Campaign|boolean
      */
     public function loadByQuoteId($quoteId, $storeId)
     {
@@ -91,7 +91,7 @@ class Collection extends
      * Get number of campaigns for contact by interval.
      *
      * @param string  $email
-     * @param mixed $updated
+     * @param string $updated
      *
      * @return int
      */
@@ -104,7 +104,7 @@ class Collection extends
     }
 
     /**
-     * @param $email
+     * @param string $email
      *
      * @return int
      */

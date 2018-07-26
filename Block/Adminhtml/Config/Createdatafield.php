@@ -79,7 +79,7 @@ class Createdatafield extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @param string $title
      *
-     * @return mixed
+     * @return string
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */

@@ -267,7 +267,7 @@ class RulesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param mixed $subtotal
+     * @param float $subtotal
      *
      * @return Quote
      */

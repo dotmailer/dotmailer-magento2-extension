@@ -356,7 +356,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets an address book by ID.
      *
-     * @param mixed $id
+     * @param int $id
      *
      * @return null
      * @throws \Exception
@@ -431,7 +431,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * @param $campaignId
+     * @param int $campaignId
      * @return mixed
      */
     public function getCampaignById($campaignId)
@@ -451,7 +451,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * @param $campaignId
+     * @param int $campaignId
      * @return mixed
      */
     public function getCampaignByIdWithPreparedContent($campaignId)
@@ -481,7 +481,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $visibility public, private
      * @param bool   $defaultValue
      *
-     * @return mixed
+     * @return object
      */
     public function postDataFields(
         $data,
@@ -545,7 +545,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Updates a contact.
      *
      * @param string|int $contactId
-     * @param mixed $data
+     * @param array $data
      *
      * @return object
      */
@@ -570,7 +570,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Deletes a contact.
      *
-     * @param mixed $contactId
+     * @param int $contactId
      *
      * @return null
      * @throws \Exception
@@ -597,7 +597,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Update contact datafields by email.
      *
      * @param string $email
-     * @param mixed $dataFields
+     * @param array $dataFields
      *
      * @return mixed|null
      *
@@ -639,8 +639,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Sends a specified campaign to one or more address books, segments or contacts at a specified time.
      * Leave the address book array empty to send to All Contacts.
      *
-     * @param mixed $campaignId
-     * @param mixed $contacts
+     * @param int $campaignId
+     * @param array $contacts
      *
      * @return mixed
      */
@@ -670,7 +670,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Creates a contact.
      *
-     * @param mixed $email
+     * @param string $email
      *
      * @return null
      * @throws \Exception
@@ -699,9 +699,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a list of suppressed contacts after a given date along with the reason for suppression.
      *
-     * @param mixed $dateString
-     * @param mixed $select
-     * @param mixed $skip
+     * @param string $dateString
+     * @param int $select
+     * @param int $skip
      *
      * @return object
      */
@@ -730,7 +730,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Adds multiple pieces of transactional data to contacts asynchronously,
      * returning an identifier that can be used to check for import progress.
-     * @param mixed  $transactionalData
+     * @param array  $transactionalData
      * @param string $collectionName
      *
      * @return null
@@ -769,7 +769,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Adds a single piece of transactional data to a contact.
      *
-     * @param mixed $data
+     * @param array $data
      * @param string $collectionName
      *
      * @return null
@@ -816,7 +816,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Adds a single piece of transactional data to account.
      *
-     * @param mixed $data
+     * @param array $data
      * @param string $collectionName
      *
      * @return null
@@ -863,8 +863,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a piece of transactional data by key.
      *
-     * @param mixed $name
-     * @param mixed $key
+     * @param string $name
+     * @param int $key
      *
      * @return null
      * @throws \Exception
@@ -882,7 +882,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Deletes all transactional data for a contact.
      *
-     * @param mixed $email
+     * @param string $email
      * @param string $collectionName
      *
      * @return null
@@ -928,7 +928,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Resubscribes a previously unsubscribed contact.
      *
-     * @param mixed $apiContact
+     * @param array $apiContact
      *
      * @return object
      *
@@ -982,7 +982,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Creates a campaign.
      *
-     * @param mixed $data
+     * @param array $data
      *
      * @return null
      * @throws \Exception
@@ -1031,7 +1031,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Creates an enrolment.
      *
-     * @param mixed $data
+     * @param array $data
      *
      * @return null
      * @throws \Exception
@@ -1057,7 +1057,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a program by id.
      *
-     * @param mixed $id
+     * @param int $id
      *
      * @return null
      * @throws \Exception
@@ -1080,7 +1080,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a summary of reporting information for a specified campaign.
      *
-     * @param mixed $campaignId
+     * @param int $campaignId
      *
      * @return null
      * @throws \Exception
@@ -1106,7 +1106,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Deletes a piece of transactional data by key.
      *
-     * @param mixed  $key
+     * @param int  $key
      * @param string $collectionName
      *
      * @return null
@@ -1139,8 +1139,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Adds a document to a campaign as an attachment.
      *
-     * @param mixed $campaignId
-     * @param mixed $data
+     * @param int $campaignId
+     * @param array $data
      *
      * @return null
      * @throws \Exception
@@ -1166,7 +1166,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Get contact address books.
      *
-     * @param mixed $contactId
+     * @param int $contactId
      *
      * @return object
      */
@@ -1275,7 +1275,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets the import status of a previously started contact import.
      *
-     * @param mixed $importId
+     * @param string $importId
      *
      * @return null
      * @throws \Exception
@@ -1326,7 +1326,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Get contact import report faults.
      *
-     * @param mixed $id
+     * @param string $id
      *
      * @return bool|null
      *
@@ -1358,7 +1358,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets the send status using send ID.
      *
-     * @param mixed $id
+     * @param string $id
      * @return object
      */
     public function getSendStatus($id)
@@ -1420,7 +1420,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Sends a transactional email.
      *
-     * @param $content
+     * @param string $content
      * @return mixed
      */
     public function sendApiTransactionalEmail($content)
@@ -1437,7 +1437,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets transactional email reporting statistics for a specified time period.
      *
-     * @param $date string
+     * @param string $date
      * @param null $endDate
      * @param null $aggregatedBy 'AllTime', 'Month', 'Week', 'Day'
      *

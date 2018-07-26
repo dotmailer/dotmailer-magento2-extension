@@ -180,7 +180,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param $guests
+     * @param array $guests
      */
     public function updateContactsAsGuests($guests)
     {
@@ -219,7 +219,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Update subscriber imported.
      *
-     * @param $emailContactIds array
+     * @param array $emailContactIds
      * @return int
      */
     public function updateSubscribers($emailContactIds)
@@ -991,9 +991,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get last cron ran date.
      *
-     * @param mixed $cronJob
+     * @param string $cronJob
      *
-     * @return mixed
+     * @return boolean|string
      */
     public function getDateLastCronRun($cronJob)
     {
@@ -1017,7 +1017,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Update contacts to re-import by customer ids
      *
-     * @param $customerIds
+     * @param array $customerIds
      */
     public function updateNotImportedByCustomerIds($customerIds)
     {

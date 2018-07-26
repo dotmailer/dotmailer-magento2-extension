@@ -89,8 +89,8 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $websiteId
-     * @param $email
+     * @param int $websiteId
+     * @param string $email
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -127,9 +127,9 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $consentUrl
-     * @param $websiteId
-     * @return mixed
+     * @param string $consentUrl
+     * @param int $websiteId
+     * @return string|boolean
      */
     public function getConsentTextForWebsite($consentUrl, $websiteId)
     {
@@ -144,7 +144,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $consentUrl
+     * @param string $consentUrl
      * @return bool
      */
     private function isLinkMatchCustomerRegistrationOrCheckout($consentUrl)

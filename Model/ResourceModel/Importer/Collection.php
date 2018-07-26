@@ -39,7 +39,7 @@ class Collection extends
      *
      * @param int $limit
      *
-     * @return mixed
+     * @return $this|boolean
      */
     public function getItemsWithImportingStatus($limit)
     {

@@ -103,8 +103,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     /**
      * Register new wishlist.
      *
-     * @param $wishlist
-     * @param $itemCount
+     * @param \Dotdigitalgroup\Email\Model\Wishlist $wishlist
+     * @param int $itemCount
      * @return $this
      */
     private function registerWishlist($wishlist, $itemCount)
@@ -159,7 +159,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * @param $wishlistId
+     * @param int $wishlistId
      * @return bool|\Magento\Framework\DataObject
      */
     private function getEmailWishlistBy($wishlistId)
@@ -169,8 +169,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * @param $emailWishlist
-     * @param $itemCount
+     * @param \Dotdigitalgroup\Email\Model\Wishlist $emailWishlist
+     * @param int $itemCount
      */
     private function updateWishlistAndReset($emailWishlist, $itemCount)
     {

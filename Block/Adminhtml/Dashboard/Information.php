@@ -99,7 +99,7 @@ class Information extends \Magento\Backend\Block\Template
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getConnectorVersion()
     {
@@ -150,7 +150,7 @@ class Information extends \Magento\Backend\Block\Template
     /**
      * Abandoned cart limit.
      *
-     * @return mixed
+     * @return string
      */
     public function getAbandonedCartLimit()
     {

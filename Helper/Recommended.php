@@ -81,7 +81,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Dispay type.
      *
-     * @return mixed|string grid:list
+     * @return string grid:list
      */
     public function getDisplayType()
     {
@@ -118,7 +118,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get related product type.
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getRelatedProductsType()
     {
@@ -130,7 +130,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get upsell product type.
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getUpsellProductsType()
     {
@@ -142,7 +142,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get crosssell product type.
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getCrosssellProductsType()
     {
@@ -154,7 +154,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get bestseller product type.
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getBestSellerProductsType()
     {
@@ -166,7 +166,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get most viewed product type.
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getMostViewedProductsType()
     {
@@ -178,7 +178,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get recently viewed product type.
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getRecentlyviewedProductsType()
     {
@@ -190,7 +190,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get product push product type.
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getProductpushProductsType()
     {
@@ -294,7 +294,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param string $config
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function processConfig($config)
     {
@@ -319,7 +319,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param string $period
      *
-     * @return mixed
+     * @return null|string
      */
     private function processPeriod($period)
     {

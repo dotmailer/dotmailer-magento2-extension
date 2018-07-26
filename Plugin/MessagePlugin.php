@@ -48,7 +48,7 @@ class MessagePlugin
      * Force the sender name to be the one from email template table.
      *
      * @param \Magento\Framework\Mail\Message $message
-     * @param $body
+     * @param string $body
      * @return mixed
      * @throws \Zend_Mail_Exception
      */

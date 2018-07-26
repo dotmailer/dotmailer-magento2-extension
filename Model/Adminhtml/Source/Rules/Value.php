@@ -71,7 +71,7 @@ class Value
     /**
      * Get element type.
      *
-     * @param mixed $attribute
+     * @param string $attribute
      *
      * @return string
      */
@@ -101,7 +101,7 @@ class Value
     /**
      * Get options array.
      *
-     * @param mixed $attribute
+     * @param string $attribute
      * @param bool $isEmpty
      *
      * @return array

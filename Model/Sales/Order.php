@@ -110,7 +110,7 @@ class Order
     /**
      * Register review campaign.
      *
-     * @param mixed $collection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection $collection
      * @param int $websiteId
      *
      * @return null

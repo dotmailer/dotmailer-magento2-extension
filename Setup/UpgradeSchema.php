@@ -288,7 +288,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     /**
      * @param SchemaSetupInterface $setup
-     * @param $connection
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
      */
     private function addColumnToCouponTable(SchemaSetupInterface $setup, $connection)
     {
@@ -307,7 +307,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     /**
      * @param SchemaSetupInterface $setup
-     * @param $connection
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
      */
     private function convertDataAndAddIndexes(SchemaSetupInterface $setup, $connection)
     {
@@ -402,7 +402,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     /**
      * @param SchemaSetupInterface $setup
      * @param ModuleContextInterface $context
-     * @param $connection
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
      */
     private function upgradeOneOneZeoToTwoTwoOne(
         SchemaSetupInterface $setup,

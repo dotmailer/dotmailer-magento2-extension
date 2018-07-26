@@ -238,8 +238,8 @@ class Template extends \Magento\Framework\DataObject
     /**
      * Load email_template by code/name.
      *
-     * @param $templateCode
-     * @return mixed
+     * @param string $templateCode
+     * @return string
      */
     public function loadByTemplateByCode($templateCode)
     {
@@ -253,7 +253,7 @@ class Template extends \Magento\Framework\DataObject
     /**
      * Delete email_template.
      *
-     * @param $templatecode
+     * @param string $templatecode
      */
     public function deleteTemplateByCode($templatecode)
     {
@@ -304,9 +304,9 @@ class Template extends \Magento\Framework\DataObject
     }
 
     /**
-     * @param $config
-     * @param $storeId
-     * @return mixed
+     * @param string $config
+     * @param int $storeId
+     * @return string|boolean
      */
     public function getConfigValue($config, $storeId)
     {
@@ -318,10 +318,10 @@ class Template extends \Magento\Framework\DataObject
     }
 
     /**
-     * @param $campaignId
-     * @param $emailTemplateId
-     * @param $store \Magento\Store\Api\Data\StoreInterface
-     * @return mixed
+     * @param int $campaignId
+     * @param int $emailTemplateId
+     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @return \Magento\Email\Model\Template|string
      */
     private function syncEmailTemplate($campaignId, $emailTemplateId, $store)
     {
@@ -344,10 +344,10 @@ class Template extends \Magento\Framework\DataObject
     }
 
     /**
-     * @param $templateConfigPath
-     * @param $campaignId
-     * @param $storeId
-     * @param $websiteId
+     * @param string $templateConfigPath
+     * @param int $campaignId
+     * @param int $storeId
+     * @param int $websiteId
      * @return bool|mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -377,10 +377,10 @@ class Template extends \Magento\Framework\DataObject
 
     /**
      * @param \Magento\Email\Model\Template $template
-     * @param $dmCampaign
-     * @param $campaignId
+     * @param Object $dmCampaign
+     * @param int $campaignId
      * @param string $origTemplateCode
-     * @return mixed
+     * @return \Magento\Email\Model\Template
      */
     public function saveTemplate($template, $dmCampaign, $campaignId, $origTemplateCode = '')
     {

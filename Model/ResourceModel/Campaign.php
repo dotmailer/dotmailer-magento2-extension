@@ -222,7 +222,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Save item
      *
-     * @param mixed $item
+     * @param \Dotdigitalgroup\Email\Model\Campaign $item
      * @return \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function saveItem($item)

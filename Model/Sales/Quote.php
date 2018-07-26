@@ -299,8 +299,8 @@ class Quote
     }
 
     /**
-     * @param mixed $from
-     * @param mixed $to
+     * @param string|null $from
+     * @param string|null $to
      * @param bool $guest
      * @param int $storeId
      *
@@ -486,7 +486,7 @@ class Quote
     }
 
     /**
-     * @param $storeId
+     * @param int $storeId
      * @return int|string
      */
     private function processCustomerFirstAbandonedCart($storeId)
@@ -536,8 +536,8 @@ class Quote
     }
 
     /**
-     * @param $quote
-     * @param $websiteId
+     * @param int $quote
+     * @param int $websiteId
      *
      * @return bool
      */
@@ -574,7 +574,7 @@ class Quote
     }
 
     /**
-     * @param $allItemsIds
+     * @param int $allItemsIds
      * @return array
      */
     private function getQuoteItemIds($allItemsIds)
@@ -588,7 +588,7 @@ class Quote
     }
 
     /**
-     * @param $items
+     * @param array $items
      * @return bool|\Magento\Quote\Model\Quote\Item
      */
     private function getMostExpensiveItems($items)
@@ -607,8 +607,8 @@ class Quote
     }
 
     /**
-     * @param $quote
-     * @param $abandonedModel
+     * @param \Magento\Quote\Model\Quote $quote
+     * @param \Dotdigitalgroup\Email\Model\Abandoned $abandonedModel
      * @return bool
      */
     private function isItemsChanged($quote, $abandonedModel)
@@ -630,9 +630,9 @@ class Quote
     }
 
     /**
-     * @param $abandonedModel
-     * @param $quote
-     * @param $itemIds
+     * @param \Dotdigitalgroup\Email\Model\Abandoned  $abandonedModel
+     * @param \Magento\Quote\Model\Quote $quote
+     * @param array $itemIds
      */
     private function createAbandonedCart($abandonedModel, $quote, $itemIds)
     {
@@ -648,11 +648,11 @@ class Quote
     }
 
     /**
-     * @param $email
-     * @param $quote
-     * @param $campaignId
-     * @param $number
-     * @param $websiteId
+     * @param string $email
+     * @param \Magento\Quote\Model\Quote $quote
+     * @param string $campaignId
+     * @param int $number
+     * @param int $websiteId
      */
     private function sendEmailCampaign($email, $quote, $campaignId, $number, $websiteId)
     {
@@ -678,7 +678,7 @@ class Quote
     }
 
     /**
-     * @param $storeId
+     * @param int $storeId
      * @return int
      */
     private function processGuestFirstAbandonedCart($storeId)
@@ -727,7 +727,7 @@ class Quote
     }
 
     /**
-     * @param $abandonedModel
+     * @param \Dotdigitalgroup\Email\Model\Abandoned $abandonedModel
      *
      * @return mixed
      */
@@ -737,7 +737,8 @@ class Quote
     }
 
     /**
-     * @param $quote
+     * @param \Dotdigitalgroup\Email\Model\Abandoned $abandonedModel
+     * @param \Magento\Quote\Model\Quote $quote
      * @return bool
      */
     private function shouldNotSendACAgain($abandonedModel, $quote)
@@ -749,7 +750,7 @@ class Quote
     }
 
     /**
-     * @param $quote
+     * @param \Dotdigitalgroup\Email\Model\Abandoned $quote
      *
      * @return bool
      */
@@ -759,7 +760,7 @@ class Quote
     }
 
     /**
-     * @param $abandonedModel
+     * @param \Dotdigitalgroup\Email\Model\Abandoned $abandonedModel
      * @throws \Exception
      */
     private function deleteAbandonedCart($abandonedModel)
@@ -768,10 +769,10 @@ class Quote
     }
 
     /**
-     * @param $campaignId
-     * @param $storeId
-     * @param $websiteId
-     * @param $number
+     * @param int $campaignId
+     * @param int $storeId
+     * @param int $websiteId
+     * @param int $number
      * @param bool $guest
      *
      * @return int
@@ -851,10 +852,10 @@ class Quote
     }
 
     /**
-     * @param $number
-     * @param $from
-     * @param $to
-     * @param $storeId
+     * @param int $number
+     * @param string $from
+     * @param string $to
+     * @param int $storeId
      * @param bool $guest
      * @return mixed
      */
@@ -887,8 +888,8 @@ class Quote
     }
 
     /**
-     * @param $quoteIds
-     * @param $storeId
+     * @param array $quoteIds
+     * @param int $storeId
      * @return mixed
      */
     private function getProcessedQuoteByIds($quoteIds, $storeId)
@@ -910,8 +911,8 @@ class Quote
     /**
      * Compare items ids.
      *
-     * @param $quoteItemIds
-     * @param $abandonedItemIds
+     * @param array $quoteItemIds
+     * @param array $abandonedItemIds
      * @return bool
      */
     private function isItemsIdsSame($quoteItemIds, $abandonedItemIds)

@@ -41,7 +41,7 @@ class TemplatePlugin
 
     /**
      * @param \Magento\Email\Model\Template $subject
-     * @param $result
+     * @param array $result
      * @param array ...$args
      * @return mixed
      */
@@ -94,7 +94,7 @@ class TemplatePlugin
     }
 
     /**
-     * @param $result
+     * @param array $result
      *
      * @return mixed
      */
@@ -149,7 +149,7 @@ class TemplatePlugin
     }
 
     /**
-     * @param $result
+     * @param array $result
      *
      * @return mixed
      */
@@ -171,7 +171,7 @@ class TemplatePlugin
 
     /**
      * @param \Magento\Email\Model\AbstractTemplate $subject
-     * @param $result
+     * @param array $result
      */
     public function afterBeforeSave(\Magento\Email\Model\AbstractTemplate $subject, $result)
     {
@@ -182,7 +182,7 @@ class TemplatePlugin
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @return bool
      */
     private function isStringCompressed($string)
@@ -196,7 +196,7 @@ class TemplatePlugin
     }
 
     /**
-     * @param $templateText
+     * @param string $templateText
      * @return string
      */
     private function compresString($templateText): string
@@ -205,7 +205,7 @@ class TemplatePlugin
     }
 
     /**
-     * @param $templateText
+     * @param string $templateText
      * @return string
      */
     private function decompresString($templateText): string
@@ -215,7 +215,7 @@ class TemplatePlugin
 
     /**
      * Template id register for email sending.
-     * @param $templateId
+     * @param int $templateId
      */
     private function saveTemplateIdInRegistry($templateId)
     {

@@ -92,7 +92,7 @@ class Bulk
      * @param string $importType
      * @param int $websiteId
      *
-     * @return mixed|string
+     * @return string
      */
     private function _getAddressBook($importType, $websiteId)
     {

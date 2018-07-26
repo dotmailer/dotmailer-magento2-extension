@@ -246,7 +246,7 @@ class Automation
     /**
      * Update config datafield.
      *
-     * @param mixed|string $email
+     * @param string $email
      *
      * @return null
      */

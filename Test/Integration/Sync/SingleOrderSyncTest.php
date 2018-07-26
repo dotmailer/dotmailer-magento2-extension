@@ -43,7 +43,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function prep()
     {

@@ -217,7 +217,7 @@ class Subscriber
     /**
      * Un-subscribe suppressed contacts.
      *
-     * @return mixed
+     * @return array
      */
     public function unsubscribe()
     {
@@ -245,7 +245,7 @@ class Subscriber
     }
 
     /**
-     * @param $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      * @return array
      */
     private function getSuppressedContacts($website)

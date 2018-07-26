@@ -119,7 +119,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Display mode type.
      *
-     * @return mixed|string
+     * @return string|boolean
      */
     public function getMode()
     {
@@ -129,7 +129,7 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getTextForUrl($store)
     {

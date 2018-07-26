@@ -90,7 +90,7 @@ class Campaign
     }
 
     /**
-     * @param mixed $website
+     * @param int $website
      * @param array $storeIds
      *
      * @return null
@@ -117,8 +117,8 @@ class Campaign
     /**
      * Get campaigns to send.
      *
-     * @param mixed $emailsToSend
-     * @param mixed $website
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection $emailsToSend
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      *
      * @return array
      */
@@ -172,7 +172,7 @@ class Campaign
     /**
      * Check if campaign item is valid
      *
-     * @param $campaign
+     * @param \Dotdigitalgroup\Email\Model\Campaign $campaign
      *
      * @return bool
      */
@@ -239,9 +239,9 @@ class Campaign
     }
 
     /**
-     * @param mixed $campaign
+     * @param \Dotdigitalgroup\Email\Model\Campaign $campaign
      * @param int $websiteId
-     * @param mixed $client
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
      * @param string $email
      *
      * @return null

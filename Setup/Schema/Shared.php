@@ -22,7 +22,7 @@ class Shared
     }
 
     /**
-     * @param $table
+     * @param \Magento\Framework\DB\Ddl\Table $table
      * @return mixed
      */
     private function addColumnForAbandonedCartTable($table)
@@ -119,8 +119,8 @@ class Shared
     }
 
     /**
-     * @param $installer SchemaSetupInterface
-     * @param $abandonedCartTable
+     * @param SchemaSetupInterface $installer
+     * @param \Magento\Framework\DB\Ddl\Table $abandonedCartTable
      * @return mixed
      */
     private function addIndexKeyForAbandonedCarts($installer, $abandonedCartTable)
@@ -147,7 +147,7 @@ class Shared
      * Create consent table
      *
      * @param SchemaSetupInterface $installer
-     * @param $tableName
+     * @param string $tableName
      */
     public function createConsentTable($installer, $tableName)
     {
@@ -160,7 +160,7 @@ class Shared
     }
 
     /**
-     * @param $emailContactConsentTable
+     * @param \Magento\Framework\DB\Ddl\Table $emailContactConsentTable
      * @return mixed
      */
     private function addColumnForConsentTable($emailContactConsentTable)
@@ -218,8 +218,8 @@ class Shared
     }
 
     /**
-     * @param $installer
-     * @param $emailContactConsentTable
+     * @param SchemaSetupInterface $installer
+     * @param \Magento\Framework\DB\Ddl\Table $emailContactConsentTable
      * @return mixed
      */
     private function addKeyForConsentTable($installer, $emailContactConsentTable)
@@ -234,8 +234,8 @@ class Shared
     }
 
     /**
-     * @param $installer
-     * @param $table
+     * @param SchemaSetupInterface $installer
+     * @param \Magento\Framework\DB\Ddl\Table $table
      * @return mixed]
      */
     private function addIndexToConsentTable($installer, $table)
@@ -250,7 +250,7 @@ class Shared
      * Create failed auth table
      *
      * @param SchemaSetupInterface $installer
-     * @param $tableName
+     * @param string $tableName
      */
     public function createFailedAuthTable($installer, $tableName)
     {
@@ -262,7 +262,7 @@ class Shared
     }
 
     /**
-     * @param $table
+     * @param \Magento\Framework\DB\Ddl\Table $table
      * @return mixed
      */
     private function addColumnForFailedAuthTable($table)
@@ -320,8 +320,8 @@ class Shared
     }
 
     /**
-     * @param $installer
-     * @param $emailAuthEdc
+     * @param SchemaSetupInterface $installer
+     * @param \Magento\Framework\DB\Ddl\Table $emailAuthEdc
      * @return mixed
      */
     private function addIndexToFailedAuthTable($installer, $emailAuthEdc)

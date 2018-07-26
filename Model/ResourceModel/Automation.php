@@ -37,7 +37,7 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param array $contactIds
      * @param string $status
      * @param string $message
-     * @param mixed $updatedAt
+     * @param string $updatedAt
      * @param string $type
      *
      * @return null

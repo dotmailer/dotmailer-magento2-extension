@@ -171,7 +171,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * Register import in queue.
      *
      * @param string $importType
-     * @param mixed $importData
+     * @param array|string|null $importData
      * @param string $importMode
      * @param int $websiteId
      * @param bool $file
@@ -444,8 +444,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param mixed $response
-     * @param mixed $item
+     * @param Object $response
+     * @param \Dotdigitalgroup\Email\Model\Importer $item
      * @param int $websiteId
      *
      * @return null
@@ -471,10 +471,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $item
-     * @param $websiteId
+     * @param Importer $item
+     * @param int $websiteId
      *
-     * @return mixed
+     * @return $this
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -513,7 +513,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param mixed $itemToSave
+     * @param \Dotdigitalgroup\Email\Model\Importer $itemToSave
      *
      * @return null
      */

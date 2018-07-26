@@ -31,7 +31,7 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Delete Consent for contact.
      *
-     * @param $emails
+     * @param array $emails
      * @return array
      */
     public function deleteConsentByEmails($emails)

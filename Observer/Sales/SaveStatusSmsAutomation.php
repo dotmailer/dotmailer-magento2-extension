@@ -238,7 +238,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
     /**
      * Save enrolment to queue for cron automation enrolment.
      *
-     * @param mixed $data
+     * @param array $data
      *
      * @return null
      */

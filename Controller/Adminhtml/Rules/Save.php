@@ -57,7 +57,7 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * Execute method.
      *
-     * @return mixed
+     * @return \Magento\Framework\App\ResponseInterface
      */
     public function execute()
     {

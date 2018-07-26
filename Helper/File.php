@@ -117,7 +117,7 @@ class File
     /**
      * Move file to archive dir.
      *
-     * @param mixed $filename
+     * @param string $filename
      *
      * @return null
      */
@@ -133,9 +133,9 @@ class File
     /**
      * Moves the output file from one folder to the next.
      *
-     * @param mixed $sourceFolder
-     * @param mixed $destFolder
-     * @param mixed $filename
+     * @param string $sourceFolder
+     * @param string $destFolder
+     * @param string $filename
      *
      * @return null
      */
@@ -152,7 +152,7 @@ class File
     /**
      * Output an array to the output file FORCING Quotes around all fields.
      *
-     * @param mixed $filepath
+     * @param string $filepath
      * @param mixed $csv
      *
      * @throws \Exception
@@ -175,8 +175,8 @@ class File
     }
 
     /**
-     * @param mixed $filepath
-     * @param mixed $csv
+     * @param string $filepath
+     * @param array $csv
      *
      * @return null
      */
@@ -194,7 +194,7 @@ class File
     /**
      * If the path does not exist then create it.
      *
-     * @param mixed $path
+     * @param string $path
      *
      * @return null
      */
@@ -256,7 +256,7 @@ class File
     /**
      * Delete file or directory.
      *
-     * @param mixed $path
+     * @param string $path
      *
      * @return bool
      */
@@ -326,7 +326,7 @@ class File
     }
 
     /**
-     * @param mixed $data
+     * @param string|array|mixed $data
      *
      * @return null
      */
@@ -336,8 +336,8 @@ class File
     }
 
     /**
-     * @param mixed $message
-     * @param mixed $extra
+     * @param string $message
+     * @param array $extra
      *
      * @return null
      */
@@ -347,7 +347,7 @@ class File
     }
 
     /**
-     * @param $file string full path to the csv file.
+     * @param string $file full path to the csv file.
      * @return bool|string
      */
     public function cleanProcessedConsent($file)
@@ -399,7 +399,7 @@ class File
     }
 
     /**
-     * @param $filename
+     * @param string $filename
      * @return bool
      */
     public function isFileAlreadyArchived($filename)

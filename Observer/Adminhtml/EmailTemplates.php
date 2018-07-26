@@ -128,8 +128,8 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * @param $configPath
-     * @param $configValue
+     * @param string $configPath
+     * @param string $configValue
      */
     private function saveConfigValue($configPath, $configValue)
     {
@@ -153,7 +153,7 @@ class EmailTemplates implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * @param $templateConfigPath
+     * @param string $templateConfigPath
      */
     private function removeConfigValue($templateConfigPath)
     {

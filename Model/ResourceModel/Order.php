@@ -17,8 +17,8 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset the email order for re-import.
      *
-     * @param mixed $from
-     * @param mixed $to
+     * @param string|null $from
+     * @param string|null $to
      *
      * @return int
      *

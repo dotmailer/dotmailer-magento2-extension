@@ -158,7 +158,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * Get rendered for attribute field.
      *
-     * @return mixed
+     * @return \Magento\Framework\View\Element\BlockInterface
      */
     private function _getAttributeRenderer()
     {
@@ -177,7 +177,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * Get renderer for conditions field.
      *
-     * @return mixed
+     * @return \Magento\Framework\View\Element\BlockInterface
      */
     private function _getConditionsRenderer()
     {
@@ -196,7 +196,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * Get renderer for value field.
      *
-     * @return mixed
+     * @return \Magento\Framework\View\Element\BlockInterface
      */
     private function _getValueRenderer()
     {
