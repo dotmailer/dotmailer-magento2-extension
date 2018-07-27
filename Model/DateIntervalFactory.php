@@ -12,12 +12,12 @@ class DateIntervalFactory
      *
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager = null;
+    private $_objectManager = null;
 
     /**
      * @var null|string
      */
-    protected $_instanceName  = null;
+    private $_instanceName  = null;
 
     /**
      * Factory constructor

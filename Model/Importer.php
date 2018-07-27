@@ -409,7 +409,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      */
     public function _checkImportStatus()
     {
-        if ($items = $this->getImportingItems($this->bulkSyncLimit)) {
+        if ($items = $this->_getImportingItems($this->bulkSyncLimit)) {
             foreach ($items as $item) {
                 $websiteId = $item->getWebsiteId();
                 $client = false;
@@ -505,7 +505,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
             }
 
             if ($item->getImportId()) {
-                $this->processContactImportReportFaults($item->getImportId(), $websiteId);
+                $this->_processContactImportReportFaults($item->getImportId(), $websiteId);
             }
         }
 
@@ -529,7 +529,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection|bool
      */
-    public function getImportingItems($limit)
+    public function _getImportingItems($limit)
     {
         return $this->getCollection()
             ->getItemsWithImportingStatus($limit);
@@ -545,13 +545,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return null
      */
-    public function processContactImportReportFaults($id, $websiteId)
+    public function _processContactImportReportFaults($id, $websiteId)
     {
         $client = $this->helper->getWebsiteApiClient($websiteId);
         $report = $client->getContactImportReportFaults($id);
 
         if ($report) {
-            $reportData = explode(PHP_EOL, $this->removeUtf8Bom($report));
+            $reportData = explode(PHP_EOL, $this->_removeUtf8Bom($report));
             //unset header
             unset($reportData[0]);
             //no data in report
@@ -579,7 +579,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      *
      * @return string
      */
-    public function removeUtf8Bom($text)
+    public function _removeUtf8Bom($text)
     {
         $bom = pack('H*', 'EFBBBF');
         $text = preg_replace("/^$bom/", '', $text);

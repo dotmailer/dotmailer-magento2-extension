@@ -85,7 +85,7 @@ class Response extends \Magento\Framework\App\Action\Action
 
             return false;
         }
-        $isCodeValid = $this->helper->isPasscodeValid($this->getRequest()->getParam('code'));
+        $isCodeValid = $this->helper->auth($this->getRequest()->getParam('code'));
         //passcode not valid.
         if (!$isCodeValid) {
             $this->processFailedRequest();

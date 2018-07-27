@@ -105,8 +105,8 @@ class Guest
     {
         $onlySubscribers = $this->helper->isOnlySubscribersForContactSync($website->getWebsiteId());
         $contact = $this->contactFactory->create();
-        $guests = ($onlySubscribers) ? $contact->getGuests($website->getId(), true) :
-            $contact->getGuests($website->getId());
+        $guests = ($onlySubscribers) ? $contact->getGuests($website, true) :
+            $contact->getGuests($website);
 
         //found some guests
         if ($guests->getSize()) {
