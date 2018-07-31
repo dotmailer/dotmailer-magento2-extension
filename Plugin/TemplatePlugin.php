@@ -83,7 +83,7 @@ class TemplatePlugin
             if ($field == 'template_text' && ! $this->isStringCompressed($result) &&
                 $this->transactionalHelper->isDotmailerTemplate($this->templateCode)
             ) {
-                $result = $this->compresString($result);
+                $result = $this->compressString($result);
             }
             if ($field == 'template_id') {
                 $this->saveTemplateIdInRegistry($result);
@@ -133,7 +133,7 @@ class TemplatePlugin
                 $field = $args[0];
                 //check for correct field
                 if ($field == 'template_text' && $this->isStringCompressed($result)) {
-                    $result = $this->decompresString($result);
+                    $result = $this->decompressString($result);
                 }
                 //decode encoded subject
                 if ($field == 'template_subject') {
@@ -162,7 +162,7 @@ class TemplatePlugin
             $templateText = $result['template_text'];
             $result['template_subject'] = utf8_decode($result['template_subject']);
             if ($this->isStringCompressed($templateText)) {
-                $result['template_text'] = $this->decompresString($templateText);
+                $result['template_text'] = $this->decompressString($templateText);
             }
         }
 
@@ -199,7 +199,7 @@ class TemplatePlugin
      * @param string $templateText
      * @return string
      */
-    private function compresString($templateText): string
+    private function compressString($templateText)
     {
         return base64_encode(gzcompress($templateText, 9));
     }
@@ -208,7 +208,7 @@ class TemplatePlugin
      * @param string $templateText
      * @return string
      */
-    private function decompresString($templateText): string
+    private function decompressString($templateText)
     {
         return gzuncompress(base64_decode($templateText));
     }
