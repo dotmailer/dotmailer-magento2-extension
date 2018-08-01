@@ -135,10 +135,6 @@ class TemplatePlugin
                 if ($field == 'template_text' && $this->isStringCompressed($result)) {
                     $result = $this->decompressString($result);
                 }
-                //decode encoded subject
-                if ($field == 'template_subject') {
-                    $result = utf8_decode($result);
-                }
                 if ($field == 'template_id') {
                     $this->saveTemplateIdInRegistry($result);
                 }
@@ -160,7 +156,6 @@ class TemplatePlugin
         }
         if (isset($result['template_text'])) {
             $templateText = $result['template_text'];
-            $result['template_subject'] = utf8_decode($result['template_subject']);
             if ($this->isStringCompressed($templateText)) {
                 $result['template_text'] = $this->decompressString($templateText);
             }

@@ -389,7 +389,7 @@ class Template extends \Magento\Framework\DataObject
         try {
             $template->setTemplateCode($templateName)
                 ->setOrigTemplateCode($origTemplateCode)
-                ->setTemplateSubject(utf8_encode($dmCampaign->subject))
+                ->setTemplateSubject($dmCampaign->subject)
                 ->setTemplateText($dmCampaign->processedHtmlContent)
                 ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
                 ->setTemplateSenderName($dmCampaign->fromName)
