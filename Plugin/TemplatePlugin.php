@@ -109,7 +109,7 @@ class TemplatePlugin
             //compress text
             if (!$this->isStringCompressed($templateText) &&
                 $this->transactionalHelper->isDotmailerTemplate($result['template_code'])) {
-                $result['template_text'] = $this->compresString($templateText);
+                $result['template_text'] = $this->compressString($templateText);
             }
         }
 
