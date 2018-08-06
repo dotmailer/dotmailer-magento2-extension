@@ -209,10 +209,10 @@ class Template extends \Magento\Framework\DataObject
 
     /**
      * Template constructor.
-     *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Store\Model\StoreManagerInterface $store
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Email\Model\TemplateFactory $templateFactory
      * @param \Magento\Email\Model\ResourceModel\Template $templateResource
      * @param \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templateCollectionFactory
      */
@@ -239,7 +239,7 @@ class Template extends \Magento\Framework\DataObject
      * Load email_template by code/name.
      *
      * @param string $templateCode
-     * @return string
+     * @return \Magento\Framework\DataObject
      */
     public function loadByTemplateByCode($templateCode)
     {
