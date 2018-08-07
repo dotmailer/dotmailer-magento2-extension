@@ -10,7 +10,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public $subscribersCollection;
 
     /**
-     * @var Contact\CollectionFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
      */
     public $contactCollectionFactory;
 
@@ -46,7 +46,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
      * @param \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory
-     * @param Contact\CollectionFactory $contactCollectionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param null $connectionName
      */
     public function __construct(
@@ -320,18 +320,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $columns = [
             'last_order_date' => $this->createLastOrderDataColumn($salesOrder),
+            'first_order_id' => $this->createFirstOrderIdColumn($salesOrder),
             'last_order_id' => $this->createLastOrderIdColumn($salesOrder),
             'last_increment_id' => $this->createLastIncrementIdColumn($salesOrder),
-            'first_category_id' => $this->createFirstCategoryIdColumn(
-                $salesOrder,
-                $salesOrderItem,
-                $catalogCategoryProductIndex
-            ),
-            'last_category_id' => $this->createLastCategoryIdColumn(
-                $salesOrder,
-                $salesOrderItem,
-                $catalogCategoryProductIndex
-            ),
             'product_id_for_first_brand' => $this->createProductIdForFirstBrandColumn($salesOrder, $salesOrderItem),
             'product_id_for_last_brand' => $this->createProductIdForLastBrandColumn($salesOrder, $salesOrderItem),
             'week_day' => $this->createWeekDayColumn($salesOrder),
@@ -381,6 +372,22 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * @param $salesOrder
+     * @return \Dotdigitalgroup\Email\Model\Sql\Expression
+     */
+    private function createFirstOrderIdColumn($salesOrder)
+    {
+        return $this->expressionFactory->create(
+            ["expression" => "(
+                SELECT entity_id FROM $salesOrder
+                WHERE customer_email = main_table.email 
+                ORDER BY created_at ASC 
+                LIMIT 1
+            )"]
+        );
+    }
+
+    /**
      * @param string $salesOrder
      *
      * @return \Zend_Db_Expr
@@ -392,48 +399,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 SELECT increment_id FROM $salesOrder
                 WHERE customer_email = main_table.email 
                 ORDER BY created_at DESC 
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * @param string $salesOrder
-     * @param string $salesOrderItem
-     * @param string $catalogCategoryProductIndex
-     *
-     * @return \Zend_Db_Expr
-     */
-    private function createFirstCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT ccpi.category_id FROM $salesOrder as sfo
-                left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                WHERE sfo.customer_email = main_table.email
-                ORDER BY sfo.created_at ASC, sfoi.price DESC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * @param string $salesOrder
-     * @param string $salesOrderItem
-     * @param string $catalogCategoryProductIndex
-     *
-     * @return \Zend_Db_Expr
-     */
-    private function createLastCategoryIdColumn($salesOrder, $salesOrderItem, $catalogCategoryProductIndex)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT ccpi.category_id FROM $salesOrder as sfo
-                left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                WHERE sfo.customer_email = main_table.email
-                ORDER BY sfo.created_at DESC, sfoi.price DESC
                 LIMIT 1
             )"]
         );
@@ -700,6 +665,13 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1
                 )"]
             ),
+            'first_order_id' => $this->expressionFactory->create(
+                ["expression" => "(
+                    SELECT entity_id
+                    FROM $salesOrderGrid
+                    WHERE customer_id =e.entity_id ORDER BY created_at ASC LIMIT 1
+                )"]
+            ),
             'last_order_id' => $this->expressionFactory->create(
                 ["expression" => "(
                     SELECT entity_id
@@ -719,26 +691,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     SELECT entity_id
                     FROM $quote
                     WHERE customer_id = e.entity_id ORDER BY created_at DESC LIMIT 1
-                )"]
-            ),
-            'first_category_id' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT ccpi.category_id FROM $salesOrder as sfo
-                    left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                    WHERE sfo.customer_id = e.entity_id
-                    ORDER BY sfo.created_at ASC, sfoi.price DESC
-                    LIMIT 1
-                )"]
-            ),
-            'last_category_id' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT ccpi.category_id FROM $salesOrder as sfo
-                    left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    left join $catalogCategoryProductIndex as ccpi on ccpi.product_id = sfoi.product_id
-                    WHERE sfo.customer_id = e.entity_id
-                    ORDER BY sfo.created_at DESC, sfoi.price DESC
-                    LIMIT 1
                 )"]
             ),
             'product_id_for_first_brand' => $this->expressionFactory->create(

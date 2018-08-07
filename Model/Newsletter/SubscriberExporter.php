@@ -121,7 +121,7 @@ class SubscriberExporter
             $headers = array_merge($headers, \Dotdigitalgroup\Email\Model\Consent::$bulkFields);
             $emailContactCollection->getSelect()
                 ->joinLeft(
-                    ['ecc' => 'email_contact_consent'],
+                    ['ecc' => $emailContactCollection->getTable('email_contact_consent')],
                     "ecc.email_contact_id = main_table.email_contact_id",
                     ['consent_url', 'consent_datetime', 'consent_ip', 'consent_user_agent']
                 );

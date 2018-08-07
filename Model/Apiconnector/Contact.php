@@ -233,7 +233,7 @@ class Contact
         foreach ($customerCollection as $customer) {
             $connectorCustomer = $this->emailCustomer->create();
             $connectorCustomer->setMappingHash($mappedHash);
-            $connectorCustomer->setCustomerData($customer);
+            $connectorCustomer->setContactData($customer);
             //count number of customers
             $countIds[] = $customer->getId();
 
