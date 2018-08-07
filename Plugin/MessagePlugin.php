@@ -57,11 +57,13 @@ class MessagePlugin
         if ($templateId = $this->registry->registry('dotmailer_current_template_id')) {
             $template = $this->templateFactory->create();
             $this->templateResource->load($template, $templateId);
-            //clear from as it trows an exception if alredy set
-            if ($message->getFrom() &&
-                $this->transactionalHelper->isDotmailerTemplate($template->getTemplateCode())
-            ) {
+            $isDotmailerTemplate = $this->transactionalHelper->isDotmailerTemplate($template->getTemplateCode());
+            //clear the message sent from
+            if (method_exists($message, 'getFrom') && $message->getFrom() && $isDotmailerTemplate) {
                 $message->clearFrom();
+            }
+            //sender email and sender name for dotmailer template
+            if ($isDotmailerTemplate){
                 $message->setFrom($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
             }
         }
