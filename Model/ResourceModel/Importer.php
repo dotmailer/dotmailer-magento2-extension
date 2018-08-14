@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
@@ -38,7 +40,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_importer', 'id');
+        $this->_init(Schema::EMAIL_IMPORTER_TABLE, 'id');
     }
 
     /**
@@ -53,7 +55,7 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         try {
             $conn = $this->getConnection();
             $num = $conn->update(
-                $this->getTable('email_importer'),
+                $this->getTable(Schema::EMAIL_IMPORTER_TABLE),
                 ['import_status' => 0],
                 ['id IN(?)' => $ids]
             );

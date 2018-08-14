@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Cron\Collection;
 use Dotdigitalgroup\Email\Model\Config\Json;
+use Dotdigitalgroup\Email\Setup\Schema;
 
 class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -19,7 +20,7 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_rules', 'id');
+        $this->_init(Schema::EMAIL_RULES_TABLE, 'id');
     }
 
     /**

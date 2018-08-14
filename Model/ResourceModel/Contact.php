@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
@@ -36,7 +38,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_contact', 'email_contact_id');
+        $this->_init(Schema::EMAIL_CONTACT_TABLE, 'email_contact_id');
     }
 
     /**
@@ -76,7 +78,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $conn = $this->getConnection();
         $num = $conn->update(
-            $this->getTable('email_contact'),
+            $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['contact_id' => $this->expressionFactory->create(["expression" => 'null'])],
             $conn->quoteInto(
                 'contact_id is ?',
@@ -97,7 +99,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $conn = $this->getConnection();
         $num = $conn->update(
-            $this->getTable('email_contact'),
+            $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['email_imported' => $this->expressionFactory->create(["expression" => 'null'])],
             $conn->quoteInto(
                 'email_imported is ?',
@@ -119,7 +121,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $conn = $this->getConnection();
 
         $num = $conn->update(
-            $this->getTable('email_contact'),
+            $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['subscriber_imported' => $this->expressionFactory->create(["expression" => 'null'])],
             $conn->quoteInto(
                 'subscriber_imported is ?',

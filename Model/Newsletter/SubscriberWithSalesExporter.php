@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 class SubscriberWithSalesExporter
 {
     /**
@@ -132,7 +134,7 @@ class SubscriberWithSalesExporter
             $headers = array_merge($headers, \Dotdigitalgroup\Email\Model\Consent::$bulkFields);
             $contactSubscriberCollection->getSelect()
                 ->joinLeft(
-                    ['ecc' => $contactSubscriberCollection->getTable('email_contact_consent')],
+                    ['ecc' => $contactSubscriberCollection->getTable(Schema::EMAIL_CONTACT_CONSENT_TABLE)],
                     "ecc.email_contact_id = main_table.email_contact_id",
                     ['consent_url', 'consent_datetime', 'consent_ip', 'consent_user_agent']
                 );

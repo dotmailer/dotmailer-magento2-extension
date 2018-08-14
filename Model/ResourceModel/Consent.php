@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
@@ -16,7 +18,7 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_contact_consent', 'id');
+        $this->_init(Schema::EMAIL_CONTACT_CONSENT_TABLE, 'id');
     }
 
     public function __construct(
@@ -42,7 +44,7 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $collection = $this->consentCollectionFactory->create();
         $collection->getSelect()
             ->joinInner(
-                ['c' => $this->getTable('email_contact')],
+                ['c' => $this->getTable(Schema::EMAIL_CONTACT_TABLE)],
                 "c.email_contact_id = main_table.email_contact_id",
                 []
             );

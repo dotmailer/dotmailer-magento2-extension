@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -64,7 +66,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_catalog', 'id');
+        $this->_init(Schema::EMAIL_CATALOG_TABLE, 'id');
     }
 
     /**
@@ -347,7 +349,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         $num = $conn->update(
-            $this->getTable('email_catalog'),
+            $this->getTable(Schema::EMAIL_CATALOG_TABLE),
             [
                 'imported' => new \Zend_Db_Expr('null'),
                 'modified' => new \Zend_Db_Expr('null'),
@@ -370,7 +372,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $coreResource = $this->getConnection();
-            $tableName = $this->getTable('email_catalog');
+            $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
 
             if ($modified) {
                 $coreResource->update(
@@ -406,7 +408,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function removeOrphanProducts()
     {
         $write = $this->getConnection();
-        $catalogTable = $this->getTable('email_catalog');
+        $catalogTable = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
         $select = $write->select();
         $select->reset()
             ->from(
@@ -438,7 +440,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function setModified($ids)
     {
         $write     = $this->getConnection();
-        $tableName = $this->getTable('email_catalog');
+        $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
         $write->update(
             $tableName,
             ['modified' => 1],

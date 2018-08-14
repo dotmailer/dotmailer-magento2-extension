@@ -112,7 +112,7 @@ class InstallData implements InstallDataInterface
 
         $insertArray = ['customer_id', 'email', 'website_id', 'store_id'];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_contact'),
+            $installer->getTable(Schema::EMAIL_CONTACT_TABLE),
             $insertArray,
             false
         );
@@ -142,7 +142,7 @@ class InstallData implements InstallDataInterface
             'store_id'
         ];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_contact'),
+            $installer->getTable(Schema::EMAIL_CONTACT_TABLE),
             $insertArray,
             false
         );
@@ -168,7 +168,7 @@ class InstallData implements InstallDataInterface
 
         if (!empty($customerIds)) {
             $installer->getConnection()->update(
-                $installer->getTable('email_contact'),
+                $installer->getTable(Schema::EMAIL_CONTACT_TABLE),
                 [
                     'is_subscriber' => new \Zend_Db_Expr('1'),
                     'subscriber_status' => new \Zend_Db_Expr('1')
@@ -206,7 +206,7 @@ class InstallData implements InstallDataInterface
             'order_status'
         ];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_order'),
+            $installer->getTable(Schema::EMAIL_ORDER_TABLE),
             $insertArray,
             false
         );
@@ -248,7 +248,7 @@ class InstallData implements InstallDataInterface
             'customer_id'
         ];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_review'),
+            $installer->getTable(Schema::EMAIL_REVIEW_TABLE),
             $insertArray,
             false
         );
@@ -288,7 +288,7 @@ class InstallData implements InstallDataInterface
             'item_count'
         ];
         $sqlQuery = $select->insertFromSelect(
-            $installer->getTable('email_wishlist'),
+            $installer->getTable(Schema::EMAIL_WISHLIST_TABLE),
             $insertArray,
             false
         );
@@ -302,7 +302,7 @@ class InstallData implements InstallDataInterface
      */
     private function populateEmailCatalogTable($installer)
     {
-        $emailCatalogTable = $installer->getTable('email_catalog');
+        $emailCatalogTable = $installer->getTable(Schema::EMAIL_CATALOG_TABLE);
         $select = $installer->getConnection()->select()
             ->from(
                 [

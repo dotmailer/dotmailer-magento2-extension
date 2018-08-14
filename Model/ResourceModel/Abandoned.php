@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
@@ -16,7 +18,7 @@ class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_abandoned_cart', 'id');
+        $this->_init(Schema::EMAIL_ABANDONED_CART_TABLE, 'id');
     }
 
     /**
