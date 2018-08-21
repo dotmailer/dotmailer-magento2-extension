@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
 use Magento\TestFramework\ObjectManager;
 use Dotdigitalgroup\Email\Setup\Schema;
 

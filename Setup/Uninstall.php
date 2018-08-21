@@ -6,7 +6,8 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UninstallInterface;
 
-class Uninstall implements UninstallInterface {
+class Uninstall implements UninstallInterface
+{
     /**
      * Invoked when remove-data flag is set during module uninstall.
      *
@@ -15,7 +16,8 @@ class Uninstall implements UninstallInterface {
      *
      * @return void
      */
-    public function uninstall(SchemaSetupInterface $setup, ModuleContextInterface $context ) {
+    public function uninstall(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
         $defaultConnection = $setup->getConnection();
 
         $defaultConnection->dropTable(Schema::EMAIL_CONTACT_CONSENT_TABLE);
@@ -36,7 +38,7 @@ class Uninstall implements UninstallInterface {
             'refresh_token'
         );
 
-        $configTable = $defaultConnection->getTable('core_config_data');
+        $configTable = $defaultConnection->getTableName('core_config_data');
         $defaultConnection->delete($configTable, "path LIKE 'connector_api_credentials/%'");
     }
 }

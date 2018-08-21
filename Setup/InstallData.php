@@ -185,32 +185,82 @@ class InstallData implements InstallDataInterface
      */
     private function populateEmailOrderTable($installer)
     {
-        $select = $installer->getConnection()->select()
-            ->from(
-                $installer->getTable('sales_order'),
-                [
-                    'order_id' => 'entity_id',
-                    'quote_id',
-                    'store_id',
-                    'created_at',
-                    'updated_at',
-                    'order_status' => 'status'
-                ]
+        $model = [];
+        $model['dotmailerTableConnection'] = $installer->getConnection();
+        $model['dotmailerTableName'] = $installer->getConnection()
+                                                 ->getTableName(Schema::EMAIL_ORDER_TABLE);
+        $model['dotmailerTableTargetColumns'] = [
+                                                'order_id',
+                                                'quote_id',
+                                                'store_id',
+                                                'created_at',
+                                                'updated_at',
+                                                'order_status'
+                                              ];
+        $model['magentoTableConnection'] = $installer->getConnection('sales');
+        $model['magentoTableName'] = $installer->getConnection('sales')
+                                               ->getTableName('sales_order');
+        $model['magentoTableIdColumn'] = 'entity_id';
+        $model['magentoTableSourceColumns'] = [
+                                                'order_id' => 'entity_id',
+                                                'quote_id',
+                                                'store_id',
+                                                'created_at',
+                                                'updated_at',
+                                                'order_status' => 'status'
+                                            ];
+        $model['batchSize'] = 1000;
+
+        $this->batchPopulateTable($model);
+    }
+
+    /**
+     * @param array $batchPopulateTableModel
+     *
+     * @return null
+     */
+    private function batchPopulateTable($batchPopulateTableModel)
+    {
+        $sourceConnection = $batchPopulateTableModel['magentoTableConnection'];
+        $sourceTableName = $batchPopulateTableModel['magentoTableName'];
+        $sourceTableIdColumn = $batchPopulateTableModel['magentoTableIdColumn'];
+        $sourceTableColumns = $batchPopulateTableModel['magentoTableSourceColumns'];
+
+        $minSourceIdSelect = $sourceConnection->select()
+                                              ->from($sourceTableName, [$sourceTableIdColumn])
+                                              ->order("$sourceTableIdColumn ASC");
+
+        $minSourceId = $sourceConnection->fetchRow($minSourceIdSelect)[$sourceTableIdColumn];
+
+        $maxSourceIdSelect = $sourceConnection->select()
+                                              ->from($sourceTableName, [$sourceTableIdColumn])
+                                              ->order("$sourceTableIdColumn DESC");
+
+        $maxOrderId = $sourceConnection->fetchRow($maxSourceIdSelect)[$sourceTableIdColumn];
+
+        $batchSize = $batchPopulateTableModel['batchSize'];
+        $batchMinId = $minSourceId;
+        $batchMaxId = $minSourceId + $batchSize;
+        $moreRecords = true;
+
+        while ($moreRecords) {
+            $sourceBatchSelect = $sourceConnection->select()
+                                                  ->from($sourceTableName, $sourceTableColumns)
+                                                  ->where('entity_id >= ?', $batchMinId)
+                                                  ->where('entity_id < ?', $batchMaxId);
+
+            $pageOfResults = $sourceConnection->fetchAll($sourceBatchSelect);
+
+            $batchPopulateTableModel['dotmailerTableConnection']->insertArray(
+                $batchPopulateTableModel['dotmailerTableName'],
+                $batchPopulateTableModel['dotmailerTableTargetColumns'],
+                $pageOfResults
             );
-        $insertArray = [
-            'order_id',
-            'quote_id',
-            'store_id',
-            'created_at',
-            'updated_at',
-            'order_status'
-        ];
-        $sqlQuery = $select->insertFromSelect(
-            $installer->getTable(Schema::EMAIL_ORDER_TABLE),
-            $insertArray,
-            false
-        );
-        $installer->getConnection()->query($sqlQuery);
+
+            $moreRecords = $maxOrderId >= $batchMaxId;
+            $batchMinId = $batchMinId + $batchSize;
+            $batchMaxId = $batchMaxId + $batchSize;
+        }
     }
 
     /**
