@@ -17,11 +17,6 @@ class TransportPlugin
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Mail\AdapterInterface
-     */
-    private $mailAdapter;
-
-    /**
      * @var int|null
      */
     private $storeId;
@@ -32,28 +27,28 @@ class TransportPlugin
     private $dataHelper;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter
+     */
+    private $smtpTransportAdapter;
+
+    /**
      * TransportPlugin constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Mail\AdapterInterfaceFactory $mailAdapterFactory
+     * @param \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter $smtpTransportAdapterFactory
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
      * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Mail\AdapterInterfaceFactory $mailAdapterFactory,
+        \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter $smtpTransportAdapter,
         \Dotdigitalgroup\Email\Helper\Transactional $helper,
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Framework\Registry $registry
     ) {
+        $this->smtpTransportAdapter = $smtpTransportAdapter;
         $this->storeId = $registry->registry('transportBuilderPluginStoreId');
-        $this->helper   = $helper;
+        $this->helper = $helper;
         $this->dataHelper = $dataHelper;
-        $this->mailAdapter = $mailAdapterFactory->create(
-            [
-            'host' => $this->helper->getSmtpHost($this->storeId),
-            'config' => $this->helper->getTransportConfig($this->storeId)
-            ]
-        );
     }
 
     /**
@@ -69,18 +64,9 @@ class TransportPlugin
     ) {
         if ($this->helper->isEnabled($this->storeId)) {
             try {
-                // For >= 2.2
-                if (method_exists($subject, 'getMessage')) {
-                    $this->mailAdapter->send($subject->getMessage());
-                } else {
-                    //For < 2.2
-                    $reflection = new \ReflectionClass($subject);
-                    $property = $reflection->getProperty('_message');
-                    $property->setAccessible(true);
-                    $this->mailAdapter->send($property->getValue($subject));
-                }
+                $this->smtpTransportAdapter->send($subject, $this->storeId);
+
             } catch (\Exception $e) {
-                //Log exception message and return to default Magento sending.
                 $this->dataHelper->log("TransportPlugin send exception: " . $e->getMessage());
                 return $proceed();
             }
