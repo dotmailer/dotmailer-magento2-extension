@@ -20,25 +20,48 @@ class Uninstall implements UninstallInterface
     {
         $defaultConnection = $setup->getConnection();
 
-        $defaultConnection->dropTable(Schema::EMAIL_CONTACT_CONSENT_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_CONTACT_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_ORDER_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_CAMPAIGN_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_REVIEW_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_WISHLIST_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_CATALOG_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_RULES_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_IMPORTER_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_AUTOMATION_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_ABANDONED_CART_TABLE);
-        $defaultConnection->dropTable(Schema::EMAIL_FAILED_AUTH_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_CONTACT_CONSENT_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_CONTACT_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_ORDER_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_CAMPAIGN_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_REVIEW_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_WISHLIST_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_CATALOG_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_RULES_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_IMPORTER_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_AUTOMATION_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_ABANDONED_CART_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_FAILED_AUTH_TABLE);
 
         $defaultConnection->dropColumn(
-            $defaultConnection->getTableName('admin_user'),
+            $this->getTableNameWithPrefix($setup, 'admin_user'),
             'refresh_token'
         );
 
-        $configTable = $defaultConnection->getTableName('core_config_data');
-        $defaultConnection->delete($configTable, "path LIKE 'connector_api_credentials/%'");
+        $defaultConnection->delete(
+            $this->getTableNameWithPrefix($setup, 'core_config_data'),
+            "path LIKE 'connector_api_credentials/%'"
+        );
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param string $tableName
+     */
+    private function dropTable(SchemaSetupInterface $setup, $tableName)
+    {
+        $connection = $setup->getConnection();
+        $connection->dropTable($this->getTableNameWithPrefix($setup, $tableName));
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param string $tableName
+     *
+     * @return string
+     */
+    private function getTableNameWithPrefix(SchemaSetupInterface $setup, $tableName)
+    {
+        return $setup->getTable($tableName);
     }
 }
