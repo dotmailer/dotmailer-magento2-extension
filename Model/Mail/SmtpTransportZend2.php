@@ -34,7 +34,7 @@ class SmtpTransportZend2
      */
     public function send($message, $storeId)
     {
-        $smtpOptions = $this->transactionalEmailSettings->getSmtpOptions23($storeId);
+        $smtpOptions = $this->transactionalEmailSettings->getSmtpOptions($storeId);
         $smtp = $this->zendMailTransportSmtp2Factory->create($smtpOptions);
         $smtp->send($message);
     }

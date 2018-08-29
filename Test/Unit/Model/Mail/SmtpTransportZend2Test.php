@@ -55,7 +55,7 @@ class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
         $smtpOptions = [];
 
         $this->transactionalEmailSettings->expects($this->once())
-                                         ->method('getSmtpOptions23')
+                                         ->method('getSmtpOptions')
                                          ->with($storeId)
                                          ->willReturn($smtpOptions);
 

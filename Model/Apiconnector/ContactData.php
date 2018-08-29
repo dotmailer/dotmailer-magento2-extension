@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 /**
- * Class ContactData
+ * Manages data synced as contact.
  * @package Dotdigitalgroup\Email\Model\Apiconnector
  */
 class ContactData

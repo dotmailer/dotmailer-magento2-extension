@@ -162,7 +162,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return SmtpOptions
      */
-    public function getSmtpOptions23($storeId)
+    public function getSmtpOptions($storeId)
     {
         return new SmtpOptions(
             [
