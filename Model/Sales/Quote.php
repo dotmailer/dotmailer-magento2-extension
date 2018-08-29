@@ -57,6 +57,11 @@ class Quote
     public $quoteCollectionFactory;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer
+     */
+    public $subscriberFilterer;
+
+    /**
      * @var Campaign
      */
     private $campaignResource;
@@ -120,12 +125,12 @@ class Quote
 
     /**
      * Quote constructor.
-     *
      * @param \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param Campaign $campaignResource
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource
+     * @param \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer $subscriberFilterer
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
@@ -137,24 +142,26 @@ class Quote
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource,
+        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer $subscriberFilterer,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
     ) {
-        $this->dateIntervalFactory = $dateIntervalFactory;
+        $this->timeZone = $timezone;
         $this->rulesFactory = $rulesFactory;
+        $this->campaignFactory = $campaignFactory;
         $this->helper = $abandonedResource->helper;
         $this->abandonedFactory = $abandonedFactory;
-        $this->abandonedCollectionFactory = $abandonedFactory->create()->abandonedCollectionFactory;
-        $this->abandonedResource = $abandonedResource;
-        $this->campaignCollection = $campaignFactory->create()->campaignCollection;
         $this->campaignResource = $campaignResource;
-        $this->campaignFactory = $campaignFactory;
-        $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->orderCollection = $collectionFactory;
+        $this->abandonedResource = $abandonedResource;
+        $this->subscriberFilterer = $subscriberFilterer;
+        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->scopeConfig = $this->helper->getScopeConfig();
-        $this->timeZone = $timezone;
+        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->campaignCollection = $campaignFactory->create()->campaignCollection;
+        $this->abandonedCollectionFactory = $abandonedFactory->create()->abandonedCollectionFactory;
     }
 
     /**
@@ -303,8 +310,8 @@ class Quote
      * @param string|null $to
      * @param bool $guest
      * @param int $storeId
-     *
-     * @return mixed
+     * @return \Magento\Quote\Model\ResourceModel\Quote\Collection|\Magento\Sales\Model\ResourceModel\Order\Collection
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
     {
@@ -880,8 +887,7 @@ class Quote
         }
 
         if ($this->helper->isOnlySubscribersForAC($storeId)) {
-            $abandonedCollection = $this->orderCollection->create()
-                ->joinSubscribersOnCollection($abandonedCollection, "main_table.email");
+            $abandonedCollection = $this->subscriberFilterer->filterBySubscribedStatus($abandonedCollection, "email");
         }
 
         return $abandonedCollection;
