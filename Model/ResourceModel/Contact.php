@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Setup\Schema;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
@@ -42,9 +43,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $orderCollectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Config
      */
-    private $helper;
+    private $config;
 
     /**
      * Initialize resource.
@@ -58,6 +59,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Contact constructor.
+     *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
@@ -66,7 +68,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\Data $config
      * @param null $connectionName
      */
     public function __construct(
@@ -78,17 +80,17 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
+        Config $config,
         $connectionName = null
     ) {
-        $this->helper = $helper;
-        $this->expressionFactory = $expressionFactory;
-        $this->schelduleFactory = $schedule;
-        $this->customerCollection = $customerCollectionFactory;
-        $this->subscribersCollection = $subscriberCollection;
+        $this->config                   = $config;
+        $this->expressionFactory        = $expressionFactory;
+        $this->schelduleFactory         = $schedule;
+        $this->customerCollection       = $customerCollectionFactory;
+        $this->subscribersCollection    = $subscriberCollection;
         $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->orderCollectionFactory = $orderCollectionFactory;
-        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->orderCollectionFactory   = $orderCollectionFactory;
+        $this->quoteCollectionFactory   = $quoteCollectionFactory;
         parent::__construct($context, $connectionName);
     }
 
@@ -274,8 +276,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getSalesDataForSubscribersWithOrderStatusesAndBrand($emails, $websiteId)
     {
-        $orderStatuses = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
+        $orderStatuses = $this->config->getWebsiteConfig(
+            Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
             $websiteId
         );
         $orderStatuses = explode(',', $orderStatuses);
