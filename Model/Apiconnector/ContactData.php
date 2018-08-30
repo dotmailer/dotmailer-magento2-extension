@@ -339,25 +339,19 @@ class ContactData
      */
     public function getMostPurBrand()
     {
-        $optionId = $this->model->getMostBrand();
+        $productId = $this->model->getProductIdForMostSoldProduct();
         $storeId = $this->model->getStoreId();
-
-        //attribute mapped from the config
         $attributeCode = $this->configHelper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
             $this->store->getStore($storeId)->getWebsiteId()
         );
 
         //if the id and attribute found
-        if ($optionId && $attributeCode) {
-            $attribute = $this->eavConfigFactory->create()
-                ->getAttribute(\Magento\Catalog\Model\Product::ENTITY, $attributeCode);
-
-            $value = $attribute->setStoreId($storeId)
-                ->getSource()
-                ->getOptionText($optionId);
-
-            //check for brand text
+        if ($productId && $attributeCode) {
+            $product = $this->productFactory->create()
+                ->setStoreId($storeId);
+            $this->productResource->load($product, $productId);
+            $value = $this->productResource->getAttribute($attributeCode)->getFrontend()->getValue($product);
             if ($value) {
                 return $value;
             }
@@ -403,8 +397,16 @@ class ContactData
      */
     public function getMostPurCategory()
     {
-        $categoryId = $this->model->getMostCategoryId();
-        return $this->getCategoryValue($categoryId);
+        $productId = $this->model->getProductIdForMostSoldProduct();
+        $product = $this->productFactory->create()
+            ->setStoreId($this->model->getStoreId());
+        $this->productResource->load($product, $productId);
+        $categoryIds = $product->getCategoryIds();
+        if (count($categoryIds)) {
+            return $this->getCategoryNames($categoryIds);
+        }
+
+        return "";
     }
 
     /**
