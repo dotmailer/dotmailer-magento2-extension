@@ -59,7 +59,7 @@ class MessagePlugin
             $this->templateResource->load($template, $templateId);
             $isDotmailerTemplate = $this->transactionalHelper->isDotmailerTemplate($template->getTemplateCode());
             //clear the message sent from
-            if (method_exists($message, 'getFrom') && $message->getFrom() && $isDotmailerTemplate) {
+            if ($message instanceof \Zend_Mail && $message->getFrom() && $isDotmailerTemplate) {
                 $message->clearFrom();
             }
             //sender email and sender name for dotmailer template
