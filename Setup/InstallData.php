@@ -252,34 +252,35 @@ class InstallData implements InstallDataInterface
                                               ->order("$sourceTableIdColumn ASC");
 
         $minSourceId = $sourceConnection->fetchRow($minSourceIdSelect)[$sourceTableIdColumn];
+        if ($minSourceId) {
+            $maxSourceIdSelect = $sourceConnection->select()
+                                                  ->from($sourceTableName, [$sourceTableIdColumn])
+                                                  ->order("$sourceTableIdColumn DESC");
 
-        $maxSourceIdSelect = $sourceConnection->select()
-                                              ->from($sourceTableName, [$sourceTableIdColumn])
-                                              ->order("$sourceTableIdColumn DESC");
+            $maxOrderId = $sourceConnection->fetchRow($maxSourceIdSelect)[$sourceTableIdColumn];
 
-        $maxOrderId = $sourceConnection->fetchRow($maxSourceIdSelect)[$sourceTableIdColumn];
+            $batchMinId = $minSourceId;
+            $batchMaxId = $minSourceId + $batchSize;
+            $moreRecords = true;
 
-        $batchMinId = $minSourceId;
-        $batchMaxId = $minSourceId + $batchSize;
-        $moreRecords = true;
+            while ($moreRecords) {
+                $sourceBatchSelect = $sourceConnection->select()
+                                                      ->from($sourceTableName, $sourceTableColumns)
+                                                      ->where('entity_id >= ?', $batchMinId)
+                                                      ->where('entity_id < ?', $batchMaxId);
 
-        while ($moreRecords) {
-            $sourceBatchSelect = $sourceConnection->select()
-                                                  ->from($sourceTableName, $sourceTableColumns)
-                                                  ->where('entity_id >= ?', $batchMinId)
-                                                  ->where('entity_id < ?', $batchMaxId);
+                $pageOfResults = $sourceConnection->fetchAll($sourceBatchSelect);
 
-            $pageOfResults = $sourceConnection->fetchAll($sourceBatchSelect);
+                $dotmailerTableConnection->insertArray(
+                    $dotmailerTableName,
+                    $dotmailerTableTargetColumns,
+                    $pageOfResults
+                );
 
-            $dotmailerTableConnection->insertArray(
-                $dotmailerTableName,
-                $dotmailerTableTargetColumns,
-                $pageOfResults
-            );
-
-            $moreRecords = $maxOrderId >= $batchMaxId;
-            $batchMinId = $batchMinId + $batchSize;
-            $batchMaxId = $batchMaxId + $batchSize;
+                $moreRecords = $maxOrderId >= $batchMaxId;
+                $batchMinId = $batchMinId + $batchSize;
+                $batchMaxId = $batchMaxId + $batchSize;
+            }
         }
     }
 
