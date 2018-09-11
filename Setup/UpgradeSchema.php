@@ -271,19 +271,22 @@ class UpgradeSchema implements UpgradeSchemaInterface
         SchemaSetupInterface $setup,
         \Magento\Framework\DB\Adapter\AdapterInterface $connection
     ) {
-        $connection->addForeignKey(
-            $setup->getFkName(
-                Schema::EMAIL_ORDER_TABLE,
+        //Only add foreign key if table exist in default connection
+        if ($connection->isTableExists($setup->getTable('sales_order'))) {
+            $connection->addForeignKey(
+                $setup->getFkName(
+                    Schema::EMAIL_ORDER_TABLE,
+                    'order_id',
+                    'sales_order',
+                    'entity_id'
+                ),
+                $setup->getTable(Schema::EMAIL_ORDER_TABLE),
                 'order_id',
-                'sales_order',
-                'entity_id'
-            ),
-            $setup->getTable(Schema::EMAIL_ORDER_TABLE),
-            'order_id',
-            $setup->getTable('sales_order'),
-            'entity_id',
-            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-        );
+                $setup->getTable('sales_order'),
+                'entity_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            );
+        }
     }
 
     /**

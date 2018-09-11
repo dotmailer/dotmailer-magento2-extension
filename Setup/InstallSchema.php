@@ -270,19 +270,22 @@ class InstallSchema implements InstallSchemaInterface
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
         );
 
-        $orderTable->addForeignKey(
-            $installer->getFkName(
-                $installer->getTable(Schema::EMAIL_ORDER_TABLE),
+        //Only add foreign key if table exist in default connection
+        if ($installer->getConnection()->isTableExists($installer->getTable('sales_order'))) {
+            $orderTable->addForeignKey(
+                $installer->getFkName(
+                    $installer->getTable(Schema::EMAIL_ORDER_TABLE),
+                    'order_id',
+                    'sales_order',
+                    'entity_id'
+                ),
                 'order_id',
-                'sales_order',
-                'entity_id'
-            ),
-            'order_id',
-            $installer->getTable('sales_order'),
-            'entity_id',
-            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
-            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-        );
+                $installer->getTable('sales_order'),
+                'entity_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            );
+        }
 
         $orderTable->setComment('Transactional Order Data');
         $installer->getConnection()->createTable($orderTable);
