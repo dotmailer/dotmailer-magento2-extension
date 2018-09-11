@@ -124,6 +124,7 @@ class Catalog
                 $this->productIds = array_merge($this->productIds, $products->getColumnValues('entity_id'));
 
                 foreach ($products as $product) {
+                    $product->setStoreId($store->getId());
                     $connProduct = $this->connectorProductFactory->create()
                         ->setProduct($product);
                     $connectorProducts[] = $connProduct->expose();
