@@ -274,7 +274,7 @@ class Product
 
             foreach ($productAttributeOptions as $productAttribute) {
                 $count = 0;
-                $label = $this->transformProductLabel($productAttribute);
+                $label   = strtolower(str_replace(' ', '', $productAttribute['label']));
                 $options = [];
                 foreach ($productAttribute['values'] as $attribute) {
                     $options[$count]['option'] = $attribute['default_label'];
@@ -314,50 +314,4 @@ class Product
         );
     }
 
-    /**
-     * @return string
-     */
-    public function __sleep()
-    {
-        $properties = array_keys(get_object_vars($this));
-        $properties = array_diff(
-            $properties,
-            [
-                'storeManager',
-                'helper',
-                'itemFactory',
-                'mediaConfigFactory',
-                'visibilityFactory',
-                'statusFactory',
-                'storeManager'
-            ]
-        );
-
-        return $properties;
-    }
-
-    /**
-     * Init not serializable fields.
-     *
-     * @return null
-     */
-    public function __wakeup()
-    {
-    }
-
-    /**
-     * Transform attribute label to acceptable format
-     *
-     * @param array $productAttribute
-     * @return string
-     */
-    private function transformProductLabel($productAttribute)
-    {
-         $label = strtolower(str_replace(' ', '', $productAttribute['label']));
-
-         $regex = '/([a-zA-Z0-9_\-]+)$/';
-         preg_match($regex, $label, $matches);
-
-         return $matches[1];
-    }
 }
