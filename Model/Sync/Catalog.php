@@ -109,22 +109,22 @@ class Catalog
     /**
      * Export catalog.
      *
-     * @param \Magento\Store\Model\Store|int $store
+     * @param int $storeId
      *
      * @return array|bool
      */
-    public function exportCatalog($store)
+    public function exportCatalog($storeId)
     {
         $connectorProducts = [];
         //all products for export
-        $products = $this->getProductsToExport($store);
+        $products = $this->getProductsToExport($storeId);
         //get products id's
         try {
             if ($products) {
                 $this->productIds = array_merge($this->productIds, $products->getColumnValues('entity_id'));
 
                 foreach ($products as $product) {
-                    $product->setStoreId($store->getId());
+                    $product->setStoreId($storeId);
                     $connProduct = $this->connectorProductFactory->create()
                         ->setProduct($product);
                     $connectorProducts[] = $connProduct->expose();
@@ -140,19 +140,20 @@ class Catalog
     /**
      * Export in single.
      *
-     * @param \Magento\Store\Model\Store|int $store
+     * @param int $storeId
      * @param string $collectionName
      * @param int $websiteId
      *
      * @return null
      */
-    public function exportInSingle($store, $collectionName, $websiteId)
+    public function exportInSingle($storeId, $collectionName, $websiteId)
     {
         $productIds = [];
-        $products         = $this->getProductsToExport($store, true);
+        $products         = $this->getProductsToExport($storeId, true);
         if (! empty($products)) {
             foreach ($products as $product) {
                 $connectorProduct = $this->connectorProductFactory->create();
+                $product->setStoreId($storeId);
                 $connectorProduct->setProduct($product);
                 $this->helper->log(
                     '---------- Start catalog single sync ----------'
@@ -283,7 +284,7 @@ class Catalog
         foreach ($stores as $store) {
             $websiteCode = $store->getWebsite()->getCode();
             $storeCode = $store->getCode();
-            $products = $this->exportCatalog($store);
+            $products = $this->exportCatalog($store->getId());
             if (! empty($products)) {
                 //register in queue with importer
                 $check = $this->importerFactory->create()
@@ -304,7 +305,7 @@ class Catalog
             }
             //using single api
             $this->exportInSingle(
-                $store,
+                $store->getId(),
                 'Catalog_' . $websiteCode . '_' . $storeCode,
                 $store->getWebsiteId()
             );
