@@ -28,20 +28,18 @@ class SubscriberFilterer
     public function filterBySubscribedStatus($collection, $emailColumn = 'customer_email')
     {
         $originalCollection = clone $collection;
-
         $emails = $originalCollection->getColumnValues($emailColumn);
 
-        if (empty($emails)) {
-            return $collection;
-        }
+        if (! empty($emails)) {
+            $subscriberCollectionFactory = $this->subscriberCollectionFactory->create();
+            $onlySubscribedEmails = $subscriberCollectionFactory->addFieldToFilter(
+                'subscriber_email',
+                ['in' => $emails]
+            )
+                ->addFieldToFilter('subscriber_status', \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED)
+                ->getColumnValues('subscriber_email');
 
-        $subscriberCollectionFactory = $this->subscriberCollectionFactory->create();
-        $subscriberEmails = $subscriberCollectionFactory->addFieldToFilter('subscriber_email', ['in' => $emails])
-            ->addFieldToFilter('subscriber_status', \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED)
-            ->getColumnValues('subscriber_email');
-
-        if (! empty($subscriberEmails)) {
-            $collection->addFieldToFilter($emailColumn, ['in' => $subscriberEmails]);
+            $collection->addFieldToFilter($emailColumn, ['in' => $onlySubscribedEmails]);
         }
 
         return $collection;
