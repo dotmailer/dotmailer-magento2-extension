@@ -1058,30 +1058,37 @@
                 <field id="customer_create_account_email_template" translate="label" sortOrder="20" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Account</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="customer_create_account_email_confirmation_template" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Account Confirmation Key</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="customer_create_account_email_confirmed_template" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Account Confirmation</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="customer_password_forgot_email_template" translate="label" sortOrder="50" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Forgot Password</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="customer_password_remind_email_template" translate="label" sortOrder="60" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Remind Password</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="wishlist_email_email_template" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Wish List Sharing</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="admin_emails_forgot_email_template" translate="label" sortOrder="80" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Forgot Admin Password</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="newsletter_title" translate="label" sortOrder="200" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Newsletter</label>
@@ -1090,14 +1097,17 @@
                 <field id="newsletter_subscription_success_email_template" translate="label" sortOrder="210" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Success Email Template</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="newsletter_subscription_confirm_email_template" translate="label" sortOrder="220" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Subscription Confirmation</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="newsletter_subscription_un_email_template" translate="label" sortOrder="230" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Unsubscribe Success</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_title" translate="label" sortOrder="300" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Sales</label>
@@ -1106,62 +1116,77 @@
                 <field id="sales_email_order_template" translate="label" sortOrder="305" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Order Confirmation</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_order_guest_template" translate="label" sortOrder="310" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Order Confirmation For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_order_comment_template" translate="label" sortOrder="315" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Order Update</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_order_comment_guest_template" translate="label" sortOrder="320" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Order Update For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_shipment_template" translate="label" sortOrder="330" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Shipment</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_shipment_guest_template" translate="label" sortOrder="335" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Shipment For Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_shipment_comment_template" translate="label" sortOrder="340" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Shipment Update</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_invoice_template" translate="label" sortOrder="345" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Invoice</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_invoice_guest_template" translate="label" sortOrder="350" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Invoice Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_invoice_comment_template" translate="label" sortOrder="355" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Invoice Update</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_invoice_comment_guest_template" translate="label" sortOrder="360" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Invoice Update Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_creditmemo_template" translate="label" sortOrder="365" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Credit Credit Memo</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_creditmemo_guest_template" translate="label" sortOrder="370" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Credit Credit Memo Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_creditmemo_comment_template" translate="label" sortOrder="375" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Credit Memo Update</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="sales_email_creditmemo_comment_guest_template" translate="label" sortOrder="380" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Credit Memo Update Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="contact_title" translate="label" sortOrder="400" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Contact</label>
@@ -1170,6 +1195,7 @@
                 <field id="contact_email_email_template" translate="label" sortOrder="410" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>New Contact Form</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="email_title" translate="label" sortOrder="600" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Email</label>
@@ -1178,6 +1204,7 @@
                 <field id="sendfriend_email_template" translate="label" sortOrder="610" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Send Product To Friend</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="product_alerts_title" translate="label" sortOrder="700" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Product Alerts</label>
@@ -1186,10 +1213,12 @@
                 <field id="product_stock_alert_template" translate="label" sortOrder="710" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Stock Alert</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
                 <field id="product_price_alert_template" translate="label" sortOrder="720" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Product Price Alert</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
             </group>
         </section>

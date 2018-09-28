@@ -346,17 +346,17 @@ class Template extends \Magento\Framework\DataObject
     /**
      * @param string $templateConfigPath
      * @param int $campaignId
-     * @param int $storeId
-     * @param int $websiteId
+     * @param string $scope
+     * @param int $scopeId
      * @return bool|mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function saveTemplateWithConfigPath($templateConfigPath, $campaignId, $storeId, $websiteId)
+    public function saveTemplateWithConfigPath($templateConfigPath, $campaignId, $scope, $scopeId)
     {
-        if ($storeId) {
-            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-        } elseif ($websiteId) {
-            $websiteId = $this->storeManager->getWebsite($websiteId)->getId();
+        if ($scope == \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES) {
+            $websiteId = $scopeId;
+        } elseif ($scope == \Magento\Store\Model\ScopeInterface::SCOPE_STORES) {
+            $websiteId = $this->storeManager->getStore($scopeId)->getWebsiteId();
         } else {
             $websiteId = '0';
         }
