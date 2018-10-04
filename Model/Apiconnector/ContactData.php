@@ -397,16 +397,23 @@ class ContactData
      */
     public function getMostPurCategory()
     {
+        $categories = '';
         $productId = $this->model->getProductIdForMostSoldProduct();
-        $product = $this->productFactory->create()
-            ->setStoreId($this->model->getStoreId());
-        $this->productResource->load($product, $productId);
-        $categoryIds = $product->getCategoryIds();
-        if (count($categoryIds)) {
-            return $this->getCategoryNames($categoryIds);
+        //sales data found for customer with product id
+        if ($productId) {
+            $product = $this->productFactory->create()
+                ->setStoreId($this->model->getStoreId());
+            $this->productResource->load($product, $productId);
+            //product found
+            if ($product->getId()) {
+                $categoryIds = $product->getCategoryIds();
+                if (count($categoryIds)) {
+                    $categories = $this->getCategoryNames($categoryIds);
+                }
+            }
         }
 
-        return "";
+        return $categories;
     }
 
     /**

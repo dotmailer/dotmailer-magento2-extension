@@ -1248,7 +1248,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
      *
-     * @return string|boolean
+     * @return array|boolean
      */
     public function getWebsiteCustomerMappingDatafields($website)
     {
