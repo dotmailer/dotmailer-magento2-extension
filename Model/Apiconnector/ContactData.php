@@ -252,9 +252,12 @@ class ContactData
         //categories from all products
         foreach ($orderItems as $item) {
             $product = $item->getProduct();
-            $categoryIds = $product->getCategoryIds();
-            if (count($categoryIds)) {
-                $catIds = array_unique(array_merge($catIds, $categoryIds));
+            //sales item product may return null if the product not exists anymore rathe then empty object
+            if ($product) {
+                $categoryIds = $product->getCategoryIds();
+                if (count($categoryIds)) {
+                    $catIds = array_unique(array_merge($catIds, $categoryIds));
+                }
             }
         }
 
