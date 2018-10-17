@@ -20,12 +20,18 @@ require([
         }
 
         confirmation({
-            title: $("label[for='" + element.attr("id") + "'] span").text(),
+            title: $('label[for=' + element.attr('id') + '] span').text(),
             content: content,
             actions: {
+                /**
+                 * Confirm.
+                 */
                 confirm: function () {
                     element.val(1);
                 },
+                /**
+                 * Reset.
+                 */
                 cancel: function () {
                     element.val(0);
                 }
