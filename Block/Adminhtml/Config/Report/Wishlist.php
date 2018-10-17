@@ -10,7 +10,7 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @var string
      */
-    public $buttonLabel = 'Contact Report';
+    public $buttonLabel = 'Wishlist Report';
 
     /**
      * @deprecated

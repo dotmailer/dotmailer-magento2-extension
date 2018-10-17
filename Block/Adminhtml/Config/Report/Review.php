@@ -10,7 +10,7 @@ class Review extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @var string
      */
-    public $buttonLabel = 'Contact Report';
+    public $buttonLabel = 'Review Report';
 
     /**
      * @deprecated

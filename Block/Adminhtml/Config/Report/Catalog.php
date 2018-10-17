@@ -9,7 +9,7 @@ class Catalog extends \Magento\Config\Block\System\Config\Form\Field
      * @deprecated
      * @var string
      */
-    public $buttonLabel = 'Contact Report';
+    public $buttonLabel = 'Catalog Report';
 
     /**
      * @deprecated
