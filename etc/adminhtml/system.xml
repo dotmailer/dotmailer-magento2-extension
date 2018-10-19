@@ -1022,10 +1022,12 @@
                 <field id="host" translate="label" sortOrder="30" type="text" showInStore="1" showInWebsite="1"
                        showInDefault="1">
                     <label>Host</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\TextValueTrimmer</backend_model>
                 </field>
                 <field id="username" translate="label" sortOrder="40" type="text" showInStore="1" showInWebsite="1"
                        showInDefault="1">
                     <label>Username</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\TextValueTrimmer</backend_model>
                 </field>
                 <field id="password" translate="label" sortOrder="50" type="obscure" showInStore="1" showInWebsite="1"
                        showInDefault="1">
