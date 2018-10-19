@@ -12,14 +12,14 @@ use Magento\Framework\Mail\TransportInterface;
 class TransportPlugin
 {
     /**
+     * @var \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter
+     */
+    private $smtpTransportAdapter;
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Transactional
      */
     private $helper;
-
-    /**
-     * @var int|null
-     */
-    private $storeId;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -27,14 +27,14 @@ class TransportPlugin
     private $dataHelper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter
+     * @var \Magento\Framework\Registry
      */
-    private $smtpTransportAdapter;
+    private $registry;
 
     /**
      * TransportPlugin constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter $smtpTransportAdapterFactory
+     * @param \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter $smtpTransportAdapter
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
      * @param \Magento\Framework\Registry $registry
@@ -46,9 +46,9 @@ class TransportPlugin
         \Magento\Framework\Registry $registry
     ) {
         $this->smtpTransportAdapter = $smtpTransportAdapter;
-        $this->storeId = $registry->registry('transportBuilderPluginStoreId');
         $this->helper = $helper;
         $this->dataHelper = $dataHelper;
+        $this->registry = $registry;
     }
 
     /**
@@ -62,9 +62,10 @@ class TransportPlugin
         TransportInterface $subject,
         \Closure $proceed
     ) {
-        if ($this->helper->isEnabled($this->storeId)) {
+        $storeId = $this->registry->registry('transportBuilderPluginStoreId');
+        if ($this->helper->isEnabled($storeId)) {
             try {
-                $this->smtpTransportAdapter->send($subject, $this->storeId);
+                $this->smtpTransportAdapter->send($subject, $storeId);
 
             } catch (\Exception $e) {
                 $this->dataHelper->log("TransportPlugin send exception: " . $e->getMessage());
