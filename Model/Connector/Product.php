@@ -247,8 +247,12 @@ class Product
                 $selectionCollection
             );
             foreach ($options as $option) {
+                $trimmedTitle = str_replace(' ', '', $option->getDefaultTitle());
+                if (!$this->textIsValidForInsightDataKey($trimmedTitle)) {
+                    continue;
+                }
+
                 $count = 0;
-                $title = str_replace(' ', '', $option->getDefaultTitle());
                 $selections = $option->getSelections();
                 $sOptions = [];
                 foreach ($selections as $selection) {
@@ -263,7 +267,7 @@ class Product
                     );
                     ++$count;
                 }
-                $this->$title = $sOptions;
+                $this->$trimmedTitle = $sOptions;
             }
         }
 
@@ -273,8 +277,12 @@ class Product
                 ->getConfigurableAttributesAsArray($product);
 
             foreach ($productAttributeOptions as $productAttribute) {
+                $trimmedLabel = str_replace(' ', '', $productAttribute['label']);
+                if (!$this->textIsValidForInsightDataKey($trimmedLabel)) {
+                    continue;
+                }
+
                 $count = 0;
-                $label   = strtolower(str_replace(' ', '', $productAttribute['label']));
                 $options = [];
                 foreach ($productAttribute['values'] as $attribute) {
                     $options[$count]['option'] = $attribute['default_label'];
@@ -288,7 +296,7 @@ class Product
                     }
                     ++$count;
                 }
-                $this->$label = $options;
+                $this->$trimmedLabel = $options;
             }
         }
     }
@@ -314,4 +322,15 @@ class Product
         );
     }
 
+    /**
+     * @param string $label
+     *
+     * https://support.dotmailer.com/hc/en-gb/articles/212214538-Using-Insight-data-developers-guide-#restrictkeys
+     *
+     * @return false|int
+     */
+    private function textIsValidForInsightDataKey($label)
+    {
+        return preg_match('/^[a-zA-Z_\\\\-][a-zA-Z0-9_\\\\-]*$/', $label);
+    }
 }
