@@ -66,7 +66,27 @@ class ContactData
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
+    private $storeManager;
+
+    /**
+     * @var \Magento\Store\Model\Store
+     */
     private $store;
+
+    /**
+     * @var array
+     */
+    private $brandValue = [];
+
+    /**
+     * @var array
+     */
+    private $categoryNames = [];
+
+    /**
+     * @var array
+     */
+    private $products = [];
 
     /**
      * ContactData constructor.
@@ -91,7 +111,7 @@ class ContactData
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
         \Dotdigitalgroup\Email\Helper\Config $configHelper
     ) {
-        $this->store = $storeManager;
+        $this->storeManager = $storeManager;
         $this->orderFactory = $orderFactory;
         $this->configHelper = $configHelper;
         $this->orderResource = $orderResource;
@@ -100,6 +120,20 @@ class ContactData
         $this->productResource = $productResource;
         $this->categoryResource = $categoryResource;
         $this->eavConfigFactory = $eavConfigFactory;
+    }
+
+    /**
+     * @param $storeId
+     *
+     * @return \Magento\Store\Api\Data\StoreInterface|\Magento\Store\Model\Store
+     */
+    private function getStore($storeId)
+    {
+        if (! isset($this->store)) {
+            $this->store = $this->storeManager->getStore($storeId);
+        }
+
+        return $this->store;
     }
 
     /**
@@ -167,9 +201,9 @@ class ContactData
      */
     public function getWebsiteName()
     {
-        $storeId = $this->model->getStoreId();
-        $website = $this->store->getWebsite(
-            $this->store->getStore($storeId)->getWebsiteId()
+        $store = $this->getStore($this->model->getStoreId());
+        $website = $store->getWebsite(
+            $store->getWebsiteId()
         );
         if ($website) {
             return $website->getName();
@@ -183,8 +217,7 @@ class ContactData
      */
     public function getStoreName()
     {
-        $storeId = $this->model->getStoreId();
-        $store = $this->store->getStore($storeId);
+        $store = $this->getStore($this->model->getStoreId());
 
         if ($store) {
             return $store->getName();
@@ -199,32 +232,18 @@ class ContactData
      */
     public function getBrandValue($id)
     {
-        //attribute mapped from the config
-        $attributeCode = $this->configHelper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
-            $this->model->getWebsiteId()
-        );
-        $storeId = $this->model->getStoreId();
+        if (! isset($this->brandValue[$id])) {
+            //attribute mapped from the config
+            $attributeCode = $this->configHelper->getWebsiteConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+                $this->model->getWebsiteId()
+            );
+            $storeId = $this->model->getStoreId();
+            $this->brandValue[$id] = $this->getAttributeValue($id, $attributeCode, $storeId);
 
-        //if the id and attribute found
-        if ($id && $attributeCode) {
-            $product = $this->productFactory->create();
-            $product = $product->setStoreId($storeId);
-            $this->productResource->load($product, $id);
-
-            $value = $this->productResource
-                ->getAttribute($attributeCode)
-                ->setStoreId($storeId)
-                ->getSource()
-                ->getOptionText($product->getData($attributeCode));
-
-            //check for brand text
-            if ($value) {
-                return $value;
-            }
         }
 
-        return '';
+        return $this->brandValue[$id];
     }
 
     /**
@@ -303,8 +322,10 @@ class ContactData
     {
         $names = [];
         foreach ($categoryIds as $id) {
-            $categoryValue = $this->getCategoryValue($id);
-            $names[$categoryValue] = $categoryValue;
+            if (! isset($this->categoryNames[$id])) {
+                $this->categoryNames[$id] = $this->getCategoryValue($id);
+            }
+            $names[$this->categoryNames[$id]] = $this->categoryNames[$id];
         }
         //comma separated category names
         if (count($names)) {
@@ -343,20 +364,20 @@ class ContactData
     public function getMostPurBrand()
     {
         $productId = $this->model->getProductIdForMostSoldProduct();
-        $storeId = $this->model->getStoreId();
+        $store = $this->getStore($this->model->getStoreId());
         $attributeCode = $this->configHelper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
-            $this->store->getStore($storeId)->getWebsiteId()
+            $store->getWebsiteId()
         );
 
         //if the id and attribute found
         if ($productId && $attributeCode) {
-            $product = $this->productFactory->create()
-                ->setStoreId($storeId);
-            $this->productResource->load($product, $productId);
-            $value = $this->productResource->getAttribute($attributeCode)->getFrontend()->getValue($product);
-            if ($value) {
-                return $value;
+            $product = $this->getProduct($productId);
+            if ($product->getId()) {
+                $value = $this->productResource->getAttribute($attributeCode)->getFrontend()->getValue($product);
+                if ($value) {
+                    return $value;
+                }
             }
         }
 
@@ -404,9 +425,7 @@ class ContactData
         $productId = $this->model->getProductIdForMostSoldProduct();
         //sales data found for customer with product id
         if ($productId) {
-            $product = $this->productFactory->create()
-                ->setStoreId($this->model->getStoreId());
-            $this->productResource->load($product, $productId);
+            $product = $this->getProduct($productId);
             //product found
             if ($product->getId()) {
                 $categoryIds = $product->getCategoryIds();
@@ -479,5 +498,53 @@ class ContactData
     public function getId()
     {
         return $this->model->getId();
+    }
+
+    /**
+     * @param int $id
+     * @param string $attributeCode
+     * @param int $storeId
+     *
+     * @return string
+     */
+    private function getAttributeValue($id, $attributeCode, $storeId)
+    {
+        //if the id and attribute found
+        if ($id && $attributeCode) {
+            $product = $this->productFactory->create();
+            $product = $product->setStoreId($storeId);
+            $this->productResource->load($product, $id);
+            $attribute = $this->productResource->getAttribute($attributeCode);
+
+            if ($attribute && $product->getId()) {
+                $value = $attribute->setStoreId($storeId)
+                    ->getSource()
+                    ->getOptionText($product->getData($attributeCode));
+
+                //check for brand text
+                if ($value) {
+                    return $value;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * @param int $productId
+     *
+     * @return \Magento\Catalog\Model\Product
+     */
+    private function getProduct($productId)
+    {
+        if (! isset($this->products[$productId])) {
+            $product = $this->productFactory->create()
+                ->setStoreId($this->model->getStoreId());
+            $this->productResource->load($product, $productId);
+            $this->products[$productId] = $product;
+        }
+
+        return $this->products[$productId];
     }
 }

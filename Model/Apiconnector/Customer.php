@@ -74,30 +74,19 @@ class Customer extends ContactData
         ];
 
     /**
-     * @var |Magento|Sales\Model\ResourceModel\Order
-     */
-    private $resourceOrder;
-
-    /**
-     * @var \Magento\Sales\Model\OrderFactory
-     */
-    private $orderFactory;
-
-    /**
      * @var \Magento\Customer\Model\ResourceModel\Group
      */
     private $groupResource;
 
     /**
      * Customer constructor.
+     *
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
      * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Magento\Customer\Model\ResourceModel\Group $groupResource
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Customer\Model\GroupFactory $groupFactory
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory

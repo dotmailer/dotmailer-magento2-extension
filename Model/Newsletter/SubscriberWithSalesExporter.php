@@ -109,6 +109,7 @@ class SubscriberWithSalesExporter
     {
         $updated = 0;
         $websiteId = $website->getId();
+        $stores = [];
         $consentModel = $this->consentFactory->create();
         $mappedHash = $this->helper->getWebsiteSalesDataFields($website);
         $isConsentSubscriberEnabled = $this->configHelper->isConsentSubscriberEnabled($websiteId);
@@ -151,8 +152,11 @@ class SubscriberWithSalesExporter
                     $subscriber
                 );
             }
-            $store = $this->helper->storeManager->getStore($subscriber->getStoreId());
-            $optInType = $this->configHelper->getOptInType($store);
+            if (! isset($stores[$subscriber->getStoreId()])) {
+                $stores[$subscriber->getStoreId()] = $this->helper->storeManager->getStore($subscriber->getStoreId());
+            }
+
+            $optInType = $this->configHelper->getOptInType($stores[$subscriber->getStoreId()]);
             $connectorSubscriber = $this->contactDataFactory->create();
             $connectorSubscriber->setMappingHash($mappedHash);
             $connectorSubscriber->setContactData($subscriber);
