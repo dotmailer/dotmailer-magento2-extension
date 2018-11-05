@@ -2,40 +2,46 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
+use Dotdigitalgroup\Email\Helper\Transactional;
+use Magento\Email\Model\ResourceModel\Template;
+use Magento\Email\Model\TemplateFactory;
+use Magento\Framework\Mail\MessageInterface;
+use Magento\Framework\Registry;
+
 class MessagePlugin
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Transactional
+     * @var Transactional
      */
     private $transactionalHelper;
 
     /**
-     * @var \Magento\Email\Model\ResourceModel\Template
+     * @var Template
      */
     private $templateResource;
 
     /**
-     * @var \Magento\Email\Model\TemplateFactory
+     * @var TemplateFactory
      */
     private $templateFactory;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     private $registry;
 
     /**
      * MessagePlugin constructor.
-     * @param \Magento\Framework\Registry $registry
-     * @param \Dotdigitalgroup\Email\Helper\Transactional $transactionalHelper
-     * @param \Magento\Email\Model\ResourceModel\Template $templateResource
-     * @param \Magento\Email\Model\TemplateFactory $template
+     * @param Registry $registry
+     * @param Transactional $transactionalHelper
+     * @param Template $templateResource
+     * @param TemplateFactory $template
      */
     public function __construct(
-        \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Transactional $transactionalHelper,
-        \Magento\Email\Model\ResourceModel\Template $templateResource,
-        \Magento\Email\Model\TemplateFactory $template
+        Registry $registry,
+        Transactional $transactionalHelper,
+        Template $templateResource,
+        TemplateFactory $template
     ) {
         $this->registry = $registry;
         $this->templateFactory = $template;
@@ -44,30 +50,79 @@ class MessagePlugin
     }
 
     /**
-     * Use after body plugin so the required data is alredy present to modify the sender name.
-     * Force the sender name to be the one from email template table.
-     *
-     * @param \Magento\Framework\Mail\Message $message
+     * @param MessageInterface $message
      * @param string $body
+     *
      * @return mixed
-     * @throws \Zend_Mail_Exception
      */
-    public function afterSetBody(\Magento\Framework\Mail\Message $message, $body)
+    public function afterSetBody(MessageInterface $message, $body)
     {
-        if ($templateId = $this->registry->registry('dotmailer_current_template_id')) {
-            $template = $this->templateFactory->create();
-            $this->templateResource->load($template, $templateId);
-            $isDotmailerTemplate = $this->transactionalHelper->isDotmailerTemplate($template->getTemplateCode());
-            //clear the message sent from
-            if ($message instanceof \Zend_Mail && $message->getFrom() && $isDotmailerTemplate) {
-                $message->clearFrom();
-            }
-            //sender email and sender name for dotmailer template
-            if ($isDotmailerTemplate){
-                $message->setFrom($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
+        if ($templateId = $this->isTemplate() && $this->shouldIntercept()) {
+            $template = $this->loadTemplate($templateId);
+            if ($this->isDotmailerTemplateCode($template->getTemplateCode())) {
+                $this->handleZendMailMessage($message);
+                $this->setMessageFromAddressFromTemplate($message, $template);
             }
         }
-
         return $body;
+    }
+
+    /**
+     * @return int
+     */
+    private function isTemplate()
+    {
+        return $this->registry->registry('dotmailer_current_template_id');
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldIntercept()
+    {
+        $storeId = $this->registry->registry('transportBuilderPluginStoreId');
+        return $this->transactionalHelper->isEnabled($storeId);
+    }
+
+    /**
+     * @param $templateId
+     *
+     * @return \Magento\Email\Model\Template
+     */
+    private function loadTemplate($templateId)
+    {
+        $template = $this->templateFactory->create();
+        $this->templateResource->load($template, $templateId);
+
+        return $template;
+    }
+
+    /**
+     * @param $templateCode
+     *
+     * @return bool
+     */
+    private function isDotmailerTemplateCode($templateCode)
+    {
+        return $this->transactionalHelper->isDotmailerTemplate($templateCode);
+    }
+
+    /**
+     * @param MessageInterface $message
+     */
+    private function handleZendMailMessage($message)
+    {
+        if ($message instanceof \Zend_Mail) {
+            $message->clearFrom();
+        }
+    }
+
+    /**
+     * @param MessageInterface $message
+     * @param \Magento\Email\Model\Template $template
+     */
+    private function setMessageFromAddressFromTemplate($message, $template)
+    {
+        $message->setFrom($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
     }
 }
