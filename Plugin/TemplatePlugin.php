@@ -215,7 +215,7 @@ class TemplatePlugin
     private function saveTemplateIdInRegistry($templateId)
     {
         if (! $this->registry->registry('dotmailer_current_template_id')) {
-             $this->registry->register('dotmailer_current_template_id', $templateId);
+            $this->registry->register('dotmailer_current_template_id', $templateId, true);
         }
     }
 }
