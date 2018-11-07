@@ -15,6 +15,34 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## V3.0.2
+
+###### New Features
+- We’ve added compatibility to Magento version 2.3.0
+- We now support a split database solution for Magento 2 Commerce editions
+
+###### Improvements
+- We now surface all the first and last purchase categories in customers' sales data fields
+
+###### Bug fix
+- We’ve fixed an issue that caused an error in the checkout page when page tracking and JS minification was enabled
+- When transactional emails were set up on two separate stores, emails weren't being sent with the correct sender details from their respective stores; they are now
+- We've fixed an issue which caused products to have incorrect URLs when the catalog was synced at store level
+- We now ignore any product attributes that don't match our transactional data key requirements
+- Saving dotmailer email template settings with no changes would reset any previously configured email to the default templates; this has now been fixed
+- We’ve fixed the signature of our MessageInterface plugin to allow custom implementation
+- The importer no longer fails to reset/resend contact imports (including archived folders)
+- We’ve reduced the performance degradation for wishlists when the extension isn’t enabled
+- We’ve fixed an issue that caused non-opted-in customers to be sent abandoned cart emails regardless of the global sync settings
+- We’ve fixed an issue whereby the automation cron would attempt to enrol on the wrong dotmailer account in a multi-website context
+
+
+## V3.0.1
+This version has been released in Magento's own repository and is available within [Magento 2.3.0](https://devdocs.magento.com/availability.html).
+
+## V3.0.0
+This version has been released in Magento's own repository and is available within [Magento 2.3.0 beta](https://devdocs.magento.com/availability.html).
+
 ## V2.5.4
 
 ###### Bug fix
