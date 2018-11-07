@@ -48,6 +48,11 @@ This version has been released in Magento's own repository and is available with
 ###### Bug fix
 - We've fixed an error which, depending on the PHP setting could become an exception and cause the importer process to be stuck
 
+## V2.5.4
+
+###### Bug fix
+- We've fixed an error which, depending on the PHP setting could become an exception and cause the importer process to be stuck
+
 ## V2.5.3
 
 ###### Improvements
