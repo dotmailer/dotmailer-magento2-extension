@@ -26,7 +26,7 @@ class Rating
     }
 
     /**
-     * @param mixed $score
+     * @param int $score
      *
      * @return $this
      */

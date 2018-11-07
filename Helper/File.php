@@ -39,13 +39,31 @@ class File
     private $directoryList;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Consent
+     */
+    private $consentResource;
+
+    /**
+     * @var \Magento\Framework\File\Csv
+     */
+    private $csv;
+
+    /**
      * File constructor.
      *
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
+     * @param \Magento\Framework\File\Csv $csv
+     *
+     * @throws \Magento\Framework\Exception\FileSystemException
      */
     public function __construct(
-        \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+        \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
+        \Magento\Framework\File\Csv $csv
     ) {
+        $this->csv = $csv;
+        $this->consentResource = $consentResource;
         $this->directoryList       = $directoryList;
         $varPath                   = $directoryList->getPath('var');
         $this->outputFolder        = $varPath . DIRECTORY_SEPARATOR . 'export' . DIRECTORY_SEPARATOR . 'email';
@@ -69,7 +87,7 @@ class File
      */
     private function getOutputFolder()
     {
-        $this->pathExists($this->outputFolder);
+        $this->createDirectoryIfNotExists($this->outputFolder);
 
         return $this->outputFolder;
     }
@@ -79,7 +97,7 @@ class File
      */
     public function getArchiveFolder()
     {
-        $this->pathExists($this->outputArchiveFolder);
+        $this->createDirectoryIfNotExists($this->outputArchiveFolder);
 
         return $this->outputArchiveFolder;
     }
@@ -99,7 +117,7 @@ class File
     /**
      * Move file to archive dir.
      *
-     * @param mixed $filename
+     * @param string $filename
      *
      * @return null
      */
@@ -115,9 +133,9 @@ class File
     /**
      * Moves the output file from one folder to the next.
      *
-     * @param mixed $sourceFolder
-     * @param mixed $destFolder
-     * @param mixed $filename
+     * @param string $sourceFolder
+     * @param string $destFolder
+     * @param string $filename
      *
      * @return null
      */
@@ -134,7 +152,7 @@ class File
     /**
      * Output an array to the output file FORCING Quotes around all fields.
      *
-     * @param mixed $filepath
+     * @param string $filepath
      * @param mixed $csv
      *
      * @throws \Exception
@@ -157,8 +175,8 @@ class File
     }
 
     /**
-     * @param mixed $filepath
-     * @param mixed $csv
+     * @param string $filepath
+     * @param array $csv
      *
      * @return null
      */
@@ -176,14 +194,14 @@ class File
     /**
      * If the path does not exist then create it.
      *
-     * @param mixed $path
+     * @param string $path
      *
      * @return null
      */
-    private function pathExists($path)
+    private function createDirectoryIfNotExists($path)
     {
         if (!is_dir($path)) {
-            mkdir($path, 750, true);
+            mkdir($path, 0750, true);
         }
     }
 
@@ -238,7 +256,7 @@ class File
     /**
      * Delete file or directory.
      *
-     * @param mixed $path
+     * @param string $path
      *
      * @return bool
      */
@@ -308,7 +326,7 @@ class File
     }
 
     /**
-     * @param mixed $data
+     * @param string|array|mixed $data
      *
      * @return null
      */
@@ -318,13 +336,74 @@ class File
     }
 
     /**
-     * @param mixed $message
-     * @param mixed $extra
+     * @param string $message
+     * @param array $extra
      *
      * @return null
      */
     public function debug($message, $extra)
     {
         $this->connectorLogger->debug($message, $extra);
+    }
+
+    /**
+     * @param string $file full path to the csv file.
+     * @return bool|string
+     */
+    public function cleanProcessedConsent($file)
+    {
+        //read file and get the email addresses
+        $index = $this->csv->getDataPairs($file, 0, 0);
+        //remove header data for Email
+        unset($index['Email']);
+        $emails = array_values($index);
+        $log = false;
+
+        try {
+            $result = $this->consentResource
+                ->deleteConsentByEmails($emails);
+            if ($count = count($result)) {
+                $log = 'Consent data removed : ' . $count;
+            }
+        } catch (\Exception $e) {
+            $log = $e->getMessage();
+        }
+
+        return $log;
+    }
+
+    /**
+     * Return the full file path with checking in archive as fallback.
+     *
+     * @param string $filename
+     * @return string
+     */
+    public function getFilePathWithFallback($filename)
+    {
+        $emailPath = $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
+        $archivePath = $this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename;
+        return is_file($emailPath) ? $emailPath : $archivePath;
+    }
+
+    /**
+     * Check if file exist in email or archive folder
+     *
+     * @param string $filename
+     * @return boolean
+     */
+    public function isFilePathExistWithFallback($filename)
+    {
+        $emailPath = $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
+        $archivePath = $this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename;
+        return is_file($emailPath) ? true : (is_file($archivePath) ? true : false);
+    }
+
+    /**
+     * @param string $filename
+     * @return bool
+     */
+    public function isFileAlreadyArchived($filename)
+    {
+       return is_file($this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename);
     }
 }

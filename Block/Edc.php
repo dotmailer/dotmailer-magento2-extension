@@ -8,7 +8,7 @@ class Edc extends \Magento\Framework\View\Element\Template
     /**
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getTextForUrl($store)
     {

@@ -21,7 +21,7 @@ class CouponPlugin
 
     /**
      * @param \Magento\SalesRule\Model\ResourceModel\Coupon $subject
-     * @param mixed $result
+     * @param \Magento\SalesRule\Model\ResourceModel\Coupon $result
      * @param \Magento\SalesRule\Model\Rule $rule
      *
      * @return \Magento\SalesRule\Model\Rule

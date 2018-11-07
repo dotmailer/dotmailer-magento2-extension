@@ -20,7 +20,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
     public $priceHelper;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var \Magento\Sales\Api\Data\OrderInterfaceFactory
      */
     public $orderFactory;
 
@@ -30,7 +30,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
     public $review;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order
+     * @var \Magento\Sales\Model\Spi\OrderResourceInterface
      */
     private $orderResource;
 
@@ -38,18 +38,18 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * Review constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
-     * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
+     * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
-        \Magento\Sales\Model\ResourceModel\Order $orderResource,
+        \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []
@@ -102,7 +102,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @param string $mode
      *
-     * @return mixed|string
+     * @return boolean|string
      */
     public function getMode($mode = 'list')
     {
@@ -122,7 +122,7 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * @param array $items
      * @param int   $websiteId
      *
-     * @return mixed
+     * @return boolean|array
      */
     public function filterItemsForReview($items, $websiteId)
     {

@@ -98,9 +98,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $contact
-     * @param $client
-     * @param $website
+     * @param Object $contact
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param \Magento\Store\Model\Website $website
      *
      * @return bool
      */
@@ -139,9 +139,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $customerEmail
-     * @param $client
-     * @param $website
+     * @param string $customerEmail
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param \Magento\Store\Model\Website $website
      *
      * @return bool - success
      */
@@ -165,8 +165,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $client
-     * @param $paramDataFields
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param array $paramDataFields
      * @return array
      */
     private function getDataFields($client, $paramDataFields)

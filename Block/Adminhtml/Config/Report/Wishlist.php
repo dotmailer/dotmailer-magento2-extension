@@ -6,11 +6,15 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
 {
 
     /**
+     * @deprecated
+     *
      * @var string
      */
-    public $buttonLabel = 'Contact Report';
+    public $buttonLabel = 'Wishlist Report';
 
     /**
+     * @deprecated
+     *
      * @param string $buttonLabel
      *
      * @return $this
@@ -24,6 +28,8 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * Set template to itself.
+     *
+     * @deprecated
      *
      * @return $this
      */
@@ -50,6 +56,8 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Unset some non-related element parameters.
      *
+     * @deprecated
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
@@ -64,6 +72,8 @@ class Wishlist extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * Get the button and scripts contents.
+     *
+     * @deprecated
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *

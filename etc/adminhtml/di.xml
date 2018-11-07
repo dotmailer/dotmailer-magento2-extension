@@ -66,4 +66,7 @@
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Abandoned</argument>
         </arguments>
     </virtualType>
+    <type name="Magento\Catalog\Controller\Adminhtml\Product\Action\Attribute\Save">
+        <plugin name="Ddg_UpdateProductAttribute_MassActionPlugin" type="Dotdigitalgroup\Email\Plugin\CatalogProductAttributeSavePlugin" sortOrder="1"/>
+    </type>
 </config>

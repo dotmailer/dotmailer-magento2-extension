@@ -9,7 +9,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
  * @magentoDBIsolation enabled
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
+class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Magento\Framework\ObjectManagerInterface
@@ -43,7 +43,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function prep()
     {
@@ -51,14 +51,17 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
         $store = $this->objectManager->create(\Magento\Store\Model\Store::class);
         $store->load($this->storeId);
 
-        $helper = $this->getMock(\Dotdigitalgroup\Email\Helper\Data::class, [], [], '', false);
+        /** @var \Dotdigitalgroup\Email\Helper\Data|\PHPUnit_Framework_MockObject_MockObject $helper */
+        $helper = $this->getMockBuilder(\Dotdigitalgroup\Email\Helper\Data::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $helper->method('isEnabled')->willReturn(true);
         $helper->method('getWebsites')->willReturn([$store->getWebsite()]);
         $helper->method('getApiUsername')->willReturn('apiuser-dummy@apiconnector.com');
         $helper->method('getApiPassword')->willReturn('dummypass');
         $helper->method('getWebsiteConfig')->willReturn('1');
         $helper->method('getConfigSelectedStatus')->willReturn($this->orderStatus);
-
+        $helper->storeManager = $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class);
         $orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ImporterFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\OrderFactory::class),
@@ -68,8 +71,7 @@ class SingleOrderSyncTest extends \PHPUnit_Framework_TestCase
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class),
             $helper,
-            $this->objectManager->create(\Magento\Sales\Model\OrderFactory::class),
-            $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class)
+            $this->objectManager->create(\Magento\Sales\Model\OrderFactory::class)
         );
 
         return $orderSync->sync();

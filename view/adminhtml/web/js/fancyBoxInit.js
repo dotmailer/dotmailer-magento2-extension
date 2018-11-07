@@ -21,7 +21,7 @@ require(['jquery', 'fancybox', 'domReady!'], function ($) {
         });
 
         window.addEventListener('message', function (event) {
-            if (event.origin != 'https://magentosignup.dotmailer.com') {
+            if (event.origin !== 'https://magentosignup.dotmailer.com') {
                 return;
             }
 

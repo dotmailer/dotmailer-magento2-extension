@@ -140,7 +140,7 @@ class Review
     /**
      * Set review date.
      *
-     * @param mixed $date
+     * @param string $date
      *
      * @return $this;
      */

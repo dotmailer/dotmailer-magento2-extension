@@ -6,11 +6,15 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
 {
 
     /**
+     * @deprecated
+     *
      * @var string
      */
     public $buttonLabel = 'Contact Report';
 
     /**
+     * @deprecated
+     *
      * @param string $buttonLabel
      *
      * @return $this
@@ -23,6 +27,8 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
+     * @deprecated
+     *
      * @return $this
      */
     public function _prepareLayout()
@@ -48,6 +54,8 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Unset some non-related element parameters.
      *
+     * @deprecated
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
@@ -62,6 +70,8 @@ class Contact extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * Get the button and scripts contents.
+     *
+     * @deprecated
      *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *

@@ -11,7 +11,7 @@ use Dotdigitalgroup\Email\Helper\Data;
  * @magentoAdminConfigFixture connector_api_credentials/api/username dummyusername
  * @magentoAdminConfigFixture connector_api_credentials/api/password dummypassword
  */
-class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
+class CreateUpdateContactTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Magento\TestFramework\ObjectManager
@@ -54,8 +54,8 @@ class CreateUpdateContactTest extends \PHPUnit_Framework_TestCase
     public function setup()
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
-        $this->customerFactory = $this->objectManager->create('\Magento\Customer\Model\CustomerFactory');
-        $this->contactFactory = $this->objectManager->create('\Dotdigitalgroup\Email\Model\ContactFactory');
+        $this->customerFactory = $this->objectManager->create(\Magento\Customer\Model\CustomerFactory::class);
+        $this->contactFactory = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ContactFactory::class);
         $this->helper = $this->objectManager->create(\Dotdigitalgroup\Email\Helper\Data::class);
     }
 

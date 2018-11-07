@@ -84,7 +84,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Display type mode.
      *
-     * @return mixed|string
+     * @return string|boolean
      */
     public function getMode()
     {

@@ -21,11 +21,6 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     public $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManager|\PHPUnit_Framework_MockObject_MockObject
-     */
-    public $storeManager;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     public $importerFactory;
@@ -63,7 +58,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * @var \Dotdigitalgroup\Email\Model\Sync\Order
      */
-    public $_orderSync;
+    public $orderSync;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order \PHPUnit_Framework_MockObject_MockObject
@@ -81,29 +76,43 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
      */
     public function setUp()
     {
-        $this->importerFactory = $this->getMock('Dotdigitalgroup\Email\Model\ImporterFactory', [], [], '', false);
+        $this->importerFactory = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\ImporterFactory::class)
+            ->setMethods(['create'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $importerMock = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\Importer::class)
+            ->setMethods(['registerQueue'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->importerFactory->method('create')->willReturn($importerMock);
         $this->account = ObjectManager::getInstance()->get('Dotdigitalgroup\Email\Model\Connector\AccountFactory');
-        $this->orderFactory = $this->getMock('Dotdigitalgroup\Email\Model\OrderFactory', [], [], '', false);
-        $this->connectorOrderFactory = $this->getMock(
-            'Dotdigitalgroup\Email\Model\Connector\OrderFactory',
-            [],
-            [],
-            '',
-            false
-        );
+        $this->orderFactory = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\OrderFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->connectorOrderFactory = $this->getMockBuilder(
+            \Dotdigitalgroup\Email\Model\Connector\OrderFactory::class
+        )
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->contactResource = ObjectManager::getInstance()->get(
             \Dotdigitalgroup\Email\Model\ResourceModel\Contact::class
         );
         $this->orderResource = ObjectManager::getInstance()->get(
             \Dotdigitalgroup\Email\Model\ResourceModel\Order::class
         );
-        $this->helper = $this->getMock(\Dotdigitalgroup\Email\Helper\Data::class, [], [], '', false);
-        $this->salesOrderFactory = $this->getMock('Magento\Sales\Model\OrderFactory', [], [], '', false);
-        $this->storeManager = ObjectManager::getInstance()->get(\Magento\Store\Model\StoreManagerInterface::class);
+        $this->helper = $this->getMockBuilder(\Dotdigitalgroup\Email\Helper\Data::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->salesOrderFactory = $this->getMockBuilder(\Magento\Sales\Model\OrderFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->helper->storeManager = ObjectManager::getInstance()->get(
+            \Magento\Store\Model\StoreManagerInterface::class
+        );
         $this->contactCollectionFactory = ObjectManager::getInstance()->get(
             \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class
         );
-        $this->_orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
+        $this->orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
             $this->importerFactory,
             $this->orderFactory,
             $this->account,
@@ -112,8 +121,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             $this->contactCollectionFactory,
             $this->orderResource,
             $this->helper,
-            $this->salesOrderFactory,
-            $this->storeManager
+            $this->salesOrderFactory
         );
     }
 
@@ -138,12 +146,12 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->helper->expects($this->never())->method('debug');
         $this->helper->expects($this->atLeastOnce())->method('log');
 
-        $this->_orderSync->sync();
+        $this->orderSync->sync();
 
-        $this->assertNotEmpty($this->_orderSync->guests, 'Failed no guests found to sync.');
+        $this->assertNotEmpty($this->orderSync->guests, 'Failed no guests found to sync.');
         $this->assertEquals(
             '1',
-            $this->_orderSync->countOrders,
+            $this->orderSync->countOrders,
             'Number of orders synced not matching.'
         );
     }
@@ -160,10 +168,10 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->createNewEmailOrder();
         $this->prepareSync();
 
-        $this->_orderSync->sync();
+        $this->orderSync->sync();
 
-        $this->assertEquals('1', count($this->_orderSync->guests));
-        $this->assertEquals('1', $this->_orderSync->countOrders);
+        $this->assertEquals('1', count($this->orderSync->guests));
+        $this->assertEquals('1', $this->orderSync->countOrders);
     }
 
     /**
@@ -178,8 +186,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->createNewEmailOrder();
         $this->prepareSync();
 
-        $this->_orderSync->sync();
-        $guests = $this->_orderSync->guests;
+        $this->orderSync->sync();
+        $guests = $this->orderSync->guests;
         $this->assertArrayHasKey('is_guest', $guests[key($guests)]);
     }
 
@@ -198,10 +206,10 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 
         $this->helper->expects($this->atLeastOnce())->method('getApiUsername')
             ->willReturn('apiuser-dummy@apiconnector.com');
-        $this->_orderSync->sync();
+        $this->orderSync->sync();
 
-        $this->assertEquals('1', count($this->_orderSync->guests));
-        $this->assertEquals('1', $this->_orderSync->countOrders);
+        $this->assertEquals('1', count($this->orderSync->guests));
+        $this->assertEquals('1', $this->orderSync->countOrders);
     }
 
     /**
@@ -243,18 +251,9 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->helper->method('getWebsiteConfig')->willReturn('2');
         $this->helper->method('getConfigSelectedStatus')->willReturn($statuses);
 
-        $this->importerFactory->method('create')->willReturn(
-            $this->getMock(\Dotdigitalgroup\Email\Model\Importer::class, ['registerQueue'], [], '', false)
-        );
-        $this->importerFactory->method('registerQueue')->willReturn(true);
-
-        $connectorEmailOrder = $this->getMock(
-            \Dotdigitalgroup\Email\Model\Connector\Order::class,
-            [],
-            [],
-            '',
-            false
-        );
+        $connectorEmailOrder = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\Connector\Order::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $connectorEmailOrder->method('setOrderData')->willReturn(true);
         $this->connectorOrderFactory->method('create')->willReturn($connectorEmailOrder);
 
@@ -263,38 +262,31 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         );
 
         $orderCollection = $objectManager->get(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
+        $connectorOrder = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\Order::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $connectorOrder = $this->getMock(\Dotdigitalgroup\Email\Model\Order::class, [], [], '', false);
-
+        $orderCollectionMock = $this->getMockBuilder(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection::class
+        )
+            ->disableOriginalConstructor()
+            ->getMock();
         if ($withGuests) {
-            $connectorOrder->method('getOrdersToImport')->willReturn($this->getMock(
-                \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection::class,
-                [],
-                [],
-                '',
-                false
-            ));
+            $connectorOrder->method('getOrdersToImport')->willReturn($orderCollectionMock);
             $connectorOrder->method('getModifiedOrdersToImport')->willReturn($emailOrderCollection);
         } else {
             $connectorOrder->method('getOrdersToImport')->willReturn($emailOrderCollection);
-            $connectorOrder->method('getModifiedOrdersToImport')->willReturn($this->getMock(
-                \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection::class,
-                [],
-                [],
-                '',
-                false
-            ));
+            $connectorOrder->method('getModifiedOrdersToImport')->willReturn($orderCollectionMock);
         }
         $connectorOrder->method('getSalesOrdersWithIds')->willReturn($orderCollection);
 
         $this->orderFactory->method('create')->willReturn($connectorOrder);
-        $this->salesOrderFactory->method('create')->willReturn($this->getMock(
-            \Magento\Sales\Model\Order::class,
-            [],
-            [],
-            '',
-            false
-        ));
+        $orderMock = $this->getMockBuilder(
+            \Magento\Sales\Model\Order::class
+        )
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->salesOrderFactory->method('create')->willReturn($orderMock);
     }
 
     /**
@@ -314,7 +306,6 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $emailOrder->setStoreId($order->getStoreId());
         $emailOrder->setEmailImported('0');
         $emailOrder->setModified(new \Zend_Db_Expr('null'));
-
         $emailOrder->save();
     }
 
@@ -333,7 +324,6 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $emailOrder->setStoreId($order->getStoreId());
         $emailOrder->setEmailImported('1');
         $emailOrder->setModified('1');
-
         $emailOrder->save();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
@@ -15,17 +17,17 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public $ruleFactory;
 
     /**
-     * @var \Magento\SalesRule\Model\Coupon\MassgeneratorFactory
+     * @var \Magento\SalesRule\Model\Coupon\CodegeneratorInterfaceFactory
      */
     public $massGeneratorFactory;
 
     /**
-     * @var \Magento\SalesRule\Model\CouponFactory
+     * @var \Magento\SalesRule\Api\Data\CouponInterfaceFactory
      */
     public $couponFactory;
 
     /**
-     * @var \Magento\SalesRule\Model\ResourceModel\Coupon
+     * @var \Magento\SalesRule\Model\Spi\CouponResourceInterface
      */
     public $coupon;
 
@@ -40,7 +42,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_campaign', 'id');
+        $this->_init(Schema::EMAIL_CAMPAIGN_TABLE, 'id');
     }
 
     /**
@@ -49,9 +51,9 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\SalesRule\Model\ResourceModel\Rule $rulesResource
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
-     * @param \Magento\SalesRule\Model\Coupon\MassgeneratorFactory $massgeneratorFactory
-     * @param \Magento\SalesRule\Model\CouponFactory $couponFactory
-     * @param \Magento\SalesRule\Model\ResourceModel\Coupon $coupon
+     * @param \Magento\SalesRule\Model\Coupon\CodegeneratorInterfaceFactory $massgeneratorFactory
+     * @param \Magento\SalesRule\Api\Data\CouponInterfaceFactory $couponFactory
+     * @param \Magento\SalesRule\Model\Spi\CouponResourceInterface $coupon
      * @param \Magento\SalesRule\Model\RuleFactory $ruleFactory
      * @param null $connectionName
      */
@@ -59,9 +61,9 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Framework\Model\ResourceModel\Db\Context       $context,
         \Magento\SalesRule\Model\ResourceModel\Rule             $rulesResource,
         \Magento\Framework\Stdlib\DateTime\DateTime             $dateTime,
-        \Magento\SalesRule\Model\Coupon\MassgeneratorFactory    $massgeneratorFactory,
-        \Magento\SalesRule\Model\CouponFactory                  $couponFactory,
-        \Magento\SalesRule\Model\ResourceModel\Coupon           $coupon,
+        \Magento\SalesRule\Model\Coupon\CodegeneratorInterfaceFactory    $massgeneratorFactory,
+        \Magento\SalesRule\Api\Data\CouponInterfaceFactory               $couponFactory,
+        \Magento\SalesRule\Model\Spi\CouponResourceInterface             $coupon,
         \Magento\SalesRule\Model\RuleFactory                    $ruleFactory,
         $connectionName = null
     ) {
@@ -222,7 +224,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Save item
      *
-     * @param mixed $item
+     * @param \Dotdigitalgroup\Email\Model\Campaign $item
      * @return \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function saveItem($item)

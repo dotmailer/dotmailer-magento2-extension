@@ -89,7 +89,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      *
      * @param int $productId
      *
-     * @return mixed
+     * @return \Dotdigitalgroup\Email\Model\Catalog
      */
     public function loadProductById($productId)
     {

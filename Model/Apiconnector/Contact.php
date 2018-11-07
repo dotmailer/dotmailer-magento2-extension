@@ -53,7 +53,6 @@ class Contact
      * @param CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\File $file
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param ContactImportQueueExport $contactImportQueueExport
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
@@ -62,7 +61,6 @@ class Contact
         \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\File $file,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport $contactImportQueueExport,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
@@ -151,7 +149,7 @@ class Contact
         }
         //customer filename
         $customersFile = strtolower(
-            $website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv'
+            $website->getCode() . '_customers_' . date('d_m_Y_His') . '.csv'
         );
         $this->helper->log('Customers file : ' . $customersFile);
         //get customers ids
@@ -185,18 +183,23 @@ class Contact
          */
 
         //customer collection
-        $customerCollection = $this->getCustomerCollection(
-            $customerIds,
-            $website->getId()
-        );
+        $customerCollection = $this->contactResource->buildCustomerCollection($customerIds);
 
-        $customerNum = $this->getNumberOfCustomers(
-            $website,
+        //Customer sales data
+        $salesData = $this->getCustomerSalesData($customerIds, $website->getId());
+
+        $this->createCsvFile(
             $customerCollection,
             $mappedHash,
             $customAttributes,
             $customersFile,
-            $customerIds
+            $salesData
+        );
+
+        $customerNum = count($customerIds);
+        $this->helper->log(
+            'Website : ' . $website->getName() . ', customers = ' . $customerNum .
+            ', execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
         );
 
         //file was created - continue to queue the export
@@ -214,30 +217,26 @@ class Contact
     }
 
     /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param mixed $customerCollection
-     * @param mixed $mappedHash
-     * @param mixed $customAttributes
-     * @param mixed $customersFile
-     * @param mixed $customerIds
-     *
-     * @return int
+     * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
+     * @param array $mappedHash
+     * @param array $customAttributes
+     * @param string $customersFile
+     * @param array $salesData
      */
-    private function getNumberOfCustomers(
-        \Magento\Store\Api\Data\WebsiteInterface $website,
+    private function createCsvFile(
         $customerCollection,
         $mappedHash,
         $customAttributes,
         $customersFile,
-        $customerIds
+        $salesData
     ) {
-        $countIds = [];
         foreach ($customerCollection as $customer) {
+            if (isset($salesData[$customer->getId()])) {
+                $customer = $this->setSalesDataOnCustomer($salesData[$customer->getId()], $customer);
+            }
             $connectorCustomer = $this->emailCustomer->create();
             $connectorCustomer->setMappingHash($mappedHash);
-            $connectorCustomer->setCustomerData($customer);
-            //count number of customers
-            $countIds[] = $customer->getId();
+            $connectorCustomer->setContactData($customer);
 
             if ($connectorCustomer) {
                 foreach ($customAttributes as $data) {
@@ -260,31 +259,36 @@ class Contact
             //clear collection and free memory
             $customer->clearInstance();
         }
-
-        $customerNum = count($customerIds);
-        $this->helper->log(
-            'Website : ' . $website->getName() . ', customers = ' . $customerNum .
-            ', execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
-        );
-        return $customerNum;
     }
 
     /**
-     * Customer collection with all data ready for export.
+     * @param array $salesData
+     * @param \Magento\Customer\Model\Customer $customer
      *
-     * @param mixed $customerIds
-     * @param int $websiteId
-     * @return mixed
+     * @return \Magento\Customer\Model\Customer
      */
-    private function getCustomerCollection($customerIds, $websiteId = 0)
+    private function setSalesDataOnCustomer($salesData, $customer)
+    {
+        foreach ($salesData as $column => $value) {
+            $customer->setData($column, $value);
+        }
+        return $customer;
+    }
+
+    /**
+     * @param array $customerIds
+     * @param int $websiteId
+     *
+     * @return array
+     */
+    private function getCustomerSalesData($customerIds, $websiteId = 0)
     {
         $statuses = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
             $websiteId
         );
         $statuses = explode(',', $statuses);
-        $brand = $this->helper->getBrandAttributeByWebsiteId($websiteId);
-
-        return $this->contactResource->getCustomerCollectionByIds($customerIds, $statuses, $brand);
+        return $this->contactResource
+            ->getSalesDataForCustomersWithOrderStatusesAndBrand($customerIds, $statuses);
     }
 }

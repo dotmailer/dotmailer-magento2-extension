@@ -7,7 +7,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
     const EMAIL_ORDER_NOT_IMPORTED = null;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\Collection
+     * @var \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory
      */
     private $salesCollection;
 
@@ -27,7 +27,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
      *
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesCollection
+     * @param \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory $salesCollection
      * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
@@ -35,7 +35,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesCollection,
+        \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory $salesCollection,
         array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null

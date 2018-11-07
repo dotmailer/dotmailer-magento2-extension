@@ -23,5 +23,4 @@ class FailedAuth extends \Magento\Framework\Model\AbstractModel
 
         return false;
     }
-
 }

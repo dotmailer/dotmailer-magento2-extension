@@ -89,7 +89,7 @@ class Edit extends \Magento\Backend\App\AbstractAction
     /**
      * Check rule exist
      *
-     * @param mixed $id
+     * @param int|null $id
      * @param \Dotdigitalgroup\Email\Model\Rules $emailRules
      * @return void
      */

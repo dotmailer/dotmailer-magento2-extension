@@ -76,7 +76,7 @@ class Books extends \Magento\Framework\View\Element\Template
      * @param string $path
      * @param int $website
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function _getWebsiteConfigFromHelper($path, $website)
     {
@@ -102,7 +102,7 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Can show additional books?
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getCanShowAdditionalBooks()
     {
@@ -161,7 +161,7 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Can show data fields?
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getCanShowDataFields()
     {
@@ -255,7 +255,7 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Get connector contact.
      *
-     * @return mixed
+     * @return object
      */
     public function getConnectorContact()
     {
@@ -282,7 +282,7 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Getter for contact id.
      *
-     * @return mixed
+     * @return int|string
      */
     public function getConnectorContactId()
     {

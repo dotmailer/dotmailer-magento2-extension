@@ -71,14 +71,16 @@ class Bulk
                     $websiteId
                 );
 
-                if (!empty($file) && !empty($addressBook) && $this->client) {
-                    //import contacts from csv file
-                    $result = $this->client->postAddressBookContactsImport(
-                        $file,
-                        $addressBook
-                    );
-
-                    $this->_handleItemAfterSync($item, $result);
+                if (! empty($file) && ! empty($addressBook) && $this->client) {
+                    if ($this->helper->fileHelper->isFilePathExistWithFallback($file)) {
+                        //import contacts from csv file
+                        $result = $this->client->postAddressBookContactsImport($file, $addressBook);
+                        $this->_handleItemAfterSync($item, $result);
+                    } else {
+                        $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                            ->setMessage(__('CSV file does not exist in email or archive folder.'));
+                        $this->importerResource->save($item);
+                    }
                 }
             }
         }
@@ -90,7 +92,7 @@ class Bulk
      * @param string $importType
      * @param int $websiteId
      *
-     * @return mixed|string
+     * @return string
      */
     private function _getAddressBook($importType, $websiteId)
     {

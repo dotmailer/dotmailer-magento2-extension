@@ -66,7 +66,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Get wishlist items.
      *
-     * @return mixed
+     * @return boolean|\Magento\Wishlist\Model\ResourceModel\Item\Collection
      */
     public function getWishlistItems()
     {
@@ -105,7 +105,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Wishlist display mode type.
      *
-     * @return mixed
+     * @return string|boolean
      */
     public function getMode()
     {
@@ -119,7 +119,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      *
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
-     * @return mixed
+     * @return boolean|string
      */
     public function getTextForUrl($store)
     {

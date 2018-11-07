@@ -45,11 +45,6 @@ class Order
     private $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
@@ -100,7 +95,6 @@ class Order
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -113,8 +107,7 @@ class Order
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Sales\Model\OrderFactory $salesOrderFactory
     ) {
         $this->importerFactory       = $importerFactory;
         $this->orderFactory          = $orderFactory;
@@ -124,7 +117,6 @@ class Order
         $this->orderResource         = $orderResource;
         $this->helper                = $helper;
         $this->salesOrderFactory     = $salesOrderFactory;
-        $this->storeManager          = $storeManagerInterface;
         $this->contactCollectionFactory = $contactCollectionFactory;
     }
 
@@ -247,7 +239,7 @@ class Order
     }
 
     /**
-     * @param mixed $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      * @param int $limit
      *
      * @return array
@@ -280,7 +272,7 @@ class Order
     }
 
     /**
-     * @param mixed $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
      * @param int $limit
      *
      * @return array
@@ -329,7 +321,7 @@ class Order
         foreach ($salesOrderCollection as $order) {
             if ($order->getId()) {
                 $storeId = $order->getStoreId();
-                $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+                $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
 
                 /**
                  * Add guest to array to add to contacts table.
@@ -357,7 +349,7 @@ class Order
 
     /**
      * @param array $ordersForSingleSync
-     * @param mixed $website
+     * @param array $website
      *
      * @return null
      */

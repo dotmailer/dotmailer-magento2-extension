@@ -54,6 +54,11 @@ class Order
     private $rulesFactory;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     */
+    private $dateIntervalFactory;
+
+    /**
      * Order constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
@@ -64,6 +69,7 @@ class Order
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime $datetime
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
@@ -73,8 +79,10 @@ class Order
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime $datetime,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
     ) {
+        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->campaignResource = $campaignResource;
         $this->rulesFactory       = $rulesFactory;
         $this->orderCollection    = $orderCollection;
@@ -102,7 +110,7 @@ class Order
     /**
      * Register review campaign.
      *
-     * @param mixed $collection
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection $collection
      * @param int $websiteId
      *
      * @return null
@@ -178,10 +186,12 @@ class Order
                     'order_increment_id'
                 );
                 $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
-                $interval = \DateInterval::createFromDateString($delayInDays . ' days');
+                $interval = $this->dateIntervalFactory->create(
+                    ['interval_spec' => sprintf('P%sD', $delayInDays)]
+                );
                 $fromTime->sub($interval);
                 $toTime = clone $fromTime;
-                $fromTime->sub(\DateInterval::createFromDateString('2 hours'));
+                $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT2H']));
                 $fromDate = $fromTime->format('Y-m-d H:i:s');
                 $toDate = $toTime->format('Y-m-d H:i:s');
 

@@ -18,11 +18,6 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
     private $redirect;
 
     /**
-     * @var \Magento\Framework\UrlInterface
-     */
-    private $url;
-
-    /**
      * @var \Magento\Framework\HTTP\Header
      */
     private $header;
@@ -62,14 +57,12 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
      */
     private $contactFactory;
 
-
     /**
      * NewsletterSubscriberSaveAfter constructor.
      * @param \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
      * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Dotdigitalgroup\Email\Helper\Config $config
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param \Magento\Framework\App\Request\Http $http
@@ -81,7 +74,6 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Dotdigitalgroup\Email\Helper\Config $config,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Magento\Framework\App\Request\Http $http,
@@ -92,7 +84,7 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
         $this->header = $header;
         $this->redirect = $redirect;
         $this->helper = $data;
-        $this->configHelper = $config;
+        $this->configHelper = $this->helper->configHelperFactory->create();
         $this->timezone = $timezone;
         $this->storeManager   = $storeManagerInterface;
         $this->consentFactory = $consentFactory;
@@ -149,7 +141,6 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
 
             //save contact
             $this->consentResource->save($consentModel);
-
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

@@ -52,6 +52,16 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     private $configHelper;
 
     /**
+     * @var array
+     */
+    private $consentText = [];
+
+    /**
+     * @var array
+     */
+    private $customerConsentText = [];
+
+    /**
      * Constructor.
      *
      * @return null
@@ -89,8 +99,8 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $websiteId
-     * @param $email
+     * @param int $websiteId
+     * @param string $email
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -111,13 +121,13 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         }
 
         $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
-        $customerConentText = $this->configHelper->getConsentCustomerText($websiteId);
+        $customerConsentText = $this->configHelper->getConsentCustomerText($websiteId);
         //customer checkout and registration if consent text not empty
-        if ($this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl()) && strlen($customerConentText)) {
-            $consentText = $customerConentText;
+        if ($this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl()) && strlen($customerConsentText)) {
+            $consentText = $customerConsentText;
         }
         $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
-        return $consentData = [
+        return [
             $consentText,
             $this->getConsentUrl(),
             $consentDatetime,
@@ -127,7 +137,32 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $consentUrl
+     * @param string $consentUrl
+     * @param int $websiteId
+     * @return string|boolean
+     */
+    public function getConsentTextForWebsite($consentUrl, $websiteId)
+    {
+        if (! isset($this->consentText[$websiteId])) {
+            $this->consentText[$websiteId] = $this->configHelper->getConsentSubscriberText($websiteId);
+        }
+        $consentText = $this->consentText[$websiteId];
+
+        if (! isset($this->customerConsentText[$websiteId])) {
+            $this->customerConsentText[$websiteId] = $this->configHelper->getConsentCustomerText($websiteId);
+        }
+        $customerConsentText = $this->customerConsentText[$websiteId];
+
+        //customer checkout and registration if consent text not empty
+        if ($this->isLinkMatchCustomerRegistrationOrCheckout($consentUrl) && strlen($customerConsentText)) {
+            $consentText = $customerConsentText;
+        }
+
+        return $consentText;
+    }
+
+    /**
+     * @param string $consentUrl
      * @return bool
      */
     private function isLinkMatchCustomerRegistrationOrCheckout($consentUrl)
@@ -138,5 +173,4 @@ class Consent extends \Magento\Framework\Model\AbstractModel
 
         return false;
     }
-
 }

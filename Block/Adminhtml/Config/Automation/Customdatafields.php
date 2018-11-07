@@ -68,7 +68,7 @@ class Customdatafields extends
     /**
      * @param string $columnName
      *
-     * @return mixed|string
+     * @return string
      *
      * @throws \Exception
      */

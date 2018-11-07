@@ -2,13 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Tests\Integration\Adminhtml\Developer;
 
+include __DIR__ . '/../../_files/wishlist.php';
+
 class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    public $objectManager;
-
     /**
      * @var string
      */
@@ -17,7 +14,17 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     /**
      * @var string
      */
-    public $url = 'backend/dotdigitalgroup_email/run/wishlistsreset';
+    public $uri = 'backend/dotdigitalgroup_email/run/wishlistsreset';
+
+    /**
+     * @var array
+     */
+    private $data = [];
+
+    /**
+     * @var string
+     */
+    public $resource = 'Dotdigitalgroup_Email::config';
 
     /**
      * @return void
@@ -26,30 +33,27 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     {
         parent::setUp();
 
-        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-        $this->uri = $this->url;
-        $this->resource = 'Dotdigitalgroup_Email::config';
         $params = [
             'from' => '',
             'to' => ''
         ];
         $this->getRequest()->setParams($params);
+        $this->data = $this->getWishlistData();
     }
 
     /**
      * @param string $from
      * @param string $to
-     * @param string $dispatchUrl
      * @return void
      */
-    public function runReset($from, $to, $dispatchUrl)
+    public function runReset($from, $to)
     {
         $params = [
             'from' => $from,
             'to' => $to
         ];
         $this->getRequest()->setParams($params);
-        $this->dispatch($dispatchUrl);
+        $this->dispatch($this->uri);
     }
 
     /**
@@ -57,23 +61,9 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      */
     public function testWishlistResetSuccessfulGivenDateRange()
     {
-        $this->emptyTable();
+        $collection = $this->createWishlistDataAndGetCollection();
 
-        $data = [
-            'wishlist_id' => '1',
-            'item_count' => '1',
-            'customer_id' => '1',
-            'store_id' => '1',
-            'wishlist_imported' => '1',
-            'created_at' => '2017-02-09'
-        ];
-        $this->createEmailData($data);
-
-        $collection = $this->objectManager->create($this->model)
-            ->getCollection();
-        $collection->addFieldToFilter('wishlist_imported', ['null' => true]);
-
-        $this->runReset('2017-02-09', '2017-02-10', $this->url);
+        $this->runReset('2017-02-09', '2017-02-10');
 
         $this->assertEquals(1, $collection->getSize());
     }
@@ -83,23 +73,9 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      */
     public function testWishlistResetNotSuccessfulWrongDateRange()
     {
-        $this->emptyTable();
+        $collection = $this->createWishlistDataAndGetCollection();
 
-        $data = [
-            'wishlist_id' => '1',
-            'item_count' => '1',
-            'customer_id' => '1',
-            'store_id' => '1',
-            'wishlist_imported' => '1',
-            'created_at' => '2017-02-09'
-        ];
-        $this->createEmailData($data);
-
-        $collection = $this->objectManager->create($this->model)
-            ->getCollection();
-        $collection->addFieldToFilter('wishlist_imported', ['null' => true]);
-
-        $this->runReset('2017-02-09', '2017-01-10', $this->url);
+        $this->runReset('2017-02-09', '2017-01-10');
 
         $this->assertSessionMessages(
             $this->equalTo(['To Date cannot be earlier then From Date.']),
@@ -114,23 +90,9 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      */
     public function testWishlistResetNotSuccessfulInvalidDateRange()
     {
-        $this->emptyTable();
+        $collection = $this->createWishlistDataAndGetCollection();
 
-        $data = [
-            'wishlist_id' => '1',
-            'item_count' => '1',
-            'customer_id' => '1',
-            'store_id' => '1',
-            'wishlist_imported' => '1',
-            'created_at' => '2017-02-09'
-        ];
-        $this->createEmailData($data);
-
-        $collection = $this->objectManager->create($this->model)
-            ->getCollection();
-        $collection->addFieldToFilter('wishlist_imported', ['null' => true]);
-
-        $this->runReset('2017-02-09', 'not valid', $this->url);
+        $this->runReset('2017-02-09', 'not valid');
 
         $this->assertSessionMessages(
             $this->equalTo(['From or To date is not a valid date.']),
@@ -145,38 +107,11 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      */
     public function testWishlistFullResetSuccessfulWithoutDateRange()
     {
-        $this->emptyTable();
+        $collection = $this->createWishlistDataAndGetCollection();
 
-        $data = [
-            [
-                'wishlist_id' => '1',
-                'item_count' => '1',
-                'customer_id' => '1',
-                'store_id' => '1',
-                'wishlist_imported' => '1',
-                'created_at' => '2017-02-09'
-            ],
-            [
-                'wishlist_id' => '2',
-                'item_count' => '1',
-                'customer_id' => '2',
-                'store_id' => '1',
-                'wishlist_imported' => '1',
-                'created_at' => '2017-02-11'
-            ]
-        ];
+        $this->runReset('', '');
 
-        foreach ($data as $item) {
-            $this->createEmailData($item);
-        }
-
-        $collection = $this->objectManager->create($this->model)
-            ->getCollection();
-        $collection->addFieldToFilter('wishlist_imported', ['null' => true]);
-
-        $this->runReset('', '', $this->url);
-
-        $this->assertEquals(2, $collection->getSize());
+        $this->assertEquals(1, $collection->getSize());
     }
 
     /**
@@ -184,23 +119,9 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      */
     public function testWishlistFullResetSuccessWithFromDateOnly()
     {
-        $this->emptyTable();
+        $collection = $this->createWishlistDataAndGetCollection();
 
-        $data = [
-            'wishlist_id' => '1',
-            'item_count' => '1',
-            'customer_id' => '1',
-            'store_id' => '1',
-            'wishlist_imported' => '1',
-            'created_at' => '2017-02-09'
-        ];
-        $this->createEmailData($data);
-
-        $collection = $this->objectManager->create($this->model)
-            ->getCollection();
-        $collection->addFieldToFilter('wishlist_imported', ['null' => true]);
-
-        $this->runReset('2017-02-10', '', $this->url);
+        $this->runReset('2017-02-10', '');
 
         $this->assertEquals(1, $collection->getSize());
     }
@@ -210,23 +131,9 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      */
     public function testWishlistFullResetSuccessWithToDateOnly()
     {
-        $this->emptyTable();
+        $collection = $this->createWishlistDataAndGetCollection();
 
-        $data = [
-            'wishlist_id' => '1',
-            'item_count' => '1',
-            'customer_id' => '1',
-            'store_id' => '1',
-            'wishlist_imported' => '1',
-            'created_at' => '2017-02-09'
-        ];
-        $this->createEmailData($data);
-
-        $collection = $this->objectManager->create($this->model)
-            ->getCollection();
-        $collection->addFieldToFilter('wishlist_imported', ['null' => true]);
-
-        $this->runReset('', '2017-02-10', $this->url);
+        $this->runReset('', '2017-02-10');
 
         $this->assertEquals(1, $collection->getSize());
     }
@@ -237,7 +144,7 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      */
     public function createEmailData($data)
     {
-        $emailModel = $this->objectManager->create($this->model);
+        $emailModel = $this->_objectManager->create($this->model);
         $emailModel->addData($data)->save();
     }
 
@@ -246,7 +153,45 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
      */
     public function emptyTable()
     {
-        $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Wishlist::class);
-        $resourceModel->getConnection()->truncateTable($resourceModel->getMainTable());
+        $abandonedCollection = $this->_objectManager->create(
+            \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\Collection::class
+        );
+        $abandonedCollection->walk('delete');
+    }
+
+    /**
+     * @return array
+     */
+    private function getWishlistData()
+    {
+        /** @var \Magento\Wishlist\Model\ResourceModel\Wishlist\Collection $collection */
+        $collection = $this->_objectManager->create(
+            \Magento\Wishlist\Model\ResourceModel\Wishlist\Collection::class
+        );
+        $wishlist = $collection->getFirstItem();
+        $data = [
+            'wishlist_id' => $wishlist->getId(),
+            'item_count' => $wishlist->getItemsCount(),
+            'customer_id' => $wishlist->getCustomerId(),
+            'store_id' => '1',
+            'wishlist_imported' => '1',
+            'created_at' => '2017-02-09'
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @return \Dotdigitalgroup\Email\Model\Wishlist
+     */
+    private function createWishlistDataAndGetCollection()
+    {
+        $this->emptyTable();
+        $this->createEmailData($this->data);
+
+        $collection = $this->_objectManager->create($this->model)
+            ->getCollection();
+        $collection->addFieldToFilter('wishlist_imported', ['null' => true]);
+        return $collection;
     }
 }

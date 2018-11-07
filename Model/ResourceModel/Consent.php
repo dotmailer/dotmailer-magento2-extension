@@ -2,13 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-    /**
-     * @var Consent\CollectionFactory
-     */
-    public $contactCollectionFactory;
-
     /**
      * @var Consent\CollectionFactory
      */
@@ -21,25 +18,22 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_contact_consent', 'id');
+        $this->_init(Schema::EMAIL_CONTACT_CONSENT_TABLE, 'id');
     }
 
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent\CollectionFactory $consentCollectionFactory,
         $connectionName = null
     ) {
-        $this->contactCollectionFactory = $consentCollectionFactory;
         $this->consentCollectionFactory = $consentCollectionFactory;
         parent::__construct($context, $connectionName);
     }
 
-
     /**
      * Delete Consent for contact.
      *
-     * @param $emails
+     * @param array $emails
      * @return array
      */
     public function deleteConsentByEmails($emails)
@@ -50,7 +44,7 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $collection = $this->consentCollectionFactory->create();
         $collection->getSelect()
             ->joinInner(
-                ['c' => $this->getTable('email_contact')],
+                ['c' => $this->getTable(Schema::EMAIL_CONTACT_TABLE)],
                 "c.email_contact_id = main_table.email_contact_id",
                 []
             );
@@ -59,5 +53,4 @@ class Consent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         return $collection->walk('delete');
     }
-
 }

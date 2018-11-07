@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Page/etc/SectionObject.xsd">
+    <section name="AdminDeveloperSettingsSection">
+        <element name="developerIpRestrictionFieldsetToggle" type="button" selector="#connector_developer_settings_ip_restriction-head"/>
+        <element name="developerIpRestrictionFieldset" type="button" selector="#connector_developer_settings_ip_restriction"/>
+        <element name="developerIpAddresses" type="textarea" selector="#connector_developer_settings_ip_restriction_ip_addresses" />
+        <element name="developerSettingSaveButton" type="button" selector="#save" />
+    </section>
+</sections>

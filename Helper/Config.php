@@ -14,9 +14,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_API_USERNAME = 'connector_api_credentials/api/username';
     const XML_PATH_CONNECTOR_API_PASSWORD = 'connector_api_credentials/api/password';
     const XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE =
-	    'connector_api_credentials/api/trial_temporary_passcode';
+        'connector_api_credentials/api/trial_temporary_passcode';
     const XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY =
-	    'connector_api_credentials/api/trial_temporary_passcode_expiry';
+        'connector_api_credentials/api/trial_temporary_passcode_expiry';
 
     /**
      * SYNC SECTION.
@@ -328,9 +328,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      *  Region aware authorize link.
      *
-     * @param mixed $website
+     * @param \Magento\Store\Api\Data\WebsiteInterface|int $website
      *
-     * @return mixed
+     * @return string|array
      */
     private function getRegionAuthorize($website)
     {
@@ -346,7 +346,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Callback authorization url.
      *
-     * @return mixed|string
+     * @return string
      */
     public function getCallbackUrl()
     {
@@ -400,7 +400,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $store
+     * @param \Magento\Store\Api\Data\StoreInterface $store
      * @return string
      */
     public function getOptInType($store)
@@ -414,10 +414,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $path
+     * @param string $path
      * @param int $website
      * @param string $scope
-     * @return mixed
+     * @return int|string|boolean|float
      */
     public function getWebsiteConfig($path, $website = 0, $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE)
     {
@@ -429,8 +429,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $websiteId
-     * @return mixed
+     * @param int $websiteId
+     * @return string
      */
     public function getConsentCustomerText($websiteId)
     {
@@ -440,8 +440,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $websiteId
-     * @return mixed
+     * @param int $websiteId
+     * @return string|boolean
      */
     public function isConsentSubscriberEnabled($websiteId)
     {
@@ -449,8 +449,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $websiteId
-     * @return mixed
+     * @param int $websiteId
+     * @return string|boolean
      */
     public function getConsentSubscriberText($websiteId)
     {
@@ -460,7 +460,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $value
+     * @param string $value
      * @return string
      */
     private function limitLength($value)

@@ -6,7 +6,7 @@ class Preview extends \Magento\Backend\Block\Template
 {
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCurrencySymbol()
     {

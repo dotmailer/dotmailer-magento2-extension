@@ -229,7 +229,10 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
      */
     public function emptyTable()
     {
-        $resourceModel = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Catalog::class);
-        $resourceModel->getConnection()->truncateTable($resourceModel->getMainTable());
+        $collection = $this->objectManager->create($this->model)
+                                          ->getCollection();
+        foreach ($collection as $collectionItem) {
+            $collectionItem->delete();
+        }
     }
 }

@@ -29,7 +29,7 @@ class TransportBuilderPlugin
 
     /**
      * @param TransportBuilder $transportBuilder
-     * @param $templateOptions
+     * @param array $templateOptions
      *
      * @return null
      */

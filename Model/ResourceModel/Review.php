@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
 use Magento\Review\Model\ResourceModel\Rating\Option;
 
 /**
@@ -59,7 +60,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_review', 'id');
+        $this->_init(Schema::EMAIL_REVIEW_TABLE, 'id');
     }
 
     /**
@@ -105,8 +106,8 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset the email reviews for re-import.
      *
-     * @param mixed $from
-     * @param mixed $to
+     * @param string $from
+     * @param string $to
      *
      * @return int
      */
@@ -126,7 +127,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         $num = $conn->update(
-            $this->getTable('email_review'),
+            $this->getTable(Schema::EMAIL_REVIEW_TABLE),
             ['review_imported' => new \Zend_Db_Expr('null')],
             $where
         );
@@ -139,7 +140,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $items
      * @param int $customerId
-     * @param mixed $order
+     * @param \Magento\Sales\Model\Order $order
      *
      * @return mixed
      */
@@ -193,7 +194,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Set imported in bulk query.
      *
      * @param array $ids
-     * @param mixed $nowDate
+     * @param string $nowDate
      *
      * @return null
      */
@@ -201,7 +202,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $coreResource = $this->getConnection();
-            $tableName = $this->getTable('email_review');
+            $tableName = $this->getTable(Schema::EMAIL_REVIEW_TABLE);
             $coreResource->update(
                 $tableName,
                 ['review_imported' => 1, 'updated_at' => $nowDate],

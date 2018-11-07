@@ -50,11 +50,6 @@ class Automation
     private $typeId;
 
     /**
-     * @var int
-     */
-    private $websiteId;
-
-    /**
      * @var string
      */
     private $storeName;
@@ -167,7 +162,7 @@ class Automation
                 $type = $automation->getAutomationType();
                 $email = $automation->getEmail();
                 $this->typeId = $automation->getTypeId();
-                $this->websiteId = $automation->getWebsiteId();
+                $websiteId = $automation->getWebsiteId();
                 $this->storeName = $automation->getStoreName();
                 $typeDouble = $type;
                 //Set type to generic automation status if type contains constant value
@@ -176,14 +171,15 @@ class Automation
                 }
                 $contactId = $this->helper->getContactId(
                     $email,
-                    $this->websiteId
+                    $websiteId
                 );
                 //contact id is valid, can update datafields
                 if ($contactId) {
                     //need to update datafields
                     $this->updateDatafieldsByType(
                         $typeDouble,
-                        $email
+                        $email,
+                        $websiteId
                     );
                     $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contactId;
                 } else {
@@ -225,20 +221,22 @@ class Automation
      *
      * @param string $type
      * @param string $email
+     * @param int $websiteId
      *
      * @return null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function updateDatafieldsByType($type, $email)
+    private function updateDatafieldsByType($type, $email, $websiteId)
     {
         switch ($type) {
             case self::AUTOMATION_TYPE_NEW_ORDER:
             case self::AUTOMATION_TYPE_NEW_GUEST_ORDER:
             case self::ORDER_STATUS_AUTOMATION:
             case self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER:
-                $this->_updateNewOrderDatafields();
+                $this->updateNewOrderDatafields($websiteId);
                 break;
             default:
-                $this->_updateDefaultDatafields($email);
+                $this->updateDefaultDatafields($email, $websiteId);
                 break;
         }
     }
@@ -246,24 +244,29 @@ class Automation
     /**
      * Update config datafield.
      *
-     * @param mixed|string $email
+     * @param string $email
+     * @param int $websiteId
      *
      * @return null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _updateDefaultDatafields($email)
+    private function updateDefaultDatafields($email, $websiteId)
     {
-        $website = $this->storeManager->getWebsite($this->websiteId);
+        $website = $this->storeManager->getWebsite($websiteId);
         $this->helper->updateDataFields($email, $website, $this->storeName);
     }
 
     /**
      * Update new order default datafields.
      *
+     * @param int $websiteId
+     *
      * @return null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function _updateNewOrderDatafields()
+    private function updateNewOrderDatafields($websiteId)
     {
-        $website = $this->storeManager->getWebsite($this->websiteId);
+        $website = $this->storeManager->getWebsite($websiteId);
         $orderModel = $this->orderFactory->create()
             ->loadByIncrementId($this->typeId);
 
@@ -337,16 +340,18 @@ class Automation
      * Program check if is valid and active.
      *
      * @param int $programId
+     * @param int $websiteId
      *
      * @return bool
+     * @throws \Exception
      */
-    public function _checkCampignEnrolmentActive($programId)
+    private function checkCampignEnrolmentActive($programId, $websiteId)
     {
         //program is not set
         if (!$programId) {
             return false;
         }
-        $client = $this->helper->getWebsiteApiClient($this->websiteId);
+        $client = $this->helper->getWebsiteApiClient($websiteId);
         $program = $client->getProgramById($programId);
         //program status
         if (isset($program->status)) {
@@ -366,8 +371,9 @@ class Automation
      * @param int $websiteId
      *
      * @return mixed
+     * @throws \Exception
      */
-    public function sendContactsToAutomation($contacts, $websiteId)
+    private function sendContactsToAutomation($contacts, $websiteId)
     {
         $client = $this->helper->getWebsiteApiClient($websiteId);
         $data = [
@@ -401,7 +407,7 @@ class Automation
      * @param string $type
      * @param string $config
      *
-     * @return mixed
+     * @return array
      */
     private function buildFirstDimensionOfContactsArray($type, $config)
     {
@@ -428,15 +434,16 @@ class Automation
     }
 
     /**
-     * @param array  $contactsArray
-     * @param int  $websiteId
+     * @param array $contactsArray
+     * @param int $websiteId
      *
      * @return null
+     * @throws \Exception
      */
     private function sendSubscribedContactsToAutomation($contactsArray, $websiteId)
     {
         if (!empty($contactsArray) &&
-            $this->_checkCampignEnrolmentActive($this->programId)
+            $this->checkCampignEnrolmentActive($this->programId, $websiteId)
         ) {
             $result = $this->sendContactsToAutomation(
                 array_values($contactsArray),

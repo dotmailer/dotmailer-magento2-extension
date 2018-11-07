@@ -209,10 +209,10 @@ class Template extends \Magento\Framework\DataObject
 
     /**
      * Template constructor.
-     *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Store\Model\StoreManagerInterface $store
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Email\Model\TemplateFactory $templateFactory
      * @param \Magento\Email\Model\ResourceModel\Template $templateResource
      * @param \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templateCollectionFactory
      */
@@ -238,8 +238,8 @@ class Template extends \Magento\Framework\DataObject
     /**
      * Load email_template by code/name.
      *
-     * @param $templateCode
-     * @return mixed
+     * @param string $templateCode
+     * @return \Magento\Framework\DataObject
      */
     public function loadByTemplateByCode($templateCode)
     {
@@ -253,7 +253,7 @@ class Template extends \Magento\Framework\DataObject
     /**
      * Delete email_template.
      *
-     * @param $templatecode
+     * @param string $templatecode
      */
     public function deleteTemplateByCode($templatecode)
     {
@@ -304,9 +304,9 @@ class Template extends \Magento\Framework\DataObject
     }
 
     /**
-     * @param $config
-     * @param $storeId
-     * @return mixed
+     * @param string $config
+     * @param int $storeId
+     * @return string|boolean
      */
     public function getConfigValue($config, $storeId)
     {
@@ -318,10 +318,10 @@ class Template extends \Magento\Framework\DataObject
     }
 
     /**
-     * @param $campaignId
-     * @param $emailTemplateId
-     * @param $store \Magento\Store\Api\Data\StoreInterface
-     * @return mixed
+     * @param int $campaignId
+     * @param int $emailTemplateId
+     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @return \Magento\Email\Model\Template|string
      */
     private function syncEmailTemplate($campaignId, $emailTemplateId, $store)
     {
@@ -344,19 +344,19 @@ class Template extends \Magento\Framework\DataObject
     }
 
     /**
-     * @param $templateConfigPath
-     * @param $campaignId
-     * @param $storeId
-     * @param $websiteId
+     * @param string $templateConfigPath
+     * @param int $campaignId
+     * @param string $scope
+     * @param int $scopeId
      * @return bool|mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function saveTemplateWithConfigPath($templateConfigPath, $campaignId, $storeId, $websiteId)
+    public function saveTemplateWithConfigPath($templateConfigPath, $campaignId, $scope, $scopeId)
     {
-        if ($storeId) {
-            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-        } elseif ($websiteId) {
-            $websiteId = $this->storeManager->getWebsite($websiteId)->getId();
+        if ($scope == \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES) {
+            $websiteId = $scopeId;
+        } elseif ($scope == \Magento\Store\Model\ScopeInterface::SCOPE_STORES) {
+            $websiteId = $this->storeManager->getStore($scopeId)->getWebsiteId();
         } else {
             $websiteId = '0';
         }
@@ -377,10 +377,10 @@ class Template extends \Magento\Framework\DataObject
 
     /**
      * @param \Magento\Email\Model\Template $template
-     * @param $dmCampaign
-     * @param $campaignId
+     * @param Object $dmCampaign
+     * @param int $campaignId
      * @param string $origTemplateCode
-     * @return mixed
+     * @return \Magento\Email\Model\Template
      */
     public function saveTemplate($template, $dmCampaign, $campaignId, $origTemplateCode = '')
     {
@@ -389,7 +389,7 @@ class Template extends \Magento\Framework\DataObject
         try {
             $template->setTemplateCode($templateName)
                 ->setOrigTemplateCode($origTemplateCode)
-                ->setTemplateSubject(utf8_encode($dmCampaign->subject))
+                ->setTemplateSubject($dmCampaign->subject)
                 ->setTemplateText($dmCampaign->processedHtmlContent)
                 ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
                 ->setTemplateSenderName($dmCampaign->fromName)

@@ -178,7 +178,7 @@ class Order
     /**
      * Set the order data information.
      *
-     * @param mixed $orderData
+     * @param \Magento\Sales\Model\Order $orderData
      *
      * @return $this
      */
@@ -281,7 +281,7 @@ class Order
     }
 
     /**
-     * @param mixed $orderData
+     * @param \Magento\Sales\Model\Order $orderData
      *
      * @return null
      */
@@ -307,7 +307,7 @@ class Order
     }
 
     /**
-     * @param mixed $orderData
+     * @param \Magento\Sales\Model\Order $orderData
      *
      * @return null
      */
@@ -334,8 +334,8 @@ class Order
     }
 
     /**
-     * @param mixed $orderData
-     * @param mixed $syncCustomOption
+     * @param \Magento\Sales\Model\Order $orderData
+     * @param boolean $syncCustomOption
      *
      * @return null
      */
@@ -478,9 +478,9 @@ class Order
     }
 
     /**
-     * @param mixed $attributes
-     * @param mixed $value
-     * @param mixed $attributeCode
+     * @param array $attributes
+     * @param string|array $value
+     * @param string $attributeCode
      *
      * @return array
      */
@@ -503,8 +503,8 @@ class Order
     /**
      * Get the street name by line number.
      *
-     * @param mixed $street
-     * @param mixed $line
+     * @param string $street
+     * @param int $line
      *
      * @return string
      */
@@ -551,8 +551,8 @@ class Order
     /**
      * Get attrubute value for the field.
      *
-     * @param mixed $field
-     * @param mixed $orderData
+     * @param array $field
+     * @param \Magento\Sales\Model\Order $orderData
      *
      * @return float|int|null|string
      */
@@ -602,7 +602,7 @@ class Order
     /**
      * Create property on runtime.
      *
-     * @param mixed $field
+     * @param string $field
      * @param mixed $value
      *
      * @return null
@@ -615,7 +615,7 @@ class Order
     /**
      * Get attributes from attribute set.
      *
-     * @param mixed $attributeSetId
+     * @param int $attributeSetId
      *
      * @return array
      */
@@ -636,7 +636,7 @@ class Order
     /**
      *  Check string length and limit to 250.
      *
-     * @param mixed $value
+     * @param string $value
      *
      * @return string
      */
@@ -650,7 +650,7 @@ class Order
     }
 
     /**
-     * @param mixed $orderItem
+     * @param \Magento\Sales\Model\Order\Item $orderItem
      * @return array
      */
     public function _getOrderItemOptions($orderItem)
@@ -691,7 +691,7 @@ class Order
     }
 
     /**
-     * @param mixed $product
+     * @param \Magento\Catalog\Model\Product $product
      * @return string
      */
     public function getAttributeSetName($product)

@@ -73,8 +73,8 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $quoteId
-     * @return mixed
+     * @param int $quoteId
+     * @return \Dotdigitalgroup\Email\Model\Abandoned
      */
     public function loadByQuoteId($quoteId)
     {

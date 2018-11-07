@@ -2,9 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
 use Magento\TestFramework\ObjectManager;
 
-class TablePrefixTest extends \PHPUnit_Framework_TestCase
+class TablePrefixTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Magento\TestFramework\ObjectManager
@@ -36,10 +37,10 @@ class TablePrefixTest extends \PHPUnit_Framework_TestCase
         $tablePrefix = (string)$this->deploymentConfig->get(
             \Magento\Framework\Config\ConfigOptionsListConstants::CONFIG_PATH_DB_PREFIX
         );
-        $tableName = 'email_contact';
+        $tableName = Schema::EMAIL_CONTACT_TABLE;
         if ($tablePrefix) {
             $tableName = $tablePrefix . $tableName;
         }
-        $this->assertEquals($tableName, $this->contactResource->getTable('email_contact'));
+        $this->assertEquals($tableName, $this->contactResource->getTable(Schema::EMAIL_CONTACT_TABLE));
     }
 }

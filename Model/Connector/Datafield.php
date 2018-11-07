@@ -316,11 +316,9 @@ class Datafield
     public function getContactDatafields()
     {
         $contactDataFields = $this->contactDatafields;
-
-        //If enterprise merge enterprise data fields
-        $enterpriseDataFields = $this->getEnterpriseDataFields();
-        if (! empty($enterpriseDataFields)) {
-            $contactDataFields = array_merge($enterpriseDataFields, $contactDataFields);
+        $extraDataFields = $this->getExtraDataFields();
+        if (! empty($extraDataFields)) {
+            $contactDataFields = array_merge($extraDataFields, $contactDataFields);
         }
 
         return $contactDataFields;
@@ -329,8 +327,8 @@ class Datafield
     /**
      * Set a single datafield.
      *
-     * @param mixed $name
-     * @param mixed $value
+     * @param string $name
+     * @param string|int|boolean $value
      * @param string $type
      * @param string $visibility
      *
@@ -355,7 +353,7 @@ class Datafield
     /**
      * @return array
      */
-    public function getEnterpriseDataFields()
+    public function getExtraDataFields()
     {
         return [];
     }

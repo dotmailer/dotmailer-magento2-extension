@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Zend\Mail\Transport\SmtpOptions;
+
 /**
  * Transactional emails configuration data values.
  */
@@ -55,7 +57,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $storeId
      *
-     * @return mixed
+     * @return boolean|string
      */
     public function getSmtpHost($storeId)
     {
@@ -71,7 +73,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $storeId
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getSmtpUsername($storeId = null)
     {
@@ -87,7 +89,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $storeId
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getSmtpPassword($storeId = null)
     {
@@ -104,7 +106,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $storeId
      *
-     * @return mixed
+     * @return boolean|string
      */
     private function getSmtpPort($storeId)
     {
@@ -156,9 +158,31 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @param int $storeId
+     *
+     * @return SmtpOptions
+     */
+    public function getSmtpOptions($storeId)
+    {
+        return new SmtpOptions(
+            [
+                'host' => $this->getSmtpHost($storeId),
+                'port' => $this->getSmtpPort($storeId),
+                'connection_class' => 'login',
+                'connection_config' =>
+                [
+                    'username' => $this->getSmtpUsername($storeId),
+                    'password' => $this->getSmtpPassword($storeId),
+                    'ssl' => 'tls'
+                ]
+            ]
+        );
+    }
+
+    /**
      * Check if the template code is containing dotmailer.
      *
-     * @param $templateCode
+     * @param string $templateCode
      * @return bool
      */
     public function isDotmailerTemplate($templateCode)

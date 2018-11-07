@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Magento\TestFramework\ObjectManager;
 
-class LogFileReadTest extends \PHPUnit_Framework_TestCase
+class LogFileReadTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var string

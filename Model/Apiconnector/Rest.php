@@ -598,5 +598,4 @@ class Rest
 
         return false;
     }
-
 }

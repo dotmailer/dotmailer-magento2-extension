@@ -2,8 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Setup\Schema;
+
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -63,7 +66,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function _construct()
     {
-        $this->_init('email_catalog', 'id');
+        $this->_init(Schema::EMAIL_CATALOG_TABLE, 'id');
     }
 
     /**
@@ -94,7 +97,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
         $connectionName = null
     ) {
-    
         $this->helper                   = $helper;
         $this->productIndexcollection = $productIndexCollection;
         $this->config = $config;
@@ -113,8 +115,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get most viewed product collection.
      *
-     * @param mixed $from
-     * @param mixed $to
+     * @param string $from
+     * @param string $to
      * @param int $limit
      * @param int $catId
      * @param string $catName
@@ -257,8 +259,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Get bestseller collection.
      *
-     * @param mixed $from
-     * @param mixed $to
+     * @param string $from
+     * @param string $to
      * @param int $limit
      * @param int $storeId
      *
@@ -325,8 +327,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Reset for re-import.
      *
-     * @param mixed $from
-     * @param mixed $to
+     * @param string|null $from
+     * @param string|null $to
      *
      * @return int
      *
@@ -347,7 +349,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
         $num = $conn->update(
-            $this->getTable('email_catalog'),
+            $this->getTable(Schema::EMAIL_CATALOG_TABLE),
             [
                 'imported' => new \Zend_Db_Expr('null'),
                 'modified' => new \Zend_Db_Expr('null'),
@@ -370,7 +372,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         try {
             $coreResource = $this->getConnection();
-            $tableName = $this->getTable('email_catalog');
+            $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
 
             if ($modified) {
                 $coreResource->update(
@@ -406,7 +408,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function removeOrphanProducts()
     {
         $write = $this->getConnection();
-        $catalogTable = $this->getTable('email_catalog');
+        $catalogTable = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
         $select = $write->select();
         $select->reset()
             ->from(
@@ -428,5 +430,24 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         //run query
         $write->query($deleteSql);
+    }
+
+    /**
+     * Set modified if already imported
+     *
+     * @param array $ids
+     */
+    public function setModified($ids)
+    {
+        $write     = $this->getConnection();
+        $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
+        $write->update(
+            $tableName,
+            ['modified' => 1],
+            [
+                $write->quoteInto("product_id IN (?)", $ids),
+                $write->quoteInto("imported = ?", 1)
+            ]
+        );
     }
 }

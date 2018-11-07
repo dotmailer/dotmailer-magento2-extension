@@ -62,7 +62,7 @@ class Collection extends
      *
      * @param int $customerId
      *
-     * @return mixed
+     * @return bool|\Dotdigitalgroup\Email\Model\Contact
      */
     public function loadByCustomerId($customerId)
     {
@@ -120,7 +120,7 @@ class Collection extends
      * @param string $email
      * @param int $websiteId
      *
-     * @return mixed
+     * @return bool|\Dotdigitalgroup\Email\Model\Contact
      */
     public function loadByCustomerEmail($email, $websiteId)
     {

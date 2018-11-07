@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Test/etc/testSchema.xsd">
+    <test name="AbandonedCartUrlLockedTest">
+        <annotations>
+            <features value="dotmailer-magento2-extension"/>
+            <stories value="Edc page visibility with invalid passcode."/>
+            <title value="You should not be able to access the edc page with invalid code."/>
+            <description value="You should not be able to see the edc page having invalid passcode."/>
+            <severity value="CRITICAL"/>
+            <group value="dotmailer-edc-locked"/>
+            <group value="dotmailer"/>
+        </annotations>
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+            <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettings"/>
+            <waitForPageLoad stepKey="waitForPageLoad1"/>
+            <conditionalClick selector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldset}}" visible="false" stepKey="click"/>
+            <grabValueFrom selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" stepKey="beforeIps"/>
+            <setCookie userInput="beforeIps" value="{$beforeIps}" stepKey="setCookie1"/>
+            <clearField selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" stepKey="noIpLimit"/>
+        </before>
+        <after>
+            <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettingsBack"/>
+            <waitForPageLoad stepKey="waitForPageLoad4"/>
+            <grabCookie userInput="beforeIps" stepKey="grabCookie"/>
+            <fillField selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" userInput="{$grabCookie}" stepKey="noIpLimitBack"/>
+            <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="click2"/>
+            <resetCookie userInput="beforeIps" stepKey="resetCookie"/>
+            <actionGroup ref="logout" stepKey="logoutAdminUserAfterTest"/>
+        </after>
+
+        <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="click1"/>
+        <amOnPage url="{{AdminAbandonedCartSettingPage.url}}" stepKey="amOnConfigurationPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad2"/>
+        <grabValueFrom selector="{{AdminAbandonedCartSettingsSection.dynamicContentPasscode}}" stepKey="passcode"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/{$passcode}" stepKey="amOnAbandonedCartPage"/>
+        <seeInCurrentUrl url="connector" stepKey="abandonedCartPage"/>
+        <dontSee userInput="401 Unauthorized" selector="h1" stepKey="dontSeeUnauthorized"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnACHackedPage"/>
+        <see selector="{{StorefrontAbandonedCartEdcSection.dynamicPageContent}}" userInput="401" stepKey="seeUnauthorized"/>
+        <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amOnDashboardPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad3"/>
+        <seeInCurrentUrl url="{{AdminDotmailerDashboardPage.url}}" stepKey="seeDashboard"/>
+        <see userInput="Not Locked." selector="{{AdminDashboardSection.lockStatus}}" stepKey="SeeLockStatus"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_1"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_2"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_3"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_4"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_5"/>
+        <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amBackOnDashboard"/>
+        <see userInput="Locked." selector="{{AdminDashboardSection.lockStatus}}" stepKey="SeeLockStatus1"/>
+    </test>
+</tests>
