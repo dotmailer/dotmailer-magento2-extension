@@ -7,7 +7,7 @@
         <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
                  showInStore="0">
             <class>separator-top</class>
-            <label>API Credentials</label>
+            <label>Accounts</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="trial" translate="label" type="text" sortOrder="5" showInWebsite="1" showInStore="0"
