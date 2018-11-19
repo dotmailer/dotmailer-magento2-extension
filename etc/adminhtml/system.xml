@@ -1417,7 +1417,7 @@
                 </field>
                 <field id="product_link_style" translate="label" sortOrder="130" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Font Size</label>
+                    <label>Font Style</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
                 <field id="body_title" translate="label" sortOrder="140" showInStore="0" showInWebsite="1"
