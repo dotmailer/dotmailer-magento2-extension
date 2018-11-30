@@ -48,6 +48,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         $this->upgradeOneOneZeoToTwoTwoOne($setup, $context, $connection);
         $this->upgradeTwoThreeSixToTwoFiveFour($setup, $context);
+        $this->upgradeTwoFiveFourToThreeZeroThree($setup, $context);
 
         $setup->endSetup();
     }
@@ -454,6 +455,30 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '2.5.4', '<')) {
             $this->modifyWishlistTable($setup);
+        }
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeTwoFiveFourToThreeZeroThree(
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '3.0.3', '<')) {
+            $definition = [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'size' => 255,
+                'nullable' => false,
+                'default' => '',
+                'comment' => 'Contact Status'
+            ];
+            $setup->getConnection()->addColumn(
+                $setup->getTable(Schema::EMAIL_ABANDONED_CART_TABLE),
+                'status',
+                $definition
+            );
         }
     }
 }

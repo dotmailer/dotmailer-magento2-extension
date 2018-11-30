@@ -2,7 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+use Dotdigitalgroup\Email\Model\AbandonedCart\PendingContactUpdater;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
+
 
 /**
  * Customer and guest Abandoned Carts.
@@ -41,6 +43,11 @@ class Quote
     const GUEST_LOST_BASKET_TWO = 2;
     const GUEST_LOST_BASKET_THREE = 3;
 
+    const STATUS_PENDING = 'PendingOptIn';
+    const STATUS_CONFIRMED = 'Confirmed';
+    const STATUS_SENT = 'Sent';
+    const STATUS_EXPIRED = 'Expired';
+
     /**
      * @var \Dotdigitalgroup\Email\Model\AbandonedFactory
      */
@@ -55,11 +62,6 @@ class Quote
      * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
      */
     public $quoteCollectionFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer
-     */
-    public $subscriberFilterer;
 
     /**
      * @var Campaign
@@ -124,29 +126,35 @@ class Quote
     private $dateIntervalFactory;
 
     /**
+     * @var PendingContactUpdater
+     */
+    private $acPendingContactUpdater;
+
+    /**
      * Quote constructor.
+     *
      * @param \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param Campaign $campaignResource
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource
-     * @param \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer $subscriberFilterer
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
+     * @param PendingContactUpdater $pendingContactUpdater
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
+        Campaign $campaignResource,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource,
-        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer $subscriberFilterer,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
+        PendingContactUpdater $pendingContactUpdater
     ) {
         $this->timeZone = $timezone;
         $this->rulesFactory = $rulesFactory;
@@ -156,12 +164,12 @@ class Quote
         $this->campaignResource = $campaignResource;
         $this->orderCollection = $collectionFactory;
         $this->abandonedResource = $abandonedResource;
-        $this->subscriberFilterer = $subscriberFilterer;
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->scopeConfig = $this->helper->getScopeConfig();
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->campaignCollection = $campaignFactory->create()->campaignCollection;
         $this->abandonedCollectionFactory = $abandonedFactory->create()->abandonedCollectionFactory;
+        $this->acPendingContactUpdater = $pendingContactUpdater;
     }
 
     /**
@@ -173,6 +181,7 @@ class Quote
     {
         $result = [];
         $stores = $this->helper->getStores();
+        $this->acPendingContactUpdater->update();
 
         foreach ($stores as $store) {
             $storeId = $store->getId();
@@ -498,7 +507,6 @@ class Quote
      */
     private function processCustomerFirstAbandonedCart($storeId)
     {
-        $result = 0;
         $abandonedNum = 1;
         $interval = $this->getInterval($storeId, $abandonedNum);
         $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
@@ -518,6 +526,25 @@ class Quote
 
         //campaign id for customers
         $campaignId = $this->getLostBasketCustomerCampaignId($abandonedNum, $storeId);
+
+        $result = $this->createCustomerFirstAbandonedCart($quoteCollection, $storeId, $campaignId);
+        $result += $this->processConfirmedCustomerAbandonedCart($storeId, $campaignId);
+
+        return $result;
+    }
+
+    /**
+     * @param $quoteCollection
+     * @param $storeId
+     * @param $campaignId
+     * @param $result
+     *
+     * @return int
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function createCustomerFirstAbandonedCart($quoteCollection, $storeId, $campaignId)
+    {
+        $result = 0;
         foreach ($quoteCollection as $quote) {
             $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
             if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)) {
@@ -543,7 +570,7 @@ class Quote
     }
 
     /**
-     * @param int $quote
+     * @param \Magento\Quote\Model\Quote $quote
      * @param int $websiteId
      *
      * @return bool
@@ -554,34 +581,40 @@ class Quote
         $items = $quote->getAllItems();
         $email = $quote->getCustomerEmail();
         $itemIds = $this->getQuoteItemIds($items);
-
-        if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
-            $this->helper->updateAbandonedProductName(
-                $mostExpensiveItem->getName(),
-                $email,
-                $websiteId
-            );
-        }
-
         $abandonedModel = $this->abandonedFactory->create()
             ->loadByQuoteId($quoteId);
+        $contact = $this->helper->getContact($email, $websiteId);
+        if (!$contact) {
+            return false;
+        }
 
+        if ($contact->status === self::STATUS_PENDING) {
+            $this->createAbandonedCart($abandonedModel, $quote, $itemIds, self::STATUS_PENDING);
+            return false;
+        }
         if ($this->abandonedCartAlreadyExists($abandonedModel) &&
-            $this->shouldNotSendACAgain($abandonedModel, $quote)) {
+            $this->shouldNotSendACAgain($abandonedModel, $quote) &&
+            $this->isNotAConfirmedContact($abandonedModel)
+        ) {
             if ($this->shouldDeleteAbandonedCart($quote)) {
                 $this->deleteAbandonedCart($abandonedModel);
             }
             return false;
         } else {
-            //create abandoned cart
-            $this->createAbandonedCart($abandonedModel, $quote, $itemIds);
+            if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
+                $this->helper->updateAbandonedProductName(
+                    $mostExpensiveItem->getName(),
+                    $email,
+                    $websiteId
+                );
+            }
+            $this->createAbandonedCart($abandonedModel, $quote, $itemIds, self::STATUS_SENT);
+            return true;
         }
-
-        return true;
     }
 
     /**
-     * @param int $allItemsIds
+     * @param array $allItemsIds
      * @return array
      */
     private function getQuoteItemIds($allItemsIds)
@@ -637,21 +670,25 @@ class Quote
     }
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\Abandoned  $abandonedModel
+     * @param \Dotdigitalgroup\Email\Model\Abandoned $abandonedModel
      * @param \Magento\Quote\Model\Quote $quote
      * @param array $itemIds
+     * @param string $status
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function createAbandonedCart($abandonedModel, $quote, $itemIds)
+    private function createAbandonedCart($abandonedModel, $quote, $itemIds, $status)
     {
         $abandonedModel->setStoreId($quote->getStoreId())
-            ->setCustomerId($quote->getCustomerId())
-            ->setEmail($quote->getCustomerEmail())
-            ->setQuoteId($quote->getId())
-            ->setQuoteUpdatedAt($quote->getUpdatedAt())
-            ->setAbandonedCartNumber(1)
-            ->setItemsCount($quote->getItemsCount())
-            ->setItemsIds(implode(',', $itemIds))
-            ->save();
+                       ->setCustomerId($quote->getCustomerId())
+                       ->setEmail($quote->getCustomerEmail())
+                       ->setQuoteId($quote->getId())
+                       ->setQuoteUpdatedAt($quote->getUpdatedAt())
+                       ->setAbandonedCartNumber(1)
+                       ->setItemsCount($quote->getItemsCount())
+                       ->setItemsIds(implode(',', $itemIds))
+                       ->setStatus($status)
+                       ->save();
     }
 
     /**
@@ -690,7 +727,6 @@ class Quote
      */
     private function processGuestFirstAbandonedCart($storeId)
     {
-        $result = 0;
         $abandonedNum = 1;
 
         $sendAfter = $this->getSendAfterIntervalForGuest($storeId, $abandonedNum);
@@ -709,6 +745,24 @@ class Quote
         }
 
         $guestCampaignId = $this->getLostBasketGuestCampaignId($abandonedNum, $storeId);
+        $result = $this->createGuestFirstAbandonedCart($quoteCollection, $storeId, $guestCampaignId);
+        $result += $this->processConfirmedGuestAbandonedCart($storeId, $guestCampaignId);
+
+
+        return $result;
+    }
+
+    /**
+     * @param $quoteCollection
+     * @param $storeId
+     * @param $guestCampaignId
+     * @param $result
+     *
+     * @return int
+     */
+    private function createGuestFirstAbandonedCart($quoteCollection, $storeId, $guestCampaignId)
+    {
+        $result = 0;
         foreach ($quoteCollection as $quote) {
             $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
             if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)) {
@@ -757,8 +811,7 @@ class Quote
     }
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\Abandoned $quote
-     *
+     * @param \Magento\Quote\Model\Quote $quote
      * @return bool
      */
     private function shouldDeleteAbandonedCart($quote)
@@ -864,6 +917,7 @@ class Quote
      * @param string $to
      * @param int $storeId
      * @param bool $guest
+     *
      * @return mixed
      */
     private function getAbandonedCartsForStore($number, $from, $to, $storeId, $guest = false)
@@ -874,23 +928,14 @@ class Quote
             'date' => true
         ];
 
-        $abandonedCollection = $this->abandonedCollectionFactory->create()
-            ->addFieldToFilter('is_active', 1)
-            ->addFieldToFilter('abandoned_cart_number', --$number)
-            ->addFieldToFilter('main_table.store_id', $storeId)
-            ->addFieldToFilter('quote_updated_at', $updated);
-
-        if ($guest) {
-            $abandonedCollection->addFieldToFilter('main_table.customer_id', ['null' => true]);
-        } else {
-            $abandonedCollection->addFieldToFilter('main_table.customer_id', ['notnull' => true]);
-        }
-
-        if ($this->helper->isOnlySubscribersForAC($storeId)) {
-            $abandonedCollection = $this->subscriberFilterer->filterBySubscribedStatus($abandonedCollection, "email");
-        }
-
-        return $abandonedCollection;
+        return $this->abandonedCollectionFactory->create()->getAbandonedCartsForStore(
+            --$number,
+            $storeId,
+            $updated,
+            self::STATUS_SENT,
+            $this->helper->isOnlySubscribersForAC($storeId),
+            $guest
+        );
     }
 
     /**
@@ -924,5 +969,54 @@ class Quote
     private function isItemsIdsSame($quoteItemIds, $abandonedItemIds)
     {
         return $quoteItemIds == $abandonedItemIds;
+    }
+
+    /**
+     * @param $storeId
+     * @param $guestCampaignId
+     *
+     * @return int
+     */
+    private function processConfirmedGuestAbandonedCart($storeId, $guestCampaignId)
+    {
+        $ac1QuoteIdsWithConfirmedContacts = $this->abandonedCollectionFactory->create()
+            ->getCollectionByConfirmedStatus($storeId, true)
+            ->getColumnValues('quote_id');
+
+        $quoteCollectionFromIds = $this->orderCollection->create()
+            ->getStoreQuotesFromQuoteIds($ac1QuoteIdsWithConfirmedContacts, $storeId);
+        return $this->createGuestFirstAbandonedCart(
+            $quoteCollectionFromIds,
+            $storeId,
+            $guestCampaignId
+        );
+    }
+
+    /**
+     * @param $storeId
+     * @param $campaignId
+     * @param $result
+     *
+     * @return int
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function processConfirmedCustomerAbandonedCart($storeId, $campaignId)
+    {
+        $ac1QuoteIdsWithConfirmedContacts = $this->abandonedCollectionFactory->create()
+            ->getCollectionByConfirmedStatus($storeId)
+            ->getColumnValues('quote_id');
+
+        $quoteCollectionFromIds = $this->orderCollection->create()
+            ->getStoreQuotesFromQuoteIds($ac1QuoteIdsWithConfirmedContacts, $storeId);
+        return $this->createCustomerFirstAbandonedCart(
+            $quoteCollectionFromIds,
+            $storeId,
+            $campaignId
+        );
+    }
+
+    private function isNotAConfirmedContact($abandonedModel)
+    {
+        return $abandonedModel->getStatus() !== self::STATUS_CONFIRMED;
     }
 }

@@ -323,4 +323,24 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $collection->getColumnValues('customer_email');
     }
 
+    /**
+     * @param array $quoteIds
+     * @param int $storeId
+     *
+     * @return \Magento\Quote\Model\ResourceModel\Quote\Collection|Object
+     */
+    public function getStoreQuotesFromQuoteIds($quoteIds, $storeId)
+    {
+        $salesCollection = $this->quoteCollection->create()
+            ->addFieldToFilter('is_active', 1)
+            ->addFieldToFilter('items_count', ['gt' => 0])
+            ->addFieldToFilter('customer_email', ['neq' => ''])
+            ->addFieldToFilter('entity_id', ['in' => $quoteIds]);
+
+        if ($this->helper->isOnlySubscribersForAC($storeId)) {
+            $salesCollection = $this->subscriberFilterer->filterBySubscribedStatus($salesCollection);
+        }
+
+        return $salesCollection;
+    }
 }

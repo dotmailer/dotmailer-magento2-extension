@@ -1350,6 +1350,11 @@
                     <label>Customer Login URL</label>
                     <comment><![CDATA[Please provide the customer login url. If no url provided then default login url customer/account/login will be used. Only enter the url after base url. For example for http://www.localhost.com/customer/account/login only enter customer/account/login]]></comment>
                 </field>
+                <field id="expire_time" translate="comment label" sortOrder="80" showInStore="0" showInWebsite="0"
+                       showInDefault="0">
+                    <label>Expire Time</label>
+                    <comment><![CDATA[The number of hours to wait before expiring an abandoned cart when a contact is pending opt in]]></comment>
+                </field>
             </group>
             <group id="dynamic_content_style" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1"
                    showInStore="0">

@@ -167,6 +167,7 @@
                 <cart_url></cart_url>
                 <login_url></login_url>
                 <allow_non_subscribers>0</allow_non_subscribers>
+                <expire_time>24</expire_time>
             </abandoned_carts>
             <tracking>
                 <roi_enabled>0</roi_enabled>

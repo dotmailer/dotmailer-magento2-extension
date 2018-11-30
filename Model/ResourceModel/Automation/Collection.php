@@ -56,7 +56,12 @@ class Collection extends
     {
         $collection = $this->addFieldToFilter(
             'enrolment_status',
-            \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING
+            [
+                'in' => [
+                    \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING,
+                    \Dotdigitalgroup\Email\Model\Sync\Automation::CONTACT_STATUS_CONFIRMED
+                ]
+            ]
         )->addFieldToFilter(
             'automation_type',
             $type
@@ -65,5 +70,36 @@ class Collection extends
         $collection->getSelect()->limit($limit);
 
         return $collection;
+    }
+
+    /**
+     * @param boolean $expireTime
+     *
+     * @return $this
+     */
+    public function getCollectionByPendingStatus($expireTime = false)
+    {
+        $collection = $this->addFieldToFilter(
+            'enrolment_status',
+            \Dotdigitalgroup\Email\Model\Sync\Automation::CONTACT_STATUS_PENDING
+        );
+        if ($expireTime) {
+            $collection->addFieldToFilter('created_at', ['lt' => $expireTime]);
+        }
+
+        return $collection;
+    }
+
+    /**
+     * @return \Magento\Framework\DataObject
+     */
+    public function getLastPendingStatusCheckTime()
+    {
+        $collection = $this->addFieldToFilter(
+            'enrolment_status',
+            \Dotdigitalgroup\Email\Model\Sync\Automation::CONTACT_STATUS_PENDING
+        )->setOrder("updated_at")->setPageSize(1);
+
+        return $collection->getFirstItem()->getUpdatedAt();
     }
 }

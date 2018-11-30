@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Automation\Status;
 
+use Dotdigitalgroup\Email\Model\Sync\Automation;
+
 class Options implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
@@ -36,6 +38,18 @@ class Options implements \Magento\Framework\Data\OptionSourceInterface
             [
                 'label' => 'Failed',
                 'value' => 'Failed'
+            ],
+            [
+                'label' => Automation::CONTACT_STATUS_PENDING,
+                'value' => Automation::CONTACT_STATUS_PENDING
+            ],
+            [
+                'label' => Automation::CONTACT_STATUS_CONFIRMED,
+                'value' => Automation::CONTACT_STATUS_CONFIRMED
+            ],
+            [
+                'label' => Automation::CONTACT_STATUS_EXPIRED,
+                'value' => Automation::CONTACT_STATUS_EXPIRED
             ],
         ];
 

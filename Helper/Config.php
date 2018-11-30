@@ -172,6 +172,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CONTENT_LOGIN_URL = 'connector_configuration/abandoned_carts/login_url';
     const XML_PATH_CONNECTOR_CONTENT_ALLOW_NON_SUBSCRIBERS
         = 'connector_configuration/abandoned_carts/allow_non_subscribers';
+    const XML_PATH_CONNECTOR_AC_AUTOMATION_EXPIRE_TIME = 'connector_configuration/abandoned_carts/expire_time';
+
     // Address Book Pref
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS =
         'connector_configuration/customer_addressbook/can_change';

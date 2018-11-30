@@ -550,22 +550,49 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $email
      * @param int $websiteId
      *
-     * @return string
+     * @return bool|string
      */
     public function getContactId($email, $websiteId)
     {
-        $contact = $this->contactFactory->create()
+        $contactFromTable = $this->contactFactory->create()
             ->loadByCustomerEmail($email, $websiteId);
-        if ($contactId = $contact->getContactId()) {
+        if ($contactId = $contactFromTable->getContactId()) {
             return $contactId;
         }
 
-        if (!$this->isEnabled($websiteId)) {
+        $contact = $this->getContact($email, $websiteId, $contactFromTable);
+        if ($contact && isset($contact->id)) {
+            return $contact->id;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $email
+     * @param int $websiteId
+     * @param boolean $contactFromTable
+     *
+     * @return bool|object
+     */
+    public function getContact($email, $websiteId, $contactFromTable = false)
+    {
+        if (! $this->isEnabled($websiteId)) {
             return false;
         }
 
+        if ($contactFromTable) {
+            $contact = $contactFromTable;
+        } else {
+            $contact = $this->contactFactory->create()
+                ->loadByCustomerEmail($email, $websiteId);
+        }
+
         $client = $this->getWebsiteApiClient($websiteId);
-        $response = $client->postContacts($email);
+        $response = $client->getContactByEmail($email);
+        if (! isset($response->id)) {
+            $response = $client->postContacts($email);
+        }
 
         if (isset($response->message)) {
             $contact->setEmailImported(1);
@@ -584,7 +611,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
 
-        return $response->id;
+        return $response;
     }
 
     /**
