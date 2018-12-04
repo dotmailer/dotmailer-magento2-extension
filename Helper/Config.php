@@ -182,6 +182,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         'connector_configuration/customer_addressbook/can_show_fields';
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS =
         'connector_configuration/customer_addressbook/fields_to_show';
+    const XML_PATH_CONNECTOR_SHOW_PREFERENCES =
+        'connector_configuration/customer_addressbook/show_preferences';
     //Dynamic Content
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT = 'connector_configuration/dynamic_content/link_text';
 

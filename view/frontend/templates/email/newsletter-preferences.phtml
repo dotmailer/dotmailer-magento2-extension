@@ -2,25 +2,81 @@
 /** @var \Dotdigitalgroup\Email\Block\Customer\Account\Books $block */
 // @codingStandardsIgnoreFile
 ?>
-<?php if ($block->canShowAnything()) : ?>
-    <?php
-    $additionalBooks = $block->getAdditionalBooksToShow();
-    $dataFields = $block->getDataFieldsToShow();
-    $canShowAddressBook = $block->getCanShowAdditionalBooks();
-    $canShowDataFields = $block->getCanShowDataFields();
-    ?>
-    <form id="connector-newsletter-form-validate" method="post"
-          action="<?= $block->escapeHtml($block->getSaveUrl()) ?>" style="margin-top: 35px;">
-        <div class="fieldset">
-            <?= $block->getBlockHtml('formkey') ?>
-            <legend class="legend"><span><?= $block->escapeHtml(__('Newsletter Preferences')) ?></span></legend>
+<form id="connector-newsletter-form-validate" method="post"
+      action="<?= $block->escapeHtml($block->getSaveUrl()) ?>">
+    <?= $block->getBlockHtml('formkey') ?>
+    <legend class="legend"><span><?= $block->escapeHtml(__('General Subscription')) ?></span></legend>
+    <fieldset class="fieldset">
+        <div class="field choice">
+            <input type="checkbox" name="is_subscribed" id="subscription" value="1"
+                   title="<?= $block->escapeHtmlAttr(__('General Subscription')) ?>"
+                <?php if ($block->isSubscribed()): ?> checked="checked"<?php endif; ?> class="checkbox">
+            <label for="subscription" class="label">
+                    <span>
+                        <?php if(strlen($block->getCustomerConsentText())) : ?>
+                            <?= $block->getCustomerConsentText() ?>
+                        <?php else : ?>
+                            <?= $block->escapeHtml(__('General Subscription')) ?>
+                        <?php endif; ?>
+                    </span>
+            </label>
+        </div>
+        <?php /* Extensions placeholder */ ?>
+        <?= $block->getChildHtml('customer.form.newsletter.extra') ?>
+    </fieldset>
+    <?php if ($block->canShowAnything()) : ?>
+        <?php
+        $additionalBooks = $block->getAdditionalBooksToShow();
+        $dataFields = $block->getDataFieldsToShow();
+        $canShowAddressBook = $block->getCanShowAdditionalBooks();
+        $canShowDataFields = $block->getCanShowDataFields();
+        ?>
+        <fieldset class="fieldset">
+            <legend class="legend"><span><?= $block->escapeHtml(__('Preferences')) ?></span></legend>
             <ul class="form-list" style="padding-left: 0">
+                <?php if ($block->getCanShowPreferences()) : ?>
+                    <h4 style="margin-top: 10px;">
+                        <?= $block->escapeHtml(__('Preferences')) ?>
+                    </h4>
+                    <?php foreach ($block->getPreferencesToShow() as $prefId => $preferences) : ?>
+                        <?php if (! $preferences['isPreference']) : ?>
+                            <h5 style="margin-bottom: 10px"><?= $block->escapeHtml($preferences['catLabel']) ?></h5>
+                            <?php foreach ($preferences['catPreferences'] as $catPrefId => $catPref) : ?>
+                                <li class="control" style="display: block; margin: 5px 0 5px 10px">
+                                    <input type="checkbox" name="preferences[]"
+                                           id="<?= $block->escapeHtml($catPref["label"] . '_' . $catPrefId); ?>"
+                                           value="<?= $block->escapeHtml($prefId . ',' . $catPrefId) ?>"
+                                           title="<?= $block->escapeHtml($catPref["label"]) ?>"
+                                        <?php if ($catPref["isOptedIn"]) : ?>
+                                            checked="checked"
+                                        <?php endif; ?> class="checkbox" />
+                                    <label for="<?= $block->escapeHtml($catPref["label"] . '_' . $catPrefId); ?>">
+                                        <?= $block->escapeHtml($catPref["label"]) ?>
+                                    </label>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li class="control" style="display: block; margin: 17px 0 17px 10px">
+                                <input type="checkbox" name="preferences[]"
+                                       id="<?= $block->escapeHtml($preferences["label"] . '_' . $prefId); ?>"
+                                       value="<?= $block->escapeHtml($prefId) ?>"
+                                       title="<?= $block->escapeHtml($preferences["label"]) ?>"
+                                    <?php if ($preferences["isOptedIn"]) : ?>
+                                        checked="checked"
+                                    <?php endif; ?> class="checkbox" />
+                                <label for="<?= $block->escapeHtml($preferences["label"] . '_' . $prefId); ?>">
+                                    <?= $block->escapeHtml($preferences["label"]) ?>
+                                </label>
+                            </li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
                 <?php if (!empty($additionalBooks) && $canShowAddressBook) : ?>
                     <h4 style="margin-top: 10px;">
-                        <?= $block->escapeHtml(__('Additional Newsletter Subscriptions')) ?>
+                        <?= $block->escapeHtml(__('Subscriptions')) ?>
                     </h4>
                     <?php foreach ($additionalBooks as $books) : ?>
-                        <li class="control" style="display: block">
+                        <li class="control" style="display: block; margin: 5px 0 5px 10px">
                             <input type="checkbox" name="additional_subscriptions[]"
                                    id="<?= $block->escapeHtml($books["name"]); ?>"
                                    value="<?= $block->escapeHtml($books["value"]) ?>"
@@ -28,13 +84,14 @@
                                 <?php if ($books["subscribed"]) : ?>
                                     checked="checked"
                                 <?php endif; ?> class="checkbox" />
-                            <label
-                                for="<?= $block->escapeHtml($books["name"]); ?>"><?= $block->escapeHtml($books["name"]) ?></label>
+                            <label for="<?= $block->escapeHtml($books["name"]); ?>">
+                                <?= $block->escapeHtml($books["name"]) ?>
+                            </label>
                         </li>
                     <?php endforeach; ?>
                 <?php endif; ?>
                 <?php if (!empty($dataFields) && $canShowDataFields) : ?>
-                    <h4 style="margin-top: 25px;"><?= $block->escapeHtml(__('Data Fields')) ?></h4>
+                    <h4 style="margin-top: 25px;"><?= $block->escapeHtml(__('Information')) ?></h4>
                     <li class="fields" style="display: block">
                         <div>
                             <?php foreach ($dataFields as $dataField) : ?>
@@ -57,13 +114,13 @@
                     </li>
                 <?php endif; ?>
             </ul>
+        </fieldset>
+    <?php endif; ?>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <button type="submit" title="Save" class="action save primary">
+                <span>Save</span>
+            </button>
         </div>
-        <div class="actions-toolbar">
-            <div class="primary">
-                <button type="submit" title="Save" class="action save primary">
-                    <span>Save</span>
-                </button>
-            </div>
-        </div>
-    </form>
-<?php endif;
+    </div>
+</form>

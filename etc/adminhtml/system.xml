@@ -1271,8 +1271,8 @@
                     <comment>Please provide the consent text that is currently displayed to your customers when they subscribe to your newsletter (i.e. via the newsletter signup form)</comment>
                 </field>
                 <field id="dotmailer_consent_customer_text" translate="comment label" sortOrder="30" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Consent text provided on registration and checkout</label>
-                    <comment>If different from above, provide the text that is displayed on your registration and checkout form to get consent from your customers and guests</comment>
+                    <label>Consent text provided on registration, account dashboard and checkout</label>
+                    <comment>If different from above, provide the text that is displayed on your registration and checkout form to get consent from your customers and guests. If provided, this text will also be displayed in the customer's newsletter subscription page.</comment>
                 </field>
             </group>
             <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
@@ -1536,7 +1536,12 @@
             </group>
             <group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1"
                    showInStore="0">
-                <label>Customer Addressbook Preference</label>
+                <label>Customer Preference</label>
+                <field id="show_preferences" translate="label" sortOrder="5" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Show Preferences to Customer</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="can_change" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Show Addressbooks to Customer</label>
