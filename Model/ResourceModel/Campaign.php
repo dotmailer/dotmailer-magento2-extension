@@ -24,11 +24,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Campaign constructor.
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-     * @param \Magento\SalesRule\Model\ResourceModel\Rule $rulesResource
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
-     * @param \Magento\SalesRule\Model\Coupon\CodegeneratorInterfaceFactory $massgeneratorFactory
-     * @param \Magento\SalesRule\Api\Data\CouponInterfaceFactory $couponFactory
-     * @param \Magento\SalesRule\Model\Spi\CouponResourceInterface $coupon
      * @param null $connectionName
      */
     public function __construct(
