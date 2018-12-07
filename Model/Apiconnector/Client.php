@@ -16,6 +16,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     //rest api data
     const REST_ACCOUNT_INFO = 'https://r1-api.dotmailer.com/v2/account-info';
     const REST_CONTACTS = '/v2/contacts/';
+    const REST_CONTACT_WITH_CONSENT = '/v2/contacts/with-consent';
+    const REST_CONTACT_WITH_CONSENT_AND_PREFERENCES = '/v2/contacts/with-consent-and-preferences';
     const REST_CONTACTS_IMPORT = '/v2/contacts/import/';
     const REST_ADDRESS_BOOKS = '/v2/address-books/';
     const REST_DATA_FILEDS = '/v2/data-fields';
@@ -52,6 +54,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const API_ERROR_ADDRESSBOOK_NOT_FOUND = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
     const API_ERROR_ADDRESSBOOK_DUPLICATE
         = 'That name is in use already, please choose another. ERROR_ADDRESSBOOK_DUPLICATE';
+    const REST_ACCOUNT_PREFERENCES = "/v2/preferences";
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\File
@@ -1456,6 +1459,135 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         if (isset($response->message)) {
             $this->helper->log('GET EMAIL STATS : ' . $response->message);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Gets all preferences that a given contact is opted into
+     *
+     * @param $contactId
+     * @return mixed
+     */
+    public function getPreferencesForContact($contactId)
+    {
+        $url = $this->getApiEndpoint() . "/v2/contact/" . $contactId . "/preferences";
+
+        $response = $this->setUrl($url)
+            ->setVerb('GET')
+            ->execute();
+
+        if (isset($response->message)) {
+            $this->helper->log('GET PREFERENCES FOR CONTACT: ' . $response->message);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Opts in a given contact to preferences, or opts out a given contact from preferences
+     *
+     * @param $contactId
+     * @param $preferences
+     *
+     * @return mixed
+     */
+    public function setPreferencesForContact($contactId, $preferences)
+    {
+        $url = $this->getApiEndpoint() . "/v2/contact/" . $contactId . "/preferences";
+        $this->setUrl($url)
+            ->setVerb('PUT')
+            ->buildPostBody($preferences);
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->helper->log('SET PREFERENCES FOR CONTACT: ' . $response->message);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Create contact with consent
+     *
+     * @param array $contact
+     * @param array $consentFields
+     *
+     * @return mixed
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function postContactWithConsent($contact, $consentFields)
+    {
+        $url = $this->getApiEndpoint() . self::REST_CONTACT_WITH_CONSENT;
+        $data = [
+            'Contact' => $contact,
+            'ConsentFields' => [['fields' => $consentFields]]
+        ];
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($data);
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = $contact['Email'] . ' , url ' . $url . ', ' . $response->message;
+            $this->helper->debug('postContactWithConsent', [$message]);
+            return $response;
+        }
+
+        return $response->contact;
+    }
+
+    /**
+     * Gets the preferences, as a tree structure
+     *
+     * @return mixed
+     */
+    public function getPreferences()
+    {
+        $url = $this->getApiEndpoint() . "/v2/preferences";
+
+        $response = $this->setUrl($url)
+            ->setVerb('GET')
+            ->execute();
+
+        if (isset($response->message)) {
+            $this->helper->log('GET PREFERENCES: ' . $response->message);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Create contact with consent
+     *
+     * @param array $contact
+     * @param array $consentFields
+     * @param array $preferences
+     *
+     * @return mixed
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function postContactWithConsentAndPreferences($contact, $consentFields, $preferences)
+    {
+        $url = $this->getApiEndpoint() . self::REST_CONTACT_WITH_CONSENT_AND_PREFERENCES;
+        $data = [
+            'Contact' => $contact,
+            'ConsentFields' => [['fields' => $consentFields]],
+            'Preferences' => [$preferences]
+        ];
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($data);
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = $contact['Email'] . ' , url ' . $url . ', ' . $response->message;
+            $this->helper->debug('postContactWithConsentAndPreferences', [$message]);
+            return $response;
         }
 
         return $response;

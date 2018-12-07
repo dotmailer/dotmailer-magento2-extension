@@ -12,16 +12,9 @@ class Books extends \Magento\Framework\View\Element\Template
     /**
      * Apiconnector client.
      *
-     * @var object
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
     public $client;
-
-    /**
-     * Contact id.
-     *
-     * @var string
-     */
-    public $contactId;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -34,22 +27,50 @@ class Books extends \Magento\Framework\View\Element\Template
     public $customerSession;
 
     /**
+     * @var \Magento\Newsletter\Model\SubscriberFactory
+     */
+    private $subscriberFactory;
+
+    /**
+     * @var object
+     */
+    private $contactFromAccount;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Contact
+     */
+    private $contactFromTable;
+
+
+    /**
      * Books constructor.
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\Session $customerSession,
+        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         array $data = []
     ) {
         $this->helper          = $helper;
         $this->customerSession = $customerSession;
+        $this->subscriberFactory = $subscriberFactory;
         parent::__construct($context, $data);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomerConsentText()
+    {
+        return $this->helper->configHelperFactory->create()
+            ->getConsentCustomerText($this->getCustomer()->getWebsiteId());
     }
 
     /**
@@ -84,9 +105,9 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * * Get api client.
+     * Get api client.
      *
-     * @return bool|mixed|object
+     * @return \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
     public function _getApiClient()
     {
@@ -119,43 +140,30 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getAdditionalBooksToShow()
     {
         $additionalBooksToShow = [];
-        $website = $this->getCustomer()->getStore()->getWebsite();
-        $additionalFromConfig = $this->helper->getAddressBookIdsToShow($website);
-
-        if (! empty($additionalFromConfig)) {
-            $this->getConnectorContact();
-            if ($this->contactId) {
+        $processedAddressBooks = [];
+        $additionalFromConfig = $this->helper->getAddressBookIdsToShow($this->getCustomer()->getStore()->getWebsite());
+        $contactFromTable = $this->getContactFromTable();
+        if (! empty($additionalFromConfig) && $contactFromTable->getContactId()) {
+            $contact = $this->getConnectorContact();
+            if (isset($contact->id) && $contact->status !== 'PendingOptIn') {
                 $addressBooks = $this->_getApiClient()
                     ->getContactAddressBooks(
-                        $this->contactId
+                        $contact->id
                     );
-                $processedAddressBooks = [];
                 if (is_array($addressBooks)) {
                     foreach ($addressBooks as $addressBook) {
                         $processedAddressBooks[$addressBook->id]
                             = $addressBook->name;
                     }
                 }
-                foreach ($additionalFromConfig as $bookId) {
-                    $connectorBook = $this->_getApiClient()->getAddressBookById(
-                        $bookId
-                    );
-                    if (isset($connectorBook->id)) {
-                        $subscribed = 0;
-                        if (isset($processedAddressBooks[$bookId])) {
-                            $subscribed = 1;
-                        }
-                        $additionalBooksToShow[] = [
-                            'name' => $connectorBook->name,
-                            'value' => $connectorBook->id,
-                            'subscribed' => $subscribed,
-                        ];
-                    }
-                }
             }
         }
 
-        return $additionalBooksToShow;
+        return $this->getProcessedAdditionalBooks(
+            $additionalFromConfig,
+            $processedAddressBooks,
+            $additionalBooksToShow
+        );
     }
 
     /**
@@ -178,59 +186,38 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getDataFieldsToShow()
     {
         $datafieldsToShow = [];
+        $website = $this->getCustomer()->getStore()->getWebsite();
         $dataFieldsFromConfig = $this->_getWebsiteConfigFromHelper(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS,
-            $this->getCustomer()->getStore()->getWebsite()
+            $website
         );
 
-        if (! empty($dataFieldsFromConfig)) {
-            $dataFieldsFromConfig = explode(',', $dataFieldsFromConfig);
+        if (empty($dataFieldsFromConfig)) {
+            return $datafieldsToShow;
+        }
+
+        $processedContactDataFields = [];
+        $processedConnectorDataFields = [];
+        $contactFromTable = $this->getContactFromTable();
+        $dataFieldsFromConfig = explode(',', $dataFieldsFromConfig);
+
+        if ($contactFromTable->getContactId()) {
             $contact = $this->getConnectorContact();
-            if ($this->contactId) {
+            if (isset($contact->id)) {
                 $contactDataFields = $contact->dataFields;
-                $processedContactDataFields = [];
                 foreach ($contactDataFields as $contactDataField) {
                     $processedContactDataFields[$contactDataField->key]
                         = $contactDataField->value;
                 }
-
-                $connectorDataFields = $this->_getApiClient()
-                    ->getDataFields();
-                $processedConnectorDataFields = [];
-                foreach ($connectorDataFields as $connectorDataField) {
-                    $processedConnectorDataFields[$connectorDataField->name]
-                        = $connectorDataField;
-                }
-                foreach ($dataFieldsFromConfig as $dataFieldFromConfig) {
-                    if (isset($processedConnectorDataFields[$dataFieldFromConfig])) {
-                        $value = '';
-                        if (isset($processedContactDataFields[$processedConnectorDataFields[
-                                                              $dataFieldFromConfig]->name])) {
-                            if ($processedConnectorDataFields[$dataFieldFromConfig]->type
-                                == 'Date'
-                            ) {
-                                $value
-                                       = $processedContactDataFields[$processedConnectorDataFields[
-                                                                     $dataFieldFromConfig]->name];
-                                $value = $this->_localeDate->convertConfigTimeToUtc($value, 'm/d/Y');
-                            } else {
-                                $value
-                                    = $processedContactDataFields[$processedConnectorDataFields[
-                                                                  $dataFieldFromConfig]->name];
-                            }
-                        }
-
-                        $datafieldsToShow[] = [
-                            'name' => $processedConnectorDataFields[$dataFieldFromConfig]->name,
-                            'type' => $processedConnectorDataFields[$dataFieldFromConfig]->type,
-                            'value' => $value,
-                        ];
-                    }
-                }
             }
         }
 
-        return $datafieldsToShow;
+        return $this->getProcessedDataFieldsToShow(
+            $processedConnectorDataFields,
+            $dataFieldsFromConfig,
+            $processedContactDataFields,
+            $datafieldsToShow
+        );
     }
 
     /**
@@ -240,16 +227,30 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function canShowAnything()
     {
-        if ($this->getCanShowDataFields() or $this->getCanShowAdditionalBooks()
-        ) {
-            $books = $this->getAdditionalBooksToShow();
-            $fields = $this->getDataFieldsToShow();
-            if (!empty($books) or !empty($fields)) {
+        if (! $this->isCustomerSubscriber() || ! $this->helper->isEnabled($this->getCustomer()->getWebsiteId())) {
+            return false;
+        }
+
+        $showPreferences = $this->getCanShowPreferences();
+        $books = $this->getAdditionalBooksToShow();
+        $fields = $this->getDataFieldsToShow();
+        if ($books || $fields || $showPreferences) {
+            if (! empty($books) || ! empty($fields) || $showPreferences) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isCustomerSubscriber()
+    {
+        return $this->subscriberFactory->create()
+            ->loadByCustomerId($this->getCustomer()->getId())
+            ->isSubscribed();
     }
 
     /**
@@ -259,33 +260,197 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function getConnectorContact()
     {
-        $contact = $this->_getApiClient()->getContactByEmail(
-            $this->getCustomer()->getEmail()
-        );
-
-        if (isset($contact->id)) {
-            $this->customerSession->setConnectorContactId($contact->id);
-            $this->contactId = $contact->id;
-        } else {
-            $contact = $this->_getApiClient()->postContacts(
+        if (! isset($this->contactFromAccount)) {
+            $contact = $this->_getApiClient()->getContactByEmail(
                 $this->getCustomer()->getEmail()
             );
             if (isset($contact->id)) {
+                $this->contactFromAccount = $contact;
                 $this->customerSession->setConnectorContactId($contact->id);
-                $this->contactId = $contact->id;
             }
         }
 
-        return $contact;
+        return $this->contactFromAccount;
     }
 
     /**
-     * Getter for contact id.
-     *
-     * @return int|string
+     * @return \Dotdigitalgroup\Email\Model\Contact
      */
-    public function getConnectorContactId()
+    private function getContactFromTable()
     {
-        return $this->contactId;
+        if (! isset($this->contactFromTable)) {
+            $this->contactFromTable = $this->helper->getContactByEmail(
+                $this->getCustomer()->getEmail(),
+                $this->getCustomer()->getStore()->getWebsite()->getId()
+            );
+        }
+
+        return $this->contactFromTable;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPreferencesToShow()
+    {
+        $processedPreferences = [];
+        $showPreferences = $this->getCanShowPreferences();
+        $contactFromTable = $this->getContactFromTable();
+
+        if ($showPreferences && $contactFromTable->getContactId()) {
+            $contact = $this->getConnectorContact();
+            if (isset($contact->id)) {
+                $preferences = $this->_getApiClient()->getPreferencesForContact($contact->id);
+                if (is_array($preferences)) {
+                    $processedPreferences = $this->processPreferences($preferences, $processedPreferences);
+                }
+            }
+        } elseif ($showPreferences) {
+            $preferences = $this->_getApiClient()->getPreferences();
+            if (is_array($preferences)) {
+                $processedPreferences = $this->processPreferences($preferences, $processedPreferences);
+            }
+        }
+        $this->customerSession->setDmContactPreferences($processedPreferences);
+        return $processedPreferences;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getCanShowPreferences()
+    {
+        return $this->_getWebsiteConfigFromHelper(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SHOW_PREFERENCES,
+            $this->getCustomer()->getStore()->getWebsite()
+        );
+    }
+
+    /**
+     * @param $preferences
+     * @param $processedPreferences
+     *
+     * @return mixed
+     */
+    private function processPreferences($preferences, $processedPreferences)
+    {
+        foreach ($preferences as $preference) {
+            $formattedPreference = [];
+            $formattedPreference['isPreference'] = $preference->isPreference;
+            if (! $preference->isPreference) {
+                if (! isset($preference->preferences)) {
+                    continue;
+                }
+                $formattedPreference['catLabel'] = $preference->publicName;
+                $formattedCatPreferences = [];
+                foreach ($preference->preferences as $catPreference) {
+                    $formattedCatPreference = [];
+                    $formattedCatPreference['label'] = $catPreference->publicName;
+                    isset($catPreference->isOptedIn)? $formattedCatPreference['isOptedIn'] = $catPreference->isOptedIn :
+                        $formattedCatPreference['isOptedIn'] = false;
+                    $formattedCatPreferences[$catPreference->id] = $formattedCatPreference;
+                }
+                $formattedPreference['catPreferences'] = $formattedCatPreferences;
+            } else {
+                $formattedPreference['label'] = $preference->publicName;
+                isset($catPreference->isOptedIn)? $formattedPreference['isOptedIn'] = $preference->isOptedIn :
+                    $formattedPreference['isOptedIn'] = false;
+            }
+            $processedPreferences[$preference->id] = $formattedPreference;
+        }
+        return $processedPreferences;
+    }
+
+    /**
+     * @param $additionalFromConfig
+     * @param $processedAddressBooks
+     * @param $additionalBooksToShow
+     *
+     * @return array
+     */
+    private function getProcessedAdditionalBooks($additionalFromConfig, $processedAddressBooks, $additionalBooksToShow)
+    {
+        foreach ($additionalFromConfig as $bookId) {
+            $connectorBook = $this->_getApiClient()->getAddressBookById(
+                $bookId
+            );
+            if (isset($connectorBook->id)) {
+                $subscribed = 0;
+                if (isset($processedAddressBooks[$bookId])) {
+                    $subscribed = 1;
+                }
+                $additionalBooksToShow[] = [
+                    'name' => $connectorBook->name,
+                    'value' => $connectorBook->id,
+                    'subscribed' => $subscribed,
+                ];
+            }
+        }
+        return $additionalBooksToShow;
+    }
+
+    /**
+     * @param array $processedConnectorDataFields
+     * @param array $dataFieldsFromConfig
+     * @param array $processedContactDataFields
+     * @param array $datafieldsToShow
+     *
+     * @return array
+     */
+    private function getProcessedDataFieldsToShow(
+        $processedConnectorDataFields,
+        $dataFieldsFromConfig,
+        $processedContactDataFields,
+        $datafieldsToShow
+    ) {
+        $connectorDataFields = $this->_getApiClient()->getDataFields();
+        if (! isset($connectorDataFields->message)) {
+            foreach ($connectorDataFields as $connectorDataField) {
+                $processedConnectorDataFields[$connectorDataField->name]
+                    = $connectorDataField;
+            }
+            foreach ($dataFieldsFromConfig as $dataFieldFromConfig) {
+                if (isset($processedConnectorDataFields[$dataFieldFromConfig])) {
+                    $value = '';
+                    if (isset($processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name])) {
+                        if ($processedConnectorDataFields[$dataFieldFromConfig]->type
+                            == 'Date'
+                        ) {
+                            $value = $processedContactDataFields[
+                                $processedConnectorDataFields[$dataFieldFromConfig]->name
+                            ];
+                            $value = $this->_localeDate->convertConfigTimeToUtc($value, 'm/d/Y');
+                        } else {
+                            $value
+                                = $processedContactDataFields[
+                                    $processedConnectorDataFields[$dataFieldFromConfig]->name
+                            ];
+                        }
+                    }
+
+                    $datafieldsToShow[] = [
+                        'name' => $processedConnectorDataFields[$dataFieldFromConfig]->name,
+                        'type' => $processedConnectorDataFields[$dataFieldFromConfig]->type,
+                        'value' => $value,
+                    ];
+                }
+            }
+        }
+        return $datafieldsToShow;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSubscribed()
+    {
+        $subscriber = $this->subscriberFactory->create()->loadByCustomerId(
+            $this->customerSession->getCustomerId()
+        );
+        if ($subscriber->getId()) {
+            return $subscriber->isSubscribed();
+        }
+
+        return false;
     }
 }

@@ -64,4 +64,24 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
     }
+
+    /**
+     * @param array $ids
+     * @param string $date
+     * @param bool $enrolmentStatus
+     */
+    public function update($ids, $date, $enrolmentStatus = false)
+    {
+        $bind = ['updated_at' => $date];
+        if ($enrolmentStatus) {
+            $bind['enrolment_status'] = $enrolmentStatus;
+        }
+
+        $where = ['id IN(?)' => $ids];
+        $this->getConnection()->update(
+            $this->getTable(Schema::EMAIL_AUTOMATION_TABLE),
+            $bind,
+            $where
+        );
+    }
 }

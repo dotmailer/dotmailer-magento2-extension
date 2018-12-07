@@ -11,12 +11,12 @@ use Zend\Mail\Transport\Smtp;
 class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Transactional|PHPUnit_Framework_MockObject_MockObject
+     * @var Transactional|\PHPUnit_Framework_MockObject_MockObject
      */
     private $transactionalEmailSettings;
 
     /**
-     * @var ZendMailTransportSmtp2Factory|PHPUnit_Framework_MockObject_MockObject
+     * @var ZendMailTransportSmtp2Factory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $zendMailTransportSmtp2Factory;
 

@@ -91,7 +91,7 @@ class Collection extends
      * Get number of campaigns for contact by interval.
      *
      * @param string  $email
-     * @param string $updated
+     * @param array $updated
      *
      * @return int
      */

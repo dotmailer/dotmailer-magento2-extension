@@ -167,6 +167,7 @@
                 <cart_url></cart_url>
                 <login_url></login_url>
                 <allow_non_subscribers>0</allow_non_subscribers>
+                <expire_time>24</expire_time>
             </abandoned_carts>
             <tracking>
                 <roi_enabled>0</roi_enabled>
@@ -174,8 +175,8 @@
             </tracking>
             <consent>
                 <dotmailer_consent_subscriber_enabled>0</dotmailer_consent_subscriber_enabled>
-                <dotmailer_consent_subscriber_text>Default subscriber text</dotmailer_consent_subscriber_text>
-                <dotmailer_consent_customer_text>Default text</dotmailer_consent_customer_text>
+                <dotmailer_consent_subscriber_text></dotmailer_consent_subscriber_text>
+                <dotmailer_consent_customer_text></dotmailer_consent_customer_text>
             </consent>
             <dynamic_content_style>
                 <dynamic_styling><![CDATA[table{font-family: Arial, Helvetica, sans-serif; font-size:12px;}]]></dynamic_styling>
@@ -212,6 +213,7 @@
                 <catalog_type>0</catalog_type>
             </catalog_sync>
             <customer_addressbook>
+                <show_preferences>0</show_preferences>
                 <can_change>0</can_change>
                 <show_books>0</show_books>
                 <can_show_fields>0</can_show_fields>

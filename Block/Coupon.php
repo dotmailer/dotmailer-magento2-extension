@@ -3,6 +3,10 @@
 namespace Dotdigitalgroup\Email\Block;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\DateIntervalFactory;
+use Dotdigitalgroup\Email\Model\SalesRule\DotmailerCouponGenerator;
+use Magento\Framework\View\Element\Template\Context;
 
 /**
  * Coupon block
@@ -12,39 +16,39 @@ use Dotdigitalgroup\Email\Helper\Config;
 class Coupon extends \Magento\Framework\View\Element\Template
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     public $helper;
     
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
+     * @var DotmailerCouponGenerator
      */
-    private $campaign;
+    private $dotmailerCouponGenerator;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     * @var DateIntervalFactory
      */
     private $dateIntervalFactory;
 
     /**
      * Coupon constructor.
      *
-     * @param \Magento\Framework\View\Element\Template\Context              $context
-     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign           $campaign
-     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory              $dateIntervalFactory
-     * @param array                                                         $data
+     * @param Context $context
+     * @param Data $helper
+     * @param DotmailerCouponGenerator $dotmailerCouponGenerator
+     * @param DateIntervalFactory $dateIntervalFactory
+     * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaign,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
+        Context $context,
+        Data $helper,
+        DotmailerCouponGenerator $dotmailerCouponGenerator,
+        DateIntervalFactory $dateIntervalFactory,
         array $data = []
     ) {
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper = $helper;
-        $this->campaign = $campaign;
+        $this->dotmailerCouponGenerator = $dotmailerCouponGenerator;
         parent::__construct($context, $data);
     }
 
@@ -52,6 +56,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
      * Generates the coupon code based on the code id.
      *
      * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function generateCoupon()
     {
@@ -60,12 +65,10 @@ class Coupon extends \Magento\Framework\View\Element\Template
         if (! isset($params['code']) ||
             ! $this->helper->isCodeValid($params['code'])
         ) {
-            $this->helper->log('Coupon no id or valid code is set');
-
             return false;
         }
 
-        $couponCodeId = (int) $params['id'];
+        $priceRuleId = (int) $params['id'];
         $expireDate = false;
 
         if (isset($params['expire_days']) && is_numeric($params['expire_days']) && $params['expire_days'] > 0) {
@@ -74,7 +77,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
                 ->add($this->dateIntervalFactory->create(['interval_spec' => sprintf('P%sD', $days)]));
         }
 
-        return $this->campaign->generateCoupon($couponCodeId, $expireDate);
+        return $this->dotmailerCouponGenerator->generateCoupon($priceRuleId, $expireDate);
     }
 
     /**

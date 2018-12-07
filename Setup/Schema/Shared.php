@@ -69,6 +69,13 @@ class Shared
                 'Email'
             )
             ->addColumn(
+                'status',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['nullable' => false, 'default' => ''],
+                'Contact Status'
+            )
+            ->addColumn(
                 'is_active',
                 \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                 5,

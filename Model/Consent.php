@@ -106,26 +106,12 @@ class Consent extends \Magento\Framework\Model\AbstractModel
      */
     public function getConsentDataByContact($websiteId, $email)
     {
-        //model not loaded try to load with contact email data
-        if (! $this->getId()) {
-            //load model using email and website id
-            $contactModel = $this->contactCollectionFacotry->create()
-                ->loadByCustomerEmail($email, $websiteId);
-            if ($contactModel) {
-                $this->consentResource->load($this, $contactModel->getEmailContactId(), 'email_contact_id');
-            }
-        }
-        //not enabled
         if (! $this->configHelper->isConsentSubscriberEnabled($websiteId)) {
             return [];
         }
 
-        $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
-        $customerConsentText = $this->configHelper->getConsentCustomerText($websiteId);
-        //customer checkout and registration if consent text not empty
-        if ($this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl()) && strlen($customerConsentText)) {
-            $consentText = $customerConsentText;
-        }
+        $this->checkModelLoaded($websiteId, $email);
+        $consentText = $this->getConsentText($websiteId);
         $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
         return [
             $consentText,
@@ -137,8 +123,33 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * @param int $websiteId
+     * @param string $email
+     *
+     * @return array
+     */
+    public function getFormattedConsentDataByContactForApi($websiteId, $email)
+    {
+        if (! $this->configHelper->isConsentSubscriberEnabled($websiteId)) {
+            return [];
+        }
+
+        $this->checkModelLoaded($websiteId, $email);
+        $consentText = $this->getConsentText($websiteId);
+        $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
+        return [
+            ['key' => 'TEXT', 'value' => $consentText],
+            ['key' => 'URL', 'value' => $this->getConsentUrl()],
+            ['key' => 'DATETIMECONSENTED', 'value' => $consentDatetime],
+            ['key' => 'IPADDRESS', 'value' => $this->getConsentIp()],
+            ['key' => 'USERAGENT', 'value' => $this->getConsentUserAgent()]
+        ];
+    }
+
+    /**
      * @param string $consentUrl
      * @param int $websiteId
+     *
      * @return string|boolean
      */
     public function getConsentTextForWebsite($consentUrl, $websiteId)
@@ -172,5 +183,38 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         }
 
         return false;
+    }
+
+    /**
+     * @param int $websiteId
+     * @param string $email
+     */
+    private function checkModelLoaded($websiteId, $email)
+    {
+        //model not loaded try to load with contact email data
+        if (!$this->getId()) {
+            //load model using email and website id
+            $contactModel = $this->contactCollectionFacotry->create()
+                ->loadByCustomerEmail($email, $websiteId);
+            if ($contactModel) {
+                $this->consentResource->load($this, $contactModel->getEmailContactId(), 'email_contact_id');
+            }
+        }
+    }
+
+    /**
+     * @param int $websiteId
+     *
+     * @return false|string
+     */
+    private function getConsentText($websiteId)
+    {
+        $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
+        $customerConsentText = $this->configHelper->getConsentCustomerText($websiteId);
+        //customer checkout and registration if consent text not empty
+        if ($this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl()) && strlen($customerConsentText)) {
+            $consentText = $customerConsentText;
+        }
+        return $consentText;
     }
 }

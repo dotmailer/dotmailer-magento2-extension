@@ -126,14 +126,15 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS = 'connector_configuration/admin/disable_customer_success';
     //Dynamic Content Styling
     const XML_PATH_CONNECTOR_DYNAMIC_STYLING = 'connector_configuration/dynamic_content_style/dynamic_styling';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR = 'connector_configuration/dynamic_content_style/name_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE = 'connector_configuration/dynamic_content_style/name_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR = 'connector_configuration/dynamic_content_style/font_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE = 'connector_configuration/dynamic_content_style/font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE = 'connector_configuration/dynamic_content_style/font_style';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR = 'connector_configuration/dynamic_content_style/price_color';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE = 'connector_configuration/dynamic_content_style/price_font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE = 'connector_configuration/dynamic_content_style/price_font_style';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR = 'connector_configuration/dynamic_content_style/link_color';
-    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE = 'connector_configuration/dynamic_content_style/link_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR = 'connector_configuration/dynamic_content_style/product_link_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE
+        = 'connector_configuration/dynamic_content_style/product_link_font_size';
     const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE = 'connector_configuration/dynamic_content_style/link_style';
     const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT = 'connector_configuration/dynamic_content_style/font';
     const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR = 'connector_configuration/dynamic_content_style/color';
@@ -171,6 +172,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CONTENT_LOGIN_URL = 'connector_configuration/abandoned_carts/login_url';
     const XML_PATH_CONNECTOR_CONTENT_ALLOW_NON_SUBSCRIBERS
         = 'connector_configuration/abandoned_carts/allow_non_subscribers';
+    const XML_PATH_CONNECTOR_AC_AUTOMATION_EXPIRE_TIME = 'connector_configuration/abandoned_carts/expire_time';
+
     // Address Book Pref
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS =
         'connector_configuration/customer_addressbook/can_change';
@@ -179,6 +182,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         'connector_configuration/customer_addressbook/can_show_fields';
     const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS =
         'connector_configuration/customer_addressbook/fields_to_show';
+    const XML_PATH_CONNECTOR_SHOW_PREFERENCES =
+        'connector_configuration/customer_addressbook/show_preferences';
     //Dynamic Content
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT = 'connector_configuration/dynamic_content/link_text';
 

@@ -7,7 +7,7 @@
         <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
                  showInStore="0">
             <class>separator-top</class>
-            <label>API Credentials</label>
+            <label>Accounts</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="trial" translate="label" type="text" sortOrder="5" showInWebsite="1" showInStore="0"
@@ -1271,8 +1271,8 @@
                     <comment>Please provide the consent text that is currently displayed to your customers when they subscribe to your newsletter (i.e. via the newsletter signup form)</comment>
                 </field>
                 <field id="dotmailer_consent_customer_text" translate="comment label" sortOrder="30" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Consent text provided on registration and checkout</label>
-                    <comment>If different from above, provide the text that is displayed on your registration and checkout form to get consent from your customers and guests</comment>
+                    <label>Consent text provided on registration, account dashboard and checkout</label>
+                    <comment>If different from above, provide the text that is displayed on your registration and checkout form to get consent from your customers and guests. If provided, this text will also be displayed in the customer's newsletter subscription page.</comment>
                 </field>
             </group>
             <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
@@ -1350,6 +1350,11 @@
                     <label>Customer Login URL</label>
                     <comment><![CDATA[Please provide the customer login url. If no url provided then default login url customer/account/login will be used. Only enter the url after base url. For example for http://www.localhost.com/customer/account/login only enter customer/account/login]]></comment>
                 </field>
+                <field id="expire_time" translate="comment label" sortOrder="80" showInStore="0" showInWebsite="0"
+                       showInDefault="0">
+                    <label>Expire Time</label>
+                    <comment><![CDATA[The number of hours to wait before expiring an abandoned cart when a contact is pending opt in]]></comment>
+                </field>
             </group>
             <group id="dynamic_content_style" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1"
                    showInStore="0">
@@ -1417,7 +1422,7 @@
                 </field>
                 <field id="product_link_style" translate="label" sortOrder="130" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Font Size</label>
+                    <label>Font Style</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Styling</source_model>
                 </field>
                 <field id="body_title" translate="label" sortOrder="140" showInStore="0" showInWebsite="1"
@@ -1531,7 +1536,12 @@
             </group>
             <group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1"
                    showInStore="0">
-                <label>Customer Addressbook Preference</label>
+                <label>Customer Preference</label>
+                <field id="show_preferences" translate="label" sortOrder="5" type="select" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Show Preferences to Customer</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="can_change" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Show Addressbooks to Customer</label>

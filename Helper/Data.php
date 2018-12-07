@@ -550,41 +550,71 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $email
      * @param int $websiteId
      *
-     * @return string
+     * @return bool|string
      */
     public function getContactId($email, $websiteId)
     {
-        $contact = $this->contactFactory->create()
-            ->loadByCustomerEmail($email, $websiteId);
-        if ($contactId = $contact->getContactId()) {
-            return $contactId;
-        }
-
-        if (!$this->isEnabled($websiteId)) {
+        if (! $this->isEnabled($websiteId)) {
             return false;
         }
 
+        $contactFromTable = $this->getContactByEmail($email, $websiteId);
+        if ($contactId = $contactFromTable->getContactId()) {
+            return $contactId;
+        }
+
+        $contact = $this->getContact($email, $websiteId, $contactFromTable);
+        if ($contact && isset($contact->id)) {
+            return $contact->id;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $email
+     * @param int $websiteId
+     * @param boolean $contactFromTable
+     *
+     * @return bool|object
+     */
+    public function getContact($email, $websiteId, $contactFromTable = false)
+    {
+        if (! $this->isEnabled($websiteId)) {
+            return false;
+        }
+
+        if ($contactFromTable) {
+            $contact = $contactFromTable;
+        } else {
+            $contact = $this->contactFactory->create()
+                ->loadByCustomerEmail($email, $websiteId);
+        }
+
         $client = $this->getWebsiteApiClient($websiteId);
-        $response = $client->postContacts($email);
+        $response = $client->getContactByEmail($email);
+        if (! isset($response->id)) {
+            $response = $client->postContacts($email);
+        }
 
         if (isset($response->message)) {
             $contact->setEmailImported(1);
             if ($response->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
                 $contact->setSuppressed(1);
             }
-            $this->contactResource->save($contact);
+            $this->saveContact($contact);
             return false;
         }
         //save contact id
         if (isset($response->id)) {
             $contact->setContactId($response->id);
-            $this->contactResource->save($contact);
+            $this->saveContact($contact);
         } else {
             //curl operation timeout
             return false;
         }
 
-        return $response->id;
+        return $response;
     }
 
     /**
@@ -1778,7 +1808,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Can show additional books?
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param \Magento\Store\Model\Website|int $website
      * @return string|boolean
      */
     public function getCanShowAdditionalSubscriptions($website)
@@ -1792,7 +1822,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Can show data fields?
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param \Magento\Store\Model\Website|int $website
      * @return boolean|string
      */
     public function getCanShowDataFields($website)
@@ -1912,5 +1942,26 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getScopeConfig()
     {
         return $this->scopeConfig;
+    }
+
+    /**
+     * @param $email
+     * @param $websiteId
+     *
+     * @return \Dotdigitalgroup\Email\Model\Contact
+     */
+    public function getContactByEmail($email, $websiteId)
+    {
+        $contact = $this->contactFactory->create()
+            ->loadByCustomerEmail($email, $websiteId);
+        return $contact;
+    }
+
+    /**
+     * @param \Dotdigitalgroup\Email\Model\Contact $contact
+     */
+    public function saveContact($contact)
+    {
+        $this->contactResource->save($contact);
     }
 }

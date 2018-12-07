@@ -32,4 +32,47 @@ class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->helper = $data;
         parent::__construct($context);
     }
+
+    /**
+     * @param array $ids
+     * @param string $date
+     * @param bool $contactStatus
+     */
+    public function update($ids, $date, $contactStatus)
+    {
+        if (empty($ids)) {
+            return;
+        }
+
+        $bind = ['updated_at' => $date, 'status' => $contactStatus];
+
+        $where = ['id IN(?)' => $ids];
+        $this->getConnection()->update(
+            $this->getTable(Schema::EMAIL_ABANDONED_CART_TABLE),
+            $bind,
+            $where
+        );
+    }
+
+    /**
+     * @param array $ids
+     * @param string $date
+     * @param string $contactStatus
+     * @param bool $isActive
+     */
+    public function updateByQuoteIds($ids, $date, $contactStatus, $isActive)
+    {
+        $bind = [
+            'updated_at' => $date,
+            'status'     => $contactStatus,
+            'is_active'  => $isActive
+        ];
+
+        $where = ['quote_id IN(?)' => $ids];
+        $this->getConnection()->update(
+            $this->getTable(Schema::EMAIL_ABANDONED_CART_TABLE),
+            $bind,
+            $where
+        );
+    }
 }
