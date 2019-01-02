@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="ddg_automation" translate="label" sortOrder="500">
-            <label>DOTMAILER</label>
+            <label>DOTDIGITAL</label>
         </tab>
         <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
                  showInStore="0">
@@ -1744,7 +1744,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Dynamic Pages IP Restriction</label>
                     <comment><![CDATA[Enter IP addresses separated by comma (,). An empty list will ignore any security check.
-                        Please ensure you keep the latest dotmailer IP ranges included
+                        Please ensure you keep the latest dotdigital IP ranges included
                         <a href="https://support.dotmailer.com/hc/en-gb/articles/216282318-Security-settings#ip" target="_blank"> here</a>.]]></comment>
                 </field>
             </group>
