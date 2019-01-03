@@ -1316,7 +1316,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Easy Email Capture (Newsletter)</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[Enable this if you would like to update update quote table with email entered in Newsletter Email Field.]]></comment>
+                    <comment><![CDATA[Enable this if you would like to update quote table with email entered in Newsletter Email Field.]]></comment>
                 </field>
                 <field id="allow_non_subscribers" translate="label" sortOrder="25" type="select" showInStore="1"
                        showInWebsite="1" showInDefault="1">
