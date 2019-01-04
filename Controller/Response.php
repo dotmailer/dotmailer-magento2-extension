@@ -85,18 +85,19 @@ class Response extends \Magento\Framework\App\Action\Action
 
             return false;
         }
-        $isCodeValid = $this->helper->auth($this->getRequest()->getParam('code'));
         //passcode not valid.
-        if (!$isCodeValid) {
+        if (!$this->helper->auth($this->getRequest()->getParam('code'))) {
             $this->processFailedRequest();
             $this->sendUnauthorizedResponse();
+            return false;
         }
         //ip is not allowed
         if (!$this->helper->isIpAllowed()) {
             $this->sendNoContentResponse();
+            return false;
         }
 
-        return $isCodeValid;
+        return true;
     }
 
     /**
