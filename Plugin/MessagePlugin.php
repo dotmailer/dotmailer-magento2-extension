@@ -57,7 +57,8 @@ class MessagePlugin
      */
     public function afterSetBody(MessageInterface $message, $body)
     {
-        if ($templateId = $this->isTemplate() && $this->shouldIntercept()) {
+        $templateId = $this->isTemplate();
+        if ($templateId && $this->shouldIntercept()) {
             $template = $this->loadTemplate($templateId);
             if ($this->isDotmailerTemplateCode($template->getTemplateCode())) {
                 $this->handleZendMailMessage($message);
