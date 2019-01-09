@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="ddg_automation" translate="label" sortOrder="500">
-            <label>DOTDIGITAL</label>
+            <label>ENGAGEMENT CLOUD</label>
         </tab>
         <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
                  showInStore="0">
