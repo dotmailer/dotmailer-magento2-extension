@@ -45,7 +45,7 @@ class Studio extends \Magento\Backend\Block\Template
      *
      * @var Client
      */
-    public $client;
+    private $client;
 
     /**
      * Studio constructor.

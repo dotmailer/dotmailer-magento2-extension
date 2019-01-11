@@ -14,7 +14,7 @@ class Books extends \Magento\Framework\View\Element\Template
      *
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
-    public $client;
+    private $client;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -109,7 +109,7 @@ class Books extends \Magento\Framework\View\Element\Template
      *
      * @return \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
-    public function _getApiClient()
+    private function _getApiClient()
     {
         if (empty($this->client)) {
             $website = $this->getCustomer()->getStore()->getWebsite();
