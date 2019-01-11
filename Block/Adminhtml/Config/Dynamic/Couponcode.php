@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
-class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
+class Couponcode extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\ReadonlyFormField
 {
 
     /**
@@ -46,7 +46,6 @@ class Couponcode extends \Magento\Config\Block\System\Config\Form\Field
         $text = $baseUrl . 'connector/email/coupon/id/[INSERT ID HERE]/code/'
             . $passcode . '/expire_days/[INSERT NUMBER OF DAYS HERE]/@EMAIL@';
         $element->setData('value', $text);
-        $element->setData('disabled', 'disabled');
 
         return parent::_getElementHtml($element);
     }

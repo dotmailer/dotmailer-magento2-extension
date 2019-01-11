@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
-class Productpush extends \Magento\Config\Block\System\Config\Form\Field
+class Productpush extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\ReadonlyFormField
 {
 
     /**

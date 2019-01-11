@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
-class Abandoned extends \Magento\Config\Block\System\Config\Form\Field
+class Abandoned extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\ReadonlyFormField
 {
 
     /**
