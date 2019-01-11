@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="SetDotmailerAccountData">
+        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <conditionalClick stepKey="expandAccountsTab" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
+        <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="Yes" stepKey="setEnabled"/>
+        <fillField selector="{{AdminDotmailerAccountsSection.accountsUsernameField}}" userInput="test-username" stepKey="setApiUserName"/>
+        <fillField selector="{{AdminDotmailerAccountsSection.accountsPasswordField}}" userInput="test-password" stepKey="setApiPassword"/>
+        <click selector="{{AdminDotmailerAccountsSection.accountsSaveButton}}" stepKey="saveConfig" />
+    </actionGroup>
+    <actionGroup name="ResetDotmailerAccountData">
+        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPageReset"/>
+        <waitForPageLoad stepKey="waitForPageLoadReset"/>
+        <conditionalClick stepKey="expandAccountsTabReset" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
+        <clearField selector="{{AdminDotmailerAccountsSection.accountsUsernameField}}" stepKey="setApiUserNameReset"/>
+        <clearField selector="{{AdminDotmailerAccountsSection.accountsPasswordField}}" stepKey="setApiPasswordReset"/>
+        <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="No" stepKey="setEnabledReset"/>
+        <click selector="{{AdminDotmailerAccountsSection.accountsSaveButton}}" stepKey="saveConfigReset" />
+    </actionGroup>
+    <actionGroup name="SetDisableDotmailerAccount">
+        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPage1"/>
+        <waitForPageLoad stepKey="waitForPageLoad1"/>
+        <conditionalClick stepKey="expandAccountsTab1" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
+        <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="No" stepKey="setEnabled1"/>
+        <click selector="{{AdminDotmailerAccountsSection.accountsSaveButton}}" stepKey="saveConfig1" />
+    </actionGroup>
+</actionGroups>
