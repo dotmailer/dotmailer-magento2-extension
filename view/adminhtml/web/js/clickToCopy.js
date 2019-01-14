@@ -1,43 +1,44 @@
 require(['jquery',
-         'jquery/ui',
-         'domReady!',
-         "Magento_Ui/js/modal/modal",
-         'mage/translate'], function ($) {
+    'jquery/ui',
+    'domReady!',
+    'mage/translate'], function ($) {
     'use strict';
+    
+    function removeTooltip(element)
+    {
+        element.css('position','');
+        $('.ddg-tooltip').remove();
+    }
+
+    function addTooltip(toolTipText,element)
+    {
+        element.attr('data-title', toolTipText);
+        element.parent().append("<div class='ddg-tooltip'>" + toolTipText + "</div>");
+        element.parent().css('position','relative');
+    }
 
     $('.ddg-dynamic-content').click(function(){
+        var toolTipText = $.mage.__('Copied!');
+
         $(this).select();
-
+        removeTooltip($(this));
+        addTooltip(toolTipText,$(this));
         setTimeout(function() {
-            $('<div />').html($.mage.__('The URL has been copied to clipboard.'))
-                .modal({
-                    title: $.mage.__('URL Copied'),
-                    autoOpen: true,
-                    closed: function () {
-                    },
-                    buttons: [{
-                        text: $.mage.__('Close'),
-                        attr: {
-                            'data-action': 'confirm'
-                        },
-                        'class': 'action-primary',
-                    }]
-                });
-        }, 150);
 
+            removeTooltip($(this));
+        }, 850);
         document.execCommand("copy");
     });
 
     $('.ddg-dynamic-content').hover( function() {
-        var toolTipText = $.mage.__('Click To Copy The URL');
+            var toolTipText = $.mage.__('Click to copy URL');
 
-        $(this).attr('data-title', toolTipText);
-        $(this).parent().append("<div class='ddg-tooltip'>" + toolTipText + "</div>");
-        $(this).parent().css('position','relative');
-    }
-    ,function() {
-        $(this).css('position','');
-        $('.ddg-tooltip').remove();
-    }
+            addTooltip(toolTipText,$(this));
+        }
+        ,function() {
+            removeTooltip($(this));
+        }
     );
+
 });
+
