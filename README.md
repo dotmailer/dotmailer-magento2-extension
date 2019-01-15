@@ -15,6 +15,22 @@ You are welcome to contribute to dotmailer for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
 
+## 3.1.0
+
+###### Improvements
+- 'dotmailer' has been renamed to 'dotdigital Engagement Cloud' (see why [here](https://www.dotmailer.com/pages/were-rebranding/))
+- We've added some MTFT tests to cover marketing preferences functionality
+- We now correctly escape the iframe URL of the Engagement Cloud page (formerly Automation studio)
+- We've added a way to automatically copy the dynamic content URLs in one click
+
+###### Fixes
+- Email addresses containing the '+' sign weren't being captured properly by the guest abandoned cart process; this has been fixed
+- Restricted IPs are now properly challenged when using the 'Coupon Codes' dynamic content
+- We've fixed an issue which caused the custom 'from' address (CFA) from the Engagement Cloud to be wrongly used for all email templates when at least one template was mapped
+- We've removed another instance of the legacy serializer class property that was removed in 3.0.3
+- We've fixed an issue which caused cancelled campaign sends to get stuck in a "Processing" state in our campaign table
+- We've fixed an issue where one suppressed contact could prevent a campaign send going out
+
 ## V3.0.3
 
 ###### New Features
