@@ -136,11 +136,11 @@ class Campaign
             //Only if valid client is returned
             if ($client && $this->isCampaignValid($campaign)) {
                 $campaignsToSend[$campaignId]['client'] = $client;
-                $contactId = $this->helper->getContactId(
+                $contact = $this->helper->getContact(
                     $campaign->getEmail(),
                     $websiteId
                 );
-                if (is_numeric($contactId)) {
+                if ($contact && isset($contact->id)) {
                     //update data fields
                     if ($campaign->getEventName() == 'Order Review') {
                         $this->updateDataFieldsForORderReviewCampaigns($campaign, $websiteId, $client, $email);
@@ -155,7 +155,7 @@ class Campaign
                         $this->helper->updateLastQuoteId($campaign->getQuoteId(), $email, $websiteId);
                     }
 
-                    $campaignsToSend[$campaignId]['contacts'][] = $contactId;
+                    $campaignsToSend[$campaignId]['contacts'][] = $contact->id;
                     $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
                 } else {
                     //update the failed to send email message error message
