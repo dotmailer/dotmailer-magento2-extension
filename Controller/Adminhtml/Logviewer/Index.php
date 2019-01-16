@@ -40,7 +40,7 @@ class Index extends \Magento\Backend\App\Action
         $resultPage->setActiveMenu('Dotdigitalgroup_Email::logviewer');
         $resultPage->addBreadcrumb(__('Dashboard'), __('Log Viewer '));
         $resultPage->addBreadcrumb(__('Dashboard'), __('Log Viewer'));
-        $resultPage->getConfig()->getTitle()->prepend(__('Dotmailer Log Viewer'));
+        $resultPage->getConfig()->getTitle()->prepend(__('dotdigital Log Viewer'));
 
         return $resultPage;
     }

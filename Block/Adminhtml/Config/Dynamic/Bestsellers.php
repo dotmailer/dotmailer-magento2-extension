@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 
-class Bestsellers extends \Magento\Config\Block\System\Config\Form\Field
+class Bestsellers extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\ReadonlyFormField
 {
 
     /**
@@ -50,7 +50,6 @@ class Bestsellers extends \Magento\Config\Block\System\Config\Form\Field
             $passcode
         );
         $element->setData('value', $text);
-        $element->setData('disabled', 'disabled');
 
         return parent::_getElementHtml($element);
     }

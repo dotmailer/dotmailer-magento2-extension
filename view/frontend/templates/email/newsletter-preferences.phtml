@@ -13,7 +13,7 @@
             <label for="subscription" class="label">
                     <span>
                         <?php if(strlen($block->getCustomerConsentText())) : ?>
-                            <?= $block->getCustomerConsentText() ?>
+                            <?= $block->escapeHtml($block->getCustomerConsentText()) ?>
                         <?php else : ?>
                             <?= $block->escapeHtml(__('General Subscription')) ?>
                         <?php endif; ?>

@@ -1,14 +1,16 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="Dotdigitalgroup_Email::marketing_automation" title="Marketing Automation" module="Dotdigitalgroup_Email" sortOrder="100"
+        <add id="Dotdigitalgroup_Email::marketing_automation" title="Customer Engagement" module="Dotdigitalgroup_Email" sortOrder="100"
              parent="Magento_Backend::marketing" resource="Dotdigitalgroup_Email::contact"/>
-        <add id="Dotdigitalgroup_Email::automation_studio" title="Automation Studio" module="Dotdigitalgroup_Email" sortOrder="120" action="dotdigitalgroup_email/studio" resource="Dotdigitalgroup_Email::studio"
+        <add id="Dotdigitalgroup_Email::automation_studio" title="Engagement Cloud" module="Dotdigitalgroup_Email" sortOrder="120" action="dotdigitalgroup_email/studio" resource="Dotdigitalgroup_Email::studio"
              parent="Dotdigitalgroup_Email::marketing_automation" />
         <add id="Dotdigitalgroup_Email::exclusion_rules" title="Exclusion Rules" module="Dotdigitalgroup_Email" sortOrder="125" action="dotdigitalgroup_email/rules"
              resource="Dotdigitalgroup_Email::exclusion_rules" parent="Dotdigitalgroup_Email::marketing_automation" />
-        <add id="Dotdigitalgroup_Email::marketing_automation_report" title="Marketing Automation" module="Dotdigitalgroup_Email" sortOrder="100"
+        <add id="Dotdigitalgroup_Email::marketing_automation_report" title="Customer Engagement" module="Dotdigitalgroup_Email" sortOrder="100"
              parent="Magento_Reports::report" resource="Dotdigitalgroup_Email::contact"/>
+        <add id="Dotdigitalgroup_Email::dashboards" title="Dashboard" module="Dotdigitalgroup_Email" sortOrder="130" action="dotdigitalgroup_email/dashboard"
+             resource="Dotdigitalgroup_Email::dashboard" parent="Dotdigitalgroup_Email::marketing_automation_report" />
         <add id="Dotdigitalgroup_Email::importer" title="Importer Status" module="Dotdigitalgroup_Email" sortOrder="140" action="dotdigitalgroup_email/importer"
              resource="Dotdigitalgroup_Email::importer" parent="Dotdigitalgroup_Email::marketing_automation_report" />
         <add id="Dotdigitalgroup_Email::automation" title="Automation Enrollment" module="Dotdigitalgroup_Email" sortOrder="150" action="dotdigitalgroup_email/automation"
@@ -17,8 +19,6 @@
              resource="Dotdigitalgroup_Email::campaign" parent="Dotdigitalgroup_Email::marketing_automation_report" />
         <add id="Dotdigitalgroup_Email::cron" title="Cron Tasks" module="Dotdigitalgroup_Email" sortOrder="170" action="dotdigitalgroup_email/cron"
              resource="Dotdigitalgroup_Email::cron" parent="Dotdigitalgroup_Email::marketing_automation_report" />
-        <add id="Dotdigitalgroup_Email::dashboards" title="Dashboard" module="Dotdigitalgroup_Email" sortOrder="200" action="dotdigitalgroup_email/dashboard"
-             resource="Dotdigitalgroup_Email::dashboard" parent="Dotdigitalgroup_Email::marketing_automation_report" />
         <add id="Dotdigitalgroup_Email::logviewer" title="Log Viewer" module="Dotdigitalgroup_Email" sortOrder="220"
              action="dotdigitalgroup_email/logviewer" resource="Dotdigitalgroup_Email::logviewer"
              parent="Dotdigitalgroup_Email::marketing_automation_report"/>

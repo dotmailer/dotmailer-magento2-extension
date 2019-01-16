@@ -48,7 +48,7 @@ class DotmailerCouponCodeGeneratorTest extends TestCase
         $this->couponHelperMock->method('getCodeSeparator')
                                ->willReturn($delimiter);
         $this->couponHelperMock->method('getCharset')
-                               ->willReturn('123ASD');
+                               ->willReturn(['1','2','3','A','S','D']);
 
         $couponCode = $this->model->generateCode();
 

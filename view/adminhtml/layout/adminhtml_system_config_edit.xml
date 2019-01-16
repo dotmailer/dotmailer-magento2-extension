@@ -8,6 +8,7 @@
         <script src="Dotdigitalgroup_Email::js/datePickerInit.js"/>
         <script src="Dotdigitalgroup_Email::js/fancyBoxInit.js"/>
         <script src="Dotdigitalgroup_Email::js/confirm.js"/>
+        <script src="Dotdigitalgroup_Email::js/clickToCopy.js"/>
         <css src="Dotdigitalgroup_Email::colpick.css"/>
         <css src="Dotdigitalgroup_Email::jquery.fancybox.css"/>
         <css src="Dotdigitalgroup_Email::styles.css"/>

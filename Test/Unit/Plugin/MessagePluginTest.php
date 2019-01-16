@@ -175,7 +175,7 @@ class MessagePluginTest extends TestCase
 
         $this->templateResourceModelMock->expects($this->once())
                                         ->method('load')
-                                        ->with($templateModelMock, $templateId);
+                                        ->with($templateModelMock, $this->stringContains($templateId));
 
         $this->transactionalHelperMock->method('isDotmailerTemplate')
                                       ->willReturn($isDotmailerTemplate);

@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="ddg_automation" translate="label" sortOrder="500">
-            <label>DOTMAILER</label>
+            <label>ENGAGEMENT CLOUD</label>
         </tab>
         <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
                  showInStore="0">
@@ -728,7 +728,7 @@
                     <label>Abandoned Carts</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="abandoned_cart_url" translate="label" sortOrder="30" type="label" showInStore="0"
+                <field id="abandoned_cart_url" translate="label" sortOrder="30" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Cart Content URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Abandoned</frontend_model>
@@ -738,7 +738,7 @@
                     <label>Reviews</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="review_url" translate="label" sortOrder="50" type="label" showInStore="0" showInWebsite="1"
+                <field id="review_url" translate="label" sortOrder="50" type="text" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Review Contents URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Review</frontend_model>
@@ -748,7 +748,7 @@
                     <label>Coupon Codes</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="coupon_code_url" translate="label" sortOrder="70" type="label" showInStore="0"
+                <field id="coupon_code_url" translate="label" sortOrder="70" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Coupon Codes URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Couponcode</frontend_model>
@@ -758,17 +758,17 @@
                     <label>Order Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="related_products_url" translate="label" sortOrder="90" type="label" showInStore="0"
+                <field id="related_products_url" translate="label" sortOrder="90" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Related Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Related</frontend_model>
                 </field>
-                <field id="upsell_products_url" translate="label" sortOrder="100" type="label" showInStore="0"
+                <field id="upsell_products_url" translate="label" sortOrder="100" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Upsell</frontend_model>
                 </field>
-                <field id="crosssell_products_url" translate="label" sortOrder="110" type="label" showInStore="0"
+                <field id="crosssell_products_url" translate="label" sortOrder="110" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Crosssell</frontend_model>
@@ -778,17 +778,17 @@
                     <label>Cart Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="cart_related_products_url" translate="label" sortOrder="130" type="label" showInStore="0"
+                <field id="cart_related_products_url" translate="label" sortOrder="130" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Related Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Related</frontend_model>
                 </field>
-                <field id="cart_upsell_products_url" translate="label" sortOrder="140" type="label" showInStore="0"
+                <field id="cart_upsell_products_url" translate="label" sortOrder="140" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Upsell</frontend_model>
                 </field>
-                <field id="cart_crosssell" translate="label" sortOrder="150" type="label" showInStore="0"
+                <field id="cart_crosssell" translate="label" sortOrder="150" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Crosssell</frontend_model>
@@ -798,22 +798,22 @@
                     <label>Product Recommendation</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="best_sellers_url" translate="label" sortOrder="170" type="label" showInStore="0" showInWebsite="1" showInDefault="1">
+                <field id="best_sellers_url" translate="label" sortOrder="170" type="text" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Best Sellers URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Bestsellers</frontend_model>
                 </field>
-                <field id="most_viewed_url" translate="comment label" sortOrder="180" type="label" showInStore="0"
+                <field id="most_viewed_url" translate="comment label" sortOrder="180" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Most Viewed URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Mostviewed</frontend_model>
                     <comment><![CDATA[add category_id/@CATEGORY_ID@ at the end of url to filter most viewed by category]]></comment>
                 </field>
-                <field id="product_push_url" translate="label" sortOrder="190" type="label" showInStore="0"
+                <field id="product_push_url" translate="label" sortOrder="190" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Product Push URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Productpush</frontend_model>
                 </field>
-                <field id="product_recently_viewed_url" translate="label" type="label" sortOrder="195" showInStore="0"
+                <field id="product_recently_viewed_url" translate="label" type="text" sortOrder="195" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Recently Viewed</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Recentlyviewed</frontend_model>
@@ -823,22 +823,22 @@
                     <label>Wishlist</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="wishlist_product_url" translate="label" sortOrder="210" type="label" showInStore="0"
+                <field id="wishlist_product_url" translate="label" sortOrder="210" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Wishlist Content</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Content</frontend_model>
                 </field>
-                <field id="wishlist_related" translate="label" sortOrder="220" type="label" showInStore="0"
+                <field id="wishlist_related" translate="label" sortOrder="220" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Wishlist Related URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Related</frontend_model>
                 </field>
-                <field id="wishlist_upsell_url" translate="label" sortOrder="230" type="label" showInStore="0"
+                <field id="wishlist_upsell_url" translate="label" sortOrder="230" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Wishlist Upsell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Upsell</frontend_model>
                 </field>
-                <field id="wishlist_crosssell_url" translate="label" sortOrder="240" type="label" showInStore="0"
+                <field id="wishlist_crosssell_url" translate="label" sortOrder="240" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Wishlist Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Wishlist\Crosssell</frontend_model>
@@ -1316,7 +1316,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Easy Email Capture (Newsletter)</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[Enable this if you would like to update update quote table with email entered in Newsletter Email Field.]]></comment>
+                    <comment><![CDATA[Enable this if you would like to update quote table with email entered in Newsletter Email Field.]]></comment>
                 </field>
                 <field id="allow_non_subscribers" translate="label" sortOrder="25" type="select" showInStore="1"
                        showInWebsite="1" showInDefault="1">
@@ -1744,7 +1744,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Dynamic Pages IP Restriction</label>
                     <comment><![CDATA[Enter IP addresses separated by comma (,). An empty list will ignore any security check.
-                        Please ensure you keep the latest dotmailer IP ranges included
+                        Please ensure you keep the latest dotdigital IP ranges included
                         <a href="https://support.dotmailer.com/hc/en-gb/articles/216282318-Security-settings#ip" target="_blank"> here</a>.]]></comment>
                 </field>
             </group>

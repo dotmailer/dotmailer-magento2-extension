@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Page/etc/SectionObject.xsd">
+    <section name="AdminDotmailerConfigurationConsentSection">
+        <element name="consentFieldsetToggle" type="button" selector="#connector_configuration_consent-head"/>
+        <element name="consentFieldset" type="button" selector="#connector_configuration_consent"/>
+        <element name="customerConsentText" type="textarea" selector="#connector_configuration_consent_dotmailer_consent_customer_text" />
+        <element name="configurationSettingSaveButton" type="button" selector="#save" />
+    </section>
+</sections>

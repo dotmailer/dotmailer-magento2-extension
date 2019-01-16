@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Test/etc/testSchema.xsd">
+    <test name="ApiDisabledNoRedirectToPrefCenterTest">
+        <annotations>
+            <features value="dotmailer-magento2-extension"/>
+            <stories value="If API disabled, plugin shouldn't redirect to preference page."/>
+            <title value="You should not be able to see dotmailer preferences page if api is disabled."/>
+            <description value="You should not be able to see dotmailer preferences page if api is disabled."/>
+            <severity value="CRITICAL"/>
+            <group value="dotmailer-preference-page"/>
+            <group value="dotmailer"/>
+        </annotations>
+        <before>
+            <createData entity="Simple_US_Customer" stepKey="createSimpleUsCustomer">
+                <field key="group_id">1</field>
+            </createData>
+            <actionGroup ref="LoginToStorefrontActionGroup" stepKey="signUpNewUser">
+                <argument name="Customer" value="$$createSimpleUsCustomer$$"/>
+            </actionGroup>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+        </before>
+        <after>
+            <actionGroup ref="logout" stepKey="logoutAsAdmin"/>
+            <deleteData createDataKey="createSimpleUsCustomer" stepKey="deleteCustomer"/>
+        </after>
+        <actionGroup ref="SetDisableDotmailerAccount" stepKey="setDisableDotmailerAccount"/>
+        <amOnPage url="{{StorefrontCustomerNewsletterPage.url}}" stepKey="amOnCustomerNewsletterManagePage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <dontSeeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
+    </test>
+</tests>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="SetAllPreferencesTypeToShowNo">
+        <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <conditionalClick stepKey="expandCustomerPreferencesTab" selector="{{AdminDotmailerConfigurationPreferencesSection.preferencesFieldsetToggle}}" dependentSelector="{{AdminDotmailerConfigurationPreferencesSection.preferencesFieldset}}" visible="false"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showPreferencesToCustomer}}" userInput="No" stepKey="setShowPreferencesDisabled"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showAddressBookToCustomer}}" userInput="No" stepKey="setShowBooksDisabled"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showDatafieldToCustomer}}" userInput="No" stepKey="setShowDataFieldsDisabled"/>
+        <click selector="{{AdminDotmailerConfigurationPreferencesSection.configurationSettingSaveButton}}" stepKey="saveConfig" />
+    </actionGroup>
+    <actionGroup name="SetOnePreferenceTypeToShowYes">
+        <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage1"/>
+        <waitForPageLoad stepKey="waitForPageLoad1"/>
+        <conditionalClick stepKey="expandCustomerPreferencesTab1" selector="{{AdminDotmailerConfigurationPreferencesSection.preferencesFieldsetToggle}}" dependentSelector="{{AdminDotmailerConfigurationPreferencesSection.preferencesFieldset}}" visible="false"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showPreferencesToCustomer}}" userInput="Yes" stepKey="setShowPreferencesEnabled"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showAddressBookToCustomer}}" userInput="No" stepKey="setShowBooksDisabled1"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showDatafieldToCustomer}}" userInput="No" stepKey="setShowDataFieldsDisabled1"/>
+        <click selector="{{AdminDotmailerConfigurationPreferencesSection.configurationSettingSaveButton}}" stepKey="saveConfig1" />
+    </actionGroup>
+    <actionGroup name="SetCustomerConsentText">
+        <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage3"/>
+        <waitForPageLoad stepKey="waitForPageLoad3"/>
+        <conditionalClick stepKey="expandConsentTab" selector="{{AdminDotmailerConfigurationConsentSection.consentFieldsetToggle}}" dependentSelector="{{AdminDotmailerConfigurationConsentSection.consentFieldset}}" visible="false"/>
+        <fillField selector="{{AdminDotmailerConfigurationConsentSection.customerConsentText}}" userInput="Test consent text" stepKey="setConsentText"/>
+        <click selector="{{AdminDotmailerConfigurationConsentSection.configurationSettingSaveButton}}" stepKey="saveConfig2" />
+    </actionGroup>
+    <actionGroup name="ResetCustomerConsentText">
+        <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage3Reset"/>
+        <waitForPageLoad stepKey="waitForPageLoad4"/>
+        <conditionalClick stepKey="expandConsentTab2" selector="{{AdminDotmailerConfigurationConsentSection.consentFieldsetToggle}}" dependentSelector="{{AdminDotmailerConfigurationConsentSection.consentFieldset}}" visible="false"/>
+        <clearField selector="{{AdminDotmailerConfigurationConsentSection.customerConsentText}}" stepKey="setConsentTextReset"/>
+        <click selector="{{AdminDotmailerConfigurationConsentSection.configurationSettingSaveButton}}" stepKey="saveConfig3" />
+    </actionGroup>
+</actionGroups>
