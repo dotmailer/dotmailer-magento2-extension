@@ -105,9 +105,9 @@ class Campaign
         foreach ($campaigns as $campaign) {
             $client = $this->helper->getWebsiteApiClient($website);
             $response = $client->getSendStatus($campaign->getSendId());
-            if (isset($response->message)) {
-                //update  the failed to send email message
-                $this->campaignResourceModel->setMessageWithSendId($campaign->getSendId(), $response->message);
+            if (isset($response->message) || $response->status == 'Cancelled') {
+                $message = isset($response->message) ? $response->message : $response->status;
+                $this->campaignResourceModel->setMessageWithSendId($campaign->getSendId(), $message);
             } elseif ($response->status == 'Sent') {
                 $this->campaignResourceModel->setSent($campaign->getSendId());
             }
