@@ -5,7 +5,7 @@ dotdigital Engagement Cloud (formerly dotmailer) for Magento 2
 
 ## Description
 
-Full support documentation and setup guides available here - https://support.dotdigital.com/hc/en-gb/categories/360000368744-dotmailer-for-Magento-2
+Full support documentation and setup guides available [here](https://support.dotdigital.com/hc/en-gb/sections/360000722900-Engagement-Cloud-for-Magento-2)
 
 =======
 ## Contribution
@@ -13,12 +13,12 @@ Full support documentation and setup guides available here - https://support.dot
 You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Report a bug: create a [GitHub issue](https://github.com/dotmailer/dotmailer-magento2-extension/issues/new) including description, repro steps, Magento and extension version numbers
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
-- Request a feature on our [community forum](https://support.dotmailer.com/hc/en-gb/community/topics/200432508-Feedback-and-feature-requests)
+- Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
 ## 3.1.0
 
 ###### Improvements
-- 'dotmailer' has been renamed to 'dotdigital Engagement Cloud' (see why [here](https://www.dotmailer.com/pages/were-rebranding/))
+- 'dotmailer' has been renamed to 'dotdigital Engagement Cloud' (see why [here](https://blog.dotdigital.com/the-story-behind-dotdigital/))
 - We've added some MTFT tests to cover marketing preferences functionality
 - We now correctly escape the iframe URL of the Engagement Cloud page (formerly Automation studio)
 - We've added a way to automatically copy the dynamic content URLs in one click
