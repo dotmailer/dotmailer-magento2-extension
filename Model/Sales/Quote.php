@@ -631,7 +631,7 @@ class Quote
      * @param array $items
      * @return bool|\Magento\Quote\Model\Quote\Item
      */
-    private function getMostExpensiveItems($items)
+    public function getMostExpensiveItems($items)
     {
         $mostExpensiveItem = false;
         foreach ($items as $item) {

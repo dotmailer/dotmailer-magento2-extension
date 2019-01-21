@@ -92,7 +92,7 @@ class Cron
      * @param Sales\QuoteFactory                       $quoteFactory
      * @param Customer\GuestFactory                    $guestFactory
      * @param Newsletter\SubscriberFactory             $subscriberFactory
-     * @param Sync\CatalogFactory                      $catalogFactorty
+     * @param Sync\CatalogFactory                      $catalogFactory
      * @param ImporterFactory                          $importerFactory
      * @param Sync\AutomationFactory                   $automationFactory
      * @param Apiconnector\ContactFactory              $contact
@@ -119,7 +119,8 @@ class Cron
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection,
-        Cron\CronSubFactory $cronSubFactory
+        Cron\CronSubFactory $cronSubFactory,
+        \Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
@@ -136,6 +137,7 @@ class Cron
         $this->cronCollection    = $cronCollection;
         $this->templateFactory   = $templateFactory;
         $this->cronHelper        = $cronSubFactory->create();
+        $this->abandonedCartProgramEnroller = $abandonedCartProgramEnroller;
     }
 
     /**
@@ -260,6 +262,7 @@ class Cron
         }
 
         $this->quoteFactory->create()->processAbandonedCarts();
+        $this->abandonedCartProgramEnroller->process();
     }
 
     /**
