@@ -166,7 +166,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 $this->getOptionHtml('cvalue', $valueName, $valueOptions)
             );
         } elseif ($elmType == 'text') {
-            $html = "<input style='width:160px' title='cvalue' name='$valueName' value='$selectedValues'/>";
+            $encodedValue = $this->escaper->escapeHtml($selectedValues);
+            $html = "<input style='width:160px' title='cvalue' name='$valueName' value='$encodedValue'/>";
             $response['cvalue'] = $html;
         }
     }
