@@ -28,7 +28,7 @@
             <actionGroup ref="logout" stepKey="logoutAsAdmin"/>
         </after>
         <actionGroup ref="SetAllPreferencesTypeToShowNo" stepKey="setAllPreferencesTypeToShowNo"/>
-        <amOnPage url="{{StorefrontCustomerNewsletterPage.url}}" stepKey="amOnCustomerNewsletterManagePage"/>
+        <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <dontSeeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
     </test>

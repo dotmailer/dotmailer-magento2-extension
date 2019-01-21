@@ -9,7 +9,7 @@
         <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showPreferencesToCustomer}}" userInput="No" stepKey="setShowPreferencesDisabled"/>
         <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showAddressBookToCustomer}}" userInput="No" stepKey="setShowBooksDisabled"/>
         <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showDatafieldToCustomer}}" userInput="No" stepKey="setShowDataFieldsDisabled"/>
-        <click selector="{{AdminDotmailerConfigurationPreferencesSection.configurationSettingSaveButton}}" stepKey="saveConfig" />
+        <click selector="{{AdminDotmailerConfigSection.configSaveButton}}" stepKey="saveConfig" />
     </actionGroup>
     <actionGroup name="SetOnePreferenceTypeToShowYes">
         <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage1"/>
@@ -18,20 +18,20 @@
         <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showPreferencesToCustomer}}" userInput="Yes" stepKey="setShowPreferencesEnabled"/>
         <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showAddressBookToCustomer}}" userInput="No" stepKey="setShowBooksDisabled1"/>
         <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showDatafieldToCustomer}}" userInput="No" stepKey="setShowDataFieldsDisabled1"/>
-        <click selector="{{AdminDotmailerConfigurationPreferencesSection.configurationSettingSaveButton}}" stepKey="saveConfig1" />
+        <click selector="{{AdminDotmailerConfigSection.configSaveButton}}" stepKey="saveConfig1" />
     </actionGroup>
     <actionGroup name="SetCustomerConsentText">
         <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage3"/>
         <waitForPageLoad stepKey="waitForPageLoad3"/>
         <conditionalClick stepKey="expandConsentTab" selector="{{AdminDotmailerConfigurationConsentSection.consentFieldsetToggle}}" dependentSelector="{{AdminDotmailerConfigurationConsentSection.consentFieldset}}" visible="false"/>
         <fillField selector="{{AdminDotmailerConfigurationConsentSection.customerConsentText}}" userInput="Test consent text" stepKey="setConsentText"/>
-        <click selector="{{AdminDotmailerConfigurationConsentSection.configurationSettingSaveButton}}" stepKey="saveConfig2" />
+        <click selector="{{AdminDotmailerConfigSection.configSaveButton}}" stepKey="saveConfig2" />
     </actionGroup>
     <actionGroup name="ResetCustomerConsentText">
         <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage3Reset"/>
         <waitForPageLoad stepKey="waitForPageLoad4"/>
         <conditionalClick stepKey="expandConsentTab2" selector="{{AdminDotmailerConfigurationConsentSection.consentFieldsetToggle}}" dependentSelector="{{AdminDotmailerConfigurationConsentSection.consentFieldset}}" visible="false"/>
         <clearField selector="{{AdminDotmailerConfigurationConsentSection.customerConsentText}}" stepKey="setConsentTextReset"/>
-        <click selector="{{AdminDotmailerConfigurationConsentSection.configurationSettingSaveButton}}" stepKey="saveConfig3" />
+        <click selector="{{AdminDotmailerConfigSection.configSaveButton}}" stepKey="saveConfig3" />
     </actionGroup>
 </actionGroups>
