@@ -120,7 +120,7 @@ class ProgramEnrolmentIntervalTest extends TestCase
                 $toString
             );
 
-        $timeWindow = $this->model->setAbandonedCartProgramEnrolmentTimeWindow($storeId);
+        $timeWindow = $this->model->getAbandonedCartProgramEnrolmentWindow($storeId);
 
         $this->assertSame($timeWindow['from'], $fromString);
         $this->assertSame($timeWindow['to'], $toString);

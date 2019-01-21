@@ -115,7 +115,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
 
         // Enrolment interval
         $this->interval
-            ->method('setAbandonedCartProgramEnrolmentTimeWindow')
+            ->method('getAbandonedCartProgramEnrolmentWindow')
             ->with($storeId)
             ->willReturn($updated);
 

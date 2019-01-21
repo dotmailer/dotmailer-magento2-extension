@@ -80,7 +80,7 @@ class Enroller
             return;
         }
 
-        $updated = $this->interval->setAbandonedCartProgramEnrolmentTimeWindow($storeId);
+        $updated = $this->interval->getAbandonedCartProgramEnrolmentWindow($storeId);
 
         $quoteCollection = $this->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
 
