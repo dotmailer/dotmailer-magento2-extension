@@ -52,7 +52,7 @@ class ProgramEnrolmentIntervalTest extends TestCase
     public function testTimeWindowWasSet()
     {
         $storeId = 1;
-        $hours = 2;
+        $minutes = 30;
 
         // DateTime
         $dateTimeMock = $this->createMock(\DateTime::class);
@@ -78,7 +78,7 @@ class ProgramEnrolmentIntervalTest extends TestCase
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                 $storeId
             )
-            ->willReturn($hours);
+            ->willReturn($minutes);
 
         // Date interval
         $intervalModelMock1 = $this->createMock(\DateInterval::class);
@@ -87,7 +87,7 @@ class ProgramEnrolmentIntervalTest extends TestCase
         $this->dateIntervalFactoryMock->expects($this->atLeastOnce())
             ->method('create')
             ->withConsecutive(
-                [['interval_spec' => sprintf('PT%sH', $hours)]],
+                [['interval_spec' => sprintf('PT%sM', $minutes)]],
                 [['interval_spec' => 'PT5M']]
             )
             ->willReturnOnConsecutiveCalls(

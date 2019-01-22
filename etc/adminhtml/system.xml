@@ -472,7 +472,7 @@
                 </field>
                 <field id="send_after" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enrol abandoned cart after</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\IntervalProgramEnrolment</source_model>
                 </field>
             </group>
             <group id="customers" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">

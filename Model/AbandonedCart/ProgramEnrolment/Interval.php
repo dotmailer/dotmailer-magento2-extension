@@ -53,14 +53,14 @@ class Interval
             ]
         );
 
-        $hours = (int) $this->helper->getScopeConfig()->getValue(
+        $minutes = (int) $this->helper->getScopeConfig()->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_INTERVAL,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
 
         $interval = $this->dateIntervalFactory->create(
-            ['interval_spec' => sprintf('PT%sH', $hours)]
+            ['interval_spec' => sprintf('PT%sM', $minutes)]
         );
 
         $fromTime->sub($interval);
