@@ -101,7 +101,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 ->addAttributeToFilter(
                     'entity_id',
                     ['in' => $productIds]
-                );
+                )->addUrlRewrite();
 
             //visibility filter
             if ($visibility = $this->helper->getWebsiteConfig(
