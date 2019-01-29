@@ -30,6 +30,11 @@ class Enroller
     private $rules;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data
+     */
+    private $cartInsight;
+
+    /**
      * Rules constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
@@ -37,19 +42,22 @@ class Enroller
      * @param Interval $interval
      * @param Saver $saver
      * @param Rules $rules
+     * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         Interval $interval,
         Saver $saver,
-        Rules $rules
+        Rules $rules,
+        \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
     ) {
         $this->orderCollection = $collectionFactory;
         $this->helper = $data;
         $this->interval = $interval;
         $this->saver = $saver;
         $this->rules = $rules;
+        $this->cartInsight = $cartInsight;
     }
 
     public function process()
@@ -86,6 +94,7 @@ class Enroller
 
         foreach ($quoteCollection as $quote) {
             $this->saver->save($quote, $store, $programId);
+            $this->cartInsight->send($quote, $storeId);
         }
     }
 

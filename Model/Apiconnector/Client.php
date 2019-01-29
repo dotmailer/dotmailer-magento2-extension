@@ -34,6 +34,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_TEMPLATES = '/v2/templates';
     const REST_SEND_TRANSACTIONAL_EMAIL = '/v2/email';
     const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
+    const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
 
     //rest error responces
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. 
@@ -258,6 +259,24 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $message = 'POST ADDRESS BOOK CONTACTS ' . $url . ', '
                 . $response->message;
             $this->helper->debug('postAddressBookContacts', [$message]);
+        }
+
+        return $response;
+    }
+
+    public function postAbandonedCartCartInsight($content)
+    {
+        $url = $this->getApiEndpoint() . self::REST_POST_ABANDONED_CART_CARTINSIGHT;
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($content);
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = 'POST CARTINSIGHT ' . $url . ', '
+                . $response->message;
+            $this->helper->debug('postAbandonedCartInsightData', [$message]);
         }
 
         return $response;

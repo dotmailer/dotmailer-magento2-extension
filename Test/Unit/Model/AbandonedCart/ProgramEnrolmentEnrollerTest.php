@@ -9,6 +9,7 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Rules;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsight;
 use PHPUnit\Framework\TestCase;
 
 class ProgramEnrolmentEnrollerTest extends TestCase
@@ -53,6 +54,11 @@ class ProgramEnrolmentEnrollerTest extends TestCase
      */
     private $model;
 
+    /**
+     * @var CartInsight
+     */
+    private $cartInsight;
+
     protected function setUp()
     {
         $this->orderCollectionFactoryMock = $this->getMockBuilder(CollectionFactory::class)
@@ -63,17 +69,18 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->scopeConfigModelMock = $this->createMock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-
         $this->interval = $this->createMock(Interval::class);
         $this->saver = $this->createMock(Saver::class);
         $this->rules = $this->createMock(Rules::class);
+        $this->cartInsight = $this->createMock(CartInsight::class);
 
         $this->model = new Enroller(
             $this->orderCollectionFactoryMock,
             $this->dataHelperMock,
             $this->interval,
             $this->saver,
-            $this->rules
+            $this->rules,
+            $this->cartInsight
         );
     }
 
