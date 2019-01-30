@@ -41,7 +41,8 @@
     "magento/module-email": ">=100 <102",
     "magento/module-send-friend": "100.*",
     "magento/module-product-alert": "100.*",
-    "magento/module-configurable-product": "100.*"
+    "magento/module-configurable-product": "100.*",
+    "magento/module-url-rewrite": ">=100 <102"
   },
   "require-dev": {
     "phpmd/phpmd": "@stable",
