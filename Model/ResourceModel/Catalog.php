@@ -245,7 +245,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $productCollection = $this->productFactory->create()
                 ->getCollection()
                 ->addAttributeToSelect(
-                    ['product_url', 'name', 'store_id', 'small_image', 'price']
+                    ['product_url', 'name', 'store_id', 'small_image', 'price', 'visibility']
                 )->addFieldToFilter('sku', ['in' => $productsSku]);
 
             if ($limit) {

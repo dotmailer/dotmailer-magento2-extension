@@ -110,6 +110,11 @@ class Product
     private $stringUtils;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
+     */
+    private $urlFinder;
+
+    /**
      * Product constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface                    $storeManagerInterface
@@ -119,6 +124,7 @@ class Product
      * @param \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory
      * @param \Magento\Catalog\Model\Product\VisibilityFactory              $visibilityFactory
      * @param \Magento\Framework\Stdlib\StringUtils                         $stringUtils
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder                $urlFinder
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -127,7 +133,8 @@ class Product
         \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
-        \Magento\Framework\Stdlib\StringUtils $stringUtils
+        \Magento\Framework\Stdlib\StringUtils $stringUtils,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
     ) {
         $this->itemFactory        = $itemFactory;
         $this->mediaConfigFactory = $mediaConfigFactory;
@@ -136,6 +143,7 @@ class Product
         $this->helper             = $helper;
         $this->storeManager       = $storeManagerInterface;
         $this->stringUtils        = $stringUtils;
+        $this->urlFinder          = $urlFinder;
     }
 
     /**
@@ -171,7 +179,7 @@ class Product
             '.',
             ''
         );
-        $this->url = $product->getProductUrl();
+        $this->url = $this->urlFinder->fetchFor($product);
 
         $this->imagePath = $this->mediaConfigFactory->create()
             ->getMediaUrl($product->getSmallImage());
