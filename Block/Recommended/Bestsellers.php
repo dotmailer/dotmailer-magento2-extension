@@ -9,7 +9,7 @@ use Magento\Store\Model\Store;
  *
  * @api
  */
-class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
+class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -35,6 +35,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
      * Bestsellers constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
@@ -43,6 +44,7 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        \Dotdigitalgroup\Email\Block\Helper\Font $font,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -51,9 +53,9 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
     ) {
         $this->helper             = $helper;
         $this->recommnededHelper  = $recommended;
-        $this->catalog     = $catalog;
-        $this->urlFinder = $urlFinder;
-        parent::__construct($context, $data);
+        $this->catalog            = $catalog;
+        $this->urlFinder          = $urlFinder;
+        parent::__construct($context, $font, $data);
     }
 
     /**

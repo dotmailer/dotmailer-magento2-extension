@@ -1454,7 +1454,7 @@
                 </field>
                 <field id="other_title" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Other Text (Will Apply To Other Remaning Text)</label>
+                    <label>Other Text (Will Apply To Other Remaining Text)</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="other_color" translate="label" sortOrder="180" type="select" showInStore="0"

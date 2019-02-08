@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Block;
  *
  * @api
  */
-class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
+class Basket extends Recommended
 {
 
     /**
@@ -39,6 +39,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      * Basket constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param Helper\Font $font
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -47,6 +48,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        Helper\Font $font,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -58,7 +60,7 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->priceHelper      = $priceHelper;
         $this->emulationFactory = $emulationFactory;
 
-        parent::__construct($context, $data);
+        parent::__construct($context, $font, $data);
     }
 
     /**
@@ -187,17 +189,5 @@ class Basket extends \Magento\Catalog\Block\Product\AbstractProduct
         return $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_TEXT
         );
-    }
-
-    /**
-     * Get dynamic style configuration.
-     *
-     * @return array
-     */
-    public function getDynamicStyle()
-    {
-        $dynamicStyle = $this->helper->getDynamicStyles();
-
-        return $dynamicStyle;
     }
 }

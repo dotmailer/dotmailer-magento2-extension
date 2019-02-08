@@ -9,9 +9,7 @@ $products = $block->getLoadedProductCollection();
 ?>
 
 <?php if (!empty($products)) : ?>
-    <?php
-    $dynamicStyle = $block->helper->getDynamicStyles();
-    ?>
+    <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;

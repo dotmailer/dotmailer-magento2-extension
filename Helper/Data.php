@@ -298,7 +298,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return int|float|string|boolean
      */
-    private function getConfigValue(
+    public function getConfigValue(
         $path,
         $contextScope = 'default',
         $contextScopeId = null
@@ -1405,74 +1405,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_ANCHOR,
             $website
         );
-    }
-
-    /**
-     * Dynamic styles from config.
-     *
-     * @return array
-     */
-    public function getDynamicStyles()
-    {
-        return [
-            'nameStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE
-                )
-            ),
-            'priceStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE
-                )
-            ),
-            'linkStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE
-                )
-            ),
-            'otherStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE
-                )
-            ),
-            'nameColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR
-            ),
-            'fontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE
-            ),
-            'priceColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR
-            ),
-            'priceFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE
-            ),
-            'urlColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR
-            ),
-            'urlFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE
-            ),
-            'otherColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR
-            ),
-            'otherFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE
-            ),
-            'docFont' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT
-            ),
-            'docBackgroundColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR
-            ),
-            'dynamicStyling' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING
-            ),
-        ];
     }
 
     /**

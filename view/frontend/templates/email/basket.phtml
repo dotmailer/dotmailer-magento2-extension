@@ -4,7 +4,7 @@
 ?>
 <?php $items = $block->getBasketItems(); ?>
 <?php if ($items) : ?>
-    <?php $dynamicStyle = $block->getDynamicStyle();?>
+    <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name {
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']); ?>;
