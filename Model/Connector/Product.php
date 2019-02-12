@@ -117,14 +117,14 @@ class Product
     /**
      * Product constructor.
      *
-     * @param \Magento\Store\Model\StoreManagerInterface                    $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Magento\CatalogInventory\Model\Stock\ItemFactory             $itemFactory
-     * @param \Magento\Catalog\Model\Product\Media\ConfigFactory            $mediaConfigFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\CatalogInventory\Model\Stock\ItemFactory $itemFactory
+     * @param \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory
      * @param \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory
-     * @param \Magento\Catalog\Model\Product\VisibilityFactory              $visibilityFactory
-     * @param \Magento\Framework\Stdlib\StringUtils                         $stringUtils
-     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder                $urlFinder
+     * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
+     * @param \Magento\Framework\Stdlib\StringUtils $stringUtils
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -167,18 +167,9 @@ class Product
         $options = $this->visibilityFactory->create()
             ->getOptionArray();
         $this->visibility = (string)$options[$product->getVisibility()];
-        $this->price = (float)number_format(
-            $product->getPrice(),
-            2,
-            '.',
-            ''
-        );
-        $this->specialPrice = (float)number_format(
-            $product->getSpecialPrice(),
-            2,
-            '.',
-            ''
-        );
+
+        $this->getMinPrices($product);
+
         $this->url = $this->urlFinder->fetchFor($product);
 
         $this->imagePath = $this->mediaConfigFactory->create()
@@ -340,5 +331,67 @@ class Product
     private function textIsValidForInsightDataKey($label)
     {
         return preg_match('/^[a-zA-Z_\\\\-][a-zA-Z0-9_\\\\-]*$/', $label);
+    }
+
+    /**
+     * Set the Minimum Prices for Configurable and Bundle products.
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     *
+     * @return null
+     */
+
+    private function getMinPrices($product)
+    {
+        if ($product->getTypeId() == 'configurable') {
+            foreach ($product->getTypeInstance()->getUsedProducts($product) as $childProduct) {
+                $childPrices[] = $childProduct->getPrice();
+                if ($childProduct->getSpecialPrice() !== null) {
+                    $childSpecialPrices[] = $childProduct->getSpecialPrice();
+                }
+            }
+            $this->price = isset($childPrices) ? min($childPrices) : null;
+            $this->specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
+        } elseif ($product->getTypeId() == 'bundle') {
+            $this->price = $product->getPriceInfo()->getPrice('regular_price')->getMinimalPrice()->getValue();
+            $this->specialPrice = $product->getPriceInfo()->getPrice('final_price')->getMinimalPrice()->getValue();
+            $this->specialPrice = ($this->specialPrice === $this->price) ? null : $this->specialPrice; //if special price equals to price then its wrong.)
+        } elseif ($product->getTypeId() == 'grouped') {
+            foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
+                $childPrices[] = $childProduct->getPrice();
+                if ($childProduct->getSpecialPrice() !== null) {
+                    $childSpecialPrices[] = $childProduct->getSpecialPrice();
+                }
+            }
+            $this->price = isset($childPrices) ? min($childPrices) : null;
+            $this->specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
+        } else {
+            $this->price = $product->getPrice();
+            $this->specialPrice = $product->getSpecialPrice();
+        }
+        $this->formatPriceValues();
+    }
+
+    /**
+     * Formats the price values.
+     *
+     * @return null
+     */
+
+    private function formatPriceValues()
+    {
+        $this->price = (float)number_format(
+            $this->price,
+            2,
+            '.',
+            ''
+        );
+
+        $this->specialPrice = (float)number_format(
+            $this->specialPrice,
+            2,
+            '.',
+            ''
+        );
     }
 }
