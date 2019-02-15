@@ -274,7 +274,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ->setReviewFilter($reviewId);
 
         $votesCollection->getSelect()->join(
-            ['rating' => 'rating'],
+            ['rating' => $this->getTable('rating')],
             'rating.rating_id = main_table.rating_id',
             ['rating_code' => 'rating.rating_code']
         );
