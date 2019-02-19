@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight;
 
-use Magento\ConfigurableProduct\Model\Product\Configuration\Item\ItemProductResolver;
-
 class Data
 {
     /**
@@ -156,7 +154,7 @@ class Data
         $base = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA, true) . 'catalog/product';
 
         $configurableProductImage = $this->scopeConfig->getValue(
-            ItemProductResolver::CONFIG_THUMBNAIL_SOURCE,
+            'checkout/cart/configurable_product_image',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getId()
         );
