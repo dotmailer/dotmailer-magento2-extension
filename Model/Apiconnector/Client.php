@@ -431,13 +431,20 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Get list of all campaigns.
      *
+     * @param int $skip     Number of campaigns to skip
+     * @param int $select   Number of campaigns to select
      * @return mixed
      *
      * @throws \Exception
      */
-    public function getCampaigns()
+    public function getCampaigns($skip = 0, $select = 1000)
     {
-        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS_CAMPAIGNS;
+        $url = sprintf('%s%s?select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_DATA_FIELDS_CAMPAIGNS,
+            $select,
+            $skip
+        );
         $this->setUrl($url)
             ->setVerb('GET');
 
