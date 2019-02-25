@@ -360,9 +360,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteForSelectedScopeInAdmin()
     {
-        //If website param does not exist then default value returned 0 "default scope"
-        //This is because there is no website param in default scope
-        $websiteId = $this->_request->getParam('website', 0);
+        /**
+         * See first if store param exist. If it does than get website from store.
+         * If website param does not exist then default value returned 0 "default scope"
+         * This is because there is no website param in default scope
+         */
+        $storeId = $this->_request->getParam('store');
+        $websiteId = ($storeId) ? $this->storeManager->getStore($storeId)->getWebsiteId() :
+            $this->_request->getParam('website', 0);
         return $this->storeManager->getWebsite($websiteId);
     }
 
