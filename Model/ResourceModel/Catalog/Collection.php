@@ -91,6 +91,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 ['null' => 'true']
             );
         }
+        $connectorCollection->getSelect()->limit($limit);
+
         //check number of products
         if ($connectorCollection->getSize()) {
             $productIds = $connectorCollection->getColumnValues('product_id');
