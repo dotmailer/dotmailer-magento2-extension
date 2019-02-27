@@ -63,11 +63,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     private $fileHelper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
-
-    /**
      * @var string
      */
     private $apiEndpoint;
@@ -82,10 +77,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Helper\File $fileHelper
     ) {
-        $this->helper     = $data;
         $this->fileHelper = $fileHelper;
-
-        parent::__construct($this->helper);
+        parent::__construct($data);
     }
 
     /**
