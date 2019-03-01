@@ -93,9 +93,9 @@ class Data
                 'createdDate' => $this->dateTime->date(\Zend_Date::ISO_8601, $quote->getCreatedAt()),
                 'modifiedDate' => $this->dateTime->date(\Zend_Date::ISO_8601, $quote->getUpdatedAt()),
                 'currency' => $quote->getQuoteCurrencyCode(),
-                'subTotal' => (float) number_format($quote->getSubtotal(), 2),
-                'taxAmount' => (float) number_format($quote->getShippingAddress()->getTaxAmount(), 2),
-                'grandTotal' => (float) number_format($quote->getGrandTotal(), 2)
+                'subTotal' => round($quote->getSubtotal(), 2),
+                'taxAmount' => round($quote->getShippingAddress()->getTaxAmount(), 2),
+                'grandTotal' => round($quote->getGrandTotal(), 2)
             ]
         ];
 
@@ -111,7 +111,7 @@ class Data
                 'imageUrl' => $this->getProductImageUrl($item, $store),
                 'productUrl' => $item->getProduct()->getProductUrl(),
                 'name' => $item->getName(),
-                'unitPrice' => (float) number_format($item->getPrice(), 2),
+                'unitPrice' => round($item->getPrice(), 2),
                 'quantity' => $item->getQty()
             ];
         }
