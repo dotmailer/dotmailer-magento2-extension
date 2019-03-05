@@ -9,7 +9,7 @@ use Dotdigitalgroup\Email\Model\Importer;
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Wishlist
+class Wishlist implements SyncInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data

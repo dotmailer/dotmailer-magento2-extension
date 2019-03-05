@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
  *
  * @SuppressWarnings(PHPMD.TooManyFields)
  */
-class Automation
+class Automation implements SyncInterface
 {
     const AUTOMATION_TYPE_NEW_CUSTOMER = 'customer_automation';
     const AUTOMATION_TYPE_NEW_SUBSCRIBER = 'subscriber_automation';

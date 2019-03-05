@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 /**
  * Send email campaings.
  */
-class Campaign
+class Campaign implements SyncInterface
 {
     //single call contact limit
     const SEND_EMAIL_CONTACT_LIMIT = 10;
@@ -88,6 +88,15 @@ class Campaign
             $this->sendCampaignsViaDotmailer($campaignsToSend);
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function sync()
+    {
+        $this->sendCampaigns();
+    }
+
 
     /**
      * @param int $website

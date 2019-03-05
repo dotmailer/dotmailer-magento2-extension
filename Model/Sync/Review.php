@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 /**
  * Sync Reviews.
  */
-class Review
+class Review implements SyncInterface
 {
     /**
      * @var mixed

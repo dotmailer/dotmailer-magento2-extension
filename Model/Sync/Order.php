@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 /**
  * Sync Orders.
  */
-class Order
+class Order implements SyncInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory

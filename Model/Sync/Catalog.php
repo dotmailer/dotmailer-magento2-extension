@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 /**
  * Sync account TD for catalog.
  */
-class Catalog
+class Catalog implements SyncInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
