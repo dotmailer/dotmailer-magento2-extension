@@ -93,8 +93,14 @@ class CampaignsTest extends TestCase
      */
     private function getCampaignsTest(array $testApiResponse)
     {
+        $websiteId = 1234;
+        $this->helper->expects($this->exactly(2))
+            ->method('getWebsiteForSelectedScopeInAdmin')
+            ->willReturn($websiteId);
+
         $this->helper->expects($this->once())
             ->method('isEnabled')
+            ->with($websiteId)
             ->willReturn(true);
 
         $this->registry->expects($this->once())
@@ -116,6 +122,7 @@ class CampaignsTest extends TestCase
 
         $this->helper->expects($this->once())
             ->method('getWebsiteApiClient')
+            ->with($websiteId)
             ->willReturn($clientMock);
 
         $this->registry->expects($this->once())

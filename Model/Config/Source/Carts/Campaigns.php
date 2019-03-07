@@ -48,7 +48,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
             'label' => '-- Please Select --',
         ]];
 
-        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsite());
+        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsiteForSelectedScopeInAdmin());
 
         if ($apiEnabled) {
             $savedCampaigns = $this->registry->registry('campaigns');
@@ -86,7 +86,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
     private function fetchCampaigns()
     {
         //grab the datafields request and save to register
-        $client = $this->helper->getWebsiteApiClient($this->helper->getWebsite());
+        $client = $this->helper->getWebsiteApiClient($this->helper->getWebsiteForSelectedScopeInAdmin());
         $campaigns = [];
 
         do {
