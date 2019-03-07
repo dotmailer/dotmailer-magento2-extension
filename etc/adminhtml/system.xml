@@ -1594,7 +1594,7 @@
                     <label>Contact Sync Size</label>
                 </field>
                 <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
+                       showInWebsite="0" showInDefault="1">
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>

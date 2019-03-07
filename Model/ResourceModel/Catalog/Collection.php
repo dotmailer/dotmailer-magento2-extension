@@ -71,27 +71,24 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @param null|string|bool|int|\Magento\Store\Model\Store  $store
      * @param int $limit
-     * @param bool $modified
      *
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|bool
+     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|array
      */
-    public function getProductsToExportByStore($store, $limit, $modified = false)
+    public function getProductsToExportByStore($store, $limit)
     {
         $connectorCollection = $this;
-
-        //for modified catalog
-        if ($modified) {
-            $connectorCollection->addFieldToFilter(
-                'modified',
+        $connectorCollection->addFieldToFilter(
+            ['imported', 'modified'],
+            [
+                ['null' => 'true'],
                 ['eq' => '1']
-            );
-        } else {
-            $connectorCollection->addFieldToFilter(
-                'imported',
-                ['null' => 'true']
-            );
-        }
+            ]
+        );
         $connectorCollection->getSelect()->limit($limit);
+        $connectorCollection->setOrder(
+            'product_id',
+            'asc'
+        );
 
         //check number of products
         if ($connectorCollection->getSize()) {
@@ -133,14 +130,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             $productCollection->addWebsiteNamesToResult()
                 ->addCategoryIds()
                 ->addOptionsToResult();
-            //clear the loaded data and set the limit
+
             $productCollection->clear();
-            //set the limit of the join collection
-            $productCollection->getSelect()->limit($limit);
 
             return $productCollection;
         }
 
-        return false;
+        return [];
     }
 }

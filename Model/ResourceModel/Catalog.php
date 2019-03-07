@@ -317,40 +317,27 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Set imported in bulk query. If modified true then set modified to null in bulk query.
+     * Set imported and modified in bulk query.
      *
      * @param array $ids
-     * @param bool $modified
      *
      * @return null
      */
-    public function setImportedByIds($ids, $modified = false)
+    public function setImportedByIds($ids)
     {
         try {
             $coreResource = $this->getConnection();
             $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
 
-            if ($modified) {
-                $coreResource->update(
-                    $tableName,
-                    [
-                        'modified' => new \Zend_Db_Expr('null'),
-                        'updated_at' => gmdate('Y-m-d H:i:s'),
-                    ],
-                    ["product_id IN (?)" => $ids]
-                );
-            } else {
-                $coreResource->update(
-                    $tableName,
-                    [
-                        'imported' => '1',
-                        'updated_at' => gmdate(
-                            'Y-m-d H:i:s'
-                        ),
-                    ],
-                    ["product_id IN (?)" => $ids]
-                );
-            }
+            $coreResource->update(
+                $tableName,
+                [
+                    'modified' => new \Zend_Db_Expr('null'),
+                    'imported' => '1',
+                    'updated_at' => gmdate('Y-m-d H:i:s'),
+                ],
+                ["product_id IN (?)" => $ids]
+            );
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

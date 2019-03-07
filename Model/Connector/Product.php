@@ -316,7 +316,9 @@ class Product
                 'mediaConfigFactory',
                 'visibilityFactory',
                 'statusFactory',
-                'storeManager'
+                'storeManager',
+                'urlFinder',
+                'stringUtils'
             ])
         );
     }
