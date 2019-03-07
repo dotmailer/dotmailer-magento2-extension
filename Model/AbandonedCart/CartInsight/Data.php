@@ -35,6 +35,11 @@ class Data
     private $dateTime;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
+     */
+    private $urlFinder;
+
+    /**
      * Data constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -42,19 +47,22 @@ class Data
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
     ) {
         $this->storeManager = $storeManager;
         $this->productRepository = $productRepository;
         $this->scopeConfig = $scopeConfig;
         $this->helper = $helper;
         $this->dateTime = $dateTime;
+        $this->urlFinder = $urlFinder;
     }
 
     /**
@@ -109,7 +117,7 @@ class Data
             $lineItems[] = [
                 'sku' => $item->getSku(),
                 'imageUrl' => $this->getProductImageUrl($item, $store),
-                'productUrl' => $item->getProduct()->getProductUrl(),
+                'productUrl' => $this->urlFinder->fetchFor($item->getProduct()),
                 'name' => $item->getName(),
                 'unitPrice' => round($item->getPrice(), 2),
                 'quantity' => $item->getQty()
@@ -126,7 +134,7 @@ class Data
      * Get basket URL for use in abandoned cart block in email templates.
      *
      * @param int $quoteId
-     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @param \Magento\Store\Model\Store $store
      *
      * @return string
      */
