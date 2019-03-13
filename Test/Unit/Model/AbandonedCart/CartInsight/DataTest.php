@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\CartInsight;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsightData;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -82,6 +83,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
      */
     private $storeMock;
 
+    /**
+     * @var UrlFinder\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $urlFinderMock;
+
     protected function setUp()
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -94,13 +100,15 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->itemMock = $this->createMock(Item::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
         $this->dateTimeMock = $this->createMock(DateTime::class);
+        $this->urlFinderMock = $this->createMock(UrlFinder::class);
 
         $this->class = new CartInsightData(
             $this->storeManagerInterfaceMock,
             $this->productRepositoryMock,
             $this->scopeConfigInterfaceMock,
             $this->helperMock,
-            $this->dateTimeMock
+            $this->dateTimeMock,
+            $this->urlFinderMock
         );
     }
 
@@ -207,8 +215,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                 '/image.jpg'
             );
 
-        $this->productMock->expects($this->once())
-            ->method('getProductUrl')
+        $this->urlFinderMock->expects($this->once())
+            ->method('fetchFor')
             ->willReturn($expectedPayload['json']['lineItems'][0]['productUrl']);
 
         $itemsArray[0]->expects($this->once())

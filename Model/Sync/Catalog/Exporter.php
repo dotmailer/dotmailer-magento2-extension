@@ -39,7 +39,7 @@ class Exporter
     /**
      * Export catalog.
      *
-     * @param string|int $storeId
+     * @param string|int|null $storeId
      * @param string|int $limit
      *
      * @return array
@@ -50,7 +50,6 @@ class Exporter
         $products = $this->getProductsToExport($storeId, $limit);
 
         foreach ($products as $product) {
-            $product->setStoreId($storeId);
             $connectorProduct = $this->connectorProductFactory->create()
                 ->setProduct($product);
             $connectorProducts[$product->getId()] = $connectorProduct->expose();
@@ -62,7 +61,7 @@ class Exporter
     /**
      * Get product collection to export.
      *
-     * @param \Magento\Store\Model\Store|int $store
+     * @param \Magento\Store\Model\Store|int|null $store
      * @param int $limit
      *
      * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|array

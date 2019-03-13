@@ -2,12 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog\UrlFinder;
 
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
-use Magento\Catalog\Model\Product;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder as UrlFinder;
 use Magento\Bundle\Model\ResourceModel\Selection;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Product;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 use PHPUnit\Framework\TestCase;
 
 class UrlFinderTest extends TestCase
@@ -28,14 +30,24 @@ class UrlFinderTest extends TestCase
     private $productMock;
 
     /**
-     * @var Selection
+     * @var Selection|\PHPUnit_Framework_MockObject_MockObject
      */
     private $bundleSelectionMock;
 
     /**
-     * @var Grouped
+     * @var Grouped|\PHPUnit_Framework_MockObject_MockObject
      */
     private $groupedTypeMock;
+
+    /**
+     * @var StoreManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $storeManagerMock;
+
+    /**
+     * @var WebsiteInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $websiteMock;
 
     /**
      * @var UrlFinder
@@ -49,12 +61,15 @@ class UrlFinderTest extends TestCase
         $this->productMock = $this->createMock(Product::class);
         $this->bundleSelectionMock = $this->createMock(Selection::class);
         $this->groupedTypeMock = $this->createMock(Grouped::class);
+        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $this->websiteMock = $this->createMock(Website::class);
 
         $this->urlFinder = new UrlFinder(
             $this->configurableTypeMock,
             $this->productRepositoryMock,
             $this->bundleSelectionMock,
-            $this->groupedTypeMock
+            $this->groupedTypeMock,
+            $this->storeManagerMock
         );
     }
 
@@ -62,6 +77,8 @@ class UrlFinderTest extends TestCase
     {
         // corresponds to Magento's constant values for visibility levels
         $visibleInCatalogAndSearchInt = 4;
+
+        $this->productMock = $this->getInScopeProduct($this->productMock);
 
         $this->productMock->expects($this->once())
             ->method('getVisibility')
@@ -78,6 +95,7 @@ class UrlFinderTest extends TestCase
 
     public function testFetchForSimpleNotVisibleProductWithConfigurableTypeParent()
     {
+        $this->productMock = $this->getInScopeProduct($this->productMock);
 
         $this->configurableTypeMock->expects($this->once())
             ->method('getParentIdsByChild')
@@ -91,11 +109,12 @@ class UrlFinderTest extends TestCase
             ->method('getParentIdsByChild');
 
         $this->buildAssertions();
-
     }
 
-    public function testFetchForSimpleNotVisibleProductsWithGroupedTypeParent()
+    public function testFetchForSimpleNotVisibleProductWithGroupedTypeParent()
     {
+        $this->productMock = $this->getInScopeProduct($this->productMock);
+
         $this->configurableTypeMock->expects($this->once())
             ->method('getParentIdsByChild')
             ->with($this->productMock->getId())
@@ -114,6 +133,8 @@ class UrlFinderTest extends TestCase
 
     public function testFetchForSimpleNotVisibleProductWithBundleTypeParent()
     {
+        $this->productMock = $this->getInScopeProduct($this->productMock);
+
         $this->configurableTypeMock->expects($this->once())
             ->method('getParentIdsByChild')
             ->with($this->productMock->getId())
@@ -134,7 +155,9 @@ class UrlFinderTest extends TestCase
 
     public function testFetchForSimpleNotVisibleProductWithNoParent()
     {
-        $notVisibleInt =1;
+        $notVisibleInt = 1;
+
+        $this->productMock = $this->getInScopeProduct($this->productMock);
 
         $this->configurableTypeMock->expects($this->once())
             ->method('getParentIdsByChild')
@@ -195,6 +218,70 @@ class UrlFinderTest extends TestCase
 
         $parentProduct->expects($this->once())
             ->method('getProductUrl');
+
+        $this->urlFinder->fetchFor($this->productMock);
+    }
+
+    private function getInScopeProduct($product)
+    {
+        $productStoreId = 1;
+        $storeIdsOfWebsite = [
+            0 => 1,
+            1 => 2
+        ];
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getStoreId')
+            ->willReturn($productStoreId);
+
+        $this->productMock->expects($this->once())
+            ->method('getStoreIds')
+            ->willReturn($storeIdsOfWebsite);
+
+        return $product;
+    }
+
+    public function testFetchForProductNotInScope()
+    {
+        $productInWebsites = [0 => 2];
+        $productStoreId = 1;
+        $storeIdsOfWebsite = [
+            0 => 2,
+            1 => 3
+        ];
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getStoreId')
+            ->willReturn($productStoreId);
+
+        $this->productMock->expects($this->once())
+            ->method('getStoreIds')
+            ->willReturn($storeIdsOfWebsite);
+
+        $this->productMock->expects($this->once())
+            ->method('getWebsiteIds')
+            ->willReturn($productInWebsites);
+
+        $this->storeManagerMock->expects($this->once())
+            ->method('getWebsite')
+            ->with($productInWebsites[0])
+            ->willReturn($this->websiteMock);
+
+        // Testing the code that hydrates a new product from the repository
+        $storeMock = $this->createMock(\Magento\Store\Model\Store::class);
+        $groupMock = $this->createMock(\Magento\Store\Model\Group::class);
+
+        $this->websiteMock->expects($this->once())
+            ->method('getDefaultGroup')
+            ->willReturn($storeMock);
+
+        $groupMock->method('getDefaultStoreId')
+            ->willReturn(1);
+
+        $newProduct = $this->createMock(Product::class);
+        $this->productRepositoryMock->expects($this->once())
+            ->method('getById')
+            ->willReturn($newProduct);
 
         $this->urlFinder->fetchFor($this->productMock);
     }

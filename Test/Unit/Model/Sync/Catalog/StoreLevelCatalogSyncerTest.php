@@ -9,6 +9,7 @@ use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreLevelCatalogSyncer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
+use Magento\Store\Model\App\Emulation;
 use PHPUnit\Framework\TestCase;
 
 class StoreLevelCatalogSyncerTest extends TestCase
@@ -53,6 +54,11 @@ class StoreLevelCatalogSyncerTest extends TestCase
      */
     private $webSiteInterfaceMock;
 
+    /**
+     * @var Emulation
+     */
+    private $appEmulation;
+
     protected function setUp()
     {
         $this->importerFactoryMock = $this->createMock(ImporterFactory::class);
@@ -62,31 +68,33 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->storeCatalogSyncerMock = $this->createMock(StoreCatalogSyncer::class);
         $this->catalogResourceMock = $this->createMock(Catalog::class);
         $this->webSiteInterfaceMock = $this->createMock(WebsiteInterface::class);
+        $this->appEmulation = $this->createMock(Emulation::class);
         $this->storeLevelCatalogSyncer = new StoreLevelCatalogSyncer(
             $this->importerFactoryMock,
             $this->helperMock,
             $this->scopeConfigMock,
             $this->catalogResourceMock,
-            $this->storeCatalogSyncerMock
+            $this->storeCatalogSyncerMock,
+            $this->appEmulation
         );
     }
 
     public function testNumberOfProductsIfBothAreEnabled()
     {
-        $product1 = $this->getMockedProductsEnabled();
-        $product2 = $this->getMockedProductsEnabled();
+        $store1 = $this->getMockedStoresEnabled();
+        $store2 = $this->getMockedStoresEnabled();
 
         $expected = 2;
 
-        $products = [$product1['product'],$product2['product']];
+        $stores = [$store1['store'],$store2['store']];
         $this->helperMock->expects($this->once())
             ->method('getStores')
-            ->willReturn($products);
+            ->willReturn($stores);
 
         $this->helperMock->method('isEnabled')
             ->withConsecutive(
-                [$product1['details']['websiteId']],
-                [$product2['details']['websiteId']]
+                [$store1['details']['websiteId']],
+                [$store2['details']['websiteId']]
             )
             ->willReturnOnConsecutiveCalls(
                 true,
@@ -95,8 +103,8 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $this->helperMock->method('isCatalogSyncEnabled')
             ->withConsecutive(
-                [$product1['details']['websiteId']],
-                [$product2['details']['websiteId']]
+                [$store1['details']['websiteId']],
+                [$store2['details']['websiteId']]
             )
             ->willReturnOnConsecutiveCalls(
                 true,
@@ -127,20 +135,20 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     public function testNumberOfProductsIfOnlyOneEnabled()
     {
-        $product1 = $this->getMockedProductsEnabled();
-        $product2 = $this->getMockedProductsDisabled();
+        $store1 = $this->getMockedStoresEnabled();
+        $store2 = $this->getMockedStoresDisabled();
 
         $expected = 1;
 
-        $products = [$product1['product'],$product2['product']];
+        $stores = [$store1['store'],$store2['store']];
         $this->helperMock->expects($this->once())
             ->method('getStores')
-            ->willReturn($products);
+            ->willReturn($stores);
 
         $this->helperMock->method('isEnabled')
             ->withConsecutive(
-                [$product1['details']['websiteId']],
-                [$product2['details']['websiteId']]
+                [$store1['details']['websiteId']],
+                [$store2['details']['websiteId']]
             )
             ->willReturnOnConsecutiveCalls(
                 true,
@@ -149,8 +157,8 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $this->helperMock->method('isCatalogSyncEnabled')
             ->withConsecutive(
-                [$product1['details']['websiteId']],
-                [$product2['details']['websiteId']]
+                [$store1['details']['websiteId']],
+                [$store2['details']['websiteId']]
             )
             ->willReturnOnConsecutiveCalls(
                 true,
@@ -175,47 +183,47 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals($result, $expected);
     }
 
-    private function getMockedProductsEnabled()
+    private function getMockedStoresEnabled()
     {
-        $productDetails = $this->getProductDetails();
-        $product = $this->getMockBuilder(StoreInterface::class)
+        $storeDetails = $this->getStoreDetails();
+        $store = $this->getMockBuilder(StoreInterface::class)
                         ->setMethods(['getWebsite'])
                         ->getMockForAbstractClass();
-        $product->expects($this->exactly(3))
+        $store->expects($this->exactly(3))
             ->method('getWebsiteId')
-            ->willReturn($productDetails['websiteId']);
-        $product->expects($this->once())
+            ->willReturn($storeDetails['websiteId']);
+        $store->expects($this->once())
             ->method('getId')
-            ->willReturn($productDetails['productId']);
-        $product->expects($this->atLeastOnce())
+            ->willReturn($storeDetails['storeId']);
+        $store->expects($this->atLeastOnce())
             ->method('getCode')
-            ->willReturn($productDetails['code']);
-        $product->expects($this->exactly(1))
+            ->willReturn($storeDetails['code']);
+        $store->expects($this->exactly(1))
             ->method('getWebsite')
             ->willReturn($this->webSiteInterfaceMock);
 
         return [
-            'product' => $product,
-            'details' => $productDetails
+            'store' => $store,
+            'details' => $storeDetails
         ];
     }
 
     public function testNumberOfProductsIfNoOneEnabled()
     {
-        $product1 = $this->getMockedProductsDisabled();
-        $product2 = $this->getMockedProductsDisabled();
+        $store1 = $this->getMockedStoresDisabled();
+        $store2 = $this->getMockedStoresDisabled();
 
         $expected = 0;
 
-        $products = [$product1['product'],$product2['product']];
+        $stores = [$store1['store'],$store2['store']];
         $this->helperMock->expects($this->once())
             ->method('getStores')
-            ->willReturn($products);
+            ->willReturn($stores);
 
         $this->helperMock->method('isEnabled')
             ->withConsecutive(
-                [$product1['details']['websiteId']],
-                [$product2['details']['websiteId']]
+                [$store1['details']['websiteId']],
+                [$store2['details']['websiteId']]
             )
             ->willReturnOnConsecutiveCalls(
                 false,
@@ -224,8 +232,8 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $this->helperMock->method('isCatalogSyncEnabled')
             ->withConsecutive(
-                [$product1['details']['websiteId']],
-                [$product2['details']['websiteId']]
+                [$store1['details']['websiteId']],
+                [$store2['details']['websiteId']]
             )
             ->willReturnOnConsecutiveCalls(
                 false,
@@ -249,41 +257,91 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals($result, $expected);
     }
 
+    public function testAppEmulationIsUsedIfSyncEnabled()
+    {
+        $store1 = $this->getMockedStoresEnabled();
+        $store2 = $this->getMockedStoresEnabled();
+
+        $this->helperMock->expects($this->once())
+            ->method('getStores')
+            ->willReturn([$store1['store'],$store2['store']]);
+
+        $this->appEmulation->expects($this->exactly(2))
+            ->method('startEnvironmentEmulation')
+            ->withConsecutive(
+                [$store1['details']['storeId']],
+                [$store2['details']['storeId']]
+            );
+
+        $this->appEmulation->expects($this->exactly(2))
+            ->method('stopEnvironmentEmulation');
+
+        $this->helperMock->method('isEnabled')
+            ->withConsecutive(
+                [$store1['details']['websiteId']],
+                [$store2['details']['websiteId']]
+            )
+            ->willReturnOnConsecutiveCalls(
+                true,
+                true
+            );
+
+        $this->helperMock->method('isCatalogSyncEnabled')
+            ->withConsecutive(
+                [$store1['details']['websiteId']],
+                [$store2['details']['websiteId']]
+            )
+            ->willReturnOnConsecutiveCalls(
+                true,
+                true
+            );
+
+        $this->storeCatalogSyncerMock->expects($this->at(0))
+            ->method('syncByStore')
+            ->willReturn([0 =>'product1']);
+
+        $this->storeCatalogSyncerMock->expects($this->at(1))
+            ->method('syncByStore')
+            ->willReturn([1 => 'product2']);
+
+        $this->storeLevelCatalogSyncer->sync();
+    }
+
     /**
-     * Generates the Disabled Products to be mocked
+     * Generates the disabled stores to be mocked
      * @return array
      */
-    private function getMockedProductsDisabled()
+    private function getMockedStoresDisabled()
     {
-        $productDetails = $this->getProductDetails();
-        $product = $this->getMockBuilder(StoreInterface::class)
+        $storeDetails = $this->getStoreDetails();
+        $store = $this->getMockBuilder(StoreInterface::class)
             ->setMethods(['getWebsite'])
             ->getMockForAbstractClass();
-        $product->expects($this->exactly(2))
+        $store->expects($this->exactly(2))
             ->method('getWebsiteId')
-            ->willReturn($productDetails['websiteId']);
-        $product->expects($this->never())
+            ->willReturn($storeDetails['websiteId']);
+        $store->expects($this->never())
             ->method('getId');
-        $product->expects($this->never())
+        $store->expects($this->never())
             ->method('getCode');
-        $product->expects($this->never())
+        $store->expects($this->never())
             ->method('getWebsite');
 
         return [
-            'product' => $product,
-            'details' => $productDetails
+            'store' => $store,
+            'details' => $storeDetails
         ];
     }
 
     /**
-     * Initializes the Enabled Mocked Products
+     * Initializes the Enabled Mocked Stores
      * @return array
      */
-    public function getProductDetails()
+    public function getStoreDetails()
     {
         return [
           'websiteId' => rand(1, 10),
-          'productId' => rand(1, 10),
+          'storeId' => rand(1, 10),
           'code' => md5(rand())
         ];
     }

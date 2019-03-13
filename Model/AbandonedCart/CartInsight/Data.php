@@ -113,11 +113,12 @@ class Data
         foreach ($quote->getAllVisibleItems() as $item) {
 
             $discountTotal += $item->getDiscountAmount();
+            $product = $this->productRepository->getById($item->getProduct()->getId(), false, $store->getId());
 
             $lineItems[] = [
                 'sku' => $item->getSku(),
                 'imageUrl' => $this->getProductImageUrl($item, $store),
-                'productUrl' => $this->urlFinder->fetchFor($item->getProduct()),
+                'productUrl' => $this->urlFinder->fetchFor($product),
                 'name' => $item->getName(),
                 'unitPrice' => round($item->getPrice(), 2),
                 'quantity' => $item->getQty()

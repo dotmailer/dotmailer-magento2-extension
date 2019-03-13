@@ -71,7 +71,7 @@ class DefaultLevelCatalogSyncer implements CatalogSyncerInterface
         );
 
         $products = $this->storeCatalogSyncer->syncByStore(
-            \Magento\Store\Model\Store::DEFAULT_STORE_ID,
+            null,
             0,
             $limit,
             'Catalog_Default'

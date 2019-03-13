@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
+use Magento\Store\Model\App\Emulation;
+
 class StoreLevelCatalogSyncer implements CatalogSyncerInterface
 {
     /**
@@ -28,28 +30,35 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
      * @var StoreCatalogSyncer
      */
     private $storeCatalogSyncer;
+    /**
+     * @var Emulation
+     */
+    private $appEmulation;
 
     /**
      * StoreLevelCatalogSyncer constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory       $importerFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data                 $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
-     * @param StoreCatalogSyncer $storeCatalogSyncer
+     * @param StoreCatalogSyncer                                 $storeCatalogSyncer
+     * @param Emulation                                          $appEmulation
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        StoreCatalogSyncer $storeCatalogSyncer
+        StoreCatalogSyncer $storeCatalogSyncer,
+        Emulation $appEmulation
     ) {
         $this->importerFactory = $importerFactory;
         $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
         $this->catalogResource = $catalogResource;
         $this->storeCatalogSyncer = $storeCatalogSyncer;
+        $this->appEmulation = $appEmulation;
     }
 
     /**
@@ -73,13 +82,18 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
                 continue;
             }
 
+            $storeId = $store->getId();
+            $this->appEmulation->startEnvironmentEmulation($storeId);
+
             $importType = 'Catalog_' . $store->getWebsite()->getCode() . '_' . $store->getCode();
             $products += $this->storeCatalogSyncer->syncByStore(
-                            $store->getId(),
-                            $store->getWebsiteId(),
-                            $limit,
-                            $importType
+                $storeId,
+                $store->getWebsiteId(),
+                $limit,
+                $importType
             );
+
+            $this->appEmulation->stopEnvironmentEmulation();
         }
 
         /*

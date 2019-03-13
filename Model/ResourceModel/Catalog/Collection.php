@@ -69,7 +69,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get product collection to export.
      *
-     * @param null|string|bool|int|\Magento\Store\Model\Store  $store
+     * @param null|string|bool|int|\Magento\Store\Model\Store $store
      * @param int $limit
      *
      * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|array
@@ -96,11 +96,14 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
             $productCollection = $this->productCollection->create()
                 ->addAttributeToSelect('*')
-                ->addStoreFilter($store)
                 ->addAttributeToFilter(
                     'entity_id',
                     ['in' => $productIds]
                 )->addUrlRewrite();
+
+            if (!empty($store)) {
+                $productCollection->addStoreFilter($store);
+            }
 
             //visibility filter
             if ($visibility = $this->helper->getWebsiteConfig(

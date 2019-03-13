@@ -40,7 +40,7 @@ class StoreCatalogSyncer
     /**
      * Sync by store
      *
-     * @param int $storeId
+     * @param int|null $storeId
      * @param int $websiteId
      * @param int $limit
      * @param string $importType

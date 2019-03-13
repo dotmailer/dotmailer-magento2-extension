@@ -103,9 +103,6 @@ class ExporterTest extends TestCase
     {
         $product = $this->createMock(Product::class);
         $product->expects($this->once())
-            ->method('setStoreId')
-            ->with($storeId);
-        $product->expects($this->once())
             ->method('getId')
             ->willReturn($productId);
 

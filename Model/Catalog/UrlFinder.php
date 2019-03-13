@@ -25,23 +25,31 @@ class UrlFinder
     private $groupedType;
 
     /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * UrlFinder constructor.
      *
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
      * @param \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection
      * @param \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection,
-        \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType
+        \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->configurableType = $configurableType;
         $this->productRepository = $productRepository;
         $this->bundleSelection = $bundleSelection;
         $this->groupedType = $groupedType;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -54,6 +62,8 @@ class UrlFinder
      */
     public function fetchFor($product)
     {
+        $product = $this->getScopedProduct($product);
+
         if ($product->getVisibility() == \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE &&
             $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
         ) {
@@ -92,5 +102,29 @@ class UrlFinder
         }
 
         return null;
+    }
+
+    /**
+     * In default-level catalog sync, the supplied Product's store ID can be 1 even though the product is not in store 1
+     * This method finds the default store of the first website the product belongs to, and uses that to get a new product.
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     *
+     * @return \Magento\Catalog\Api\Data\ProductInterface|\Magento\Catalog\Model\Product
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getScopedProduct($product)
+    {
+        if (!in_array($product->getStoreId(), $product->getStoreIds())) {
+
+            $productInWebsites = $product->getWebsiteIds();
+            $firstWebsite = $this->storeManager->getWebsite($productInWebsites[0]);
+            $storeId = (int) $firstWebsite->getDefaultGroup()->getDefaultStoreId();
+
+            return $this->productRepository->getById($product->getId(), false, $storeId);
+        }
+
+        return $product;
     }
 }
