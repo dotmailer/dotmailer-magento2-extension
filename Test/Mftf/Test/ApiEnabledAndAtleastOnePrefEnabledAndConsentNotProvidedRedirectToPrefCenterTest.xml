@@ -29,7 +29,7 @@
         </after>
         <actionGroup ref="SetOnePreferenceTypeToShowYes" stepKey="setOnePreferenceTypeToShowYes"/>
         <actionGroup ref="ResetCustomerConsentText" stepKey="resetCustomerConsentText"/>
-        <amOnPage url="{{StorefrontCustomerNewsletterPage.url}}" stepKey="amOnCustomerNewsletterManagePage"/>
+        <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <seeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
         <dontsee selector="{{StorefrontDotmailerPreferenceSection.subscriptionLabel}}" userInput="Test consent text" stepKey="seeConsentText"/>

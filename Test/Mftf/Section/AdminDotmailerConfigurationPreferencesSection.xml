@@ -8,6 +8,5 @@
         <element name="showPreferencesToCustomer" type="select" selector="#connector_configuration_customer_addressbook_show_preferences" />
         <element name="showAddressBookToCustomer" type="select" selector="#connector_configuration_customer_addressbook_can_change" />
         <element name="showDatafieldToCustomer" type="select" selector="#connector_configuration_customer_addressbook_can_show_fields" />
-        <element name="configurationSettingSaveButton" type="button" selector="#save" />
     </section>
 </sections>

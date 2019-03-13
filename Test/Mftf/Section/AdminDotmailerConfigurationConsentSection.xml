@@ -6,6 +6,5 @@
         <element name="consentFieldsetToggle" type="button" selector="#connector_configuration_consent-head"/>
         <element name="consentFieldset" type="button" selector="#connector_configuration_consent"/>
         <element name="customerConsentText" type="textarea" selector="#connector_configuration_consent_dotmailer_consent_customer_text" />
-        <element name="configurationSettingSaveButton" type="button" selector="#save" />
     </section>
 </sections>

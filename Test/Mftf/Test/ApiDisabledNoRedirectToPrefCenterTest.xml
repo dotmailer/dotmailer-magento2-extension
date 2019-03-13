@@ -26,7 +26,7 @@
             <deleteData createDataKey="createSimpleUsCustomer" stepKey="deleteCustomer"/>
         </after>
         <actionGroup ref="SetDisableDotmailerAccount" stepKey="setDisableDotmailerAccount"/>
-        <amOnPage url="{{StorefrontCustomerNewsletterPage.url}}" stepKey="amOnCustomerNewsletterManagePage"/>
+        <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <dontSeeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
     </test>

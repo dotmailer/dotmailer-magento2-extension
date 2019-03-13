@@ -15,6 +15,15 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.1.1
+
+###### Improvements:
+- We're added additional MFTF tests
+
+###### Fixes:
+- We've removed a plugin that wasn't required.
+- We've fixed an issue affecting the review sync in the context where rating table used a prefix or suffix
+
 ## 3.1.0
 
 ###### Improvements
