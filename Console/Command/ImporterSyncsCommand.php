@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Console\Command\Provider\SyncProvider;
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
+use Magento\Framework\App\State;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,12 +19,21 @@ class ImporterSyncsCommand extends Command
     private $syncProvider;
 
     /**
+     * @var State
+     */
+    private $state;
+
+    /**
      * ImporterSyncsCommand constructor
      * @param SyncProvider $syncProvider
+     * @param State $state
      */
-    public function __construct(SyncProvider $syncProvider)
-    {
+    public function __construct(
+        SyncProvider $syncProvider,
+        State $state
+    ) {
         $this->syncProvider = $syncProvider;
+        $this->state = $state;
         parent::__construct();
     }
 
@@ -55,6 +65,8 @@ class ImporterSyncsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_CRONTAB);
+
         if (!$requestedSync = $input->getArgument('sync')) {
             $requestedSync = $this->askForSync($input, $output);
         }
