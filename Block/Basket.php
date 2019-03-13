@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Magento\Catalog\Model\Product;
+
 /**
  * Basket block
  *
@@ -36,6 +38,11 @@ class Basket extends Recommended
     public $emulationFactory;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
+     */
+    public $urlFinder;
+
+    /**
      * Basket constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
@@ -44,6 +51,7 @@ class Basket extends Recommended
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param array $data
      */
     public function __construct(
@@ -53,13 +61,14 @@ class Basket extends Recommended
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         array $data = []
     ) {
         $this->quoteFactory     = $quoteFactory;
         $this->helper           = $helper;
         $this->priceHelper      = $priceHelper;
         $this->emulationFactory = $emulationFactory;
-
+        $this->urlFinder = $urlFinder;
         parent::__construct($context, $font, $data);
     }
 
@@ -109,43 +118,104 @@ class Basket extends Recommended
         $itemsData = [];
 
         /** @var \Magento\Quote\Model\Quote\Item $quoteItem */
+
+        $parentProductIds = [];
+
+        //Collect all parent ids to identify later which products to show in EDC
         foreach ($quoteItems as $quoteItem) {
-            //skip configurable products
-            if ($quoteItem->getParentItemId() != null) {
-                continue;
+            if ($quoteItem->getParentItemId() == null) {
+                $parentProductIds[] = $quoteItem->getProduct()->getId();
             }
+        }
+        foreach ($quoteItems as $quoteItem) {
+            if ($quoteItem->getParentItemId() != null) {
+                //If a product is a bundle we don't need to show all parts of it.
+                if ($quoteItem->getParentItem()->getProductType() == 'bundle') {
+                    continue;
+                }
+                $itemsData[] =  $this->getItemDataForChildProducts($quoteItem);
+                //Signal that we added a child product, so its parent must be ignored later.
+                if (in_array($quoteItem->getParentItem()->getProduct()->getId(), $parentProductIds)) {
+                    $key = array_search($quoteItem->getParentItem()->getProduct()->getId(), $parentProductIds);
+                    unset($parentProductIds[$key]);
+                }
+            }
+        }
 
-            $_product = $quoteItem->getProduct();
-
-            $inStock = ($_product->isInStock())
-                ? 'In Stock'
-                : 'Out of stock';
-            $total = $this->priceHelper->currency(
-                $quoteItem->getBaseRowTotalInclTax(),
-                true,
-                false
-            );
-
-            $productUrl = $_product->getProductUrl();
-            $grandTotal = $this->priceHelper->currency(
-                $this->getGrandTotal(),
-                true,
-                false
-            );
-            $itemsData[] = [
-                'grandTotal' => $grandTotal,
-                'total' => $total,
-                'inStock' => $inStock,
-                'productUrl' => $productUrl,
-                'product' => $_product,
-                'qty' => $quoteItem->getQty(),
-
-            ];
+        foreach ($quoteItems as $quoteItem) {
+            //If a child product added already, we must not add it's parent.
+            if ($quoteItem->getParentItemId() == null && in_array($quoteItem->getProduct()->getId(), $parentProductIds)) {
+                $itemsData[] = $this->getItemDataForParentProducts($quoteItem);
+            }
         }
 
         return $itemsData;
     }
 
+    /**
+     * @var \Magento\Quote\Model\Quote\Item $quoteItem
+     * Get Item Data For Products who doesn't have child's
+     * @return array
+     */
+
+    private function getItemDataForParentProducts($quoteItem)
+    {
+        $_product = $quoteItem->getProduct();
+        return $this->getItemsData($quoteItem, $_product, $_parentProduct = null);
+    }
+
+    /**
+     * @var \Magento\Quote\Model\Quote\Item $quoteItem
+     * Get Item Data For Products who do have child's
+     * @return array
+     */
+
+    private function getItemDataForChildProducts($quoteItem)
+    {
+        $_product = $quoteItem->getProduct();
+        $_parentProduct = $quoteItem->getParentItem()->getProduct();
+
+        return $this->getItemsData($quoteItem, $_product, $_parentProduct);
+    }
+
+    /**
+     * Returns the itemsData array to be viewed;
+     * @var \Magento\Quote\Model\Quote\Item $quoteItem
+     * @param Product $_product
+     * @param  Product$_parentProduct
+     * @return array
+     */
+
+    private function getItemsData($quoteItem, $_product, $_parentProduct)
+    {
+        $totalPrice = (!isset($_parentProduct) ? $quoteItem->getBaseRowTotalInclTax() : $quoteItem->getParentItem()->getBaseRowTotalInclTax());
+        $inStock = ($_product->isInStock())
+            ? 'In Stock'
+            : 'Out of stock';
+        $total = $this->priceHelper->currency(
+            $totalPrice,
+            true,
+            false
+        );
+
+        $productUrl = (isset($_parentProduct) ? $this->urlFinder->fetchFor($_parentProduct) : $this->urlFinder->fetchFor($_product));
+        $grandTotal = $this->priceHelper->currency(
+            $this->getGrandTotal(),
+            true,
+            false
+        );
+        $itemsData = [
+            'grandTotal' => $grandTotal,
+            'total' => $total,
+            'inStock' => $inStock,
+            'productUrl' => $productUrl,
+            'product' => (isset($_parentProduct) ? $_parentProduct : $_product),
+            'qty' => isset($_parentProduct) ? $quoteItem->getParentItem()->getQty() : $quoteItem->getQty(),
+            'product_details' => $_product
+        ];
+
+        return $itemsData;
+    }
     /**
      * Grand total.
      *
