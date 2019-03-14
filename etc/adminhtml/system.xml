@@ -19,7 +19,7 @@
                 <attribute type="expanded">1</attribute>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enabled</label>
-                    <comment><![CDATA[Dont' have an API? click <a href="https://developer.dotmailer.com/docs/getting-started-with-the-api/" target="_blank">here</a> to know how to create new one.]]></comment>
+                    <comment><![CDATA[Don't have an API user? Find out about <a href="https://developer.dotdigital.com/docs/getting-started-with-the-api/" target="_blank">getting started with the Engagement Cloud API</a>.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInStore="0" showInWebsite="1">
@@ -463,8 +463,20 @@
             <label>Abandoned Carts</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="program" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Abandoned Cart Program</label>
+                <attribute type="expanded">1</attribute>
+                <field id="id" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enrol abandoned cart to</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
+                </field>
+                <field id="send_after" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enrol abandoned cart after</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\IntervalProgramEnrolment</source_model>
+                </field>
+            </group>
             <group id="customers" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Customers</label>
+                <label>Customers Email Series</label>
                 <attribute type="expanded">1</attribute>
                 <field id="heading_1" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Abandoned Cart 1</label>
@@ -516,7 +528,7 @@
                 </field>
             </group>
             <group id="guests" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Guests</label>
+                <label>Guests Email Series</label>
                 <attribute type="expanded">1</attribute>
                 <field id="heading_1" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
                        showInDefault="1">
@@ -1442,7 +1454,7 @@
                 </field>
                 <field id="other_title" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Other Text (Will Apply To Other Remaning Text)</label>
+                    <label>Other Text (Will Apply To Other Remaining Text)</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="other_color" translate="label" sortOrder="180" type="select" showInStore="0"
@@ -1582,7 +1594,7 @@
                     <label>Contact Sync Size</label>
                 </field>
                 <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
+                       showInWebsite="0" showInDefault="1">
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>

@@ -15,6 +15,23 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.2.0
+
+###### Improvements
+- Abandoned carts can now trigger automation program enrolments in Engagement Cloud, in addition to regular campaign sends.
+- All abandoned cart flows will now send cartInsight data in advance, to enable use of the abandoned cart block in Engagement Cloud email templates.
+- We've made a number of improvements to our catalog sync. The sync has been refactored for speed and efficiency, products of all types now show correct prices, and product URLs are now presented with the correct rewrite rules.
+- We resolved a limitation of the Engagement Cloud API that restricted campaign option lists to 1000 campaigns.
+- We ensure that re-subscribing subscribers are mapped to the appropriate address book, if one has been set.
+- Products presented on the dynamic content page for abandoned carts will now show images that match the customer's original selection.
+- We've shipped a new console command that populates SQL tables for this extension, to be used when enabling the module in an established Magento installation.
+
+###### Fixes
+- Remote deep-links to saved baskets now resolve correctly after customer login.
+- Stock figures will now be accurate for synced products.
+- We've fixed a small regression where campaign option lists were displaying campaigns from the wrong account scope.
+- We've optimised and strengthened some key security points.
+
 ## 3.1.1
 
 ###### Improvements:
@@ -62,7 +79,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 ###### Improvements
 - We now surface all the first and last purchase categories in customers' sales data fields
 
-###### Bug fix
+###### Fixes
 - We’ve fixed an issue that caused an error in the checkout page when page tracking and JS minification was enabled
 - When transactional emails were set up on two separate stores, emails weren't being sent with the correct sender details from their respective stores; they are now
 - We've fixed an issue which caused products to have incorrect URLs when the catalog was synced at store level
@@ -83,7 +100,7 @@ This version has been released in Magento's own repository and is available with
 
 ## V2.5.4
 
-###### Bug fix
+###### Fixes
 - We've fixed an error which, depending on the PHP setting could become an exception and cause the importer process to be stuck
 
 ## V2.5.3
@@ -92,7 +109,7 @@ This version has been released in Magento's own repository and is available with
 - We've implemented prevention against cross-site scripting in the TrialController.php
 - We've implemented an improved retry process after a failed attempt to access EDC
 
-###### Bug fix
+###### Fixes
 - ROI reporting is working again 
 - We've fixed an error that was being caused by the importer 
 
@@ -107,7 +124,7 @@ This version has been released in Magento's own repository and is available with
 - Users can now import only those Magento contacts who've opted-in (customer subscribers, guest subscribers, and other subscribers)
 - Users now get warned when they're about to sync non-subscribers into their Engagement Cloud account
 
-###### Bug fix
+###### Fixes
 - We've fixed the catalog sync so it now syncs all products across all created collections when it's configured to sync on store level 
 - We’ve changed validation for new subscribers so that it's no longer possible for them to get enrolled multiple times into the new subscriber program
 - We've fixed occurrences of unexpected errors during subscriber and/or customer creation
@@ -120,7 +137,7 @@ This version has been released in Magento's own repository and is available with
 
 ## V2.4.9
 
-###### Bug fix
+###### Fixes
 - We've fixed a dependency issue which prevented composer from installing the extension
 
 ## V2.4.8
@@ -131,7 +148,7 @@ This version has been released in Magento's own repository and is available with
 - We no longer load any scripts on Magento's customer view when the tracking settings are disabled
 
 
-###### Bug fix
+###### Fixes
 - We've fixed a regression issue which caused the second and third abandoned cart emails to be skipped
 - Some products with individual visibilities were getting ignored by the importer; this has been fixed
 - We've fixed a configuration issue which caused the transactional email settings to be enabled by default
@@ -140,7 +157,7 @@ This version has been released in Magento's own repository and is available with
 
 ## V2.4.7
 
-###### Bug fix
+###### Fixes
 - We've fixed a regression whereby the email from address was empty in the message object when email templates were not mapped in the extension
 - We've fixed a compatibility issue which caused fatal email template errors when using Magento 2.1.9 and below with the version 2.4.4 of the extension
 - An error would occur while sending registration email to customer created via script in Magento 2.2.3 - this is no longer happens [#13888](https://github.com/magento/magento2/issues/13888)
@@ -154,7 +171,7 @@ This version has been released in Magento's own repository and is available with
 - We've changed our dynamic content blocks to be non-cacheable
 
 
-###### Bug fix
+###### Fixes
 - We've fixed an issue in the upgrade script whereby the abandoned cart report table was not created for version 2.3.8
 - Page Tracking data wasn't sent to Engagement Cloud accounts located in region 2 or 3 ; this is now fixed 
 - The abandoned cart process wasn't stop when all items had been removed from the cart ; this no longer happens
@@ -169,7 +186,7 @@ This version has been released in Magento's own repository and is available with
 ###### Improvements
 - We've improved the password encryption using Magento's encryption framework
 
-###### Bug fix
+###### Fixes
 - We've fixed an issue related to email capture causing an infinite loop during checkout when form field is auto filled by browser
 - Date type attributes in transactional data were using the wrong locale time;this is now fixed
 - We've fixed an error related to importing orders having both virtual and physical products
@@ -201,7 +218,7 @@ This version has been released in Magento's own repository and is available with
 - We’ve introduced new validation when deleting cron job CSV files
 - Subscriber's sales data is now synced only if the sales data option is enabled in config
 
-###### Bug fix
+###### Fixes
 - We’ve removed the MailCheck feature
 - We’ve fixed an encoding issue for the product short description
 - We’ve fixed generating a token for an admin user
@@ -231,13 +248,13 @@ This version has been released in Magento's own repository and is available with
 
 ## V2.3.7
 
-###### Bug fix
+###### Fixes
 - We've fixed an error related to a column not found that could occur when trying to sync subscribers with sales data
 - Abandoned cart table couldn't be found when upgrading from 2.3.5 to 2.3.6 - this is now fixed.
 
 ## V2.3.6
 
-###### Bug fix
+###### Fixes
 - It was possible for guests and customers to receive duplicate abandoned cart emails; this has been resolved.
 - EE data can now be synced.
 - An expiry days value of ‘0’ in the external dynamic content coupon code URL would set the coupon code’s expiration date and time to the coupon code’s creation date and time; this has been fixed.
@@ -246,7 +263,7 @@ This version has been released in Magento's own repository and is available with
 
 ## V2.3.5
 
-###### Bug fix
+###### Fixes
 - Errors would occur when trying to run contacts and orders sync with a database using table prefix - this has now been fixed.
 
 ## V2.3.4
@@ -260,7 +277,7 @@ This version has been released in Magento's own repository and is available with
 ###### Improvements
  - We've done a large amount of code refactoring and have implemented main Magento extension best practices.
  
-###### Bug fixes 
+###### Fixes 
  - The order sync no longer gets stuck due to missing additional info that’s required.
  - Coupon codes no longer expire after an hour despite the expiration being set beyond an hour.
  - We’ve fixed the response that’s returned when Feefo authorisation fails.
@@ -276,7 +293,7 @@ This version has been released in Magento's own repository and is available with
   
 ## V2.2.1
 
-###### Bug fixes
+###### Fixes
 
  - We've fixed a styling issue that was not visible in the trial version pop-up window.
  - We've fixed a problem that had been adversely affecting the exclusion rules report table upon execution of a mass delete action.
@@ -292,7 +309,7 @@ This version has been released in Magento's own repository and is available with
  - Bulk order sync will have a delay(60min) before being imported.
  - Improve install script for customers that are subscribed.
 
-###### Bug fixes
+###### Fixes
  - Subscribers with datafields issues.
  - Campaign bulk setProccessing array conversion.
  - Abandoned cart price fetch from quote.
@@ -322,7 +339,7 @@ This version has been released in Magento's own repository and is available with
  
 ## V2.1.8
 
-###### Bug fixes
+###### Fixes
   - Storename fix(#215)
 
 ## V2.1.7
@@ -332,7 +349,7 @@ This version has been released in Magento's own repository and is available with
  - Improved trail account creation process.
  - Improved Guests finding(separated from the order sync).
  
-###### Bug fixes
+###### Fixes
  - Abandoned cart process throws error(collection).
  - Single orders type inside importer.
  - Abandoned carts timezone issue.
@@ -343,7 +360,7 @@ This version has been released in Magento's own repository and is available with
 
 ## V2.1.6
 
-###### Bug fixes
+###### Fixes
  - Syntax error or access violation while updating Coupon code.
  - Stop emulation when api is disabled.  
  
@@ -353,7 +370,7 @@ This version has been released in Magento's own repository and is available with
  - Admin Log file viewer.
  - Subsribers now have datafields.
  
-######Bug fixes
+######Fixes
  - ACL for reports menu items.
  - API creds always for default level.
  - Compatibility _getChildrenElementsHtml with 2.1.3.
@@ -371,7 +388,7 @@ This version has been released in Magento's own repository and is available with
  - Now can be added multiple dimention condition for Rules.
 
 ## V2.1.4
-###### Bugs fixes
+###### Bugs Fixes
  - InvalidContactIdentifier for single orders.
  - Compatibility with catalogStaging.
  - Fix admin configuration fancybox error.
@@ -384,7 +401,7 @@ This version has been released in Magento's own repository and is available with
  - Add new automation for first customer order event.
  - EDC include all product types to have an image and inlcude the price range available for the product.   
 
-###### Bug fixes
+###### Fixes
  - EDC fixed the prefix for table names.
  - Fix unsubscribeEmail register already exists.
  - New installation do not get the customers mark as subscribers.

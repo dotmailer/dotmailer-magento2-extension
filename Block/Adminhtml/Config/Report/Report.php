@@ -28,7 +28,8 @@ class Report extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function render(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
-    ) {
+    )
+    {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
 
         return parent::render($element);
@@ -44,7 +45,8 @@ class Report extends \Magento\Config\Block\System\Config\Form\Field
      */
     protected function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
-    ) {
+    )
+    {
         $this->addData(['ajax_url' => $this->getLink()]);
 
         return $this->_toHtml();

@@ -54,7 +54,7 @@ class Save extends \Magento\Backend\App\AbstractAction
 
         if (! empty($datafield)) {
             $response = $this->dataHelper->createDatafield(
-                (int) $this->getRequest()->getParam('website', 0),
+                (int) $this->getRequest()->getParam('website_id'),
                 $datafield,
                 $this->getRequest()->getParam('type'),
                 $this->getRequest()->getParam('visibility'),

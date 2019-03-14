@@ -60,7 +60,7 @@ class Rest
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    private $helper;
+    protected $helper;
 
     /**
      * @var bool

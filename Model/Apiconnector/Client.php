@@ -34,6 +34,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_TEMPLATES = '/v2/templates';
     const REST_SEND_TRANSACTIONAL_EMAIL = '/v2/email';
     const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
+    const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
 
     //rest error responces
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. 
@@ -62,11 +63,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     private $fileHelper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
-
-    /**
      * @var string
      */
     private $apiEndpoint;
@@ -81,10 +77,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Helper\File $fileHelper
     ) {
-        $this->helper     = $data;
         $this->fileHelper = $fileHelper;
-
-        parent::__construct($this->helper);
+        parent::__construct($data);
     }
 
     /**
@@ -263,6 +257,24 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         return $response;
     }
 
+    public function postAbandonedCartCartInsight($content)
+    {
+        $url = $this->getApiEndpoint() . self::REST_POST_ABANDONED_CART_CARTINSIGHT;
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($content);
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $message = 'POST CARTINSIGHT ' . $url . ', '
+                . $response->message;
+            $this->helper->debug('postAbandonedCartInsightData', [$message]);
+        }
+
+        return $response;
+    }
+
     /**
      * Deletes all contacts from a given address book.
      *
@@ -412,13 +424,20 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Get list of all campaigns.
      *
+     * @param int $skip     Number of campaigns to skip
+     * @param int $select   Number of campaigns to select
      * @return mixed
      *
      * @throws \Exception
      */
-    public function getCampaigns()
+    public function getCampaigns($skip = 0, $select = 1000)
     {
-        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS_CAMPAIGNS;
+        $url = sprintf('%s%s?select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_DATA_FIELDS_CAMPAIGNS,
+            $select,
+            $skip
+        );
         $this->setUrl($url)
             ->setVerb('GET');
 

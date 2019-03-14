@@ -66,7 +66,8 @@ class Review extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function render(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
-    ) {
+    )
+    {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
 
         return parent::render($element);
@@ -83,12 +84,13 @@ class Review extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function _getElementHtml(
         \Magento\Framework\Data\Form\Element\AbstractElement $element
-    ) {
+    )
+    {
         $originalData = $element->getOriginalData();
         $buttonLabel = !empty($originalData['button_label'])
             ? $originalData['button_label'] : $this->buttonLabel;
         $url
-                      = $this->_urlBuilder->getUrl('dotdigitalgroup_email/addressbook/save');
+            = $this->_urlBuilder->getUrl('dotdigitalgroup_email/addressbook/save');
         $this->addData(
             [
                 'button_label' => $buttonLabel,

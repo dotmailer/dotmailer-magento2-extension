@@ -10,7 +10,7 @@ $mode = $block->getMode();
 $website = $block->getWebsite();
 ?>
 <?php if ($order) : ?>
-    <?php $dynamicStyle = $helper->getDynamicStyles(); ?>
+    <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;

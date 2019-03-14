@@ -9,7 +9,7 @@ use Magento\Store\Model\Store;
  *
  * @api
  */
-class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
+class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -19,41 +19,43 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
-    public $recommnededHelper;
+    private $recommnededHelper;
 
-    /**
-     * @var \Magento\Catalog\Model\ProductFactory
-     */
-    public $productFactory;
-    
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
-    public $catalog;
+    private $catalog;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
+     */
+    private $urlFinder;
 
     /**
      * Bestsellers constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        \Dotdigitalgroup\Email\Block\Helper\Font $font,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         array $data = []
     ) {
-        $this->productFactory     = $productFactory;
         $this->helper             = $helper;
         $this->recommnededHelper  = $recommended;
-        $this->catalog     = $catalog;
-        parent::__construct($context, $data);
+        $this->catalog            = $catalog;
+        $this->urlFinder          = $urlFinder;
+        parent::__construct($context, $font, $data);
     }
 
     /**
@@ -104,5 +106,17 @@ class Bestsellers extends \Magento\Catalog\Block\Product\AbstractProduct
         return $store->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
+    }
+
+    /**
+     * Return a product's parent URL, if it has one.
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     *
+     * @return string
+     */
+    public function getConfigurableParentUrl($product)
+    {
+        return $this->urlFinder->fetchFor($product);
     }
 }
