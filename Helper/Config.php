@@ -161,6 +161,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES = 'connector_configuration/catalog_sync/catalog_values';
     const XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY = 'connector_configuration/catalog_sync/catalog_visibility';
     const XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE = 'connector_configuration/catalog_sync/catalog_type';
+
     //Abandoned Cart
     const XML_PATH_CONNECTOR_EMAIL_CAPTURE = 'connector_configuration/abandoned_carts/email_capture';
     const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT = 'connector_configuration/abandoned_carts/cart_limit';
@@ -201,6 +202,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS = 'connector_automation/order_status_automation/program';
     const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER =
         'connector_automation/visitor_automation/first_order_automation';
+
+    /**
+     * Abandoned cart program enrolment.
+     */
+    const XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID = 'abandoned_carts/program/id';
+    const XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_INTERVAL = 'abandoned_carts/program/send_after';
 
     /**
      * ROI SECTION.

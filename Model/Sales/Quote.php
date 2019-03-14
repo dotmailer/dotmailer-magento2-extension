@@ -131,6 +131,11 @@ class Quote
     private $acPendingContactUpdater;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data
+     */
+    private $cartInsight;
+
+    /**
      * Quote constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory
@@ -143,6 +148,7 @@ class Quote
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      * @param PendingContactUpdater $pendingContactUpdater
+     * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory,
@@ -154,7 +160,8 @@ class Quote
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
-        PendingContactUpdater $pendingContactUpdater
+        PendingContactUpdater $pendingContactUpdater,
+        \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
     ) {
         $this->timeZone = $timezone;
         $this->rulesFactory = $rulesFactory;
@@ -170,6 +177,7 @@ class Quote
         $this->campaignCollection = $campaignFactory->create()->campaignCollection;
         $this->abandonedCollectionFactory = $abandonedFactory->create()->abandonedCollectionFactory;
         $this->acPendingContactUpdater = $pendingContactUpdater;
+        $this->cartInsight = $cartInsight;
     }
 
     /**
@@ -547,7 +555,7 @@ class Quote
         $result = 0;
         foreach ($quoteCollection as $quote) {
             $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
-            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)) {
+            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId, $storeId)) {
                 continue;
             }
 
@@ -572,11 +580,14 @@ class Quote
     /**
      * @param \Magento\Quote\Model\Quote $quote
      * @param int $websiteId
+     * @param int $storeId
      *
      * @return bool
      */
-    private function updateDataFieldAndCreateAc($quote, $websiteId)
+    private function updateDataFieldAndCreateAc($quote, $websiteId, $storeId)
     {
+        $this->cartInsight->send($quote, $storeId);
+
         $quoteId = $quote->getId();
         $items = $quote->getAllItems();
         $email = $quote->getCustomerEmail();
@@ -631,7 +642,7 @@ class Quote
      * @param array $items
      * @return bool|\Magento\Quote\Model\Quote\Item
      */
-    private function getMostExpensiveItems($items)
+    public function getMostExpensiveItems($items)
     {
         $mostExpensiveItem = false;
         foreach ($items as $item) {
@@ -765,7 +776,7 @@ class Quote
         $result = 0;
         foreach ($quoteCollection as $quote) {
             $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
-            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId)) {
+            if (! $this->updateDataFieldAndCreateAc($quote, $websiteId, $storeId)) {
                 continue;
             }
 
@@ -879,6 +890,9 @@ class Quote
         }
 
         foreach ($quoteCollection as $quote) {
+
+            $this->cartInsight->send($quote, $storeId);
+
             $quoteId = $quote->getId();
             $email = $quote->getCustomerEmail();
 

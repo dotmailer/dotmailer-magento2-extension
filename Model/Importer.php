@@ -2,10 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
+
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Importer extends \Magento\Framework\Model\AbstractModel
+class Importer extends \Magento\Framework\Model\AbstractModel implements SyncInterface
 {
     const NOT_IMPORTED = 0;
     const IMPORTING = 1;
@@ -215,6 +217,14 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         }
 
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function sync()
+    {
+        $this->processQueue();
     }
 
     /**

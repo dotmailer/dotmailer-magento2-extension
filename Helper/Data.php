@@ -298,7 +298,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return int|float|string|boolean
      */
-    private function getConfigValue(
+    public function getConfigValue(
         $path,
         $contextScope = 'default',
         $contextScopeId = null
@@ -360,9 +360,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteForSelectedScopeInAdmin()
     {
-        //If website param does not exist then default value returned 0 "default scope"
-        //This is because there is no website param in default scope
-        $websiteId = $this->_request->getParam('website', 0);
+        /**
+         * See first if store param exist. If it does than get website from store.
+         * If website param does not exist then default value returned 0 "default scope"
+         * This is because there is no website param in default scope
+         */
+        $storeId = $this->_request->getParam('store');
+        $websiteId = ($storeId) ? $this->storeManager->getStore($storeId)->getWebsiteId() :
+            $this->_request->getParam('website', 0);
         return $this->storeManager->getWebsite($websiteId);
     }
 
@@ -1405,74 +1410,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_ANCHOR,
             $website
         );
-    }
-
-    /**
-     * Dynamic styles from config.
-     *
-     * @return array
-     */
-    public function getDynamicStyles()
-    {
-        return [
-            'nameStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE
-                )
-            ),
-            'priceStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE
-                )
-            ),
-            'linkStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE
-                )
-            ),
-            'otherStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE
-                )
-            ),
-            'nameColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR
-            ),
-            'fontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE
-            ),
-            'priceColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR
-            ),
-            'priceFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE
-            ),
-            'urlColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR
-            ),
-            'urlFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE
-            ),
-            'otherColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR
-            ),
-            'otherFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE
-            ),
-            'docFont' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT
-            ),
-            'docBackgroundColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR
-            ),
-            'dynamicStyling' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING
-            ),
-        ];
     }
 
     /**

@@ -9,7 +9,7 @@ $items = $block->getWishlistItems();
 $priceHelper = $block->priceHelper;
 ?>
 <?php if ($items) : ?>
-    <?php $dynamicStyle = $block->helper->getDynamicStyles(); ?>
+    <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;

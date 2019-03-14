@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Block;
  *
  * @api
  */
-class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
+class Wishlist extends Recommended
 {
 
     /**
@@ -39,6 +39,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      * Wishlist constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param Helper\Font $font
      * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
@@ -48,6 +49,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        Helper\Font $font,
         \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -55,7 +57,7 @@ class Wishlist extends \Magento\Catalog\Block\Product\AbstractProduct
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($context, $font, $data);
         $this->wishlist = $wishlist;
         $this->customerFactory = $customerFactory;
         $this->helper          = $helper;

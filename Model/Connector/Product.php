@@ -110,32 +110,45 @@ class Product
     private $stringUtils;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
+     */
+    private $urlFinder;
+
+    /**
+     * @var \Magento\CatalogInventory\Api\StockStateInterface
+     */
+    private $stockStateInterface;
+
+    /**
      * Product constructor.
      *
-     * @param \Magento\Store\Model\StoreManagerInterface                    $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Magento\CatalogInventory\Model\Stock\ItemFactory             $itemFactory
-     * @param \Magento\Catalog\Model\Product\Media\ConfigFactory            $mediaConfigFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory
      * @param \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory
-     * @param \Magento\Catalog\Model\Product\VisibilityFactory              $visibilityFactory
-     * @param \Magento\Framework\Stdlib\StringUtils                         $stringUtils
+     * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
+     * @param \Magento\Framework\Stdlib\StringUtils $stringUtils
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\CatalogInventory\Model\Stock\ItemFactory $itemFactory,
         \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
-        \Magento\Framework\Stdlib\StringUtils $stringUtils
+        \Magento\Framework\Stdlib\StringUtils $stringUtils,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
     ) {
-        $this->itemFactory        = $itemFactory;
         $this->mediaConfigFactory = $mediaConfigFactory;
         $this->visibilityFactory  = $visibilityFactory;
         $this->statusFactory      = $statusFactory;
         $this->helper             = $helper;
         $this->storeManager       = $storeManagerInterface;
         $this->stringUtils        = $stringUtils;
+        $this->urlFinder          = $urlFinder;
+        $this->stockStateInterface = $stockStateInterface;
     }
 
     /**
@@ -159,27 +172,15 @@ class Product
         $options = $this->visibilityFactory->create()
             ->getOptionArray();
         $this->visibility = (string)$options[$product->getVisibility()];
-        $this->price = (float)number_format(
-            $product->getPrice(),
-            2,
-            '.',
-            ''
-        );
-        $this->specialPrice = (float)number_format(
-            $product->getSpecialPrice(),
-            2,
-            '.',
-            ''
-        );
-        $this->url = $product->getProductUrl();
+
+        $this->getMinPrices($product);
+
+        $this->url = $this->urlFinder->fetchFor($product);
 
         $this->imagePath = $this->mediaConfigFactory->create()
             ->getMediaUrl($product->getSmallImage());
 
-        $stock = $this->itemFactory->create()
-            ->setProduct($product);
-
-        $this->stock = (float)number_format($stock->getQty(), 2, '.', '');
+        $this->stock = (float)number_format($this->getStockQty($product), 2, '.', '');
 
         $shortDescription = $product->getShortDescription();
         //limit short description
@@ -223,6 +224,16 @@ class Product
         );
 
         return $this;
+    }
+
+    /**
+     * @param \Magento\Catalog\Model\Product $product
+     * This function calculates the stock Quantity for each Product.
+     * @return float
+     */
+    private function getStockQty($product)
+    {
+        return $this->stockStateInterface->getStockQty($product->getId(), $product->getStore()->getWebsiteId());
     }
 
     /**
@@ -317,7 +328,9 @@ class Product
                 'mediaConfigFactory',
                 'visibilityFactory',
                 'statusFactory',
-                'storeManager'
+                'storeManager',
+                'urlFinder',
+                'stringUtils'
             ])
         );
     }
@@ -332,5 +345,68 @@ class Product
     private function textIsValidForInsightDataKey($label)
     {
         return preg_match('/^[a-zA-Z_\\\\-][a-zA-Z0-9_\\\\-]*$/', $label);
+    }
+
+    /**
+     * Set the Minimum Prices for Configurable and Bundle products.
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     *
+     * @return null
+     */
+
+    private function getMinPrices($product)
+    {
+        if ($product->getTypeId() == 'configurable') {
+            foreach ($product->getTypeInstance()->getUsedProducts($product) as $childProduct) {
+                $childPrices[] = $childProduct->getPrice();
+                if ($childProduct->getSpecialPrice() !== null) {
+                    $childSpecialPrices[] = $childProduct->getSpecialPrice();
+                }
+            }
+            $this->price = isset($childPrices) ? min($childPrices) : null;
+            $this->specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
+        } elseif ($product->getTypeId() == 'bundle') {
+            $this->price = $product->getPriceInfo()->getPrice('regular_price')->getMinimalPrice()->getValue();
+            $this->specialPrice = $product->getPriceInfo()->getPrice('final_price')->getMinimalPrice()->getValue();
+            //if special price equals to price then its wrong.)
+            $this->specialPrice = ($this->specialPrice === $this->price) ? null : $this->specialPrice;
+        } elseif ($product->getTypeId() == 'grouped') {
+            foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
+                $childPrices[] = $childProduct->getPrice();
+                if ($childProduct->getSpecialPrice() !== null) {
+                    $childSpecialPrices[] = $childProduct->getSpecialPrice();
+                }
+            }
+            $this->price = isset($childPrices) ? min($childPrices) : null;
+            $this->specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
+        } else {
+            $this->price = $product->getPrice();
+            $this->specialPrice = $product->getSpecialPrice();
+        }
+        $this->formatPriceValues();
+    }
+
+    /**
+     * Formats the price values.
+     *
+     * @return null
+     */
+
+    private function formatPriceValues()
+    {
+        $this->price = (float)number_format(
+            $this->price,
+            2,
+            '.',
+            ''
+        );
+
+        $this->specialPrice = (float)number_format(
+            $this->specialPrice,
+            2,
+            '.',
+            ''
+        );
     }
 }

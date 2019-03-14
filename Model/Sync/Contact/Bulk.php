@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 
+use \Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use \Dotdigitalgroup\Email\Model\Apiconnector\EngagementCloudAddressBookApi;
+
 /**
  * Handle bulk data for importer.
  */
@@ -18,7 +21,7 @@ class Bulk
     protected $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Client
+     * @var Client|EngagementCloudAddressBookApi
      */
     protected $client;
 
