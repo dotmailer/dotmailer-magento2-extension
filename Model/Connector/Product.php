@@ -330,7 +330,8 @@ class Product
                 'statusFactory',
                 'storeManager',
                 'urlFinder',
-                'stringUtils'
+                'stringUtils',
+                'stockStateInterface'
             ])
         );
     }
