@@ -101,7 +101,7 @@ class ImporterSyncsCommand extends Command
     {
         $helper = $this->getHelper('question');
         $syncQuestion = new ChoiceQuestion(
-            __('Please select an Engagement Cloud sync to run'),
+            __('Please select an Engagement Cloud sync to run')->getText(),
             array_values($this->syncProvider->getAvailableSyncs())
         );
         $syncQuestion->setErrorMessage(__('Please select a sync'));
