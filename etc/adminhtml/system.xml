@@ -1094,6 +1094,11 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
+                <field id="customer_password_reset_password_template" translate="label" sortOrder="65" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Password</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
+                </field>
                 <field id="wishlist_email_email_template" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Wish List Sharing</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
