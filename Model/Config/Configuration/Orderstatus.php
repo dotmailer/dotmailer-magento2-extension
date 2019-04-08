@@ -5,19 +5,19 @@ namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 class Orderstatus implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
-     * @var \Magento\Sales\Model\Config\Source\Order\Status
+     * @var \Magento\Sales\Model\Order\Config
      */
-    private $status;
+    private $orderConfig;
 
     /**
      * Orderstatus constructor.
      *
-     * @param \Magento\Sales\Model\Config\Source\Order\Status $status
+     * @param \Magento\Sales\Model\Order\Config $orderConfig
      */
     public function __construct(
-        \Magento\Sales\Model\Config\Source\Order\Status $status
+        \Magento\Sales\Model\Order\Config $orderConfig
     ) {
-        $this->status = $status;
+        $this->orderConfig = $orderConfig;
     }
 
     /**
@@ -27,22 +27,15 @@ class Orderstatus implements \Magento\Framework\Data\OptionSourceInterface
      */
     public function toOptionArray()
     {
-        $statuses = $this->status->toOptionArray();
-
-        if (! empty($statuses) && $statuses[0]['value'] == '') {
-            array_shift($statuses);
-        }
+        $statuses = $this->orderConfig->getStatuses();
 
         $options[] = [
             'label' => __('---- Default Option ----'),
             'value' => '0',
         ];
 
-        foreach ($statuses as $status) {
-            $options[] = [
-                'value' => $status['value'],
-                'label' => $status['label'],
-            ];
+        foreach ($statuses as $code => $label) {
+            $options[] = ['value' => $code, 'label' => $label];
         }
 
         return $options;
