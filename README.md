@@ -51,7 +51,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 ## 3.1.1
 
 ###### Improvements:
-- We're added additional MFTF tests
+- We've added additional MFTF tests
 
 ###### Fixes:
 - We've removed a plugin that wasn't required.
