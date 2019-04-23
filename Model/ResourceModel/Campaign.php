@@ -134,4 +134,24 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         return parent::save($item);
     }
+
+    /**
+     * @param array $ids
+     *
+     * @return null
+     */
+    public function expireCampaigns($ids)
+    {
+        $bind = [
+            'send_status' => \Dotdigitalgroup\Email\Model\Campaign::SENT,
+            'message' => 'Check sending status in Engagement Cloud',
+            'updated_at' => $this->datetime->gmtDate()
+        ];
+        $this->getConnection()
+            ->update(
+                $this->getMainTable(),
+                $bind,
+                ["id in (?)" => $ids]
+        );
+    }
 }
