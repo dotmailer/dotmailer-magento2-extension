@@ -16,11 +16,11 @@ class InsertEmailContactTableSubscribers extends AbstractDataMigration implement
      */
     protected function getSelectStatement()
     {
-        return $this->installer
+        return $this->resourceConnection
             ->getConnection()
             ->select()
             ->from([
-                'subscriber' => $this->installer->getTable('newsletter_subscriber'),
+                'subscriber' => $this->resourceConnection->getTableName('newsletter_subscriber'),
             ], [
                 'email' => 'subscriber_email',
                 'customer_id' => new \Zend_Db_Expr('0'),
@@ -29,7 +29,7 @@ class InsertEmailContactTableSubscribers extends AbstractDataMigration implement
                 'store_id',
             ])
             ->joinInner(
-                ['store' => $this->installer->getTable('store')],
+                ['store' => $this->resourceConnection->getTableName('store')],
                 'subscriber.store_id = store.store_id',
                 ['website_id' => 'store.website_id']
             )
