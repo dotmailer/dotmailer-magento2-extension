@@ -22,21 +22,21 @@ class InsertEmailCatalogTable extends AbstractDataMigration implements InsertTyp
      */
     protected function getSelectStatement()
     {
-        return $this->installer
+        return $this->resourceConnection
             ->getConnection()
             ->select()
             ->from([
-                'catalog' => $this->installer->getTable('catalog_product_entity'),
+                'catalog' => $this->resourceConnection->getTableName('catalog_product_entity'),
             ], [
                 'product_id' => 'catalog.entity_id',
                 'created_at' => 'catalog.created_at',
             ])
             ->where(
                 'catalog.entity_id NOT IN (?)',
-                $this->installer
+                $this->resourceConnection
                     ->getConnection()
                     ->select()
-                    ->from($this->installer->getTable(Schema::EMAIL_CATALOG_TABLE), ['product_id'])
+                    ->from($this->resourceConnection->getTableName(Schema::EMAIL_CATALOG_TABLE), ['product_id'])
             )
             ->order('catalog.entity_id')
         ;

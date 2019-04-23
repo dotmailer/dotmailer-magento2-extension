@@ -85,7 +85,7 @@ class Campaign implements SyncInterface
 
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
             $campaignsToSend = $this->getCampaignsToSend($emailsToSend, $website);
-            $this->sendCampaignsViaDotmailer($campaignsToSend);
+            $this->sendCampaignsViaEngagementCloud($campaignsToSend);
         }
     }
 
@@ -106,6 +106,7 @@ class Campaign implements SyncInterface
      */
     public function _checkSendStatus($website, $storeIds)
     {
+        $this->expireExpiredCampaigns($storeIds);
         $campaigns = $this->_getEmailCampaigns(
             $storeIds,
             \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
@@ -120,6 +121,20 @@ class Campaign implements SyncInterface
             } elseif ($response->status == 'Sent') {
                 $this->campaignResourceModel->setSent($campaign->getSendId());
             }
+        }
+    }
+
+    /**
+     * @param array $storeIds
+     */
+    private function expireExpiredCampaigns($storeIds)
+    {
+        $expiredCampaigns = $this->campaignCollection->create()
+            ->getExpiredEmailCampaignsByStoreIds($storeIds);
+        $ids = $expiredCampaigns->getColumnValues('id');
+
+        if (! empty($ids)) {
+            $this->campaignResourceModel->expireCampaigns($ids);
         }
     }
 
@@ -208,7 +223,7 @@ class Campaign implements SyncInterface
      *
      * @return null
      */
-    private function sendCampaignsViaDotmailer($campaignsToSend)
+    private function sendCampaignsViaEngagementCloud($campaignsToSend)
     {
         foreach ($campaignsToSend as $campaignId => $data) {
             if (isset($data['contacts']) && isset($data['client'])) {

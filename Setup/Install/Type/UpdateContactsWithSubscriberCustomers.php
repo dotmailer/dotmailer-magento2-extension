@@ -17,11 +17,11 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
      */
     protected function getSelectStatement()
     {
-        return $this->installer
+        return $this->resourceConnection
             ->getConnection()
             ->select()
             ->from(
-                $this->installer->getTable('newsletter_subscriber'),
+                $this->resourceConnection->getTableName('newsletter_subscriber'),
                 'customer_id'
             )
             ->where('subscriber_status = ?', 1)
@@ -47,7 +47,7 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
     public function getUpdateWhereClause(Select $subQuery = null)
     {
         // get customer IDs
-        $customerIds = $this->installer
+        $customerIds = $this->resourceConnection
             ->getConnection()
             ->fetchCol($subQuery ?: $this->getSelectStatement());
 
