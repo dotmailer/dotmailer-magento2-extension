@@ -17,11 +17,11 @@ class InsertEmailOrderTable extends AbstractDataMigration implements InsertTypeI
      */
     protected function getSelectStatement()
     {
-        return $this->installer
+        return $this->resourceConnection
             ->getConnection('sales')
             ->select()
             ->from([
-                $this->installer->getTable('sales_order', 'sales'),
+                $this->resourceConnection->getTableName('sales_order', 'sales'),
             ], [
                 'order_id' => 'entity_id',
                 'quote_id',

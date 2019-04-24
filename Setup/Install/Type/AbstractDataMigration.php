@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
 use Magento\Framework\DB\Select;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\App\ResourceConnection;
 
 abstract class AbstractDataMigration
 {
@@ -20,9 +20,9 @@ abstract class AbstractDataMigration
 
     /**
      * The MigrationHelper should contain any dependencies required by the updates
-     * @var ModuleDataSetupInterface
+     * @var ResourceConnection
      */
-    protected $installer;
+    protected $resourceConnection;
 
     /**
      * onDuplicate value
@@ -44,11 +44,11 @@ abstract class AbstractDataMigration
 
     /**
      * AbstractType constructor
-     * @param ModuleDataSetupInterface $installer
+     * @param ResourceConnection $resourceConnection
      */
-    public function __construct(ModuleDataSetupInterface $installer)
+    public function __construct(ResourceConnection $resourceConnection)
     {
-        $this->installer = $installer;
+        $this->resourceConnection = $resourceConnection;
     }
 
     /**
@@ -116,11 +116,11 @@ abstract class AbstractDataMigration
                 // inserts
                 case $this instanceof InsertTypeInterface :
                     $query = $selectStatement->insertFromSelect(
-                        $this->installer->getTable($this->tableName),
+                        $this->resourceConnection->getTableName($this->tableName),
                         $this->getInsertArray(),
                         $this->onDuplicate
                     );
-                    $rowCount = $this->installer
+                    $rowCount = $this->resourceConnection
                         ->getConnection()
                         ->query($query)
                         ->rowCount();
@@ -128,10 +128,10 @@ abstract class AbstractDataMigration
 
                 // updates
                 case $this instanceof UpdateTypeInterface :
-                    $rowCount = $this->installer
+                    $rowCount = $this->resourceConnection
                         ->getConnection()
                         ->update(
-                            $this->installer->getTable($this->tableName),
+                            $this->resourceConnection->getTableName($this->tableName),
                             $this->getUpdateBindings(),
                             $this->getUpdateWhereClause($selectStatement)
                         );

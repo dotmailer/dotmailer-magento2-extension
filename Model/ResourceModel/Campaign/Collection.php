@@ -11,6 +11,35 @@ class Collection extends
     protected $_idFieldName = 'id';
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     */
+    private $dateIntervalFactory;
+
+    /**
+     * Collection constructor.
+     *
+     * @param \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory
+     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
+     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null $resource
+     */
+    public function __construct(
+        \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory,
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
+        \Magento\Framework\Event\ManagerInterface $eventManager,
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
+        \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
+        \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
+    ) {
+        $this->dateIntervalFactory = $dateIntervalFactory;
+        parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
+    }
+
+    /**
      * Initialize resource collection.
      *
      * @return null
@@ -71,6 +100,29 @@ class Collection extends
 
         $campaignCollection->getSelect()
             ->limit(\Dotdigitalgroup\Email\Model\Sync\Campaign::SEND_EMAIL_CONTACT_LIMIT);
+
+        return $campaignCollection;
+    }
+
+    /**
+     * Get expired campaigns by store ids
+     *
+     * @param array $storeIds
+     * @return Collection
+     */
+    public function getExpiredEmailCampaignsByStoreIds($storeIds)
+    {
+        $time = new \DateTime('now', new \DateTimezone('UTC'));
+        $interval = $this->dateIntervalFactory->create(
+            ['interval_spec' => sprintf('PT%sH', 2)]
+        );
+        $time->sub($interval);
+
+        $campaignCollection = $this->addFieldToFilter('campaign_id', ['notnull' => true])
+            ->addFieldToFilter('send_status', \Dotdigitalgroup\Email\Model\Campaign::PROCESSING)
+            ->addFieldToFilter('store_id', ['in' => $storeIds])
+            ->addFieldToFilter('send_id', ['notnull' => true])
+            ->addFieldToFilter('updated_at', ['lt' => $time->format('Y-m-d H:i:s')]);
 
         return $campaignCollection;
     }

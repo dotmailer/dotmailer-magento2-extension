@@ -16,11 +16,11 @@ class InsertEmailContactTableSubscribers extends AbstractDataMigration implement
      */
     protected function getSelectStatement()
     {
-        return $this->installer
+        return $this->resourceConnection
             ->getConnection()
             ->select()
             ->from([
-                'subscriber' => $this->installer->getTable('newsletter_subscriber'),
+                'subscriber' => $this->resourceConnection->getTableName('newsletter_subscriber'),
             ], [
                 'email' => 'subscriber_email',
                 'customer_id' => new \Zend_Db_Expr('0'),
@@ -28,9 +28,14 @@ class InsertEmailContactTableSubscribers extends AbstractDataMigration implement
                 'subscriber_status' => new \Zend_Db_Expr('1'),
                 'store_id',
             ])
-            ->where('customer_id = ?', 0)
-            ->where('subscriber_status = ?', 1)
-            ->order('subscriber_id')
+            ->joinInner(
+                ['store' => $this->resourceConnection->getTableName('store')],
+                'subscriber.store_id = store.store_id',
+                ['website_id' => 'store.website_id']
+            )
+            ->where('subscriber.customer_id = ?', 0)
+            ->where('subscriber.subscriber_status = ?', 1)
+            ->order('subscriber.subscriber_id')
         ;
     }
 
@@ -45,6 +50,7 @@ class InsertEmailContactTableSubscribers extends AbstractDataMigration implement
             'is_subscriber',
             'subscriber_status',
             'store_id',
+            'website_id',
         ];
     }
 }

@@ -164,10 +164,8 @@ class Product
         $this->sku = $product->getSku();
         $this->name = $product->getName();
 
-        $status = $this->statusFactory->create()
+        $this->status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());
-
-        $this->status = $status->getText();
 
         $options = $this->visibilityFactory->create()
             ->getOptionArray();
@@ -330,7 +328,8 @@ class Product
                 'statusFactory',
                 'storeManager',
                 'urlFinder',
-                'stringUtils'
+                'stringUtils',
+                'stockStateInterface'
             ])
         );
     }

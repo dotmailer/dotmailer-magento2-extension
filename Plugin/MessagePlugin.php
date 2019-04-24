@@ -7,6 +7,9 @@ use Magento\Email\Model\ResourceModel\Template;
 use Magento\Email\Model\TemplateFactory;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Registry;
+use Zend\Mime\Mime;
+use Zend\Mime\Part;
+use Dotdigitalgroup\Email\Model\Mail\SmtpTransportZend2;
 
 class MessagePlugin
 {
@@ -51,11 +54,11 @@ class MessagePlugin
 
     /**
      * @param MessageInterface $message
-     * @param string $body
+     * @param mixed $body
      *
      * @return mixed
      */
-    public function afterSetBody(MessageInterface $message, $body)
+    public function beforeSetBody(MessageInterface $message, $body)
     {
         $templateId = $this->isTemplate();
         if ($templateId && $this->shouldIntercept()) {
@@ -64,8 +67,37 @@ class MessagePlugin
                 $this->handleZendMailMessage($message);
                 $this->setMessageFromAddressFromTemplate($message, $template);
             }
+            if (is_string($body) && ! $message instanceof \Zend_Mail) {
+                return [self::createMimeFromString($body)];
+            }
         }
-        return $body;
+        return null;
+    }
+
+    /**
+     * @param $string
+     * @return bool
+     */
+    private function isHTML($string)
+    {
+        return $string != strip_tags($string);
+    }
+
+    /**
+     * Create HTML mime message from the string.
+     *
+     * @param string $body
+     * @return \Zend\Mime\Message
+     */
+    private function createMimeFromString($body)
+    {
+        $bodyPart = new Part($body);
+        $bodyPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
+        $bodyPart->setCharset(SmtpTransportZend2::ENCODING);
+        ($this->isHTML($body)) ? $bodyPart->setType(Mime::TYPE_HTML) : $bodyPart->setType(Mime::TYPE_TEXT);
+        $mimeMessage = new \Zend\Mime\Message();
+        $mimeMessage->addPart($bodyPart);
+        return $mimeMessage;
     }
 
     /**

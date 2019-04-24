@@ -8,7 +8,7 @@ use Magento\Sales\Model\Order\Config;
 use Magento\Config\Model\ResourceModel\Config as ConfigResource;
 use Magento\Catalog\Model\Product\TypeFactory;
 use Magento\Catalog\Model\Product\VisibilityFactory;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\App\ResourceConnection;
 use Symfony\Component\Console\Output\OutputInterface;
 use Dotdigitalgroup\Email\Setup\Install\Type\AbstractDataMigration; 
 
@@ -40,9 +40,9 @@ class DataMigrationHelper
     private $randomMath;
 
     /**
-     * @var ModuleDataSetupInterface
+     * @var ResourceConnection
      */
-    private $installer;
+    private $resourceConnection;
 
     /**
      * @var LoggerInterface
@@ -67,7 +67,7 @@ class DataMigrationHelper
      * @param VisibilityFactory $visibilityFactory
      * @param Config $orderConfig
      * @param Random $random
-     * @param ModuleDataSetupInterface $installer
+     * @param ResourceConnection $resourceConnection
      * @param LoggerInterface $logger
      * @param DataMigrationTypeProvider $dataMigrationTypeProvider
      */
@@ -77,7 +77,7 @@ class DataMigrationHelper
         VisibilityFactory $visibilityFactory,
         Config $orderConfig,
         Random $random,
-        ModuleDataSetupInterface $installer,
+        ResourceConnection $resourceConnection,
         LoggerInterface $logger,
         DataMigrationTypeProvider $dataMigrationTypeProvider
     ) {
@@ -86,7 +86,7 @@ class DataMigrationHelper
         $this->visibilityFactory = $visibilityFactory;
         $this->orderConfig = $orderConfig;
         $this->randomMath = $random;
-        $this->installer = $installer;
+        $this->resourceConnection = $resourceConnection;
         $this->logger = $logger;
         $this->dataMigrationTypeProvider = $dataMigrationTypeProvider;
     }
@@ -152,10 +152,10 @@ class DataMigrationHelper
     {
         foreach ($this->dataMigrationTypeProvider->getTypes() as $migrationType) {
             /** @var AbstractDataMigration $migrationType */
-            $tableName = $this->installer->getTable($migrationType->getTableName());
-            $this->installer->getConnection()->delete($tableName);
+            $tableName = $this->resourceConnection->getTableName($migrationType->getTableName());
+            $this->resourceConnection->getConnection()->delete($tableName);
 
-            $this->installer->getConnection()
+            $this->resourceConnection->getConnection()
                 ->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
         }
     }

@@ -15,6 +15,22 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.2.1
+
+###### Improvements
+- We've clarified the wording beneath the field "Delay Period (Days)" in Engagement Cloud > Automation > Review Settings.
+
+###### Fixes
+- We've fixed a problem with scheduled campaign sends, arising from campaigns stuck in a "Processing" state on Engagement Cloud. In such cases, we will expire campaigns that have been "Processing" for longer than two hours. 
+- In the settings under Engagement Cloud > Configuration > Transactional Data, we now show all existing order statuses in the select box for "Import Order with Status", rather than a subset.
+- We've resolved a problem with special characters not displaying correctly in some transactional email sends. 
+- We've fixed a bug affecting upgrades from older versions of the module to version 3.2.0.
+- The grand total for an abandoned cart - accessed via a dynamic content page - will now be visible at all screen widths.
+- Subscriber data now includes an accurate website_id when migrated using the console command.
+- We've removed the stockStateInterface field from synced catalog data.
+- We've tidied up the layout of the Feefo Feedback Engine fieldset.
+- We've added the option to use a specific transactional email template for "Reset Password" emails.
+
 ## 3.2.0
 
 ###### Improvements
@@ -35,7 +51,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 ## 3.1.1
 
 ###### Improvements:
-- We're added additional MFTF tests
+- We've added additional MFTF tests
 
 ###### Fixes:
 - We've removed a plugin that wasn't required.

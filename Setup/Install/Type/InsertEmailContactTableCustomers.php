@@ -16,11 +16,11 @@ class InsertEmailContactTableCustomers extends AbstractDataMigration implements 
      */
     protected function getSelectStatement()
     {
-        return $this->installer
+        return $this->resourceConnection
             ->getConnection()
             ->select()
             ->from([
-                'customer' => $this->installer->getTable('customer_entity'),
+                'customer' => $this->resourceConnection->getTableName('customer_entity'),
             ], [
                 'customer_id' => 'entity_id',
                 'email',
