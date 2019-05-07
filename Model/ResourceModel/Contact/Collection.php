@@ -136,23 +136,22 @@ class Collection extends
     }
 
     /**
-     * Contact subscribers to import for website.
+     * Contact subscribers to import for store.
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param int $storeId
      * @param int $limit
      * @param bool $isCustomerCheck
      * @return $this
      */
     public function getSubscribersToImport(
-        \Magento\Store\Model\Website $website,
+        $storeId,
         $limit = 1000,
         $isCustomerCheck = true
     ) {
-        $storeIds = $website->getStoreIds();
         $collection = $this->addFieldToFilter('is_subscriber', ['notnull' => true])
             ->addFieldToFilter('subscriber_status', '1')
             ->addFieldToFilter('subscriber_imported', ['null' => true])
-            ->addFieldToFilter('store_id', ['in' => $storeIds]);
+            ->addFieldToFilter('store_id', ['eq' => $storeId]);
 
         if ($isCustomerCheck) {
             $collection->addFieldToFilter('customer_id', ['neq' => 0]);

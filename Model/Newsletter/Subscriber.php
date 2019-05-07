@@ -105,10 +105,10 @@ class Subscriber
     {
         $response    = ['success' => true, 'message' => ''];
         $this->start = microtime(true);
-        $websites    = $this->helper->getWebsites(true);
+        $stores    = $this->helper->getStores(true);
 
-        foreach ($websites as $website) {
-            $websiteId = $website->getId();
+        foreach ($stores as $store) {
+            $websiteId = $store->getWebsiteId();
             //if subscriber is enabled and mapped
             $apiEnabled = $this->helper->isEnabled($websiteId);
             $addressBook = $this->helper->getSubscriberAddressBook($websiteId);
@@ -116,11 +116,11 @@ class Subscriber
             //enabled and mapped
             if ($apiEnabled && $addressBook && $subscriberEnabled) {
                 //ready to start sync
-                $numUpdated = $this->exportSubscribersPerWebsite($website);
+                $numUpdated = $this->exportSubscribersPerStore($store);
 
                 // show message for any number of customers
                 if ($numUpdated) {
-                    $response['message'] .= $website->getName() . ',  count = ' . $numUpdated;
+                    $response['message'] .= $store->getName() . ',  count = ' . $numUpdated;
                 }
             }
         }
@@ -137,16 +137,19 @@ class Subscriber
     }
 
     /**
-     * Export subscribers per website.
+     * Export subscribers per store.
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param \Magento\Store\Api\Data\StoreInterface $store
      *
      * @return int
      *
      * @throws LocalizedException
      */
-    public function exportSubscribersPerWebsite($website)
+    public function exportSubscribersPerStore($store)
     {
+        /** @var \Magento\Store\Model\Website $website */
+        $website = $store->getWebsite();
+        $storeId = $store->getId();
         $isSubscriberSalesDataEnabled = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA,
             $website
@@ -157,9 +160,9 @@ class Subscriber
         //subscriber collection to import
         $emailContactModel = $this->contactFactory->create();
         //Customer Subscribers
-        $subscribersAreCustomers = $emailContactModel->getSubscribersToImport($website, $limit);
+        $subscribersAreCustomers = $emailContactModel->getSubscribersToImport($storeId, $limit);
         //Guest Subscribers
-        $subscribersAreGuest = $emailContactModel->getSubscribersToImport($website, $limit, false);
+        $subscribersAreGuest = $emailContactModel->getSubscribersToImport($storeId, $limit, false);
         $subscribersGuestEmails = $subscribersAreGuest->getColumnValues('email');
         $existInSales = [];
         //Only if subscriber with sales data enabled
@@ -178,7 +181,7 @@ class Subscriber
         }
         if (! empty($subscribersWithNoSaleData)) {
             $updated += $this->subscriberExporter->exportSubscribers(
-                $website,
+                $store,
                 $subscribersWithNoSaleData
             );
             //add updated number for the website
@@ -192,7 +195,7 @@ class Subscriber
 
         if (! empty($subscribersWithSaleData)) {
             $updated += $this->subscriberWithSalesExporter->exportSubscribersWithSales(
-                $website,
+                $store,
                 $subscribersWithSaleData
             );
             //add updated number for the website

@@ -412,20 +412,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param \Magento\Store\Api\Data\StoreInterface $store
-     * @return string
-     */
-    public function getOptInType($store)
-    {
-        $needToConfirm = $store->getConfig(
-            \Magento\Newsletter\Model\Subscriber::XML_PATH_CONFIRMATION_FLAG
-        );
-        $optInType = ($needToConfirm)? 'Double' : 'Single';
-
-        return $optInType;
-    }
-
-    /**
      * @param string $path
      * @param int $website
      * @param string $scope
