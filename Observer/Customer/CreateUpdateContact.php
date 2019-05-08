@@ -130,9 +130,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 
             //email change detection
             if ($emailBefore && $email != $emailBefore) {
-                //Reload contact model up update email
-                $contactModel = $this->contactFactory->create()
-                    ->loadByCustomerEmail($emailAddress, $websiteId);
+                // update email
                 $contactModel->setEmail($email);
 
                 $data = [
@@ -150,6 +148,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 //for new contacts update email
                 $contactModel->setEmail($email);
             }
+
             $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
                 ->setStoreId($storeId)
                 ->setCustomerId($customerId);
