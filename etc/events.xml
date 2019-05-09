@@ -16,7 +16,7 @@
         <observer name="ddg_wishlist_item_delete" instance="Dotdigitalgroup\Email\Observer\Customer\RemoveWishlistItem"/>
     </event>
     <event name="sales_order_place_after">
-        <observer name="ddg_order_place_order" instance="Dotdigitalgroup\Email\Observer\Sales\PlaceCreateAutomationStatus"/>
+        <observer name="ddg_order_place_after" instance="Dotdigitalgroup\Email\Observer\Sales\OrderPlaceAfter"/>
     </event>
     <event name="sales_order_save_before">
         <observer name="ddg_order_save_before" instance="Dotdigitalgroup\Email\Observer\Sales\SaveRegisterOrderStatusBefore"/>

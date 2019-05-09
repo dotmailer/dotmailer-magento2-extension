@@ -33,6 +33,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel implements SyncInt
     const IMPORT_TYPE_SUBSCRIBERS = 'Subscriber';
     const IMPORT_TYPE_SUBSCRIBER_UPDATE = 'Subscriber';
     const IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber';
+    const IMPORT_TYPE_CART_INSIGHT_CART_PHASE = 'CartInsight';
 
     //sync limits
     const SYNC_SINGLE_LIMIT_NUMBER = 100;
@@ -91,7 +92,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel implements SyncInt
      * @var int
      */
     public $totalItems;
-    
+
     /**
      * @var int
      */
@@ -101,7 +102,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel implements SyncInt
      * @var \Magento\Framework\Stdlib\DateTime
      */
     public $dateTime;
-    
+
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
@@ -358,6 +359,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel implements SyncInt
         $orderUpdate['mode'] = self::MODE_SINGLE;
         $orderUpdate['type'] = self::IMPORT_TYPE_ORDERS;
 
+        //CartInsight TD update
+        $updateCartInsightTd = $defaultSingleUpdate;
+        $updateCartInsightTd['model'] = \Dotdigitalgroup\Email\Model\Sync\Td\Update::class;
+        $updateCartInsightTd['mode'] = self::MODE_SINGLE;
+        $updateCartInsightTd['type'] = self::IMPORT_TYPE_CART_INSIGHT_CART_PHASE;
+
         //Update Other TD
         $updateOtherTd = $defaultSingleUpdate;
         $updateOtherTd['model'] = \Dotdigitalgroup\Email\Model\Sync\Td\Update::class;
@@ -406,6 +413,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel implements SyncInt
             $subscriberUpdate,
             $emailChange,
             $orderUpdate,
+            $updateCartInsightTd,
             $updateOtherTd,
             $contactDelete,
             $tdDelete,
