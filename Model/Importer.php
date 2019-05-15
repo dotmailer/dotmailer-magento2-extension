@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
 
 /**
@@ -576,16 +577,49 @@ class Importer extends \Magento\Framework\Model\AbstractModel implements SyncInt
             if (! empty($reportData)) {
                 $contacts = [];
                 foreach ($reportData as $row) {
-                    $row = explode(',', $row);
-                    //reason
-                    if (in_array($row[0], $this->reasons)) {
-                        //email
-                        $contacts[] = $row[1];
+                    if (empty($row)) {
+                        continue;
+                    }
+
+                    list ($reason, $email) = explode(',', $row);
+                    if (in_array($reason, $this->reasons)) {
+                        $contacts[] = $email;
                     }
                 }
 
+                // get a time period for the last contact sync
+                $cronMinutes = filter_var($this->helper->getConfigValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT), FILTER_SANITIZE_NUMBER_INT);
+                $lastSyncPeriod = new \DateTime($this->dateTime->formatDate(true), new \DateTimeZone('UTC'));
+                $lastSyncPeriod->sub(new \DateInterval("PT{$cronMinutes}M"));
+
+                // check whether any last subscribe dates fall within the last subscriber sync period
+                $recentlyResubscribed = array_filter(
+                    $this->helper->contactResource->getLastSubscribedAtDates($contacts),
+                    function ($contact) use ($lastSyncPeriod) {
+                        $lastSubscribed = new \DateTime($contact['last_subscribed_at'], new \DateTimeZone('UTC'));
+                        return $lastSubscribed >= $lastSyncPeriod;
+                    }
+                );
+
+                if (!empty($recentlyResubscribed)) {
+                    // queue resubscription jobs
+                    foreach ($recentlyResubscribed as $resubscriber) {
+                        $this->registerQueue(
+                            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
+                            ['email' => $resubscriber['email']],
+                            \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
+                            $websiteId
+                        );
+                    }
+
+                    // remove from unsubscribable emails
+                    $contacts = array_diff($contacts, array_column($recentlyResubscribed, 'email'));
+                }
+
                 //unsubscribe from email contact and newsletter subscriber tables
-                $this->helper->contactResource->unsubscribe($contacts);
+                if (!empty($contacts)) {
+                    $this->helper->contactResource->unsubscribe($contacts);
+                }
             }
         }
     }

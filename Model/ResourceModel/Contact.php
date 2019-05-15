@@ -206,17 +206,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             return 0;
         }
 
-        // get current contact records to check when they last subscribed
-        $contacts = $this->contactCollectionFactory->create()
-            ->addFieldToSelect([
-                'email',
-                'last_subscribed_at',
-            ])
-            ->addFieldToFilter('email', ['in' => array_column($unsubscribes, 'email')])
-            ->getData();
-
         // get emails which either have no last_subscribed_at date, or were more recently removed in EC
-        $unsubscribeEmails = $this->filterRecentlyResubscribedEmails($contacts, $unsubscribes);
+        $localContacts = $this->getLastSubscribedAtDates(array_column($unsubscribes, 'email'));
+        $unsubscribeEmails = $this->filterRecentlyResubscribedEmails($localContacts, $unsubscribes);
 
         // no emails to unsubscribe?
         if (empty($unsubscribeEmails)) {
@@ -354,6 +346,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         return $orderArray;
     }
 
+    public function getLastSubscribedAtDates(array $emails)
+    {
+        // get current contact records to check when they last subscribed
+        return $this->contactCollectionFactory->create()
+            ->addFieldToSelect([
+                'email',
+                'last_subscribed_at',
+            ])
+            ->addFieldToFilter('email', ['in' => $emails])
+            ->getData();
+    }
+
     /**
      * Filter out any unsubscribes from EC which have recently resubscribed in Magento
      *
@@ -361,7 +365,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param array $unsubscribes
      * @return array
      */
-    private function filterRecentlyResubscribedEmails(array $localContacts, array $unsubscribes)
+    public function filterRecentlyResubscribedEmails(array $localContacts, array $unsubscribes)
     {
         // get emails which either have no last_subscribed_at date, or were more recently removed in EC
         return array_filter(array_map(function ($email) use ($localContacts) {

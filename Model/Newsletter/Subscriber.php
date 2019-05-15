@@ -251,7 +251,7 @@ class Subscriber
             }
 
             // add unique contact emails
-            foreach ($this->getSuppressedContacts($website) as $suppressedContact) {
+            foreach ($this->helper->getSuppressedContacts($website) as $suppressedContact) {
                 if (!array_key_exists($suppressedContact['email'], $suppressedEmails)) {
                     $suppressedEmails[$suppressedContact['email']] = [
                         'email' => $suppressedContact['email'],
@@ -266,50 +266,5 @@ class Subscriber
             $result['customers'] = $this->emailContactResource->unsubscribeWithResubscriptionCheck(array_values($suppressedEmails));
         }
         return $result;
-    }
-
-    /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @return array
-     */
-    private function getSuppressedContacts($website)
-    {
-        $limit = 5;
-        $maxToSelect = 1000;
-        $skip = $i = 0;
-        $contacts = [];
-        $suppressedEmails = [];
-        $date = $this->timezone->date()->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT24H']));
-        $dateString = $date->format(\DateTime::W3C);
-        $client = $this->helper->getWebsiteApiClient($website);
-
-        //there is a maximum of request we need to loop to get more suppressed contacts
-        for ($i=0; $i<= $limit; $i++) {
-            $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect, $skip);
-
-            // skip no more contacts or the api request failed
-            if (empty($apiContacts) || isset($apiContacts->message)) {
-                break;
-            }
-            $contacts = array_merge($contacts, $apiContacts);
-            $skip += 1000;
-        }
-
-        // Contacts to un-subscribe
-        foreach ($contacts as $apiContact) {
-            if (isset($apiContact->suppressedContact)) {
-                $suppressedContactEmail = $apiContact->suppressedContact->email;
-                if (!array_key_exists($suppressedContactEmail, $suppressedEmails)) {
-                    $suppressedEmails[$suppressedContactEmail] = [
-                        'email' => $apiContact->suppressedContact->email,
-                        'removed_at' => $apiContact->dateRemoved,
-                        // users suppressed in EC can be re-added without confirmation
-                        'suppressed_in_ec' => $apiContact->reason == 'Suppressed',
-                    ];
-                }
-            }
-        }
-
-        return array_values($suppressedEmails);
     }
 }

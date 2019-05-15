@@ -264,6 +264,15 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA =
         'connector_developer_settings/import_settings/subscriber_sales_data_enabled';
 
+    /*
+     * Cron schedules
+     */
+    const XML_PATH_CRON_SCHEDULE_CONTACT = 'connector_developer_settings/cron_schedules/contact';
+    const XML_PATH_CRON_SCHEDULE_IMPORTER = 'connector_developer_settings/cron_schedules/importer';
+    const XML_PATH_CRON_SCHEDULE_REVIEWS = 'connector_developer_settings/cron_schedules/review_wishlist';
+    const XML_PATH_CRON_SCHEDULE_ORDERS = 'connector_developer_settings/cron_schedules/order';
+    const XML_PATH_CRON_SCHEDULE_CATALOG = 'connector_developer_settings/cron_schedules/catalog';
+
     /**
      * API endpoint.
      */
