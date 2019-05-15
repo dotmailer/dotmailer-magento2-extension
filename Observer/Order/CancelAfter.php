@@ -1,11 +1,11 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Observer\Sales;
+namespace Dotdigitalgroup\Email\Observer\Order;
 
 /**
  * Order single delete.
  */
-class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
+class CancelAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -16,7 +16,7 @@ class CancelRegisterRemove implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
