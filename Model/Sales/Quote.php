@@ -960,7 +960,8 @@ class Quote
     private function getProcessedQuoteByIds($quoteIds, $storeId)
     {
         $quoteCollection = $this->quoteCollectionFactory->create()
-            ->addFieldToFilter('entity_id', ['in' => $quoteIds]);
+            ->addFieldToFilter('entity_id', ['in' => $quoteIds])
+            ->addFieldToFilter('is_active', 1);
 
         //process rules on collection
         $ruleModel       = $this->rulesFactory->create();
