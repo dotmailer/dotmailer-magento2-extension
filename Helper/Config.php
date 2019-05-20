@@ -232,8 +232,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const API_CONNECTOR_OAUTH_URL_TOKEN = 'OAuth2/Tokens.ashx';
     const API_CONNECTOR_OAUTH_URL_LOG_USER = '?oauthtoken=';
 
-    const CONNECTOR_FEED_LAST_CHECK_TIME = 'connector_feed_last_check_time';
-
     /**
      * Reviews SECTION.
      */
