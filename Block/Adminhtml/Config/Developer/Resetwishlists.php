@@ -40,12 +40,10 @@ class Resetwishlists extends \Magento\Config\Block\System\Config\Form\Field
         ];
         $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/wishlistsreset', $query);
 
-        return $this->getLayout()->createBlock(
-            \Magento\Backend\Block\Widget\Button::class
-        )
+        return $this->getLayout()
+            ->createBlock(\Magento\Backend\Block\Widget\Button::class)
             ->setType('button')
             ->setLabel($this->buttonLabel)
-            ->setId($element->getId())
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();
     }
