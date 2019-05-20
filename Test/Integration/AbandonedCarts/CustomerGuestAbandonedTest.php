@@ -9,6 +9,7 @@ use Dotdigitalgroup\Email\Model\Sales\Quote;
 /**
  * Class CustomerGuestAbandonedTest
  * @package Dotdigitalgroup\Email\Test\Integration\AbandonedCarts
+ * @IgnoreAnnotation("magentoDBIsolation")
  */
 class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
 {

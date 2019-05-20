@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Test\Integration\Automation;
 /**
  * Class FirstOrderTest
  * @package Dotdigitalgroup\Email\Test\Integration\Automation
- *
+ * @IgnoreAnnotation("magentoDBIsolation")
  * @magentoDBIsolation disabled
  */
 class FirstOrderTest extends \PHPUnit\Framework\TestCase

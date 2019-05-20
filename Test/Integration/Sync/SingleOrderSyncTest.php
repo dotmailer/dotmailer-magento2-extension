@@ -6,6 +6,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
  * Class SingleOrderSyncTest
  *
  * @package Dotdigitalgroup\Email\Controller\Customer
+ * @IgnoreAnnotation("magentoDBIsolation")
  * @magentoDBIsolation enabled
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */

@@ -8,6 +8,7 @@ use Magento\TestFramework\ObjectManager;
  * Class ApiEndpointTest
  *
  * @package Dotdigitalgroup\Email\Helper
+ * @IgnoreAnnotation("magentoDBIsolation")
  * @magentoDBIsolation enabled
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */

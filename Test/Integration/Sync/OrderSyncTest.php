@@ -7,6 +7,7 @@ use Magento\TestFramework\ObjectManager;
 /**
  * Class OrderSyncTest
  * @package Dotdigitalgroup\Email\Controller\Customer
+ * @IgnoreAnnotation("magentoDBIsolation")
  * @magentoDBIsolation enabled
  * magentoAppArea cron
  *
