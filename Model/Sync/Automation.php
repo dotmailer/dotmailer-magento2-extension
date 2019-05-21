@@ -162,9 +162,10 @@ class Automation implements SyncInterface
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      *
+     * @param \DateTime|null $from
      * @return null
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $this->checkStatusForPendingContacts();
         $this->setupAutomationTypes();

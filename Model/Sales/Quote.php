@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 
 use Dotdigitalgroup\Email\Model\AbandonedCart\PendingContactUpdater;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
+use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 
 
 /**
@@ -13,6 +14,8 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
  */
 class Quote
 {
+    use SetsSyncFromTime;
+
     //customer
     const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_1 = 'abandoned_carts/customers/enabled_1';
     const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_2 = 'abandoned_carts/customers/enabled_2';
@@ -390,7 +393,7 @@ class Quote
             return false;
         }
 
-        $fromTime = $this->timeZone->scopeDate($storeId, 'now', true);
+        $fromTime = $this->timeZone->scopeDate($storeId, $this->getSyncFromTime(), true);
         $toTime = clone $fromTime;
         $interval = $this->dateIntervalFactory->create(
             ['interval_spec' => sprintf('PT%sH', $cartLimit)]
@@ -516,9 +519,8 @@ class Quote
     private function processCustomerFirstAbandonedCart($storeId)
     {
         $abandonedNum = 1;
-        $interval = $this->getInterval($storeId, $abandonedNum);
-        $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
-        $fromTime->sub($interval);
+
+        $fromTime = $this->getSyncFromTime($this->getInterval($storeId, $abandonedNum));
         $toTime = clone $fromTime;
         $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT5M']));
         $fromDate = $fromTime->format('Y-m-d H:i:s');
@@ -740,9 +742,7 @@ class Quote
     {
         $abandonedNum = 1;
 
-        $sendAfter = $this->getSendAfterIntervalForGuest($storeId, $abandonedNum);
-        $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
-        $fromTime->sub($sendAfter);
+        $fromTime = $this->getSyncFromTime($this->getSendAfterIntervalForGuest($storeId, $abandonedNum));
         $toTime = clone $fromTime;
         $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT5M']));
 
@@ -751,6 +751,7 @@ class Quote
         $toDate     = $toTime->format('Y-m-d H:i:s');
 
         $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, true, $storeId);
+
         if ($quoteCollection->getSize()) {
             $this->helper->log('Guest AC 1 ' . $fromDate . ' - ' . $toDate);
         }
@@ -851,7 +852,6 @@ class Quote
     private function processExistingAbandonedCart($campaignId, $storeId, $websiteId, $number, $guest = false)
     {
         $result = 0;
-        $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
         if ($guest) {
             $interval = $this->getSendAfterIntervalForGuest($storeId, $number);
             $message = 'Guest';
@@ -860,7 +860,7 @@ class Quote
             $message = 'Customer';
         }
 
-        $fromTime->sub($interval);
+        $fromTime = $this->getSyncFromTime($interval);
         $toTime = clone $fromTime;
         $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT5M']));
         $fromDate   = $fromTime->format('Y-m-d H:i:s');

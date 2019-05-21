@@ -224,7 +224,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel implements SyncInt
     /**
      * @inheritdoc
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $this->processQueue();
     }

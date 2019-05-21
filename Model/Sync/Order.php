@@ -125,9 +125,10 @@ class Order implements SyncInterface
      *
      * @return array
      *
+     * @param \DateTime|null $from
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $response = ['success' => true, 'message' => 'Done.'];
 
