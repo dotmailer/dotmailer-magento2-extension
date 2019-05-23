@@ -45,7 +45,7 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                         );
                     }
 
-                    $this->_handleSingleItemAfterSync($item, $result);
+                    $this->handleSingleItemAfterSync($item, $result);
                 }
             }
         }
