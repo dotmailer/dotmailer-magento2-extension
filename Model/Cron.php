@@ -25,7 +25,7 @@ class Cron
     private $automationFactory;
 
     /**
-     * @var ImporterFactory
+     * @var Sync\ImporterFactory
      */
     private $importerFactory;
 
@@ -93,7 +93,7 @@ class Cron
      * @param Customer\GuestFactory                    $guestFactory
      * @param Newsletter\SubscriberFactory             $subscriberFactory
      * @param Sync\CatalogFactory                      $catalogFactory
-     * @param ImporterFactory                          $importerFactory
+     * @param Sync\ImporterFactory                     $importerFactory
      * @param Sync\AutomationFactory                   $automationFactory
      * @param Apiconnector\ContactFactory              $contact
      * @param \Dotdigitalgroup\Email\Helper\Data       $helper
@@ -111,7 +111,7 @@ class Cron
         \Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
+        \Dotdigitalgroup\Email\Model\Sync\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -218,7 +218,8 @@ class Cron
             return;
         }
 
-        $this->importerFactory->create()->processQueue();
+        $this->importerFactory->create()
+            ->sync();
     }
 
     /**

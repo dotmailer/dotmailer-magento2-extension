@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\ProductFactory;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog as ResourceCatalog;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
@@ -29,11 +28,6 @@ class CatalogTest extends TestCase
      * @var CollectionFactory
      */
     private $catalogCollectionFactoryMock;
-
-    /**
-     * @var ImporterFactory
-     */
-    private $importerFactoryMock;
 
     /**
      * @var Data
@@ -64,7 +58,6 @@ class CatalogTest extends TestCase
     {
         $this->catalogCollectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->connectorProductFactoryMock = $this->createMock(ProductFactory::class);
-        $this->importerFactoryMock = $this->createMock(ImporterFactory::class);
         $this->helperMock = $this->createMock(Data::class);
         $this->catalogSyncFactoryMock = $this->createMock(CatalogSyncFactory::class);
         $this->catalogResourceFactoryMock = $this->createMock(CatalogFactory::class);

@@ -43,7 +43,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
-    
+
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory
      */

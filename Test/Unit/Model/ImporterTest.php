@@ -4,9 +4,8 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model;
 
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
-use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
-use Magento\Framework\ObjectManagerInterface;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
 use Magento\Framework\Stdlib\DateTime;
 use Dotdigitalgroup\Email\Model\Config\Json;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
@@ -70,9 +69,8 @@ class ImporterTest extends TestCase
     {
         $this->contextMock = $this->createMock(Context::class);
         $this->registryMock = $this->createMock(Registry::class);
-        $this->dataMock = $this->createMock(Data::class);
         $this->importerMock = $this->createMock(Importer::class);
-        $this->objectManagerMock = $this->createMock(ObjectManagerInterface::class);
+        $this->collectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->dateTimeMock = $this->createMock(DateTime::class);
         $this->serializerMock = $this->createMock(Json::class);
         $this->resourceModelMock= $this->getMockBuilder(AbstractResource::class)
@@ -83,9 +81,8 @@ class ImporterTest extends TestCase
         $this->importer = new Import(
             $this->contextMock,
             $this->registryMock,
-            $this->dataMock,
             $this->importerMock,
-            $this->objectManagerMock,
+            $this->collectionFactoryMock,
             $this->dateTimeMock,
             $this->serializerMock,
             [],

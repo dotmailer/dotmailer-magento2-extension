@@ -64,7 +64,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $helper->method('getConfigSelectedStatus')->willReturn($this->orderStatus);
         $helper->storeManager = $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class);
         $orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ImporterFactory::class),
+            $this->objectManager->create(\Dotdigitalgroup\Email\Model\Sync\ImporterFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\OrderFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\Connector\AccountFactory::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\Connector\OrderFactory::class),

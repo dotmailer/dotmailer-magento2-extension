@@ -10,7 +10,7 @@ use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbandonedCartFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory;
 use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
 
 /**
  * Provides factories for all available sync models, and exposes it's properties to show what's available
