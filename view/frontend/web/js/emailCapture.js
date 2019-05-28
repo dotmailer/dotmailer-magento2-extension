@@ -16,11 +16,12 @@ define(['jquery', 'domReady!'], function ($) {
     /**
      * Email capture for checkout
      * @param {String} url
+     * @param {String} input
      *
      */
-    function emailCaptureCheckout(url) {
+    function emailCaptureCheckout(url, input) {
         var previousEmail = '';
-        $('body').on('blur', 'input[id=customer-email]', function () {
+        $('body').on('blur', input, function () {
             var email = $(this).val();
 
             if (email === previousEmail) {
@@ -61,7 +62,10 @@ define(['jquery', 'domReady!'], function ($) {
      */
     return function (emailCapture) {
         if (emailCapture.type === 'checkout') {
-            emailCaptureCheckout(emailCapture.url);
+            //Pre 2.3.2
+            emailCaptureCheckout(emailCapture.url, 'input[id=customer-email]');
+            //From 2.3.2
+            emailCaptureCheckout(emailCapture.url, 'input[id=checkout-customer-email]');
         }
 
         if (emailCapture.type === 'newsletter') {
