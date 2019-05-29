@@ -472,9 +472,10 @@ class Importer implements SyncInterface
                 );
 
                 if (!empty($recentlyResubscribed)) {
+                    $importerModel = $this->importerFactory->create();
                     // queue resubscription jobs
                     foreach ($recentlyResubscribed as $resubscriber) {
-                        $this->registerQueue(
+                        $importerModel->registerQueue(
                             \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
                             ['email' => $resubscriber['email']],
                             \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
