@@ -141,6 +141,11 @@ class Order
     private $stringUtils;
 
     /**
+     * @var KeyValidator
+     */
+    private $validator;
+
+    /**
      * Order constructor.
      *
      * @param \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory
@@ -152,6 +157,7 @@ class Order
      * @param \Dotdigitalgroup\Email\Helper\Data $helperData
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Framework\Stdlib\StringUtils $stringUtils
+     * @param KeyValidator $validator
      */
     public function __construct(
         \Magento\Eav\Model\Entity\Attribute\SetFactory $setFactory,
@@ -162,7 +168,8 @@ class Order
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Stdlib\StringUtils $stringUtils
+        \Magento\Framework\Stdlib\StringUtils $stringUtils,
+        KeyValidator $validator
     ) {
         $this->attributeSet        = $attributeSet;
         $this->setFactory          = $setFactory;
@@ -173,6 +180,7 @@ class Order
         $this->productResource     = $productResource;
         $this->_storeManager       = $storeManagerInterface;
         $this->stringUtils         = $stringUtils;
+        $this->validator = $validator;
     }
 
     /**
@@ -276,6 +284,8 @@ class Order
         $this->orderStatus = $orderData->getStatus();
 
         unset($this->_storeManager);
+        unset($this->stringUtils);
+        unset($this->validator);
 
         return $this;
     }
@@ -523,7 +533,7 @@ class Order
 
     /**
      * Exposes the class as an array of objects.
-     * Return any exposed data that will included into the import as transactinoal data for Orders.
+     * Return any exposed data that will included into the import as transactional data for Orders.
      *
      * @return array
      */
@@ -549,7 +559,7 @@ class Order
     }
 
     /**
-     * Get attrubute value for the field.
+     * Get attribute value for the field.
      *
      * @param array $field
      * @param \Magento\Sales\Model\Order $orderData
@@ -678,11 +688,14 @@ class Order
                     $orderItemOption
                 )
             ) {
-                $label = str_replace(
-                    ' ',
+                $label = $this->validator->cleanLabel(
+                    $orderItemOption['label'],
                     '-',
-                    $orderItemOption['label']
+                    $orderItemOption['option_id']
                 );
+                if (empty($label)) {
+                    continue;
+                }
                 $options[][$label] = $orderItemOption['value'];
             }
         }

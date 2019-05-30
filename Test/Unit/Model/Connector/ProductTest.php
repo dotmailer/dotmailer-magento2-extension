@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Connector\Product;
+use Dotdigitalgroup\Email\Model\Connector\KeyValidator;
 use Magento\Bundle\Model\Product\Type;
 use Magento\Bundle\Model\ResourceModel\Option\Collection as OptionCollection;
 use Magento\Bundle\Pricing\Price\BundleRegularPrice;
@@ -166,6 +167,7 @@ class ProductTest extends TestCase
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
         $this->storeMock = $this->createMock(Store::class);
         $this->stockStateMock = $this->createMock(StockStateInterface::class);
+        $this->keyValidatorMock = $this->createMock(KeyValidator::class);
         $this->visibility = new Visibility(
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
@@ -178,7 +180,8 @@ class ProductTest extends TestCase
             $this->visibilityFactoryMock,
             $this->stringUtilsMock,
             $this->urlFinderMock,
-            $this->stockStateMock
+            $this->stockStateMock,
+            $this->keyValidatorMock
         );
 
         $status = 1;

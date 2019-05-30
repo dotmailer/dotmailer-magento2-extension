@@ -120,6 +120,11 @@ class Product
     private $stockStateInterface;
 
     /**
+     * @var KeyValidator
+     */
+    private $validator;
+
+    /**
      * Product constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -130,6 +135,7 @@ class Product
      * @param \Magento\Framework\Stdlib\StringUtils $stringUtils
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
+     * @param KeyValidator $validator
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -139,7 +145,8 @@ class Product
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
         \Magento\Framework\Stdlib\StringUtils $stringUtils,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
-        \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
+        \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface,
+        KeyValidator $validator
     ) {
         $this->mediaConfigFactory = $mediaConfigFactory;
         $this->visibilityFactory  = $visibilityFactory;
@@ -149,6 +156,7 @@ class Product
         $this->stringUtils        = $stringUtils;
         $this->urlFinder          = $urlFinder;
         $this->stockStateInterface = $stockStateInterface;
+        $this->validator = $validator;
     }
 
     /**
@@ -256,8 +264,12 @@ class Product
                 $selectionCollection
             );
             foreach ($options as $option) {
-                $trimmedTitle = str_replace(' ', '', $option->getDefaultTitle());
-                if (!$this->textIsValidForInsightDataKey($trimmedTitle)) {
+                $trimmedTitle = $this->validator->cleanLabel(
+                    $option->getDefaultTitle(),
+                    '',
+                    $option->getId()
+                );
+                if (empty($trimmedTitle)) {
                     continue;
                 }
 
@@ -286,8 +298,12 @@ class Product
                 ->getConfigurableAttributesAsArray($product);
 
             foreach ($productAttributeOptions as $productAttribute) {
-                $trimmedLabel = str_replace(' ', '', $productAttribute['label']);
-                if (!$this->textIsValidForInsightDataKey($trimmedLabel)) {
+                $trimmedLabel = $this->validator->cleanLabel(
+                    $productAttribute['label'],
+                    '',
+                    $productAttribute['id']
+                );
+                if (empty($trimmedLabel)) {
                     continue;
                 }
 
@@ -329,21 +345,10 @@ class Product
                 'storeManager',
                 'urlFinder',
                 'stringUtils',
-                'stockStateInterface'
+                'stockStateInterface',
+                'validator'
             ])
         );
-    }
-
-    /**
-     * @param string $label
-     *
-     * https://support.dotmailer.com/hc/en-gb/articles/212214538-Using-Insight-data-developers-guide-#restrictkeys
-     *
-     * @return false|int
-     */
-    private function textIsValidForInsightDataKey($label)
-    {
-        return preg_match('/^[a-zA-Z_\\\\-][a-zA-Z0-9_\\\\-]*$/', $label);
     }
 
     /**

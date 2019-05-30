@@ -267,7 +267,7 @@ class Order implements SyncInterface
             return $orders;
         }
 
-        $orders = $this->mappOrderData($orderCollection, $orderModel, $orders);
+        $orders = $this->mapOrderData($orderCollection, $orderModel, $orders);
 
         return $orders;
     }
@@ -300,7 +300,7 @@ class Order implements SyncInterface
             return $orders;
         }
 
-        $orders = $this->mappOrderData($orderCollection, $orderModel, $orders);
+        $orders = $this->mapOrderData($orderCollection, $orderModel, $orders);
 
         return $orders;
     }
@@ -312,7 +312,7 @@ class Order implements SyncInterface
      *
      * @return array
      */
-    protected function mappOrderData($orderCollection, $orderModel, $orders)
+    protected function mapOrderData($orderCollection, $orderModel, $orders)
     {
         $orderIds = $orderCollection->getColumnValues('order_id');
 
