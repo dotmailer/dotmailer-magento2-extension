@@ -117,7 +117,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS = 'connector_configuration/transactional_data/order_statuses';
     const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES =
         'connector_configuration/transactional_data/order_custom_attributes';
-    const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES =
+    const XML_PATH_CONNECTOR_SYNC_PRODUCT_ATTRIBUTES =
         'connector_configuration/transactional_data/order_product_attributes';
     const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS =
         'connector_configuration/transactional_data/order_product_custom_options';
