@@ -95,9 +95,10 @@ class Review implements SyncInterface
     /**
      * Sync reviews.
      *
+     * @param \DateTime|null $from
      * @return array
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $response = ['success' => true, 'message' => 'Done.'];
 

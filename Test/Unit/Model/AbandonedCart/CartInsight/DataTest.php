@@ -295,7 +295,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                         "unitPrice" => 49.2,
                         "quantity" => "1"
                     ]
-                ]
+                ],
+                "cartPhase" => "ORDER_PENDING"
             ]
         ];
     }

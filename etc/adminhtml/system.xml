@@ -1309,7 +1309,7 @@
                 </field>
                 <field id="order_product_attributes" translate="comment label" type="multiselect" sortOrder="40"
                        showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Include Products Attributes In Order Sync</label>
+                    <label>Include Product Attributes In Syncs</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
                     <comment><![CDATA[Selected product attribute(s) will be exported]]></comment>
                 </field>

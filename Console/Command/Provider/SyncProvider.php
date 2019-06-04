@@ -7,9 +7,10 @@ use Dotdigitalgroup\Email\Model\Sync\CampaignFactory;
 use Dotdigitalgroup\Email\Model\Sync\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory;
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
+use Dotdigitalgroup\Email\Model\Sync\AbandonedCartFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory;
 use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
 
 /**
  * Provides factories for all available sync models, and exposes it's properties to show what's available
@@ -52,6 +53,11 @@ class SyncProvider
     private $templateFactory;
 
     /**
+     * @var AbandonedCartFactory
+     */
+    private $abandonedCartFactory;
+
+    /**
      * @var ImporterFactory
      */
     private $importerFactory;
@@ -65,6 +71,7 @@ class SyncProvider
      * @param OrderFactory $orderFactory
      * @param SubscriberFactory $subscriberFactory
      * @param TemplateFactory $templateFactory
+     * @param AbandonedCartFactory $abandonedCartFactory
      * @param ImporterFactory $importerFactory
      */
     public function __construct(
@@ -75,6 +82,7 @@ class SyncProvider
         OrderFactory $orderFactory,
         SubscriberFactory $subscriberFactory,
         TemplateFactory $templateFactory,
+        AbandonedCartFactory $abandonedCartFactory,
         ImporterFactory $importerFactory
     ) {
         $this->automationFactory = $automationFactory;
@@ -84,6 +92,7 @@ class SyncProvider
         $this->orderFactory = $orderFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->templateFactory = $templateFactory;
+        $this->abandonedCartFactory = $abandonedCartFactory;
         $this->importerFactory = $importerFactory;
     }
 

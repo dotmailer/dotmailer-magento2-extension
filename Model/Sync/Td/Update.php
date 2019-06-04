@@ -28,6 +28,10 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                             $importData,
                             $item->getImportType()
                         );
+                    } elseif ($item->getImportType() == \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CART_INSIGHT_CART_PHASE) {
+                        $result = $this->client->postAbandonedCartCartInsight(
+                            $importData
+                        );
                     } else {
                         if ($item->getImportType() == \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS) {
                             //Skip if one hour has not passed from created
@@ -41,7 +45,7 @@ class Update extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                         );
                     }
 
-                    $this->_handleSingleItemAfterSync($item, $result);
+                    $this->handleSingleItemAfterSync($item, $result);
                 }
             }
         }

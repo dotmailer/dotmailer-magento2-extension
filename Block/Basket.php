@@ -38,15 +38,11 @@ class Basket extends Recommended
     public $emulationFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
-     */
-    public $urlFinder;
-
-    /**
      * Basket constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -57,19 +53,19 @@ class Basket extends Recommended
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
-        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         array $data = []
     ) {
         $this->quoteFactory     = $quoteFactory;
         $this->helper           = $helper;
         $this->priceHelper      = $priceHelper;
         $this->emulationFactory = $emulationFactory;
-        $this->urlFinder = $urlFinder;
-        parent::__construct($context, $font, $data);
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**
@@ -224,6 +220,16 @@ class Basket extends Recommended
     public function getGrandTotal()
     {
         return $this->quote->getGrandTotal();
+    }
+
+    /**
+     * Grand total with currency
+     *
+     * @return string
+     */
+    public function getGrandTotalWithCurrency()
+    {
+        return $this->priceHelper->currency($this->getGrandTotal(), true, false);
     }
 
     /**

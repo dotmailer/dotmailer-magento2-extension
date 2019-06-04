@@ -23,7 +23,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
     private $contactFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactor
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
 
@@ -48,7 +48,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
-    
+
         $this->contactFactory = $contactFactory;
         $this->helper = $data;
         $this->storeManager = $storeManagerInterface;

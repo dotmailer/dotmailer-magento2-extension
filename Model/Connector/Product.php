@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
+
 /**
  * Transactional data for catalog products to sync.
  *
@@ -82,7 +84,7 @@ class Product
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * @var \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory
@@ -105,11 +107,6 @@ class Product
     public $itemFactory;
 
     /**
-     * @var \Magento\Framework\Stdlib\StringUtils
-     */
-    private $stringUtils;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
      */
     private $urlFinder;
@@ -120,6 +117,11 @@ class Product
     private $stockStateInterface;
 
     /**
+     * @var AttributeFactory $attributeHandler
+     */
+    private $attributeHandler;
+
+    /**
      * Product constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -127,9 +129,9 @@ class Product
      * @param \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory
      * @param \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory
      * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
-     * @param \Magento\Framework\Stdlib\StringUtils $stringUtils
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
+     * @param AttributeFactory $attributeHandler
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -137,28 +139,29 @@ class Product
         \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
-        \Magento\Framework\Stdlib\StringUtils $stringUtils,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
-        \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
+        \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface,
+        AttributeFactory $attributeHandler
     ) {
         $this->mediaConfigFactory = $mediaConfigFactory;
         $this->visibilityFactory  = $visibilityFactory;
         $this->statusFactory      = $statusFactory;
         $this->helper             = $helper;
         $this->storeManager       = $storeManagerInterface;
-        $this->stringUtils        = $stringUtils;
         $this->urlFinder          = $urlFinder;
         $this->stockStateInterface = $stockStateInterface;
+        $this->attributeHandler = $attributeHandler;
     }
 
     /**
      * Set the product data.
      *
      * @param \Magento\Catalog\Model\Product $product
+     * @param string|int|null $storeId
      *
      * @return $this
      */
-    public function setProduct($product)
+    public function setProduct($product, $storeId)
     {
         $this->id = $product->getId();
         $this->sku = $product->getSku();
@@ -180,13 +183,12 @@ class Product
 
         $this->stock = (float)number_format($this->getStockQty($product), 2, '.', '');
 
-        $shortDescription = $product->getShortDescription();
         //limit short description
-        if ($this->stringUtils->strlen($shortDescription) > \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT) {
-            $shortDescription = mb_substr($shortDescription, 0, \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT);
-        }
-
-        $this->shortDescription = $shortDescription;
+        $this->shortDescription = mb_substr(
+            $product->getShortDescription(),
+            0,
+            \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT
+        );
 
         //category data
         $count = 0;
@@ -210,7 +212,7 @@ class Product
             ++$count;
         }
 
-        $this->processProductOptions($product);
+        $this->processProductOptions($product, $storeId);
 
         unset(
             $this->itemFactory,
@@ -218,7 +220,8 @@ class Product
             $this->visibilityFactory,
             $this->statusFactory,
             $this->helper,
-            $this->storeManager
+            $this->storeManager,
+            $this->attributeHandler
         );
 
         return $this;
@@ -235,78 +238,39 @@ class Product
     }
 
     /**
+     * Retrieve product attributes for catalog sync.
+     *
      * @param mixed $product
+     * @param string|int|null $storeId
      *
      * @return null
      */
-    private function processProductOptions($product)
+    private function processProductOptions($product, $storeId)
     {
-        //bundle product options
-        if ($product->getTypeId()
-            == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
-        ) {
-            $optionCollection = $product->getTypeInstance()
-                ->getOptionsCollection($product);
-            $selectionCollection = $product->getTypeInstance()
-                ->getSelectionsCollection(
-                    $product->getTypeInstance()->getOptionsIds($product),
-                    $product
-                );
-            $options = $optionCollection->appendSelections(
-                $selectionCollection
+        $attributeModel = $this->attributeHandler->create();
+
+        $attributeSetKey = 'attribute_set';
+        $this->$attributeSetKey = $attributeModel->getAttributeSetName($product);
+
+        //selected attributes from config
+        $configAttributes = $attributeModel->getConfigAttributesForSync(
+            $this->storeManager->getStore($storeId)->getWebsiteId()
+        );
+
+        if ($configAttributes) {
+            $configAttributes = explode(',', $configAttributes);
+            //attributes from attribute set
+            $attributesFromAttributeSet = $attributeModel->getAttributesArray(
+                $product->getAttributeSetId()
             );
-            foreach ($options as $option) {
-                $trimmedTitle = str_replace(' ', '', $option->getDefaultTitle());
-                if (!$this->textIsValidForInsightDataKey($trimmedTitle)) {
-                    continue;
-                }
 
-                $count = 0;
-                $selections = $option->getSelections();
-                $sOptions = [];
-                foreach ($selections as $selection) {
-                    $sOptions[$count]['name'] = $selection->getName();
-                    $sOptions[$count]['sku'] = $selection->getSku();
-                    $sOptions[$count]['id'] = $selection->getProductId();
-                    $sOptions[$count]['price'] = (float)number_format(
-                        $selection->getPrice(),
-                        2,
-                        '.',
-                        ''
-                    );
-                    ++$count;
-                }
-                $this->$trimmedTitle = $sOptions;
-            }
-        }
+            $attributesKey = 'attributes';
 
-        //configurable product options
-        if ($product->getTypeId() == 'configurable') {
-            $productAttributeOptions = $product->getTypeInstance()
-                ->getConfigurableAttributesAsArray($product);
-
-            foreach ($productAttributeOptions as $productAttribute) {
-                $trimmedLabel = str_replace(' ', '', $productAttribute['label']);
-                if (!$this->textIsValidForInsightDataKey($trimmedLabel)) {
-                    continue;
-                }
-
-                $count = 0;
-                $options = [];
-                foreach ($productAttribute['values'] as $attribute) {
-                    $options[$count]['option'] = $attribute['default_label'];
-                    if (isset($attribute['pricing_value'])) {
-                        $options[$count]['price'] = (float)number_format(
-                            $attribute['pricing_value'],
-                            2,
-                            '.',
-                            ''
-                        );
-                    }
-                    ++$count;
-                }
-                $this->$trimmedLabel = $options;
-            }
+            $this->$attributesKey = $attributeModel->processConfigAttributes(
+                $configAttributes,
+                $attributesFromAttributeSet,
+                $product
+            );
         }
     }
 
@@ -328,22 +292,10 @@ class Product
                 'statusFactory',
                 'storeManager',
                 'urlFinder',
-                'stringUtils',
-                'stockStateInterface'
+                'stockStateInterface',
+                'attributeHandler'
             ])
         );
-    }
-
-    /**
-     * @param string $label
-     *
-     * https://support.dotmailer.com/hc/en-gb/articles/212214538-Using-Insight-data-developers-guide-#restrictkeys
-     *
-     * @return false|int
-     */
-    private function textIsValidForInsightDataKey($label)
-    {
-        return preg_match('/^[a-zA-Z_\\\\-][a-zA-Z0-9_\\\\-]*$/', $label);
     }
 
     /**

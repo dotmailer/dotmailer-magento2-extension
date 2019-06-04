@@ -18,6 +18,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 ## 3.2.1
 
 ###### Improvements
+- We've added the option to use a specific transactional email template for "Reset Password" emails.
 - We've clarified the wording beneath the field "Delay Period (Days)" in Engagement Cloud > Automation > Review Settings.
 
 ###### Fixes
@@ -29,7 +30,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Subscriber data now includes an accurate website_id when migrated using the console command.
 - We've removed the stockStateInterface field from synced catalog data.
 - We've tidied up the layout of the Feefo Feedback Engine fieldset.
-- We've added the option to use a specific transactional email template for "Reset Password" emails.
+- We've added a fix to catalog sync so that products without a status do not block the process.
 
 ## 3.2.0
 

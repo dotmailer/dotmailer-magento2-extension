@@ -16,12 +16,12 @@ class RemoveWishlist implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Customer\Api\CustomerRepositoryInterface
      */
     private $customer;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
-    
+
     /**
      * RemoveWishlist constructor.
      *

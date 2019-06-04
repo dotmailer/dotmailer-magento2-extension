@@ -11,7 +11,7 @@ class Test
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-    
+
     /**
      * @var \Magento\Framework\App\Config\ReinitableConfigInterface
      */
@@ -60,7 +60,7 @@ class Test
                 ->setApiPassword($apiPassword);
 
             $accountInfo = $client->getAccountInfo();
-            
+
             if (isset($accountInfo->message)) {
                 $this->helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
 
@@ -75,6 +75,23 @@ class Test
         }
 
         return false;
+    }
+
+    /**
+     * Check API endpoint matches permitted hosts and HTTPS scheme before storing.
+     *
+     * @param string $apiEndpoint
+     *
+     * @return bool
+     */
+    public function validateEndpoint($apiEndpoint)
+    {
+        if (!preg_match('#^https://(r[0-9]+-)?api\.dotmailer\.com$#', $apiEndpoint) &&
+            !preg_match('#^https://(r[0-9]+\.)?apiconnector\.com$#', $apiEndpoint)) {
+            throw new \Magento\Framework\Exception\LocalizedException(__('The endpoint '.$apiEndpoint.' is not permitted.'));
+        }
+
+        return true;
     }
 
     /**

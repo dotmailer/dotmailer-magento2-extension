@@ -90,7 +90,7 @@ class Data
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function getPayload($quote, $store)
+    public function getPayload($quote, $store)
     {
         $data = [
             'key' => $quote->getId(),
@@ -127,6 +127,7 @@ class Data
 
         $data['json']['discountAmount'] = (float) $discountTotal;
         $data['json']['lineItems'] = $lineItems;
+        $data['json']['cartPhase'] = 'ORDER_PENDING';
 
         return $data;
     }

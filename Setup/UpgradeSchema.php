@@ -49,6 +49,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->upgradeOneOneZeoToTwoTwoOne($setup, $context, $connection);
         $this->upgradeTwoThreeSixToTwoFiveFour($setup, $context);
         $this->upgradeTwoFiveFourToThreeZeroThree($setup, $context);
+        $this->upgradeThreeTwoTwo($setup, $context);
 
         $setup->endSetup();
     }
@@ -477,6 +478,30 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $setup->getConnection()->addColumn(
                 $setup->getTable(Schema::EMAIL_ABANDONED_CART_TABLE),
                 'status',
+                $definition
+            );
+        }
+    }
+
+    /**
+     * Adds last_subscribed_date to email_contact
+     *
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeThreeTwoTwo(
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '3.2.2', '<')) {
+            $definition = [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                'nullable' => true,
+                'comment' => 'Last subscribed date'
+            ];
+            $setup->getConnection()->addColumn(
+                $setup->getTable(Schema::EMAIL_CONTACT_TABLE),
+                'last_subscribed_at',
                 $definition
             );
         }

@@ -43,11 +43,16 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
-    
+
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory
      */
     private $subscriberFactory;
+
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime
+     */
+    private $dateTime;
 
     /**
      * CreateUpdateContact constructor.
@@ -69,7 +74,8 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+        \Magento\Framework\Stdlib\DateTime $dateTime
     ) {
         $this->wishlist        = $wishlist;
         $this->contactFactory  = $contactFactory;
@@ -79,6 +85,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         $this->registry        = $registry;
         $this->importerFactory = $importerFactory;
         $this->subscriberFactory = $subscriberFactory;
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -130,9 +137,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 
             //email change detection
             if ($emailBefore && $email != $emailBefore) {
-                //Reload contact model up update email
-                $contactModel = $this->contactFactory->create()
-                    ->loadByCustomerEmail($emailAddress, $websiteId);
+                // update email
                 $contactModel->setEmail($email);
 
                 $data = [
@@ -140,6 +145,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                     'email' => $email,
                     'isSubscribed' => $isSubscribed,
                 ];
+
                 $this->importerFactory->create()->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT_UPDATE,
                     $data,
@@ -150,9 +156,15 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 //for new contacts update email
                 $contactModel->setEmail($email);
             }
+
             $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
                 ->setStoreId($storeId)
                 ->setCustomerId($customerId);
+
+            if ($isSubscribed) {
+                $contactModel->setLastSubscribedAt($this->dateTime->formatDate(true));
+            }
+
             $this->contactResource->save($contactModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);

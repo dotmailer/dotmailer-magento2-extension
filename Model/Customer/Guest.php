@@ -21,7 +21,7 @@ class Guest
      * @var mixed
      */
     private $start;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */

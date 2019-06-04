@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Observer\Sales;
 /**
  * Save original order status.
  */
-class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\ObserverInterface
+class OrderSaveBefore implements \Magento\Framework\Event\ObserverInterface
 {
     /**
      * @var \Magento\Framework\Registry
@@ -16,7 +16,7 @@ class SaveRegisterOrderStatusBefore implements \Magento\Framework\Event\Observer
      * @var \Magento\Sales\Api\Data\OrderInterfaceFactory
      */
     private $orderFactory;
-    
+
     /**
      * @var \Magento\Sales\Model\Spi\OrderResourceInterface
      */

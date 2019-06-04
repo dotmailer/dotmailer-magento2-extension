@@ -34,6 +34,7 @@ class Push extends \Dotdigitalgroup\Email\Block\Recommended
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
@@ -43,17 +44,19 @@ class Push extends \Dotdigitalgroup\Email\Block\Recommended
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         array $data = []
     ) {
-        parent::__construct($context, $font, $data);
-        $this->helper            = $helper;
-        $this->catalog    = $catalog;
+        $this->helper = $helper;
+        $this->catalog = $catalog;
         $this->recommnededHelper = $recommended;
-        $this->priceHelper       = $priceHelper;
+        $this->priceHelper = $priceHelper;
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

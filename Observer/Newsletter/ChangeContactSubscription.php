@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
+use Dotdigitalgroup\Email\Model\Newsletter\Subscriber;
+
 /**
  * Contact newsletter subscription change.
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -54,6 +56,11 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     private $isSubscriberNew;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime
+     */
+    private $dateTime;
+
+    /**
      * ChangeContactSubscription constructor.
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
@@ -72,16 +79,18 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
+        \Magento\Framework\Stdlib\DateTime $dateTime
     ) {
         $this->contactResource = $contactResource;
         $this->automationFactory = $automationFactory;
         $this->automationResource = $automationResource;
-        $this->contactFactory    = $contactFactory;
-        $this->helper            = $data;
-        $this->storeManager      = $storeManagerInterface;
-        $this->registry          = $registry;
-        $this->importerFactory   = $importerFactory->create();
+        $this->contactFactory = $contactFactory;
+        $this->helper = $data;
+        $this->storeManager = $storeManagerInterface;
+        $this->registry = $registry;
+        $this->importerFactory = $importerFactory->create();
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -112,7 +121,12 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 
             //update the contact
             $contactEmail->setStoreId($storeId)
-                ->setSubscriberStatus($subscriberStatus);
+                ->setSubscriberStatus($subscriberStatus)
+                ->setLastSubscribedAt(
+                    (int) $subscriberStatus === Subscriber::STATUS_SUBSCRIBED
+                        ? $this->dateTime->formatDate(true)
+                        : null
+                );
 
             // only for subscribers
             if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED) {

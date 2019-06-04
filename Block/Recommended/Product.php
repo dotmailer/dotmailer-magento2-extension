@@ -34,6 +34,7 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
@@ -43,17 +44,19 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         array $data = []
     ) {
-        parent::__construct($context, $font, $data);
         $this->orderFactory      = $orderFactory;
         $this->recommendedHelper = $recommended;
         $this->helper            = $helper;
         $this->orderResource     = $orderResource;
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

@@ -2,8 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
+use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
+
 class Enroller
 {
+    use SetsSyncFromTime;
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
      */
@@ -88,7 +92,7 @@ class Enroller
             return;
         }
 
-        $updated = $this->interval->getAbandonedCartProgramEnrolmentWindow($storeId);
+        $updated = $this->interval->getAbandonedCartProgramEnrolmentWindow($storeId, $this->getSyncFromTime());
 
         $quoteCollection = $this->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
 

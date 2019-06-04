@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder as UrlFinder;
 use Magento\Bundle\Model\ResourceModel\Selection;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Block\Product\Image;
+use Magento\Catalog\Block\Product\ImageFactory;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
@@ -54,6 +56,11 @@ class UrlFinderTest extends TestCase
      */
     private $urlFinder;
 
+    /**
+     * @var ImageFactory
+     */
+    private $imageFactoryMock;
+
     protected function setUp()
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
@@ -63,13 +70,15 @@ class UrlFinderTest extends TestCase
         $this->groupedTypeMock = $this->createMock(Grouped::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->websiteMock = $this->createMock(Website::class);
+        $this->imageFactoryMock = $this->createMock(ImageFactory::class);
 
         $this->urlFinder = new UrlFinder(
             $this->configurableTypeMock,
             $this->productRepositoryMock,
             $this->bundleSelectionMock,
             $this->groupedTypeMock,
-            $this->storeManagerMock
+            $this->storeManagerMock,
+            $this->imageFactoryMock
         );
     }
 
@@ -284,5 +293,28 @@ class UrlFinderTest extends TestCase
             ->willReturn($newProduct);
 
         $this->urlFinder->fetchFor($this->productMock);
+    }
+
+    public function testGetProductImage()
+    {
+        $imagePath = 'some-image-path';
+        $mockImageBlock = $this->createMock(Image::class);
+        $mockImageBlock->expects($this->once())
+            ->method('getData')
+            ->willReturn([
+                'image_url' => $imagePath,
+            ]);
+
+        $imageId = 'product_small_image';
+        $this->imageFactoryMock->expects($this->once())
+            ->method('create')
+            ->with($this->productMock, $imageId)
+            ->willReturn($mockImageBlock);
+
+        $this->productMock = $this->getInScopeProduct($this->productMock);
+        $this->assertEquals(
+            $imagePath,
+            $this->urlFinder->getProductImageUrl($this->productMock, $imageId)
+        );
     }
 }

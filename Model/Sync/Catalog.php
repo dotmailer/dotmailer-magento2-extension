@@ -47,9 +47,10 @@ class Catalog implements SyncInterface
     /**
      * Catalog sync.
      *
+     * @param \DateTime|null $from
      * @return array
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $response    = ['success' => true, 'message' => 'Done.'];
         $this->start = microtime(true);
