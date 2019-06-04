@@ -40,6 +40,7 @@ class Wishlist extends Recommended
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
@@ -50,6 +51,7 @@ class Wishlist extends Recommended
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -57,12 +59,13 @@ class Wishlist extends Recommended
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         array $data = []
     ) {
-        parent::__construct($context, $font, $data);
         $this->wishlist = $wishlist;
         $this->customerFactory = $customerFactory;
         $this->helper          = $helper;
         $this->priceHelper     = $priceHelper;
         $this->customerResource = $customerResource;
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

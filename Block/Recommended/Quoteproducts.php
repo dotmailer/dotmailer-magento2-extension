@@ -24,6 +24,7 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
      * @param array $data
@@ -31,13 +32,15 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
         array $data = []
     ) {
-        parent::__construct($context, $font, $data);
         $this->helper            = $helper;
         $this->recommendedHelper = $recommendedHelper;
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

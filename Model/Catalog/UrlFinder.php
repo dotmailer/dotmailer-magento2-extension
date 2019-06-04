@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
+use Magento\Catalog\Model\Product;
+
 class UrlFinder
 {
     /**
@@ -30,6 +32,11 @@ class UrlFinder
     private $storeManager;
 
     /**
+     * @var ImageFactory
+     */
+    private $imageFactory;
+
+    /**
      * UrlFinder constructor.
      *
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType
@@ -37,19 +44,22 @@ class UrlFinder
      * @param \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection
      * @param \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Catalog\Block\Product\ImageFactory $imageFactory
      */
     public function __construct(
         \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection,
         \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Catalog\Block\Product\ImageFactory $imageFactory
     ) {
         $this->configurableType = $configurableType;
         $this->productRepository = $productRepository;
         $this->bundleSelection = $bundleSelection;
         $this->groupedType = $groupedType;
         $this->storeManager = $storeManager;
+        $this->imageFactory = $imageFactory;
     }
 
     /**
@@ -64,17 +74,40 @@ class UrlFinder
     {
         $product = $this->getScopedProduct($product);
 
-        if ($product->getVisibility() == \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE &&
-            $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+        if (
+            $product->getVisibility() == \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE
+            && $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+            && $parentProduct = $this->getParentProduct($product)
         ) {
-            $parentId = $this->getFirstParentId($product);
-            if (isset($parentId)) {
-                /** @var \Magento\Catalog\Model\Product $parentProduct */
-                $parentProduct = $this->productRepository->getById($parentId, false, $product->getStoreId());
-                return $parentProduct->getProductUrl();
-            }
+            return $parentProduct->getProductUrl();
         }
+
         return $product->getProductUrl();
+    }
+
+    /**
+     * Get a product image URL, or that of it's parent if no image is set
+     *
+     * @param Product $product
+     * @param string $imageId
+     * @return string|null
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getProductImageUrl(Product $product, string $imageId)
+    {
+        $product = $this->getScopedProduct($product);
+
+        if (
+            $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+            && $product->getSmallImage() == \Magento\Sitemap\Model\ResourceModel\Catalog\Product::NOT_SELECTED_IMAGE
+            && $parentProduct = $this->getParentProduct($product)
+        ) {
+            $product = $parentProduct;
+        }
+
+        $imageData = $this->imageFactory->create($product, $imageId, [])->getData();
+        return $imageData['image_url'] ?? null;
     }
 
     /**
@@ -126,5 +159,18 @@ class UrlFinder
         }
 
         return $product;
+    }
+
+    /**
+     * @param $product
+     * @return \Magento\Catalog\Api\Data\ProductInterface|\Magento\Catalog\Model\Product|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getParentProduct($product)
+    {
+        if ($parentId = $this->getFirstParentId($product)) {
+            return $this->productRepository->getById($parentId, false, $product->getStoreId());
+        }
+        return null;
     }
 }

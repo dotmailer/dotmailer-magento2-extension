@@ -27,35 +27,29 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
     private $catalog;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
-     */
-    private $urlFinder;
-
-    /**
      * Bestsellers constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
-     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
-        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         array $data = []
     ) {
         $this->helper             = $helper;
         $this->recommnededHelper  = $recommended;
         $this->catalog            = $catalog;
-        $this->urlFinder          = $urlFinder;
-        parent::__construct($context, $font, $data);
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**
@@ -118,5 +112,10 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
     public function getConfigurableParentUrl($product)
     {
         return $this->urlFinder->fetchFor($product);
+    }
+
+    public function getSmallImageUrl($product, $imageId)
+    {
+        return $this->urlFinder->getProductImageUrl($product, $imageId);
     }
 }

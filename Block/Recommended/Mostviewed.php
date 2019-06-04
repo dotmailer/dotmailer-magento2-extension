@@ -34,6 +34,7 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
@@ -43,6 +44,7 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
@@ -54,7 +56,7 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
         $this->recommnededHelper        = $recommended;
         $this->priceHelper              = $priceHelper;
 
-        parent::__construct($context, $font, $data);
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

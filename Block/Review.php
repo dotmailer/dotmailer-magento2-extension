@@ -39,6 +39,7 @@ class Review extends Recommended
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
@@ -49,6 +50,7 @@ class Review extends Recommended
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
@@ -62,7 +64,7 @@ class Review extends Recommended
         $this->priceHelper       = $priceHelper;
         $this->orderResource     = $orderResource;
 
-        parent::__construct($context, $font, $data);
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

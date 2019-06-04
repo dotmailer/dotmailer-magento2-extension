@@ -95,7 +95,7 @@ $priceHelper = $block->priceHelper;
                        true
                    )
                ) ?>" class="product-image">
-                <?= $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
+                <img src="<?= $block->getProductImageUrl($_product, 'category_page_grid') ?>" alt="<?= $_product->getName() ?>">
             </a>
             <div class="product-name" align="center"><b><?= $block->escapeHtml(
                 mb_substr(
