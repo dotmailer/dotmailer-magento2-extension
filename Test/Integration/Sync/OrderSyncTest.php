@@ -7,8 +7,7 @@ use Magento\TestFramework\ObjectManager;
 /**
  * Class OrderSyncTest
  * @package Dotdigitalgroup\Email\Controller\Customer
- * @IgnoreAnnotation("magentoDBIsolation")
- * @magentoDBIsolation enabled
+ * @magentoDbIsolation enabled
  * magentoAppArea cron
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)

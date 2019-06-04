@@ -3,8 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 /**
- * @IgnoreAnnotation("magentoDBIsolation")
- * @magentoDBIsolation enabled
+ * @magentoDbIsolation enabled
  * @magentoDataFixture Magento/Store/_files/website.php
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */

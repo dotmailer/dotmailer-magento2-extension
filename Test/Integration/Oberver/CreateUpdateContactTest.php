@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 use Dotdigitalgroup\Email\Helper\Data;
 
 /**
- * @IgnoreAnnotation("magentoDBIsolation")
  * @magentoDbIsolation enabled
  * @magentoAdminConfigFixture connector/api/endpoint https://r1-api.dotmailer.com
  * @magentoAdminConfigFixture connector_api_credentials/api/enabled 1

@@ -7,9 +7,6 @@ use Dotdigitalgroup\Email\Setup\Schema;
 use Magento\Framework\App\ResourceConnection;
 use Magento\TestFramework\ObjectManager;
 
-/**
- * @IgnoreAnnotation("magentoDBIsolation")
- */
 class CampaignORMTest extends \PHPUnit\Framework\TestCase
 {
     /**
