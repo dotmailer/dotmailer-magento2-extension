@@ -15,6 +15,32 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.2.2
+
+###### Improvements
+- When an order is placed following a cart abandonment, we now send a 'cartPhase' flag to Engagement Cloud to enable merchants to exit customers from an abandoned cart program 
+- To prevent connector syncs overwriting opt-in status data set in Engagement Cloud, we now only send opt-in status data if a) Configuration > Customers > Newsletter > Subscription Options > Need to Confirm is set to 'Yes' and b) the subscriber is marked as confirmed in newsletter_subscriber
+- We've updated dynamic content endpoints to ensure that, if a child product is missing an image, we use its parent's image instead
+- We've improved the coverage of catalog sync by allowing selected custom attributes to be included in the synced data
+- We are now cleaning any custom transactional data keys prior to import, removing invalid (non-alphanumeric) characters, but not skipping records as was previously happening
+- The class structure relating to the importer sync has been tidied up, and is now consistent with other 'sync' models
+- We’ve improved security by validating the Engagement Cloud API endpoint value prior to storage
+- The abandoned cart sync can now be run via the dotdigital:sync console command
+- Some legacy configuration code has been removed
+- We’ve renamed some of our observers for clarity
+
+###### Fixes
+- In some situations the ‘Automation settings’ page was not rendering correctly owing to the type of data retrieved from the API; this has been resolved
+- Product data imported as CSV via the System > Import tool will now be added to the email_catalog table and synced in due course
+- We’ve fixed a bug that could affect customers resubscribing via Magento; they can now not be accidentally unsubscribed again in a subsequent sync
+- If a contact is already subscribed in Engagement Cloud, and a Subscriber_Resubscribe job is sent for them, we now mark the job with ‘Contact is already subscribed’ as opposed to marking it as failed with the 'Error Unknown' message
+- We’ve repaired some invalid HTML on the ‘Developer settings’ page
+- Access control for the abandoned carts report is now consistent with other module-specific views
+- Before the second and third campaign runs in an abandoned cart series, we will now re-confirm that the original quote is still active
+- We’ve fixed an error on the customer preferences page in Magento 2.1
+- We’ve fixed an error with the catalog sync in Magento 2.1
+- We’ve fixed an incorrect node name in the crontab.xml file [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/542) 
+
 ## 3.2.1
 
 ###### Improvements
