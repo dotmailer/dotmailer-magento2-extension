@@ -264,13 +264,16 @@ class Product
                 $product->getAttributeSetId()
             );
 
-            $attributesKey = 'attributes';
-
-            $this->$attributesKey = $attributeModel->processConfigAttributes(
+            $attributes = $attributeModel->processConfigAttributes(
                 $configAttributes,
                 $attributesFromAttributeSet,
                 $product
             );
+
+            if ($attributes->hasValues()) {
+                $attributesKey = 'attributes';
+                $this->$attributesKey = $attributes;
+            }
         }
     }
 

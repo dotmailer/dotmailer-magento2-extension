@@ -27,6 +27,11 @@ class Attribute
     private $productResource;
 
     /**
+     * @var
+     */
+    private $hasValues;
+
+    /**
      * Attribute constructor.
      *
      * @param Helper\Data $helper
@@ -127,10 +132,16 @@ class Attribute
      */
     private function processAttributeValue($value, $attributeCode)
     {
-        if ($value && !is_array($value)) {
+        if (!$value) {
+            return;
+        }
+
+        $this->hasValues = true;
+
+        if (!is_array($value)) {
             // check limit on text and assign value to array
             $this->$attributeCode = mb_substr($value, 0, Helper\Data::DM_FIELD_LIMIT);
-        } elseif ($value && is_array($value)) {
+        } elseif (is_array($value)) {
             $values = (isset($value['values'])) ? implode(',', $value['values']) : implode(',', $value);
 
             if ($values) {
@@ -147,5 +158,13 @@ class Attribute
     {
         $attributeSetRepository = $this->attributeSet->get($product->getAttributeSetId());
         return $attributeSetRepository->getAttributeSetName();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function hasValues()
+    {
+        return $this->hasValues;
     }
 }
