@@ -354,6 +354,7 @@ class Order
                 }
 
                 $attributeModel = $this->attributeHandler->create();
+                $attributes = null;
 
                 //selected attributes from config
                 $configAttributes = $attributeModel->getConfigAttributesForSync(
@@ -392,7 +393,7 @@ class Order
                     'attribute-set' => $attributeSetName,
                     'categories' => $productCat
                 ];
-                if ($attributes) {
+                if ($attributes->hasValues()) {
                     $productData['product_attributes'] = $attributes;
                 }
                 if ($customOptions) {
@@ -416,7 +417,6 @@ class Order
                     ),
                     'attribute-set' => '',
                     'categories' => [],
-                    'product_attributes' => null,
                     'custom-options' => $customOptions,
                 ];
                 if (!$customOptions) {
