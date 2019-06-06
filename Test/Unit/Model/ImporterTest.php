@@ -10,7 +10,8 @@ use Magento\Framework\Stdlib\DateTime;
 use Dotdigitalgroup\Email\Model\Config\Json;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Data\Collection\AbstractDb;
-use Dotdigitalgroup\Email\Model\Importer as Import;
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
+use Dotdigitalgroup\Email\Helper\Data;
 use PHPUnit\Framework\TestCase;
 
 class ImporterTest extends TestCase
@@ -28,17 +29,12 @@ class ImporterTest extends TestCase
     /**
      * @var Data
      */
-    private $dataMock;
+    private $helperMock;
 
     /**
      * @var Importer
      */
     private $importerMock;
-
-    /**
-     * @var ObjectManagerInterface
-     */
-    private $objectManagerMock;
 
     /**
      * @var DateTime
@@ -61,7 +57,12 @@ class ImporterTest extends TestCase
     private $resourceCollectionMock;
 
     /**
-     * @var Import
+     * @var CollectionFactory
+     */
+    private $collectionFactoryMock;
+
+    /**
+     * @var ImporterModel
      */
     private $importer;
 
@@ -77,8 +78,9 @@ class ImporterTest extends TestCase
             ->setMethods(['getIdFieldName'])
             ->getMockForAbstractClass();
         $this->resourceCollectionMock = $this->createMock(AbstractDb::class);
+        $this->helperMock = $this->createMock(Data::class);
 
-        $this->importer = new Import(
+        $this->importer = new ImporterModel(
             $this->contextMock,
             $this->registryMock,
             $this->importerMock,
@@ -87,7 +89,8 @@ class ImporterTest extends TestCase
             $this->serializerMock,
             [],
             $this->resourceModelMock,
-            $this->resourceCollectionMock
+            $this->resourceCollectionMock,
+            $this->helperMock
         );
     }
 
@@ -102,9 +105,9 @@ class ImporterTest extends TestCase
             ->method('save');
 
         $result = $this->importer->registerQueue(
-            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
+            ImporterModel::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
                 $this->getData(),
-                \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
+            ImporterModel::MODE_SINGLE,
                 1
         );
 
@@ -120,9 +123,9 @@ class ImporterTest extends TestCase
             ->method('save');
 
         $result = $this->importer->registerQueue(
-            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
+            ImporterModel::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
             [],
-            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
+            ImporterModel::MODE_SINGLE,
             1
         );
 
@@ -138,9 +141,9 @@ class ImporterTest extends TestCase
             ->method('save');
 
         $result = $this->importer->registerQueue(
-            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
+            ImporterModel::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
            '',
-            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
+            ImporterModel::MODE_SINGLE,
             1,
             'path/to/file.csv'
         );
@@ -157,9 +160,9 @@ class ImporterTest extends TestCase
             ->method('save');
 
         $result = $this->importer->registerQueue(
-            \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
+            ImporterModel::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
             '',
-            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
+            ImporterModel::MODE_SINGLE,
             1,
             ''
         );
