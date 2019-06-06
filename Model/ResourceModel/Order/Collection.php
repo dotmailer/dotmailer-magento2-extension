@@ -278,7 +278,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get store quotes excluding inactive and empty.
+     * Get store quotes for either guests or customers, excluding inactive and empty.
      *
      * @param int $storeId
      * @param array $updated
@@ -287,6 +287,27 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      * @return \Magento\Quote\Model\ResourceModel\Quote\Collection
      */
     public function getStoreQuotes($storeId, $updated, $guest = false)
+    {
+        $salesCollection = $this->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
+
+        if ($guest) {
+            $salesCollection->addFieldToFilter('main_table.customer_id', ['null' => true]);
+        } else {
+            $salesCollection->addFieldToFilter('main_table.customer_id', ['notnull' => true]);
+        }
+
+        return $salesCollection;
+    }
+
+    /**
+     * Get store quotes for both guests and customers, excluding inactive and empty.
+     *
+     * @param int $storeId
+     * @param array $updated
+     *
+     * @return \Magento\Quote\Model\ResourceModel\Quote\Collection
+     */
+    public function getStoreQuotesForGuestsAndCustomers($storeId, $updated)
     {
         $salesCollection = $this->quoteCollection->create();
         $salesCollection->addFieldToFilter('is_active', 1)
@@ -297,13 +318,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
         if ($this->helper->isOnlySubscribersForAC($storeId)) {
             $salesCollection = $this->subscriberFilterer->filterBySubscribedStatus($salesCollection);
-        }
-        //guests
-        if ($guest) {
-            $salesCollection->addFieldToFilter('main_table.customer_id', ['null' => true]);
-        } else {
-            //customers
-            $salesCollection->addFieldToFilter('main_table.customer_id', ['notnull' => true]);
         }
 
         return $salesCollection;

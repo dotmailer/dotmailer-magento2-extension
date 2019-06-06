@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
  *
  * @api
  */
-class Product extends \Magento\Catalog\Block\Product\AbstractProduct
+class Product extends \Dotdigitalgroup\Email\Block\Recommended
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -33,6 +33,8 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      * Product constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
@@ -41,17 +43,20 @@ class Product extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         array $data = []
     ) {
-        parent::__construct($context, $data);
         $this->orderFactory      = $orderFactory;
         $this->recommendedHelper = $recommended;
         $this->helper            = $helper;
         $this->orderResource     = $orderResource;
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

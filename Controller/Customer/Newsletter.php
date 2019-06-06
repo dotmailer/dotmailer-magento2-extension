@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Controller\Customer;
 
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Newsletter\Model\Subscriber;
+use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
 
 class Newsletter extends \Magento\Framework\App\Action\Action
 {
@@ -43,6 +44,11 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     protected $subscriberFactory;
 
     /**
+     * @var CsvGenerator
+     */
+    public $csvGenerator;
+
+    /**
      * Newsletter constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
@@ -53,6 +59,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\Data\Form\FormKey\Validator                $formKeyValidator
      * @param CustomerRepository                                            $customerRepository
      * @param \Magento\Newsletter\Model\SubscriberFactory                   $subscriberFactory
+     * @param CsvGenerator                                                  $csvGenerator
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -62,7 +69,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
         CustomerRepository $customerRepository,
-        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+        CsvGenerator $csvGenerator
     ) {
         $this->helper           = $helper;
         $this->customerSession  = $session;
@@ -71,6 +79,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         $this->formKeyValidator = $formKeyValidator;
         $this->customerRepository = $customerRepository;
         $this->subscriberFactory = $subscriberFactory;
+        $this->csvGenerator = $csvGenerator;
         parent::__construct($context);
     }
 
@@ -84,7 +93,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         }
 
         $this->processGeneralSubscription();
-        $website = $this->customerSession->getCustomer()->getStore()->getWebsite();
+        $store = $this->customerSession->getCustomer()->getStore();
+        $website = $store->getWebsite();
 
         //if enabled
         if ($this->helper->isEnabled($website)) {
@@ -94,7 +104,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
 
             $client = $this->helper->getWebsiteApiClient($website);
             $contact = isset($contactId) ? $client->getContactById($contactId) :
-                $this->createContact($client, $customerEmail, $website, $contactFromTable);
+                $this->createContact($client, $customerEmail, $store, $contactFromTable);
 
             if (isset($contact->id)) {
                 $additionalSubscriptionsSuccess = $this->processAdditionalSubscriptions(
@@ -136,30 +146,28 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     /**
      * @param $apiClient
      * @param string $customerEmail
-     * @param $website
-     * @param $contactFromTable
+     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @param \Dotdigitalgroup\Email\Model\Contact $contactFromTable
      *
      * @return object
      */
-    private function createContact($apiClient, $customerEmail, $website, $contactFromTable)
+    private function createContact($apiClient, $customerEmail, $store, $contactFromTable)
     {
         $consentModel = $this->consentFactory->create();
         $consentData = $consentModel->getFormattedConsentDataByContactForApi(
-            $website->getId(),
+            $store->getWebsiteId(),
             $customerEmail
         );
 
         if (empty(! $consentData)) {
-            $needToConfirm = $this->helper->getWebsiteConfig(
-                \Magento\Newsletter\Model\Subscriber::XML_PATH_CONFIRMATION_FLAG,
-                $website->getId()
-            );
-            $optInType = ($needToConfirm)? 'Double' : 'Single';
             $contactData = [
                 'Email' => $customerEmail,
-                'EmailType' => 'Html',
-                'OptInType' => $optInType,
+                'EmailType' => 'Html'
             ];
+            $optInType = $this->csvGenerator->isOptInTypeDouble($store);
+            if ($optInType) {
+                $contactData['OptInType'] = 'Double';
+            }
 
             $contact = $apiClient->postContactWithConsent(
                 $contactData,

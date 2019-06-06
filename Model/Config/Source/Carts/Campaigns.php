@@ -43,10 +43,12 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
      */
     public function toOptionArray()
     {
-        $fields = [];
-        $fields[] = ['value' => '0', 'label' => '-- Please Select --'];
+        $fields = [[
+            'value' => '0',
+            'label' => '-- Please Select --',
+        ]];
 
-        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsite());
+        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsiteForSelectedScopeInAdmin());
 
         if ($apiEnabled) {
             $savedCampaigns = $this->registry->registry('campaigns');
@@ -54,17 +56,13 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
             if (is_array($savedCampaigns)) {
                 $campaigns = $savedCampaigns;
             } else {
-                //grab the datafields request and save to register
-                $client = $this->helper->getWebsiteApiClient($this->helper->getWebsite());
-                $campaigns = $client->getCampaigns();
-                $this->registry->unregister('campaigns'); // additional measure
-                $this->registry->register('campaigns', $campaigns);
+                $campaigns = $this->fetchCampaigns();
             }
 
             //set the api error message for the first option
-            if (isset($campaigns->message)) {
+            if (isset($campaigns['message'])) {
                 //message
-                $fields[] = ['value' => 0, 'label' => $campaigns->message];
+                $fields[] = ['value' => 0, 'label' => $campaigns['message']];
             } elseif (!empty($campaigns)) {
                 //loop for all campaing options
                 foreach ($campaigns as $campaign) {
@@ -79,5 +77,30 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
         }
 
         return $fields;
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    private function fetchCampaigns()
+    {
+        //grab the datafields request and save to register
+        $client = $this->helper->getWebsiteApiClient($this->helper->getWebsiteForSelectedScopeInAdmin());
+        $campaigns = [];
+
+        do {
+            // due to the API limitation of 1000 campaign responses, loop while the campaigns returned === 1000,
+            // skipping by the count of the total received so far
+            if (!is_array($campaignResponse = $client->getCampaigns(count($campaigns)))) {
+                return (array) $campaignResponse;
+            }
+            $campaigns = array_merge($campaigns, $campaignResponse);
+        } while (count($campaignResponse) === 1000);
+
+        $this->registry->unregister('campaigns');
+        $this->registry->register('campaigns', $campaigns);
+
+        return $campaigns;
     }
 }

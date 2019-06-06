@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Model\SalesRule\DotmailerCouponGenerator;
 use Magento\Framework\View\Element\Template\Context;
+use Dotdigitalgroup\Email\Block\Helper\Font;
 
 /**
  * Coupon block
@@ -19,7 +20,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
      * @var Data
      */
     public $helper;
-    
+
     /**
      * @var DotmailerCouponGenerator
      */
@@ -31,12 +32,18 @@ class Coupon extends \Magento\Framework\View\Element\Template
     private $dateIntervalFactory;
 
     /**
+     * @var Font
+     */
+    private $font;
+
+    /**
      * Coupon constructor.
      *
      * @param Context $context
      * @param Data $helper
      * @param DotmailerCouponGenerator $dotmailerCouponGenerator
      * @param DateIntervalFactory $dateIntervalFactory
+     * @param Font $font
      * @param array $data
      */
     public function __construct(
@@ -44,11 +51,13 @@ class Coupon extends \Magento\Framework\View\Element\Template
         Data $helper,
         DotmailerCouponGenerator $dotmailerCouponGenerator,
         DateIntervalFactory $dateIntervalFactory,
+        Font $font,
         array $data = []
     ) {
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper = $helper;
         $this->dotmailerCouponGenerator = $dotmailerCouponGenerator;
+        $this->font = $font;
         parent::__construct($context, $data);
     }
 
@@ -116,15 +125,11 @@ class Coupon extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Coupon Font from config.
-     *
-     * @return string|boolean
+     * @return bool|string
      */
-    public function getFont()
+    public function getHtmlFontFamily()
     {
-        return $this->helper->getWebsiteConfig(
-            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT
-        );
+        return $this->font->getEscapedFontFamilyForCoupon();
     }
 
     /**

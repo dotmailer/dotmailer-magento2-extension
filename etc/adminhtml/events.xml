@@ -3,6 +3,9 @@
     <event name="admin_system_config_changed_section_connector_api_credentials">
         <observer name="admin_connector_api_credentials" instance="Dotdigitalgroup\Email\Observer\Adminhtml\ApiValidate" />
     </event>
+    <event name="admin_system_config_changed_section_connector">
+        <observer name="admin_connector_api_endpoint" instance="Dotdigitalgroup\Email\Observer\Adminhtml\ApiEndpointValidate"/>
+    </event>
     <event name="admin_system_config_changed_section_connector_data_mapping">
         <observer name="admin_connector_data_mapping" instance="Dotdigitalgroup\Email\Observer\Adminhtml\ResetContactImport"/>
     </event>

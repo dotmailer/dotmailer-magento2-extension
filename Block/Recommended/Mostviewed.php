@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
  *
  * @api
  */
-class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
+class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -33,6 +33,8 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * Mostviewed constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
@@ -41,18 +43,20 @@ class Mostviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         array $data = []
     ) {
-        $this->catalog           = $catalog;
+        $this->catalog                  = $catalog;
         $this->helper                   = $helper;
         $this->recommnededHelper        = $recommended;
         $this->priceHelper              = $priceHelper;
 
-        parent::__construct($context, $data);
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

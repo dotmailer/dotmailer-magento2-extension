@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
  *
  * @SuppressWarnings(PHPMD.TooManyFields)
  */
-class Automation
+class Automation implements SyncInterface
 {
     const AUTOMATION_TYPE_NEW_CUSTOMER = 'customer_automation';
     const AUTOMATION_TYPE_NEW_SUBSCRIBER = 'subscriber_automation';
@@ -16,8 +16,9 @@ class Automation
     const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
     const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
     const AUTOMATION_STATUS_PENDING = 'pending';
-    const ORDER_STATUS_AUTOMATION = 'order_automation_';
     const AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER = 'first_order_automation';
+    const AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT = 'abandoned_cart_automation';
+    const ORDER_STATUS_AUTOMATION = 'order_automation_';
     const CONTACT_STATUS_PENDING = "PendingOptIn";
     const CONTACT_STATUS_CONFIRMED = "Confirmed";
     const CONTACT_STATUS_EXPIRED = "Expired";
@@ -39,7 +40,9 @@ class Automation
         self::AUTOMATION_TYPE_NEW_WISHLIST =>
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
         self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER =>
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER,
+        self::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT =>
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID,
     ];
 
     /**
@@ -112,6 +115,13 @@ class Automation
      */
     private $timeZone;
 
+    // this doesn't seem right but how else to access core Quote methods as well as custom ones defined in our module?
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Automation\UpdateFields\Update
+     */
+    private $updateAbandoned;
+
     /**
      * Automation constructor.
      *
@@ -122,7 +132,8 @@ class Automation
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timeZone
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timeZone,
+     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $automationFactory,
@@ -132,7 +143,8 @@ class Automation
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
         \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timeZone
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timeZone,
+        \Dotdigitalgroup\Email\Model\Automation\UpdateFields\Update $updateAbandoned
     ) {
         $this->automationFactory = $automationFactory;
         $this->helper            = $helper;
@@ -142,6 +154,7 @@ class Automation
         $this->automationResource = $automationResource;
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->timeZone = $timeZone;
+        $this->updateAbandoned = $updateAbandoned;
     }
 
     /**
@@ -149,9 +162,10 @@ class Automation
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      *
+     * @param \DateTime|null $from
      * @return null
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $this->checkStatusForPendingContacts();
         $this->setupAutomationTypes();
@@ -308,6 +322,8 @@ class Automation
             case self::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER:
                 $this->updateNewOrderDatafields($websiteId);
                 break;
+            case self::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT:
+                $this->updateAbandoned->updateAbandonedCartDatafields($email, $websiteId, $this->typeId, $this->storeName);
             default:
                 $this->updateDefaultDatafields($email, $websiteId);
                 break;
@@ -408,7 +424,7 @@ class Automation
             );
         }
     }
-
+    
     /**
      * Program check if is valid and active.
      *

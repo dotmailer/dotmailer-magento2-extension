@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Dotdigitalgroup_Email" setup_version="3.1.0">
+    <module name="Dotdigitalgroup_Email" setup_version="3.2.2">
         <sequence>
             <module name="Magento_Newsletter"/>
             <module name="Magento_Review"/>
@@ -27,6 +27,10 @@
             <module name="Magento_Email" />
             <module name="Magento_SendFriend" />
             <module name="Magento_ProductAlert" />
+            <module name="Magento_UrlRewrite" />
+            <module name="Magento_ConfigurableProduct" />
+            <module name="Magento_Bundle" />
+            <module name="Magento_GroupedProduct" />
         </sequence>
     </module>
 </config>

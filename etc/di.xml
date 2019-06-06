@@ -15,9 +15,6 @@
     <type name="Magento\Framework\Mail\TransportInterface">
         <plugin name="ddg_mail_transport" type="Dotdigitalgroup\Email\Plugin\TransportPlugin" sortOrder="1" disabled="false" />
     </type>
-    <type name="Magento\SalesRule\Model\ResourceModel\Rule\Collection">
-        <plugin name="ddg_sales_rule_collection" type="Dotdigitalgroup\Email\Plugin\RuleCollectionPlugin"/>
-    </type>
     <type name="Magento\Reports\Model\ResourceModel\Product\Collection">
         <plugin name="ddg_reports_product_collection" type="Dotdigitalgroup\Email\Plugin\ReportsProductCollectionPlugin"/>
     </type>
@@ -32,6 +29,9 @@
     </type>
     <type name="Magento\Newsletter\Controller\Manage\Index">
         <plugin name="dotmailer_newsletter_plugin" type="Dotdigitalgroup\Email\Plugin\NewsletterManageIndexPlugin" sortOrder="1"/>
+    </type>
+    <type name="Magento\UrlRewrite\Controller\Adminhtml\Url\Rewrite\Save">
+        <plugin name="dotmailer_url_rewrite_save_plugin" type="Dotdigitalgroup\Email\Plugin\UrlRewriteSavePlugin" sortOrder="1"/>
     </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
@@ -72,6 +72,14 @@
                 <item name="review_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Review\Collection</item>
                 <item name="wishlist_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Wishlist\Collection</item>
                 <item name="abandoned_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Abandoned\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="import_data" xsi:type="object">Dotdigitalgroup\Email\Console\Command\ImportDataCommand</item>
+                <item name="importer_syncs" xsi:type="object">Dotdigitalgroup\Email\Console\Command\ImporterSyncsCommand</item>
             </argument>
         </arguments>
     </type>

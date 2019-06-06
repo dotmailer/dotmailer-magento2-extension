@@ -69,7 +69,7 @@ class MessagePluginTest extends TestCase
         $this->templateModelMock->expects($this->never())
                                 ->method('create');
 
-        $this->plugin->afterSetBody($this->messageMock, null);
+        $this->plugin->beforeSetBody($this->messageMock, null);
     }
 
     public function testNoActionTakenIfDotmailerSMTPIsDisabled()
@@ -80,7 +80,7 @@ class MessagePluginTest extends TestCase
         $this->templateModelMock->expects($this->never())
                                 ->method('create');
 
-        $this->plugin->afterSetBody($this->messageMock, null);
+        $this->plugin->beforeSetBody($this->messageMock, null);
     }
 
     public function testFromAddressNotSetWhenNotADotmailerTemplate()
@@ -94,7 +94,7 @@ class MessagePluginTest extends TestCase
         $this->messageMock->expects($this->never())
                           ->method('setFrom');
 
-        $this->plugin->afterSetBody($this->messageMock, null);
+        $this->plugin->beforeSetBody($this->messageMock, null);
     }
 
     public function testFromSetWhenDotmailerTemplateAndDotmailerSmtpIsEnabled()
@@ -111,7 +111,7 @@ class MessagePluginTest extends TestCase
                           ->method('setFrom')
                           ->with($senderEmail, $senderName);
 
-        $this->plugin->afterSetBody($this->messageMock, null);
+        $this->plugin->beforeSetBody($this->messageMock, null);
     }
 
     public function testFromClearedWhenZendMail()
@@ -131,7 +131,7 @@ class MessagePluginTest extends TestCase
                           ->method('setFrom')
                           ->with($senderEmail, $senderName);
 
-        $this->plugin->afterSetBody($this->messageMock, null);
+        $this->plugin->beforeSetBody($this->messageMock, null);
     }
 
     private function mockRegistry($templateId, $storeId)

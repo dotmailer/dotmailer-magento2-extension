@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
  *
  * @api
  */
-class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
+class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -23,19 +23,24 @@ class Quoteproducts extends \Magento\Catalog\Block\Product\AbstractProduct
      * Quoteproducts constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
      * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
         array $data = []
     ) {
-        parent::__construct($context, $data);
         $this->helper            = $helper;
         $this->recommendedHelper = $recommendedHelper;
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

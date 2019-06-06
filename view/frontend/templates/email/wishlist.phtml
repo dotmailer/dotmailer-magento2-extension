@@ -9,7 +9,7 @@ $items = $block->getWishlistItems();
 $priceHelper = $block->priceHelper;
 ?>
 <?php if ($items) : ?>
-    <?php $dynamicStyle = $block->helper->getDynamicStyles(); ?>
+    <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;
@@ -95,7 +95,7 @@ $priceHelper = $block->priceHelper;
                        true
                    )
                ) ?>" class="product-image">
-                <?= $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
+                <img src="<?= $block->getProductImageUrl($_product, 'category_page_grid') ?>" alt="<?= $_product->getName() ?>">
             </a>
             <div class="product-name" align="center"><b><?= $block->escapeHtml(
                 mb_substr(

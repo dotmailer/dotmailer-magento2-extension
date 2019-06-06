@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Block;
  *
  * @api
  */
-class Review extends \Magento\Catalog\Block\Product\AbstractProduct
+class Review extends Recommended
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -38,6 +38,8 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      * Review constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
@@ -47,6 +49,8 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
@@ -58,9 +62,9 @@ class Review extends \Magento\Catalog\Block\Product\AbstractProduct
         $this->orderFactory      = $orderFactory;
         $this->helper            = $helper;
         $this->priceHelper       = $priceHelper;
-        $this->orderResource = $orderResource;
+        $this->orderResource     = $orderResource;
 
-        parent::__construct($context, $data);
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

@@ -4,5 +4,6 @@
 <page name="AdminDotmailerConfigurationPage" url="admin/system_config/edit/section/connector_configuration" area="admin" module="Dotdigitalgroup_Email">
     <section name="AdminDotmailerConfigurationPreferencesSection"/>
     <section name="AdminDotmailerConfigurationConsentSection"/>
+    <section name="AdminMainActionsSection"/>
 </page>
 </pages>

@@ -121,7 +121,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @magentoDBIsolation enabled
+     * @magentoDbIsolation enabled
      * @magentoConfigFixture default_store abandoned_carts/guests/enabled_2 1
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_3 2
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1
@@ -146,7 +146,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @magentoDBIsolation enabled
+     * @magentoDbIsolation enabled
      * @magentoConfigFixture default_store abandoned_carts/guests/enabled_2 1
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_3 2
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1

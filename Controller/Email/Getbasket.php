@@ -121,13 +121,13 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
             $this->_redirect($url);
         } else {
-            //set after auth url. customer will be redirected to cart after successful login
             if ($configCartUrl) {
                 $cartUrl = $configCartUrl;
             } else {
                 $cartUrl = 'checkout/cart';
             }
-            $customerSession->setAfterAuthUrl(
+            //set before auth url. customer will be redirected to cart after successful login
+            $customerSession->setBeforeAuthUrl(
                 $this->quote->getStore()->getUrl($cartUrl)
             );
 

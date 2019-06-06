@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
  *
  * @api
  */
-class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
+class Recentlyviewed extends \Dotdigitalgroup\Email\Block\Recommended
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -43,6 +43,8 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      * Recentlyviewed constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
+     * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Magento\Customer\Model\SessionFactory $sessionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -52,6 +54,8 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
+        \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Magento\Customer\Model\SessionFactory $sessionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -59,13 +63,14 @@ class Recentlyviewed extends \Magento\Catalog\Block\Product\AbstractProduct
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         array $data = []
     ) {
-        parent::__construct($context, $data);
         $this->sessionFactory    = $sessionFactory;
         $this->helper            = $helper;
         $this->recommnededHelper = $recommended;
         $this->priceHelper       = $priceHelper;
         $this->storeManager      = $this->_storeManager;
-        $this->catalog    = $catalog;
+        $this->catalog           = $catalog;
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

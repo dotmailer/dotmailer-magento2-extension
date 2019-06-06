@@ -10,7 +10,7 @@ $mode = $block->getMode();
 $website = $block->getWebsite();
 ?>
 <?php if ($order) : ?>
-    <?php $dynamicStyle = $helper->getDynamicStyles(); ?>
+    <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;
@@ -90,7 +90,7 @@ $website = $block->getWebsite();
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
-            <?= $block->getImage($item, 'category_page_grid')->toHtml(); ?>
+            <img src="<?= $block->getProductImageUrl($item, 'category_page_grid') ?>" alt="<?= $item->getName() ?>">
             <div class="product-name" align="center"><b>
                     <?= mb_substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
             <div align="center">

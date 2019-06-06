@@ -9,9 +9,7 @@ $products = $block->getLoadedProductCollection();
 ?>
 
 <?php if (!empty($products)) : ?>
-    <?php
-    $dynamicStyle = $block->helper->getDynamicStyles();
-    ?>
+    <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;
@@ -78,7 +76,8 @@ $products = $block->getLoadedProductCollection();
     </style>
 <?php endif; ?>
 
-<?php foreach ($products as $key => $_product) :?>
+<?php foreach ($products as $key => $_product) : ?>
+    <?php $productUrl = $block->getConfigurableParentUrl($_product); ?>
     <?php if ($i == 0) : ?>
         <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0"
         style='border-collapse: collapse; font-size:12px';><tr>
@@ -88,19 +87,20 @@ $products = $block->getLoadedProductCollection();
     <?php endif;?>
 
     <td style="vertical-align: text-top; padding-right: 2px;">
-        <a href="<?= $block->escapeHtml($_product->getProductUrl()) ?>"
+        <a href="<?= $block->escapeHtml($productUrl); ?>"
            title="<?= $block->escapeHtml(
-               $block->stripTags(
+                $block->stripTags(
                    $block->getImageLabel(
                        $_product,
                        'small_image'
                    ),
                    null,
                    true
-               )
-           ); ?>"
-           class="product-image"><?= $block->getImage($_product, 'product_small_image')->toHtml(); ?>
-            </a>
+                )
+            ); ?>"
+            class="product-image">
+            <img src="<?= $block->getProductImageUrl($_product, 'product_small_image') ?>" alt="<?= $_product->getName() ?>">
+        </a>
         <div class="product-name" align="center"><b><?= $block->escapeHtml(
                 mb_substr(
                     $_product->getName(),
@@ -115,7 +115,7 @@ $products = $block->getLoadedProductCollection();
             <?= /* @noEscape */ $productPriceHtml; ?>
         </div>
         <div align="center">
-            <a class="proudct-url" href="<?= $block->escapeHtml($_product->getProductUrl()); ?>">
+            <a class="proudct-url" href="<?= $block->escapeHtml($productUrl); ?>">
                 <?php if ($urlText = $block->getTextForUrl($_product->getStoreId())) : ?>
                     <?= $block->escapeHtml($urlText); ?>
                 <?php else : ?>

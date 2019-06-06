@@ -117,7 +117,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS = 'connector_configuration/transactional_data/order_statuses';
     const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES =
         'connector_configuration/transactional_data/order_custom_attributes';
-    const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_ATTRIBUTES =
+    const XML_PATH_CONNECTOR_SYNC_PRODUCT_ATTRIBUTES =
         'connector_configuration/transactional_data/order_product_attributes';
     const XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS =
         'connector_configuration/transactional_data/order_product_custom_options';
@@ -161,6 +161,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES = 'connector_configuration/catalog_sync/catalog_values';
     const XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY = 'connector_configuration/catalog_sync/catalog_visibility';
     const XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE = 'connector_configuration/catalog_sync/catalog_type';
+
     //Abandoned Cart
     const XML_PATH_CONNECTOR_EMAIL_CAPTURE = 'connector_configuration/abandoned_carts/email_capture';
     const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT = 'connector_configuration/abandoned_carts/cart_limit';
@@ -203,6 +204,12 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         'connector_automation/visitor_automation/first_order_automation';
 
     /**
+     * Abandoned cart program enrolment.
+     */
+    const XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID = 'abandoned_carts/program/id';
+    const XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_INTERVAL = 'abandoned_carts/program/send_after';
+
+    /**
      * ROI SECTION.
      */
     const XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED = 'connector_configuration/tracking/roi_enabled';
@@ -224,8 +231,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const API_CONNECTOR_OAUTH_URL_AUTHORISE = 'OAuth2/authorise.aspx?';
     const API_CONNECTOR_OAUTH_URL_TOKEN = 'OAuth2/Tokens.ashx';
     const API_CONNECTOR_OAUTH_URL_LOG_USER = '?oauthtoken=';
-
-    const CONNECTOR_FEED_LAST_CHECK_TIME = 'connector_feed_last_check_time';
 
     /**
      * Reviews SECTION.
@@ -256,6 +261,15 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES = 'connector_developer_settings/ip_restriction/ip_addresses';
     const XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA =
         'connector_developer_settings/import_settings/subscriber_sales_data_enabled';
+
+    /*
+     * Cron schedules
+     */
+    const XML_PATH_CRON_SCHEDULE_CONTACT = 'connector_developer_settings/cron_schedules/contact';
+    const XML_PATH_CRON_SCHEDULE_IMPORTER = 'connector_developer_settings/cron_schedules/importer';
+    const XML_PATH_CRON_SCHEDULE_REVIEWS = 'connector_developer_settings/cron_schedules/review_wishlist';
+    const XML_PATH_CRON_SCHEDULE_ORDERS = 'connector_developer_settings/cron_schedules/order';
+    const XML_PATH_CRON_SCHEDULE_CATALOG = 'connector_developer_settings/cron_schedules/catalog';
 
     /**
      * API endpoint.
@@ -402,20 +416,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $logUserUrl;
-    }
-
-    /**
-     * @param \Magento\Store\Api\Data\StoreInterface $store
-     * @return string
-     */
-    public function getOptInType($store)
-    {
-        $needToConfirm = $store->getConfig(
-            \Magento\Newsletter\Model\Subscriber::XML_PATH_CONFIRMATION_FLAG
-        );
-        $optInType = ($needToConfirm)? 'Double' : 'Single';
-
-        return $optInType;
     }
 
     /**

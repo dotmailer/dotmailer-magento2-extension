@@ -25,7 +25,7 @@ class Cron
     private $automationFactory;
 
     /**
-     * @var ImporterFactory
+     * @var Sync\ImporterFactory
      */
     private $importerFactory;
 
@@ -92,8 +92,8 @@ class Cron
      * @param Sales\QuoteFactory                       $quoteFactory
      * @param Customer\GuestFactory                    $guestFactory
      * @param Newsletter\SubscriberFactory             $subscriberFactory
-     * @param Sync\CatalogFactory                      $catalogFactorty
-     * @param ImporterFactory                          $importerFactory
+     * @param Sync\CatalogFactory                      $catalogFactory
+     * @param Sync\ImporterFactory                     $importerFactory
      * @param Sync\AutomationFactory                   $automationFactory
      * @param Apiconnector\ContactFactory              $contact
      * @param \Dotdigitalgroup\Email\Helper\Data       $helper
@@ -111,7 +111,7 @@ class Cron
         \Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
         \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
+        \Dotdigitalgroup\Email\Model\Sync\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -119,7 +119,8 @@ class Cron
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection,
-        Cron\CronSubFactory $cronSubFactory
+        Cron\CronSubFactory $cronSubFactory,
+        \Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
@@ -136,6 +137,7 @@ class Cron
         $this->cronCollection    = $cronCollection;
         $this->templateFactory   = $templateFactory;
         $this->cronHelper        = $cronSubFactory->create();
+        $this->abandonedCartProgramEnroller = $abandonedCartProgramEnroller;
     }
 
     /**
@@ -174,7 +176,7 @@ class Cron
     {
         //sync subscribers
         $subscriberModel = $this->subscriberFactory->create();
-        $result = $subscriberModel->sync();
+        $result = $subscriberModel->runExport();
 
         //un-subscribe suppressed contacts
         $subscriberModel->unsubscribe();
@@ -216,7 +218,8 @@ class Cron
             return;
         }
 
-        $this->importerFactory->create()->processQueue();
+        $this->importerFactory->create()
+            ->sync();
     }
 
     /**
@@ -260,6 +263,7 @@ class Cron
         }
 
         $this->quoteFactory->create()->processAbandonedCarts();
+        $this->abandonedCartProgramEnroller->process();
     }
 
     /**

@@ -97,6 +97,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $contactResource;
 
     /**
+     * @var \Magento\Framework\Encryption\EncryptorInterface
+     */
+    public $encryptor;
+
+    /**
      * @var \Magento\Quote\Model\ResourceModel\Quote
      */
     private $quoteResource;
@@ -112,9 +117,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $userResource;
 
     /**
-     * @var \Magento\Framework\Encryption\EncryptorInterface
+     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
      */
-    public $encryptor;
+    private $timezone;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     */
+    private $dateIntervalFactory;
 
     /**
      * Data constructor.
@@ -156,6 +166,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
         \Dotdigitalgroup\Email\Model\Config\Json $serilizer,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\User\Model\ResourceModel\User $userResource,
@@ -174,6 +186,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->clientFactory = $clientFactory;
         $this->configHelperFactory = $configHelperFactory;
         $this->datetime = $dateTime;
+        $this->timezone = $timezone;
+        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->quoteResource = $quoteResource;
         $this->quoteFactory = $quoteFactory;
         $this->userResource = $userResource;
@@ -298,7 +312,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return int|float|string|boolean
      */
-    private function getConfigValue(
+    public function getConfigValue(
         $path,
         $contextScope = 'default',
         $contextScopeId = null
@@ -360,9 +374,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteForSelectedScopeInAdmin()
     {
-        //If website param does not exist then default value returned 0 "default scope"
-        //This is because there is no website param in default scope
-        $websiteId = $this->_request->getParam('website', 0);
+        /**
+         * See first if store param exist. If it does than get website from store.
+         * If website param does not exist then default value returned 0 "default scope"
+         * This is because there is no website param in default scope
+         */
+        $storeId = $this->_request->getParam('store');
+        $websiteId = ($storeId) ? $this->storeManager->getStore($storeId)->getWebsiteId() :
+            $this->_request->getParam('website', 0);
         return $this->storeManager->getWebsite($websiteId);
     }
 
@@ -615,6 +634,50 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $response;
+    }
+
+    /**
+     * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * @param string $intervalSpec
+     * @return array
+     */
+    public function getSuppressedContacts($website, $intervalSpec = 'PT24H')
+    {
+        $limit = 5;
+        $maxToSelect = 1000;
+        $skip = $i = 0;
+        $contacts = [];
+        $suppressedEmails = [];
+        $date = $this->timezone->date()->sub($this->dateIntervalFactory->create(['interval_spec' => $intervalSpec]));
+        $dateString = $date->format(\DateTime::W3C);
+        $client = $this->getWebsiteApiClient($website);
+
+        //there is a maximum of request we need to loop to get more suppressed contacts
+        for ($i=0; $i<= $limit; $i++) {
+            $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect, $skip);
+
+            // skip no more contacts or the api request failed
+            if (empty($apiContacts) || isset($apiContacts->message)) {
+                break;
+            }
+            $contacts = array_merge($contacts, $apiContacts);
+            $skip += 1000;
+        }
+
+        // Contacts to un-subscribe
+        foreach ($contacts as $apiContact) {
+            if (isset($apiContact->suppressedContact)) {
+                $suppressedContactEmail = $apiContact->suppressedContact->email;
+                if (!array_key_exists($suppressedContactEmail, $suppressedEmails)) {
+                    $suppressedEmails[$suppressedContactEmail] = [
+                        'email' => $apiContact->suppressedContact->email,
+                        'removed_at' => $apiContact->dateRemoved,
+                    ];
+                }
+            }
+        }
+
+        return array_values($suppressedEmails);
     }
 
     /**
@@ -1405,74 +1468,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_ANCHOR,
             $website
         );
-    }
-
-    /**
-     * Dynamic styles from config.
-     *
-     * @return array
-     */
-    public function getDynamicStyles()
-    {
-        return [
-            'nameStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE
-                )
-            ),
-            'priceStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE
-                )
-            ),
-            'linkStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE
-                )
-            ),
-            'otherStyle' => explode(
-                ',',
-                $this->getConfigValue(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE
-                )
-            ),
-            'nameColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR
-            ),
-            'fontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE
-            ),
-            'priceColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR
-            ),
-            'priceFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE
-            ),
-            'urlColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR
-            ),
-            'urlFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE
-            ),
-            'otherColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR
-            ),
-            'otherFontSize' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE
-            ),
-            'docFont' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT
-            ),
-            'docBackgroundColor' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR
-            ),
-            'dynamicStyling' => $this->getConfigValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING
-            ),
-        ];
     }
 
     /**

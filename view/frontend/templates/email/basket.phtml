@@ -4,7 +4,7 @@
 ?>
 <?php $items = $block->getBasketItems(); ?>
 <?php if ($items) : ?>
-    <?php $dynamicStyle = $block->getDynamicStyle();?>
+    <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name {
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']); ?>;
@@ -190,16 +190,10 @@
                 <?= $block->escapeHtml(__('Total')); ?>
             </th>
         </tr>
-        <?php $grandTotal = 0; ?>
         <?php foreach ($items as $item) : ?>
-            <?php $grandTotal = $item['grandTotal']; ?>
             <tr>
                 <td class="product-image">
-                    <?= $block->getImage(
-                        $item['product'],
-                        'product_small_image'
-                    )->toHtml();
-                    ?>
+                    <img src="<?= $block->getProductImageUrl($item['product_details']) ?>" alt="<?= $item['product']->getName() ?>">
                 </td>
                 <td class="product-name">
                     <a class="product-url" href="<?= $block->escapeHtml($item['productUrl']); ?>">
@@ -214,12 +208,12 @@
                 </td>
             </tr>
         <?php endforeach; ?>
-        <tr class="hidemob">
+        <tr>
             <td class="hidemob"></td>
             <td class="hidemob"></td>
             <td class="hidemob"></td>
             <td class="other-text other-text-padding">
-                <?= $block->escapeHtml(__('Total: ') . $grandTotal); ?>
+                <?= $block->getGrandTotalWithCurrency() ?>
             </td>
         </tr>
     </table>

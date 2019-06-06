@@ -19,7 +19,7 @@
                 <attribute type="expanded">1</attribute>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enabled</label>
-                    <comment><![CDATA[Dont' have an API? click <a href="https://developer.dotmailer.com/docs/getting-started-with-the-api/" target="_blank">here</a> to know how to create new one.]]></comment>
+                    <comment><![CDATA[Don't have an API user? Find out about <a href="https://developer.dotdigital.com/docs/getting-started-with-the-api/" target="_blank">getting started with the Engagement Cloud API</a>.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInStore="0" showInWebsite="1">
@@ -463,8 +463,20 @@
             <label>Abandoned Carts</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="program" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Abandoned Cart Program</label>
+                <attribute type="expanded">1</attribute>
+                <field id="id" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enrol abandoned cart to</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
+                </field>
+                <field id="send_after" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enrol abandoned cart after</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\IntervalProgramEnrolment</source_model>
+                </field>
+            </group>
             <group id="customers" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Customers</label>
+                <label>Customers Email Series</label>
                 <attribute type="expanded">1</attribute>
                 <field id="heading_1" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Abandoned Cart 1</label>
@@ -516,7 +528,7 @@
                 </field>
             </group>
             <group id="guests" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Guests</label>
+                <label>Guests Email Series</label>
                 <attribute type="expanded">1</attribute>
                 <field id="heading_1" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
                        showInDefault="1">
@@ -659,7 +671,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Delay Period (Days)</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Delay</source_model>
-                    <comment><![CDATA[The system will send the reminder after the above mentioned amount of days upon order status selected above.]]></comment>
+                    <comment><![CDATA[The system will send the reminder the selected number of days after order creation, if the order status matches.]]></comment>
                 </field>
                 <field id="campaign" translate="label" type="select" sortOrder="50" showInStore="0" showInWebsite="1"
                        showInDefault="1">
@@ -690,13 +702,13 @@
                     <label>Logo Template (Optional)</label>
                     <comment>Enter name of logo template.</comment>
                 </field>
-                <field id="service_score_url" translate="label" type="label" sortOrder="40" showInStore="0"
+                <field id="service_score_url" translate="label" type="text" sortOrder="40" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Service Score URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo\Score</frontend_model>
                     <comment><![CDATA[Enter Feefo logon above before using this URL.]]></comment>
                 </field>
-                <field id="product_reviews_url" translate="comment label" type="label" sortOrder="50" showInStore="0"
+                <field id="product_reviews_url" translate="comment label" type="text" sortOrder="50" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Product Reviews URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Feefo\Reviews</frontend_model>
@@ -1082,6 +1094,11 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
                 </field>
+                <field id="customer_password_reset_password_template" translate="label" sortOrder="65" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Reset Password</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
+                </field>
                 <field id="wishlist_email_email_template" translate="label" sortOrder="70" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Wish List Sharing</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
@@ -1292,9 +1309,9 @@
                 </field>
                 <field id="order_product_attributes" translate="comment label" type="multiselect" sortOrder="40"
                        showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Include Products Attributes In Order Sync</label>
+                    <label>Product Attributes</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
-                    <comment><![CDATA[Selected product attribute(s) will be exported]]></comment>
+                    <comment><![CDATA[Selected product attribute(s) will be imported in order and catalog syncs.]]></comment>
                 </field>
                 <field id="order_product_custom_options" translate="label" type="select" sortOrder="50" showInStore="0"
                        showInWebsite="1" showInDefault="1">
@@ -1442,7 +1459,7 @@
                 </field>
                 <field id="other_title" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Other Text (Will Apply To Other Remaning Text)</label>
+                    <label>Other Text (Will Apply To Other Remaining Text)</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="other_color" translate="label" sortOrder="180" type="select" showInStore="0"
@@ -1582,7 +1599,7 @@
                     <label>Contact Sync Size</label>
                 </field>
                 <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
+                       showInWebsite="0" showInDefault="1">
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>

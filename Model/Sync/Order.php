@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 /**
  * Sync Orders.
  */
-class Order
+class Order implements SyncInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
@@ -125,9 +125,10 @@ class Order
      *
      * @return array
      *
+     * @param \DateTime|null $from
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $response = ['success' => true, 'message' => 'Done.'];
 
@@ -266,7 +267,7 @@ class Order
             return $orders;
         }
 
-        $orders = $this->mappOrderData($orderCollection, $orderModel, $orders);
+        $orders = $this->mapOrderData($orderCollection, $orderModel, $orders);
 
         return $orders;
     }
@@ -299,7 +300,7 @@ class Order
             return $orders;
         }
 
-        $orders = $this->mappOrderData($orderCollection, $orderModel, $orders);
+        $orders = $this->mapOrderData($orderCollection, $orderModel, $orders);
 
         return $orders;
     }
@@ -311,7 +312,7 @@ class Order
      *
      * @return array
      */
-    protected function mappOrderData($orderCollection, $orderModel, $orders)
+    protected function mapOrderData($orderCollection, $orderModel, $orders)
     {
         $orderIds = $orderCollection->getColumnValues('order_id');
 

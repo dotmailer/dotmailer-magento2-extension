@@ -7,9 +7,10 @@
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <conditionalClick stepKey="expandAccountsTab" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
         <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="Yes" stepKey="setEnabled"/>
-        <fillField selector="{{AdminDotmailerAccountsSection.accountsUsernameField}}" userInput="test-username" stepKey="setApiUserName"/>
-        <fillField selector="{{AdminDotmailerAccountsSection.accountsPasswordField}}" userInput="test-password" stepKey="setApiPassword"/>
-        <click selector="{{AdminDotmailerAccountsSection.accountsSaveButton}}" stepKey="saveConfig" />
+        <fillField selector="{{AdminDotmailerAccountsSection.accountsUsernameField}}" userInput="{{_CREDS.engagement_cloud_api_username}}" stepKey="setApiUserName"/>
+        <fillField selector="{{AdminDotmailerAccountsSection.accountsPasswordField}}" userInput="{{_CREDS.engagement_cloud_api_password}}" stepKey="setApiPassword"/>
+        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig" />
+        <waitForPageLoad stepKey="waitForPageLoad1"/>
     </actionGroup>
     <actionGroup name="ResetDotmailerAccountData">
         <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPageReset"/>
@@ -18,13 +19,15 @@
         <clearField selector="{{AdminDotmailerAccountsSection.accountsUsernameField}}" stepKey="setApiUserNameReset"/>
         <clearField selector="{{AdminDotmailerAccountsSection.accountsPasswordField}}" stepKey="setApiPasswordReset"/>
         <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="No" stepKey="setEnabledReset"/>
-        <click selector="{{AdminDotmailerAccountsSection.accountsSaveButton}}" stepKey="saveConfigReset" />
+        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfigReset" />
+        <waitForPageLoad stepKey="waitForPageLoad2"/>
     </actionGroup>
     <actionGroup name="SetDisableDotmailerAccount">
         <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPage1"/>
-        <waitForPageLoad stepKey="waitForPageLoad1"/>
+        <waitForPageLoad stepKey="waitForPageLoad3"/>
         <conditionalClick stepKey="expandAccountsTab1" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
         <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="No" stepKey="setEnabled1"/>
-        <click selector="{{AdminDotmailerAccountsSection.accountsSaveButton}}" stepKey="saveConfig1" />
+        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig1" />
+        <waitForPageLoad stepKey="waitForPageLoad4"/>
     </actionGroup>
 </actionGroups>

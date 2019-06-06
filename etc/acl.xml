@@ -10,24 +10,25 @@
                     </resource>
                 </resource>
                 <resource id="Magento_Reports::report">
-                    <resource id="Dotdigitalgroup_Email::reports" title="Dotmailer Email">
-                        <resource id="Dotdigitalgroup_Email::contact" title="Dotmailer Contact" sortOrder="20"/>
-                        <resource id="Dotdigitalgroup_Email::order" title="Dotmailer Order" sortOrder="30"/>
-                        <resource id="Dotdigitalgroup_Email::review" title="Dotmailer Review" sortOrder="50"/>
-                        <resource id="Dotdigitalgroup_Email::wishlist" title="Dotmailer Wishlist" sortOrder="60"/>
-                        <resource id="Dotdigitalgroup_Email::catalog" title="Dotmailer Catalog" sortOrder="70"/>
-                        <resource id="Dotdigitalgroup_Email::importer" title="Dotmailer Importer" sortOrder="80"/>
-                        <resource id="Dotdigitalgroup_Email::campaign" title="Dotmailer Campaign" sortOrder="90"/>
-                        <resource id="Dotdigitalgroup_Email::cron" title="Dotmailer Cron" sortOrder="100"/>
-                        <resource id="Dotdigitalgroup_Email::dashboard" title="Dotmailer Dashboard" sortOrder="110"/>
-                        <resource id="Dotdigitalgroup_Email::automation_enrollment" title="Dotmailer Enrollment Automation" sortOrder="120"/>
-                        <resource id="Dotdigitalgroup_Email::logviewer" title="Dotmailer Log Viewer" sortOrder="130"/>
+                    <resource id="Dotdigitalgroup_Email::reports" title="Engagement Cloud Email">
+                        <resource id="Dotdigitalgroup_Email::contact" title="Engagement Cloud Contact" sortOrder="20"/>
+                        <resource id="Dotdigitalgroup_Email::order" title="Engagement Cloud Order" sortOrder="30"/>
+                        <resource id="Dotdigitalgroup_Email::review" title="Engagement Cloud Review" sortOrder="50"/>
+                        <resource id="Dotdigitalgroup_Email::wishlist" title="Engagement Cloud Wishlist" sortOrder="60"/>
+                        <resource id="Dotdigitalgroup_Email::catalog" title="Engagement Cloud Catalog" sortOrder="70"/>
+                        <resource id="Dotdigitalgroup_Email::importer" title="Engagement Cloud Importer" sortOrder="80"/>
+                        <resource id="Dotdigitalgroup_Email::campaign" title="Engagement Cloud Campaign" sortOrder="90"/>
+                        <resource id="Dotdigitalgroup_Email::cron" title="Engagement Cloud Cron" sortOrder="100"/>
+                        <resource id="Dotdigitalgroup_Email::dashboard" title="Engagement Cloud Dashboard" sortOrder="110"/>
+                        <resource id="Dotdigitalgroup_Email::automation_enrollment" title="Engagement Cloud Enrollment Automation" sortOrder="120"/>
+                        <resource id="Dotdigitalgroup_Email::logviewer" title="Engagement Cloud Log Viewer" sortOrder="130"/>
+                        <resource id="Dotdigitalgroup_Email::abandoned" title="Engagement Cloud Abandoned Carts" sortOrder="140"/>
                     </resource>
                 </resource>
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="Dotdigitalgroup_Email::config" title="DOTMAILER"/>
+                            <resource id="Dotdigitalgroup_Email::config" title="Engagement Cloud"/>
                         </resource>
                     </resource>
                 </resource>

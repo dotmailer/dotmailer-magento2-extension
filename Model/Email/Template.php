@@ -12,7 +12,7 @@ class Template extends \Magento\Framework\DataObject
     const XML_PATH_WISHLIST_EMAIL_EMAIL_TEMPLATE = 'wishlist/email/email_template';
     const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT =
         'dotmailer_email_templates/email_templates/customer_create_account_email_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY =
+    const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION_KEY =
         'dotmailer_email_templates/email_templates/customer_create_account_email_confirmation_template';
     const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION =
         'dotmailer_email_templates/email_templates/customer_create_account_email_confirmed_template';
@@ -20,6 +20,8 @@ class Template extends \Magento\Framework\DataObject
         'dotmailer_email_templates/email_templates/customer_password_forgot_email_template';
     const XML_PATH_DDG_TEMPLATE_REMIND_PASSWORD =
         'dotmailer_email_templates/email_templates/customer_password_remind_email_template';
+    const XML_PATH_DDG_TEMPLATE_RESET_PASSWORD =
+        'dotmailer_email_templates/email_templates/customer_password_reset_password_template';
     const XML_PATH_DDG_TEMPLATE_WISHLIST_PRODUCT_SHARE =
         'dotmailer_email_templates/email_templates/wishlist_email_email_template';
     const XML_PATH_DDG_TEMPLATE_FORGOT_ADMIN_PASSWORD =
@@ -84,6 +86,8 @@ class Template extends \Magento\Framework\DataObject
             \Magento\Customer\Model\EmailNotification::XML_PATH_CONFIRM_EMAIL_TEMPLATE,
         'customer_password_forgot_email_template' =>
             \Magento\Customer\Model\EmailNotification::XML_PATH_FORGOT_EMAIL_TEMPLATE,
+        'customer_password_reset_password_template' =>
+            \Magento\Customer\Model\EmailNotification::XML_PATH_RESET_PASSWORD_TEMPLATE,
         'customer_password_remind_email_template' =>
             \Magento\Customer\Model\EmailNotification::XML_PATH_REMIND_EMAIL_TEMPLATE,
         'wishlist_email_email_template' => self::XML_PATH_WISHLIST_EMAIL_EMAIL_TEMPLATE,
@@ -134,17 +138,18 @@ class Template extends \Magento\Framework\DataObject
     ];
 
     /**
-     * Config path id to dotmialer config.
+     * Config path id to dotmailer config.
      *
      * @var array
      */
     public $templateConfigIdToDotmailerConfigPath = [
         'customer_create_account_email_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT,
         'customer_create_account_email_confirmation_template' =>
-            self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT_CONFIRMATION_KEY,
+            self::XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION_KEY,
         'customer_create_account_email_confirmed_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION,
         'customer_password_forgot_email_template' => self::XML_PATH_DDG_TEMPLATE_FORGOT_PASSWORD,
         'customer_password_remind_email_template' => self::XML_PATH_DDG_TEMPLATE_REMIND_PASSWORD,
+        'customer_password_reset_password_template' => self::XML_PATH_DDG_TEMPLATE_RESET_PASSWORD,
         'admin_emails_forgot_email_template' => self::XML_PATH_DDG_TEMPLATE_FORGOT_ADMIN_PASSWORD,
         'newsletter_subscription_success_email_template' => self::XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS,
         'newsletter_subscription_confirm_email_template' => self::XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_CONFIRMATION,
@@ -198,14 +203,14 @@ class Template extends \Magento\Framework\DataObject
     public $templateResource;
 
     /**
-     * @var \Magento\Email\Model\TempalteFactory
+     * @var \Magento\Email\Model\TemplateFactory
      */
     public $templateFactory;
 
     /**
      * @var array
      */
-    public $proccessedCampaings = [];
+    public $processedCampaigns = [];
 
     /**
      * Template constructor.
@@ -281,7 +286,7 @@ class Template extends \Magento\Framework\DataObject
             //reset the campaign ids for each website
             $websiteId = $store->getWebsiteId();
             if ($websiteId != $lastWebsiteId) {
-                $this->proccessedCampaings = [];
+                $this->processedCampaigns = [];
                 $lastWebsiteId = $websiteId;
             }
 
@@ -290,12 +295,12 @@ class Template extends \Magento\Framework\DataObject
                 $configPath = $this->templateConfigMapping[$configTemplateId];
                 $emailTemplateId = $this->getConfigValue($configPath, $storeId);
 
-                if ($campaignId && $emailTemplateId && ! in_array($campaignId, $this->proccessedCampaings)) {
+                if ($campaignId && $emailTemplateId && ! in_array($campaignId, $this->processedCampaigns)) {
                     //sync template for store
                     $this->syncEmailTemplate($campaignId, $emailTemplateId, $store);
                     $result['store'] .= ', ' . $store->getCode();
 
-                    $this->proccessedCampaings[$campaignId] = $campaignId;
+                    $this->processedCampaigns[$campaignId] = $campaignId;
                 }
             }
         }

@@ -10,19 +10,9 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
     private $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @var \Magento\Framework\Registry
      */
     private $registry;
-
-    /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    private $request;
     
     /**
      * Escaper
@@ -34,22 +24,16 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
     /**
      * Program constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data         $data
-     * @param \Magento\Framework\App\RequestInterface    $requestInterface
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Magento\Framework\Registry                $registry
-     * @param \Magento\Framework\Escaper                 $escaper
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\App\RequestInterface $requestInterface,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Escaper $escaper
     ) {
         $this->helper       = $data;
-        $this->request      = $requestInterface;
-        $this->storeManager = $storeManagerInterface;
         $this->registry     = $registry;
         $this->escaper      = $escaper;
     }
@@ -63,10 +47,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
     {
         $fields = [];
         $fields[] = ['value' => '0', 'label' => '-- Disabled --'];
-
-        $websiteName = $this->request->getParam('website', false);
-        $website = ($websiteName)
-            ? $this->storeManager->getWebsite($websiteName) : 0;
+        $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
 
         if ($this->helper->isEnabled($website)) {
             $savedPrograms = $this->registry->registry('programs');
