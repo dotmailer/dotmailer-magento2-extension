@@ -57,7 +57,7 @@ class OrderSaveBefore implements \Magento\Framework\Event\ObserverInterface
             $orderStatus = $reloaded->getStatus();
         }
         //register the order status before change
-        if (!$this->registry->registry('sales_order_status_before')) {
+        if (is_null($this->registry->registry('sales_order_status_before'))) {
             $this->registry->register(
                 'sales_order_status_before',
                 $orderStatus
