@@ -92,7 +92,7 @@ class Campaign implements SyncInterface
     /**
      * @inheritdoc
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $this->sendCampaigns();
     }

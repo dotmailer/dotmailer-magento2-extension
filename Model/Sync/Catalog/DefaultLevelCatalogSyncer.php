@@ -5,11 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 class DefaultLevelCatalogSyncer implements CatalogSyncerInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
-     */
-    private $importerFactory;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -32,20 +27,17 @@ class DefaultLevelCatalogSyncer implements CatalogSyncerInterface
     /**
      * DefaultLevelCatalogSyncer constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
      * @param StoreCatalogSyncer $storeCatalogSyncer
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         StoreCatalogSyncer $storeCatalogSyncer
     ) {
-        $this->importerFactory = $importerFactory;
         $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
         $this->catalogResource = $catalogResource;

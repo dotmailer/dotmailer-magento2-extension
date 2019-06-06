@@ -60,11 +60,9 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
         $apiEnabled = $this->helper->isEnabled($website);
         if ($apiEnabled) {
             $client = $this->helper->getWebsiteApiClient($website);
-            $programs = $client->getPrograms();
-
-            foreach ($programs as $one) {
-                if (isset($one->id)) {
-                    if ($one->status == 'Active') {
+            if ($programs = $client->getPrograms()) {
+                foreach ($programs as $one) {
+                    if (isset($one->id) && $one->status == 'Active') {
                         $fields[] = [
                             'value' => $one->id,
                             'label' => $one->name,

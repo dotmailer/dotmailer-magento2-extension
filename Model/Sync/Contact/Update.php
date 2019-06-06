@@ -9,8 +9,10 @@ use Dotdigitalgroup\Email\Model\Apiconnector\EngagementCloudAddressBookApiFactor
 /**
  * Handle update data for importer.
  */
-class Update extends Delete
+class Update extends Bulk
 {
+    const ERROR_CONTACT_ALREADY_SUBSCRIBED = 'Contact is already subscribed';
+
     /**
      * @var Contact
      */
@@ -28,6 +30,7 @@ class Update extends Delete
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param Contact $contactResource
      * @param EngagementCloudAddressBookApiFactory $engagementCloudAddressBookApiFactory
      */
@@ -36,13 +39,14 @@ class Update extends Delete
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Magento\Framework\Stdlib\DateTime $dateTime,
         Contact $contactResource,
         EngagementCloudAddressBookApiFactory $engagementCloudAddressBookApiFactory
     ) {
         $this->contactResource = $contactResource;
         $this->engagementCloudAddressBookApiFactory = $engagementCloudAddressBookApiFactory;
 
-        parent::__construct($helper, $importerResource, $serializer, $contactFactory);
+        parent::__construct($helper, $importerResource, $serializer, $contactFactory, $dateTime);
     }
 
     /**
@@ -68,7 +72,9 @@ class Update extends Delete
                     ->setRequiredDataForClient($websiteId);
                 $importData = $this->serializer->unserialize($item->getImportData());
 
-                $this->syncItem($item, $importData, $websiteId);
+                if ($this->client) {
+                    $this->syncItem($item, $importData, $websiteId);
+                }
             }
         }
         //update suppress status for contact ids
@@ -86,18 +92,28 @@ class Update extends Delete
      */
     public function syncItem($item, $importData, $websiteId)
     {
-        if ($this->client) {
-            if ($item->getImportMode() == Importer::MODE_CONTACT_EMAIL_UPDATE) {
-                $result = $this->syncItemContactEmailUpdateMode($importData, $websiteId);
-            } elseif ($item->getImportMode() == Importer::MODE_SUBSCRIBER_RESUBSCRIBED) {
-                $result = $this->syncItemSubscriberResubscribedMode($importData, $websiteId);
-            } elseif ($item->getImportMode() == Importer::MODE_SUBSCRIBER_UPDATE) {
-                $result = $this->syncItemSubscriberUpdateMode($importData, $websiteId);
-            }
+        $apiMessage = $result = null;
 
-            if (isset($result)) {
-                $this->_handleSingleItemAfterSync($item, $result);
-            }
+        switch ($item->getImportMode()) {
+            case Importer::MODE_CONTACT_EMAIL_UPDATE:
+                $result = $this->syncItemContactEmailUpdateMode($importData, $websiteId);
+                break;
+
+            case Importer::MODE_SUBSCRIBER_RESUBSCRIBED:
+                $result = $this->syncItemSubscriberResubscribedMode($importData, $websiteId);
+                if (($result->status ?? null) == 'Subscribed') {
+                    // the contact is already subscribed in EC and cannot be resubscribed
+                    $apiMessage = self::ERROR_CONTACT_ALREADY_SUBSCRIBED;
+                }
+                break;
+
+            case Importer::MODE_SUBSCRIBER_UPDATE:
+                $result = $this->syncItemSubscriberUpdateMode($importData, $websiteId);
+                break;
+        }
+
+        if ($result) {
+            $this->handleSingleItemAfterSync($item, $result, $apiMessage);
         }
     }
 
@@ -159,9 +175,10 @@ class Update extends Delete
             return ($subscribersAddressBook) ?
                 $this->client->postAddressBookContactResubscribe($subscribersAddressBook, $email) :
                 $this->client->postContactsResubscribe($this->client->getContactByEmail($email));
+
         }
 
-        return false;
+        return $apiContact;
     }
 
     /**

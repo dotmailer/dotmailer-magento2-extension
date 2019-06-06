@@ -393,4 +393,16 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ]
         );
     }
+
+    /**
+     * @param $products
+     */
+    public function bulkProductImport($products)
+    {
+        if (! empty($products)) {
+            $connection = $this->getConnection();
+            $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
+            $connection->insertMultiple($tableName, $products);
+        }
+    }
 }

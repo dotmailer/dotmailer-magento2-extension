@@ -43,7 +43,6 @@ class Resetorders extends \Magento\Config\Block\System\Config\Form\Field
         return $this->getLayout()
             ->createBlock(\Magento\Backend\Block\Widget\Button::class)
             ->setType('button')
-            ->setId($element->getId())
             ->setLabel($this->buttonLabel)
             ->setOnClick("window.location.href='" . $url . "'")
             ->toHtml();

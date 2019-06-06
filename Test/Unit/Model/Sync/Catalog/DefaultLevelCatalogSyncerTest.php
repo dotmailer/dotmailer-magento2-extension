@@ -1,7 +1,6 @@
 <?php
 
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\DefaultLevelCatalogSyncer;
@@ -15,11 +14,6 @@ class DefaultLevelCatalogSyncerTest extends TestCase
      * @var DefaultLevelCatalogSyncer
      */
     private $defaultCatalogSyncer;
-
-    /**
-     * @var ImporterFactory
-     */
-    private $importerFactory;
 
     /**
      * @var Data
@@ -48,14 +42,12 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
     protected function setUp()
     {
-        $this->importerFactory = $this->createMock(ImporterFactory::class);
         $this->helperMock = $this->createMock(Data::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
         $this->catalogFactoryMock = $this->createMock(CatalogFactory::class);
         $this->storeCatalogSyncerMock = $this->createMock(StoreCatalogSyncer::class);
         $this->resourceCatalogMock = $this->createMock(Catalog::class);
         $this->defaultCatalogSyncer = new DefaultLevelCatalogSyncer(
-            $this->importerFactory,
             $this->helperMock,
             $this->scopeConfigInterfaceMock,
             $this->resourceCatalogMock,

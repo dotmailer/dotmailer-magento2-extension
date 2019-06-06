@@ -11,6 +11,16 @@ use \Dotdigitalgroup\Email\Model\Apiconnector\EngagementCloudAddressBookApi;
 class Bulk
 {
     /**
+     * Legendary error message
+     */
+    const ERROR_UNKNOWN = 'Error unknown';
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Config\Json
+     */
+    public $serializer;
+
+    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
     protected $importerResource;
@@ -31,9 +41,9 @@ class Bulk
     private $contactFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Config\Json
+     * @var \Magento\Framework\Stdlib\DateTime
      */
-    public $serializer;
+    private $dateTime;
 
     /**
      * Bulk constructor.
@@ -46,12 +56,14 @@ class Bulk
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
+        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        \Magento\Framework\Stdlib\DateTime $dateTime
     ) {
-        $this->helper         = $helper;
-        $this->serializer     = $serializer;
+        $this->helper = $helper;
+        $this->serializer = $serializer;
         $this->importerResource = $importerResource;
         $this->contactFactory = $contactFactory;
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -139,11 +151,11 @@ class Bulk
             } elseif (isset($result->id) && !isset($result->message)) {
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTING)
                     ->setImportId($result->id)
-                    ->setImportStarted(time())
+                    ->setImportStarted($this->dateTime->formatDate(true))
                     ->setMessage('');
                 $this->importerResource->save($item);
             } else {
-                $message = (isset($result->message)) ? $result->message : 'Error unknown';
+                $message = (isset($result->message)) ? $result->message : self::ERROR_UNKNOWN;
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
                     ->setMessage($message);
 
@@ -175,5 +187,33 @@ class Bulk
         }
 
         return false;
+    }
+
+    /**
+     * @param $item
+     * @param $apiContact
+     * @param string|null $apiMessage
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     */
+    protected function handleSingleItemAfterSync($item, $apiContact, $apiMessage = null)
+    {
+        $curlError = $this->_checkCurlError($item);
+
+        //no api connection error
+        if (! $curlError) {
+            //api response error
+            if (isset($apiContact->message) or ! $apiContact) {
+                $message = (isset($apiContact->message)) ? $apiContact->message : self::ERROR_UNKNOWN;
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+                    ->setMessage($message);
+            } else {
+                $dateTime = $this->dateTime->formatDate(true);
+                $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTED)
+                    ->setImportFinished($dateTime)
+                    ->setImportStarted($dateTime)
+                    ->setMessage($apiMessage ?: '');
+            }
+            $this->importerResource->save($item);
+        }
     }
 }

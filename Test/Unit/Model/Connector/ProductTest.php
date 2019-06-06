@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Connector\Product;
+use Dotdigitalgroup\Email\Model\Product\Attribute;
+use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Magento\Bundle\Model\Product\Type;
 use Magento\Bundle\Model\ResourceModel\Option\Collection as OptionCollection;
 use Magento\Bundle\Pricing\Price\BundleRegularPrice;
@@ -21,7 +23,6 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Phrase;
 use Magento\Framework\Pricing\Amount\Base as AmountBase;
 use Magento\Framework\Pricing\PriceInfo\Base;
-use Magento\Framework\Stdlib\StringUtils;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Store;
 use Magento\CatalogInventory\Api\StockStateInterface;
@@ -53,11 +54,6 @@ class ProductTest extends TestCase
      * @var StatusFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $statusFactoryMock;
-
-    /**
-     * @var StringUtils|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $stringUtilsMock;
 
     /**
      * @var MageProduct|\PHPUnit_Framework_MockObject_MockObject
@@ -93,11 +89,6 @@ class ProductTest extends TestCase
      * @var Base|\PHPUnit_Framework_MockObject_MockObject
      */
     private $baseMock;
-
-    /**
-     * @var AbstractType|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $abstractMock;
 
     /**
      * @var BundleRegularPrice|\PHPUnit_Framework_MockObject_MockObject
@@ -144,6 +135,16 @@ class ProductTest extends TestCase
      */
     private $storeMock;
 
+    /**
+     * @var Attribute
+     */
+    private $attributeMock;
+
+    /**
+     * @var AttributeFactory
+     */
+    private $attributeFactoryMock;
+
     protected function setUp()
     {
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
@@ -151,7 +152,6 @@ class ProductTest extends TestCase
         $this->mediaConfigFactoryMock = $this->createMock(ConfigFactory::class);
         $this->statusFactoryMock = $this->createMock(StatusFactory::class);
         $this->visibilityFactoryMock = $this->createMock(VisibilityFactory::class);
-        $this->stringUtilsMock = $this->createMock(StringUtils::class);
         $this->mageProductMock = $this->createMock(MageProduct::class);
         $this->statusMock = $this->createMock(Status::class);
         $this->phraseMock = $this->createMock(Phrase::class);
@@ -166,6 +166,8 @@ class ProductTest extends TestCase
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
         $this->storeMock = $this->createMock(Store::class);
         $this->stockStateMock = $this->createMock(StockStateInterface::class);
+        $this->attributeMock = $this->createMock(Attribute::class);
+        $this->attributeFactoryMock = $this->createMock(AttributeFactory::class);
         $this->visibility = new Visibility(
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
@@ -176,9 +178,9 @@ class ProductTest extends TestCase
             $this->mediaConfigFactoryMock,
             $this->statusFactoryMock,
             $this->visibilityFactoryMock,
-            $this->stringUtilsMock,
             $this->urlFinderMock,
-            $this->stockStateMock
+            $this->stockStateMock,
+            $this->attributeFactoryMock
         );
 
         $status = 1;
@@ -229,8 +231,16 @@ class ProductTest extends TestCase
             ->method('getStore')
             ->willReturn($this->storeMock);
 
+        $this->storeManagerMock->expects($this->atLeastOnce())
+            ->method('getStore')
+            ->willReturn($this->storeMock);
+
         $this->storeMock->expects($this->atLeastOnce())
             ->method('getWebsiteId');
+
+        $this->attributeFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->attributeMock);
     }
 
     public function testSetProductFunction()
@@ -250,7 +260,7 @@ class ProductTest extends TestCase
             ->method('getSpecialPrice')
             ->willReturn($specialPrice);
 
-        $this->product->setProduct($this->mageProductMock);
+        $this->product->setProduct($this->mageProductMock, 1);
 
         $this->assertEquals($price, $this->product->price);
         $this->assertEquals($specialPrice, $this->product->specialPrice);
@@ -269,11 +279,6 @@ class ProductTest extends TestCase
             ->method('getTypeInstance')
             ->willReturn($this->configurableMock);
 
-        $this->configurableMock->expects($this->atLeastOnce())
-            ->method('getConfigurableAttributesAsArray')
-            ->with($this->mageProductMock)
-            ->willReturn([]);
-
         $arrayPrices = $this->getArrayPrices();
 
         $this->configurableMock->expects($this->atLeastOnce())
@@ -281,7 +286,7 @@ class ProductTest extends TestCase
             ->with($this->mageProductMock)
             ->willReturn($arrayPrices);
 
-        $this->product->setProduct($this->mageProductMock);
+        $this->product->setProduct($this->mageProductMock, 1);
 
         $this->assertEquals($minPrice, $this->product->price);
         $this->assertEquals($minSpecialPrice, $this->product->specialPrice);
@@ -300,11 +305,6 @@ class ProductTest extends TestCase
             ->method('getTypeInstance')
             ->willReturn($this->configurableMock);
 
-        $this->configurableMock->expects($this->atLeastOnce())
-            ->method('getConfigurableAttributesAsArray')
-            ->with($this->mageProductMock)
-            ->willReturn([]);
-
         $arrayPrices = $this->getArrayNullSpecialPrices();
 
         $this->configurableMock->expects($this->atLeastOnce())
@@ -312,7 +312,7 @@ class ProductTest extends TestCase
             ->with($this->mageProductMock)
             ->willReturn($arrayPrices);
 
-        $this->product->setProduct($this->mageProductMock);
+        $this->product->setProduct($this->mageProductMock, 1);
 
         $this->assertEquals($minPrice, $this->product->price);
         $this->assertEquals($minSpecialPrice, $this->product->specialPrice);
@@ -322,19 +322,6 @@ class ProductTest extends TestCase
     {
         $minPrice = '10.00';
         $minSpecialPrice = '8.00';
-
-        $this->mageProductMock->expects($this->atLeastOnce())
-            ->method('getTypeInstance')
-            ->willReturn($this->typeMock);
-
-        $this->typeMock->expects($this->atLeastOnce())
-            ->method('getOptionsCollection')
-            ->with($this->mageProductMock)
-            ->willReturn($this->optionCollectionMock);
-
-        $this->optionCollectionMock->expects($this->atLeastOnce())
-            ->method('appendSelections')
-            ->willReturn([]);
 
         $this->mageProductMock->expects($this->atLeastOnce())
             ->method('getTypeId')
@@ -349,10 +336,6 @@ class ProductTest extends TestCase
             ->withConsecutive(['regular_price'], ['final_price'])
             ->willReturnOnConsecutiveCalls($this->bundleRegularPriceMock, $this->bundleRegularPriceMock);
 
-        $this->mageProductMock->expects($this->atLeastOnce())
-            ->method('getTypeInstance')
-            ->willReturn($this->abstractMock);
-
         $this->bundleRegularPriceMock->expects($this->atLeastOnce())
             ->method('getMinimalPrice')
             ->willReturnOnConsecutiveCalls($this->amountBaseMock, $this->amountBaseMock);
@@ -361,7 +344,7 @@ class ProductTest extends TestCase
             ->method('getValue')
             ->willReturnOnConsecutiveCalls('10.00', '8.00');
 
-        $this->product->setProduct($this->mageProductMock);
+        $this->product->setProduct($this->mageProductMock, 1);
 
         $this->assertEquals($minPrice, $this->product->price);
         $this->assertEquals($minSpecialPrice, $this->product->specialPrice);
@@ -387,7 +370,7 @@ class ProductTest extends TestCase
             ->with($this->mageProductMock)
             ->willReturn($arrayPrices);
 
-        $this->product->setProduct($this->mageProductMock);
+        $this->product->setProduct($this->mageProductMock, 1);
 
         $this->assertEquals($minPrice, $this->product->price);
         $this->assertEquals($minSpecialPrice, $this->product->specialPrice);
@@ -413,7 +396,7 @@ class ProductTest extends TestCase
             ->with($this->mageProductMock)
             ->willReturn($arrayPrices);
 
-        $this->product->setProduct($this->mageProductMock);
+        $this->product->setProduct($this->mageProductMock, 1);
 
         $this->assertEquals($minPrice, $this->product->price);
         $this->assertEquals($minSpecialPrice, $this->product->specialPrice);

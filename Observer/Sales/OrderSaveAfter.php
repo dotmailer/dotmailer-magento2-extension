@@ -10,7 +10,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
-class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterface
+class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**
      * @var Automation
@@ -41,7 +41,7 @@ class SaveStatusSmsAutomation implements \Magento\Framework\Event\ObserverInterf
      * @var \Magento\Store\Model\App\EmulationFactory
      */
     private $emulationFactory;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory
      */

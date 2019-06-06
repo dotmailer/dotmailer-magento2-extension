@@ -51,7 +51,7 @@ class Exporter
 
         foreach ($products as $product) {
             $connectorProduct = $this->connectorProductFactory->create()
-                ->setProduct($product);
+                ->setProduct($product, $storeId);
             $connectorProducts[$product->getId()] = $connectorProduct->expose();
         }
 

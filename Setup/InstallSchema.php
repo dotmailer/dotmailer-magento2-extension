@@ -187,6 +187,13 @@ class InstallSchema implements InstallSchemaInterface
                 null,
                 ['unsigned' => true, 'nullable' => true],
                 'Is Suppressed'
+            )
+            ->addColumn(
+                'last_subscribed_at',
+                Table::TYPE_TIMESTAMP,
+                null,
+                [],
+                'Last time user subscribed'
             );
     }
 

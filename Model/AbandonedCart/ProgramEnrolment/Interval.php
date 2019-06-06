@@ -40,13 +40,13 @@ class Interval
      * Set time window for abandoned cart program enrolments
      *
      * @param int $storeId
-     *
+     * @param \DateTime|null $syncFromTime
      * @return array
      * @throws \Exception
      */
-    public function getAbandonedCartProgramEnrolmentWindow($storeId)
+    public function getAbandonedCartProgramEnrolmentWindow($storeId, \DateTime $syncFromTime = null)
     {
-        $fromTime = $this->dateTimeFactory->create(
+        $fromTime = $syncFromTime ?: $this->dateTimeFactory->create(
             [
                 'time' => 'now',
                 'timezone' => new \DateTimezone('UTC')

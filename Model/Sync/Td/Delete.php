@@ -27,7 +27,7 @@ class Delete extends \Dotdigitalgroup\Email\Model\Sync\Contact\Delete
                     $key = $importData[0];
                     $collectionName = $item->getImportType();
                     $this->client->deleteContactsTransactionalData($key, $collectionName);
-                    $this->_handleSingleItemAfterSync($item, $result);
+                    $this->handleSingleItemAfterSync($item, $result);
                 }
             }
         }

@@ -374,7 +374,8 @@ class ContactData
         if ($productId && $attributeCode) {
             $product = $this->getProduct($productId);
             if ($product->getId()) {
-                $value = $this->productResource->getAttribute($attributeCode)->getFrontend()->getValue($product);
+                $attribute = $this->productResource->getAttribute($attributeCode);
+                $value = is_object($attribute) ? $attribute->getFrontend()->getValue($product) : null;
                 if ($value) {
                     return $value;
                 }

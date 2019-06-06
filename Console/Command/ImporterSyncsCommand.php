@@ -8,6 +8,7 @@ use Magento\Framework\App\State;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
@@ -53,6 +54,12 @@ class ImporterSyncsCommand extends Command
                     implode('; ', $this->syncProvider->getAvailableSyncs())
                 )
             )
+            ->addOption(
+                'from',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                __('Specify a date/time (parsable by \DateTime) to run a sync from (if supported)')
+            )
         ;
         parent::configure();
     }
@@ -74,6 +81,10 @@ class ImporterSyncsCommand extends Command
         // get the requested sync class
         /** @var SyncInterface $syncClass */
         $syncClass = $this->syncProvider->$requestedSync;
+        if (is_null($syncClass)) {
+            $output->writeln('Requested sync was not recognised');
+            return;
+        }
 
         $start = microtime(true);
         $output->writeln(sprintf('[%s] %s: %s',
@@ -82,8 +93,15 @@ class ImporterSyncsCommand extends Command
             get_class($syncClass)
         ));
 
+        // check whether a from time was specified
+        if ($fromTimeString = $input->getOption('from')) {
+            $fromTime = new \DateTime($fromTimeString, new \DateTimeZone('UTC'));
+        } else {
+            $fromTime = null;
+        }
+
         // run the sync
-        $syncClass->sync();
+        $syncClass->sync($fromTime);
 
         $output->writeln(sprintf('[%s] %s %s',
             date('Y-m-d H:i:s'),

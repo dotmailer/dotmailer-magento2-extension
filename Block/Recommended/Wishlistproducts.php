@@ -49,6 +49,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
@@ -61,6 +62,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
@@ -70,7 +72,6 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
         array $data = []
     ) {
-        parent::__construct($context, $font, $data);
         $this->helper            = $helper;
         $this->customerFactory   = $customerFactory;
         $this->recommnededHelper = $recommended;
@@ -78,6 +79,8 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
         $this->wishlist          = $wishlist;
         $this->catalog           = $catalog;
         $this->customerResource  = $customerResource;
+
+        parent::__construct($context, $font, $urlFinder, $data);
     }
 
     /**

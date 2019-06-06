@@ -2,10 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+use Dotdigitalgroup\Email\Model\Sales\CartInsight\Update as CartInsightUpdater;
+
 /**
- * Customer and guest new order automation.
+ * Send cart phase flag as CartInsight for some orders.
+ * New order automation for customers and guests.
  */
-class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverInterface
+class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
@@ -28,23 +31,31 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
     private $automationFactory;
 
     /**
-     * PlaceCreateAutomationStatus constructor.
+     * @var CartInsightUpdater
+     */
+    private $cartInsightUpdater;
+
+    /**
+     * OrderPlaceAfter constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param CartInsightUpdater $cartInsightUpdater
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        CartInsightUpdater $cartInsightUpdater
     ) {
         $this->automationFactory = $automationFactory;
         $this->automationResource = $automationResource;
         $this->helper            = $data;
         $this->storeManager      = $storeManagerInterface;
+        $this->cartInsightUpdater = $cartInsightUpdater;
     }
 
     /**
@@ -53,18 +64,21 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
-        $email = $order->getCustomerEmail();
-        $website = $this->storeManager->getWebsite($order->getWebsiteId());
-        $storeName = $this->storeManager->getStore($order->getStoreId())
-            ->getName();
-        //if api is not enabled
+        $store = $this->storeManager->getStore($order->getStoreId());
+        $website = $store->getWebsite();
+
         if (!$this->helper->isEnabled($website)) {
             return $this;
         }
+
+        $this->cartInsightUpdater->updateCartPhase($order, $store);
+
         //automation enrolment for order
         if ($order->getCustomerIsGuest()) {
             // guest to automation mapped
@@ -88,12 +102,12 @@ class PlaceCreateAutomationStatus implements \Magento\Framework\Event\ObserverIn
         }
         try {
             $automation = $this->automationFactory->create()
-                ->setEmail($email)
+                ->setEmail($order->getCustomerEmail())
                 ->setAutomationType($automationType)
                 ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
                 ->setTypeId($order->getIncrementId())
                 ->setWebsiteId($website->getId())
-                ->setStoreName($storeName)
+                ->setStoreName($store->getName())
                 ->setProgramId($programId);
             $this->automationResource->save($automation);
         } catch (\Exception $e) {

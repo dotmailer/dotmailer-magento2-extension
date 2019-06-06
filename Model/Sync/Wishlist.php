@@ -114,9 +114,10 @@ class Wishlist implements SyncInterface
     /**
      * Sync Wishlists.
      *
+     * @param \DateTime|null $from
      * @return array
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $response = ['success' => true, 'message' => 'Done.'];
         $websites = $this->helper->getWebsites();

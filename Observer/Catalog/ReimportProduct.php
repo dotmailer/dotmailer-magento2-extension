@@ -8,61 +8,26 @@ namespace Dotdigitalgroup\Email\Observer\Catalog;
 class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     * @var \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog
      */
-    private $catalogResource;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\CatalogFactory
-     */
-    private $catalogFactory;
+    private $updater;
 
     /**
      * ReimportProduct constructor.
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
-     * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
+     * @param  \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog $updater
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
+        \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog $updater
     ) {
-        $this->helper            = $data;
-        $this->catalogResource = $catalogResource;
-        $this->catalogFactory    = $catalogFactory;
+        $this->updater = $updater;
     }
 
     /**
      * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $productModel = $observer->getEvent()->getDataObject();
-        $productId = $productModel->getId();
-
-        $emailCatalogModel = $this->catalogFactory->create();
-        $emailCatalog = $emailCatalogModel->loadProductById($productId);
-
-        if ($emailCatalog->getId()) {
-            //update email catalog item when imported
-            if ($emailCatalog->getImported()) {
-                $emailCatalog->setModified(1);
-                $this->catalogResource->save($emailCatalog);
-            }
-        } else {
-            //create new email catalog item
-            $emailCatalogModel->setProductId($productId);
-            $this->catalogResource->save($emailCatalogModel);
-        }
-
-        return $this;
+        $this->updater->execute($productModel->getId());
     }
 }
