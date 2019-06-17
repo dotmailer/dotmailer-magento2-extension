@@ -100,7 +100,7 @@ class UrlFinder
 
         if (
             $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
-            && $product->getSmallImage() == \Magento\Sitemap\Model\ResourceModel\Catalog\Product::NOT_SELECTED_IMAGE
+            && $product->getSmallImage() == 'no_selection'
             && $parentProduct = $this->getParentProduct($product)
         ) {
             $product = $parentProduct;
