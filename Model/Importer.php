@@ -64,10 +64,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param ResourceModel\Importer\CollectionFactory $importerCollection
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param Config\Json $serializer
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -76,10 +76,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         ResourceModel\Importer\CollectionFactory $importerCollection,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         Config\Json $serializer,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
         array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        \Dotdigitalgroup\Email\Helper\Data $helper
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
         $this->dateTime      = $dateTime;
         $this->serializer    = $serializer;
