@@ -59,4 +59,21 @@ class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
     {
         return $this->urlFinder->getProductImageUrl($product, $imageId);
     }
+
+    /**
+     * Return a product's parent URL, if it has one.
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     *
+     * @return string
+     */
+    public function getConfigurableParentUrl($product)
+    {
+        return $this->urlFinder->fetchFor($product);
+    }
+
+    public function getSmallImageUrl($product, $imageId)
+    {
+        return $this->urlFinder->getProductImageUrl($product, $imageId);
+    }
 }
