@@ -34,12 +34,12 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @var XSLTProcessor
      */
     public $processor;
-    
+
     /**
      * @var Quote
      */
     private $quoteResource;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
@@ -103,14 +103,14 @@ class Feefo extends \Magento\Framework\View\Element\Template
             return [];
         }
 
-        $url = 'http://www.feefo.com/feefo/feefologo.jsp?logon=';
+        $url = 'https://api.feefo.com/api/logo?merchantidentifier=';
         $logon = $this->helper->getFeefoLogon();
         $template = '';
         if ($this->helper->getFeefoLogoTemplate()) {
             $template = '&template=' . $this->helper->getFeefoLogoTemplate();
         }
         $fullUrl = $url . $logon . $template;
-        $vendorUrl = 'http://www.feefo.com/feefo/viewvendor.jsp?logon='
+        $vendorUrl = 'https://www.feefo.com/reviews/'
             . $logon;
 
         return ['vendorUrl' => $vendorUrl, 'fullUrl' => $fullUrl];

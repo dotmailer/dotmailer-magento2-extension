@@ -15,6 +15,13 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.2.3 
+
+###### Fixes
+- We've fixed a regression in the constructor of the importer model that was affecting all syncs for older versions of Magento (2.1.x and 2.2.x)
+- We've resolved some "mixed content" browser warnings that would occur when using the 'Service Score' dynamics content of the Feefo integration
+- An unnecessary dependency on the Magento Sitemap module has now been removed
+
 ## 3.2.2
 
 ###### Improvements

@@ -87,10 +87,10 @@ class ImporterTest extends TestCase
             $this->collectionFactoryMock,
             $this->dateTimeMock,
             $this->serializerMock,
+            $this->helperMock,
             [],
             $this->resourceModelMock,
-            $this->resourceCollectionMock,
-            $this->helperMock
+            $this->resourceCollectionMock
         );
     }
 
