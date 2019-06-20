@@ -107,6 +107,23 @@
                                     <label for="<?= $block->escapeHtml($dataField['name']) ?>">
                                         <?= $block->escapeHtml($dataField['name']) ?>
                                     </label>
+                                    <?php if ($dataField['type'] == "Boolean") : ?>
+                                    <div class="control">
+                                        <select style="width: 50%" name="data_fields[<?= $block->escapeHtml($dataField['name']) ?>]" id="<?= $block->escapeHtml($dataField['name']) ?>" title="<?= $block->escapeHtml($dataField['name']) ?>">
+                                            <option value="1"<?php if ($block->escapeHtml($dataField['value'])) : ?> selected="selected"<?php endif; ?>><?= __('Yes') ?></option>
+                                            <option value="0"<?php if (!$block->escapeHtml($dataField['value'])) : ?> selected="selected"<?php endif; ?>><?= __('No') ?></option>
+                                        </select>
+                                    </div>
+                                    <?php elseif ($dataField['type'] == "Numeric") : ?>
+                                    <div class="input-box">
+                                        <input style="width: 50%" type="number"
+                                           title="<?= $block->escapeHtml($dataField['name']) ?>"
+                                           value="<?= $block->escapeHtml($dataField['value']) ?>"
+                                           name="data_fields[<?= $block->escapeHtml($dataField['name']) ?>]"
+                                           id="<?= $block->escapeHtml($dataField['name']) ?>"
+                                        />
+                                    </div>
+                                    <?php else: ?>
                                     <div class="input-box">
                                         <input style="width: 50%" type="text"
                                            class="input-text <?php if ($dataField['type'] == "Date") : ?>
@@ -117,6 +134,7 @@
                                            id="<?= $block->escapeHtml($dataField['name']) ?>"
                                         />
                                     </div>
+                                    <?php endif; ?>
                                 </div>
                             </li>
                         <?php endforeach; ?>
