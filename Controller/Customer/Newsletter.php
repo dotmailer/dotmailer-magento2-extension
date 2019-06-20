@@ -103,8 +103,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
             $contactId = $this->getContactId($contactFromTable);
 
             $client = $this->helper->getWebsiteApiClient($website);
-            $contact = isset($contactId) ? $client->getContactById($contactId) :
-                $this->createContact($client, $customerEmail, $store, $contactFromTable);
+            $contact = isset($contactId)
+                ? $client->getContactById($contactId)
+                : $this->createContact($client, $customerEmail, $store, $contactFromTable);
 
             if (isset($contact->id)) {
                 $additionalSubscriptionsSuccess = $this->processAdditionalSubscriptions(
@@ -129,7 +130,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                     );
                 } else {
                     $this->messageManager->addSuccessMessage(
-                        __('The subscription preferences has been saved.')
+                        __('Your subscription preferences have been saved.')
                     );
                 }
             } else {
@@ -269,7 +270,11 @@ class Newsletter extends \Magento\Framework\App\Action\Action
             $processedFields[$dataField->name] = $dataField->type;
         }
         foreach ($paramDataFields as $key => $value) {
-            if (isset($processedFields[$key]) && $value) {
+            /*
+             * Allow boolean "0" to pass (e.g. "No" for "Yes/No" select)
+             * as well as any other truthy $value
+             */
+            if (isset($processedFields[$key]) && ($value || $value === "0")) {
                 if ($processedFields[$key] == 'Numeric') {
                     $paramDataFields[$key] = (int)$value;
                 }
@@ -278,6 +283,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 }
                 if ($processedFields[$key] == 'Date') {
                     $paramDataFields[$key] = $this->localeDate->date($value)->format(\Zend_Date::ISO_8601);
+                }
+                if ($processedFields[$key] == 'Boolean') {
+                    $paramDataFields[$key] = (bool)$value;
                 }
                 $data[] = [
                     'Key' => $key,
@@ -394,6 +402,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     private function getContactId($contactFromTable)
     {
         $contactId = null;
+
         if (!$this->customerSession->getConnectorContactId()) {
             $contactId = $this->customerSession->getConnectorContactId();
         } elseif ($contactFromTable->getContactId()) {

@@ -30,14 +30,19 @@ class Order implements SyncInterface
     /**
      * Global number of orders.
      *
-     * @var int
+     * @var array
      */
-    public $countOrders = 0;
+    public $countOrders = [
+        'orders' => 0,
+        'single_sync' => 0,
+        'pending' => 0,
+        'modified' => 0,
+    ];
 
     /**
      * @var array
      */
-    private $orderIds;
+    private $orderIds = [];
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -141,8 +146,10 @@ class Order implements SyncInterface
             $numOrders = count($orders);
             $numOrdersForSingleSync = count($ordersForSingleSync);
             $website = $account->getWebsites();
-            $this->countOrders += $numOrders;
-            $this->countOrders += $numOrdersForSingleSync;
+
+            $this->countOrders['orders'] += $numOrders;
+            $this->countOrders['single_sync'] += $numOrdersForSingleSync;
+
             //create bulk
             if ($numOrders) {
                 $this->helper->log('--------- Order sync ---------- : ' . $numOrders);
@@ -185,8 +192,11 @@ class Order implements SyncInterface
             $this->contactResource->updateContactsAsGuests($guestsEmailFound);
         }
 
+        $totalOrders = $this->countOrders['orders'] + $this->countOrders['single_sync'];
         if ($this->countOrders) {
-            $response['message'] = 'Orders updated ' . $this->countOrders;
+            $response = [
+                'message' => 'Orders updated ' . $totalOrders,
+            ] + $this->countOrders + $response;
         }
 
         return $response;
@@ -226,13 +236,17 @@ class Order implements SyncInterface
                     $account->setApiPassword($this->apiPassword);
                     $this->accounts[$this->apiUsername] = $account;
                 }
+
                 $pendingOrders = $this->getPendingConnectorOrders($website, $limit);
                 if (! empty($pendingOrders)) {
+                    $this->countOrders['pending'] += count($pendingOrders);
                     $this->accounts[$this->apiUsername]->setOrders($pendingOrders);
                 }
                 $this->accounts[$this->apiUsername]->setWebsites($website->getId());
+
                 $modifiedOrders = $this->getModifiedOrders($website, $limit);
                 if (! empty($modifiedOrders)) {
+                    $this->countOrders['modified'] += count($modifiedOrders);
                     $this->accounts[$this->apiUsername]->setOrdersForSingleSync($modifiedOrders);
                 }
             }
