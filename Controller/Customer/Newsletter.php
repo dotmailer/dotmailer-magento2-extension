@@ -103,8 +103,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
             $contactId = $this->getContactId($contactFromTable);
 
             $client = $this->helper->getWebsiteApiClient($website);
-            $contact = isset($contactId) ? $client->getContactById($contactId) :
-                $this->createContact($client, $customerEmail, $store, $contactFromTable);
+            $contact = isset($contactId)
+                ? $client->getContactById($contactId)
+                : $this->createContact($client, $customerEmail, $store, $contactFromTable);
 
             if (isset($contact->id)) {
                 $additionalSubscriptionsSuccess = $this->processAdditionalSubscriptions(
@@ -401,6 +402,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     private function getContactId($contactFromTable)
     {
         $contactId = null;
+
         if (!$this->customerSession->getConnectorContactId()) {
             $contactId = $this->customerSession->getConnectorContactId();
         } elseif ($contactFromTable->getContactId()) {

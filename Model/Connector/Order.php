@@ -393,7 +393,7 @@ class Order
                     'attribute-set' => $attributeSetName,
                     'categories' => $productCat
                 ];
-                if ($attributes->hasValues()) {
+                if ($configAttributes && $attributes->hasValues()) {
                     $productData['product_attributes'] = $attributes;
                 }
                 if ($customOptions) {
