@@ -13,5 +13,5 @@ require([
     });
 
     li.parent().addClass('current');
-    li.parent().replaceWith("<strong>" + li.text() + "</strong>");
+    li.replaceWith("<strong>" + li.text() + "</strong>");
 });
