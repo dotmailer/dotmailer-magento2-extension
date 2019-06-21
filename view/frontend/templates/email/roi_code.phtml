@@ -4,6 +4,7 @@
     $helper = $this->helper(\Dotdigitalgroup\Email\Helper\Data::class);
 ?>
 
+<?php if ($block->isRoiTrackingAvailable()) : ?>
 <script>
     require.config({
         paths: {
@@ -22,3 +23,4 @@
         }
     }
 </script>
+<?php endif; ?>

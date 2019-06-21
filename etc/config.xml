@@ -170,8 +170,8 @@
                 <expire_time>24</expire_time>
             </abandoned_carts>
             <tracking>
-                <roi_enabled>0</roi_enabled>
-                <page_enabled>0</page_enabled>
+                <roi_enabled>1</roi_enabled>
+                <page_enabled>1</page_enabled>
             </tracking>
             <consent>
                 <dotmailer_consent_subscriber_enabled>0</dotmailer_consent_subscriber_enabled>
