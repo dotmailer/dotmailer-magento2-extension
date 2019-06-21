@@ -8,10 +8,10 @@
                    template="Dotdigitalgroup_Email::email/email_capture_newsletter.phtml"/>
         </referenceContainer>
         <referenceContainer name="after.body.start">
-            <block class="Magento\Framework\View\Element\Template"
+            <block class="Dotdigitalgroup\Email\Block\Tracking"
                    name="ddg.checkout.tag"
                    template="Dotdigitalgroup_Email::email/tracking_code.phtml"
-                   ifconfig="connector_configuration/tracking/page_enabled"/>
+            />
         </referenceContainer>
     </body>
 </page>
