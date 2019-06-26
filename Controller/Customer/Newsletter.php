@@ -8,6 +8,9 @@ use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
 
 class Newsletter extends \Magento\Framework\App\Action\Action
 {
+    const MESSAGE_TYPE_SUCCESS = 'Success';
+    const MESSAGE_TYPE_ERROR = 'Error';
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -418,39 +421,47 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     private function processGeneralSubscription()
     {
         $customerId = $this->customerSession->getCustomerId();
+        $message = null;
+        $messageType = self::MESSAGE_TYPE_SUCCESS;
+
         if ($customerId === null) {
-            $this->messageManager->addError(__('Something went wrong while saving your subscription.'));
+            $messageType = self::MESSAGE_TYPE_ERROR;
+            $message = __('Something went wrong while saving your subscription.');
         } else {
             try {
                 $customer = $this->customerRepository->getById($customerId);
                 $storeId = $this->helper->storeManager->getStore()->getId();
                 $customer->setStoreId($storeId);
+
                 $isSubscribedState = $customer->getExtensionAttributes()
                     ->getIsSubscribed();
-                $isSubscribedParam = (boolean)$this->getRequest()
-                    ->getParam('is_subscribed', false);
+
+                $isSubscribedParam = (bool) $this->getRequest()->getParam('is_subscribed', false);
+
                 if ($isSubscribedParam !== $isSubscribedState) {
                     $this->customerRepository->save($customer);
+                    $subscribeModel = $this->subscriberFactory->create();
+
                     if ($isSubscribedParam) {
-                        $subscribeModel = $this->subscriberFactory->create()
-                            ->subscribeCustomerById($customerId);
+                        $subscribeModel->subscribeCustomerById($customerId);
                         $subscribeStatus = $subscribeModel->getStatus();
-                        if ($subscribeStatus == Subscriber::STATUS_SUBSCRIBED) {
-                            $this->messageManager->addSuccess(__('We have saved your subscription.'));
-                        } else {
-                            $this->messageManager->addSuccess(__('A confirmation request has been sent.'));
-                        }
+
+                        $message = $subscribeStatus == Subscriber::STATUS_SUBSCRIBED
+                            ? __('We have saved your subscription.')
+                            : __('A confirmation request has been sent.');
                     } else {
-                        $this->subscriberFactory->create()
-                            ->unsubscribeCustomerById($customerId);
-                        $this->messageManager->addSuccess(__('We have removed your newsletter subscription.'));
+                        $subscribeModel->unsubscribeCustomerById($customerId);
+                        $message = __('We have removed your newsletter subscription.');
                     }
                 } else {
-                    $this->messageManager->addSuccess(__('We have updated your subscription.'));
+                    $message = __('We have updated your subscription.');
                 }
             } catch (\Exception $e) {
-                $this->messageManager->addError(__('Something went wrong while saving your subscription.'));
+                $messageType = self::MESSAGE_TYPE_ERROR;
+                $message = __('Something went wrong while saving your subscription.');
             }
         }
+
+        $this->messageManager->{'add' . $messageType}($message);
     }
 }
