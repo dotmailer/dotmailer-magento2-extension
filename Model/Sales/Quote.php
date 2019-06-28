@@ -395,7 +395,7 @@ class Quote
             return false;
         }
 
-        $fromTime = $this->timeZone->scopeDate($storeId, $this->getSyncFromTime(), true);
+        $fromTime = $this->timeZone->scopeDate($storeId, $this->getSyncFromTime()->format('Y-m-d H:i:s'), true);
         $toTime = clone $fromTime;
         $interval = $this->dateIntervalFactory->create(
             ['interval_spec' => sprintf('PT%sH', $cartLimit)]
