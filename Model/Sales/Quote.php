@@ -159,6 +159,7 @@ class Quote
         Campaign $campaignResource,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource,
+        \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
@@ -169,7 +170,7 @@ class Quote
         $this->timeZone = $timezone;
         $this->rulesFactory = $rulesFactory;
         $this->campaignFactory = $campaignFactory;
-        $this->helper = $abandonedResource->helper;
+        $this->helper = $data;
         $this->abandonedFactory = $abandonedFactory;
         $this->campaignResource = $campaignResource;
         $this->orderCollection = $collectionFactory;
@@ -347,6 +348,7 @@ class Quote
         $ruleModel = $this->rulesFactory->create();
         $websiteId = $this->helper->storeManager->getStore($storeId)
             ->getWebsiteId();
+
         $salesCollection = $ruleModel->process(
             $salesCollection,
             \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
@@ -393,7 +395,7 @@ class Quote
             return false;
         }
 
-        $fromTime = $this->timeZone->scopeDate($storeId, $this->getSyncFromTime(), true);
+        $fromTime = $this->timeZone->scopeDate($storeId, $this->getSyncFromTime()->format('Y-m-d H:i:s'), true);
         $toTime = clone $fromTime;
         $interval = $this->dateIntervalFactory->create(
             ['interval_spec' => sprintf('PT%sH', $cartLimit)]
@@ -828,7 +830,7 @@ class Quote
      */
     private function shouldDeleteAbandonedCart($quote)
     {
-        return !$quote->getIsActive() || $quote->getItemsCount() == 0;
+        return !$quote->getIsActive() || (int) $quote->getItemsCount() === 0;
     }
 
     /**

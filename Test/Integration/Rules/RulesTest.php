@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory')) {
+    require __DIR__ . '/../_files/product_extension_interface_hacktory.php';
+}
+
 use Dotdigitalgroup\Email\Model\Config\Json;
 use Dotdigitalgroup\Email\Model\ResourceModel\Rules as RulesResource;
 use Dotdigitalgroup\Email\Model\Rules;
@@ -9,6 +13,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 use Magento\Customer\Api\AddressRepositoryInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
 use Magento\Quote\Model\ResourceModel\Quote\Collection as QuoteCollection;
@@ -18,7 +23,6 @@ use Magento\TestFramework\ObjectManager;
 /**
  * @magentoDataFixture Magento/Customer/_files/customer.php
  * @magentoDataFixture Magento/Customer/_files/customer_address.php
- * @magentoDataFixture Magento/Catalog/_files/products.php
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -37,6 +41,16 @@ class RulesTest extends \PHPUnit\Framework\TestCase
      * @var int
      */
     private $currentWebsiteId;
+
+    public function setUp()
+    {
+        include __DIR__ . '/../_files/products.php';
+        $this->quoteCollection = ObjectManager::getInstance()->create(QuoteCollection::class);
+
+        /** @var StoreManagerInterface $storeManager */
+        $storeManager = ObjectManager::getInstance()->get(StoreManagerInterface::class);
+        $this->currentWebsiteId = $storeManager->getStore()->getWebsiteId();
+    }
 
     /**
      * @param string $type
@@ -230,18 +244,6 @@ class RulesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @return void
-     */
-    protected function setUp()
-    {
-        $this->quoteCollection = ObjectManager::getInstance()->create(QuoteCollection::class);
-
-        /** @var StoreManagerInterface $storeManager */
-        $storeManager = ObjectManager::getInstance()->get(StoreManagerInterface::class);
-        $this->currentWebsiteId = $storeManager->getStore()->getWebsiteId();
-    }
-
-    /**
      * @param Quote $expected
      * @return void
      */
@@ -295,6 +297,7 @@ class RulesTest extends \PHPUnit\Framework\TestCase
         $quote = $this->createQuoteWithSubtotal('500.00');
         $quote1 = $this->createQuoteWithSubtotal('1000.11');
         $quote2 = $this->createQuoteWithSubtotal('999.11');
+        $quote3 = $this->createQuoteWithSubtotal('200.00');
 
         /** @var Rules $ruleService */
         $ruleService = ObjectManager::getInstance()->create(Rules::class);
@@ -303,20 +306,60 @@ class RulesTest extends \PHPUnit\Framework\TestCase
         $this->assertQuoteCollectionNotContains($quote);
         $this->assertQuoteCollectionNotContains($quote1);
         $this->assertQuoteCollectionNotContains($quote2);
+        $this->assertQuoteCollectionContains($quote3);
     }
 
     /**
      * @return void
      */
-    public function testRuleWithCustomerGroupANDPaymentMethod()
+    public function testMultipleRules()
     {
-        $attribute1  = 'method';
-        $attribute2 = 'customer_group_id';
-        $value1 = '1';
-        $value2 = 'payflow_advanced';
+        $rule = $this->createAbandonedCartRuleWithOperator(self::RULE_OPERATOR_AND);
+        $rule->setData('conditions', [[
+            'attribute' => 'customer_group_id',
+            'conditions' => 'neq',
+            'cvalue' => '1',
+        ], [
+            'attribute' => 'subtotal',
+            'conditions' => 'lteq',
+            'cvalue' => '200.00',
+        ]]);
 
-        $this->createAbandonedCartRuleWithCondition($attribute1, 'neq', $value1, self::RULE_OPERATOR_AND);
-        $this->createAbandonedCartRuleWithCondition($attribute2, 'eq', $value2, self::RULE_OPERATOR_AND);
+        /** @var RulesResource $rulesResource */
+        $rulesResource = ObjectManager::getInstance()->get(RulesResource::class);
+        $rulesResource->save($rule);
+
+        /** @var \Magento\Quote\Model\Quote $quote */
+        $quote1 = $this->createQuote();
+        $quote1->setSubtotal(200.00);
+        $quote1->setCustomerGroupId('1');
+
+        $quote2 = $this->createQuote();
+        $quote2->setSubtotal(100.00);
+        $quote2->setCustomerGroupId('1');
+
+        $quote3 = $this->createQuote();
+        $quote3->setSubtotal(2401.00);
+        $quote3->setCustomerGroupId('2');
+
+        $quote4 = $this->createQuote();
+        $quote4->setSubtotal(201.00);
+        $quote4->setCustomerGroupId('1');
+
+        $quoteResource = ObjectManager::getInstance()->create(QuoteResource::class);
+        $quoteResource->save($quote1);
+        $quoteResource->save($quote2);
+        $quoteResource->save($quote3);
+        $quoteResource->save($quote4);
+
+        /** @var Rules $ruleService */
+        $ruleService = ObjectManager::getInstance()->create(Rules::class);
+        $ruleService->process($this->quoteCollection, Rules::ABANDONED, $this->currentWebsiteId);
+
+        $this->assertQuoteCollectionContains($quote1);
+        $this->assertQuoteCollectionContains($quote4);
+        $this->assertQuoteCollectionNotContains($quote2);
+        $this->assertQuoteCollectionNotContains($quote3);
     }
 
     /**
@@ -327,11 +370,12 @@ class RulesTest extends \PHPUnit\Framework\TestCase
         //create a rule to exclude the city attribute from the abandoned carts
         $attribute = 'city';
         $value = $cityOne = 'CityM';
-        $city = null;
+        $city = 'Croydon - Home of Champions';
         $this->createAbandonedCartRuleWithCondition($attribute, 'eq', $value, self::RULE_OPERATOR_AND);
 
         $quote = $this->createQuoteWithCityAddress($city);
         $quote1 = $this->createQuoteWithCityAddress($cityOne);
+
         /** @var Rules $ruleService */
         $ruleService = ObjectManager::getInstance()->create(Rules::class);
         $ruleService->process($this->quoteCollection, Rules::ABANDONED, $this->currentWebsiteId);

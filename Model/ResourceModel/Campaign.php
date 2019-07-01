@@ -82,17 +82,21 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Set sent.
+     * Set a campaign as sent.
+     * The sent_at date is set via the response data from Engagement Cloud.
      *
      * @param int $sendId
+     * @param string $sendDate
      *
      * @return null
      */
-    public function setSent($sendId)
+    public function setSent($sendId, $sendDate)
     {
+        $sendDateObject = new \DateTime($sendDate, new \DateTimeZone('UTC'));
+        $sentAt = $sendDateObject->format('Y-m-d H:i:s');
         $bind = [
             'send_status' => \Dotdigitalgroup\Email\Model\Campaign::SENT,
-            'sent_at' => $this->datetime->gmtDate()
+            'sent_at' => $sentAt
         ];
         $conn = $this->getConnection();
         $conn->update(

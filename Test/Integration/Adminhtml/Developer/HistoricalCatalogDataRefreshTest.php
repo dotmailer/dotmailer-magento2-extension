@@ -2,9 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Tests\Integration\Adminhtml\Developer;
 
-/**
- * @magentoDataFixture Magento/Catalog/_files/products.php
- */
+use Magento\Reports\Model\ResourceModel\Product\Collection;
+
 class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
@@ -28,6 +27,8 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
     public function setUp()
     {
         parent::setUp();
+
+        include __DIR__ . '/../../_files/products.php';
 
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->uri = $this->url;
@@ -142,18 +143,14 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
     {
         $this->emptyTable();
 
-        $data = [
-            [
-                'product_id' => '1',
+        $productCollection = $this->objectManager->create(Collection::class);
+        $data = array_map(function ($product) {
+            return [
+                'product_id' => $product['entity_id'],
                 'imported' => '1',
-                'created_at' => '2017-02-09'
-            ],
-            [
-                'product_id' => '2',
-                'imported' => '1',
-                'created_at' => '2017-02-11'
-            ]
-        ];
+                'created_at' => date('Y-m-d'),
+            ];
+        }, array_slice($productCollection->getData(), 0, 3));
 
         foreach ($data as $item) {
             $this->createEmailData($item);
@@ -165,7 +162,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
         $this->runReset('', '', $this->url);
 
-        $this->assertEquals(2, $collection->getSize());
+        $this->assertEquals(count($data), $collection->getSize());
     }
 
     /**

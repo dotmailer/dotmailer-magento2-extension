@@ -2,15 +2,22 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
+
+if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory')) {
+    require __DIR__ . '/../_files/product_extension_interface_hacktory.php';
+}
+
 /**
  * Class SingleOrderSyncTest
  *
  * @package Dotdigitalgroup\Email\Controller\Customer
- * @magentoDbIsolation enabled
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
 {
+    use MocksApiResponses;
+
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
@@ -37,6 +44,10 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
     public function setup()
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
+
+        $this->setApiConfigFlags();
+        $this->instantiateDataHelper();
+
         $this->importerCollection = $this->objectManager->create(
             \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection::class
         );
@@ -51,29 +62,8 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $store = $this->objectManager->create(\Magento\Store\Model\Store::class);
         $store->load($this->storeId);
 
-        /** @var \Dotdigitalgroup\Email\Helper\Data|\PHPUnit_Framework_MockObject_MockObject $helper */
-        $helper = $this->getMockBuilder(\Dotdigitalgroup\Email\Helper\Data::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $helper->method('isEnabled')->willReturn(true);
-        $helper->method('getWebsites')->willReturn([$store->getWebsite()]);
-        $helper->method('getApiUsername')->willReturn('apiuser-dummy@apiconnector.com');
-        $helper->method('getApiPassword')->willReturn('dummypass');
-        $helper->method('getWebsiteConfig')->willReturn('1');
-        $helper->method('getConfigSelectedStatus')->willReturn($this->orderStatus);
-        $helper->storeManager = $this->objectManager->create(\Magento\Store\Model\StoreManagerInterface::class);
-        $orderSync = new \Dotdigitalgroup\Email\Model\Sync\Order(
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\Sync\ImporterFactory::class),
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\OrderFactory::class),
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\Connector\AccountFactory::class),
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\Connector\OrderFactory::class),
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class),
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class),
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class),
-            $helper,
-            $this->objectManager->create(\Magento\Sales\Model\OrderFactory::class)
-        );
-
+        /** @var Order $orderSync */
+        $orderSync = $this->objectManager->create(Order::class);
         return $orderSync->sync();
     }
 
@@ -115,7 +105,6 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
      */
     public function testSingleOrderTypeIsObject()
     {
-        $this->createModifiedEmailOrder();
         $this->prep();
         $item = $this->importerCollection->getFirstItem();
 
@@ -132,17 +121,14 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         /** @var \Magento\Sales\Model\Order $order */
         $order = $orderCollection->getFirstItem();
 
-        $this->storeId = $order->getStoreId();
-        $this->orderStatus = [$order->getStatus()];
-
+        /** @var \Dotdigitalgroup\Email\Model\Order $emailOrder */
         $emailOrder = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Order::class)
             ->setOrderId($order->getId())
             ->setOrderStatus($order->getStatus())
             ->setQuoteId($order->getQuoteId())
-            ->setStoreId($this->storeId)
+            ->setStoreId($order->getStoreId())
             ->setEmailImported('1')
             ->setModified('1');
-
         $emailOrder->save();
     }
 
@@ -154,9 +140,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $this->createModifiedEmailOrder();
         $orderResponse = $this->prep();
 
-        $expected = 'Orders updated 1';
-
-        $this->assertEquals($expected, $orderResponse['message']);
+        $this->assertEquals(1, $orderResponse['single_sync']);
     }
 
     /**
@@ -167,9 +151,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $this->createOrderWithoutPayment();
         $orderResponse = $this->prep();
 
-        $expected = 'Orders updated 1';
-
-        $this->assertEquals($expected, $orderResponse['message']);
+        $this->assertEquals(1, $orderResponse['single_sync']);
     }
 
     private function createOrderWithoutPayment()

@@ -2,8 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory')) {
+    require __DIR__ . '/../_files/product_extension_interface_hacktory.php';
+}
+
 /**
- * @magentoDbIsolation enabled
  * @magentoDataFixture Magento/Store/_files/website.php
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
@@ -144,7 +147,7 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
             ->setWebsiteId($customer->getWebsiteId())
             ->setStoreId($customer->getStoreId())
             ->setEmail($customer->getEmail())
-            ->setEmailIMpoerted(null);
+            ->setEmailImported(null);
 
         $emailContact->save();
     }

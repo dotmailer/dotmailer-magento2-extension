@@ -119,7 +119,10 @@ class Campaign implements SyncInterface
                 $message = isset($response->message) ? $response->message : $response->status;
                 $this->campaignResourceModel->setMessageWithSendId($campaign->getSendId(), $message);
             } elseif ($response->status == 'Sent') {
-                $this->campaignResourceModel->setSent($campaign->getSendId());
+                $this->campaignResourceModel->setSent(
+                    $campaign->getSendId(),
+                    $response->sendDate
+                );
             }
         }
     }

@@ -75,7 +75,6 @@ class CampaignORMTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @magentoDbIsolation enabled
      * @return void
      */
     public function testModelAndResourceModelORMConfiguration()
@@ -90,7 +89,6 @@ class CampaignORMTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @magentoDbIsolation enabled
      * @return void
      */
     public function testCollectionORMConfiguration()
@@ -107,7 +105,6 @@ class CampaignORMTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @magentoDbIsolation enabled
      * @return void
      */
     public function testCanBeLoadedByQuoteId()
