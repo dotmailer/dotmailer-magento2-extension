@@ -51,20 +51,6 @@
     "magento/marketplace-eqp": "dev-master",
     "squizlabs/php_codesniffer": "@stable"
   },
-  "authors": [
-    {
-      "name": "Calin Diacon",
-      "email": "calin.diacon@dotmailer.com"
-    },
-    {
-      "name": "Adeel Qamar",
-      "email": "adeel.qamar@dotmailer.com"
-    },
-    {
-      "name": "Zygimantas",
-      "email": "zygimantas.simkus@dotmailer.com"
-    }
-  ],
   "autoload": {
     "files": [ "registration.php" ],
     "psr-4": {
