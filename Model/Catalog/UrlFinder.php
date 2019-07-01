@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
+use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Model\Product;
 
 class UrlFinder
@@ -32,9 +33,9 @@ class UrlFinder
     private $storeManager;
 
     /**
-     * @var ImageFactory
+     * @var ImageBuilder
      */
-    private $imageFactory;
+    private $imageBuilder;
 
     /**
      * UrlFinder constructor.
@@ -44,7 +45,7 @@ class UrlFinder
      * @param \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection
      * @param \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Catalog\Block\Product\ImageFactory $imageFactory
+     * @param \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory
      */
     public function __construct(
         \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType,
@@ -52,14 +53,14 @@ class UrlFinder
         \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection,
         \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Block\Product\ImageFactory $imageFactory
+        \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory
     ) {
         $this->configurableType = $configurableType;
         $this->productRepository = $productRepository;
         $this->bundleSelection = $bundleSelection;
         $this->groupedType = $groupedType;
         $this->storeManager = $storeManager;
-        $this->imageFactory = $imageFactory;
+        $this->imageBuilder = $imageBuilderFactory->create();
     }
 
     /**
@@ -106,7 +107,12 @@ class UrlFinder
             $product = $parentProduct;
         }
 
-        $imageData = $this->imageFactory->create($product, $imageId, [])->getData();
+        $imageData = $this->imageBuilder
+            ->setProduct($product)
+            ->setImageId($imageId)
+            ->create()
+            ->getData();
+
         return $imageData['image_url'] ?? null;
     }
 
