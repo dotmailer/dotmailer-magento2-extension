@@ -15,6 +15,21 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.2.4
+
+###### Improvements
+- Yes/No data fields defined in Engagement Cloud will now be displayed as option lists in a customer's account.  
+- Upon installing our module, both Page Tracking and ROI Tracking will be enabled by default.
+- We've improved our automated test coverage.
+- We've removed a legacy package.json file.
+
+###### Fixes
+- We've modified the 'sent at' date stored when a campaign is sent from Engagement Cloud. We now store the date the campaign was sent from the platform (as opposed to the current time in Magento), in a timezone that matches the store locale. 
+- We've repaired a problem affecting order sync if no order attributes had been selected.
+- We've fixed a bug with the handling of Abandoned Cart Limits. 
+- We've fixed a bug with images not displaying in external dynamic content in older versions of Magento.
+- Marketing preference checkbox ID attributes are no longer invalid if their label has more than one word.
+
 ## 3.2.3 
 
 ###### Fixes
