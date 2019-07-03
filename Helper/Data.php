@@ -1218,7 +1218,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'Key' => $quoteIdField,
                 'Value' => $quoteId,
             ];
-            //update datafields for conctact
+            //update datafields for contact
             $client->updateContactDatafieldsByEmail($email, $data);
         }
     }

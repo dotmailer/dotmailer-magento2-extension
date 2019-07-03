@@ -101,21 +101,4 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
     }
-
-    /**
-     * Return a product's parent URL, if it has one.
-     *
-     * @param \Magento\Catalog\Model\Product $product
-     *
-     * @return string
-     */
-    public function getConfigurableParentUrl($product)
-    {
-        return $this->urlFinder->fetchFor($product);
-    }
-
-    public function getSmallImageUrl($product, $imageId)
-    {
-        return $this->urlFinder->getProductImageUrl($product, $imageId);
-    }
 }
