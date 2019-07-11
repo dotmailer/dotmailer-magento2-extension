@@ -32,7 +32,7 @@ class File
      * @var string
      */
     private $logFileName = 'connector.log';
-    
+
     /**
      * @var \Magento\Framework\App\Filesystem\DirectoryList
      */
@@ -386,7 +386,7 @@ class File
     }
 
     /**
-     * Check if file exist in email or archive folder
+     * Check if file exists in email or archive folder
      *
      * @param string $filename
      * @return boolean
