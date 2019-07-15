@@ -514,7 +514,8 @@ class Order
                 case 'timestamp':
                 case 'datetime':
                 case 'date':
-                    $value = $orderData->$function();
+                    $date = new \DateTime($orderData->$function());
+                    $value = $date->format(\DateTime::ISO8601);
                     break;
 
                 default:
