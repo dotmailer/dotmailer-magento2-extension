@@ -64,7 +64,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var File
      */
-    public $fileHelper;
+    private $fileHelper;
 
     /**
      * @var \Magento\Framework\App\Config\Storage\Writer

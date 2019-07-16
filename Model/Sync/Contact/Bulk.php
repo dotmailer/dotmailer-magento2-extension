@@ -31,6 +31,11 @@ class Bulk
     protected $helper;
 
     /**
+     * @var \Dotdigitalgroup\Email\Helper\File
+     */
+    protected $fileHelper;
+
+    /**
      * @var Client|EngagementCloudAddressBookApi
      */
     protected $client;
@@ -48,18 +53,21 @@ class Bulk
     /**
      * Bulk constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Framework\Stdlib\DateTime $dateTime
     ) {
         $this->helper = $helper;
+        $this->fileHelper = $fileHelper;
         $this->serializer = $serializer;
         $this->importerResource = $importerResource;
         $this->contactFactory = $contactFactory;
@@ -87,7 +95,7 @@ class Bulk
                 );
 
                 if (! empty($file) && ! empty($addressBook) && $this->client) {
-                    if ($this->helper->fileHelper->isFilePathExistWithFallback($file)) {
+                    if ($this->fileHelper->isFilePathExistWithFallback($file)) {
                         //import contacts from csv file
                         $result = $this->client->postAddressBookContactsImport($file, $addressBook);
                         $this->_handleItemAfterSync($item, $result);
