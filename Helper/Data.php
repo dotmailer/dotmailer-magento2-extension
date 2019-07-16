@@ -63,11 +63,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $customerFactory;
 
     /**
-     * @var File
-     */
-    private $fileHelper;
-
-    /**
      * @var \Magento\Framework\App\Config\Storage\Writer
      */
     public $writer;
@@ -137,7 +132,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
-     * @param File $fileHelper
      * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
      * @param \Magento\Framework\App\ResourceConnection $adapter
      * @param \Magento\Framework\App\Helper\Context $context
@@ -160,7 +154,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\ProductMetadata $productMetadata,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
@@ -204,7 +197,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->logger = $logger;
 
         parent::__construct($context);
-        $this->fileHelper = $fileHelper;
     }
 
     /**
