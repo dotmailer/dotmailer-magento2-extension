@@ -96,12 +96,18 @@
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
     </type>
+    <type name="Dotdigitalgroup\Email\Logger\Handler\Error">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
     <type name="Dotdigitalgroup\Email\Logger\Logger">
         <arguments>
             <argument name="name" xsi:type="string">dotdigital</argument>
             <argument name="handlers"  xsi:type="array">
                 <item name="info" xsi:type="object">Dotdigitalgroup\Email\Logger\Handler\Info</item>
                 <item name="debug" xsi:type="object">Dotdigitalgroup\Email\Logger\Handler\Debug</item>
+                <item name="error" xsi:type="object">Dotdigitalgroup\Email\Logger\Handler\Error</item>
             </argument>
         </arguments>
     </type>

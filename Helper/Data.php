@@ -477,17 +477,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Log data into the connector file.
+     * Log data to the extension's log file.
+     * INFO (200): Interesting events.
+     *
      * @param string $data
+     * @param array $extra
      *
      * @return null
      */
-    public function log($data)
+    public function log($data, $extra = [])
     {
-        $this->logger->info($data);
+        $this->logger->info($data, $extra);
     }
 
     /**
+     * Log data to the extension's log file.
+     * DEBUG (100): Detailed debug information.
      *
      * @param string $message
      * @param array $extra
@@ -500,6 +505,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Log data to the extension's log file.
+     * ERROR (400): Runtime errors.
      *
      * @param string $message
      * @param array $extra
@@ -508,7 +515,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function error($message, $extra)
     {
-        $this->debug($message, $extra);
+        $this->logger->error($message, $extra);
     }
 
     /**
