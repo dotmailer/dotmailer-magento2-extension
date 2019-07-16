@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Helper;
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Model\Config\Json;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Dotdigitalgroup\Email\Logger\Logger;
 
 /**
  * General most used helper to work with config data, saving updating and generating.
@@ -127,6 +128,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $dateIntervalFactory;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * Data constructor.
      * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
@@ -148,6 +154,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @var \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param Logger $logger
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -171,7 +178,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\User\Model\ResourceModel\User $userResource,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        Logger $logger
     ) {
         $this->serializer       = $serilizer;
         $this->adapter          = $adapter;
@@ -193,6 +201,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->userResource = $userResource;
         $this->contactResource = $contactResource;
         $this->encryptor = $encryptor;
+        $this->logger = $logger;
 
         parent::__construct($context);
         $this->fileHelper = $fileHelper;
@@ -483,7 +492,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function log($data)
     {
-        $this->fileHelper->info($data);
+        $this->logger->info($data);
     }
 
     /**
@@ -495,7 +504,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function debug($message, $extra)
     {
-        $this->fileHelper->debug($message, $extra);
+        $this->logger->debug($message, $extra);
     }
 
     /**
@@ -1615,7 +1624,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $cartLimit = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT
         );
-        
+
         return $cartLimit;
     }
 

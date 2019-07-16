@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
-use Dotdigitalgroup\Email\Logger\Logger;
-
 /**
  * Creates the csv files in export folder and move to archive when it's complete.
  * Log info and debug to a custom log file connector.log
@@ -46,25 +44,18 @@ class File
     private $csv;
 
     /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
      * File constructor.
      *
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
      * @param \Magento\Framework\File\Csv $csv
-     * @param Logger $logger
      *
      * @throws \Magento\Framework\Exception\FileSystemException
      */
     public function __construct(
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
-        \Magento\Framework\File\Csv $csv,
-        Logger $logger
+        \Magento\Framework\File\Csv $csv
     ) {
         $this->csv = $csv;
         $this->consentResource = $consentResource;
@@ -75,7 +66,6 @@ class File
         // tab character
         $this->delimiter = ',';
         $this->enclosure = '"';
-        $this->logger = $logger;
     }
 
     /**
@@ -319,27 +309,6 @@ class File
         } catch (\Exception $e) {
             return $e->getMessage() . $pathLogfile;
         }
-    }
-
-    /**
-     * @param string|array|mixed $data
-     *
-     * @return null
-     */
-    public function info($data)
-    {
-        $this->logger->info($data);
-    }
-
-    /**
-     * @param string $message
-     * @param array $extra
-     *
-     * @return null
-     */
-    public function debug($message, $extra)
-    {
-        $this->logger->debug($message, $extra);
     }
 
     /**
