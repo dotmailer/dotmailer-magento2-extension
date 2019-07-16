@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Dotdigitalgroup\Email\Logger\Logger;
+
 /**
  * Creates the csv files in export folder and move to archive when it's complete.
  * Log info and debug to a custom log file connector.log
@@ -29,11 +31,6 @@ class File
     private $enclosure;
 
     /**
-     * @var string
-     */
-    private $logFileName = 'connector.log';
-
-    /**
      * @var \Magento\Framework\App\Filesystem\DirectoryList
      */
     private $directoryList;
@@ -49,18 +46,25 @@ class File
     private $csv;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * File constructor.
      *
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
      * @param \Magento\Framework\File\Csv $csv
+     * @param Logger $logger
      *
      * @throws \Magento\Framework\Exception\FileSystemException
      */
     public function __construct(
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
-        \Magento\Framework\File\Csv $csv
+        \Magento\Framework\File\Csv $csv,
+        Logger $logger
     ) {
         $this->csv = $csv;
         $this->consentResource = $consentResource;
@@ -71,15 +75,7 @@ class File
         // tab character
         $this->delimiter = ',';
         $this->enclosure = '"';
-
-        $logDir = $directoryList->getPath('log');
-        if (! is_dir($logDir)) {
-            mkdir($directoryList->getPath('var')  . DIRECTORY_SEPARATOR . 'log');
-        }
-        $writer = new \Zend\Log\Writer\Stream($logDir . DIRECTORY_SEPARATOR .  $this->logFileName);
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
-        $this->connectorLogger  = $logger;
+        $this->logger = $logger;
     }
 
     /**
@@ -332,7 +328,7 @@ class File
      */
     public function info($data)
     {
-        $this->connectorLogger->info($data);
+        $this->logger->info($data);
     }
 
     /**
@@ -343,7 +339,7 @@ class File
      */
     public function debug($message, $extra)
     {
-        $this->connectorLogger->debug($message, $extra);
+        $this->logger->debug($message, $extra);
     }
 
     /**
