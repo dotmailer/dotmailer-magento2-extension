@@ -193,12 +193,13 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param string $importType
      * @param string $importMode
      * @param int $limit
+     * @param array $websiteIds
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection
      */
-    public function _getQueue($importType, $importMode, $limit)
+    public function _getQueue($importType, $importMode, $limit, $websiteIds)
     {
         return $this->importerCollection->create()
-            ->getQueueByTypeAndMode($importType, $importMode, $limit);
+            ->getQueueByTypeAndMode($importType, $importMode, $limit, $websiteIds);
     }
 }

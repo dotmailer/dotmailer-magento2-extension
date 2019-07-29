@@ -61,13 +61,14 @@ class Collection extends
     /**
      * Get the imports by type and mode.
      *
-     * @param string $importType
+     * @param string|array $importType
      * @param string $importMode
      * @param int $limit
+     * @param array $websiteIds
      *
      * @return $this
      */
-    public function getQueueByTypeAndMode($importType, $importMode, $limit)
+    public function getQueueByTypeAndMode($importType, $importMode, $limit, $websiteIds)
     {
         if (is_array($importType)) {
             $condition = [];
@@ -90,8 +91,11 @@ class Collection extends
             ->addFieldToFilter(
                 'import_status',
                 ['eq' => \Dotdigitalgroup\Email\Model\Importer::NOT_IMPORTED]
-            )
-            ->setPageSize($limit)
+            );
+
+        $this->addFieldToFilter('website_id', ['in' => $websiteIds]);
+
+        $this->setPageSize($limit)
             ->setCurPage(1);
 
         return $this;
