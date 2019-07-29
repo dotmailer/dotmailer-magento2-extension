@@ -499,7 +499,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return null
      */
-    public function debug($message, $extra)
+    public function debug($message, $extra = [])
     {
         $this->logger->debug($message, $extra);
     }
@@ -513,7 +513,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return null
      */
-    public function error($message, $extra)
+    public function error($message, $extra = [])
     {
         $this->logger->error($message, $extra);
     }
