@@ -4,13 +4,13 @@ namespace Dotdigitalgroup\Email\Logger\Handler;
 
 use Monolog\Logger;
 
-class Error extends \Magento\Framework\Logger\Handler\Base
+class ConnectorLogHandler extends \Magento\Framework\Logger\Handler\Base
 {
     /**
      * Logging level
      * @var int
      */
-    protected $loggerType = Logger::ERROR;
+    protected $loggerType = Logger::DEBUG;
 
     /**
      * File name
