@@ -1275,6 +1275,11 @@
                     <label>Page Tracking</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
+                <field id="script_version" translate="label" sortOrder="30" showInStore="0" showInWebsite="0"
+                       showInDefault="1">
+                    <label>Script version</label>
+                    <comment>This adds an optional version number to the ROI tracking script to force a reload if the script is cached.</comment>
+                </field>
             </group>
             <group id="consent" translate="label" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Consent</label>

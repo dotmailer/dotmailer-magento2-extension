@@ -1883,7 +1883,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPageTrackingUrl()
     {
-        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmpt';
+        $version = $this->getTrackingScriptVersionNumber();
+        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmpt'
+            . ($version ? '.js?v=' . $version : '');
     }
 
     /**
@@ -1891,7 +1893,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPageTrackingUrlForSuccessPage()
     {
-        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmmpt';
+        $version = $this->getTrackingScriptVersionNumber();
+        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmmpt'
+            . ($version ? '.js?v=' . $version : '');
     }
 
     /**
@@ -1966,5 +1970,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function saveContact($contact)
     {
         $this->contactResource->save($contact);
+    }
+
+    /**
+     * Get the version number to append to _dmpt tracking script
+     *
+     * @return int|null
+     */
+    private function getTrackingScriptVersionNumber()
+    {
+        return (int) $this->scopeConfig->getValue(Config::XML_PATH_TRACKING_SCRIPT_VERSION);
     }
 }
