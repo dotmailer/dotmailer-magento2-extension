@@ -2,11 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
-use DOMDocument;
 use Magento\Quote\Model\ResourceModel\Quote;
-use XSLTProcessor;
-
-const FEEFO_URL = 'http://www.feefo.com/feefo/xmlfeed.jsp?';
 
 /**
  * Feefo block
@@ -15,6 +11,9 @@ const FEEFO_URL = 'http://www.feefo.com/feefo/xmlfeed.jsp?';
  */
 class Feefo extends \Magento\Framework\View\Element\Template
 {
+    const FEEFO_LOGO_ROOT = 'https://api.feefo.com/api/logo?';
+    const FEEFO_PRODUCT_REVIEWS_ROOT = 'https://api.feefo.com/api/10/reviews/product?';
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -24,16 +23,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
-
-    /**
-     * @var DOMDocument
-     */
-    public $domDocument;
-
-    /**
-     * @var XSLTProcessor
-     */
-    public $processor;
 
     /**
      * @var Quote
@@ -59,8 +48,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
      * Feefo constructor.
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param XSLTProcessor $processor
-     * @param DOMDocument $document
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
@@ -70,8 +57,6 @@ class Feefo extends \Magento\Framework\View\Element\Template
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
-        XSLTProcessor $processor,
-        DOMDocument $document,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
@@ -79,10 +64,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         array $data = []
     ) {
-        $this->helper         = $helper;
-        $this->domDocument = $document;
-        $this->processor = $processor;
-        $this->priceHelper    = $priceHelper;
+        $this->helper = $helper;
+        $this->priceHelper = $priceHelper;
         $this->review = $review;
         $this->assetRepository = $context->getAssetRepository();
         $this->quoteFactory = $quoteFactory;
@@ -103,7 +86,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
             return [];
         }
 
-        $url = 'https://api.feefo.com/api/logo?merchantidentifier=';
+        $url = self::FEEFO_LOGO_ROOT . 'merchantidentifier=';
         $logon = $this->helper->getFeefoLogon();
         $template = '';
         if ($this->helper->getFeefoLogoTemplate()) {
@@ -150,13 +133,11 @@ class Feefo extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Get product reviews from feefo.
-     *
-     * @param bool $check
+     * Get product reviews from Feefo.
      *
      * @return array
      */
-    public function getProductsReview($check = true)
+    public function getProductsReview()
     {
         $reviews = [];
         $logon = $this->helper->getFeefoLogon();
@@ -164,40 +145,29 @@ class Feefo extends \Magento\Framework\View\Element\Template
         $products = $this->getQuoteProducts();
 
         foreach ($products as $sku => $name) {
-            $url = 'http://www.feefo.com/feefo/xmlfeed.jsp?logon=' . $logon
-                . '&limit=' . $limit . '&vendorref=' . $sku
-                . '&mode=productonly';
-            $doc = $this->domDocument;
-            $xsl = $this->processor;
-            if ($check) {
-                $pathToTemplate = $this->getFeefoTemplate('feedback.xsl');
-                $doc->load($pathToTemplate);
-            } else {
-                $pathToTemplate = $this->getFeefoTemplate('feedback-no-th.xsl');
-                $doc->load($pathToTemplate);
+            $url = self::FEEFO_PRODUCT_REVIEWS_ROOT . 'merchant_identifier=' . $logon
+                . '&page_size=' . $limit . '&product_sku=' . $sku . '&page=1';
+
+            $json = file_get_contents($url);
+            $productReviewObject = json_decode($json);
+
+            if (count($productReviewObject->reviews) > 0) {
+                $reviewParentObject = reset($productReviewObject->reviews);
+                $reviewItemObject = reset($reviewParentObject->products);
+                $dateObject = new \DateTime($reviewParentObject->last_updated_date);
+
+                $reviews[$name] = [
+                    'url' => $reviewParentObject->url,
+                    'rating' => $reviewItemObject->rating->rating,
+                    'review' => $reviewItemObject->review,
+                    'products_purchased' => $reviewParentObject->products_purchased,
+                    'last_updated_date' => $dateObject->format('Y-m-d H:i:s'),
+                    'star_image_path' => $this->getStarImagePath(round($reviewItemObject->rating->rating))
+                ];
             }
-            $xsl->importStyleSheet($doc);
-            $doc->loadXML(file_get_contents($url));
-            $productReview = $xsl->transformToXML($doc);
-            if (strpos($productReview, '<td') !== false) {
-                $reviews[$name] = $xsl->transformToXML($doc);
-            }
-            $check = false;
         }
 
         return $reviews;
-    }
-
-    /**
-     * @param string $template
-     *
-     * @return string
-     */
-    private function getFeefoTemplate($template)
-    {
-        return $this->assetRepository
-            ->createAsset('Dotdigitalgroup_Email::feefo/' . $template)
-            ->getUrl();
     }
 
     /**
@@ -208,5 +178,15 @@ class Feefo extends \Magento\Framework\View\Element\Template
         return $this->assetRepository
             ->createAsset('Dotdigitalgroup_Email::css/feefo.css')
             ->getUrl();
+    }
+
+    /**
+     *
+     * @param int $rating
+     */
+    private function getStarImagePath($rating)
+    {
+        $fileId = 'Dotdigitalgroup_Email::feefo/' . $rating . 'star.png';
+        return $this->getViewFileUrl($fileId);
     }
 }
