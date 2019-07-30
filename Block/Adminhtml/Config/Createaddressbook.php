@@ -30,7 +30,7 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
-            $this->setTemplate('system/config/createaddressbook.phtml');
+            $this->setTemplate('Dotdigitalgroup_Email::system/config/createaddressbook.phtml');
         }
 
         return $this;

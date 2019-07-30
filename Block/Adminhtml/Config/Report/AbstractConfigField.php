@@ -42,7 +42,7 @@ abstract class AbstractConfigField extends \Magento\Config\Block\System\Config\F
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
-            $this->setTemplate('system/config/reportlink.phtml');
+            $this->setTemplate('Dotdigitalgroup_Email::system/config/reportlink.phtml');
         }
 
         return $this;
