@@ -77,11 +77,11 @@ class ImporterSyncsCommand extends Command
         if (!$requestedSync = $input->getArgument('sync')) {
             $requestedSync = $this->askForSync($input, $output);
         }
-        
+
         // get the requested sync class
         /** @var SyncInterface $syncClass */
         $syncClass = $this->syncProvider->$requestedSync;
-        if (is_null($syncClass)) {
+        if (is_null($syncClass) || !$syncClass instanceof SyncInterface) {
             $output->writeln('Requested sync was not recognised');
             return;
         }

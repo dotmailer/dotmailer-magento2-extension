@@ -172,6 +172,7 @@
             <tracking>
                 <roi_enabled>1</roi_enabled>
                 <page_enabled>1</page_enabled>
+                <script_version></script_version>
             </tracking>
             <consent>
                 <dotmailer_consent_subscriber_enabled>0</dotmailer_consent_subscriber_enabled>

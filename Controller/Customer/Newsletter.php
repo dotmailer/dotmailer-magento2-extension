@@ -49,7 +49,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     /**
      * @var CsvGenerator
      */
-    public $csvGenerator;
+    private $csvGenerator;
 
     /**
      * Newsletter constructor.

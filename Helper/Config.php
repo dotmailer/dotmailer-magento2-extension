@@ -277,6 +277,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const PATH_FOR_API_ENDPOINT = 'connector/api/endpoint';
 
     /**
+     * Version number to append to _dmpt tracking scripts
+     */
+    const XML_PATH_TRACKING_SCRIPT_VERSION = 'connector_configuration/tracking/script_version';
+
+    /**
      * Trial Account.
      */
     const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';

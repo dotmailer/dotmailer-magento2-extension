@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Helper\Config;
+use \Magento\Store\Api\StoreRepositoryInterface;
 
 class Importer implements SyncInterface
 {
@@ -34,6 +35,11 @@ class Importer implements SyncInterface
      * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
+
+    /**
+     * @var StoreRepositoryInterface $storeRepository
+     */
+    private $storeRepository;
 
     /**
      * @var array
@@ -93,19 +99,22 @@ class Importer implements SyncInterface
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param StoreRepositoryInterface $storeRepository
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Stdlib\DateTime $dateTime
+        \Magento\Framework\Stdlib\DateTime $dateTime,
+        StoreRepositoryInterface $storeRepository
     ) {
         $this->helper = $helper;
         $this->fileHelper = $fileHelper;
         $this->importerFactory = $importerFactory;
         $this->objectManager = $objectManager;
         $this->dateTime = $dateTime;
+        $this->storeRepository = $storeRepository;
     }
 
     /**
@@ -133,6 +142,8 @@ class Importer implements SyncInterface
         //Set priority
         $this->_setPriority();
 
+        $enabledWebsites = $this->getECEnabledWebsites();
+
         //Check previous import status
         $this->_checkImportStatus();
 
@@ -144,7 +155,8 @@ class Importer implements SyncInterface
                 $collection = $importerModel->_getQueue(
                     $bulk['type'],
                     $bulk['mode'],
-                    $bulk['limit'] - $this->totalItems
+                    $bulk['limit'] - $this->totalItems,
+                    $enabledWebsites
                 );
                 if ($collection->getSize()) {
                     $this->totalItems += $collection->getSize();
@@ -163,7 +175,8 @@ class Importer implements SyncInterface
                 $collection = $importerModel->_getQueue(
                     $single['type'],
                     $single['mode'],
-                    $single['limit'] - $this->totalItems
+                    $single['limit'] - $this->totalItems,
+                    $enabledWebsites
                 );
                 if ($collection->getSize()) {
                     $this->totalItems += $collection->getSize();
@@ -329,27 +342,32 @@ class Importer implements SyncInterface
                         $websiteId
                     );
                 }
-                if ($client) {
-                    try {
-                        if ($item->getImportType() == ImporterModel::IMPORT_TYPE_CONTACT ||
-                            $item->getImportType() == ImporterModel::IMPORT_TYPE_SUBSCRIBERS ||
-                            $item->getImportType() == ImporterModel::IMPORT_TYPE_GUEST
-                        ) {
-                            $response = $client->getContactsImportByImportId($item->getImportId());
-                        } else {
-                            $response = $client->getContactsTransactionalDataImportByImportId(
-                                $item->getImportId()
-                            );
-                        }
-                    } catch (\Exception $e) {
-                        $item->setMessage($e->getMessage())
-                            ->setImportStatus(ImporterModel::FAILED);
+                if (!$client) {
+                    $item->setMessage('No API client found for this website.')
+                        ->setImportStatus(ImporterModel::FAILED);
                         $importerModel->saveItem($item);
                         continue;
-                    }
-
-                    $this->processResponse($response, $item, $websiteId);
                 }
+
+                try {
+                    if ($item->getImportType() == ImporterModel::IMPORT_TYPE_CONTACT ||
+                        $item->getImportType() == ImporterModel::IMPORT_TYPE_SUBSCRIBERS ||
+                        $item->getImportType() == ImporterModel::IMPORT_TYPE_GUEST
+                    ) {
+                        $response = $client->getContactsImportByImportId($item->getImportId());
+                    } else {
+                        $response = $client->getContactsTransactionalDataImportByImportId(
+                            $item->getImportId()
+                        );
+                    }
+                } catch (\Exception $e) {
+                    $item->setMessage($e->getMessage())
+                        ->setImportStatus(ImporterModel::FAILED);
+                    $importerModel->saveItem($item);
+                    continue;
+                }
+
+                $this->processResponse($response, $item, $websiteId);
             }
         }
     }
@@ -509,5 +527,25 @@ class Importer implements SyncInterface
         $text = preg_replace("/^$bom/", '', $text);
 
         return $text;
+    }
+
+    /**
+     * Retrieve a list of websites that have Engagement Cloud enabled.
+     *
+     * @return array
+     */
+    private function getECEnabledWebsites()
+    {
+        $stores = $this->storeRepository->getList();
+        $websiteIds = [];
+        foreach ($stores as $store) {
+            $websiteId = $store->getWebsiteId();
+            if ($this->helper->isEnabled($websiteId)
+                && !in_array($websiteId, $websiteIds)
+            ) {
+                $websiteIds[] = $websiteId;
+            }
+        }
+        return $websiteIds;
     }
 }

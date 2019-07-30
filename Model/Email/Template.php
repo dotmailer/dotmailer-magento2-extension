@@ -180,37 +180,37 @@ class Template extends \Magento\Framework\DataObject
     /**
      * @var \Magento\Email\Model\ResourceModel\Template\CollectionFactory
      */
-    public $templateCollectionFactory;
+    private $templateCollectionFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    public $scopeConfig;
+    private $scopeConfig;
 
     /**
      * @var \Magento\Email\Model\ResourceModel\TemplateFactory
      */
-    public $templateResource;
+    private $templateResource;
 
     /**
      * @var \Magento\Email\Model\TemplateFactory
      */
-    public $templateFactory;
+    private $templateFactory;
 
     /**
      * @var array
      */
-    public $processedCampaigns = [];
+    private $processedCampaigns = [];
 
     /**
      * Template constructor.
