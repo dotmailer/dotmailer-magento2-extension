@@ -5,12 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Customer;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Newsletter\Model\Subscriber;
 use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
+use Magento\Framework\Message\MessageInterface;
 
 class Newsletter extends \Magento\Framework\App\Action\Action
 {
-    const MESSAGE_TYPE_SUCCESS = 'Success';
-    const MESSAGE_TYPE_ERROR = 'Error';
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -422,10 +420,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     {
         $customerId = $this->customerSession->getCustomerId();
         $message = null;
-        $messageType = self::MESSAGE_TYPE_SUCCESS;
+        $isSuccess = true;
 
         if ($customerId === null) {
-            $messageType = self::MESSAGE_TYPE_ERROR;
+            $isSuccess = false;
             $message = __('Something went wrong while saving your subscription.');
         } else {
             try {
@@ -457,11 +455,15 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                     $message = __('We have updated your subscription.');
                 }
             } catch (\Exception $e) {
-                $messageType = self::MESSAGE_TYPE_ERROR;
+                $isSuccess = false;
                 $message = __('Something went wrong while saving your subscription.');
             }
         }
 
-        $this->messageManager->{'add' . $messageType}($message);
+        if ($isSuccess) {
+            $this->messageManager->addSuccessMessage($message);
+        } else {
+            $this->messageManager->addErrorMessage($message);
+        }
     }
 }
