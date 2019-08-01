@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
-use Magento\Framework\DB\Select;
-
 interface UpdateTypeInterface
 {
     /**
@@ -14,8 +12,7 @@ interface UpdateTypeInterface
 
     /**
      * Get the where clause for this update
-     * @param Select|null $subQuery   Optional sub-query
      * @return array
      */
-    public function getUpdateWhereClause(Select $subQuery = null);
+    public function getUpdateWhereClause();
 }

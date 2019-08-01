@@ -44,12 +44,12 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
     /**
      * @inheritdoc
      */
-    public function getUpdateWhereClause(Select $subQuery = null)
+    public function getUpdateWhereClause()
     {
         // get customer IDs
         $customerIds = $this->resourceConnection
             ->getConnection()
-            ->fetchCol($subQuery ?: $this->getSelectStatement());
+            ->fetchCol($this->getSelectStatement());
 
         return [
             'customer_id in (?)' => $customerIds,
