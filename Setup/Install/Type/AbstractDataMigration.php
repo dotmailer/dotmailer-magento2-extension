@@ -59,7 +59,15 @@ abstract class AbstractDataMigration
      */
     public function execute()
     {
-        $this->batch($this->getSelectStatement());
+        if ($this instanceof InsertTypeInterface) {
+            $this->batchInsert($this->getSelectStatement());
+        } elseif ($this instanceof UpdateTypeInterface) {
+            $this->update($this->getSelectStatement());
+        }
+
+        // run any post-install operations
+        $this->afterInstall();
+
         return $this;
     }
 
@@ -98,12 +106,28 @@ abstract class AbstractDataMigration
     }
 
     /**
+     * Run an update statement
+     *
      * @param Select $selectStatement
      * @return void
-     * @throws \ErrorException
+     */
+    private function update(Select $selectStatement)
+    {
+        $this->rowsAffected += $this->resourceConnection
+            ->getConnection()
+            ->update(
+                $this->resourceConnection->getTableName($this->tableName),
+                $this->getUpdateBindings(),
+                $this->getUpdateWhereClause($selectStatement)
+            );
+    }
+
+    /**
+     * @param Select $selectStatement
+     * @return void
      * @throws \Zend_Db_Statement_Exception
      */
-    private function batch(Select $selectStatement)
+    private function batchInsert(Select $selectStatement)
     {
         $iterations = $rowCount = 0;
 
@@ -111,35 +135,15 @@ abstract class AbstractDataMigration
             // select offset for query
             $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $this->rowsAffected : 0);
 
-            // get and perform query, returning the rows affected
-            switch (true) {
-                // inserts
-                case $this instanceof InsertTypeInterface :
-                    $query = $selectStatement->insertFromSelect(
-                        $this->resourceConnection->getTableName($this->tableName),
-                        $this->getInsertArray(),
-                        $this->onDuplicate
-                    );
-                    $rowCount = $this->resourceConnection
-                        ->getConnection()
-                        ->query($query)
-                        ->rowCount();
-                    break;
-
-                // updates
-                case $this instanceof UpdateTypeInterface :
-                    $rowCount = $this->resourceConnection
-                        ->getConnection()
-                        ->update(
-                            $this->resourceConnection->getTableName($this->tableName),
-                            $this->getUpdateBindings(),
-                            $this->getUpdateWhereClause($selectStatement)
-                        );
-                    break;
-
-                default :
-                    throw new \ErrorException('A query type must be implemented');
-            }
+            $query = $selectStatement->insertFromSelect(
+                $this->resourceConnection->getTableName($this->tableName),
+                $this->getInsertArray(),
+                $this->onDuplicate
+            );
+            $rowCount = $this->resourceConnection
+                ->getConnection()
+                ->query($query)
+                ->rowCount();
 
             // increase the batch offset
             $this->rowsAffected += $rowCount;
@@ -150,8 +154,5 @@ abstract class AbstractDataMigration
             }
 
         } while ($rowCount > 0);
-
-        // run any post-install operations
-        $this->afterInstall();
     }
 }
