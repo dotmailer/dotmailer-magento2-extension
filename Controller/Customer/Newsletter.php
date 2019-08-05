@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Controller\Customer;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Newsletter\Model\Subscriber;
 use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
-use Magento\Framework\Message\MessageInterface;
 
 class Newsletter extends \Magento\Framework\App\Action\Action
 {
