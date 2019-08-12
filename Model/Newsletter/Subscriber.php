@@ -3,11 +3,12 @@
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Magento\Framework\Exception\LocalizedException;
+use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
 
 /**
  * Sync subscribers.
  */
-class Subscriber
+class Subscriber implements SyncInterface
 {
     const STATUS_SUBSCRIBED = 1;
     const STATUS_NOT_ACTIVE = 2;
@@ -101,7 +102,7 @@ class Subscriber
     /**
      * Sync subscribers and unsubscribes in EC
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $this->runExport();
         $this->unsubscribe();
