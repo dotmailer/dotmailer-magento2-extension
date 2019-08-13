@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-class Connect extends \Magento\Config\Block\System\Config\Form\Field
+class Connect extends AbstractDeveloper
 {
 
     /**
@@ -31,6 +31,11 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     public $configHelper;
 
     /**
+     * @var String
+     */
+    private $refreshToken;
+
+    /**
      * Connect constructor.
      *
      * @param \Magento\Backend\Block\Template\Context $context
@@ -51,54 +56,36 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
         $this->auth         = $auth;
 
         parent::__construct($context, $data);
+
+        $this->setRefreshToken();
     }
 
     /**
-     * @param string $buttonLabel
-     *
-     * @return $this
+     * @return bool
      */
-    public function setButtonLabel($buttonLabel)
+    protected function getDisabled()
     {
-        $this->buttonLabel = $buttonLabel;
-
-        return $this;
+        return !$this->_isSecureUrl();
     }
 
     /**
-     * Get the button and scripts contents.
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-     *
-     * @return string
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return \Magento\Framework\Phrase|string
      */
-    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function getButtonLabel()
+    {
+        return ($this->refreshToken) ? __('Disconnect') : __('Connect');
+    }
+
+    /**
+     * @return string
+     */
+    protected function getButtonUrl()
     {
         $url = $this->escapeUrl($this->getAuthoriseUrl());
-        $disabled = false;
-        //disable for ssl missing
-        if (! $this->_isSecureUrl()) {
-            $disabled = true;
-        }
 
-        $adminUser = $this->auth->getUser();
-        $refreshToken = $adminUser->getRefreshToken();
-
-        $title = ($refreshToken) ? __('Disconnect') : __('Connect');
-
-        $url = ($refreshToken) ? $this->escapeUrl($this->getUrl(
+        return ($this->refreshToken) ? $this->escapeUrl($this->getUrl(
             'dotdigitalgroup_email/studio/disconnect'
         )) : $url;
-
-        return $this->getLayout()->createBlock(
-            \Magento\Backend\Block\Widget\Button::class
-        )
-            ->setType('button')
-            ->setLabel($title)
-            ->setDisabled($disabled)
-            ->setOnClick("window.location.href='" . $url . "'")
-            ->toHtml();
     }
 
     /**
@@ -119,7 +106,7 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Autorisation url for OAUTH.
+     * Authorisation url for OAUTH.
      *
      * @return string
      */
@@ -149,5 +136,15 @@ class Connect extends \Magento\Config\Block\System\Config\Form\Field
             . '&client_id=' . $clientId;
 
         return $url;
+    }
+
+    /**
+     * Store the refresh token
+     *
+     * @return string
+     */
+    private function setRefreshToken()
+    {
+        $this->refreshToken = $this->auth->getUser()->getRefreshToken();
     }
 }
