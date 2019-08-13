@@ -3,10 +3,11 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Importer;
 
 use Dotdigitalgroup\Email\Controller\Adminhtml\Importer as ImporterController;
+use Dotdigitalgroup\Email\Helper\MassDeleteCsrf;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
-class MassDelete extends ImporterController
+class MassDelete extends MassDeleteCsrf
 {
     /**
      * Authorization level of a basic admin session
@@ -18,7 +19,7 @@ class MassDelete extends ImporterController
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory
      */
-    private $collectionFactory;
+    protected $collectionFactory;
 
     /**
      * @var object
@@ -28,50 +29,30 @@ class MassDelete extends ImporterController
     /**
      * @var Filter
      */
-    private $filter;
+    protected $filter;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
      */
-    private $importerResource;
+    protected $collectionResource;
 
     /**
      * MassDelete constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $collectionResource
      * @param \Magento\Backend\App\Action\Context $context
      * @param Filter $filter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory $collectionFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $collectionResource,
         \Magento\Backend\App\Action\Context $context,
         Filter $filter,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory $collectionFactory
     ) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->importerResource = $importerResource;
+        $this->collectionResource = $collectionResource;
         parent::__construct($context);
-    }
-
-    /**
-     * @return \Magento\Backend\Model\View\Result\Redirect
-     */
-    public function execute()
-    {
-        $collection = $this->filter->getCollection($this->collectionFactory->create());
-        $collectionSize = $collection->getSize();
-
-        foreach ($collection as $item) {
-            $this->importerResource->delete($item);
-        }
-
-        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
-
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-
-        return $resultRedirect->setPath('*/*/');
     }
 }

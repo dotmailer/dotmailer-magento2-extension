@@ -2,10 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Cron;
 
+use Dotdigitalgroup\Email\Helper\MassDeleteCsrf;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
-class MassDelete extends \Magento\Backend\App\Action
+class MassDelete extends MassDeleteCsrf
 {
     /**
      * Authorization level of a basic admin session
@@ -17,7 +18,7 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory
      */
-    private $collectionFactory;
+    protected $collectionFactory;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -27,50 +28,30 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var \Magento\Cron\Model\ResourceModel\Schedule
      */
-    private $scheduleResource;
+    protected $collectionResource;
 
     /**
      * @var Filter
      */
-    private $filter;
+    protected $filter;
 
     /**
      * MassDelete constructor.
      *
-     * @param \Magento\Cron\Model\ResourceModel\Schedule $scheduleResource
+     * @param \Magento\Cron\Model\ResourceModel\Schedule $collectionResource
      * @param \Magento\Backend\App\Action\Context $context
      * @param Filter $filter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $collectionFactory
      */
     public function __construct(
-        \Magento\Cron\Model\ResourceModel\Schedule $scheduleResource,
+        \Magento\Cron\Model\ResourceModel\Schedule $collectionResource,
         \Magento\Backend\App\Action\Context $context,
         Filter $filter,
         \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $collectionFactory
     ) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->scheduleResource = $scheduleResource;
+        $this->collectionResource = $collectionResource;
         parent::__construct($context);
-    }
-
-    /**
-     * @return \Magento\Backend\Model\View\Result\Redirect
-     */
-    public function execute()
-    {
-        $collection = $this->filter->getCollection($this->collectionFactory->create());
-        $collectionSize = $collection->getSize();
-
-        foreach ($collection as $item) {
-            $this->scheduleResource->delete($item);
-        }
-
-        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
-
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-
-        return $resultRedirect->setPath('*/*/');
     }
 }
