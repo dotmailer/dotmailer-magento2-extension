@@ -141,6 +141,9 @@ class MessagePlugin
     }
 
     /**
+     * Handle a $message object that has extended \Zend_Mail
+     * i.e. for Magento 2.1 > 2.2.7
+     *
      * @param MessageInterface $message
      */
     private function handleZendMailMessage($message)
@@ -156,6 +159,10 @@ class MessagePlugin
      */
     private function setMessageFromAddressFromTemplate($message, $template)
     {
-        $message->setFrom($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
+        if (method_exists($message, 'setFromAddress')) {
+            $message->setFromAddress($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
+        } else {
+            $message->setFrom($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
+        }
     }
 }
