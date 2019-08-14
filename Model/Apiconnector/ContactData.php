@@ -239,8 +239,13 @@ class ContactData
                 $this->model->getWebsiteId()
             );
             $storeId = $this->model->getStoreId();
-            $this->brandValue[$id] = $this->getAttributeValue($id, $attributeCode, $storeId);
+            $brandValue = $this->getAttributeValue($id, $attributeCode, $storeId);
 
+            if (is_array($brandValue)) {
+                $this->brandValue[$id] = implode(',', $brandValue);
+            } else {
+                $this->brandValue[$id] = $brandValue;
+            }
         }
 
         return $this->brandValue[$id];
