@@ -2,9 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Email;
 
-use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
-
-class Template extends \Magento\Framework\DataObject implements SyncInterface
+class Template extends \Magento\Framework\DataObject
 {
     /**
      * HTML template type.
@@ -275,7 +273,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
      *
      * @return array
      */
-    public function sync(\DateTime $from = null)
+    public function sync()
     {
         $result = ['store' => 'Stores : ', 'message' => 'Done.'];
         $lastWebsiteId = '0';

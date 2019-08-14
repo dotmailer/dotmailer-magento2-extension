@@ -2,12 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
-
 /**
  * manages the sync of dotmailer Contact.
  */
-class Contact implements SyncInterface
+class Contact
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
@@ -81,7 +79,7 @@ class Contact implements SyncInterface
      *
      * @return array
      */
-    public function sync(\DateTime $from = null)
+    public function sync()
     {
         //result message
         $result = ['success' => true, 'message' => ''];
