@@ -32,6 +32,6 @@
         <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <seeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
-        <dontsee selector="{{StorefrontDotmailerPreferenceSection.subscriptionLabel}}" userInput="Test consent text" stepKey="seeConsentText"/>
+        <dontSee selector="{{StorefrontDotmailerPreferenceSection.subscriptionLabel}}" userInput="Test consent text" stepKey="seeConsentText"/>
     </test>
 </tests>
