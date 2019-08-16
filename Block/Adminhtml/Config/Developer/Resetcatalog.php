@@ -2,34 +2,28 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-class Resetcatalog extends \Magento\Config\Block\System\Config\Form\Field
+class Resetcatalog extends AbstractDeveloper
 {
-
     /**
-     * @var string
+     * @return bool
      */
-    public $buttonLabel = 'Run Now';
-
-    /**
-     * @param string $buttonLabel
-     *
-     * @return $this
-     */
-    public function setButtonLabel($buttonLabel)
+    protected function getDisabled()
     {
-        $this->buttonLabel = $buttonLabel;
-
-        return $this;
+        return false;
     }
 
     /**
-     * Get the button and scripts contents.
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-     *
+     * @return \Magento\Framework\Phrase|string
+     */
+    protected function getButtonLabel()
+    {
+        return  __('Run Now');
+    }
+
+    /**
      * @return string
      */
-    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function getButtonUrl()
     {
         $query = [
             '_query' => [
@@ -38,13 +32,6 @@ class Resetcatalog extends \Magento\Config\Block\System\Config\Form\Field
                 'tp' => ''
             ]
         ];
-        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/catalogreset', $query);
-
-        return $this->getLayout()
-            ->createBlock(\Magento\Backend\Block\Widget\Button::class)
-            ->setType('button')
-            ->setLabel($this->buttonLabel)
-            ->setOnClick("window.location.href='" . $url . "'")
-            ->toHtml();
+        return $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/catalogreset', $query);
     }
 }

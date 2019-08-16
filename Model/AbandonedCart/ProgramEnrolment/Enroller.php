@@ -39,7 +39,7 @@ class Enroller
     private $cartInsight;
 
     /**
-     * Rules constructor.
+     * Enroller constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
@@ -96,27 +96,45 @@ class Enroller
 
         $quoteCollection = $this->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
 
-        foreach ($quoteCollection as $quote) {
-            $this->saver->save($quote, $store, $programId);
-            $this->cartInsight->send($quote, $storeId);
+        foreach ($quoteCollection as $batchQuoteCollection) {
+            foreach ($batchQuoteCollection as $quote) {
+                $this->saver->save($quote, $store, $programId);
+                $this->cartInsight->send($quote, $storeId);
+            }
         }
     }
 
     /**
      * Retrieve store quotes
      *
-     * @param int $storeId
-     * @param array $updated
-     *
-     * @return \Magento\Quote\Model\ResourceModel\Quote\Collection|\Magento\Sales\Model\ResourceModel\Order\Collection
+     * @param $storeId
+     * @param $updated
+     * @return \Iterator
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getStoreQuotesForGuestsAndCustomers($storeId, $updated)
     {
-        $salesCollection = $this->orderCollection->create()
+        $batchSize = $this->helper->getScopeConfig()->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        $initialCollection = $this->orderCollection
+            ->create()
             ->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
 
-        $this->rules->apply($salesCollection, $storeId);
+        $page = 1;
+        for ($i = 0; $i < $initialCollection->getSize(); $i += $batchSize) {
 
-        return $salesCollection;
+            $salesCollection = $this->orderCollection
+                ->create()
+                ->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
+
+            $salesCollection->setPageSize($batchSize)->setCurPage($page);
+            $this->rules->apply($salesCollection, $storeId);
+
+            $page++;
+            yield $salesCollection;
+        }
     }
 }
