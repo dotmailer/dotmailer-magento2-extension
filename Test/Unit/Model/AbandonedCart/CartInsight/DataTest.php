@@ -227,6 +227,10 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('fetchFor')
             ->willReturn($expectedPayload['json']['lineItems'][0]['productUrl']);
 
+        $this->urlFinderMock->expects($this->once())
+            ->method('getPath')
+            ->willReturn($expectedPayload['json']['lineItems'][0]['imageUrl']);
+
         $itemsArray[0]->expects($this->once())
             ->method('getSku')
             ->willReturn($expectedPayload['json']['lineItems'][0]['sku']);

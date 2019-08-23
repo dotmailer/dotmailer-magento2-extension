@@ -283,6 +283,7 @@
                 <transactional_data>50</transactional_data>
                 <importer_bulk_limit>1</importer_bulk_limit>
                 <subscriber_sales_data_enabled>0</subscriber_sales_data_enabled>
+                <strip_pub_from_media_paths>0</strip_pub_from_media_paths>
             </import_settings>
             <sync_settings>
                 <setup_data_fields></setup_data_fields>

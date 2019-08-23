@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder as UrlFinder;
 use Magento\Bundle\Model\ResourceModel\Selection;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Block\Product\Image;
 use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Block\Product\ImageBuilderFactory;
 use Magento\Catalog\Model\Product;
@@ -13,6 +12,7 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\TestCase;
 
 class UrlFinderTest extends TestCase
@@ -62,6 +62,11 @@ class UrlFinderTest extends TestCase
      */
     private $imageBuilderMock;
 
+    /**
+     * @var
+     */
+    private $scopeConfigInterfaceMock;
+
     protected function setUp()
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
@@ -81,13 +86,16 @@ class UrlFinderTest extends TestCase
             ->method('create')
             ->willReturn($this->imageBuilderMock);
 
+        $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
+
         $this->urlFinder = new UrlFinder(
             $this->configurableTypeMock,
             $this->productRepositoryMock,
             $this->bundleSelectionMock,
             $this->groupedTypeMock,
             $this->storeManagerMock,
-            $imageBuilderFactory
+            $imageBuilderFactory,
+            $this->scopeConfigInterfaceMock
         );
     }
 
@@ -211,6 +219,7 @@ class UrlFinderTest extends TestCase
 
     /**
      * Builds all the mutual assertions for all cases
+     * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function buildAssertions()
@@ -317,20 +326,24 @@ class UrlFinderTest extends TestCase
             ->willReturn(new class($imageId, $imagePath) {
                 private $imageId;
                 private $imagePath;
-                public function __construct($imageId, $imagePath) {
+                public function __construct($imageId, $imagePath)
+                {
                     $this->imageId = $imageId;
                     $this->imagePath = $imagePath;
                 }
-                public function setImageId($imageId) {
+                public function setImageId($imageId)
+                {
                     if ($imageId !== $this->imageId) {
                         throw new \Exception('Image ID did not match');
                     }
                     return $this;
                 }
-                public function create() {
+                public function create()
+                {
                     return $this;
                 }
-                public function getData() {
+                public function getData()
+                {
                     return [
                         'image_url' => $this->imagePath,
                     ];
@@ -341,5 +354,63 @@ class UrlFinderTest extends TestCase
             $imagePath,
             $this->urlFinder->getProductImageUrl($this->productMock, $imageId)
         );
+    }
+
+    public function testGetPathRemovesPubSubStringIfEnabledInConfig()
+    {
+        $path = 'https://magento2.dev/pub/media/chaz-kangaroo.jpg';
+
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
+            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS)
+            ->willReturn(1);
+
+        $returnedUrl = $this->urlFinder->getPath($path);
+
+        $this->assertFalse(strpos($returnedUrl, '/pub'));
+    }
+
+    public function testGetPathNotRemovesPubSubStringIfNotEnabledInConfig()
+    {
+        $path = 'https://magento2.dev/pub/media/chaz-kangaroo.jpg';
+
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
+            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS)
+            ->willReturn(0);
+
+        $returnedUrl = $this->urlFinder->getPath($path);
+
+        $this->assertGreaterThan(0, strpos($returnedUrl, '/pub'));
+    }
+
+    public function testThatRemovePubDoesntBreakUrlsWithNotPubDirectory()
+    {
+        $path = 'https://magento2.dev/media/chaz-kangaroo.jpg';
+
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
+            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS)
+            ->willReturn(1);
+
+        $returnedUrl = $this->urlFinder->getPath($path);
+
+        $this->assertEquals($returnedUrl, $path);
+    }
+
+    public function testThatremovePubRemovesOnlyPubDirectoryAndnotAllSubstrings()
+    {
+        $path = 'https://simons-pub.com/pub/pub-location/pub-beautifulImage.jpg';
+
+        $expected = 'https://simons-pub.com/pub-location/pub-beautifulImage.jpg';
+
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
+            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS)
+            ->willReturn(1);
+
+        $returnedUrl = $this->urlFinder->getPath($path);
+
+        $this->assertEquals($expected,$returnedUrl);
     }
 }

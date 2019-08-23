@@ -261,6 +261,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES = 'connector_developer_settings/ip_restriction/ip_addresses';
     const XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA =
         'connector_developer_settings/import_settings/subscriber_sales_data_enabled';
+    const XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS = 'connector_developer_settings/import_settings/strip_pub_from_media_paths';
 
     /*
      * Cron schedules
