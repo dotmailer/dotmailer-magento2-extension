@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Controller;
 /**
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class Response extends \Magento\Framework\App\Action\Action
+class Edc extends \Magento\Framework\App\Action\Action
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -101,10 +101,17 @@ class Response extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     *
+     * Standard EDC execution
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      */
     public function execute()
     {
+        //authenticate
+        if ($this->authenticate()) {
+            $this->_view->loadLayout();
+            $this->_view->renderLayout();
+            $this->checkResponse();
+        }
     }
 
     /**
@@ -144,6 +151,16 @@ class Response extends \Magento\Framework\App\Action\Action
             return $this->getResponse()->sendHeaders();
         } catch (\Exception $e) {
             $this->helper->log($e);
+        }
+    }
+
+    /**
+     * If there is no Page output for EDC then send 204
+     */
+    public function checkResponse()
+    {
+        if(strlen($this->_view->getLayout()->getOutput()) < 10) {
+            $this->sendNoContentResponse();
         }
     }
 

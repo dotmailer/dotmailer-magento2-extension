@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Controller\Feefo;
 
-class Reviews extends \Dotdigitalgroup\Email\Controller\Response
+class Reviews extends \Dotdigitalgroup\Email\Controller\Edc
 {
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
