@@ -96,7 +96,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
 
         $this->quoteMock->expects($this->once())
             ->method("getAllItems")
-            ->willReturn($this->quoteMock->toArray());
+            ->willReturn([$this->quoteMock]);
 
         $this->magentoQuoteFactoryMock
             ->expects($this->once())
@@ -112,7 +112,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->ddgQuoteMock
             ->expects($this->once())
             ->method("getMostExpensiveItems")
-            ->with($this->quoteMock->toArray())
+            ->with([$this->quoteMock])
             ->willReturn($this->quoteMock);
 
         $this->engagementCloudApi = $this->createMock(\Dotdigitalgroup\Email\Model\Apiconnector\Client::class);
@@ -246,8 +246,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->websiteMock
             ->method("getConfig")
             ->withConsecutive(
-                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID],
                 [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME],
+                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID],
                 [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME],
                 [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME]
             )
