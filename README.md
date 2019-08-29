@@ -15,6 +15,30 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.4.0
+
+###### Improvements 
+- Date format columns added to the `sales_order` table will now be treated as ISO 8601 dates when added to Insight Data in Engagement Cloud.
+- We have changed the way the Request object is handled outside controller classes, in line with Magento design principles.
+- Abandoned cart program enrollment is now handled in batches.
+- We have fixed a bug which, in certain conditions, could have resulted in deleted Exclusion Rules.
+- We have updated the connector's MFTF tests.
+- We have added total price and sale price to Cart Insight data sent to Engagement Cloud.
+- We have made the output and log messages consistent across all syncs when they have completed.
+- We have updated the connector's logging to use Monolog as per Magento 2 guidelines, and add PSR-3 compliance.
+- We have updated template name references to use a canonical format recommended in Magento design.
+- We have removed the 'Use default' checkbox from button inputs in the connector config to improve user experience.
+
+###### Fixes
+- We have fixed an issue whereby media URLs were prefixed with /pub, causing a 404 error.
+- We have fixed an issue with the importer attempting to archive CSV files which had already been removed.
+- Product attributes with multiple values which are mapped to data fields in Engagement Cloud are now passed as a comma-separated list, rather than ‘Array’.
+- We have fixed an issue with the abandoned cart automation cron not exiting if the cart is empty, which was previously throwing an exception.
+- We have updated the Feefo dynamic content block to use the newer JSON API, as the block previously used the discontinued Feefo reviews XML feed.
+- We have fixed an issue with the friendly from name not being added to transactional mails in certain Magento versions.
+- The importer sync will no longer process imports for websites configured to have Engagement Cloud integration disabled.
+- External dynamic content blocks will now return an HTTP 204 status if no content is available.
+
 ## 3.2.4
 
 ###### Improvements
