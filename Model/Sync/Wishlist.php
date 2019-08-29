@@ -147,19 +147,17 @@ class Wishlist implements SyncInterface
                     //mark connector wishlist as  imported
                     $this->setImported($this->wishlistIds);
                 }
-                if (! empty($this->wishlists)) {
-                    $message = '----------- Wishlist bulk sync ----------- : ' .
-                               gmdate('H:i:s', microtime(true) - $this->start) .
-                               ', Total synced = ' . $this->countWishlists;
+                $message = '----------- Wishlist bulk sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) . ', Total synced = ' . $this->countWishlists;
 
+                if ($this->countWishlists) {
                     $this->helper->log($message);
                 }
 
+                $response['message'] = $message;
                 //using single api
                 $this->exportWishlistForWebsiteInSingle($website);
             }
         }
-        $response['message'] = 'wishlists updated: ' . $this->countWishlists;
 
         return $response;
     }

@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Helper;
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Model\Config\Json;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Dotdigitalgroup\Email\Logger\Logger;
+use \Magento\Framework\App\RequestInterface;
 
 /**
  * General most used helper to work with config data, saving updating and generating.
@@ -60,11 +62,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Customer\Model\CustomerFactory
      */
     public $customerFactory;
-
-    /**
-     * @var File
-     */
-    public $fileHelper;
 
     /**
      * @var \Magento\Framework\App\Config\Storage\Writer
@@ -127,11 +124,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $dateIntervalFactory;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * Data constructor.
      * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
-     * @param File $fileHelper
      * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
      * @param \Magento\Framework\App\ResourceConnection $adapter
      * @param \Magento\Framework\App\Helper\Context $context
@@ -148,12 +154,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @var \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param Logger $logger
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
@@ -171,7 +177,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\User\Model\ResourceModel\User $userResource,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        Logger $logger,
+        RequestInterface $request
     ) {
         $this->serializer       = $serilizer;
         $this->adapter          = $adapter;
@@ -193,9 +201,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->userResource = $userResource;
         $this->contactResource = $contactResource;
         $this->encryptor = $encryptor;
+        $this->logger = $logger;
+        $this->request = $request;
 
         parent::__construct($context);
-        $this->fileHelper = $fileHelper;
     }
 
     /**
@@ -359,7 +368,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsite()
     {
-        $websiteId = $this->_request->getParam('website', false);
+        $websiteId = $this->request->getParam('website', false);
         if ($websiteId) {
             return $this->storeManager->getWebsite($websiteId);
         }
@@ -379,9 +388,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
          * If website param does not exist then default value returned 0 "default scope"
          * This is because there is no website param in default scope
          */
-        $storeId = $this->_request->getParam('store');
+        $storeId = $this->request->getParam('store');
         $websiteId = ($storeId) ? $this->storeManager->getStore($storeId)->getWebsiteId() :
-            $this->_request->getParam('website', 0);
+            $this->request->getParam('website', 0);
         return $this->storeManager->getWebsite($websiteId);
     }
 
@@ -392,7 +401,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPasscode()
     {
-        $websiteId = (int) $this->_request->getParam('website', false);
+        $websiteId = (int) $this->request->getParam('website', false);
 
         $scope = 'default';
         $scopeId = '0';
@@ -476,38 +485,45 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Log data into the connector file.
+     * Log data to the extension's log file.
+     * INFO (200): Interesting events.
+     *
      * @param string $data
+     * @param array $extra
      *
      * @return null
      */
-    public function log($data)
+    public function log($data, $extra = [])
     {
-        $this->fileHelper->info($data);
+        $this->logger->info($data, $extra);
     }
 
     /**
+     * Log data to the extension's log file.
+     * DEBUG (100): Detailed debug information.
      *
      * @param string $message
      * @param array $extra
      *
      * @return null
      */
-    public function debug($message, $extra)
+    public function debug($message, $extra = [])
     {
-        $this->fileHelper->debug($message, $extra);
+        $this->logger->debug($message, $extra);
     }
 
     /**
+     * Log data to the extension's log file.
+     * ERROR (400): Runtime errors.
      *
      * @param string $message
      * @param array $extra
      *
      * @return null
      */
-    public function error($message, $extra)
+    public function error($message, $extra = [])
     {
-        $this->debug($message, $extra);
+        $this->logger->error($message, $extra);
     }
 
     /**
@@ -1023,7 +1039,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function disableConfigForWebsite($path)
     {
         $scopeId = 0;
-        if ($website = $this->_request->getParam('website')) {
+        if ($website = $this->request->getParam('website')) {
             $scope = 'websites';
             $scopeId = $this->storeManager->getWebsite($website)->getId();
         } else {
@@ -1063,7 +1079,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function generateDynamicUrl()
     {
-        $website = $this->_request->getParam('website', false);
+        $website = $this->request->getParam('website', false);
 
         //set website url for the default store id
         $website = ($website) ? $this->storeManager->getWebsite($website) : 0;
@@ -1218,7 +1234,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'Key' => $quoteIdField,
                 'Value' => $quoteId,
             ];
-            //update datafields for conctact
+            //update datafields for contact
             $client->updateContactDatafieldsByEmail($email, $data);
         }
     }
@@ -1615,7 +1631,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $cartLimit = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT
         );
-        
+
         return $cartLimit;
     }
 
@@ -1875,7 +1891,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPageTrackingUrl()
     {
-        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmpt';
+        $version = $this->getTrackingScriptVersionNumber();
+        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmpt'
+            . ($version ? '.js?v=' . $version : '');
     }
 
     /**
@@ -1883,7 +1901,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPageTrackingUrlForSuccessPage()
     {
-        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmmpt';
+        $version = $this->getTrackingScriptVersionNumber();
+        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmmpt'
+            . ($version ? '.js?v=' . $version : '');
     }
 
     /**
@@ -1958,5 +1978,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function saveContact($contact)
     {
         $this->contactResource->save($contact);
+    }
+
+    /**
+     * Get the version number to append to _dmpt tracking script
+     *
+     * @return int|null
+     */
+    private function getTrackingScriptVersionNumber()
+    {
+        return (int) $this->scopeConfig->getValue(Config::XML_PATH_TRACKING_SCRIPT_VERSION);
     }
 }

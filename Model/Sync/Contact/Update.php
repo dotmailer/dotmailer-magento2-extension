@@ -27,6 +27,7 @@ class Update extends Bulk
      * Update constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
@@ -36,6 +37,7 @@ class Update extends Bulk
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
@@ -46,7 +48,7 @@ class Update extends Bulk
         $this->contactResource = $contactResource;
         $this->engagementCloudAddressBookApiFactory = $engagementCloudAddressBookApiFactory;
 
-        parent::__construct($helper, $importerResource, $serializer, $contactFactory, $dateTime);
+        parent::__construct($helper, $fileHelper, $importerResource, $serializer, $contactFactory, $dateTime);
     }
 
     /**

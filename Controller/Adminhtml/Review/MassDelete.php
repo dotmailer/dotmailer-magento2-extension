@@ -2,10 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Review;
 
+use Dotdigitalgroup\Email\Helper\MassDeleteCsrf;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
-class MassDelete extends \Magento\Backend\App\Action
+class MassDelete extends MassDeleteCsrf
 {
     /**
      * Authorization level of a basic admin session
@@ -17,7 +18,7 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
-    private $collectionFactory;
+    protected $collectionFactory;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -27,12 +28,12 @@ class MassDelete extends \Magento\Backend\App\Action
     /**
      * @var Filter
      */
-    private $filter;
+    protected $filter;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review
      */
-    private $reviewResource;
+    protected $collectionResource;
 
     /**
      * MassDelete constructor.
@@ -50,27 +51,7 @@ class MassDelete extends \Magento\Backend\App\Action
     ) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->reviewResource = $reviewResource;
+        $this->collectionResource = $reviewResource;
         parent::__construct($context);
-    }
-
-    /**
-     * @return \Magento\Backend\Model\View\Result\Redirect
-     */
-    public function execute()
-    {
-        $collection = $this->filter->getCollection($this->collectionFactory->create());
-        $collectionSize = $collection->getSize();
-
-        foreach ($collection as $item) {
-            $this->reviewResource->delete($item);
-        }
-
-        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
-
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-
-        return $resultRedirect->setPath('*/*/');
     }
 }

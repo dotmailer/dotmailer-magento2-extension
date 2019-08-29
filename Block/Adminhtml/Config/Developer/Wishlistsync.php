@@ -2,43 +2,29 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-class Wishlistsync extends \Magento\Config\Block\System\Config\Form\Field
+class Wishlistsync extends AbstractDeveloper
 {
-
     /**
-     * @var string
+     * @return bool
      */
-    public $buttonLabel = 'Run Now';
-
-    /**
-     * @param string $buttonLabel
-     *
-     * @return $this
-     */
-    public function setButtonLabel($buttonLabel)
+    protected function getDisabled()
     {
-        $this->buttonLabel = $buttonLabel;
-
-        return $this;
+        return false;
     }
 
     /**
-     * Get the button and scripts contents.
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-     *
-     * @return string
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return \Magento\Framework\Phrase|string
      */
-    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function getButtonLabel()
     {
-        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/wishlistsync');
+        return  __('Run Now');
+    }
 
-        return $this->getLayout()
-            ->createBlock(\Magento\Backend\Block\Widget\Button::class)
-            ->setType('button')
-            ->setLabel($this->buttonLabel)
-            ->setOnClick("window.location.href='" . $url . "'")
-            ->toHtml();
+    /**
+     * @return string
+     */
+    protected function getButtonUrl()
+    {
+        return $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/wishlistsync');
     }
 }

@@ -86,4 +86,17 @@
     <preference for="Magento\Config\Model\Config\Structure\SearchInterface" type="Magento\Config\Model\Config\Structure" />
     <preference for="Magento\Sales\Api\Data\OrderSearchResultInterface" type="Magento\Sales\Model\ResourceModel\Order\Collection" />
     <preference for="Magento\SalesRule\Model\Coupon\CodegeneratorInterface" type="Dotdigitalgroup\Email\Model\SalesRule\DotmailerCouponCodeGenerator" />
+    <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Dotdigitalgroup\Email\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">dotdigital</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="connector_log_handler" xsi:type="object">Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

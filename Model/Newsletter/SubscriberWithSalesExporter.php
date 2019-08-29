@@ -15,42 +15,32 @@ class SubscriberWithSalesExporter
     /**
      * @var CsvGeneratorFactory
      */
-    public $csvGeneratorFactory;
+    private $csvGeneratorFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
-    public $resource;
-
-    /**
-     * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
-     */
-    public $subscribersCollection;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\SubscriberFactory
-     */
-    public $emailSubscriber;
+    private $resource;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
-    public $emailContactResource;
+    private $emailContactResource;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
-    public $configHelper;
+    private $configHelper;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-    public $dateTime;
+    private $dateTime;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Consent

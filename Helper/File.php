@@ -29,11 +29,6 @@ class File
     private $enclosure;
 
     /**
-     * @var string
-     */
-    private $logFileName = 'connector.log';
-    
-    /**
      * @var \Magento\Framework\App\Filesystem\DirectoryList
      */
     private $directoryList;
@@ -71,15 +66,6 @@ class File
         // tab character
         $this->delimiter = ',';
         $this->enclosure = '"';
-
-        $logDir = $directoryList->getPath('log');
-        if (! is_dir($logDir)) {
-            mkdir($directoryList->getPath('var')  . DIRECTORY_SEPARATOR . 'log');
-        }
-        $writer = new \Zend\Log\Writer\Stream($logDir . DIRECTORY_SEPARATOR .  $this->logFileName);
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
-        $this->connectorLogger  = $logger;
     }
 
     /**
@@ -326,27 +312,6 @@ class File
     }
 
     /**
-     * @param string|array|mixed $data
-     *
-     * @return null
-     */
-    public function info($data)
-    {
-        $this->connectorLogger->info($data);
-    }
-
-    /**
-     * @param string $message
-     * @param array $extra
-     *
-     * @return null
-     */
-    public function debug($message, $extra)
-    {
-        $this->connectorLogger->debug($message, $extra);
-    }
-
-    /**
      * @param string $file full path to the csv file.
      * @return bool|string
      */
@@ -386,7 +351,7 @@ class File
     }
 
     /**
-     * Check if file exist in email or archive folder
+     * Check if file exists in email or archive folder
      *
      * @param string $filename
      * @return boolean

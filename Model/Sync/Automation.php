@@ -16,6 +16,8 @@ class Automation implements SyncInterface
     const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
     const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
     const AUTOMATION_STATUS_PENDING = 'pending';
+    const AUTOMATION_STATUS_SUPPRESSED = 'Suppressed';
+    const AUTOMATION_STATUS_CANCELLED = 'Cancelled';
     const AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER = 'first_order_automation';
     const AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT = 'abandoned_cart_automation';
     const ORDER_STATUS_AUTOMATION = 'order_automation_';
@@ -192,22 +194,26 @@ class Automation implements SyncInterface
                 //contact id is valid, can update datafields
                 if ($contact && isset($contact->id)) {
                     if ($contact->status === self::CONTACT_STATUS_PENDING) {
-                        $automation->setEnrolmentStatus(self::CONTACT_STATUS_PENDING);
-                        $this->automationResource->save($automation);
+                        $this->setStatusAndSaveAutomation($automation, self::CONTACT_STATUS_PENDING);
                         continue;
                     }
 
                     //need to update datafields
-                    $this->updateDatafieldsByType(
+                    $updated = $this->updateDatafieldsByType(
                         $typeDouble,
                         $email,
                         $websiteId
                     );
+
+                    // Cancel the enrolment if update datafields failed
+                    if (!$updated) {
+                        $this->setStatusAndSaveAutomation($automation, self::AUTOMATION_STATUS_CANCELLED);
+                        continue;
+                    }
                     $contacts[$automation->getWebsiteId()]['contacts'][$automation->getId()] = $contact->id;
                 } else {
                     // the contact is suppressed or the request failed
-                    $automation->setEnrolmentStatus('Suppressed');
-                    $this->automationResource->save($automation);
+                    $this->setStatusAndSaveAutomation($automation, self::AUTOMATION_STATUS_SUPPRESSED);
                 }
             }
             $this->sendAutomationEnrolements($contacts, $type);
@@ -310,11 +316,13 @@ class Automation implements SyncInterface
      * @param string $email
      * @param int $websiteId
      *
-     * @return null
+     * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function updateDatafieldsByType($type, $email, $websiteId)
     {
+        $updated = true;
+
         switch ($type) {
             case self::AUTOMATION_TYPE_NEW_ORDER:
             case self::AUTOMATION_TYPE_NEW_GUEST_ORDER:
@@ -323,11 +331,14 @@ class Automation implements SyncInterface
                 $this->updateNewOrderDatafields($websiteId);
                 break;
             case self::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT:
-                $this->updateAbandoned->updateAbandonedCartDatafields($email, $websiteId, $this->typeId, $this->storeName);
+                $updated = $this->updateAbandoned->updateAbandonedCartDatafields($email, $websiteId, $this->typeId, $this->storeName);
+                break;
             default:
                 $this->updateDefaultDatafields($email, $websiteId);
                 break;
         }
+
+        return $updated;
     }
 
     /**
@@ -424,7 +435,7 @@ class Automation implements SyncInterface
             );
         }
     }
-    
+
     /**
      * Program check if is valid and active.
      *
@@ -434,7 +445,7 @@ class Automation implements SyncInterface
      * @return bool
      * @throws \Exception
      */
-    private function checkCampignEnrolmentActive($programId, $websiteId)
+    private function checkCampaignEnrolmentActive($programId, $websiteId)
     {
         //program is not set
         if (!$programId) {
@@ -534,7 +545,7 @@ class Automation implements SyncInterface
     private function sendSubscribedContactsToAutomation($contactsArray, $websiteId)
     {
         if (!empty($contactsArray) &&
-            $this->checkCampignEnrolmentActive($this->programId, $websiteId)
+            $this->checkCampaignEnrolmentActive($this->programId, $websiteId)
         ) {
             $result = $this->sendContactsToAutomation(
                 array_values($contactsArray),
@@ -580,5 +591,17 @@ class Automation implements SyncInterface
                     );
             }
         }
+    }
+
+    /**
+     * @param \Dotdigitalgroup\Email\Model\Automation $automation
+     * @param string $status
+     *
+     * @return void
+     */
+    private function setStatusAndSaveAutomation($automation, $status)
+    {
+        $automation->setEnrolmentStatus($status);
+        $this->automationResource->save($automation);
     }
 }

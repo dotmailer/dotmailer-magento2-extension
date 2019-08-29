@@ -1,4 +1,4 @@
-define(['dmmpt', 'domReady!'], function () {
+define(['jquery', 'dmmpt'], function ($) {
     'use strict';
 
     /**
@@ -22,7 +22,9 @@ define(['dmmpt', 'domReady!'], function () {
      * @param {Object} roiCode
      */
     return function (roiCode) {
-        init(roiCode.items, roiCode.total);
+        $(document).ready(function () {
+            init(roiCode.items, roiCode.total);
+        });
     };
 });
 

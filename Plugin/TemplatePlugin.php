@@ -145,7 +145,7 @@ class TemplatePlugin
     }
 
     /**
-     * @param array $result
+     * @param mixed $result
      *
      * @return mixed
      */
@@ -153,7 +153,11 @@ class TemplatePlugin
     {
         if (isset($result['template_id'])) {
             $this->saveTemplateIdInRegistry($result['template_id']);
+        } elseif (is_numeric($result)) {
+            // $result will be int for template id in 2.1.x
+            $this->saveTemplateIdInRegistry($result);
         }
+
         if (isset($result['template_text'])) {
             $templateText = $result['template_text'];
             if ($this->isStringCompressed($templateText)) {

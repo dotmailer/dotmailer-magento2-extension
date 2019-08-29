@@ -201,7 +201,7 @@ class UpdateCatalogBulkTest extends TestCase
             ->method('getItems')
             ->willReturn($this->getProductItems($numberOfProducts));
 
-        $this->setRandomIdsForProductMock($values,$numberOfProducts);
+        $this->setIdsForProductMock($values,$numberOfProducts);
 
         $this->collectionFactoryMock->expects($this->atLeastOnce())
             ->method('create')
@@ -305,12 +305,14 @@ class UpdateCatalogBulkTest extends TestCase
         return $catalogIds;
     }
 
-    private function setRandomIdsForProductMock($value,$numberOfProducts)
+    private function setIdsForProductMock($value, $numberOfProducts)
     {
         for($i=0; $i<$numberOfProducts; $i++) {
             $this->productMock->expects($this->at($i))
                 ->method('getId')
-                ->willReturn(rand($value['productMin'],$value['productMax']));
+                ->willReturn(
+                    (int) ($value['productMin'] === $value['productMax']) ?: $value['productMin'] + $i
+                );
         }
     }
 

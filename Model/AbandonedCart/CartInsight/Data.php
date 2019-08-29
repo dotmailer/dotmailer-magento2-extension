@@ -114,14 +114,17 @@ class Data
 
             $discountTotal += $item->getDiscountAmount();
             $product = $this->productRepository->getById($item->getProduct()->getId(), false, $store->getId());
+            $mediaPath = $this->getProductImageUrl($item, $store);
 
             $lineItems[] = [
                 'sku' => $item->getSku(),
-                'imageUrl' => $this->getProductImageUrl($item, $store),
+                'imageUrl' => $this->urlFinder->getPath($mediaPath),
                 'productUrl' => $this->urlFinder->fetchFor($product),
                 'name' => $item->getName(),
-                'unitPrice' => round($item->getPrice(), 2),
-                'quantity' => $item->getQty()
+                'unitPrice' => round($product->getPrice(), 2),
+                'quantity' => $item->getQty(),
+                'salePrice' => round($item->getPrice(), 2),
+                'totalPrice' => round($item->getRowTotal(), 2)
             ];
         }
 

@@ -10,37 +10,37 @@ class SubscriberExporter
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * @var CsvGeneratorFactory
      */
-    public $csvGeneratorFactory;
+    private $csvGeneratorFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
      */
-    public $configHelper;
+    private $configHelper;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-    public $dateTime;
+    private $dateTime;
 
     /**
      * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
      */
-    public $subscriberCollectionFactory;
+    private $subscriberCollectionFactory;
 
     /**
      *

@@ -215,9 +215,21 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                 '/image.jpg'
             );
 
+        $this->productRepositoryMock->expects($this->once())
+            ->method('getById')
+            ->willReturn($this->productMock);
+
+        $this->productMock->expects($this->once())
+            ->method('getPrice')
+            ->willReturn($expectedPayload['json']['lineItems'][0]['unitPrice']);
+
         $this->urlFinderMock->expects($this->once())
             ->method('fetchFor')
             ->willReturn($expectedPayload['json']['lineItems'][0]['productUrl']);
+
+        $this->urlFinderMock->expects($this->once())
+            ->method('getPath')
+            ->willReturn($expectedPayload['json']['lineItems'][0]['imageUrl']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getSku')
@@ -229,7 +241,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
 
         $itemsArray[0]->expects($this->once())
             ->method('getPrice')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['unitPrice']);
+            ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice']);
+
+        $itemsArray[0]->expects($this->once())
+            ->method('getRowTotal')
+            ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice']);
 
         $itemsArray[0]->expects($this->once())
             ->method('__call')
@@ -248,6 +264,20 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->class->send($this->quoteMock, $this->storeId, $this->websiteId);
 
         $this->assertJsonStringEqualsJsonString(json_encode($expectedPayload), json_encode($actualPayload));
+    }
+
+    public function testThatTotalPriceIsCorrectSumRegardlessOfSale()
+    {
+        $expectedPayload = $this->getMockPayload();
+        $salePrice = $expectedPayload['json']['lineItems'][0]['salePrice'];
+        $quantity = $expectedPayload['json']['lineItems'][0]['quantity'];
+        $totalPrice = $expectedPayload['json']['lineItems'][0]['totalPrice'];
+
+        /*
+         * totalPrice is always salePrice * quantity,
+         * because salePrice = unitPrice if there is no special price set.
+         */
+        $this->assertTrue($totalPrice ===  $salePrice * $quantity);
     }
 
     private function setStoreMock()
@@ -293,7 +323,9 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                         "productUrl" => "https://magentostore.com/product/PRODUCT-SKU",
                         "name" => "Test Product",
                         "unitPrice" => 49.2,
-                        "quantity" => "1"
+                        "quantity" => "2",
+                        "salePrice" => 40,
+                        "totalPrice" => 80
                     ]
                 ],
                 "cartPhase" => "ORDER_PENDING"

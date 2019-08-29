@@ -2,7 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Email;
 
-class Template extends \Magento\Framework\DataObject
+use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
+
+class Template extends \Magento\Framework\DataObject implements SyncInterface
 {
     /**
      * HTML template type.
@@ -180,37 +182,37 @@ class Template extends \Magento\Framework\DataObject
     /**
      * @var \Magento\Email\Model\ResourceModel\Template\CollectionFactory
      */
-    public $templateCollectionFactory;
+    private $templateCollectionFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    public $storeManager;
+    private $storeManager;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    public $scopeConfig;
+    private $scopeConfig;
 
     /**
      * @var \Magento\Email\Model\ResourceModel\TemplateFactory
      */
-    public $templateResource;
+    private $templateResource;
 
     /**
      * @var \Magento\Email\Model\TemplateFactory
      */
-    public $templateFactory;
+    private $templateFactory;
 
     /**
      * @var array
      */
-    public $processedCampaigns = [];
+    private $processedCampaigns = [];
 
     /**
      * Template constructor.
@@ -273,7 +275,7 @@ class Template extends \Magento\Framework\DataObject
      *
      * @return array
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         $result = ['store' => 'Stores : ', 'message' => 'Done.'];
         $lastWebsiteId = '0';

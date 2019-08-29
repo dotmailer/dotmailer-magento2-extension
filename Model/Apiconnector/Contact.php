@@ -2,10 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
+
 /**
  * manages the sync of dotmailer Contact.
  */
-class Contact
+class Contact implements SyncInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
@@ -79,7 +81,7 @@ class Contact
      *
      * @return array
      */
-    public function sync()
+    public function sync(\DateTime $from = null)
     {
         //result message
         $result = ['success' => true, 'message' => ''];
@@ -108,14 +110,15 @@ class Contact
             }
         }
         //sync proccessed
+        $message = '----------- Customer sync ----------- : '
+            . gmdate('H:i:s', microtime(true) - $this->start)
+            . ', Total contacts = ' . $this->countCustomers;
+
         if ($this->countCustomers) {
-            $message = '----------- Customer sync ----------- : ' .
-                gmdate('H:i:s', microtime(true) - $this->start) .
-                ', Total contacts = ' . $this->countCustomers;
             $this->helper->log($message);
-            $message .= $result['message'];
-            $result['message'] = $message;
         }
+
+        $result['message'] .= $message;
 
         return $result;
     }

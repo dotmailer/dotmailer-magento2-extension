@@ -146,6 +146,7 @@ class Quote
      * @param Campaign $campaignResource
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
@@ -549,7 +550,6 @@ class Quote
      * @param $quoteCollection
      * @param $storeId
      * @param $campaignId
-     * @param $result
      *
      * @return int
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -689,8 +689,6 @@ class Quote
      * @param \Magento\Quote\Model\Quote $quote
      * @param array $itemIds
      * @param string $status
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function createAbandonedCart($abandonedModel, $quote, $itemIds, $status)
     {
@@ -770,7 +768,6 @@ class Quote
      * @param $quoteCollection
      * @param $storeId
      * @param $guestCampaignId
-     * @param $result
      *
      * @return int
      */
@@ -1012,7 +1009,6 @@ class Quote
     /**
      * @param $storeId
      * @param $campaignId
-     * @param $result
      *
      * @return int
      * @throws \Magento\Framework\Exception\NoSuchEntityException

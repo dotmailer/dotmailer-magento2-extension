@@ -52,7 +52,7 @@ class Update
      * @param int $quoteId
      * @param string $parentStoreName
      *
-     * @return void
+     * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function updateAbandonedCartDatafields($email, $websiteId, $quoteId, $parentStoreName)
@@ -64,9 +64,16 @@ class Update
             ->loadByIdWithoutStore($quoteId);
         $items = $quoteModel->getAllItems();
 
+        if (count($items) === 0) {
+            return false;
+        }
+
         // Nominate the most expensive item in the cart as the 'abandoned product'
         $nominatedAbandonedCartItem = $this->ddgQuoteFactory->create()
             ->getMostExpensiveItems($items);
+        $abandonedProductName = $website->getConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME
+        );
 
         if ($lastQuoteId = $website->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID
@@ -77,10 +84,7 @@ class Update
                 'Value' => $quoteId,
             ];
         }
-        if ($abandonedProductName = $website->getConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME
-        )
-        ) {
+        if ($nominatedAbandonedCartItem && $abandonedProductName) {
             $data[] = [
                 'Key' => $abandonedProductName,
                 'Value' => $nominatedAbandonedCartItem->getName(),
@@ -111,5 +115,7 @@ class Update
                 $data
             );
         }
+
+        return true;
     }
 }
