@@ -136,12 +136,11 @@ class Subscriber implements SyncInterface
             }
         }
         //sync proccessed
-        if ($this->countSubscribers) {
-            $message = '----------- Subscribers sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) .
-                ', updated = ' . $this->countSubscribers;
-            $this->helper->log($message);
-            $message .= $response['message'];
-            $response['message'] = $message;
+
+        $response['message'] .= '----------- Subscribers sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) . ', updated = ' . $this->countSubscribers;
+
+        if($this->countSubscribers) {
+            $this->helper->log($response['message']);
         }
 
         return $response;

@@ -2,19 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Report;
 
-class Recentlyviewed extends \Dotdigitalgroup\Email\Controller\Response
+class Recentlyviewed extends \Dotdigitalgroup\Email\Controller\Edc
 {
-    /**
-     * @throws \Magento\Framework\Exception\LocalizedException
-     *
-     * @return null
-     */
-    public function execute()
-    {
-        //authenticate
-        if ($this->authenticate()) {
-            $this->_view->loadLayout();
-            $this->_view->renderLayout();
-        }
-    }
 }

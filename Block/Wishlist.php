@@ -76,7 +76,7 @@ class Wishlist extends Recommended
     public function getWishlistItems()
     {
         $wishlist = $this->_getWishlist();
-        if ($wishlist && ! empty($wishlist->getItemCollection())) {
+        if ($wishlist && $wishlist->getItemCollection()->getSize()) {
             return $wishlist->getItemCollection();
         } else {
             return false;

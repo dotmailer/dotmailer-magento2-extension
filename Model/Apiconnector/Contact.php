@@ -110,14 +110,15 @@ class Contact implements SyncInterface
             }
         }
         //sync proccessed
+        $message = '----------- Customer sync ----------- : '
+            . gmdate('H:i:s', microtime(true) - $this->start)
+            . ', Total contacts = ' . $this->countCustomers;
+
         if ($this->countCustomers) {
-            $message = '----------- Customer sync ----------- : ' .
-                gmdate('H:i:s', microtime(true) - $this->start) .
-                ', Total contacts = ' . $this->countCustomers;
             $this->helper->log($message);
-            $message .= $result['message'];
-            $result['message'] = $message;
         }
+
+        $result['message'] .= $message;
 
         return $result;
     }

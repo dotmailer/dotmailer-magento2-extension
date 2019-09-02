@@ -178,8 +178,9 @@ class Product
 
         $this->url = $this->urlFinder->fetchFor($product);
 
-        $this->imagePath = $this->mediaConfigFactory->create()
+        $mediaPath = $this->mediaConfigFactory->create()
             ->getMediaUrl($product->getSmallImage());
+        $this->imagePath = $this->urlFinder->getPath($mediaPath);
 
         $this->stock = (float)number_format($this->getStockQty($product), 2, '.', '');
 

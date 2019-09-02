@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Catalog;
 
 use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class UrlFinder
 {
@@ -38,6 +39,11 @@ class UrlFinder
     private $imageBuilder;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * UrlFinder constructor.
      *
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType
@@ -46,6 +52,7 @@ class UrlFinder
      * @param \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType,
@@ -53,7 +60,8 @@ class UrlFinder
         \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection,
         \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory
+        \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->configurableType = $configurableType;
         $this->productRepository = $productRepository;
@@ -61,14 +69,13 @@ class UrlFinder
         $this->groupedType = $groupedType;
         $this->storeManager = $storeManager;
         $this->imageBuilder = $imageBuilderFactory->create();
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
-     * Fetch a URL for a product depending on its visibility and type.
-     *
-     * @param \Magento\Catalog\Model\Product $product
-     *
+     * @param $product
      * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function fetchFor($product)
@@ -156,7 +163,6 @@ class UrlFinder
     private function getScopedProduct($product)
     {
         if (!in_array($product->getStoreId(), $product->getStoreIds())) {
-
             $productInWebsites = $product->getWebsiteIds();
             $firstWebsite = $this->storeManager->getWebsite($productInWebsites[0]);
             $storeId = (int) $firstWebsite->getDefaultGroup()->getDefaultStoreId();
@@ -165,6 +171,22 @@ class UrlFinder
         }
 
         return $product;
+    }
+
+    /**
+     * Utility method to remove /pub from media paths.
+     * Note this inclusion of /pub in media paths during CLI or cron script execution is a longstanding Magento issue, ref https://github.com/magento/magento2/issues/8868
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public function getPath($path)
+    {
+        $stripPubFromPath = $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS
+        );
+        return $stripPubFromPath ? $this->removePub($path) : $path;
     }
 
     /**
@@ -178,5 +200,23 @@ class UrlFinder
             return $this->productRepository->getById($parentId, false, $product->getStoreId());
         }
         return null;
+    }
+
+    /**
+     * @param $path
+     * @return string
+     */
+    private function removePub($path)
+    {
+        $parsed = parse_url($path);
+        $pathArray = explode('/', $parsed['path']);
+
+        foreach ($pathArray as $key => $value) {
+            if ($value === 'pub') {
+                unset($pathArray[$key]);
+            }
+        }
+
+        return $parsed['scheme'].'://'.$parsed['host'].implode('/', $pathArray);
     }
 }
