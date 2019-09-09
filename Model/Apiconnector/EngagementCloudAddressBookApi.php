@@ -5,19 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class EngagementCloudAddressBookApi extends Client
 {
     /**
-     * EngagementCloudAddressBookApi constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     */
-    public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper
-    ) {
-        parent::__construct($data, $fileHelper);
-    }
-
-    /**
      * @param $websiteId
      * @return $this
      */
@@ -55,9 +42,7 @@ class EngagementCloudAddressBookApi extends Client
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'POST ADDRESS BOOK CONTACT RESUBSCRIBE ' . $url . ', '
-                . $response->message;
-            $this->helper->debug('postAddressBookContactResubscribe', [$message]);
+            $this->addClientLog('Error resubscribing address book contact');
         }
 
         return $response;
