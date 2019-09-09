@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog;
 
+use Dotdigitalgroup\Email\Model\Product\Bunch;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
@@ -72,6 +73,11 @@ class UpdateCatalogBulkTest extends TestCase
      */
     private $collectionMock;
 
+    /**
+     * @var Bunch
+     */
+    private $bunchMock;
+
     protected function setUp()
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
@@ -85,15 +91,13 @@ class UpdateCatalogBulkTest extends TestCase
         $this->productSearchResultsMock = $this->createMock(ProductSearchResultsInterface::class);
         $this->productMock = $this->createMock(Product::class);
         $this->collectionMock = $this->createMock(Collection::class);
+        $this->bunchMock = $this->createMock(Bunch::class);
 
         $this->bulkUpdate = new UpdateCatalogBulk(
-            $this->productRepositoryMock,
             $this->resourceCatalogMock,
             $this->collectionFactoryMock,
             $this->dateTimeMock,
-            $this->searchCriteriaMock,
-            $this->filterGroupMock,
-            $this->filterBuilderMock
+            $this->bunchMock
         );
     }
 
@@ -167,41 +171,9 @@ class UpdateCatalogBulkTest extends TestCase
     {
         $values = $this->getMinMaxValues($scope,$numberOfProducts);
 
-        $this->filterGroupMock->expects($this->atLeastOnce())
-            ->method('setFilters')
-            ->willReturn($this->filterGroupMock);
-
-        $this->filterBuilderMock->expects($this->atLeastOnce())
-            ->method('setField')
-            ->willReturn($this->filterBuilderMock);
-
-        $this->filterBuilderMock->expects($this->atLeastOnce())
-            ->method('setConditionType')
-            ->willReturn($this->filterBuilderMock);
-
-        $this->filterBuilderMock->expects($this->atLeastOnce())
-            ->method('setValue')
-            ->willReturn($this->filterBuilderMock);
-
-        $this->filterBuilderMock->expects($this->atLeastOnce())
-            ->method('create')
-            ->willReturn($this->filterBuilderMock);
-
-        $this->searchCriteriaMock->expects($this->atLeastOnce())
-            ->method('setFilterGroups')
-            ->with([$this->filterGroupMock])
-            ->willReturn($this->searchCriteriaMock);
-
-        $this->productRepositoryMock->expects($this->atLeastOnce())
-            ->method('getList')
-            ->with($this->searchCriteriaMock)
-            ->willReturn($this->productSearchResultsMock);
-
-        $this->productSearchResultsMock->expects($this->atLeastOnce())
-            ->method('getItems')
-            ->willReturn($this->getProductItems($numberOfProducts));
-
-        $this->setIdsForProductMock($values,$numberOfProducts);
+        $this->bunchMock->expects($this->once())
+            ->method('getProductIdsBySkuInBunch')
+            ->willReturn($this->getIdsForProductMock($values,$numberOfProducts));
 
         $this->collectionFactoryMock->expects($this->atLeastOnce())
             ->method('create')
@@ -260,6 +232,7 @@ class UpdateCatalogBulkTest extends TestCase
     }
     /**
      * Generates Random Sku's
+     * @param $numberOfProducts
      * @return array
      */
     private function generateBunches($numberOfProducts)
@@ -275,21 +248,9 @@ class UpdateCatalogBulkTest extends TestCase
     }
 
     /**
-     * Generates Random Product Mocks Array
-     * @return array
-     */
-    private function getProductItems($numberOfProducts)
-    {
-        $products = [];
-        for ($i=0; $i<$numberOfProducts; $i++)
-        {
-            $products[] = $this->productMock;
-        }
-        return $products;
-    }
-
-    /**
      * Generates Random Catalog Id
+     * @param array $value
+     * @param int $numberOfProducts
      * @return array
      */
     private function getCatalogIds($value,$numberOfProducts)
@@ -305,15 +266,18 @@ class UpdateCatalogBulkTest extends TestCase
         return $catalogIds;
     }
 
-    private function setIdsForProductMock($value, $numberOfProducts)
+    /**
+     * @param $value
+     * @param $numberOfProducts
+     * @return array
+     */
+    private function getIdsForProductMock($value, $numberOfProducts)
     {
+        $productIds = [];
         for($i=0; $i<$numberOfProducts; $i++) {
-            $this->productMock->expects($this->at($i))
-                ->method('getId')
-                ->willReturn(
-                    (int) ($value['productMin'] === $value['productMax']) ?: $value['productMin'] + $i
-                );
+            $productIds[]= (int) ($value['productMin'] === $value['productMax']) ?: $value['productMin'] + $i;
         }
+        return $productIds;
     }
 
     /**

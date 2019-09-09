@@ -90,6 +90,16 @@ class Order implements SyncInterface
     public $guests = [];
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     */
+    private $catalogResource;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Product\Bunch
+     */
+    private $bunch;
+
+    /**
      * Order constructor.
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
@@ -112,7 +122,9 @@ class Order implements SyncInterface
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Sales\Model\OrderFactory $salesOrderFactory
+        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
+        \Dotdigitalgroup\Email\Model\Product\Bunch $bunch
     ) {
         $this->importerFactory       = $importerFactory;
         $this->orderFactory          = $orderFactory;
@@ -123,6 +135,8 @@ class Order implements SyncInterface
         $this->helper                = $helper;
         $this->salesOrderFactory     = $salesOrderFactory;
         $this->contactCollectionFactory = $contactCollectionFactory;
+        $this->catalogResource = $catalogResource;
+        $this->bunch = $bunch;
     }
 
     /**
@@ -169,6 +183,10 @@ class Order implements SyncInterface
 
             //mark the orders as imported
             $this->orderResource->setImported($this->orderIds);
+
+            //Mark Ordered Products as Modified to be imported again
+            $mergedProducts = $this->getAllProducts(array_merge($orders, $ordersForSingleSync));
+            $this->catalogResource->setModified($this->bunch->getProductIdsBySkuInBunch($mergedProducts));
 
             unset($this->accounts[$account->getApiUsername()]);
         }
@@ -380,5 +398,20 @@ class Order implements SyncInterface
                     $website[0]
                 );
         }
+    }
+
+    /**
+     * @param array $orders
+     * @return array
+     */
+    private function getAllProducts($orders)
+    {
+        $allProducts = array();
+        foreach ($orders as $order) {
+            foreach ($order['products'] as $products) {
+                $allProducts[] = $products;
+            }
+        }
+        return $allProducts;
     }
 }

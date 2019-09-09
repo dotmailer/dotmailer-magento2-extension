@@ -1116,26 +1116,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Is email capture enabled.
-     *
-     * @return bool
+     * Is EmailCapture Enabled
+     * @param $websiteId
+     * @return mixed
      */
-    public function isEasyEmailCaptureEnabled()
+    public function isEasyEmailCaptureEnabled($websiteId)
     {
-        return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE
+        return $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
     }
 
     /**
      * Is email capture for newsletter enabled.
-     *
-     * @return bool
+     * @param $websiteId
+     * @return mixed
      */
-    public function isEasyEmailCaptureForNewsletterEnabled()
+    public function isEasyEmailCaptureForNewsletterEnabled($websiteId)
     {
-        return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER
+        return $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
     }
 

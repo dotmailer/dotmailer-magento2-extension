@@ -5,11 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Catalog;
 class UpdateCatalogBulk
 {
     /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    private $productRepository;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     private $catalogResource;
@@ -25,40 +20,26 @@ class UpdateCatalogBulk
     private $dateTime;
 
     /**
-     * @var \Magento\Framework\Api\SearchCriteriaInterface
+     * @var \Dotdigitalgroup\Email\Model\Product\Bunch
      */
-    private $searchCriteria;
+    private $bunch;
 
-    /**
-     * @var \Magento\Framework\Api\Search\FilterGroup
-     */
-    private $filterGroup;
-
-    /**
-     * @var \Magento\Framework\Api\FilterBuilder
-     */
-    private $filterBuilder;
 
     public function __construct(
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogFactory,
         \Magento\Framework\Stdlib\DateTime $dateTime,
-        \Magento\Framework\Api\SearchCriteriaInterface $criteria,
-        \Magento\Framework\Api\Search\FilterGroup $filterGroup,
-        \Magento\Framework\Api\FilterBuilder $filterBuilder
-    ) {
-        $this->productRepository = $productRepository;
+        \Dotdigitalgroup\Email\Model\Product\Bunch $bunch
+    )
+    {
         $this->catalogResource = $catalogResource;
         $this->catalogFactory = $catalogFactory;
         $this->dateTime = $dateTime;
-        $this->searchCriteria = $criteria;
-        $this->filterGroup = $filterGroup;
-        $this->filterBuilder = $filterBuilder;
+        $this->bunch = $bunch;
     }
 
     /**
-     * @param $chunkBunches
+     * @param array $bunch
      */
     public function execute($bunch)
     {
@@ -76,7 +57,7 @@ class UpdateCatalogBulk
      */
     private function processBatch($bunch)
     {
-        $productIds = $this->getProductIdsInBunch($bunch);
+        $productIds = $this->bunch->getProductIdsBySkuInBunch($bunch);
         $existingProductIds = $this->getExistingProductIds($productIds);
 
         $newEntryIds = array_diff($productIds, $existingProductIds);
@@ -112,34 +93,5 @@ class UpdateCatalogBulk
 
         $catalogIds = $connectorCollection->getColumnValues('product_id');
         return $catalogIds;
-    }
-
-    /**
-     * @param $bunch
-     * @return array
-     */
-    private function getProductIdsInBunch($bunch)
-    {
-        $bunchSkus = array_map(function ($importedEntry) {
-            return $importedEntry['sku'];
-        }, $bunch);
-
-        $this->filterGroup->setFilters([
-            $this->filterBuilder
-                ->setField('sku')
-                ->setConditionType('in')
-                ->setValue($bunchSkus)
-                ->create()
-        ]);
-
-        $this->searchCriteria->setFilterGroups([$this->filterGroup]);
-        $products = $this->productRepository->getList($this->searchCriteria);
-        $productItems = $products->getItems();
-
-        $productIds = array_map(function ($product) {
-            return $product->getId();
-        }, $productItems);
-
-        return $productIds;
     }
 }

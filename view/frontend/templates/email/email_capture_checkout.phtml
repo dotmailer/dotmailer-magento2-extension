@@ -3,8 +3,7 @@
 /** @var \Dotdigitalgroup\Email\Helper\Data $helper */
 ?>
 <?php $helper = $this->helper(\Dotdigitalgroup\Email\Helper\Data::class); ?>
-
-<?php if ($helper->isEasyEmailCaptureEnabled()) : ?>
+<?php if ($helper->isEasyEmailCaptureEnabled($helper->getWebsite()->getId())) : ?>
     <script type="text/x-magento-init">
     {
         "*": {
