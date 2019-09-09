@@ -305,7 +305,7 @@
                 </field>
                 <field id="custom_attributes" translate="label" sortOrder="550" showInDefault="1" showInWebsite="1"
                        showInStore="0">
-                    <label></label>
+                    <label>Manage custom attributes</label>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
@@ -527,66 +527,54 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
             </group>
-            <group id="guests" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+            <group id="guests" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Guests Email Series</label>
                 <attribute type="expanded">1</attribute>
-                <field id="heading_1" translate="label" sortOrder="10" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="heading_1" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Abandoned Cart 1</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="enabled_1" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="0">
+                <field id="enabled_1" translate="label" sortOrder="20" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enabled\Disabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="send_after_1" translate="label" sortOrder="30" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
+                <field id="send_after_1" translate="label" sortOrder="30" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Send After (min)</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Intervalminute</source_model>
                 </field>
-                <field id="campaign_1" translate="label" sortOrder="40" type="select" showInDefault="1"
-                       showInWebsite="1" showInStore="0">
+                <field id="campaign_1" translate="label" sortOrder="40" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Campaign to Send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="heading_2" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="heading_2" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Abandoned Cart 2</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="enabled_2" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1"
-                       showInStore="0">
+                <field id="enabled_2" translate="label" sortOrder="60" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enabled\Disabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="send_after_2" translate="label" sortOrder="70" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
+                <field id="send_after_2" translate="label" sortOrder="70" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Send After</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
-                <field id="campaign_2" translate="label" sortOrder="80" type="select" showInDefault="1"
-                       showInWebsite="1" showInStore="0">
+                <field id="campaign_2" translate="label" sortOrder="80" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Campaign to Send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="heading_3" translate="label" sortOrder="90" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="heading_3" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Abandoned Cart 3</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="enabled_3" translate="label" type="select" sortOrder="100" showInDefault="1"
-                       showInWebsite="1" showInStore="0">
+                <field id="enabled_3" translate="label" sortOrder="100" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enabled\Disabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="send_after_3" translate="label" sortOrder="110" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
+                <field id="send_after_3" translate="label" sortOrder="110" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Send After</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Interval</source_model>
                 </field>
-                <field id="campaign_3" translate="label" sortOrder="120" type="select" showInDefault="1"
-                       showInWebsite="1" showInStore="0">
+                <field id="campaign_3" translate="label" sortOrder="120" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Campaign to Send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
@@ -1613,6 +1601,12 @@
                     <label>Enable Subscribers Sales Data Sync</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enabling ability to sync subscribers sales data increases server load and overall sync times.]]></comment>
+                </field>
+                <field id="strip_pub_from_media_paths" translate="label" sortOrder="50" type="select" showInStore="0"
+                       showInWebsite="0" showInDefault="1">
+                    <label>Remove /pub directory from URLs</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable this to remove the /pub directory from image URLs in catalog sync and insight data.</comment>
                 </field>
             </group>
             <group id="sync_settings" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1"
