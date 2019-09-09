@@ -51,7 +51,7 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
                 return null;
             }
 
-            if ($quote->hasItems()) {
+            if ($quote->hasItems() && !$quote->getCustomerEmail()) {
                 try {
                     $quote->setCustomerEmail($email);
 
