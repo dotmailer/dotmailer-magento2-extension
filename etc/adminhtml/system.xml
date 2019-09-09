@@ -305,7 +305,7 @@
                 </field>
                 <field id="custom_attributes" translate="label" sortOrder="550" showInDefault="1" showInWebsite="1"
                        showInStore="0">
-                    <label></label>
+                    <label>Manage custom attributes</label>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
