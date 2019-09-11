@@ -17,16 +17,16 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 
 ## 3.4.1
 
-###### Improvements
-- We’ve improved the consistency of the log messages we output in the context of API connections.
-- Merchants wishing to remove the /pub folder from synced URLs can now do so via the admin (Developer > Import Settings).
-- Abandoned cart campaigns can now be configured for guests at store level.
+###### What's new
+- We've improved the consistency of the log messages we output for API connections.
+- It's now possible to remove the /pub folder from synced URLs. Do this in Developer > Import Settings of the admin.
+- You can now configure abandoned cart campaigns for guests at the store level.
 
-###### Fixes
-- A missing label was preventing custom attributes from saving updates in Magento 2.3.0 and above; this has been fixed.
-- Purchased products will now be marked as modified, so that their stock value is updated at the next catalog sync.
-- Easy email capture now functions correctly at website level. 
-- Easy email capture for newsletter sign ups will now not override an email address already stored against an active quote.
+###### Bug fixes
+- A missing label was preventing custom attributes from saving updates in Magento 2.3.0 and above. We fixed this.
+- Purchased products are now marked as modified. This means the stock level updates the next time the catalog syncs.
+- Easy email capture now works correctly at website level. 
+- Easy email capture for newsletter sign-ups no longer overrides an email address that is stored against an active quote.
 
 ## 3.4.0
 
