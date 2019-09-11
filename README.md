@@ -15,6 +15,19 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.4.1
+
+###### Improvements
+- We’ve improved the consistency of the log messages we output in the context of API connections.
+- Merchants wishing to remove the /pub folder from synced URLs can now do so via the admin (Developer > Import Settings).
+- Abandoned cart campaigns can now be configured for guests at store level.
+
+###### Fixes
+- A missing label was preventing custom attributes from saving updates in Magento 2.3.0 and above; this has been fixed.
+- Purchased products will now be marked as modified, so that their stock value is updated at the next catalog sync.
+- Easy email capture now functions correctly at website level. 
+- Easy email capture for newsletter sign ups will now not override an email address already stored against an active quote.
+
 ## 3.4.0
 
 ###### Improvements 
