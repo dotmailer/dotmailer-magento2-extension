@@ -77,6 +77,11 @@ class Product
     public $websites = [];
 
     /**
+     * @var string
+     */
+    public $type = '';
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
@@ -169,6 +174,8 @@ class Product
 
         $this->status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());
+
+        $this->type = ucfirst($product->getTypeId());
 
         $options = $this->visibilityFactory->create()
             ->getOptionArray();

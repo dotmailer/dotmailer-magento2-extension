@@ -1700,10 +1700,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function validateDateRange($dateFrom, $dateTo)
     {
         if (!$this->validateDate($dateFrom) || !$this->validateDate($dateTo)) {
-            return 'From or To date is not a valid date.';
+            return 'From date or to date is not valid.';
         }
         if (strtotime($dateFrom) > strtotime($dateTo)) {
-            return 'To Date cannot be earlier then From Date.';
+            return 'To date cannot be earlier than from date.';
         }
         return false;
     }
