@@ -31,6 +31,7 @@
             <module name="Magento_ConfigurableProduct" />
             <module name="Magento_Bundle" />
             <module name="Magento_GroupedProduct" />
+            <module name="Magento_Theme" />
         </sequence>
     </module>
 </config>
