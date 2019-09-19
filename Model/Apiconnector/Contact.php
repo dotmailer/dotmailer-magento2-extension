@@ -168,11 +168,9 @@ class Contact implements SyncInterface
         //custom customer attributes
         $customAttributes = $this->helper->getCustomAttributes($website);
 
-        if ($customAttributes) {
-            foreach ($customAttributes as $data) {
-                $headers[] = $data['datafield'];
-                $allMappedHash[$data['attribute']] = $data['datafield'];
-            }
+        foreach ($customAttributes ?: [] as $data) {
+            $headers[] = $data['datafield'];
+            $allMappedHash[$data['attribute']] = $data['datafield'];
         }
         $headers[] = 'Email';
         $headers[] = 'EmailType';
@@ -242,7 +240,7 @@ class Contact implements SyncInterface
             $connectorCustomer->setContactData($customer);
 
             if ($connectorCustomer) {
-                foreach ($customAttributes as $data) {
+                foreach ($customAttributes ?: [] as $data) {
                     $attribute = $data['attribute'];
                     $value = $customer->getData($attribute);
                     $connectorCustomer->setData($value);
