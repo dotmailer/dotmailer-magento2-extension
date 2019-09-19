@@ -22,7 +22,7 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
-    public $recommnededHelper;
+    public $recommendedHelper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
@@ -53,7 +53,7 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
     ) {
         $this->catalog                  = $catalog;
         $this->helper                   = $helper;
-        $this->recommnededHelper        = $recommended;
+        $this->recommendedHelper        = $recommended;
         $this->priceHelper              = $priceHelper;
 
         parent::__construct($context, $font, $urlFinder, $data);
@@ -74,8 +74,8 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
 
         $productsToDisplay = [];
         $mode = $this->getRequest()->getActionName();
-        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
-        $from  = $this->recommnededHelper->getTimeFromConfig($mode);
+        $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
+        $from  = $this->recommendedHelper->getTimeFromConfig($mode);
         $to = $this->_localeDate->date()->format(\Zend_Date::ISO_8601);
         $catId = $this->getRequest()->getParam('category_id');
         $catName = $this->getRequest()->getParam('category_name');
@@ -105,7 +105,7 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
      */
     public function getMode()
     {
-        return $this->recommnededHelper->getDisplayType();
+        return $this->recommendedHelper->getDisplayType();
     }
 
     /**

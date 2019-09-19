@@ -140,7 +140,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      *
      * @return int
      */
-    public function getNumberOfImportedContacs()
+    public function getNumberOfImportedContacts()
     {
         return $this->getCollection()
             ->getNumberOfImportedContacts();

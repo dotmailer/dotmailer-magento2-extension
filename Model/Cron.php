@@ -116,7 +116,7 @@ class Cron
         \Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
-        \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
+        \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Model\Sync\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
@@ -134,7 +134,7 @@ class Cron
         $this->quoteFactory      = $quoteFactory;
         $this->guestFactory      = $guestFactory;
         $this->subscriberFactory = $subscriberFactory;
-        $this->catalogFactory    = $catalogFactorty;
+        $this->catalogFactory    = $catalogFactory;
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
         $this->contactFactory    = $contact;

@@ -60,7 +60,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @var array
      */
     private $attributeMapForOrder;
-    
+
     /**
      * @var array
      */
@@ -327,7 +327,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             if ($cond == 'like' or $cond == 'nlike') {
                 $value = '%' . $value . '%';
             }
-            //condition with null values can't be filter using sting, inlude to filter null values
+            //condition with null values can't be filtered using string, include to filter null values
             $conditionMap = [$this->conditionMap[$cond] => $value];
             if ($cond == 'eq' || $cond == 'neq') {
                 $conditionMap[] = ['null' => true];

@@ -15,7 +15,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -82,7 +82,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
         if (!$client) {
             $this->messageManager->addNoticeMessage('Please enable api first.');
         } else {
-            // get all possible datatifileds
+            // get all possible datafields
             $datafields = $this->datafield->getContactDatafields();
             $eeFields = $this->datafield->getExtraDataFields();
             foreach ($datafields as $key => $datafield) {

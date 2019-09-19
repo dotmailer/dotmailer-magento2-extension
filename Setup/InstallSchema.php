@@ -1446,7 +1446,7 @@ class InstallSchema implements InstallSchemaInterface
             \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
             255,
             ['nullable' => false],
-            'Entrolment Status'
+            'Enrolment Status'
         )
         ->addColumn(
             'email',

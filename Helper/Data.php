@@ -148,7 +148,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param ConfigFactory $configHelperFactory
-     * @param Json $serilizer
+     * @param Json $serializer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
@@ -170,7 +170,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Config\Storage\Writer $writer,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
-        \Dotdigitalgroup\Email\Model\Config\Json $serilizer,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
@@ -181,7 +181,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         Logger $logger,
         RequestInterface $request
     ) {
-        $this->serializer       = $serilizer;
+        $this->serializer       = $serializer;
         $this->adapter          = $adapter;
         $this->productMetadata  = $productMetadata;
         $this->contactFactory   = $contactFactory;
@@ -208,7 +208,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get api creadentials enabled.
+     * Get api credentials enabled.
      *
      * @param int $website
      *
@@ -258,7 +258,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Passcode for dynamic content liks.
+     * Passcode for dynamic content links.
      *
      * @param string $authRequest
      *
@@ -854,7 +854,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get the addres book for customer.
+     * Get the address book for customer.
      *
      * @param int $website
      *
@@ -1598,7 +1598,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * check if both frotnend and backend secure(HTTPS).
+     * Check if both frontend and backend are secure (HTTPS).
      *
      * @return bool
      */
@@ -1656,7 +1656,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getWebsiteSalesDataFields($website)
     {
-        $subscriberDataFileds = [
+        $subscriberDataFields = [
             'website_name' => '',
             'store_name' => '',
             'number_of_orders' => '',
@@ -1681,7 +1681,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $store->getId()
         );
 
-        $mappedData = array_intersect_key($mappedData, $subscriberDataFileds);
+        $mappedData = array_intersect_key($mappedData, $subscriberDataFields);
         foreach ($mappedData as $key => $value) {
             if (!$value) {
                 unset($mappedData[$key]);

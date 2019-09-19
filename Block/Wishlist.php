@@ -115,7 +115,7 @@ class Wishlist extends Recommended
     public function getMode()
     {
         return $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WIHSLIST_DISPLAY
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_WISHLIST_DISPLAY
         );
     }
 

@@ -32,7 +32,7 @@ class Cartlimit implements \Magento\Framework\Data\OptionSourceInterface
         ];
 
     /**
-     * Send to campain options hours.
+     * Send to campaign options hours.
      *
      * @return array
      */

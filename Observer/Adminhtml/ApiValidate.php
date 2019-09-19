@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 
 /**
- * Validate api when saving creds in admin.
+ * Validate api when saving credentials in admin.
  */
 class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 {

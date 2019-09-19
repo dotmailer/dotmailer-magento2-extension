@@ -109,7 +109,7 @@ class Contact implements SyncInterface
                 }
             }
         }
-        //sync proccessed
+        //sync processed
         $message = '----------- Customer sync ----------- : '
             . gmdate('H:i:s', microtime(true) - $this->start)
             . ', Total contacts = ' . $this->countCustomers;

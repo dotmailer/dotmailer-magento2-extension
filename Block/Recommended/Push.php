@@ -22,7 +22,7 @@ class Push extends \Dotdigitalgroup\Email\Block\Recommended
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
-    public $recommnededHelper;
+    public $recommendedHelper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
@@ -53,7 +53,7 @@ class Push extends \Dotdigitalgroup\Email\Block\Recommended
     ) {
         $this->helper = $helper;
         $this->catalog = $catalog;
-        $this->recommnededHelper = $recommended;
+        $this->recommendedHelper = $recommended;
         $this->priceHelper = $priceHelper;
 
         parent::__construct($context, $font, $urlFinder, $data);
@@ -73,8 +73,8 @@ class Push extends \Dotdigitalgroup\Email\Block\Recommended
         }
 
         $mode = $this->getRequest()->getActionName();
-        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
-        $productIds = $this->recommnededHelper->getProductPushIds();
+        $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
+        $productIds = $this->recommendedHelper->getProductPushIds();
         $productCollection = $this->catalog->getProductCollectionFromIds($productIds, $limit);
 
         //important check the salable product in template
@@ -88,7 +88,7 @@ class Push extends \Dotdigitalgroup\Email\Block\Recommended
      */
     public function getMode()
     {
-        return $this->recommnededHelper->getDisplayType();
+        return $this->recommendedHelper->getDisplayType();
     }
 
     /**
