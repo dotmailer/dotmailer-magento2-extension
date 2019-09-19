@@ -335,6 +335,9 @@ class Books extends \Magento\Framework\View\Element\Template
     private function processPreferences($preferences, $processedPreferences)
     {
         foreach ($preferences as $preference) {
+            if (!$preference->isPublic) {
+                continue;
+            }
             $formattedPreference = [];
             $formattedPreference['isPreference'] = $preference->isPreference;
             if (! $preference->isPreference) {
