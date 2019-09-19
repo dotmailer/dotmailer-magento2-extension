@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Model\Sync\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Sync\CampaignFactory;
 use Dotdigitalgroup\Email\Model\Sync\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory;
+use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbandonedCartFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory;
@@ -63,6 +64,11 @@ class SyncProvider
     private $importerFactory;
 
     /**
+     * @var IntegrationInsightsFactory
+     */
+    private $integrationInsightsFactory;
+
+    /**
      * SyncProvider constructor
      * @param AutomationFactory $automationFactory
      * @param CampaignFactory $campaignFactory
@@ -73,6 +79,7 @@ class SyncProvider
      * @param TemplateFactory $templateFactory
      * @param AbandonedCartFactory $abandonedCartFactory
      * @param ImporterFactory $importerFactory
+     * @param IntegrationInsightsFactory $integrationInsightsFactory
      */
     public function __construct(
         AutomationFactory $automationFactory,
@@ -83,7 +90,8 @@ class SyncProvider
         SubscriberFactory $subscriberFactory,
         TemplateFactory $templateFactory,
         AbandonedCartFactory $abandonedCartFactory,
-        ImporterFactory $importerFactory
+        ImporterFactory $importerFactory,
+        IntegrationInsightsFactory $integrationInsightsFactory
     ) {
         $this->automationFactory = $automationFactory;
         $this->campaignFactory = $campaignFactory;
@@ -94,6 +102,7 @@ class SyncProvider
         $this->templateFactory = $templateFactory;
         $this->abandonedCartFactory = $abandonedCartFactory;
         $this->importerFactory = $importerFactory;
+        $this->integrationInsightsFactory = $integrationInsightsFactory;
     }
 
     /**

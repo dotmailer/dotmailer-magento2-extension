@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Test\Integration;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory;
 use Magento\Framework\App\Config\MutableScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use ReflectionClass;
@@ -12,13 +14,26 @@ use Magento\TestFramework\Helper\Bootstrap;
 
 trait MocksApiResponses
 {
+    private static $clientFactoryClass = ClientFactory::class;
+
+    /**
+     * @var Client
+     */
+    private $mockClient;
+
+    /**
+     * @var ClientFactory
+     */
+    private $mockClientFactory;
+
     /**
      * The magentoConfigFixture annotation cannot set config at website level
      * Recommend never using docblock annotations in PHP for this, and many other, reasons
      *
      * @param array $configFlags    Overridable config flags
+     * @param int $scopeCode        Scope code to set values against
      */
-    private function setApiConfigFlags(array $configFlags = [])
+    private function setApiConfigFlags(array $configFlags = [], $scopeCode = null)
     {
         /** @var MutableScopeConfigInterface $mutableScopeConfig */
         $mutableScopeConfig = Bootstrap::getObjectManager()->get(MutableScopeConfigInterface::class);
@@ -26,14 +41,14 @@ trait MocksApiResponses
             Config::XML_PATH_CONNECTOR_API_ENABLED => 1,
             Config::XML_PATH_CONNECTOR_API_USERNAME => 'test',
             Config::XML_PATH_CONNECTOR_API_PASSWORD => 'test',
-            Config::PATH_FOR_API_ENDPOINT => 'https://dotdigital.com',
+            Config::PATH_FOR_API_ENDPOINT => 'https://r1-api.dotmailer.com',
             Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED => 1,
             Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS => implode(',', [
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
                 \Magento\Sales\Model\Order::STATE_COMPLETE,
             ]),
         ] as $path => $value) {
-            $mutableScopeConfig->setValue($path, $value, ScopeInterface::SCOPE_WEBSITE);
+            $mutableScopeConfig->setValue($path, $value, ScopeInterface::SCOPE_WEBSITE, $scopeCode);
         }
     }
 
@@ -50,6 +65,13 @@ trait MocksApiResponses
         $objectManager = Bootstrap::getObjectManager();
         $class = new ReflectionClass(Data::class);
 
+        // add mock clientfactory, if it has been mocked
+        if ($this->mockClient && $this->mockClientFactory) {
+            $parameters += [
+                self::$clientFactoryClass => $this->mockClientFactory,
+            ];
+        }
+
         // build all constructor parameters, sneaking in any overridden parameters
         $args = array_map(function ($param) use ($objectManager, $parameters) {
             /** @var ReflectionParameter $param */
@@ -65,5 +87,30 @@ trait MocksApiResponses
         $objectManager->addSharedInstance($helper, Data::class);
 
         return $helper;
+    }
+
+    /**
+     * Generate a mock of Client and ClientFactory which creates it
+     *
+     * @return $this
+     */
+    private function mockClientFactory()
+    {
+        $this->mockClient = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->setMethods(get_class_methods(Client::class))
+            ->getMock();
+        $this->mockClient->method('setApiUsername')
+            ->willReturn(new class() {
+                public function setApiPassword($password) {}
+            });
+
+        $this->mockClientFactory = $this->getMockBuilder(self::$clientFactoryClass)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->mockClientFactory->method('create')->willReturn($this->mockClient);
+
+        return $this;
     }
 }

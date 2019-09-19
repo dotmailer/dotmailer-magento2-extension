@@ -1269,6 +1269,32 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
+     * Send integration insight data
+     *
+     * @param array $insightData
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function postIntegrationInsightData(array $insightData)
+    {
+        $response = $this->setUrl($this->getApiEndpoint() . self::REST_TRANSACTIONAL_DATA_IMPORT . 'Integrations')
+            ->setVerb('POST')
+            ->buildPostBody([[
+                'Key' => $insightData['recordId'],
+                'ContactIdentifier' => 'account',
+                'Json' => json_encode($insightData),
+            ]])
+            ->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error sending integration insight data');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Gets the import status of a previously started contact import.
      *
      * @param string $importId

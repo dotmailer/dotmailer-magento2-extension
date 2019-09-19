@@ -210,8 +210,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_INTERVAL = 'abandoned_carts/program/send_after';
 
     /**
-     * ROI SECTION.
+     * TRACKING SECTION.
      */
+    const XML_PATH_CONNECTOR_INTEGRATION_INSIGHTS_ENABLED = 'connector_configuration/tracking/integration_insights';
     const XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED = 'connector_configuration/tracking/roi_enabled';
     const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED = 'connector_configuration/tracking/page_enabled';
 

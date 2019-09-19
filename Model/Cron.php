@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Setup\Schema;
 
 /**
@@ -85,6 +86,11 @@ class Cron
     private $cronHelper;
 
     /**
+     * @var IntegrationInsightsFactory
+     */
+    private $integrationInsights;
+
+    /**
      * Cron constructor.
      *
      * @param Sync\CampaignFactory                     $campaignFactory
@@ -120,7 +126,8 @@ class Cron
         \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection,
         Cron\CronSubFactory $cronSubFactory,
-        \Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
+        \Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
+        IntegrationInsightsFactory $integrationInsightsFactory
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
@@ -138,6 +145,7 @@ class Cron
         $this->templateFactory   = $templateFactory;
         $this->cronHelper        = $cronSubFactory->create();
         $this->abandonedCartProgramEnroller = $abandonedCartProgramEnroller;
+        $this->integrationInsights = $integrationInsightsFactory;
     }
 
     /**
@@ -223,6 +231,21 @@ class Cron
     }
 
     /**
+     * Send integration insight data
+     */
+    public function sendIntegrationInsights()
+    {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_integration_insights')) {
+            $this->helper->log('Skipping ddg_automation_integration_insights job run');
+            return;
+        }
+
+        $this->integrationInsights->create()
+            ->sync();
+    }
+
+    /**
+     *
      * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS.
      *
      * @return null
