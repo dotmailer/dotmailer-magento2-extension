@@ -44,7 +44,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     /**
      * @var ResourceModel\Contact\CollectionFactory
      */
-    private $contactCollectionFacotry;
+    private $contactCollectionFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Config
@@ -94,7 +94,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         $this->dateTime = $dateTime;
         $this->configHelper = $config;
         $this->consentResource = $consent;
-        $this->contactCollectionFacotry = $contactCollectionFactory;
+        $this->contactCollectionFactory = $contactCollectionFactory;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -194,7 +194,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         //model not loaded try to load with contact email data
         if (!$this->getId()) {
             //load model using email and website id
-            $contactModel = $this->contactCollectionFacotry->create()
+            $contactModel = $this->contactCollectionFactory->create()
                 ->loadByCustomerEmail($email, $websiteId);
             if ($contactModel) {
                 $this->consentResource->load($this, $contactModel->getEmailContactId(), 'email_contact_id');

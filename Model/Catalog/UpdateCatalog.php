@@ -47,8 +47,8 @@ class UpdateCatalog
      */
     private function updateEmailCatalog($emailCatalog)
     {
-        if ($emailCatalog->getImported()) {
-            $emailCatalog->setModified(1);
+        if ($emailCatalog->getProcessed()) {
+            $emailCatalog->setProcessed(0);
             $this->catalogResource->save($emailCatalog);
         }
     }

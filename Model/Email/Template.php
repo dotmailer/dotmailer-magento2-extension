@@ -12,7 +12,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     const TEMPLATE_TYPE = 1;
 
     const XML_PATH_WISHLIST_EMAIL_EMAIL_TEMPLATE = 'wishlist/email/email_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT =
+    const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT =
         'dotmailer_email_templates/email_templates/customer_create_account_email_template';
     const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION_KEY =
         'dotmailer_email_templates/email_templates/customer_create_account_email_confirmation_template';
@@ -145,7 +145,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
      * @var array
      */
     public $templateConfigIdToDotmailerConfigPath = [
-        'customer_create_account_email_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ACCCOUNT,
+        'customer_create_account_email_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT,
         'customer_create_account_email_confirmation_template' =>
             self::XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION_KEY,
         'customer_create_account_email_confirmed_template' => self::XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION,

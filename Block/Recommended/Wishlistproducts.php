@@ -22,7 +22,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
-    public $recommnededHelper;
+    public $recommendedHelper;
 
     /**
      * @var \Magento\Customer\Model\CustomerFactory
@@ -74,7 +74,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
     ) {
         $this->helper            = $helper;
         $this->customerFactory   = $customerFactory;
-        $this->recommnededHelper = $recommended;
+        $this->recommendedHelper = $recommended;
         $this->priceHelper       = $priceHelper;
         $this->wishlist          = $wishlist;
         $this->catalog           = $catalog;
@@ -140,7 +140,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
         //number of product items to be displayed
-        $limit = (int) $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $limit = (int) $this->recommendedHelper->getDisplayLimitByMode($mode);
         $items = $this->_getWishlistItems();
         $numItems = count($items);
 
@@ -267,7 +267,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
      */
     private function fillProductsToDisplay($productsToDisplay, &$productsToDisplayCounter, $limit)
     {
-        $fallbackIds = $this->recommnededHelper->getFallbackIds();
+        $fallbackIds = $this->recommendedHelper->getFallbackIds();
         $productCollection = $this->catalog->getProductCollectionFromIds($fallbackIds);
 
         foreach ($productCollection as $product) {
@@ -312,13 +312,13 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
     }
 
     /**
-     * Diplay mode type.
+     * Display mode type.
      *
      * @return string|boolean
      */
     public function getMode()
     {
-        return $this->recommnededHelper->getDisplayType();
+        return $this->recommendedHelper->getDisplayType();
     }
 
     /**
@@ -328,7 +328,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
      */
     public function getColumnCount()
     {
-        return $this->recommnededHelper->getDisplayLimitByMode(
+        return $this->recommendedHelper->getDisplayLimitByMode(
             $this->getRequest()->getActionName()
         );
     }

@@ -63,6 +63,11 @@ class UrlFinderTest extends TestCase
     private $imageBuilderMock;
 
     /**
+     * @var Product\Media\Config
+     */
+    private $mediaConfigMock;
+
+    /**
      * @var
      */
     private $scopeConfigInterfaceMock;
@@ -77,6 +82,15 @@ class UrlFinderTest extends TestCase
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->websiteMock = $this->createMock(Website::class);
         $this->imageBuilderMock = $this->createMock(ImageBuilder::class);
+        $this->mediaConfigMock = $this->createMock(Product\Media\Config::class);
+
+        $mediaConfigFactory = $this->getMockBuilder(Product\Media\ConfigFactory::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['create'])
+            ->getMock();
+        $mediaConfigFactory->expects($this->once())
+            ->method('create')
+            ->willReturn($this->mediaConfigMock);
 
         $imageBuilderFactory = $this->getMockBuilder(ImageBuilderFactory::class)
             ->disableOriginalConstructor()
@@ -95,6 +109,7 @@ class UrlFinderTest extends TestCase
             $this->groupedTypeMock,
             $this->storeManagerMock,
             $imageBuilderFactory,
+            $mediaConfigFactory,
             $this->scopeConfigInterfaceMock
         );
     }

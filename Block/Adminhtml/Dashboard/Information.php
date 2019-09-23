@@ -107,7 +107,7 @@ class Information extends \Magento\Backend\Block\Template
     }
 
     /**
-     * Get the api creds are valid.
+     * Return HTML indicating the validity of stored API credentials.
      * @return string
      */
     public function getApiValid()

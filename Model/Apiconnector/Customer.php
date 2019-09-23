@@ -384,7 +384,7 @@ class Customer extends ContactData
     }
 
     /**
-     * Get delivery addrss line 2.
+     * Get delivery address line 2.
      *
      * @return string
      */
@@ -558,7 +558,7 @@ class Customer extends ContactData
     {
         return $this->model->getBillingCompany();
     }
-    
+
     /**
      * Get shipping company name.
      *

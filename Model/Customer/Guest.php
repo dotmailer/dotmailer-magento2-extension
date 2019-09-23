@@ -76,10 +76,10 @@ class Guest
 
         foreach ($websites as $website) {
             //check if the guest is mapped and enabled
-            $addresbook = $this->helper->getGuestAddressBook($website);
+            $addressbook = $this->helper->getGuestAddressBook($website);
             $guestSyncEnabled = $this->helper->isGuestSyncEnabled($website);
             $apiEnabled = $this->helper->isEnabled($website);
-            if ($addresbook && $guestSyncEnabled && $apiEnabled) {
+            if ($addressbook && $guestSyncEnabled && $apiEnabled) {
                 //sync guests for website
                 $this->exportGuestPerWebsite($website);
             }

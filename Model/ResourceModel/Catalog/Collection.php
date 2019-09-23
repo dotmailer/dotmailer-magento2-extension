@@ -69,21 +69,14 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get product collection to export.
      *
-     * @param null|string|bool|int|\Magento\Store\Model\Store $store
      * @param int $limit
      *
      * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|array
      */
-    public function getProductsToExportByStore($store, $limit)
+    public function getProductsToProcess($limit)
     {
         $connectorCollection = $this;
-        $connectorCollection->addFieldToFilter(
-            ['imported', 'modified'],
-            [
-                ['null' => 'true'],
-                ['eq' => '1']
-            ]
-        );
+        $connectorCollection->addFieldToFilter('processed', '0');
         $connectorCollection->getSelect()->limit($limit);
         $connectorCollection->setOrder(
             'product_id',
@@ -92,53 +85,64 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
         //check number of products
         if ($connectorCollection->getSize()) {
-            $productIds = $connectorCollection->getColumnValues('product_id');
-
-            $productCollection = $this->productCollection->create()
-                ->addAttributeToSelect('*')
-                ->addAttributeToFilter(
-                    'entity_id',
-                    ['in' => $productIds]
-                )->addUrlRewrite();
-
-            if (!empty($store)) {
-                $productCollection->addStoreFilter($store);
-            }
-
-            //visibility filter
-            if ($visibility = $this->helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY
-            )
-            ) {
-                $visibility = explode(',', $visibility);
-                //remove the default option from values
-                $visibility = array_filter($visibility);
-                $productCollection->addAttributeToFilter(
-                    'visibility',
-                    ['in' => $visibility]
-                );
-            }
-            //type filter
-            if ($type = $this->helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE
-            )
-            ) {
-                $type = explode(',', $type);
-                $productCollection->addAttributeToFilter(
-                    'type_id',
-                    ['in' => $type]
-                );
-            }
-
-            $productCollection->addWebsiteNamesToResult()
-                ->addCategoryIds()
-                ->addOptionsToResult();
-
-            $productCollection->clear();
-
-            return $productCollection;
+            return $connectorCollection->getColumnValues('product_id');
         }
 
         return [];
+    }
+
+    /**
+     * Get product collection to export.
+     *
+     * @param string $storeId
+     * @param array $productIds
+     *
+     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
+    public function filterProductsByStoreTypeAndVisibility($storeId, $productIds)
+    {
+        $productCollection = $this->productCollection->create()
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter(
+                'entity_id',
+                ['in' => $productIds]
+            )->addUrlRewrite();
+
+        if (!empty($storeId)) {
+            $productCollection->addStoreFilter($storeId);
+        }
+
+        //visibility filter
+        if ($visibility = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY
+        )
+        ) {
+            $visibility = explode(',', $visibility);
+            //remove the default option from values
+            $visibility = array_filter($visibility);
+            $productCollection->addAttributeToFilter(
+                'visibility',
+                ['in' => $visibility]
+            );
+        }
+        //type filter
+        if ($type = $this->helper->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE
+        )
+        ) {
+            $type = explode(',', $type);
+            $productCollection->addAttributeToFilter(
+                'type_id',
+                ['in' => $type]
+            );
+        }
+
+        $productCollection->addWebsiteNamesToResult()
+            ->addCategoryIds()
+            ->addOptionsToResult();
+
+        $productCollection->clear();
+
+        return $productCollection;
     }
 }

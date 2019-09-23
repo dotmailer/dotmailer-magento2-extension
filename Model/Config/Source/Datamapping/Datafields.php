@@ -51,7 +51,7 @@ class Datafields implements \Magento\Framework\Option\ArrayInterface
         if ($apiEnabled) {
             $savedDatafields = $this->registry->registry('datafields');
 
-            //get saved datafileds from registry
+            //get saved datafields from registry
             if ($savedDatafields) {
                 $datafields = $savedDatafields;
             } else {

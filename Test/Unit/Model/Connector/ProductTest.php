@@ -149,13 +149,11 @@ class ProductTest extends TestCase
     {
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->helperMock = $this->createMock(Data::class);
-        $this->mediaConfigFactoryMock = $this->createMock(ConfigFactory::class);
         $this->statusFactoryMock = $this->createMock(StatusFactory::class);
         $this->visibilityFactoryMock = $this->createMock(VisibilityFactory::class);
         $this->mageProductMock = $this->createMock(MageProduct::class);
         $this->statusMock = $this->createMock(Status::class);
         $this->phraseMock = $this->createMock(Phrase::class);
-        $this->configMock = $this->createMock(Config::class);
         $this->collectionMock = $this->createMock(Collection::class);
         $this->configurableMock = $this->createMock(Configurable::class);
         $this->baseMock = $this->createMock(Base::class);
@@ -175,7 +173,6 @@ class ProductTest extends TestCase
         $this->product = new Product(
             $this->storeManagerMock,
             $this->helperMock,
-            $this->mediaConfigFactoryMock,
             $this->statusFactoryMock,
             $this->visibilityFactoryMock,
             $this->urlFinderMock,
@@ -207,10 +204,6 @@ class ProductTest extends TestCase
         $this->mageProductMock->expects($this->once())
             ->method('getVisibility')
             ->willReturn($visibility);
-
-        $this->mediaConfigFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($this->configMock);
 
         $this->mageProductMock->expects($this->atLeastOnce())
             ->method('getCategoryCollection')

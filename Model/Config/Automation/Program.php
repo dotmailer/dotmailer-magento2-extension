@@ -13,7 +13,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Magento\Framework\Registry
      */
     private $registry;
-    
+
     /**
      * Escaper
      *
@@ -52,7 +52,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
         if ($this->helper->isEnabled($website)) {
             $savedPrograms = $this->registry->registry('programs');
 
-            //get saved datafileds from registry
+            //get saved datafields from registry
             if (is_array($savedPrograms)) {
                 $programs = $savedPrograms;
             } else {

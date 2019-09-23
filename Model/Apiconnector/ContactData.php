@@ -276,7 +276,7 @@ class ContactData
         //categories from all products
         foreach ($orderItems as $item) {
             $product = $item->getProduct();
-            //sales item product may return null if the product not exists anymore rathe then empty object
+            //sales item product may return null if product no longer exists, rather than empty object
             if ($product) {
                 $categoryIds = $product->getCategoryIds();
                 if (count($categoryIds)) {

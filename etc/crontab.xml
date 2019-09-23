@@ -19,6 +19,9 @@
         <job name="ddg_automation_campaign" instance="Dotdigitalgroup\Email\Model\Cron" method="sendCampaigns">
             <schedule>*/5 * * * *</schedule>
         </job>
+        <job name="ddg_automation_integration_insights" instance="Dotdigitalgroup\Email\Model\Cron" method="sendIntegrationInsights">
+            <schedule>0 3 * * 1</schedule>
+        </job>
         <job name="ddg_automation_order_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="orderSync">
             <config_path>connector_developer_settings/cron_schedules/order</config_path>
         </job>

@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Setup\Schema;
 
 /**
@@ -85,6 +86,11 @@ class Cron
     private $cronHelper;
 
     /**
+     * @var IntegrationInsightsFactory
+     */
+    private $integrationInsights;
+
+    /**
      * Cron constructor.
      *
      * @param Sync\CampaignFactory                     $campaignFactory
@@ -110,7 +116,7 @@ class Cron
         \Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
-        \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactorty,
+        \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Model\Sync\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
@@ -120,14 +126,15 @@ class Cron
         \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection,
         Cron\CronSubFactory $cronSubFactory,
-        \Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
+        \Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
+        IntegrationInsightsFactory $integrationInsightsFactory
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
         $this->quoteFactory      = $quoteFactory;
         $this->guestFactory      = $guestFactory;
         $this->subscriberFactory = $subscriberFactory;
-        $this->catalogFactory    = $catalogFactorty;
+        $this->catalogFactory    = $catalogFactory;
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
         $this->contactFactory    = $contact;
@@ -138,6 +145,7 @@ class Cron
         $this->templateFactory   = $templateFactory;
         $this->cronHelper        = $cronSubFactory->create();
         $this->abandonedCartProgramEnroller = $abandonedCartProgramEnroller;
+        $this->integrationInsights = $integrationInsightsFactory;
     }
 
     /**
@@ -223,6 +231,21 @@ class Cron
     }
 
     /**
+     * Send integration insight data
+     */
+    public function sendIntegrationInsights()
+    {
+        if ($this->jobHasAlreadyBeenRun('ddg_automation_integration_insights')) {
+            $this->helper->log('Skipping ddg_automation_integration_insights job run');
+            return;
+        }
+
+        $this->integrationInsights->create()
+            ->sync();
+    }
+
+    /**
+     *
      * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS.
      *
      * @return null

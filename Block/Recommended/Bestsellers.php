@@ -19,7 +19,7 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
-    private $recommnededHelper;
+    private $recommendedHelper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
@@ -47,7 +47,7 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
         array $data = []
     ) {
         $this->helper             = $helper;
-        $this->recommnededHelper  = $recommended;
+        $this->recommendedHelper  = $recommended;
         $this->catalog            = $catalog;
         parent::__construct($context, $font, $urlFinder, $data);
     }
@@ -68,9 +68,9 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
         //mode param grid/list
         $mode = $this->getRequest()->getActionName();
         //limit of the products to display
-        $limit = $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
         //date range
-        $from = $this->recommnededHelper->getTimeFromConfig($mode);
+        $from = $this->recommendedHelper->getTimeFromConfig($mode);
         $to = $this->_localeDate->date()->format(\Zend_Date::ISO_8601);
         $storeId = $this->_storeManager->getStore()->getId();
 
@@ -84,7 +84,7 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
      */
     public function getMode()
     {
-        return $this->recommnededHelper->getDisplayType();
+        return $this->recommendedHelper->getDisplayType();
     }
 
     /**

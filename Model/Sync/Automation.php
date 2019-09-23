@@ -216,7 +216,7 @@ class Automation implements SyncInterface
                     $this->setStatusAndSaveAutomation($automation, self::AUTOMATION_STATUS_SUPPRESSED);
                 }
             }
-            $this->sendAutomationEnrolements($contacts, $type);
+            $this->sendAutomationEnrolments($contacts, $type);
         }
     }
 
@@ -568,7 +568,7 @@ class Automation implements SyncInterface
      * @param $contacts
      * @param $type
      */
-    private function sendAutomationEnrolements($contacts, $type)
+    private function sendAutomationEnrolments($contacts, $type)
     {
         foreach ($contacts as $websiteId => $websiteContacts) {
             if (isset($websiteContacts['contacts'])) {

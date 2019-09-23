@@ -135,7 +135,7 @@ class Subscriber implements SyncInterface
                 }
             }
         }
-        //sync proccessed
+        //sync processed
 
         $response['message'] .= '----------- Subscribers sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) . ', updated = ' . $this->countSubscribers;
 

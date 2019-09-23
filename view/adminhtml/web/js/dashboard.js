@@ -14,8 +14,8 @@ define(['jquery', 'domReady!'], function ($) {
     /**
      * export/return
      */
-    return function (dasboard) {
-        bind('contact_sync', dasboard.contactLink);
-        bind('importer_sync', dasboard.importerLink);
+    return function (dashboard) {
+        bind('contact_sync', dashboard.contactLink);
+        bind('importer_sync', dashboard.importerLink);
     };
 });

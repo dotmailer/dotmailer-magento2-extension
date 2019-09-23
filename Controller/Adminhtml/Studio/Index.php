@@ -22,7 +22,7 @@ class Index extends \Magento\Backend\App\AbstractAction
 
         if (! $refreshToken) {
             $resultRedirect = $this->resultRedirectFactory->create();
-            $this->messageManager->addNoticeMessage('Please enter OAUTH creds and click Connect.');
+            $this->messageManager->addNoticeMessage('Please enter OAUTH credentials and click Connect.');
             //Redirect to developer section config
             $resultRedirect->setPath('adminhtml/system_config/edit', ['section' => 'connector_developer_settings']);
 

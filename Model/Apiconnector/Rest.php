@@ -392,7 +392,7 @@ class Rest
     }
 
     /**
-     * Ececute delete.
+     * Execute delete.
      *
      * @param mixed $ch
      *

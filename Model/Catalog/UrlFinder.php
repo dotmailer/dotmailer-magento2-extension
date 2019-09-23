@@ -44,6 +44,11 @@ class UrlFinder
     private $scopeConfig;
 
     /**
+     * @var \Magento\Catalog\Model\Product\Media\Config
+     */
+    private $mediaConfig;
+
+    /**
      * UrlFinder constructor.
      *
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType
@@ -52,6 +57,7 @@ class UrlFinder
      * @param \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory
+     * @param \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
@@ -61,6 +67,7 @@ class UrlFinder
         \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory,
+        \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
         ScopeConfigInterface $scopeConfig
     ) {
         $this->configurableType = $configurableType;
@@ -69,6 +76,7 @@ class UrlFinder
         $this->groupedType = $groupedType;
         $this->storeManager = $storeManager;
         $this->imageBuilder = $imageBuilderFactory->create();
+        $this->mediaConfig = $mediaConfigFactory->create();
         $this->scopeConfig = $scopeConfig;
     }
 
@@ -104,15 +112,9 @@ class UrlFinder
      */
     public function getProductImageUrl(Product $product, string $imageId)
     {
-        $product = $this->getScopedProduct($product);
-
-        if (
-            $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
-            && $product->getSmallImage() == 'no_selection'
-            && $parentProduct = $this->getParentProduct($product)
-        ) {
-            $product = $parentProduct;
-        }
+        $product = $this->getParentProductForNoImageSelection(
+            $this->getScopedProduct($product)
+        );
 
         $imageData = $this->imageBuilder
             ->setProduct($product)
@@ -121,6 +123,38 @@ class UrlFinder
             ->getData();
 
         return $imageData['image_url'] ?? null;
+    }
+
+    /**
+     * @param Product $product
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getProductSmallImageUrl(Product $product)
+    {
+        return $this->getPath(
+            $this->mediaConfig->getMediaUrl(
+                $this->getParentProductForNoImageSelection($product)->getSmallImage()
+            )
+        );
+    }
+
+    /**
+     * @param Product $product
+     * @return \Magento\Catalog\Api\Data\ProductInterface|Product|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getParentProductForNoImageSelection(Product $product)
+    {
+        if (
+            $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+            && $product->getSmallImage() == 'no_selection'
+            && $parentProduct = $this->getParentProduct($product)
+        ) {
+            return $parentProduct;
+        }
+
+        return $product;
     }
 
     /**

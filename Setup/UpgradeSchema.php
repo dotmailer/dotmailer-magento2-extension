@@ -50,6 +50,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->upgradeTwoThreeSixToTwoFiveFour($setup, $context);
         $this->upgradeTwoFiveFourToThreeZeroThree($setup, $context);
         $this->upgradeThreeTwoTwo($setup, $context);
+        $this->upgradeThreeFourTwo($setup, $context);
 
         $setup->endSetup();
     }
@@ -502,6 +503,71 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $setup->getConnection()->addColumn(
                 $setup->getTable(Schema::EMAIL_CONTACT_TABLE),
                 'last_subscribed_at',
+                $definition
+            );
+        }
+    }
+
+    /**
+     * Changes 'imported' column to 'processed' in email_catalog
+     *
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeThreeFourTwo(
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '3.4.2', '<')) {
+
+            $catalogTable = $setup->getTable(Schema::EMAIL_CATALOG_TABLE);
+
+            // Remove 'modified' column
+            $setup->getConnection()->dropColumn(
+                $setup->getTable(Schema::EMAIL_CATALOG_TABLE),
+                'modified'
+            );
+            // Remove index on 'imported' column
+            $setup->getConnection()->dropIndex(
+                $catalogTable,
+                'EMAIL_CATALOG_IMPORTED'
+            );
+
+            // Change 'imported' column to 'processed'
+            if ($setup->getConnection()->tableColumnExists(
+                $catalogTable,
+                'imported'
+            )) {
+                $definition = [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'nullable' => false,
+                    'unsigned' => true,
+                    'comment' => 'Product processed'
+                ];
+                $setup->getConnection()->changeColumn(
+                    $catalogTable,
+                    'imported',
+                    'processed',
+                    $definition
+                );
+            }
+
+            // Restore index
+            $setup->getConnection()->addIndex(
+                $catalogTable,
+                $setup->getIdxName($catalogTable, ['processed']),
+                ['processed']
+            );
+
+            // Add 'last_imported_at' column
+            $definition = [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                'nullable' => true,
+                'comment' => 'Last imported date'
+            ];
+            $setup->getConnection()->addColumn(
+                $setup->getTable(Schema::EMAIL_CATALOG_TABLE),
+                'last_imported_at',
                 $definition
             );
         }

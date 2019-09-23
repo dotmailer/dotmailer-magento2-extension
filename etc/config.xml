@@ -170,6 +170,7 @@
                 <expire_time>24</expire_time>
             </abandoned_carts>
             <tracking>
+                <integration_insights>1</integration_insights>
                 <roi_enabled>1</roi_enabled>
                 <page_enabled>1</page_enabled>
                 <script_version></script_version>
