@@ -1286,7 +1286,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ]])
             ->execute();
 
-        if (isset($response->message)) {
+        if (!$response || isset($response->message)) {
             $this->addClientLog('Error sending integration insight data');
             return false;
         }

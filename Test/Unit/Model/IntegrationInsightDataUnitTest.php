@@ -10,11 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 class IntegrationInsightDataUnitTest extends TestCase
 {
-    const API_USERS = [
-        '53acb5d20576',
-        'chattyconsoles',
-        'chattyconsoles',
-    ];
     const PLATFORM = 'Magento';
     const EDITION = 'Community';
     const VERSION = '2.3';
@@ -73,10 +68,6 @@ class IntegrationInsightDataUnitTest extends TestCase
                 'setup_version' => self::CONNECTOR_VERSION,
             ]);
 
-        $this->timezoneMock->expects($this->any())
-            ->method('date')
-            ->willReturn(new \DateTime);
-
         $this->helperMock->expects($this->once())
             ->method('getStores')
             ->willReturn([
@@ -85,19 +76,10 @@ class IntegrationInsightDataUnitTest extends TestCase
                 $this->getTestStore(3, 'Bye Bye Man', 'https://www.bye-bye-man.com', false),
             ]);
 
-        $apiUserCheck = 0;
-        $this->helperMock
-            ->expects($this->any())
-            ->method('getApiUsername')
-            ->will($this->returnCallback(function () use (&$apiUserCheck) {
-                return sprintf('apiuser-%s@apiconnector.com', self::API_USERS[$apiUserCheck++]);
-            }));
-
         $this->integrationInsightData = new IntegrationInsightData(
             $this->helperMock,
             $this->productMetadataMock,
-            $this->moduleListMock,
-            $this->timezoneMock
+            $this->moduleListMock
         );
     }
 
@@ -124,29 +106,8 @@ class IntegrationInsightDataUnitTest extends TestCase
 
         // assert 2 records were returned, with separate integration IDs based on the API hash
         $this->assertCount(2, $data);
-        $this->assertEquals('integration_' . self::API_USERS[0], reset($data)['recordId']);
-        $this->assertEquals('integration_' . self::API_USERS[1], end($data)['recordId']);
-    }
-
-    /**
-     * Check that API users with > 1 website connected have those sites grouped
-     *
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function testWebsitesUnderIntegration()
-    {
-        $this->helperMock
-            ->expects($this->any())
-            ->method('isEnabled')
-            ->willReturn(true);
-
-        $data = $this->integrationInsightData->getIntegrationInsightData();
-
-        // get integration record with more than one website connected
-        $chattyConsoleApiUserData = $data[array_search('integration_chattyconsoles', array_column($data, 'recordId'))];
-
-        $this->assertCount(2, $chattyConsoleApiUserData['websites']);
-        $this->assertArraySubset([['name' => 'Typos'], ['name' => 'Bye Bye Man']], $chattyConsoleApiUserData['websites']);
+        $this->assertEquals('www.chaz-kangaroo.com', reset($data)['recordId']);
+        $this->assertEquals('www.bye-bye-man.com', end($data)['recordId']);
     }
 
     /**
@@ -168,6 +129,7 @@ class IntegrationInsightDataUnitTest extends TestCase
             'version' => self::VERSION,
             'connectorVersion' => self::CONNECTOR_VERSION,
         ], reset($data));
+        $this->assertArrayHasKey('phpVersion', reset($data));
     }
 
     /**

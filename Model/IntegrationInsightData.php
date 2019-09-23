@@ -2,13 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
-use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class IntegrationInsightData
 {
@@ -28,76 +26,44 @@ class IntegrationInsightData
     private $moduleList;
 
     /**
-     * @var TimezoneInterface
-     */
-    private $timezone;
-
-    /**
      * @var array
      */
-    private $systemMetadata;
+    private $integrationMetaData;
 
     /**
      * @param Data $helper
      * @param ProductMetadataInterface $productMetadata
      * @param ModuleListInterface $moduleList
-     * @param TimezoneInterface $timezone
      */
     public function __construct(
         Data $helper,
         ProductMetadataInterface $productMetadata,
-        ModuleListInterface $moduleList,
-        TimezoneInterface $timezone
+        ModuleListInterface $moduleList
     ) {
         $this->helper = $helper;
         $this->productMetadata = $productMetadata;
         $this->moduleList = $moduleList;
-        $this->timezone = $timezone;
     }
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Exception
      */
     public function getIntegrationInsightData(): array
-    {
-        $websiteData = $this->getData();
-
-        return array_map(
-            function ($websiteData, $apiUsername) {
-                $apiHash = str_replace('apiuser-', '', strtok($apiUsername, '@'));
-                return [
-                    'recordId' => sprintf('integration_%s', $apiHash),
-                    'websites' => $websiteData,
-                    'apiUsername' => $apiUsername,
-                    'lastUpdated' => $this->timezone->date()->format(\DateTime::W3C),
-                ] + $this->getSystemMetadata();
-            },
-            $websiteData,
-            array_keys($websiteData)
-        );
-    }
-
-    /**
-     * Compile website data by API username
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    private function getData(): array
     {
         $websiteData = [];
         foreach ($this->helper->getStores() as $store) {
             /** @var Store $store */
-            if (!$this->helper->isEnabled($store->getWebsiteId())) {
+            if (!$this->helper->isEnabled($store->getWebsiteId()) || isset($websiteData[$store->getWebsiteId()])) {
                 continue;
             }
 
-            $websiteData[$this->helper->getApiUsername($store->getWebsiteId())][] = [
-                'id' => $store->getWebsiteId(),
-                'baseUrl' => $store->getBaseUrl(UrlInterface::URL_TYPE_LINK, $store->isCurrentlySecure()),
-                'name' => $store->getWebsite()->getName(),
-            ];
+            $websiteData[$store->getWebsiteId()] = [
+                'recordId' => parse_url(
+                    $store->getBaseUrl(UrlInterface::URL_TYPE_LINK, $store->isCurrentlySecure()),
+                    PHP_URL_HOST
+                ),
+            ] + $this->getIntegrationMetaData();
         }
 
         return $websiteData;
@@ -105,18 +71,21 @@ class IntegrationInsightData
 
     /**
      * @return array
+     * @throws \Exception
      */
-    private function getSystemMetadata(): array
+    private function getIntegrationMetaData(): array
     {
-        if ($this->systemMetadata) {
-            return $this->systemMetadata;
+        if ($this->integrationMetaData) {
+            return $this->integrationMetaData;
         }
 
-        return $this->systemMetadata = [
+        return $this->integrationMetaData = [
             'platform' => $this->productMetadata->getName(),
             'edition' => $this->productMetadata->getEdition(),
             'version' => $this->productMetadata->getVersion(),
+            'phpVersion' => implode('.', [PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION]),
             'connectorVersion' => $this->getConnectorVersion(),
+            'lastUpdated' => (new \DateTime('now', new \DateTimeZone('UTC')))->format(\DateTime::W3C),
         ];
     }
 

@@ -40,10 +40,8 @@ class IntegrationInsights implements SyncInterface
             return false;
         }
 
-        foreach ($this->insightData->getIntegrationInsightData() as $integration) {
-            // get the first website connected to this API user, to get it's client
-            $firstWebsiteId = (int) reset($integration['websites'])['id'];
-            $result = $this->helper->getWebsiteApiClient($firstWebsiteId)
+        foreach ($this->insightData->getIntegrationInsightData() as $websiteId => $integration) {
+            $result = $this->helper->getWebsiteApiClient($websiteId)
                 ->postIntegrationInsightData($integration);
 
             $this->helper->log('Integration insight data sent', [
