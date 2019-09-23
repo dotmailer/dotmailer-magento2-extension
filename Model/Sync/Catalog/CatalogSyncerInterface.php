@@ -4,5 +4,11 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 interface CatalogSyncerInterface
 {
-    public function sync();
+    /**
+     * Sync
+     *
+     * @param array $products
+     * @return int
+     */
+    public function sync($products);
 }

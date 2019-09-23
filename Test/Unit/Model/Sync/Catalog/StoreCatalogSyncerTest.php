@@ -45,6 +45,7 @@ class StoreCatalogSyncerTest extends TestCase
      * @var Importer
      */
     private $importerModelMock;
+
     protected function setUp()
     {
         $this->importerFactoryMock = $this->createMock(ImporterFactory::class);
@@ -63,18 +64,18 @@ class StoreCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getParameters
+     * @param $productToProcess
      * @param $storeId
      * @param $websiteId
-     * @param $limit
      * @param $importType
      */
-    public function testThatIfImporterIsSuccessThenSyncByStoreReturnsTheProducts($storeId, $websiteId, $limit, $importType)
+    public function testThatIfImporterIsSuccessThenSyncByStoreReturnsTheProducts($productToProcess, $storeId, $websiteId, $importType)
     {
         $products = $this->getMockProducts();
 
         $this->exporterMock->expects($this->once())
             ->method('exportCatalog')
-            ->with($storeId, $limit)
+            ->with($storeId, $productToProcess)
             ->willReturn($products);
 
         $this->importerFactoryMock->expects($this->once())
@@ -90,25 +91,25 @@ class StoreCatalogSyncerTest extends TestCase
                 $websiteId
             )->willReturn(true);
 
-        $result = $this->storeCatalogSyncer->syncByStore($storeId, $websiteId, $limit, $importType);
+        $result = $this->storeCatalogSyncer->syncByStore($productToProcess, $storeId, $websiteId, $importType);
 
         $this->assertEquals($result, $products);
     }
 
     /**
      * @dataProvider getParameters
+     * @param $productToProcess
      * @param $storeId
      * @param $websiteId
-     * @param $limit
      * @param $importType
      */
-    public function testThatIfImporterFailsThenSyncByStoreReturnsEmptyArray($storeId, $websiteId, $limit, $importType)
+    public function testThatIfImporterFailsThenSyncByStoreReturnsEmptyArray($productToProcess, $storeId, $websiteId, $importType)
     {
         $products = $this->getMockProducts();
 
         $this->exporterMock->expects($this->once())
             ->method('exportCatalog')
-            ->with($storeId, $limit)
+            ->with($storeId, $productToProcess)
             ->willReturn($products);
 
         $this->importerFactoryMock->expects($this->once())
@@ -124,7 +125,7 @@ class StoreCatalogSyncerTest extends TestCase
                 $websiteId
             )->willReturn(false);
 
-        $result = $this->storeCatalogSyncer->syncByStore($storeId, $websiteId, $limit, $importType);
+        $result = $this->storeCatalogSyncer->syncByStore($productToProcess, $storeId, $websiteId, $importType);
 
         $this->assertEquals($result, []);
     }
@@ -135,10 +136,12 @@ class StoreCatalogSyncerTest extends TestCase
      */
     public function getParameters()
     {
+        $productToProcess = $this->getMockProductsToProcess();
+
         return [
-            [1,1,200,'subscribers'],
-            [2,1,400,'catalog'],
-            [3,2,4500,'contacts']
+            [$productToProcess,1,1,'subscribers'],
+            [$productToProcess,2,1,'catalog'],
+            [$productToProcess,3,2,'contacts']
         ];
     }
 
@@ -154,5 +157,26 @@ class StoreCatalogSyncerTest extends TestCase
             $products[] = $this->createMock(Product::class)->toArray();
         }
         return $products;
+    }
+
+    /**
+     * Returns product array
+     *
+     * @return array
+     */
+    public function getMockProductsToProcess()
+    {
+        return [
+            0 => '1205',
+            1 => '1206',
+            2 => '1207',
+            3 => '1208',
+            4 => '1209',
+            5 => '1210',
+            6 => '1211',
+            7 => '1212',
+            8 => '1213',
+            9 => '1214'
+        ];
     }
 }

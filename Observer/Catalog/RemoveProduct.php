@@ -87,7 +87,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
             $emailCatalog = $this->catalogFactory->create();
             if ($item = $emailCatalog->loadProductById($productId)) {
                 //if imported delete from account
-                if ($item->getImported()) {
+                if ($item->getProcessed()) {
                     $this->deleteFromAccount($productId);
                 }
             }

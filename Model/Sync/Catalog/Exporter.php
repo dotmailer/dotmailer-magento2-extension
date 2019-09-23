@@ -39,15 +39,15 @@ class Exporter
     /**
      * Export catalog.
      *
-     * @param string|int|null $storeId
-     * @param string|int $limit
+     * @param string $storeId
+     * @param array $productsToProcess
      *
      * @return array
      */
-    public function exportCatalog($storeId, $limit)
+    public function exportCatalog($storeId, $productsToProcess)
     {
         $connectorProducts = [];
-        $products = $this->getProductsToExport($storeId, $limit);
+        $products = $this->getProductsToExport($storeId, $productsToProcess);
 
         foreach ($products as $product) {
             $connectorProduct = $this->connectorProductFactory->create()
@@ -61,14 +61,14 @@ class Exporter
     /**
      * Get product collection to export.
      *
-     * @param \Magento\Store\Model\Store|int|null $store
-     * @param int $limit
+     * @param string $storeId
+     * @param array $productIds
      *
      * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|array
      */
-    private function getProductsToExport($store, $limit)
+    private function getProductsToExport($storeId, $productIds)
     {
         return $this->catalogCollectionFactory->create()
-            ->getProductsToExportByStore($store, $limit);
+            ->filterProductsByStoreTypeAndVisibility($storeId, $productIds);
     }
 }

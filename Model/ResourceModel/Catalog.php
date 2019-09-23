@@ -294,21 +294,17 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $conn = $this->getConnection();
         if ($from && $to) {
             $where = [
-                'created_at >= ?' => $from . ' 00:00:00',
-                'created_at <= ?' => $to . ' 23:59:59',
-                'imported is ?' => new \Zend_Db_Expr('not null')
+                '(created_at >= ?' .$from. ' 00:00:00' .' AND created_at <= ?'. $to . ' 23:59:59)',
+                'AND (last_imported_at IS NOT NULL OR processed = 1)'
             ];
         } else {
-            $where = $conn->quoteInto(
-                'imported is ?',
-                new \Zend_Db_Expr('not null')
-            );
+            $where[] = 'last_imported_at IS NOT NULL OR processed= 1';
         }
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CATALOG_TABLE),
             [
-                'imported' => new \Zend_Db_Expr('null'),
-                'modified' => new \Zend_Db_Expr('null'),
+                'processed' => 0,
+                'last_imported_at' => new \Zend_Db_Expr('null')
             ],
             $where
         );
@@ -317,13 +313,13 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Set imported and modified in bulk query.
+     * Set processed flag.
      *
      * @param array $ids
      *
      * @return null
      */
-    public function setImportedByIds($ids)
+    public function setProcessedByIds($ids)
     {
         try {
             $coreResource = $this->getConnection();
@@ -332,9 +328,57 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $coreResource->update(
                 $tableName,
                 [
-                    'modified' => new \Zend_Db_Expr('null'),
-                    'imported' => '1',
+                    'processed' => 1,
                     'updated_at' => gmdate('Y-m-d H:i:s'),
+                ],
+                ["product_id IN (?)" => $ids]
+            );
+        } catch (\Exception $e) {
+            $this->helper->debug((string)$e, []);
+        }
+    }
+
+    /**
+     * Set 'processed' to 0
+     *
+     * @param array $ids
+     */
+    public function setUnprocessedByIds($ids)
+    {
+        try {
+            $coreResource = $this->getConnection();
+            $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
+
+            $coreResource->update(
+                $tableName,
+                [
+                    'processed' => 0,
+                    'updated_at' => gmdate('Y-m-d H:i:s'),
+                ],
+                ["product_id IN (?)" => $ids]
+            );
+        } catch (\Exception $e) {
+            $this->helper->debug((string)$e, []);
+        }
+    }
+
+    /**
+     * Set imported date.
+     *
+     * @param array $ids
+     *
+     * @return null
+     */
+    public function setImportedDateByIds($ids)
+    {
+        try {
+            $coreResource = $this->getConnection();
+            $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
+
+            $coreResource->update(
+                $tableName,
+                [
+                    'last_imported_at' => gmdate('Y-m-d H:i:s'),
                 ],
                 ["product_id IN (?)" => $ids]
             );
@@ -373,25 +417,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         //run query
         $write->query($deleteSql);
-    }
-
-    /**
-     * Set modified if already imported
-     *
-     * @param array $ids
-     */
-    public function setModified($ids)
-    {
-        $write     = $this->getConnection();
-        $tableName = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
-        $write->update(
-            $tableName,
-            ['modified' => 1],
-            [
-                $write->quoteInto("product_id IN (?)", $ids),
-                $write->quoteInto("imported = ?", 1)
-            ]
-        );
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
 /**
- * Product to be marked as modified and reimported.
+ * Product to be marked as unprocessed and reimported.
  */
 class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
 {

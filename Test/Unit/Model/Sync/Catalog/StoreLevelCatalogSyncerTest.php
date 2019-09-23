@@ -5,7 +5,6 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreCatalogSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreLevelCatalogSyncer;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\App\Emulation;
@@ -22,11 +21,6 @@ class StoreLevelCatalogSyncerTest extends TestCase
      * @var Data
      */
     private $helperMock;
-
-    /**
-     * @var ScopeConfigInterface;
-     */
-    private $scopeConfigMock;
 
     /**
      * @var CatalogFactory
@@ -56,7 +50,6 @@ class StoreLevelCatalogSyncerTest extends TestCase
     protected function setUp()
     {
         $this->helperMock = $this->createMock(Data::class);
-        $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->catalogResourceFactoryMock = $this->createMock(CatalogFactory::class);
         $this->storeCatalogSyncerMock = $this->createMock(StoreCatalogSyncer::class);
         $this->catalogResourceMock = $this->createMock(Catalog::class);
@@ -64,14 +57,16 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->appEmulation = $this->createMock(Emulation::class);
         $this->storeLevelCatalogSyncer = new StoreLevelCatalogSyncer(
             $this->helperMock,
-            $this->scopeConfigMock,
-            $this->catalogResourceMock,
             $this->storeCatalogSyncerMock,
             $this->appEmulation
         );
     }
 
-    public function testNumberOfProductsIfBothAreEnabled()
+    /**
+     * @dataProvider getProducts
+     * @param $products
+     */
+    public function testNumberOfProductsIfBothAreEnabled($products)
     {
         $store1 = $this->getMockedStoresEnabled();
         $store2 = $this->getMockedStoresEnabled();
@@ -103,9 +98,6 @@ class StoreLevelCatalogSyncerTest extends TestCase
                 true
             );
 
-        $this->scopeConfigMock->expects($this->exactly(1))
-            ->method('getValue');
-
         $this->storeCatalogSyncerMock->expects($this->at(0))
             ->method('syncByStore')
             ->willReturn([0 =>'product1']);
@@ -114,18 +106,19 @@ class StoreLevelCatalogSyncerTest extends TestCase
             ->method('syncByStore')
             ->willReturn([1 => 'product2']);
 
-        $this->catalogResourceMock->expects($this->exactly(1))
-            ->method('setImportedByIds');
-
         $this->webSiteInterfaceMock->expects($this->exactly(2))
             ->method('getCode')
             ->willReturn(md5(rand()));
 
-        $result = $this->storeLevelCatalogSyncer->sync();
-        $this->assertEquals($result, $expected);
+        $result = $this->storeLevelCatalogSyncer->sync($products);
+        $this->assertEquals(count($result), $expected);
     }
 
-    public function testNumberOfProductsIfOnlyOneEnabled()
+    /**
+     * @dataProvider getProducts
+     * @param $products
+     */
+    public function testNumberOfProductsIfOnlyOneEnabled($products)
     {
         $store1 = $this->getMockedStoresEnabled();
         $store2 = $this->getMockedStoresDisabled();
@@ -157,22 +150,17 @@ class StoreLevelCatalogSyncerTest extends TestCase
                 false
             );
 
-        $this->scopeConfigMock->expects($this->exactly(1))
-            ->method('getValue');
-
         $this->storeCatalogSyncerMock->expects($this->at(0))
             ->method('syncByStore')
             ->willReturn([0 =>'product1']);
-
-        $this->catalogResourceMock->expects($this->exactly(1))
-            ->method('setImportedByIds');
 
         $this->webSiteInterfaceMock->expects($this->at(0))
             ->method('getCode')
             ->willReturn(md5(rand()));
 
-        $result = $this->storeLevelCatalogSyncer->sync();
-        $this->assertEquals($result, $expected);
+        $result = $this->storeLevelCatalogSyncer->sync($products);
+
+        $this->assertEquals(count($result), $expected);
     }
 
     private function getMockedStoresEnabled()
@@ -200,7 +188,11 @@ class StoreLevelCatalogSyncerTest extends TestCase
         ];
     }
 
-    public function testNumberOfProductsIfNoOneEnabled()
+    /**
+     * @dataProvider getProducts
+     * @param $products
+     */
+    public function testNumberOfProductsIfNoOneEnabled($products)
     {
         $store1 = $this->getMockedStoresDisabled();
         $store2 = $this->getMockedStoresDisabled();
@@ -232,24 +224,22 @@ class StoreLevelCatalogSyncerTest extends TestCase
                 false
             );
 
-        $this->scopeConfigMock->expects($this->once())
-            ->method('getValue');
-
         $this->storeCatalogSyncerMock->expects($this->never())
             ->method('syncByStore');
-
-        $this->catalogResourceMock->expects($this->exactly(1))
-            ->method('setImportedByIds');
 
         $this->webSiteInterfaceMock->expects($this->never())
             ->method('getCode')
             ->willReturn(md5(rand()));
 
-        $result = $this->storeLevelCatalogSyncer->sync();
-        $this->assertEquals($result, $expected);
+        $result = $this->storeLevelCatalogSyncer->sync($products);
+        $this->assertEquals(count($result), $expected);
     }
 
-    public function testAppEmulationIsUsedIfSyncEnabled()
+    /**
+     * @dataProvider getProducts
+     * @param $products
+     */
+    public function testAppEmulationIsUsedIfSyncEnabled($products)
     {
         $store1 = $this->getMockedStoresEnabled();
         $store2 = $this->getMockedStoresEnabled();
@@ -296,7 +286,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
             ->method('syncByStore')
             ->willReturn([1 => 'product2']);
 
-        $this->storeLevelCatalogSyncer->sync();
+        $this->storeLevelCatalogSyncer->sync($products);
     }
 
     /**
@@ -335,6 +325,20 @@ class StoreLevelCatalogSyncerTest extends TestCase
           'websiteId' => rand(1, 10),
           'storeId' => rand(1, 10),
           'code' => md5(rand())
+        ];
+    }
+
+    /**
+     * Returns possible array product combinations
+     * @return array
+     */
+    public function getProducts()
+    {
+        return [
+            [['Product 1','Product 2','Product 3']],
+            [['Product A','Product B','Product C','Product D']],
+            [['Product a','Product b']],
+            [['Product X','Product Y','Product Z','Product W']]
         ];
     }
 }

@@ -39,7 +39,7 @@ class CatalogProductAttributeSavePlugin
     ) {
         $productIds = $this->attributeHelper->getProductIds();
         if (! empty($productIds)) {
-            $this->catalogResource->setModified($productIds);
+            $this->catalogResource->setUnprocessedByIds($productIds);
         }
         return $result;
     }

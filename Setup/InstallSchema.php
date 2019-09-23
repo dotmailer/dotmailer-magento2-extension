@@ -1034,18 +1034,11 @@ class InstallSchema implements InstallSchemaInterface
             'Product Id'
         )
         ->addColumn(
-            'imported',
+            'processed',
             \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
             null,
-            ['unsigned' => true, 'nullable' => true],
-            'Product Imported'
-        )
-        ->addColumn(
-            'modified',
-            \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-            null,
-            ['unsigned' => true, 'nullable' => true],
-            'Product Modified'
+            ['unsigned' => true, 'nullable' => false],
+            'Product processed'
         )
         ->addColumn(
             'created_at',
@@ -1060,6 +1053,13 @@ class InstallSchema implements InstallSchemaInterface
             null,
             [],
             'Update Time'
+        )
+        ->addColumn(
+            'last_imported_at',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+            null,
+            [],
+            'Last imported date'
         );
     }
 
@@ -1080,16 +1080,9 @@ class InstallSchema implements InstallSchemaInterface
         ->addIndex(
             $installer->getIdxName(
                 $installer->getTable(Schema::EMAIL_CATALOG_TABLE),
-                ['imported']
+                ['processed']
             ),
-            ['imported']
-        )
-        ->addIndex(
-            $installer->getIdxName(
-                $installer->getTable(Schema::EMAIL_CATALOG_TABLE),
-                ['modified']
-            ),
-            ['modified']
+            ['processed']
         )
         ->addIndex(
             $installer->getIdxName(

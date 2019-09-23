@@ -162,7 +162,7 @@ class Product
      * Set the product data.
      *
      * @param \Magento\Catalog\Model\Product $product
-     * @param string|int|null $storeId
+     * @param string $storeId
      *
      * @return $this
      */
@@ -248,8 +248,8 @@ class Product
     /**
      * Retrieve product attributes for catalog sync.
      *
-     * @param mixed $product
-     * @param string|int|null $storeId
+     * @param \Magento\Catalog\Model\Product $product
+     * @param string $storeId
      *
      * @return null
      */

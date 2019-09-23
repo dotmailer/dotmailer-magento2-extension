@@ -1530,17 +1530,20 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Catalog Values</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogvalues</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CatalogReset</backend_model>
                 </field>
                 <field id="catalog_visibility" translate="label" sortOrder="20" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Catalog Visibility</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogvisibility</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CatalogReset</backend_model>
                     <comment>Selected visibility type products will be exported.</comment>
                 </field>
                 <field id="catalog_type" translate="label" sortOrder="30" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Catalog Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogtype</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CatalogReset</backend_model>
                     <comment>Selected product type(s) will be exported.</comment>
                 </field>
             </group>

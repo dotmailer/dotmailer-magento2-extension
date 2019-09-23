@@ -184,9 +184,9 @@ class Order implements SyncInterface
             //mark the orders as imported
             $this->orderResource->setImported($this->orderIds);
 
-            //Mark Ordered Products as Modified to be imported again
+            //Mark ordered products as unprocessed to be imported again
             $mergedProducts = $this->getAllProducts(array_merge($orders, $ordersForSingleSync));
-            $this->catalogResource->setModified($this->bunch->getProductIdsBySkuInBunch($mergedProducts));
+            $this->catalogResource->setUnprocessedByIds($this->bunch->getProductIdsBySkuInBunch($mergedProducts));
 
             unset($this->accounts[$account->getApiUsername()]);
         }

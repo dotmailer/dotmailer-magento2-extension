@@ -39,7 +39,7 @@ class UrlRewriteSavePlugin
     ) {
         $productId = (int)$this->request->getParam('product', 0);
         if ($productId) {
-            $this->catalogResource->setModified([$productId]);
+            $this->catalogResource->setUnprocessedByIds([$productId]);
         }
         return $result;
     }

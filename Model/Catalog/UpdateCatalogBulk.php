@@ -66,8 +66,7 @@ class UpdateCatalogBulk
         $newEntries = array_map(function ($id) use ($createdAt) {
             return [
                 'product_id' => $id,
-                'imported' => null,
-                'modified' => null,
+                'processed' => 0,
                 'created_at' => $createdAt
             ];
         }, $newEntryIds);
@@ -77,7 +76,7 @@ class UpdateCatalogBulk
         }
 
         if (!empty($existingProductIds)) {
-            $this->catalogResource->setModified($existingProductIds);
+            $this->catalogResource->setUnprocessedByIds($existingProductIds);
         }
     }
 
