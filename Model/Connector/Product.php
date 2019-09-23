@@ -102,11 +102,6 @@ class Product
     public $visibilityFactory;
 
     /**
-     * @var \Magento\Catalog\Model\Product\Media\ConfigFactory
-     */
-    public $mediaConfigFactory;
-
-    /**
      * @var \Magento\CatalogInventory\Model\Stock\ItemFactory
      */
     public $itemFactory;
@@ -141,14 +136,12 @@ class Product
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface,
         AttributeFactory $attributeHandler
     ) {
-        $this->mediaConfigFactory = $mediaConfigFactory;
         $this->visibilityFactory  = $visibilityFactory;
         $this->statusFactory      = $statusFactory;
         $this->helper             = $helper;
@@ -185,9 +178,7 @@ class Product
 
         $this->url = $this->urlFinder->fetchFor($product);
 
-        $mediaPath = $this->mediaConfigFactory->create()
-            ->getMediaUrl($product->getSmallImage());
-        $this->imagePath = $this->urlFinder->getPath($mediaPath);
+        $this->imagePath = $this->urlFinder->getProductSmallImageUrl($product);
 
         $this->stock = (float)number_format($this->getStockQty($product), 2, '.', '');
 
@@ -224,7 +215,6 @@ class Product
 
         unset(
             $this->itemFactory,
-            $this->mediaConfigFactory,
             $this->visibilityFactory,
             $this->statusFactory,
             $this->helper,
