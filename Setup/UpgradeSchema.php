@@ -522,11 +522,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             $catalogTable = $setup->getTable(Schema::EMAIL_CATALOG_TABLE);
 
-            // Remove 'modified' column
-            $setup->getConnection()->dropColumn(
-                $setup->getTable(Schema::EMAIL_CATALOG_TABLE),
-                'modified'
-            );
             // Remove index on 'imported' column
             $setup->getConnection()->dropIndex(
                 $catalogTable,
@@ -559,16 +554,29 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ['processed']
             );
 
-            // Add 'last_imported_at' column
+            /*
+             * Change 'modified' column to 'last_imported_at'
+             * This will set any modified = 1 rows to 0000-00-00 00:00:00 after conversion to timestamp.
+             * This in turn allows the UpgradeData script to setUnprocessed on these rows,
+             * thus ensuring modified rows are marked for sync.
+             */
             $definition = [
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                 'nullable' => true,
                 'comment' => 'Last imported date'
             ];
-            $setup->getConnection()->addColumn(
-                $setup->getTable(Schema::EMAIL_CATALOG_TABLE),
+            $setup->getConnection()->changeColumn(
+                $catalogTable,
+                'modified',
                 'last_imported_at',
                 $definition
+            );
+
+            // Add index
+            $setup->getConnection()->addIndex(
+                $catalogTable,
+                $setup->getIdxName($catalogTable, ['last_imported_at']),
+                ['last_imported_at']
             );
         }
     }
