@@ -46,7 +46,7 @@ class DefaultLevelCatalogSyncer implements CatalogSyncerInterface
         $catalogSyncEnabled = $this->helper->isCatalogSyncEnabled();
 
         if (!$enabled || !$catalogSyncEnabled) {
-            return 0;
+            return [];
         }
 
         return $this->storeCatalogSyncer->syncByStore(
