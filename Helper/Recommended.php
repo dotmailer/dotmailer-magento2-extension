@@ -86,7 +86,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Dispay type.
+     * Display type.
      *
      * @return string grid:list
      */

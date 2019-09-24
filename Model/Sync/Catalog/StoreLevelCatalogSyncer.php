@@ -4,6 +4,11 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 use Magento\Store\Model\App\Emulation;
 
+/**
+ * StoreLevelCatalogSyncer
+ *
+ * @implements CatalogSyncerInterface
+ */
 class StoreLevelCatalogSyncer implements CatalogSyncerInterface
 {
     /**
@@ -12,19 +17,10 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
     private $helper;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    private $scopeConfig;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
-     */
-    private $catalogResource;
-
-    /**
      * @var StoreCatalogSyncer
      */
     private $storeCatalogSyncer;
+
     /**
      * @var Emulation
      */
@@ -33,22 +29,16 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
     /**
      * StoreLevelCatalogSyncer constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data                 $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
-     * @param StoreCatalogSyncer                                 $storeCatalogSyncer
-     * @param Emulation                                          $appEmulation
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param StoreCatalogSyncer $storeCatalogSyncer
+     * @param Emulation $appEmulation
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         StoreCatalogSyncer $storeCatalogSyncer,
         Emulation $appEmulation
     ) {
         $this->helper = $helper;
-        $this->scopeConfig = $scopeConfig;
-        $this->catalogResource = $catalogResource;
         $this->storeCatalogSyncer = $storeCatalogSyncer;
         $this->appEmulation = $appEmulation;
     }
@@ -56,15 +46,14 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
     /**
      * Sync
      *
-     * @return int
+     * @see CatalogSyncerInterface::sync()
+     * @param array $products
+     * @return array
      */
-    public function sync()
+    public function sync($products)
     {
-        $limit = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
-        );
         $stores = $this->helper->getStores();
-        $products = [];
+        $syncedProducts = [];
 
         foreach ($stores as $store) {
             $enabled = $this->helper->isEnabled($store->getWebsiteId());
@@ -78,23 +67,16 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
             $this->appEmulation->startEnvironmentEmulation($storeId);
 
             $importType = 'Catalog_' . $store->getWebsite()->getCode() . '_' . $store->getCode();
-            $products += $this->storeCatalogSyncer->syncByStore(
+            $syncedProducts += $this->storeCatalogSyncer->syncByStore(
+                $products,
                 $storeId,
                 $store->getWebsiteId(),
-                $limit,
                 $importType
             );
 
             $this->appEmulation->stopEnvironmentEmulation();
         }
 
-        /*
-         * Sits outside of syncByStore by intention.
-         * We grab products for sync from each store and put them all into an array, then we mark them all as imported.
-         * This is to prevent products that need to be synced with multiple stores being marked as imported before they have been synced.
-         */
-        $this->catalogResource->setImportedByIds(array_keys($products));
-
-        return count($products);
+        return $syncedProducts;
     }
 }

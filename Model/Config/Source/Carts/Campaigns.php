@@ -15,7 +15,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-    
+
     /**
      * @var \Magento\Framework\Registry
      */
@@ -64,7 +64,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
                 //message
                 $fields[] = ['value' => 0, 'label' => $campaigns['message']];
             } elseif (!empty($campaigns)) {
-                //loop for all campaing options
+                //loop for all campaign options
                 foreach ($campaigns as $campaign) {
                     if (isset($campaign->name)) {
                         $fields[] = [

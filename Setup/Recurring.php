@@ -2,11 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Setup;
 
+use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ExternalFKSetup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Magento\Framework\DB\Ddl\Table;
 
 /**
  * Catalog recurring setup
@@ -24,15 +25,23 @@ class Recurring implements InstallSchemaInterface
     private $shared;
 
     /**
+     * @var IntegrationInsightsFactory
+     */
+    private $integrationInsightsFactory;
+
+    /**
      * @param ExternalFKSetup $externalFKSetup
      * @param Schema\Shared $shared
+     * @param IntegrationInsightsFactory $integrationInsightsFactory
      */
     public function __construct(
         ExternalFKSetup $externalFKSetup,
-        Schema\Shared $shared
+        Schema\Shared $shared,
+        IntegrationInsightsFactory $integrationInsightsFactory
     ) {
         $this->shared = $shared;
         $this->externalFKSetup = $externalFKSetup;
+        $this->integrationInsightsFactory = $integrationInsightsFactory;
     }
 
     /**
@@ -41,20 +50,30 @@ class Recurring implements InstallSchemaInterface
      */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
-        $installer = $setup;
-        $installer->startSetup();
+        $setup->startSetup();
 
         $this->externalFKSetup->install(
-            $installer,
+            $setup,
             'catalog_product_entity',
             'entity_id',
             Schema::EMAIL_CATALOG_TABLE,
             'product_id'
         );
-
         $this->checkAndCreateAbandonedCart($setup, $context);
 
-        $installer->endSetup();
+        $setup->endSetup();
+
+        $this->syncIntegrationData();
+    }
+
+    /**
+     * Sync integration data with Engagement Cloud
+     */
+    private function syncIntegrationData()
+    {
+        try {
+            $this->integrationInsightsFactory->create()->sync();
+        } catch (LocalizedException $e) {}
     }
 
     /**

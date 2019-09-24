@@ -100,7 +100,7 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->runReset('2017-02-09', '2017-01-10', $this->url);
 
         $this->assertSessionMessages(
-            $this->equalTo(['To Date cannot be earlier then From Date.']),
+            $this->equalTo(['To date cannot be earlier than from date.']),
             \Magento\Framework\Message\MessageInterface::TYPE_ERROR
         );
 
@@ -130,7 +130,7 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->runReset('2017-02-09', 'not valid', $this->url);
 
         $this->assertSessionMessages(
-            $this->equalTo(['From or To date is not a valid date.']),
+            $this->equalTo(['From date or to date is not valid.']),
             \Magento\Framework\Message\MessageInterface::TYPE_ERROR
         );
 

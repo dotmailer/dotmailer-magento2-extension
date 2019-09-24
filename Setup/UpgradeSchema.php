@@ -50,6 +50,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->upgradeTwoThreeSixToTwoFiveFour($setup, $context);
         $this->upgradeTwoFiveFourToThreeZeroThree($setup, $context);
         $this->upgradeThreeTwoTwo($setup, $context);
+        $this->upgradeThreeFourTwo($setup, $context);
 
         $setup->endSetup();
     }
@@ -503,6 +504,79 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $setup->getTable(Schema::EMAIL_CONTACT_TABLE),
                 'last_subscribed_at',
                 $definition
+            );
+        }
+    }
+
+    /**
+     * Changes 'imported' column to 'processed' in email_catalog
+     *
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeThreeFourTwo(
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '3.4.2', '<')) {
+
+            $catalogTable = $setup->getTable(Schema::EMAIL_CATALOG_TABLE);
+
+            // Remove index on 'imported' column
+            $setup->getConnection()->dropIndex(
+                $catalogTable,
+                'EMAIL_CATALOG_IMPORTED'
+            );
+
+            // Change 'imported' column to 'processed'
+            if ($setup->getConnection()->tableColumnExists(
+                $catalogTable,
+                'imported'
+            )) {
+                $definition = [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'nullable' => false,
+                    'unsigned' => true,
+                    'comment' => 'Product processed'
+                ];
+                $setup->getConnection()->changeColumn(
+                    $catalogTable,
+                    'imported',
+                    'processed',
+                    $definition
+                );
+            }
+
+            // Restore index
+            $setup->getConnection()->addIndex(
+                $catalogTable,
+                $setup->getIdxName($catalogTable, ['processed']),
+                ['processed']
+            );
+
+            /*
+             * Change 'modified' column to 'last_imported_at'
+             * This will set any modified = 1 rows to 0000-00-00 00:00:00 after conversion to timestamp.
+             * This in turn allows the UpgradeData script to setUnprocessed on these rows,
+             * thus ensuring modified rows are marked for sync.
+             */
+            $definition = [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                'nullable' => true,
+                'comment' => 'Last imported date'
+            ];
+            $setup->getConnection()->changeColumn(
+                $catalogTable,
+                'modified',
+                'last_imported_at',
+                $definition
+            );
+
+            // Add index
+            $setup->getConnection()->addIndex(
+                $catalogTable,
+                $setup->getIdxName($catalogTable, ['last_imported_at']),
+                ['last_imported_at']
             );
         }
     }

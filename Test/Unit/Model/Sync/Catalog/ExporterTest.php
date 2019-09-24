@@ -54,9 +54,12 @@ class ExporterTest extends TestCase
      * @param $storeId
      * @param $product1Id
      * @param $product2Id
+     * @param $productsToProcess
      */
     public function testThatExportKeysAndProductsMatches($storeId, $product1Id, $product2Id)
     {
+        $productsToProcess = $this->getMockProductsToProcess();
+
         $this->collectionFactoryMock->expects($this->once())
             ->method('create')
             ->willReturn($this->collectionMock);
@@ -73,8 +76,8 @@ class ExporterTest extends TestCase
         $products = [$productMock1, $productMock2];
 
         $this->collectionMock->expects($this->once())
-            ->method('getProductsToExportByStore')
-            ->with($storeId, 200)
+            ->method('filterProductsByStoreTypeAndVisibility')
+            ->with($storeId, $productsToProcess)
             ->willReturn($products);
 
         $this->productFactoryMock->expects($this->exactly(2))
@@ -84,7 +87,7 @@ class ExporterTest extends TestCase
                 $connectorProductMock2
             );
 
-        $actual = $this->exporter->exportCatalog($storeId, 200);
+        $actual = $this->exporter->exportCatalog($storeId, $productsToProcess);
 
         $actualExposedProduct1 = $actual[$product1Id];
         $this->assertEquals($exposedProduct1, $actualExposedProduct1);
@@ -139,6 +142,27 @@ class ExporterTest extends TestCase
             [1254,337,1],
             [2234,554,2],
             [332,2445,4]
+        ];
+    }
+
+    /**
+     * Returns product array
+     *
+     * @return array
+     */
+    public function getMockProductsToProcess()
+    {
+        return [
+            0 => '1205',
+            1 => '1206',
+            2 => '1207',
+            3 => '1208',
+            4 => '1209',
+            5 => '1210',
+            6 => '1211',
+            7 => '1212',
+            8 => '1213',
+            9 => '1214'
         ];
     }
 }

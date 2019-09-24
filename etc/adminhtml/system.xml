@@ -675,7 +675,7 @@
             <group id="feefo_feedback_engine" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
                    showInStore="0">
                 <label>Feefo Feedback Engine</label>
-                <field id="logon" translate="commment label" sortOrder="10" showInStore="0" showInWebsite="1"
+                <field id="logon" translate="comment label" sortOrder="10" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Feefo Logon</label>
                     <comment><![CDATA[This is what you provided Feefo during account setup and is usually your website domain name.]]></comment>
@@ -955,7 +955,7 @@
                     <label>Display Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Displaytype</source_model>
                 </field>
-                <field id="recenlty_viewed_items_to_display" translate="label" type="select" sortOrder="240"
+                <field id="recently_viewed_items_to_display" translate="label" type="select" sortOrder="240"
                        showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Items To Display</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Dynamic\Gridview</source_model>
@@ -1447,7 +1447,7 @@
                 </field>
                 <field id="color" translate="label" sortOrder="160" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Backgroung Color</label>
+                    <label>Background Color</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Colorpicker</frontend_model>
                 </field>
                 <field id="other_title" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
@@ -1530,17 +1530,20 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Catalog Values</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogvalues</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CatalogReset</backend_model>
                 </field>
                 <field id="catalog_visibility" translate="label" sortOrder="20" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Catalog Visibility</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogvisibility</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CatalogReset</backend_model>
                     <comment>Selected visibility type products will be exported.</comment>
                 </field>
                 <field id="catalog_type" translate="label" sortOrder="30" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Catalog Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Catalogtype</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CatalogReset</backend_model>
                     <comment>Selected product type(s) will be exported.</comment>
                 </field>
             </group>
@@ -1643,7 +1646,7 @@
                     <label>Subscriber Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Subscribersync</frontend_model>
                 </field>
-                <field id="oerder_sync" translate="label" sortOrder="90" showInStore="0" showInWebsite="1"
+                <field id="order_sync" translate="label" sortOrder="90" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Order Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Ordersync</frontend_model>

@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 /**
- * Newsletter disable susbcriber email depending on settings value.
+ * Newsletter disable subscriber email depending on settings value.
  */
 class SubscriberPlugin
 {

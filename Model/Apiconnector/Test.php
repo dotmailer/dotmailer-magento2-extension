@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 /**
- * test class for validation of the api creds.
+ * test class for validation of the api credentials.
  */
 class Test
 {

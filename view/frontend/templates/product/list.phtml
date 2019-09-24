@@ -32,7 +32,7 @@
             text-decoration: underline;
         <?php endif; ?>
         }
-        .proudct-url{
+        .product-url{
             color: <?= $block->escapeHtml($dynamicStyle['urlColor']);?>;
             font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
@@ -112,7 +112,7 @@
             <?= /* @noEscape */ $productPriceHtml; ?>
         </div>
         <div align="center">
-            <a class="proudct-url" href="<?= $block->escapeHtml($productUrl); ?>">
+            <a class="product-url" href="<?= $block->escapeHtml($productUrl); ?>">
                 <?php if ($urlText = $block->getTextForUrl($_product->getStoreId())) : ?>
                     <?= $block->escapeHtml($urlText); ?>
                 <?php else : ?>

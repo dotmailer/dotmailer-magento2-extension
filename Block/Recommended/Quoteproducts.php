@@ -109,7 +109,7 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
     }
 
     /**
-     * Diplay mode type.
+     * Display mode type.
      *
      * @return mixed|string
      */

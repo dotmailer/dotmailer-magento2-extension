@@ -66,7 +66,7 @@ class TrialSetup
     }
 
     /**
-     * Save api credentioals.
+     * Save api credentials.
      *
      * @param string $apiUser
      * @param string $apiPass

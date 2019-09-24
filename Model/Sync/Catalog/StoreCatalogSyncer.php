@@ -30,7 +30,6 @@ class StoreCatalogSyncer
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         Exporter $exporter
-
     ) {
         $this->importerFactory = $importerFactory;
         $this->helper = $helper;
@@ -40,31 +39,33 @@ class StoreCatalogSyncer
     /**
      * Sync by store
      *
-     * @param int|null $storeId
-     * @param int $websiteId
-     * @param int $limit
+     * @param array $productsToProcess
+     * @param string $storeId
+     * @param string $websiteId
      * @param string $importType
      *
      * @return array
      */
-    public function syncByStore($storeId, $websiteId, $limit, $importType)
+    public function syncByStore($productsToProcess, $storeId, $websiteId, $importType)
     {
-        $products = $this->exporter->exportCatalog($storeId, $limit);
+        $products = $this->exporter->exportCatalog($storeId, $productsToProcess);
 
-        $success = $this->importerFactory->create()
-            ->registerQueue(
-                $importType,
-                $products,
-                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                $websiteId
-            );
+        if ($products) {
+            $success = $this->importerFactory->create()
+                ->registerQueue(
+                    $importType,
+                    $products,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                    $websiteId
+                );
 
-        if ($success) {
-            return $products;
-        } else {
-            $pid = implode(",", array_keys($products));
-            $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Store($storeId) / Product Ids($pid)";
-            $this->helper->log($msg);
+            if ($success) {
+                return $products;
+            } else {
+                $pid = implode(",", array_keys($products));
+                $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Store($storeId) / Product Ids($pid)";
+                $this->helper->log($msg);
+            }
         }
 
         return [];

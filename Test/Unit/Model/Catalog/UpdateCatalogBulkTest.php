@@ -116,7 +116,7 @@ class UpdateCatalogBulkTest extends TestCase
             ->method('bulkProductImport');
 
         $this->resourceCatalogMock->expects($this->never())
-            ->method('setModified');
+            ->method('setUnprocessedByIds');
 
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
     }
@@ -134,7 +134,7 @@ class UpdateCatalogBulkTest extends TestCase
             ->method('bulkProductImport');
 
         $this->resourceCatalogMock->expects($this->atLeastOnce())
-            ->method('setModified');
+            ->method('setUnprocessedByIds');
 
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
     }
@@ -153,7 +153,7 @@ class UpdateCatalogBulkTest extends TestCase
             ->method('bulkProductImport');
 
         $this->resourceCatalogMock->expects($this->atLeastOnce())
-            ->method('setModified');
+            ->method('setUnprocessedByIds');
 
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
     }

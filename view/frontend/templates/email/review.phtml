@@ -34,7 +34,7 @@ $website = $block->getWebsite();
             text-decoration: underline;
         <?php endif; ?>
         }
-        .proudct-url{
+        .product-url{
             color: <?= $block->escapeHtml($dynamicStyle['urlColor']);?>;
             font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
@@ -95,7 +95,7 @@ $website = $block->getWebsite();
                     <?= mb_substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
             <div align="center">
                 <?php $url = $block->getReviewItemUrl($item->getId()) . $helper->getReviewReminderAnchor($website); ?>
-                <a class="proudct-url" href="<?= $block->escapeUrl($url); ?>">
+                <a class="product-url" href="<?= $block->escapeUrl($url); ?>">
                     <?= $block->escapeHtml(__('Leave a review')); ?>
                 </a>
             </div>

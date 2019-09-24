@@ -17,16 +17,16 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 
 ## 3.4.1
 
-###### Improvements
-- We’ve improved the consistency of the log messages we output in the context of API connections.
-- Merchants wishing to remove the /pub folder from synced URLs can now do so via the admin (Developer > Import Settings).
-- Abandoned cart campaigns can now be configured for guests at store level.
+###### What's new
+- We've improved the consistency of the log messages we output for API connections.
+- It's now possible to remove the /pub folder from synced URLs. Do this in Developer > Import Settings of the admin.
+- You can now configure abandoned cart campaigns for guests at the store level.
 
-###### Fixes
-- A missing label was preventing custom attributes from saving updates in Magento 2.3.0 and above; this has been fixed.
-- Purchased products will now be marked as modified, so that their stock value is updated at the next catalog sync.
-- Easy email capture now functions correctly at website level. 
-- Easy email capture for newsletter sign ups will now not override an email address already stored against an active quote.
+###### Bug fixes
+- A missing label was preventing custom attributes from saving updates in Magento 2.3.0 and above. We fixed this.
+- Purchased products are now marked as modified. This means the stock level updates the next time the catalog syncs.
+- Easy email capture now works correctly at website level. 
+- Easy email capture for newsletter sign-ups no longer overrides an email address that is stored against an active quote.
 
 ## 3.4.0
 
@@ -340,7 +340,7 @@ This version has been released in Magento's own repository and is available with
 - A customer’s import status wasn’t getting reset after making an order; it is now
 - We’ve fixed the process for abandoned carts when the first one is disabled
 - It wasn’t possible to save a condition in exclusion rules in Magento lower than v2.1.6
-- Malconfigured stores can no longer cause email capture scripts to make POST requests over an incorrect HTTP protocol; it’s now made over HTTPS
+- Misconfigured stores can no longer cause email capture scripts to make POST requests over an incorrect HTTP protocol; it’s now made over HTTPS
 - When saving API credentials, the value in config for connector/API/endpoint was getting saved for ‘website’ scope and not ‘default’ scope; this is no longer the case
 - Subscriber status wasn’t getting updated in Magento when changed in Engagement Cloud; it is now
 - Catalog report mass delete action no longer shows an exception.
@@ -414,7 +414,7 @@ This version has been released in Magento's own repository and is available with
 
 ###### Fixes
  - Subscribers with datafields issues.
- - Campaign bulk setProccessing array conversion.
+ - Campaign bulk setProcessing array conversion.
  - Abandoned cart price fetch from quote.
  - Send id is set for all failed campaign records.
  - Abandoned cart with wrong email contact_id.
@@ -459,7 +459,7 @@ This version has been released in Magento's own repository and is available with
  - Order sync can have duplicate emails for guests.
  - Cannot automap(button) when using different websites.
  - Failed send campaign in bulk containing duplicated contact_ids(dotmailer @AndrewGretton).
- - Campaign report messages/sendId for suppresed/failed contacts.
+ - Campaign report messages/sendId for suppressed/failed contacts.
 
 ## V2.1.6
 
@@ -471,15 +471,15 @@ This version has been released in Magento's own repository and is available with
 
 ###### Features
  - Admin Log file viewer.
- - Subsribers now have datafields.
+ - Subscribers now have datafields.
  
 ######Fixes
  - ACL for reports menu items.
- - API creds always for default level.
+ - API credentials always for default level.
  - Compatibility _getChildrenElementsHtml with 2.1.3.
  - Unrecognized getFirstItem for last review date.
  - Go to cart button should redirect to quote's store.
- - Get addressBooks using the website level creds.
+ - Get addressBooks using the website level credentials.
  - DI when initializing Zend_Mail_Transport_Sendmail.
  - Fix js for the dotmailer configuration page.
  - Unserialize error for orders sync. 
@@ -488,7 +488,7 @@ This version has been released in Magento's own repository and is available with
  - Remove modification for guest quote items.
  
 ###### Improvements 
- - Now can be added multiple dimention condition for Rules.
+ - Now can be added multiple dimension condition for Rules.
 
 ## V2.1.4
 ###### Bugs Fixes
@@ -502,14 +502,14 @@ This version has been released in Magento's own repository and is available with
  - Coupon EDC expiration date. You can set the expiration date for coupon included into the URL
  - Improve finding guests. Guest will be added in bulk to the table.
  - Add new automation for first customer order event.
- - EDC include all product types to have an image and inlcude the price range available for the product.   
+ - EDC include all product types to have an image and include the price range available for the product.   
 
 ###### Fixes
  - EDC fixed the prefix for table names.
  - Fix unsubscribeEmail register already exists.
  - New installation do not get the customers mark as subscribers.
  - Automation program enrollment without unserialized is failing.
- - Exclution Rules conditional mapping fix.
+ - Exclusion Rules conditional mapping fix.
  - Fix the case sensitive namespace.
  - Wishlist not batching.
 

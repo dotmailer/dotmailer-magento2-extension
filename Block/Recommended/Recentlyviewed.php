@@ -22,7 +22,7 @@ class Recentlyviewed extends \Dotdigitalgroup\Email\Block\Recommended
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
-    public $recommnededHelper;
+    public $recommendedHelper;
 
     /**
      * @var \Magento\Customer\Model\SessionFactory
@@ -65,7 +65,7 @@ class Recentlyviewed extends \Dotdigitalgroup\Email\Block\Recommended
     ) {
         $this->sessionFactory    = $sessionFactory;
         $this->helper            = $helper;
-        $this->recommnededHelper = $recommended;
+        $this->recommendedHelper = $recommended;
         $this->priceHelper       = $priceHelper;
         $this->storeManager      = $this->_storeManager;
         $this->catalog           = $catalog;
@@ -93,7 +93,7 @@ class Recentlyviewed extends \Dotdigitalgroup\Email\Block\Recommended
         $productsToDisplay = [];
         $mode = $this->getRequest()->getActionName();
         $customerId = (int) $this->getRequest()->getParam('customer_id');
-        $limit = (int) $this->recommnededHelper->getDisplayLimitByMode($mode);
+        $limit = (int) $this->recommendedHelper->getDisplayLimitByMode($mode);
 
         //login customer to receive the recent products
         $session = $this->sessionFactory->create();
@@ -128,7 +128,7 @@ class Recentlyviewed extends \Dotdigitalgroup\Email\Block\Recommended
      */
     public function getMode()
     {
-        return $this->recommnededHelper->getDisplayType();
+        return $this->recommendedHelper->getDisplayType();
     }
 
     /**

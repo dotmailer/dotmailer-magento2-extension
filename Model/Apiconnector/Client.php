@@ -22,7 +22,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_CONTACT_WITH_CONSENT_AND_PREFERENCES = '/v2/contacts/with-consent-and-preferences';
     const REST_CONTACTS_IMPORT = '/v2/contacts/import/';
     const REST_ADDRESS_BOOKS = '/v2/address-books/';
-    const REST_DATA_FILEDS = '/v2/data-fields';
+    const REST_DATA_FIELDS = '/v2/data-fields';
     const REST_TRANSACTIONAL_DATA_IMPORT = '/v2/contacts/transactional-data/import/';
     const REST_TRANSACTIONAL_DATA = '/v2/contacts/transactional-data/';
     const REST_CAMPAIGN_SEND = '/v2/campaigns/send';
@@ -38,7 +38,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
     const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
 
-    //rest error responces
+    //rest error responses
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. Please contact support. ERROR_APIUSAGE_EXCEEDED';
     const API_ERROR_TRANS_ALLOWANCE = 'TransactionalDataAllowanceInMegabytes';
     const API_ERROR_EMAIL_NOT_VALID = 'Email is not a valid email address. ERROR_PARAMETER_INVALID';
@@ -173,7 +173,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $this->getApiUsername() . ':' . $this->getApiPassword()
         );
 
-        //case the deprication of @filename for uploading
+        //case the deprecation of @filename for uploading
         if (function_exists('curl_file_create')) {
             $args['file']
                 = curl_file_create(
@@ -182,7 +182,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 );
             curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
         } else {
-            //standart use of curl file
+            //standard use of curl file
             curl_setopt($ch, CURLOPT_POSTFIELDS, [
                 'file' => '@' . $this->fileHelper->getFilePathWithFallback($filename),
             ]);
@@ -486,7 +486,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $visibility = 'public',
         $defaultValue = false
     ) {
-        $url = $this->getApiEndpoint() . self::REST_DATA_FILEDS;
+        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS;
         //set default value for the numeric datatype
         if ($type == 'numeric' && !$defaultValue) {
             $defaultValue = 0;
@@ -526,7 +526,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getDataFields()
     {
-        $url = $this->getApiEndpoint() . self::REST_DATA_FILEDS;
+        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS;
         $this->setUrl($url)
             ->setVerb('GET');
 
@@ -1266,6 +1266,32 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
 
         return $response;
+    }
+
+    /**
+     * Send integration insight data
+     *
+     * @param array $insightData
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function postIntegrationInsightData(array $insightData)
+    {
+        $response = $this->setUrl($this->getApiEndpoint() . self::REST_TRANSACTIONAL_DATA_IMPORT . 'Integrations')
+            ->setVerb('POST')
+            ->buildPostBody([[
+                'Key' => $insightData['recordId'],
+                'ContactIdentifier' => 'account',
+                'Json' => json_encode($insightData),
+            ]])
+            ->execute();
+
+        if (!$response || isset($response->message)) {
+            $this->addClientLog('Error sending integration insight data');
+            return false;
+        }
+
+        return true;
     }
 
     /**

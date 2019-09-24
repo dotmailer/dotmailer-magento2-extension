@@ -129,7 +129,7 @@ class BunchTest extends TestCase
     }
 
     /**
-     * Generates Random Sku's
+     * Generates Random Skus
      * @param int $numberOfProducts
      * @return array
      */

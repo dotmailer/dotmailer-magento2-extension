@@ -25,7 +25,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @var \Magento\Cron\Model\ScheduleFactory
      */
-    private $schelduleFactory;
+    private $scheduleFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory
@@ -85,7 +85,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     ) {
         $this->config                   = $config;
         $this->expressionFactory        = $expressionFactory;
-        $this->schelduleFactory         = $schedule;
+        $this->scheduleFactory         = $schedule;
         $this->customerCollection       = $customerCollectionFactory;
         $this->subscribersCollection    = $subscriberCollection;
         $this->contactCollectionFactory = $contactCollectionFactory;
@@ -928,7 +928,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getDateLastCronRun($cronJob)
     {
-        $collection = $this->schelduleFactory->create()
+        $collection = $this->scheduleFactory->create()
             ->getCollection()
             ->addFieldToFilter('status', \Magento\Cron\Model\Schedule::STATUS_SUCCESS)
             ->addFieldToFilter('job_code', $cronJob);

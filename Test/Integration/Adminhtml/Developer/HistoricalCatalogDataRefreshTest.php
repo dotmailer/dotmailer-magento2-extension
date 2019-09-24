@@ -65,7 +65,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
         $data = [
             'product_id' => '1',
-            'imported' => '1',
+            'processed' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
@@ -75,7 +75,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
 
-        $collection->addFieldToFilter('imported', ['null' => true]);
+        $collection->addFieldToFilter('processed', 0);
 
         $this->assertEquals(1, $collection->getSize());
     }
@@ -89,19 +89,19 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
         $data = [
             'product_id' => '1',
-            'imported' => '1',
+            'processed' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('imported', ['null' => true]);
+        $collection->addFieldToFilter('processed', 0);
 
         $this->runReset('2017-02-09', '2017-01-10', $this->url);
 
         $this->assertSessionMessages(
-            $this->equalTo(['To Date cannot be earlier then From Date.']),
+            $this->equalTo(['To date cannot be earlier than from date.']),
             \Magento\Framework\Message\MessageInterface::TYPE_ERROR
         );
 
@@ -117,19 +117,19 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
         $data = [
             'product_id' => '1',
-            'imported' => '1',
+            'processed' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('imported', ['null' => true]);
+        $collection->addFieldToFilter('processed', 0);
 
         $this->runReset('2017-02-09', 'not valid', $this->url);
 
         $this->assertSessionMessages(
-            $this->equalTo(['From or To date is not a valid date.']),
+            $this->equalTo(['From date or to date is not valid.']),
             \Magento\Framework\Message\MessageInterface::TYPE_ERROR
         );
 
@@ -147,7 +147,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $data = array_map(function ($product) {
             return [
                 'product_id' => $product['entity_id'],
-                'imported' => '1',
+                'processed' => '1',
                 'created_at' => date('Y-m-d'),
             ];
         }, array_slice($productCollection->getData(), 0, 3));
@@ -158,7 +158,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('imported', ['null' => true]);
+        $collection->addFieldToFilter('processed', 0);
 
         $this->runReset('', '', $this->url);
 
@@ -174,14 +174,14 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
         $data = [
             'product_id' => '1',
-            'imported' => '1',
+            'processed' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('imported', ['null' => true]);
+        $collection->addFieldToFilter('processed', 0);
 
         $this->runReset('2017-02-10', '', $this->url);
 
@@ -197,14 +197,14 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
 
         $data = [
             'product_id' => '1',
-            'imported' => '1',
+            'processed' => '1',
             'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
         $collection = $this->objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('imported', ['null' => true]);
+        $collection->addFieldToFilter('processed', 0);
 
         $this->runReset('', '2017-02-10', $this->url);
 

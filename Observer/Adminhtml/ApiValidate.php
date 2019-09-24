@@ -2,8 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
+use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
+
 /**
- * Validate api when saving creds in admin.
+ * Validate api when saving credentials in admin.
  */
 class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 {
@@ -33,24 +35,32 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     private $test;
 
     /**
+     * @var IntegrationInsightsFactory
+     */
+    private $integrationInsightsFactory;
+
+    /**
      * ApiValidate constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
+     * @param IntegrationInsightsFactory $integrationInsightsFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\App\Config\Storage\Writer $writer
+        \Magento\Framework\App\Config\Storage\Writer $writer,
+        IntegrationInsightsFactory $integrationInsightsFactory
     ) {
         $this->test           = $test;
         $this->helper         = $data;
         $this->writer         = $writer;
         $this->context        = $context;
         $this->messageManager = $context->getMessageManager();
+        $this->integrationInsightsFactory = $integrationInsightsFactory;
     }
 
     /**
@@ -71,12 +81,17 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
             return $this;
         }
 
-        $apiUsername = isset($groups['api']['fields']['username']['value'])
-            ? $groups['api']['fields']['username']['value'] : false;
-        $apiPassword = isset($groups['api']['fields']['password']['value'])
-            ? $groups['api']['fields']['password']['value'] : false;
+        $apiUsername = $groups['api']['fields']['username']['value'] ?? false;
+        $apiPassword = $groups['api']['fields']['password']['value'] ?? false;
 
-        $this->validateAccount($apiUsername, $apiPassword);
+        if ($apiUsername && $apiPassword) {
+            $isValidAccount = $this->isValidAccount($apiUsername, $apiPassword);
+            if ($isValidAccount) {
+                // send integration data
+                $this->integrationInsightsFactory->create()
+                    ->sync();
+            }
+        }
 
         return $this;
     }
@@ -84,21 +99,20 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     /**
      * Validate account
      *
-     * @param string|boolean $apiUsername
-     * @param string|boolean $apiPassword
-     * @return void
+     * @param string $apiUsername
+     * @param string $apiPassword
+     * @return bool
      */
-    private function validateAccount($apiUsername, $apiPassword)
+    private function isValidAccount(string $apiUsername, string $apiPassword): bool
     {
-        //skip if the inherit option is selected
-        if ($apiUsername && $apiPassword) {
-            $this->helper->log('----VALIDATING ACCOUNT---');
-            $isValid = $this->test->validate($apiUsername, $apiPassword);
-            if ($isValid) {
-                $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));
-            } else {
-                $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
-            }
+        $this->helper->log('----VALIDATING ACCOUNT---');
+
+        if ($this->test->validate($apiUsername, $apiPassword)) {
+            $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));
+            return true;
         }
+
+        $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
+        return false;
     }
 }

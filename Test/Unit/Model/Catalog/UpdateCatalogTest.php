@@ -35,7 +35,7 @@ class UpdateCatalogTest extends TestCase {
         $this->catalogResourceMock = $this->createMock(Catalog::class);
         $this->catalogFactoryMock = $this->createMock(CatalogFactory::class);
         $this->catalogMock = $this->getMockBuilder(ModelCatalog::class)
-                                    ->setMethods(['loadProductById','getId','getImported','setProductId'])
+                                    ->setMethods(['loadProductById','getId','getProcessed','setProductId'])
                                     ->disableOriginalConstructor()
                                     ->getMock();
 
@@ -61,7 +61,7 @@ class UpdateCatalogTest extends TestCase {
             ->willReturn(2455);
 
         $this->catalogMock->expects($this->once())
-            ->method('getImported')
+            ->method('getProcessed')
             ->willReturn(1);
 
         $this->catalogResourceMock->expects($this->once())

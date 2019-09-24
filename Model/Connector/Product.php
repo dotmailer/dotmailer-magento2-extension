@@ -77,6 +77,11 @@ class Product
     public $websites = [];
 
     /**
+     * @var string
+     */
+    public $type = '';
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     public $helper;
@@ -95,11 +100,6 @@ class Product
      * @var \Magento\Catalog\Model\Product\VisibilityFactory
      */
     public $visibilityFactory;
-
-    /**
-     * @var \Magento\Catalog\Model\Product\Media\ConfigFactory
-     */
-    public $mediaConfigFactory;
 
     /**
      * @var \Magento\CatalogInventory\Model\Stock\ItemFactory
@@ -136,14 +136,12 @@ class Product
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface,
         AttributeFactory $attributeHandler
     ) {
-        $this->mediaConfigFactory = $mediaConfigFactory;
         $this->visibilityFactory  = $visibilityFactory;
         $this->statusFactory      = $statusFactory;
         $this->helper             = $helper;
@@ -157,7 +155,7 @@ class Product
      * Set the product data.
      *
      * @param \Magento\Catalog\Model\Product $product
-     * @param string|int|null $storeId
+     * @param string $storeId
      *
      * @return $this
      */
@@ -170,6 +168,8 @@ class Product
         $this->status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());
 
+        $this->type = ucfirst($product->getTypeId());
+
         $options = $this->visibilityFactory->create()
             ->getOptionArray();
         $this->visibility = (string)$options[$product->getVisibility()];
@@ -178,9 +178,7 @@ class Product
 
         $this->url = $this->urlFinder->fetchFor($product);
 
-        $mediaPath = $this->mediaConfigFactory->create()
-            ->getMediaUrl($product->getSmallImage());
-        $this->imagePath = $this->urlFinder->getPath($mediaPath);
+        $this->imagePath = $this->urlFinder->getProductSmallImageUrl($product);
 
         $this->stock = (float)number_format($this->getStockQty($product), 2, '.', '');
 
@@ -217,7 +215,6 @@ class Product
 
         unset(
             $this->itemFactory,
-            $this->mediaConfigFactory,
             $this->visibilityFactory,
             $this->statusFactory,
             $this->helper,
@@ -241,8 +238,8 @@ class Product
     /**
      * Retrieve product attributes for catalog sync.
      *
-     * @param mixed $product
-     * @param string|int|null $storeId
+     * @param \Magento\Catalog\Model\Product $product
+     * @param string $storeId
      *
      * @return null
      */
