@@ -148,7 +148,7 @@ class UrlFinder
     {
         if (
             $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
-            && $product->getSmallImage() == 'no_selection'
+            && (empty($product->getSmallImage()) || $product->getSmallImage() == 'no_selection')
             && $parentProduct = $this->getParentProduct($product)
         ) {
             return $parentProduct;
