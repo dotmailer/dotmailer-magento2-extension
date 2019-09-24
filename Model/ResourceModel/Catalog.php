@@ -298,7 +298,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 'AND (last_imported_at IS NOT NULL OR processed = 1)'
             ];
         } else {
-            $where[] = 'last_imported_at IS NOT NULL OR processed= 1';
+            $where[] = 'last_imported_at IS NOT NULL OR processed = 1';
         }
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CATALOG_TABLE),

@@ -121,6 +121,8 @@ class UpgradeData implements UpgradeDataInterface
             $this->config->reinit();
         }
 
+        $this->upgradeThreeFourTwo($setup, $context);
+
         $installer->endSetup();
     }
 
@@ -202,6 +204,31 @@ class UpgradeData implements UpgradeDataInterface
                     $id
                 );
             }
+        }
+    }
+
+    /**
+     * Maps 'imported' data to 'processed' in email_catalog
+     *
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeThreeFourTwo(
+        ModuleDataSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '3.4.2', '<')) {
+
+            $setup->getConnection()->update(
+                $setup->getTable(Schema::EMAIL_CATALOG_TABLE),
+                [
+                    'processed' => 0,
+                    'last_imported_at' => new \Zend_Db_Expr('null')
+                ],
+                [
+                    'last_imported_at IS NOT NULL'
+                ]
+            );
         }
     }
 }

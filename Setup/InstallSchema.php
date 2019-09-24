@@ -1097,6 +1097,13 @@ class InstallSchema implements InstallSchemaInterface
                 ['updated_at']
             ),
             ['updated_at']
+        )
+        ->addIndex(
+            $installer->getIdxName(
+                $installer->getTable(Schema::EMAIL_CATALOG_TABLE),
+                ['last_imported_at']
+            ),
+            ['last_imported_at']
         );
     }
 
