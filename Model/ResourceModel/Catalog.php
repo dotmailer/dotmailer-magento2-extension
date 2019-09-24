@@ -294,8 +294,9 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $conn = $this->getConnection();
         if ($from && $to) {
             $where = [
-                '(created_at >= ?' .$from. ' 00:00:00' .' AND created_at <= ?'. $to . ' 23:59:59)',
-                'AND (last_imported_at IS NOT NULL OR processed = 1)'
+                'created_at >= ?' => $from . ' 00:00:00',
+                'created_at <= ?' => $to . ' 23:59:59',
+                'last_imported_at IS NOT NULL OR processed = 1'
             ];
         } else {
             $where[] = 'last_imported_at IS NOT NULL OR processed = 1';
