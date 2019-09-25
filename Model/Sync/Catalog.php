@@ -68,7 +68,12 @@ class Catalog implements SyncInterface
      */
     public function sync(\DateTime $from = null)
     {
-        $response    = ['success' => true, 'message' => 'Done.'];
+        $response = ['success' => true, 'message' => 'Done.'];
+
+        if (!$this->shouldProceed()) {
+            return $response;
+        }
+
         $this->start = microtime(true);
         $limit = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
@@ -132,5 +137,32 @@ class Catalog implements SyncInterface
     {
         return $this->catalogCollectionFactory->create()
             ->getProductsToProcess($limit);
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldProceed()
+    {
+        // check default level
+        $apiEnabled = $this->helper->isEnabled();
+        $catalogSyncEnabled = $this->helper->isCatalogSyncEnabled();
+
+        if ($apiEnabled && $catalogSyncEnabled) {
+            return true;
+        }
+
+        // not enabled at default, check each website, exiting as soon as we find an enabled website
+        $websites = $this->helper->getWebsites();
+        foreach ($websites as $website) {
+
+            $apiEnabled = $this->helper->isEnabled($website);
+            $catalogSyncEnabled = $this->helper->isCatalogSyncEnabled($website);
+
+            if ($apiEnabled && $catalogSyncEnabled) {
+                return true;
+            }
+        }
+        return false;
     }
 }
