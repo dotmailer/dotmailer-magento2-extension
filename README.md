@@ -64,7 +64,6 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Product attributes with multiple values which are mapped to data fields in Engagement Cloud are now passed as a comma-separated list, rather than ‘Array’.
 - We have fixed an issue with the abandoned cart automation cron not exiting if the cart is empty, which was previously throwing an exception.
 - We have updated the Feefo dynamic content block to use the newer JSON API, as the block previously used the discontinued Feefo reviews XML feed.
-- We have fixed an issue with the friendly from name not being added to transactional mails in certain Magento versions.
 - The importer sync will no longer process imports for websites configured to have Engagement Cloud integration disabled.
 - External dynamic content blocks will now return an HTTP 204 status if no content is available.
 
