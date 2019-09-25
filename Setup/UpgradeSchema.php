@@ -522,10 +522,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             $catalogTable = $setup->getTable(Schema::EMAIL_CATALOG_TABLE);
 
-            // Remove index on 'imported' column
+            // Remove indexes on 'imported' and 'modified' columns
             $setup->getConnection()->dropIndex(
                 $catalogTable,
                 'EMAIL_CATALOG_IMPORTED'
+            );
+            $setup->getConnection()->dropIndex(
+                $catalogTable,
+                'EMAIL_CATALOG_MODIFIED'
             );
 
             // Change 'imported' column to 'processed'
@@ -560,17 +564,22 @@ class UpgradeSchema implements UpgradeSchemaInterface
              * This in turn allows the UpgradeData script to setUnprocessed on these rows,
              * thus ensuring modified rows are marked for sync.
              */
-            $definition = [
-                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                'nullable' => true,
-                'comment' => 'Last imported date'
-            ];
-            $setup->getConnection()->changeColumn(
+            if ($setup->getConnection()->tableColumnExists(
                 $catalogTable,
-                'modified',
-                'last_imported_at',
-                $definition
-            );
+                'modified'
+            )) {
+                $definition = [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                    'nullable' => true,
+                    'comment' => 'Last imported date'
+                ];
+                $setup->getConnection()->changeColumn(
+                    $catalogTable,
+                    'modified',
+                    'last_imported_at',
+                    $definition
+                );
+            }
 
             // Add index
             $setup->getConnection()->addIndex(
