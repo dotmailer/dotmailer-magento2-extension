@@ -15,6 +15,22 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 3.4.2
+
+###### What's new
+- We've introduced a new _Integrations_ Insight data collection that gathers metadata relating to the Magento installation currently connected to the Engagement Cloud account.
+- We've added a _type_ field to the schema for catalog Insight data.
+- In catalog sync, child products without an image will now try to use their parent's image.
+- We've updated our module dependencies in preparation for the release of Magento 2.3.3.
+
+###### Bug fixes
+- We've fixed a bug with catalog sync which prevented a complete sync for merchants syncing a filtered subset of products. Products are now marked as _processed_ even if they are not imported.
+- Private marketing preferences will now not be displayed to logged-in subscribers.
+- We've fixed an error relating to invalid custom attribute values. 
+- We've fixed an issue with the friendly from name not being added to transactional emails in certain Magento versions.
+- Date range filters for resetting data in **Developer > Reset Sync Options** have been repaired.
+- We've fixed a number of spelling errors in the codebase, including CSS selectors in some view templates. Merchants who have extended or modified our templates should review these before upgrading.
+
 ## 3.4.1
 
 ###### What's new
