@@ -72,6 +72,14 @@ class CatalogTest extends TestCase
         $this->resourceCatalogMock = $this->createMock(ResourceCatalog::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
 
+        $this->helperMock->expects($this->any())
+            ->method('isEnabled')
+            ->willReturn(true);
+
+        $this->helperMock->expects($this->any())
+            ->method('isCatalogSyncEnabled')
+            ->willReturn(true);
+
         $this->catalog = new Catalog(
             $this->helperMock,
             $this->scopeConfigInterfaceMock,

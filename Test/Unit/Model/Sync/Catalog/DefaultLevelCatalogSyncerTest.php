@@ -64,7 +64,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
         $result = $this->defaultCatalogSyncer->sync($products);
 
-        $this->assertNotEquals($result, 0);
+        $this->assertNotEmpty($result);
         $this->assertEquals($result, $products);
     }
 
@@ -86,7 +86,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
         $result = $this->defaultCatalogSyncer->sync($products);
 
-        $this->assertEquals($result, 0);
+        $this->assertEmpty($result);
     }
 
     /**
@@ -107,7 +107,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
         $result = $this->defaultCatalogSyncer->sync($products);
 
-        $this->assertEquals($result, 0);
+        $this->assertEmpty($result);
     }
 
     /**
@@ -128,7 +128,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
         $result = $this->defaultCatalogSyncer->sync($products);
 
-        $this->assertEquals($result, 0);
+        $this->assertEmpty($result);
     }
 
     /**
