@@ -308,7 +308,7 @@
                     <label>Manage custom attributes</label>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Adminhtml\Source\Customer\Attributes\Select</source_model>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Customdatafields</frontend_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\CustomDataFields</frontend_model>
                 </field>
             </group>
             <group id="dynamic_datafield" translate="comment label" sortOrder="30" showInDefault="1" showInWebsite="1"
@@ -633,7 +633,7 @@
                     <label>Customer</label>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\Customdatafields</frontend_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\OrderStatusEnrolment</frontend_model>
                 </field>
             </group>
             <group id="review_settings" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
@@ -1226,6 +1226,17 @@
                     <label>Product Price Alert</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\EmailTemplateFieldValue</backend_model>
+                </field>
+                <field id="additional_templates_title" translate="label" sortOrder="725" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Additional Templates</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="additional_templates" translate="label" sortOrder="730" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
+                    <label>Template mapping</label>
+                    <comment><![CDATA[Mapped templates will be available to select under any Magento template dropdown.]]></comment>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\EmailTemplates\AdditionalTemplateMappings</backend_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\EmailTemplates\AdditionalTemplateMapping</frontend_model>
                 </field>
             </group>
         </section>
