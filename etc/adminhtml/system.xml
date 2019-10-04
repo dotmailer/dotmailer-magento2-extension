@@ -1233,7 +1233,7 @@
                 </field>
                 <field id="additional_templates" translate="label" sortOrder="730" showInDefault="1" showInWebsite="1"
                        showInStore="0">
-                    <label>Template mapping</label>
+                    <label>Sync additional campaigns as templates</label>
                     <comment><![CDATA[Mapped templates will be available to select under any Magento template dropdown.]]></comment>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\EmailTemplates\AdditionalTemplateMappings</backend_model>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\EmailTemplates\AdditionalTemplateMapping</frontend_model>

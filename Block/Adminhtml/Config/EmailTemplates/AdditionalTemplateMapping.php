@@ -12,7 +12,7 @@ class AdditionalTemplateMapping extends AbstractCustomSelectTable
     /**
      * @var string
      */
-    protected $buttonLabel = 'Add New Campaign';
+    protected $buttonLabel = 'Sync New Campaign';
 
     /**
      * @var CampaignsFactory
