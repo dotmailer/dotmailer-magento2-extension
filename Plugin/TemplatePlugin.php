@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
+use Dotdigitalgroup\Email\Model\Email\Template;
 
 /**
  * Class TemplatePlugin
@@ -27,16 +28,24 @@ class TemplatePlugin
     private $registry;
 
     /**
+     * @var Template
+     */
+    private $templateModel;
+
+    /**
      * TemplatePlugin constructor.
      * @param Transactional $transactionalHelper
      * @param \Magento\Framework\Registry $registry
+     * @param Template $templateModel
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Transactional $transactionalHelper,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        Template $templateModel
     ) {
         $this->transactionalHelper = $transactionalHelper;
         $this->registry = $registry;
+        $this->templateModel = $templateModel;
     }
 
     /**
@@ -86,7 +95,7 @@ class TemplatePlugin
                 $result = $this->compressString($result);
             }
             if ($field == 'template_id') {
-                $this->saveTemplateIdInRegistry($result);
+                $this->templateModel->saveTemplateIdInRegistry($result);
             }
         }
 
@@ -102,7 +111,7 @@ class TemplatePlugin
     {
         //save template id for email sending to update the sender name and sender email saved on template level.
         if (isset($result['template_id'])) {
-            $result = $this->saveTemplateIdInRegistry($result['template_id']);
+            $result = $this->templateModel->saveTemplateIdInRegistry($result['template_id']);
         }
         if (isset($result['template_text'])) {
             $templateText = $result['template_text'];
@@ -136,7 +145,7 @@ class TemplatePlugin
                     $result = $this->decompressString($result);
                 }
                 if ($field == 'template_id') {
-                    $this->saveTemplateIdInRegistry($result);
+                    $this->templateModel->saveTemplateIdInRegistry($result);
                 }
             }
         }
@@ -152,10 +161,10 @@ class TemplatePlugin
     private function getResultIfArgsEmptyForPreviewAndOther($result)
     {
         if (isset($result['template_id'])) {
-            $this->saveTemplateIdInRegistry($result['template_id']);
+            $this->templateModel->saveTemplateIdInRegistry($result['template_id']);
         } elseif (is_numeric($result)) {
             // $result will be int for template id in 2.1.x
-            $this->saveTemplateIdInRegistry($result);
+            $this->templateModel->saveTemplateIdInRegistry($result);
         }
 
         if (isset($result['template_text'])) {
@@ -210,16 +219,5 @@ class TemplatePlugin
     private function decompressString($templateText)
     {
         return gzuncompress(base64_decode($templateText));
-    }
-
-    /**
-     * Template id register for email sending.
-     * @param int $templateId
-     */
-    private function saveTemplateIdInRegistry($templateId)
-    {
-        if (! $this->registry->registry('dotmailer_current_template_id')) {
-             $this->registry->register('dotmailer_current_template_id', $templateId);
-        }
     }
 }
