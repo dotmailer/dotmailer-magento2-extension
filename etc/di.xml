@@ -86,6 +86,7 @@
     <preference for="Magento\Config\Model\Config\Structure\SearchInterface" type="Magento\Config\Model\Config\Structure" />
     <preference for="Magento\Sales\Api\Data\OrderSearchResultInterface" type="Magento\Sales\Model\ResourceModel\Order\Collection" />
     <preference for="Magento\SalesRule\Model\Coupon\CodegeneratorInterface" type="Dotdigitalgroup\Email\Model\SalesRule\DotmailerCouponCodeGenerator" />
+    <preference for="Magento\Framework\Mail\Template\SenderResolverInterface" type="Dotdigitalgroup\Email\Model\Email\DotdigitalSenderResolver" />
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>

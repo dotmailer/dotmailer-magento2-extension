@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Email;
 
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
+use Magento\Setup\Exception;
 
 class Template extends \Magento\Framework\DataObject implements SyncInterface
 {
@@ -200,7 +201,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     private $scopeConfig;
 
     /**
-     * @var \Magento\Email\Model\ResourceModel\TemplateFactory
+     * @var \Magento\Email\Model\ResourceModel\Template
      */
     private $templateResource;
 
@@ -208,6 +209,11 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
      * @var \Magento\Email\Model\TemplateFactory
      */
     private $templateFactory;
+
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    private $registry;
 
     /**
      * @var array
@@ -222,6 +228,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
      * @param \Magento\Email\Model\TemplateFactory $templateFactory
      * @param \Magento\Email\Model\ResourceModel\Template $templateResource
      * @param \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templateCollectionFactory
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -229,7 +236,8 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Email\Model\TemplateFactory $templateFactory,
         \Magento\Email\Model\ResourceModel\Template $templateResource,
-        \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templateCollectionFactory
+        \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templateCollectionFactory,
+        \Magento\Framework\Registry $registry
     ) {
         $data = [];
         $this->helper = $helper;
@@ -238,6 +246,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
         $this->templateFactory = $templateFactory;
         $this->templateResource = $templateResource;
         $this->templateCollectionFactory  = $templateCollectionFactory;
+        $this->registry = $registry;
 
         parent::__construct($data);
     }
@@ -408,5 +417,94 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
         }
 
         return $template;
+    }
+
+    /**
+     * @param $templateId
+     *
+     * @return \Magento\Email\Model\Template
+     */
+    public function loadTemplate($templateId)
+    {
+        $template = $this->templateFactory->create();
+        $this->templateResource->load($template, $templateId);
+
+        return $template;
+    }
+
+    /**
+     * Store template id in registry to look up in SenderResolverPlugin.
+     * @param int $templateId
+     */
+    public function saveTemplateIdInRegistry($templateId)
+    {
+        if (!$this->registry->registry('dotmailer_current_template_id')) {
+            $this->registry->register('dotmailer_current_template_id', $templateId);
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function loadTemplateIdFromRegistry()
+    {
+        return $this->registry->registry('dotmailer_current_template_id');
+    }
+
+    /**
+     * Deletes additional Templates
+     *
+     * @param array $campaignIdsNotIn   Campaign templates not to remove
+     * @return array
+     */
+    public function deleteAdditionalTemplates(array $campaignIdsNotIn = [])
+    {
+        $templates = array_map(
+            function ($template) {
+                return $template += [
+                    'ddg_campaign_id' => (int) filter_var($template['template_code'], FILTER_SANITIZE_NUMBER_INT),
+                ];
+            },
+            $this->templateCollectionFactory
+                ->create()
+                ->addFieldToFilter('orig_template_code', 'additional_templates')
+                ->getData()
+        );
+
+        if (empty($templates)) {
+            return $campaignIdsNotIn;
+        }
+
+        // filter templates to remove
+        $removeTemplates = !empty($campaignIdsNotIn)
+            ? array_filter($templates, function ($template) use ($campaignIdsNotIn) {
+                return !in_array($template['ddg_campaign_id'], $campaignIdsNotIn);
+            })
+            : $templates;
+
+        // get local template IDs to remove
+        $removeTemplateIds = array_column($removeTemplates, 'template_id');
+        if (empty($removeTemplateIds)) {
+            return array_diff($campaignIdsNotIn, array_column($templates, 'ddg_campaign_id'));
+        }
+
+        try {
+            $this->templateResource
+                ->getConnection()
+                ->delete(
+                    $this->templateResource->getMainTable(),
+                    [sprintf('template_id IN (%s)', implode(',', $removeTemplateIds))]
+                );
+        } catch (\Exception $e) {
+            $this->helper->debug('Error deleting additional templates', [
+                'template_ids' => $removeTemplateIds,
+            ]);
+        }
+
+        // return campaign IDs which were not already in db
+        return array_diff(
+            array_column($templates, 'ddg_campaign_id'),
+            array_column($removeTemplates, 'ddg_campaign_id')
+        );
     }
 }
