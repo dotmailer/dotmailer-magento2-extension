@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
-use Dotdigitalgroup\Email\Model\Email\Template;
+use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Registry;
 use Zend\Mime\Mime;
@@ -23,24 +23,24 @@ class MessagePlugin
     private $registry;
 
     /**
-     * @var Template
+     * @var TemplateFactory
      */
-    private $templateModel;
+    private $templateFactory;
 
     /**
      * MessagePlugin constructor.
      * @param Registry $registry
      * @param Transactional $transactionalHelper
-     * @param Template $templateModel
+     * @param TemplateFactory $templateFactory
      */
     public function __construct(
         Registry $registry,
         Transactional $transactionalHelper,
-        Template $templateModel
+        TemplateFactory $templateFactory
     ) {
         $this->registry = $registry;
         $this->transactionalHelper = $transactionalHelper;
-        $this->templateModel = $templateModel;
+        $this->templateFactory = $templateFactory;
     }
 
     /**
@@ -51,7 +51,8 @@ class MessagePlugin
      */
     public function beforeSetBody(MessageInterface $message, $body)
     {
-        $templateId = $this->templateModel->loadTemplateIdFromRegistry();
+        $dotTemplate = $this->templateFactory->create();
+        $templateId = $dotTemplate->loadTemplateIdFromRegistry();
         if ($templateId && $this->shouldIntercept()) {
             if (is_string($body) && ! $message instanceof \Zend_Mail) {
                 return [self::createMimeFromString($body)];

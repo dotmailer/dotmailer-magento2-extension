@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Email;
 
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
-use Magento\Setup\Exception;
 
 class Template extends \Magento\Framework\DataObject implements SyncInterface
 {
