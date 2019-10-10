@@ -59,22 +59,19 @@ class AdditionalTemplateMappings extends ArraySerialized
 
         $values = $this->getValue();
         if (empty(array_filter($values))) {
-            $dotTemplate->deleteAdditionalTemplates();
             return parent::beforeSave();
         }
 
         // get campaign IDs
         $templateCampaignIds = array_unique(array_column($values, 'campaign'));
 
-        // delete any which are no longer required
-        $templatesToAdd = $dotTemplate->deleteAdditionalTemplates($templateCampaignIds);
 
         $templateConfigId = $this->getField();
         $scope = $this->getScope();
         $scopeId = $this->getScopeId();
 
         //email template mapped
-        foreach (array_intersect($templatesToAdd, $templateCampaignIds) as $templateCampaignId) {
+        foreach ($templateCampaignIds as $templateCampaignId) {
             $dotTemplate->saveTemplateWithConfigPath(
                 $templateConfigId,
                 $templateCampaignId,
