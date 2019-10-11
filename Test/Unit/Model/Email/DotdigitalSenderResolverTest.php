@@ -5,8 +5,8 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Email;
 use Dotdigitalgroup\Email\Helper\Transactional;
 use Dotdigitalgroup\Email\Model\Email\DotdigitalSenderResolver;
 use Dotdigitalgroup\Email\Model\Email\Template;
+use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 use Magento\Email\Model\Template\SenderResolver;
-use Magento\Email\Model\TemplateFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
 use PHPUnit\Framework\TestCase;
@@ -63,7 +63,7 @@ class DotdigitalSenderResolverTest extends TestCase
         $this->dotdigitalSenderResolver = new DotdigitalSenderResolver(
             $this->scopeConfigMock,
             $this->registryMock,
-            $this->templateModelMock,
+            $this->templateFactoryMock,
             $this->transactionalHelperMock
         );
     }
@@ -73,6 +73,10 @@ class DotdigitalSenderResolverTest extends TestCase
         $storeId = 1;
         $this->mockRegistry(null, $storeId);
         $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
+
+        $this->templateFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->templateModelMock);
 
         $this->templateModelMock->expects($this->never())
             ->method('loadTemplate');
@@ -86,6 +90,10 @@ class DotdigitalSenderResolverTest extends TestCase
         $this->mockRegistry(123456, $storeId);
         $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, false);
 
+        $this->templateFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->templateModelMock);
+
         $this->templateModelMock->expects($this->never())
             ->method('loadTemplate');
 
@@ -96,6 +104,10 @@ class DotdigitalSenderResolverTest extends TestCase
     {
         $templateId = 123456;
         $storeId = 1;
+
+        $this->templateFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->templateModelMock);
 
         $this->templateModelMock->expects($this->once())
             ->method('loadTemplateIdFromRegistry')
@@ -118,6 +130,10 @@ class DotdigitalSenderResolverTest extends TestCase
 
         $this->mockRegistry($templateId, $storeId);
         $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
+
+        $this->templateFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->templateModelMock);
 
         $this->templateModelMock->expects($this->once())
             ->method('loadTemplateIdFromRegistry')

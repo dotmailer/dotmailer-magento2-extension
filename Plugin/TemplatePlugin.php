@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
-use Dotdigitalgroup\Email\Model\Email\Template;
+use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 
 /**
  * Class TemplatePlugin
@@ -28,24 +28,24 @@ class TemplatePlugin
     private $registry;
 
     /**
-     * @var Template
+     * @var TemplateFactory
      */
-    private $templateModel;
+    private $templateFactory;
 
     /**
      * TemplatePlugin constructor.
      * @param Transactional $transactionalHelper
      * @param \Magento\Framework\Registry $registry
-     * @param Template $templateModel
+     * @param TemplateFactory $templateFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Transactional $transactionalHelper,
         \Magento\Framework\Registry $registry,
-        Template $templateModel
+        TemplateFactory $templateFactory
     ) {
         $this->transactionalHelper = $transactionalHelper;
         $this->registry = $registry;
-        $this->templateModel = $templateModel;
+        $this->templateFactory = $templateFactory;
     }
 
     /**
@@ -95,7 +95,8 @@ class TemplatePlugin
                 $result = $this->compressString($result);
             }
             if ($field == 'template_id') {
-                $this->templateModel->saveTemplateIdInRegistry($result);
+                $dotTemplate = $this->templateFactory->create();
+                $dotTemplate->saveTemplateIdInRegistry($result);
             }
         }
 
@@ -111,7 +112,8 @@ class TemplatePlugin
     {
         //save template id for email sending to update the sender name and sender email saved on template level.
         if (isset($result['template_id'])) {
-            $result = $this->templateModel->saveTemplateIdInRegistry($result['template_id']);
+            $dotTemplate = $this->templateFactory->create();
+            $result = $dotTemplate->saveTemplateIdInRegistry($result['template_id']);
         }
         if (isset($result['template_text'])) {
             $templateText = $result['template_text'];
@@ -145,7 +147,8 @@ class TemplatePlugin
                     $result = $this->decompressString($result);
                 }
                 if ($field == 'template_id') {
-                    $this->templateModel->saveTemplateIdInRegistry($result);
+                    $dotTemplate = $this->templateFactory->create();
+                    $dotTemplate->saveTemplateIdInRegistry($result);
                 }
             }
         }
@@ -160,11 +163,13 @@ class TemplatePlugin
      */
     private function getResultIfArgsEmptyForPreviewAndOther($result)
     {
+        $dotTemplate = $this->templateFactory->create();
+
         if (isset($result['template_id'])) {
-            $this->templateModel->saveTemplateIdInRegistry($result['template_id']);
+            $dotTemplate->saveTemplateIdInRegistry($result['template_id']);
         } elseif (is_numeric($result)) {
             // $result will be int for template id in 2.1.x
-            $this->templateModel->saveTemplateIdInRegistry($result);
+            $dotTemplate->saveTemplateIdInRegistry($result);
         }
 
         if (isset($result['template_text'])) {

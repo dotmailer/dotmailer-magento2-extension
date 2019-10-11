@@ -6,7 +6,6 @@ use Dotdigitalgroup\Email\Helper\Transactional;
 use Magento\Email\Model\Template\SenderResolver;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
-use Dotdigitalgroup\Email\Model\Email\Template;
 
 /**
  * Class SenderResolver
@@ -21,9 +20,9 @@ class DotdigitalSenderResolver extends SenderResolver
     private $registry;
 
     /**
-     * @var Template
+     * @var TemplateFactory
      */
-    private $templateModel;
+    private $templateFactory;
 
     /**
      * @var Transactional
@@ -35,17 +34,17 @@ class DotdigitalSenderResolver extends SenderResolver
      *
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Registry $registry
-     * @param Template $templateModel
+     * @param TemplateFactory $templateFactory
      * @param Transactional $transactionalHelper
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         Registry $registry,
-        Template $templateModel,
+        TemplateFactory $templateFactory,
         Transactional $transactionalHelper
     ) {
         $this->registry = $registry;
-        $this->templateModel = $templateModel;
+        $this->templateFactory = $templateFactory;
         $this->transactionalHelper = $transactionalHelper;
         parent::__construct(
             $scopeConfig
@@ -62,10 +61,11 @@ class DotdigitalSenderResolver extends SenderResolver
      */
     public function resolve($sender, $scopeId = null)
     {
-        $templateId = $this->templateModel->loadTemplateIdFromRegistry();
+        $dotTemplate = $this->templateFactory->create();
+        $templateId = $dotTemplate->loadTemplateIdFromRegistry();
 
         if ($templateId && $this->shouldIntercept()) {
-            $template = $this->templateModel->loadTemplate($templateId);
+            $template = $dotTemplate->loadTemplate($templateId);
             if ($this->isDotmailerTemplateCode($template->getTemplateCode())) {
                 return [
                     'email' => $template->getTemplateSenderEmail(),

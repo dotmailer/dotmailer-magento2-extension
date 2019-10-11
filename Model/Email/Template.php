@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Email;
 
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
-use Magento\Setup\Exception;
 
 class Template extends \Magento\Framework\DataObject implements SyncInterface
 {
@@ -450,61 +449,5 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     {
         return $this->registry->registry('dotmailer_current_template_id');
     }
-
-    /**
-     * Deletes additional Templates
-     *
-     * @param array $campaignIdsNotIn   Campaign templates not to remove
-     * @return array
-     */
-    public function deleteAdditionalTemplates(array $campaignIdsNotIn = [])
-    {
-        $templates = array_map(
-            function ($template) {
-                return $template += [
-                    'ddg_campaign_id' => (int) filter_var($template['template_code'], FILTER_SANITIZE_NUMBER_INT),
-                ];
-            },
-            $this->templateCollectionFactory
-                ->create()
-                ->addFieldToFilter('orig_template_code', 'additional_templates')
-                ->getData()
-        );
-
-        if (empty($templates)) {
-            return $campaignIdsNotIn;
-        }
-
-        // filter templates to remove
-        $removeTemplates = !empty($campaignIdsNotIn)
-            ? array_filter($templates, function ($template) use ($campaignIdsNotIn) {
-                return !in_array($template['ddg_campaign_id'], $campaignIdsNotIn);
-            })
-            : $templates;
-
-        // get local template IDs to remove
-        $removeTemplateIds = array_column($removeTemplates, 'template_id');
-        if (empty($removeTemplateIds)) {
-            return array_diff($campaignIdsNotIn, array_column($templates, 'ddg_campaign_id'));
-        }
-
-        try {
-            $this->templateResource
-                ->getConnection()
-                ->delete(
-                    $this->templateResource->getMainTable(),
-                    [sprintf('template_id IN (%s)', implode(',', $removeTemplateIds))]
-                );
-        } catch (\Exception $e) {
-            $this->helper->debug('Error deleting additional templates', [
-                'template_ids' => $removeTemplateIds,
-            ]);
-        }
-
-        // return campaign IDs which were not already in db
-        return array_diff(
-            array_column($templates, 'ddg_campaign_id'),
-            array_column($removeTemplates, 'ddg_campaign_id')
-        );
-    }
+    
 }
