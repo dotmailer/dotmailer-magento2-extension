@@ -56,8 +56,6 @@ class Connect extends AbstractDeveloper
         $this->auth         = $auth;
 
         parent::__construct($context, $data);
-
-        $this->setRefreshToken();
     }
 
     /**
@@ -73,7 +71,7 @@ class Connect extends AbstractDeveloper
      */
     protected function getButtonLabel()
     {
-        return ($this->refreshToken) ? __('Disconnect') : __('Connect');
+        return $this->getRefreshToken() ? __('Disconnect') : __('Connect');
     }
 
     /**
@@ -83,9 +81,9 @@ class Connect extends AbstractDeveloper
     {
         $url = $this->escapeUrl($this->getAuthoriseUrl());
 
-        return ($this->refreshToken) ? $this->escapeUrl($this->getUrl(
-            'dotdigitalgroup_email/studio/disconnect'
-        )) : $url;
+        return $this->getRefreshToken()
+            ? $this->escapeUrl($this->getUrl('dotdigitalgroup_email/studio/disconnect'))
+            : $url;
     }
 
     /**
@@ -143,8 +141,12 @@ class Connect extends AbstractDeveloper
      *
      * @return string
      */
-    private function setRefreshToken()
+    private function getRefreshToken()
     {
-        $this->refreshToken = $this->auth->getUser()->getRefreshToken();
+        if ($this->refreshToken) {
+            return $this->refreshToken;
+        }
+
+        return $this->refreshToken = $this->auth->getUser()->getRefreshToken();
     }
 }
