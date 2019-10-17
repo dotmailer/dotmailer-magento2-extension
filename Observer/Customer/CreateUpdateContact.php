@@ -102,7 +102,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         $storeId = $customer->getStoreId();
 
         //check if enabled
-        if (!$this->helper->isEnabled($websiteId)) {
+        if (!$this->helper->isEnabled($websiteId) || PHP_SAPI === 'cli') {
             return $this;
         }
 
