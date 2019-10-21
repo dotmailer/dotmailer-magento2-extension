@@ -45,8 +45,12 @@ class Callback extends \Magento\Framework\App\Action\Action
     private $resultPageFactory;
 
     /**
+     * @var \Magento\Framework\Encryption\EncryptorInterface
+     */
+    private $encryptor;
+
+    /**
      * Callback constructor.
-     *
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @param \Magento\Backend\Helper\Data $backendData
      * @param \Dotdigitalgroup\Email\Helper\Config $config
@@ -54,8 +58,9 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\User\Api\Data\UserInterfaceFactory $adminUser
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper,
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         \Magento\User\Model\ResourceModel\User $userResource,
@@ -66,7 +71,8 @@ class Callback extends \Magento\Framework\App\Action\Action
         \Magento\User\Api\Data\UserInterfaceFactory $adminUser,
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         $this->adminHelper      = $backendData;
         $this->config           = $config;
@@ -76,6 +82,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         $this->userResource     = $userResource;
         $this->helper           = $helper;
         $this->resultPageFactory = $resultPageFactory;
+        $this->encryptor = $encryptor;
 
         parent::__construct($context);
     }
@@ -133,7 +140,7 @@ class Callback extends \Magento\Framework\App\Action\Action
             } elseif (isset($response->refresh_token)) {
                 //save the refresh token to the admin user
                 $adminUser->setRefreshToken(
-                    $this->helper->encryptor->encrypt($response->refresh_token)
+                    $this->encryptor->encrypt($response->refresh_token)
                 );
 
                 $this->userResource->save($adminUser);

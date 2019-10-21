@@ -20,6 +20,7 @@ class IntegrationInsightsTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {
         $this->mutableScopeConfig = ObjectManager::getInstance()->get(MutableScopeConfigInterface::class);
+        $this->mockClientFactory()->instantiateDataHelper();
     }
 
     /**
@@ -51,22 +52,17 @@ class IntegrationInsightsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Assert that the data is sent to EC
-     *
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \ReflectionException
      */
     public function testClientDataSent()
     {
-        $this->setApiConfigFlags();
-        $this->mutableScopeConfig->setValue(Config::XML_PATH_CONNECTOR_INTEGRATION_INSIGHTS_ENABLED, 1, 'default');
-
-        $this->mockClientFactory();
+        $this->setApiConfigFlags([], 0);
         $this->mockClient->expects($this->once())
             ->method('postIntegrationInsightData');
 
-        $this->instantiateDataHelper();
+        $this->mutableScopeConfig->setValue(Config::XML_PATH_CONNECTOR_INTEGRATION_INSIGHTS_ENABLED, 1, 'default');
 
         /** @var IntegrationInsights $integrationInsights */
         $integrationInsights = ObjectManager::getInstance()->create(IntegrationInsights::class);

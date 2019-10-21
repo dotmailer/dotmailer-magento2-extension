@@ -8,6 +8,9 @@
                         <resource id="Dotdigitalgroup_Email::automation_studio" title="Automation Studio" sortOrder="10"/>
                         <resource id="Dotdigitalgroup_Email::exclusion_rules" title="Exclusion Rules" sortOrder="20"/>
                     </resource>
+                    <resource id="Magento_Backend::marketing_communications">
+                        <resource id="Dotdigitalgroup_Email::iframe" title="Chat" sortOrder="10"/>
+                    </resource>
                 </resource>
                 <resource id="Magento_Reports::report">
                     <resource id="Dotdigitalgroup_Email::reports" title="Engagement Cloud Email">

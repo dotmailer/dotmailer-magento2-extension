@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Test/etc/testSchema.xsd">
+    <test name="ButtonsAreDisabledWhenApiCredsAreInvalidTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Chat configuration buttons depend on valid API credentials"/>
+            <title value="Check buttons are disabled"/>
+            <description value="Disable chat configuration when invalid API credentials are entered."/>
+            <severity value="MAJOR"/>
+            <group value="dotdigitalChat"/>
+        </annotations>
+
+        <before>
+            <!-- Log in and set API credentials -->
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+
+            <!-- Fill in invalid API credentials and enable -->
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData">
+                <argument name="ecApiUser" value="{{_CREDS.ec_api_user_invalid}}"/>
+                <argument name="ecApiPassword" value="{{_CREDS.ec_api_password_invalid}}"/>
+            </actionGroup>
+            <actionGroup ref="setChatStatus" stepKey="enableChat"/>
+        </before>
+
+        <after>
+            <!-- Reset and log out -->
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminEngagementCloudChatSettingsPage.url}}" stepKey="dotDigitalChatSettingsOnAssert"/>
+        <comment userInput="Checking the correct button class is added after chat is enabled" stepKey="buttonClassComment"/>
+        <waitForPageLoad stepKey="checkButtonClassWait"/>
+        <selectOption selector="{{AdminEngagementCloudChatSettingsSection.apiEnabled}}" userInput="1" stepKey="enableChatOnAssert"/>
+        <seeElement selector=".ddg-disabled-button" stepKey="seeDisabledConfigureButtons"/>
+    </test>
+</tests>

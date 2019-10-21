@@ -14,6 +14,9 @@ use Magento\TestFramework\Helper\Bootstrap;
 
 trait MocksApiResponses
 {
+    /**
+     * @var string
+     */
     private static $clientFactoryClass = ClientFactory::class;
 
     /**

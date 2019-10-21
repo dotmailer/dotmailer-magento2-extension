@@ -4,7 +4,7 @@
        xsi:noNamespaceSchemaLocation="../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Test/etc/testSchema.xsd">
     <test name="ApiDisabledNoRedirectToPrefCenterTest">
         <annotations>
-            <features value="dotmailer-magento2-extension"/>
+            <features value="Engagement Cloud module"/>
             <stories value="If API disabled, plugin shouldn't redirect to preference page."/>
             <title value="You should not be able to see dotmailer preferences page if api is disabled."/>
             <description value="You should not be able to see dotmailer preferences page if api is disabled."/>

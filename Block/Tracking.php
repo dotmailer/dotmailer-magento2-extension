@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Block;
 
 /**
  * Tracking block
+ *
  * @api
  */
 class Tracking extends \Magento\Framework\View\Element\Template

@@ -94,11 +94,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $contactResource;
 
     /**
-     * @var \Magento\Framework\Encryption\EncryptorInterface
-     */
-    public $encryptor;
-
-    /**
      * @var \Magento\Quote\Model\ResourceModel\Quote
      */
     private $quoteResource;
@@ -153,7 +148,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\User\Model\ResourceModel\User $userResource
-     * @var \Magento\Framework\Encryption\EncryptorInterface $encryptor
      * @param Logger $logger
      */
     public function __construct(
@@ -177,7 +171,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\User\Model\ResourceModel\User $userResource,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
         Logger $logger,
         RequestInterface $request
     ) {
@@ -200,7 +193,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->quoteFactory = $quoteFactory;
         $this->userResource = $userResource;
         $this->contactResource = $contactResource;
-        $this->encryptor = $encryptor;
         $this->logger = $logger;
         $this->request = $request;
 
@@ -211,8 +203,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Get api credentials enabled.
      *
      * @param int $website
-     *
      * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function isEnabled($website = 0)
     {
@@ -363,8 +355,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get website selected in admin.
-     *
-     * @return \Magento\Store\Api\Data\WebsiteInterface
+     * @return \Magento\Store\Api\Data\WebsiteInterface|null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getWebsite()
     {
@@ -374,6 +366,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $this->storeManager->getWebsite();
+    }
+
+    /**
+     * @param $websiteId
+     * @return \Magento\Store\Api\Data\WebsiteInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getWebsiteById($websiteId)
+    {
+        return $this->storeManager->getWebsite($websiteId);
     }
 
     /**
@@ -426,8 +428,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $value
      * @param string $scope
      * @param int $scopeId
-     *
-     * @return null
      */
     public function saveConfigData($path, $value, $scope, $scopeId)
     {
@@ -458,8 +458,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $scope
      * @param int $scopeId
-     *
-     * @return null
      */
     public function disableTransactionalDataConfig($scope, $scopeId)
     {
@@ -518,8 +516,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $message
      * @param array $extra
-     *
-     * @return null
      */
     public function error($message, $extra = [])
     {
@@ -699,10 +695,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Api client by website.
      *
-     * @param int $website
+     * @param Magento\Store\Model\Website|int $website
      * @param string $username
      * @param string $password
-     *
      *
      * @return \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
@@ -846,11 +841,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiPassword($website = 0)
     {
-        $value = $this->getWebsiteConfig(
+        return $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
             $website
         );
-        return $this->encryptor->decrypt($value);
     }
 
     /**
