@@ -5,7 +5,7 @@
             <api>
                 <enabled>0</enabled>
                 <username></username>
-                <password></password>
+                <password backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
             </api>
         </connector_api_credentials>
         <sync_settings>
@@ -145,6 +145,7 @@
         <transactional_emails>
             <ddg_transactional>
                 <enabled>0</enabled>
+                <password backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
             </ddg_transactional>
         </transactional_emails>
         <connector_configuration>
@@ -317,5 +318,14 @@
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
         </connector_developer_settings>
+        <chat_api_credentials>
+            <credentials>
+                <api_space_id></api_space_id>
+                <api_token></api_token>
+            </credentials>
+            <settings>
+                <enabled>0</enabled>
+            </settings>
+        </chat_api_credentials>
     </default>
 </config>

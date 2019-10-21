@@ -14,6 +14,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\User\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
 use Magento\User\Model\ResourceModel\User;
+use Magento\Framework\Encryption\EncryptorInterface;
 
 /**
  * @codeCoverageIgnore
@@ -46,26 +47,33 @@ class UpgradeData implements UpgradeDataInterface
     private $userResource;
 
     /**
+     * @var EncryptorInterface
+     */
+    private $encryptor;
+
+    /**
      * UpgradeData constructor.
-     *
      * @param Data $helper
      * @param CollectionFactory $configCollectionFactory
      * @param ReinitableConfigInterface $config
      * @param UserCollectionFactory $userCollectionFactory
      * @param User $userResource
+     * @param EncryptorInterface $encryptor
      */
     public function __construct(
         Data $helper,
         CollectionFactory $configCollectionFactory,
         ReinitableConfigInterface $config,
         UserCollectionFactory $userCollectionFactory,
-        User $userResource
+        User $userResource,
+        EncryptorInterface $encryptor
     ) {
         $this->configCollectionFactory = $configCollectionFactory;
         $this->helper = $helper;
         $this->config = $config;
         $this->userCollectionFactory = $userCollectionFactory;
         $this->userResource = $userResource;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -147,7 +155,7 @@ class UpgradeData implements UpgradeDataInterface
     private function encryptAndSaveRefreshToken($user)
     {
         $user->setRefreshToken(
-            $this->helper->encryptor->encrypt($user->getRefreshToken())
+            $this->encryptor->encrypt($user->getRefreshToken())
         );
         $this->userResource->save($user);
     }
@@ -199,7 +207,7 @@ class UpgradeData implements UpgradeDataInterface
             if ($value) {
                 $this->helper->saveConfigData(
                     $path,
-                    $this->helper->encryptor->encrypt($value),
+                    $this->encryptor->encrypt($value),
                     $scope,
                     $id
                 );

@@ -2,163 +2,125 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
+use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\Stdlib\DateTime\Timezone;
+use Dotdigitalgroup\Email\Model\Chat\Config;
+use Dotdigitalgroup\Email\Model\Trial\TrialSetup;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
+use Dotdigitalgroup\Email\Model\Chat\EmailFlagManager;
+
 class Accountcallback extends \Magento\Framework\App\Action\Action
 {
-
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
-
-    /**
-     * @var \Magento\Framework\Json\Helper\Data
-     */
-    private $jsonHelper;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Trial\TrialSetup
-     */
-    private $trialSetup;
-
-    /**
-     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
-     */
-    private $remoteAddress;
-
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\Timezone
+     * @var Timezone
      */
     private $timezone;
 
     /**
-     * Accountcallback constructor.
-     *
-     * @param \Magento\Framework\App\Action\Context                   $context
-     * @param \Dotdigitalgroup\Email\Helper\Data                      $helper
-     * @param \Magento\Framework\Json\Helper\Data                     $jsonHelper
-     * @param \Magento\Store\Model\StoreManagerInterface              $storeManager
-     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress    $remoteAddress
-     * @param \Dotdigitalgroup\Email\Model\Trial\TrialSetup           $trialSetup
-     * @param \Magento\Framework\Stdlib\DateTime\Timezone             $timezone
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var TrialSetup
+     */
+    private $trialSetup;
+
+    /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
+     * @var EmailFlagManager
+     */
+    private $flagManager;
+
+    /**
+     * AccountCallBack constructor
+     * @param Context $context
+     * @param Timezone $timezone
+     * @param Config $config
+     * @param TrialSetupFactory $trialSetupFactory
+     * @param Data $helper
+     * @param EmailFlagManager $flagManager
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
-        \Dotdigitalgroup\Email\Model\Trial\TrialSetup $trialSetup,
-        \Magento\Framework\Stdlib\DateTime\Timezone $timezone
+        Context $context,
+        Timezone $timezone,
+        Config $config,
+        TrialSetupFactory $trialSetupFactory,
+        Data $helper,
+        EmailFlagManager $flagManager
     ) {
-        $this->timezone      = $timezone;
-        $this->helper        = $helper;
-        $this->jsonHelper    = $jsonHelper;
-        $this->storeManager  = $storeManager;
-        $this->remoteAddress = $remoteAddress;
-        $this->trialSetup    = $trialSetup;
+        $this->timezone = $timezone;
+        $this->config = $config;
+        $this->trialSetup = $trialSetupFactory->create();
+        $this->helper = $helper;
+        $this->flagManager = $flagManager;
 
         parent::__construct($context);
     }
 
     /**
-     * Execute method.
+     * Process the callback
      *
-     * @return void
+     * @return ResponseInterface|ResultInterface
      */
     public function execute()
     {
         $params = $this->getRequest()->getParams();
+        $this->helper->debug('Account callback request', $params);
 
-        //if no value to any of the required params send error response
-        if (empty($params['apiUser']) ||
-            empty($params['pass']) ||
-            empty($params['code']) ||
-            ! $this->isCodeValid($params['code'])
-        ) {
-            $this->sendAjaxResponse(true);
-        } else {
-            $this->processAccountCallback($params);
-        }
-    }
-
-    /**
-     * @param array $params
-     */
-    private function processAccountCallback($params)
-    {
-        //Remove temporary passcode
-        $this->helper->resourceConfig->deleteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE,
-            'default',
-            0
-        );
-
-        //Save api end point
-        if (isset($params['apiEndpoint'])) {
-            $this->trialSetup->saveApiEndPoint($params['apiEndpoint']);
-        } else { //Save empty value to endpoint. New endpoint will be fetched when first api call made.
-            $this->trialSetup->saveApiEndPoint('');
+        if (!isset($params['code']) || !$this->trialSetup->isCodeValid($params['code'])) {
+            return $this->sendErrorResponse();
         }
 
-        $apiConfigStatus = $this->trialSetup->saveApiCreds($params['apiUser'], $params['pass']);
-        $dataFieldsStatus = $this->trialSetup->setupDataFields($params['apiUser'], $params['pass']);
-        $addressBookStatus = $this->trialSetup->createAddressBooks($params['apiUser'], $params['pass']);
+        // save credentials and reinit cache
+        $this->config->saveApiCredentials($params['apiusername'], $params['apipassword'], $params['apiendpoint'] ?? null);
+
+        if ($chatAccountCreated = (!empty($params['apispaceid']) && !empty($params['token']))) {
+            $this->config->saveChatApiSpaceIdAndToken($params['apispaceid'], $params['token']);
+        }
+
+        // enable EC in Magento
+        $this->config->enableEngagementCloud()
+            ->reinitialiseConfig();
+
+        // set up EC account
+        $dataFieldsStatus = $this->trialSetup->setupDataFields();
+        $addressBookStatus = $this->trialSetup->createAddressBooks();
         $syncStatus = $this->trialSetup->enableSyncForTrial();
 
-        if ($apiConfigStatus && $dataFieldsStatus && $addressBookStatus && $syncStatus) {
-            $this->sendAjaxResponse(false);
-        } else {
-            $this->sendAjaxResponse(true);
-        }
+        $this->helper->log('Engagement Cloud account creation', [
+            'api_username' => $params['apiusername'],
+            'api_endpoint' => $params['apiendpoint'],
+            'chat_account' => $chatAccountCreated
+                ? ['api_space_id' => $params['apispaceid']]
+                : false,
+            'data_field_set_up' => $dataFieldsStatus,
+            'address_books_set_up' => $addressBookStatus,
+            'syncs_enabled_for_trial' => $syncStatus,
+        ]);
+
+        return $this->getResponse()
+            ->setHttpResponseCode(201)
+            ->sendHeaders();
     }
 
     /**
-     * Send ajax response.
+     * Send error response
      *
-     * @param string $error
-     * @param string $msg
-     * @return void
+     * @return ResponseInterface
      */
-    private function sendAjaxResponse($error)
+    private function sendErrorResponse()
     {
-        $message = [
-            'err' => $error
-        ];
-
-        $this->getResponse()
-            ->setHeader('Content-type', 'application/javascript', true)
-            ->setBody(
-                'signupCallback(' . $this->jsonHelper->jsonEncode($message) . ')'
-            )
-            ->sendResponse();
-    }
-
-    /**
-     * Validate code
-     *
-     * @param string $code
-     * @return bool
-     */
-    public function isCodeValid($code)
-    {
-        $now = $this->timezone->date()->format(\DateTime::ATOM);
-        $expiryDateString = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY
-        );
-
-        if ($now >= $expiryDateString) {
-            return false;
-        }
-
-        $codeFromConfig = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE
-        );
-
-        return $codeFromConfig === $code;
+        return $this->getResponse()
+            ->setHttpResponseCode(401)
+            ->sendHeaders();
     }
 }

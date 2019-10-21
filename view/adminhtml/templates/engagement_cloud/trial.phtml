@@ -1,0 +1,14 @@
+<?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\EngagementCloudTrialInterface $block */?>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Dotdigitalgroup_Email/js/engagementCloudEmbed": {
+                "iframeSrc": "<?= $block->getAction() ?>"
+            },
+            "Dotdigitalgroup_Email/js/engagementCloudTrial": {
+                "callback": "<?= $block->getLocalCallbackUrl() ?>",
+                "micrositeUrl": "<?= $block->getTrialSignupHostAndScheme() ?>"
+            }
+        }
+    }
+</script>

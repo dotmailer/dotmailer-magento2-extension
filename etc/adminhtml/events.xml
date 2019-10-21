@@ -9,6 +9,9 @@
     <event name="admin_system_config_changed_section_connector_data_mapping">
         <observer name="admin_connector_data_mapping" instance="Dotdigitalgroup\Email\Observer\Adminhtml\ResetContactImport"/>
     </event>
+    <event name="admin_system_config_changed_section_chat_api_credentials">
+        <observer name="admin_chat_api_credentials" instance="Dotdigitalgroup\Email\Observer\Adminhtml\ChatStatusChanged" />
+    </event>
     <event name="view_block_abstract_to_html_before">
         <observer name="ddg_add_column_expiration_date" instance="Dotdigitalgroup\Email\Observer\Html\BeforeBlockToHtml"/>
     </event>

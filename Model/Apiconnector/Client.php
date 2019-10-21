@@ -37,6 +37,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_SEND_TRANSACTIONAL_EMAIL = '/v2/email';
     const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
     const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
+    const REST_CHAT_SETUP = '/v2/webchat/setup';
 
     //rest error responses
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. Please contact support. ERROR_APIUSAGE_EXCEEDED';
@@ -1612,6 +1613,29 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 ->addClientLog('Failed contact details', [
                     'contact' => $contact['Email'],
                 ]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Setup New Chat Account
+     * @param $data
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function setUpChatAccount(array $data = [])
+    {
+        $url = $this->getApiEndpoint() . self::REST_CHAT_SETUP;
+
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($data);
+
+        $response = $this->execute();
+
+        if ($response) {
+            $this->helper->log('Initialised for chat');
             return $response;
         }
 

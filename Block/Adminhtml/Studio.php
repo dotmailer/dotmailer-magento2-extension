@@ -2,198 +2,76 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Trial\TrialSetup;
+use Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory;
+use Dotdigitalgroup\Email\Helper\OauthValidator;
+use Magento\Backend\Block\Template\Context;
 
 /**
  * Automation studio block
  *
  * @api
  */
-class Studio extends \Magento\Backend\Block\Template
+class Studio extends \Magento\Backend\Block\Template implements EngagementCloudTrialInterface
 {
+    use HandlesMicrositeRequests;
 
     /**
-     * Helper config.
-     *
-     * @var \Dotdigitalgroup\Email\Helper\Config
+     * @var Config
      */
-    public $configFactory;
+    private $config;
 
     /**
-     * Helper.
-     *
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var TrialSetup
      */
-    public $helper;
+    private $trialSetup;
 
     /**
-     * Mage auth model.
-     *
-     * @var \Magento\Backend\Model\Auth
+     * @var OauthValidator
      */
-    public $auth;
+    private $oauth;
 
     /**
-     * Messenger.
-     *
-     * @var \Magento\Framework\Message\ManagerInterface
+     * @var Data
      */
-    public $messageManager;
+    private $helper;
 
     /**
-     * Apiconnector client.
+     * Studio constructor
      *
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * Studio constructor.
-     *
-     * @param \Magento\Backend\Model\Auth                 $auth
-     * @param \Dotdigitalgroup\Email\Helper\Config        $configFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data          $dataHelper
-     * @param \Magento\Backend\Block\Template\Context     $context
-     * @param Client                                      $client
+     * @param Config $config
+     * @param Context $context
+     * @param Data $helper
+     * @param TrialSetupFactory $trialSetupFactory
+     * @param OauthValidator $oauth
      */
     public function __construct(
-        \Magento\Backend\Model\Auth $auth,
-        \Dotdigitalgroup\Email\Helper\Config $configFactory,
-        \Dotdigitalgroup\Email\Helper\Data $dataHelper,
-        \Magento\Backend\Block\Template\Context $context,
-        Client $client
+        Config $config,
+        Context $context,
+        Data $helper,
+        TrialSetupFactory $trialSetupFactory,
+        OauthValidator $oauth
     ) {
-        $this->client         = $client;
-        $this->auth           = $auth;
-        $this->helper         = $dataHelper;
-        $this->configFactory  = $configFactory;
+        $this->config  = $config;
+        $this->helper = $helper;
+        $this->trialSetup = $trialSetupFactory->create();
+        $this->oauth = $oauth;
 
         parent::__construct($context, []);
     }
 
     /**
-     * Returns page header.
-     *
-     * @return \Magento\Framework\Phrase
-     * @codeCoverageIgnore
-     */
-    public function getHeader()
-    {
-        return __('Automation');
-    }
-
-    /**
-     * Returns URL for save action.
-     *
      * @return string
-     * @codeCoverageIgnore
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getFormActionUrl()
+    public function getAction(): string
     {
-        return $this->getUrl('adminhtml/*/save');
-    }
-
-    /**
-     * Returns website id.
-     *
-     * @return int
-     * @codeCoverageIgnore
-     */
-    public function getWebsiteId()
-    {
-        return (int) $this->getRequest()->getParam('website');
-    }
-
-    /**
-     * Returns store id.
-     *
-     * @return int
-     * @codeCoverageIgnore
-     */
-    public function getStoreId()
-    {
-        return (int) $this->getRequest()->getParam('store');
-    }
-
-    /**
-     * Returns inheritance text.
-     *
-     * @return \Magento\Framework\Phrase
-     * @codeCoverageIgnore
-     */
-    public function getInheritText()
-    {
-        return __('Use Standard');
-    }
-
-    /**
-     * User login url.
-     *
-     * @return string
-     */
-    public function getLoginUserHtml()
-    {
-        // authorize or create token.
-        $token = $this->generateToken();
-        $baseUrl = $this->configFactory
-            ->getLogUserUrl();
-
-        $loginuserUrl = $baseUrl . $token . '&suppressfooter=true';
-
-        return $loginuserUrl;
-    }
-
-    /**
-     * Generate new token and connect from the admin.
-     *
-     * @return string
-     */
-    public function generateToken()
-    {
-        $adminUser = $this->auth->getUser();
-        $refreshToken = $adminUser->getRefreshToken();
-
-        if ($refreshToken) {
-            $accessToken = $this->client->getAccessToken(
-                $this->configFactory->getTokenUrl(),
-                $this->buildUrlParams(
-                    $this->helper->encryptor->decrypt($refreshToken)
-                )
-            );
-
-            if (is_string($accessToken)) {
-                return $accessToken;
-            }
+        if (!($this->helper->getApiUsername() && $this->helper->getApiPassword())) {
+            return $this->trialSetup->getEcSignupUrl($this->getRequest());
         }
 
-        return false;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCode()
-    {
-        return $this->auth->getUser()->getEmailCode();
-    }
-
-    /**
-     * Build url param.
-     *
-     * @param string $refreshToken
-     *
-     * @return string
-     */
-    public function buildUrlParams($refreshToken)
-    {
-        $params = 'client_id=' . $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_ID
-        )
-            . '&client_secret=' . $this->helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID
-            )
-            . '&refresh_token=' . $refreshToken . '&grant_type=refresh_token';
-
-        return $params;
+        return $this->oauth->createAuthorisedEcUrl($this->config->getLoginUserUrl());
     }
 }
