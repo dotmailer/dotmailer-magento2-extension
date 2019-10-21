@@ -198,6 +198,9 @@ class UrlFinder
     {
         if (!in_array($product->getStoreId(), $product->getStoreIds())) {
             $productInWebsites = $product->getWebsiteIds();
+            if (empty($productInWebsites)) {
+                return $product;
+            }
             $firstWebsite = $this->storeManager->getWebsite($productInWebsites[0]);
             $storeId = (int) $firstWebsite->getDefaultGroup()->getDefaultStoreId();
 
