@@ -56,7 +56,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * CreateUpdateContact constructor.
-     *
      * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
@@ -65,6 +64,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
      */
     public function __construct(
         \Magento\Wishlist\Model\WishlistFactory $wishlist,
@@ -76,13 +76,14 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Framework\Stdlib\DateTime $dateTime
-    ) {
-        $this->wishlist        = $wishlist;
-        $this->contactFactory  = $contactFactory;
+    )
+    {
+        $this->wishlist = $wishlist;
+        $this->contactFactory = $contactFactory;
         $this->contactResource = $contactResource;
         $this->customerFactory = $customerFactory;
-        $this->helper          = $data;
-        $this->registry        = $registry;
+        $this->helper = $data;
+        $this->registry = $registry;
         $this->importerFactory = $importerFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->dateTime = $dateTime;
@@ -98,15 +99,14 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $customer = $observer->getEvent()->getCustomer();
-        $websiteId  = $customer->getWebsiteId();
+        $websiteId = $customer->getWebsiteId();
         $storeId = $customer->getStoreId();
 
         //check if enabled
         if (!$this->helper->isEnabled($websiteId)) {
             return $this;
         }
-
-        $email      = $customer->getEmail();
+        $email = $customer->getEmail();
         $customerId = $customer->getEntityId();
         $subscriber = $this->subscriberFactory->create()
             ->loadByCustomerId($customerId);
