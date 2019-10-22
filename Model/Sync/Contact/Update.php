@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Contact;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\Apiconnector\EngagementCloudAddressBookApiFactory;
+use Dotdigitalgroup\Email\Model\Apiconnector\Customer;
 
 /**
  * Handle update data for importer.
@@ -24,6 +25,11 @@ class Update extends Bulk
     private $engagementCloudAddressBookApiFactory;
 
     /**
+     * @var Customer
+     */
+    private $apiConnectorCustomer;
+
+    /**
      * Update constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -34,6 +40,7 @@ class Update extends Bulk
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param Contact $contactResource
      * @param EngagementCloudAddressBookApiFactory $engagementCloudAddressBookApiFactory
+     * @param Customer $apiConnectorCustomer
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -43,10 +50,12 @@ class Update extends Bulk
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         Contact $contactResource,
-        EngagementCloudAddressBookApiFactory $engagementCloudAddressBookApiFactory
+        EngagementCloudAddressBookApiFactory $engagementCloudAddressBookApiFactory,
+        Customer $apiConnectorCustomer
     ) {
         $this->contactResource = $contactResource;
         $this->engagementCloudAddressBookApiFactory = $engagementCloudAddressBookApiFactory;
+        $this->apiConnectorCustomer = $apiConnectorCustomer;
 
         parent::__construct($helper, $fileHelper, $importerResource, $serializer, $contactFactory, $dateTime);
     }
@@ -193,7 +202,16 @@ class Update extends Bulk
     {
         $email = $importData['email'];
         $id = $importData['id'];
-        $result = $this->client->postContacts($email);
+
+        $subscriberStatuses = $this->apiConnectorCustomer->subscriberStatus;
+        $unsubscribedValue = $subscriberStatuses[\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED];
+        $data[] = [
+            'Key' => 'SUBSCRIBER_STATUS',
+            'Value' => $unsubscribedValue
+        ];
+
+        $result = $this->client->updateContactDatafieldsByEmail($email, $data);
+
         if (isset($result->id)) {
             $contactId = $result->id;
             $this->client->deleteAddressBookContact(
