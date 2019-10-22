@@ -15,6 +15,22 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 4.0.0
+
+###### What’s new
+- Our connector now ships with live chat functionality. Existing clients can enable chat via **Engagement Cloud > Chat Settings** to start using this new channel.  
+- Merchants can now sync additional campaigns from Engagement Cloud to Magento. This enables merchants to map custom templates to any transactional email in Magento.  
+- We’ve improved the way we set _from name_ and _from email_ values during transactional email sends. All versions of Magento 2, including 2.2.8, now send using the friendly from name that is set in Engagement Cloud, and that is stored in the email_template table. 
+- Sale price and total price figures in cart insight data now include tax, in line with the prices presented in the basket EDC.  
+
+###### Bug fixes
+- We’ve made a small change to our migration scripts to ensure that only wishlists with valid customers are migrated.
+- We’ve written a workaround to handle duplicate rows in the `email_contact_consent` table.
+- Products without website IDs will now not break catalog sync.
+- We’ve patched a potential cross-site scripting exploit in **Marketing > Exclusion Rules**.
+- We’ve updated the way we set a refresh token in our OAuth Connect block, in order to fix a Magento integration test. 
+- Subscribers who unsubscribe will now be updated so that their _SUBSCRIBER_STATUS_ data field in Engagement Cloud is set to 'Unsubscribed'.
+
 ## 3.4.2
 
 ###### What's new
