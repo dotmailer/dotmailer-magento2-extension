@@ -3,8 +3,7 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
-use Magento\Email\Model\ResourceModel\Template;
-use Magento\Email\Model\TemplateFactory;
+use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Registry;
 use Zend\Mime\Mime;
@@ -19,9 +18,9 @@ class MessagePlugin
     private $transactionalHelper;
 
     /**
-     * @var Template
+     * @var Registry
      */
-    private $templateResource;
+    private $registry;
 
     /**
      * @var TemplateFactory
@@ -29,27 +28,19 @@ class MessagePlugin
     private $templateFactory;
 
     /**
-     * @var Registry
-     */
-    private $registry;
-
-    /**
      * MessagePlugin constructor.
      * @param Registry $registry
      * @param Transactional $transactionalHelper
-     * @param Template $templateResource
-     * @param TemplateFactory $template
+     * @param TemplateFactory $templateFactory
      */
     public function __construct(
         Registry $registry,
         Transactional $transactionalHelper,
-        Template $templateResource,
-        TemplateFactory $template
+        TemplateFactory $templateFactory
     ) {
         $this->registry = $registry;
-        $this->templateFactory = $template;
-        $this->templateResource = $templateResource;
         $this->transactionalHelper = $transactionalHelper;
+        $this->templateFactory = $templateFactory;
     }
 
     /**
@@ -60,13 +51,9 @@ class MessagePlugin
      */
     public function beforeSetBody(MessageInterface $message, $body)
     {
-        $templateId = $this->isTemplate();
+        $dotTemplate = $this->templateFactory->create();
+        $templateId = $dotTemplate->loadTemplateIdFromRegistry();
         if ($templateId && $this->shouldIntercept()) {
-            $template = $this->loadTemplate($templateId);
-            if ($this->isDotmailerTemplateCode($template->getTemplateCode())) {
-                $this->handleZendMailMessage($message);
-                $this->setMessageFromAddressFromTemplate($message, $template);
-            }
             if (is_string($body) && ! $message instanceof \Zend_Mail) {
                 return [self::createMimeFromString($body)];
             }
@@ -101,68 +88,11 @@ class MessagePlugin
     }
 
     /**
-     * @return int
-     */
-    private function isTemplate()
-    {
-        return $this->registry->registry('dotmailer_current_template_id');
-    }
-
-    /**
      * @return bool
      */
     private function shouldIntercept()
     {
         $storeId = $this->registry->registry('transportBuilderPluginStoreId');
         return $this->transactionalHelper->isEnabled($storeId);
-    }
-
-    /**
-     * @param $templateId
-     *
-     * @return \Magento\Email\Model\Template
-     */
-    private function loadTemplate($templateId)
-    {
-        $template = $this->templateFactory->create();
-        $this->templateResource->load($template, $templateId);
-
-        return $template;
-    }
-
-    /**
-     * @param $templateCode
-     *
-     * @return bool
-     */
-    private function isDotmailerTemplateCode($templateCode)
-    {
-        return $this->transactionalHelper->isDotmailerTemplate($templateCode);
-    }
-
-    /**
-     * Handle a $message object that has extended \Zend_Mail
-     * i.e. for Magento 2.1 > 2.2.7
-     *
-     * @param MessageInterface $message
-     */
-    private function handleZendMailMessage($message)
-    {
-        if ($message instanceof \Zend_Mail) {
-            $message->clearFrom();
-        }
-    }
-
-    /**
-     * @param MessageInterface $message
-     * @param \Magento\Email\Model\Template $template
-     */
-    private function setMessageFromAddressFromTemplate($message, $template)
-    {
-        if (method_exists($message, 'setFromAddress')) {
-            $message->setFromAddress($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
-        } else {
-            $message->setFrom($template->getTemplateSenderEmail(), $template->getTemplateSenderName());
-        }
     }
 }

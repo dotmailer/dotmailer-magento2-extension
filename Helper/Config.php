@@ -231,7 +231,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     const API_CONNECTOR_OAUTH_URL_AUTHORISE = 'OAuth2/authorise.aspx?';
     const API_CONNECTOR_OAUTH_URL_TOKEN = 'OAuth2/Tokens.ashx';
-    const API_CONNECTOR_OAUTH_URL_LOG_USER = '?oauthtoken=';
+    const API_CONNECTOR_OAUTH_URL_LOG_USER = 'oauthtoken';
+    const API_CONNECTOR_SUPPRESS_FOOTER = 'suppressfooter';
 
     /**
      * Reviews SECTION.
@@ -274,9 +275,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CRON_SCHEDULE_CATALOG = 'connector_developer_settings/cron_schedules/catalog';
 
     /**
-     * API endpoint.
+     * API and portal endpoints
      */
     const PATH_FOR_API_ENDPOINT = 'connector/api/endpoint';
+    const PATH_FOR_PORTAL_ENDPOINT = 'connector/portal/endpoint';
 
     /**
      * Version number to append to _dmpt tracking scripts
@@ -286,7 +288,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Trial Account.
      */
-    const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotmailer.com/';
+    const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotdigital.com';
+    const XML_PATH_CONNECTOR_TRIAL_URL_OVERRIDE = 'connector/microsite/url';
+    const INTERNAL_SUB_DOMAIN = 'internal';
 
     /**
      * @var \Magento\Framework\Stdlib\StringUtils
@@ -297,6 +301,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
+
+    /**
+     * @var string
+     */
+    private $regionAwarePortalUrl;
 
     /**
      * Config constructor.
@@ -328,7 +337,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             $baseUrl = $this->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
                 . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         } else {
-            $baseUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
+            $baseUrl = $this->getRegionAwarePortalUrl($website) . self::API_CONNECTOR_OAUTH_URL_AUTHORISE;
         }
 
         return $baseUrl;
@@ -352,24 +361,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     *  Region aware authorize link.
-     *
-     * @param \Magento\Store\Api\Data\WebsiteInterface|int $website
-     *
-     * @return string|array
-     */
-    private function getRegionAuthorize($website)
-    {
-        $website = $this->storeManager->getWebsite($website);
-
-        $apiEndpoint = $this->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website) . '/';
-        //replace the api with the app prefix from the domain name
-        $regionBaseUrl = str_replace('api', 'app', $apiEndpoint);
-
-        return $regionBaseUrl;
-    }
-
-    /**
      * Callback authorization url.
      *
      * @return string
@@ -387,6 +378,29 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Region-aware EC portal URL
+     *
+     * @param int $website
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getRegionAwarePortalUrl($website = 0)
+    {
+        if ($this->regionAwarePortalUrl) {
+            return $this->regionAwarePortalUrl;
+        }
+
+        $website = $this->storeManager->getWebsite($website);
+        $apiEndpoint = $this->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website);
+        $appSubDomain = substr_compare($apiEndpoint, self::INTERNAL_SUB_DOMAIN, -strlen(self::INTERNAL_SUB_DOMAIN)) === 0
+            ? 'webapp'
+            : 'app';
+
+        //replace the api with the app prefix from the domain name
+        return $this->regionAwarePortalUrl = str_replace(['api', 'dotmailer'], [$appSubDomain, 'dotdigital'], $apiEndpoint) . '/';
+    }
+
+    /**
      * Token url for OAUTH.
      *
      * @param int $website
@@ -400,7 +414,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             $tokenUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) .
                 self::API_CONNECTOR_OAUTH_URL_TOKEN;
         } else {
-            $tokenUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_TOKEN;
+            $tokenUrl = $this->getRegionAwarePortalUrl($website) . self::API_CONNECTOR_OAUTH_URL_TOKEN;
         }
 
         return $tokenUrl;
@@ -413,16 +427,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getLogUserUrl($website = 0)
+    public function getLoginUserUrl($website = 0)
     {
-        if ($this->isAuthorizeCustomDomain($website)) {
-            $logUserUrl = $this->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
-                . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
-        } else {
-            $logUserUrl = $this->getRegionAuthorize($website) . self::API_CONNECTOR_OAUTH_URL_LOG_USER;
-        }
-
-        return $logUserUrl;
+        return $this->isAuthorizeCustomDomain($website)
+            ? $this->getWebsiteConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN)
+            : $this->getRegionAwarePortalUrl($website);
     }
 
     /**

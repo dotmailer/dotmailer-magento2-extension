@@ -17,22 +17,14 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_DDG_TRANSACTIONAL_DEBUG      = 'transactional_emails/ddg_transactional/debug';
 
     /**
-     * @var \Magento\Framework\Encryption\EncryptorInterface
-     */
-    private $encryptor;
-
-    /**
      * Transactional constructor.
      *
      * @param \Magento\Framework\App\Helper\Context $context
      * @var \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        \Magento\Framework\App\Helper\Context $context
     ) {
-        $this->encryptor = $encryptor;
-
         parent::__construct($context);
     }
 
@@ -93,12 +85,11 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      */
     private function getSmtpPassword($storeId = null)
     {
-        $value = $this->scopeConfig->getValue(
+        return $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_PASSWORD,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
-        return $this->encryptor->decrypt($value);
     }
 
     /**

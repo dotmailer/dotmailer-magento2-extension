@@ -26,7 +26,7 @@ class InsertEmailWishlistTable extends AbstractDataMigration implements InsertTy
                 'customer_id',
                 'created_at' => 'updated_at',
             ])
-            ->joinLeft(
+            ->joinInner(
                 ['ce' => $this->resourceConnection->getTableName('customer_entity')],
                 'wishlist.customer_id = ce.entity_id',
                 ['store_id']

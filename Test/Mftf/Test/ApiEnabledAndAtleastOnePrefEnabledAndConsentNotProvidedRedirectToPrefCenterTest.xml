@@ -4,7 +4,7 @@
        xsi:noNamespaceSchemaLocation="../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Test/etc/testSchema.xsd">
     <test name="ApiEnabledAndAtleastOnePrefEnabledAndConsentNotProvidedRedirectToPrefCenterTest">
         <annotations>
-            <features value="dotmailer-magento2-extension"/>
+            <features value="Engagement Cloud module"/>
             <stories value="If API enabled and one of the preferences enabled, plugin should redirect to dotmailer preference page and general subscription text should display default text"/>
             <title value="You should be able to see dotmailer preferences page with default subscription text if api is enabled, consent not provided and one of the preferences are enabled."/>
             <description value="You should be able to see dotmailer preferences page with default subscription text if api is enabled, consent not provided and one of the preferences are enabled."/>

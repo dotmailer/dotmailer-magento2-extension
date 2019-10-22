@@ -55,12 +55,10 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
     text-align: center;
 }
 .ddg-edc-content div { text-align: center; }
-
 .ddg-dynamic-content {
     cursor: pointer!important;
     background-color: #fff!important;
 }
-
 .ddg-tooltip{
     position:absolute;
     top:-15px;
@@ -68,4 +66,7 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
     color:#fff;
     padding:5px;
     border-radius:5px;
+}
+.ddg-disabled-button{
+    cursor: not-allowed;
 }

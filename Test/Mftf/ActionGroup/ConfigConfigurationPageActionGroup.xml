@@ -12,6 +12,7 @@
         <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig" />
         <waitForPageLoad stepKey="waitForPageLoad2"/>
     </actionGroup>
+
     <actionGroup name="SetOnePreferenceTypeToShowYes">
         <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage1"/>
         <waitForPageLoad stepKey="waitForPageLoad3"/>

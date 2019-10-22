@@ -8,7 +8,10 @@
     <update handle="styles" />
     <body>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Studio" name="dotdigitalgroup_studio_disconnect" template="Dotdigitalgroup_Email::automation/iframe.phtml"/>
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Studio"
+                   name="dotdigitalgroup_studio_disconnect"
+                   template="Dotdigitalgroup_Email::engagement_cloud/trial.phtml"
+                   cacheable="false" />
         </referenceContainer>
     </body>
 </page>

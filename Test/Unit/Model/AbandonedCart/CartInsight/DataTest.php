@@ -240,11 +240,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->willReturn($expectedPayload['json']['lineItems'][0]['name']);
 
         $itemsArray[0]->expects($this->once())
-            ->method('getPrice')
+            ->method('getBasePriceInclTax')
             ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice']);
 
         $itemsArray[0]->expects($this->once())
-            ->method('getRowTotal')
+            ->method('getRowTotalInclTax')
             ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice']);
 
         $itemsArray[0]->expects($this->once())
@@ -324,8 +324,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                         "name" => "Test Product",
                         "unitPrice" => 49.2,
                         "quantity" => "2",
-                        "salePrice" => 40,
-                        "totalPrice" => 80
+                        "salePrice" => 46.15,
+                        "totalPrice" => 92.3
                     ]
                 ],
                 "cartPhase" => "ORDER_PENDING"

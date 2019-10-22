@@ -58,7 +58,8 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
-    ) {
+    )
+    {
         $this->templateFactory = $templateFactory;
         $this->storeManager = $storeManager;
         $this->templateResource = $templateResource;
@@ -69,6 +70,7 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
 
     /**
      * @return \Magento\Framework\App\Config\Value
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function beforeDelete()
     {
@@ -83,18 +85,17 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
 
     /**
      * @return \Magento\Framework\App\Config\Value
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function beforeSave()
     {
-        if (! $this->isValueChanged()) {
+        if (!$this->isValueChanged()) {
             return parent::beforeSave();
         }
-
         $dotTemplate = $this->templateFactory->create();
         $templateConfigId = $this->getField();
         $scope = $this->getScope();
         $scopeId = $this->getScopeId();
-
         //email template mapped
         if ($this->getValue()) {
             $templateConfigPath = $dotTemplate->templateConfigMapping[$templateConfigId];
@@ -127,7 +128,6 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
                 $scopeId
             );
         }
-
         return parent::beforeSave();
     }
 }

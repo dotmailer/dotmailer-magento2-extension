@@ -52,7 +52,7 @@ class IntegrationInsightData
     public function getIntegrationInsightData(): array
     {
         $websiteData = [];
-        foreach ($this->helper->getStores() as $store) {
+        foreach ($this->helper->getStores(true) as $store) {
             /** @var Store $store */
             if (!$this->helper->isEnabled($store->getWebsiteId()) || isset($websiteData[$store->getWebsiteId()])) {
                 continue;

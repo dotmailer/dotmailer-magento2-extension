@@ -114,6 +114,7 @@ class Data
 
             $discountTotal += $item->getDiscountAmount();
             $product = $this->productRepository->getById($item->getProduct()->getId(), false, $store->getId());
+
             $mediaPath = $this->getProductImageUrl($item, $store);
 
             $lineItems[] = [
@@ -123,8 +124,8 @@ class Data
                 'name' => $item->getName(),
                 'unitPrice' => round($product->getPrice(), 2),
                 'quantity' => $item->getQty(),
-                'salePrice' => round($item->getPrice(), 2),
-                'totalPrice' => round($item->getRowTotal(), 2)
+                'salePrice' => round($item->getBasePriceInclTax(), 2),
+                'totalPrice' => round($item->getRowTotalInclTax(), 2)
             ];
         }
 

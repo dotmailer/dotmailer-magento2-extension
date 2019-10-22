@@ -8,5 +8,6 @@
         <element name="accountsEnabledOption" type="select" selector="#connector_api_credentials_api_enabled" />
         <element name="accountsUsernameField" type="input" selector="#connector_api_credentials_api_username" />
         <element name="accountsPasswordField" type="input" selector="#connector_api_credentials_api_password" />
+        <element name="save" type="button" selector="#save" />
     </section>
 </sections>

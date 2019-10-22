@@ -125,7 +125,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 ->setLastSubscribedAt(
                     (int) $subscriberStatus === Subscriber::STATUS_SUBSCRIBED
                         ? $this->dateTime->formatDate(true)
-                        : null
+                        : $contactEmail->getLastSubscribedAt()
                 );
 
             // only for subscribers

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Dotdigitalgroup_Email::studio.css"/>
+    </head>
+    <update handle="styles" />
+    <body>
+        <referenceContainer name="content">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\StudioChat"
+                   name="dotdigitalgroup_studio_chat"
+                   template="Dotdigitalgroup_Email::engagement_cloud/trial.phtml"
+                   cacheable="false" />
+        </referenceContainer>
+    </body>
+</page>
+

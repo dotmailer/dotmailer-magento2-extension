@@ -1,36 +1,9 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Adminhtml\Connector;
+namespace Dotdigitalgroup\Email\Model;
 
-class Trial extends \Magento\Backend\App\Action
+trait SetsTimezoneAndCultureTrait
 {
-    /**
-     * Authorization level of a basic admin session
-     *
-     * @see _isAllowed()
-     */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
-
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\Timezone
-     */
-    public $localeDate;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    public $helper;
-
-    /**
-     * @var \Magento\Framework\HTTP\PhpEnvironment\ServerAddress
-     */
-    private $serverAddress;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Trial\TrialSetup
-     */
-    private $trialSetup;
-
     /**
      * @var array
      */
@@ -469,85 +442,13 @@ class Trial extends \Magento\Backend\App\Action
     ];
 
     /**
-     * Trial constructor.
-     *
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress
-     * @param \Magento\Framework\Stdlib\DateTime\Timezone $localeDate
-     * @param \Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory $trialFactory
-     */
-    public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress,
-        \Magento\Framework\Stdlib\DateTime\Timezone $localeDate,
-        \Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory $trialFactory
-    ) {
-        $this->trialSetup    = $trialFactory->create();
-        $this->serverAddress = $serverAddress;
-        $this->localeDate    = $localeDate;
-        $this->helper        = $this->trialSetup->helper;
-        parent::__construct($context);
-    }
-
-    /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|
-     * \Magento\Framework\Controller\ResultInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function execute()
-    {
-        return $this->resultRedirectFactory->create()->setUrl($this->_getIframeFormUrl());
-    }
-
-    /**
-     * Generate url for iframe for trial account popup.
-     *
-     * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function _getIframeFormUrl()
-    {
-        $formUrl = \Dotdigitalgroup\Email\Helper\Config::API_CONNECTOR_TRIAL_FORM_URL;
-
-        $ipAddress = $this->serverAddress->getServerAddress();
-        //get the forward ip address for the request
-        if ($ipAddress) {
-            $ipAddress = $this->_request->getServer('HTTP_X_FORWARDED_FOR', $ipAddress);
-            //get the first ip
-            if (strpos($ipAddress, ',') !== false) {
-                $ipList = explode(',', $ipAddress);
-                $ipAddress = trim(reset($ipList));
-            }
-        }
-
-        $timezone = $this->_getTimeZoneId();
-        $culture = $this->_getCultureId();
-        $company = $this->helper->getWebsiteConfig(\Magento\Store\Model\Information::XML_PATH_STORE_INFO_NAME);
-        $callback = $this->helper->storeManager->getStore()
-                ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true) . 'connector/email/accountcallback';
-
-        //query params
-        $params = [
-            'callback' => $callback,
-            'company' => $company,
-            'culture' => $culture,
-            'timezone' => $timezone,
-            'ip' => $ipAddress,
-            'code' => $this->trialSetup->generateTemporaryPasscode()
-        ];
-        $url = $formUrl . '?' . http_build_query($params);
-
-        return $url;
-    }
-
-    /**
      * Get time zone id for trial account.
      *
      * @return string
      */
-    private function _getTimeZoneId()
+    public function getTimeZoneId()
     {
-        $timeZone = $this->localeDate->getConfigTimezone();
+        $timeZone = $this->timezone->getConfigTimezone();
         $result = '085';
         if ($timeZone) {
             foreach ($this->timeZones as $time) {
@@ -565,7 +466,7 @@ class Trial extends \Magento\Backend\App\Action
      *
      * @return array
      */
-    private function _getCultureId()
+    public function getCultureId()
     {
         $fallback = 'en_US';
         $supportedCultures = [

@@ -4,8 +4,8 @@ namespace Dotdigitalgroup\Email\Test\Unit\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
 use Dotdigitalgroup\Email\Plugin\MessagePlugin;
-use Magento\Email\Model\ResourceModel\Template;
-use Magento\Email\Model\TemplateFactory;
+use Dotdigitalgroup\Email\Model\Email\Template;
+use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Registry;
 use PHPUnit\Framework\TestCase;
@@ -25,12 +25,12 @@ class MessagePluginTest extends TestCase
     /**
      * @var Template|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $templateResourceModelMock;
+    private $templateModelMock;
 
     /**
      * @var TemplateFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $templateModelMock;
+    private $templateFactoryMock;
 
     /**
      * @var MessagePlugin
@@ -42,7 +42,6 @@ class MessagePluginTest extends TestCase
      */
     private $messageMock;
 
-
     /**
      * @return void
      */
@@ -51,135 +50,65 @@ class MessagePluginTest extends TestCase
         $this->messageMock               = $this->createMock(MessageInterface::class);
         $this->registryMock              = $this->createMock(Registry::class);
         $this->transactionalHelperMock   = $this->createMock(Transactional::class);
-        $this->templateResourceModelMock = $this->createMock(Template::class);
-        $this->templateModelMock         = $this->createMock(TemplateFactory::class);
+        $this->templateModelMock = $this->createMock(Template::class);
+        $this->templateFactoryMock = $this->createMock(TemplateFactory::class);
         $this->plugin                    = new MessagePlugin(
             $this->registryMock,
             $this->transactionalHelperMock,
-            $this->templateResourceModelMock,
-            $this->templateModelMock
+            $this->templateFactoryMock
         );
     }
 
     public function testNoActionTakenIfNotFromTemplateRoute()
     {
         $storeId = 1;
-        $this->mockRegistry(null, $storeId);
-        $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
-        $this->templateModelMock->expects($this->never())
-                                ->method('create');
+        $templateId = null;
 
-        $this->plugin->beforeSetBody($this->messageMock, null);
+        $this->mockLoadTemplateIdFromRegistry($templateId);
+        $this->mockRegistry($storeId);
+        $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
+
+        $result = $this->plugin->beforeSetBody($this->messageMock, null);
+
+        $this->assertNull($result);
     }
 
-    public function testNoActionTakenIfDotmailerSMTPIsDisabled()
+    public function testNoActionTakenIfSMTPIsDisabled()
     {
         $storeId = 1;
-        $this->mockRegistry(123456, $storeId);
-        $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, false);
-        $this->templateModelMock->expects($this->never())
-                                ->method('create');
-
-        $this->plugin->beforeSetBody($this->messageMock, null);
-    }
-
-    public function testFromAddressNotSetWhenNotADotmailerTemplate()
-    {
         $templateId = 123456;
-        $storeId    = 1;
-        $this->mockRegistry($templateId, $storeId);
-        $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
-        $this->mockTemplateCollectionToReturnTemplate(false, $templateId, '', '');
 
-        $this->messageMock->expects($this->never())
-                          ->method('setFrom');
+        $this->mockLoadTemplateIdFromRegistry($templateId);
+        $this->mockRegistry($storeId);
+        $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, false);
 
-        $this->plugin->beforeSetBody($this->messageMock, null);
+        $result = $this->plugin->beforeSetBody($this->messageMock, null);
+
+        $this->assertNull($result);
     }
 
-    public function testFromSetWhenDotmailerTemplateAndDotmailerSmtpIsEnabled()
-    {
-        $templateId  = 123456;
-        $storeId     = 1;
-        $senderEmail = 'test@dotmailer.com';
-        $senderName  = 'dotmailer';
-        $this->mockRegistry($templateId, $storeId);
-        $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
-        $this->mockTemplateCollectionToReturnTemplate(true, $templateId, $senderEmail, $senderName);
-
-        $this->messageMock->expects($this->once())
-                          ->method('setFrom')
-                          ->with($senderEmail, $senderName);
-
-        $this->plugin->beforeSetBody($this->messageMock, null);
-    }
-
-    public function testFromClearedWhenZendMail()
-    {
-        $templateId  = 123456;
-        $storeId     = 1;
-        $senderEmail = 'test@dotmailer.com';
-        $senderName  = 'dotmailer';
-        $this->mockRegistry($templateId, $storeId);
-        $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
-        $this->mockTemplateCollectionToReturnTemplate(true, $templateId, $senderEmail, $senderName);
-
-        $this->messageMock = $this->createMock(Magento22MailClassTestDouble::class);
-        $this->messageMock->expects($this->once())
-                          ->method('clearFrom');
-        $this->messageMock->expects($this->once())
-                          ->method('setFrom')
-                          ->with($senderEmail, $senderName);
-
-        $this->plugin->beforeSetBody($this->messageMock, null);
-    }
-
-    private function mockRegistry($templateId, $storeId)
+    private function mockRegistry($storeId)
     {
         $this->registryMock->method('registry')
-                           ->withConsecutive(
-                               ['dotmailer_current_template_id'],
-                               ['transportBuilderPluginStoreId']
-                           )
-                           ->willReturnOnConsecutiveCalls($templateId, $storeId);
+            ->with('transportBuilderPluginStoreId')
+            ->willReturn($storeId);
     }
 
     private function mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, $value)
     {
         $this->transactionalHelperMock->method('isEnabled')
-                                      ->with($storeId)
-                                      ->willReturn($value);
+            ->with($storeId)
+            ->willReturn($value);
     }
 
-    private function mockTemplateCollectionToReturnTemplate(
-        $isDotmailerTemplate,
-        $templateId,
-        $senderEmail,
-        $senderName
-    ) {
-        $templateCode      = 'dm_template_code';
-        $templateModelMock = $this->createMock(\Magento\Email\Model\Template::class);
-        $templateModelMock->method('__call')
-                          ->withConsecutive(
-                              [$this->equalTo('getTemplateCode')],
-                              [$this->equalTo('getTemplateSenderEmail')],
-                              [$this->equalTo('getTemplateSenderName')]
-                          )
-                          ->willReturnOnConsecutiveCalls(
-                              $templateCode,
-                              $senderEmail,
-                              $senderName
-                          );
-        $this->templateModelMock->method('create')
-                                ->willReturn($templateModelMock);
+    private function mockLoadTemplateIdFromRegistry($templateId)
+    {
+        $this->templateFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->templateModelMock);
 
-        $this->templateResourceModelMock->expects($this->once())
-                                        ->method('load')
-                                        ->with($templateModelMock, $this->stringContains($templateId));
-
-        $this->transactionalHelperMock->method('isDotmailerTemplate')
-                                      ->willReturn($isDotmailerTemplate);
-
-        return $templateModelMock;
+        $this->templateModelMock->expects($this->once())
+            ->method('loadTemplateIdFromRegistry')
+            ->willReturn($templateId);
     }
 }
