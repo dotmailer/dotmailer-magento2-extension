@@ -58,6 +58,7 @@
             <argument name="parameters" xsi:type="null"/>
         </arguments>
     </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Block\Chat\Virtual" type="Magento\Framework\View\Element\Template" />
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">

@@ -7,7 +7,7 @@
                    name="emailCapture"
                    template="Dotdigitalgroup_Email::email/email_capture_newsletter.phtml"/>
             <block ifconfig="chat_api_credentials/settings/enabled"
-                   class="Dotdigitalgroup\Email\Block\Chat"
+                   class="Dotdigitalgroup\Email\Block\Chat\Virtual"
                    name="ddg.chat.tag"
                    template="Dotdigitalgroup_Email::chat/include.phtml">
                 <arguments>
