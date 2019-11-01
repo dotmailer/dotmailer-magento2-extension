@@ -2,8 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
+use Dotdigitalgroup\Email\Model\Trial\TrialSetup;
+
 trait HandlesMicrositeRequests
 {
+    /**
+     * @var TrialSetup
+     */
+    private $trialSetup;
+
     /**
      * @return string
      */
@@ -18,5 +25,14 @@ trait HandlesMicrositeRequests
     public function getTrialSignupHostAndScheme(): string
     {
         return $this->trialSetup->getTrialSignupHostAndScheme();
+    }
+
+    /**
+     * @return TrialSetup
+     */
+    private function getTrialSetup()
+    {
+        return $this->trialSetup
+            ?: $this->trialSetup = $this->trialSetupFactory->create();
     }
 }

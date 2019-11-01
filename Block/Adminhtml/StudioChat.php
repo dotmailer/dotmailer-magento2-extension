@@ -19,9 +19,9 @@ class StudioChat extends \Magento\Backend\Block\Template implements EngagementCl
     use HandlesMicrositeRequests;
 
     /**
-     * @var TrialSetup
+     * @var TrialSetupFactory
      */
-    private $trialSetup;
+    private $trialSetupFactory;
 
     /**
      * @var Data
@@ -53,7 +53,7 @@ class StudioChat extends \Magento\Backend\Block\Template implements EngagementCl
         Config $config,
         OauthValidator $oauth
     ) {
-        $this->trialSetup = $trialSetupFactory->create();
+        $this->trialSetupFactory = $trialSetupFactory;
         $this->helper = $helper;
         $this->config = $config;
         $this->oauth = $oauth;
@@ -69,7 +69,8 @@ class StudioChat extends \Magento\Backend\Block\Template implements EngagementCl
     {
         //If API Creds Aren't set
         if (!$this->helper->isEnabled()) {
-            return $this->trialSetup->getEcSignupUrl($this->getRequest(), TrialSetup::SOURCE_CHAT);
+            return $this->getTrialSetup()
+                ->getEcSignupUrl($this->getRequest(), TrialSetup::SOURCE_CHAT);
         }
 
         return $this->oauth->createAuthorisedEcUrl($this->config->getChatPortalUrl());
