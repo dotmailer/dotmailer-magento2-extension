@@ -24,9 +24,9 @@ class LiveChatApiClient
     /**
      * Zend HTTP Client
      *
-     * @var HttpClient
+     * @var HttpClientFactory
      */
-    private $httpClient;
+    private $httpClientFactory;
 
     /**
      * Client constructor
@@ -39,7 +39,7 @@ class LiveChatApiClient
         ClientFactory $clientFactory
     ) {
         $this->config = $config;
-        $this->httpClient = $clientFactory->create();
+        $this->httpClientFactory = $clientFactory;
     }
 
     /**
@@ -55,7 +55,10 @@ class LiveChatApiClient
     {
         // set up client
         $apiToken = $apiToken ?: $this->config->getApiToken();
-        $this->httpClient->setMethod($method)
+
+        /** @var HttpClient $httpClient */
+        $httpClient = $this->httpClientFactory->create();
+        $httpClient->setMethod($method)
             ->setUri(sprintf('%s/%s', self::CHAT_API_HOST, $endpoint))
             ->setHeaders([
                 'Accept' => 'application/json',
@@ -65,8 +68,8 @@ class LiveChatApiClient
 
         // add JSON body, if required
         if (!empty($body)) {
-            $this->httpClient->setRawBody(json_encode($body));
+            $httpClient->setRawBody(json_encode($body));
         }
-        return $this->httpClient->send();
+        return $httpClient->send();
     }
 }

@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\Trial\TrialSetup;
 use Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory;
 use Dotdigitalgroup\Email\Helper\OauthValidator;
 use Magento\Backend\Block\Template\Context;
@@ -24,9 +23,9 @@ class Studio extends \Magento\Backend\Block\Template implements EngagementCloudT
     private $config;
 
     /**
-     * @var TrialSetup
+     * @var TrialSetupFactory
      */
-    private $trialSetup;
+    private $trialSetupFactory;
 
     /**
      * @var OauthValidator
@@ -56,7 +55,7 @@ class Studio extends \Magento\Backend\Block\Template implements EngagementCloudT
     ) {
         $this->config  = $config;
         $this->helper = $helper;
-        $this->trialSetup = $trialSetupFactory->create();
+        $this->trialSetupFactory = $trialSetupFactory;
         $this->oauth = $oauth;
 
         parent::__construct($context, []);
@@ -69,7 +68,8 @@ class Studio extends \Magento\Backend\Block\Template implements EngagementCloudT
     public function getAction(): string
     {
         if (!($this->helper->getApiUsername() && $this->helper->getApiPassword())) {
-            return $this->trialSetup->getEcSignupUrl($this->getRequest());
+            return $this->getTrialSetup()
+                ->getEcSignupUrl($this->getRequest());
         }
 
         return $this->oauth->createAuthorisedEcUrl($this->config->getLoginUserUrl());
