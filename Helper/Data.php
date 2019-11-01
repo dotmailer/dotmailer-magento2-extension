@@ -3,10 +3,10 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
-use Dotdigitalgroup\Email\Model\Config\Json;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
-use \Magento\Framework\App\RequestInterface;
+use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
 
 /**
  * General most used helper to work with config data, saving updating and generating.
@@ -19,7 +19,6 @@ use \Magento\Framework\App\RequestInterface;
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
     const MODULE_NAME = 'Dotdigitalgroup_Email';
     const DM_FIELD_LIMIT = 250;
 
@@ -1976,6 +1975,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function saveContact($contact)
     {
         $this->contactResource->save($contact);
+    }
+
+    /**
+     * @param int $websiteId
+     * @return bool|string
+     */
+    public function getProfileId($websiteId = 0)
+    {
+        return $this->getWebsiteConfig(CONFIG::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID, $websiteId);
     }
 
     /**
