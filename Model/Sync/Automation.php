@@ -190,7 +190,7 @@ class Automation implements SyncInterface
                 if (strpos($typeDouble, self::ORDER_STATUS_AUTOMATION) !== false) {
                     $typeDouble = self::ORDER_STATUS_AUTOMATION;
                 }
-                $contact = $this->helper->getContact($email, $websiteId);
+                $contact = $this->helper->getOrCreateContact($email, $websiteId);
                 //contact id is valid, can update datafields
                 if ($contact && isset($contact->id)) {
                     if ($contact->status === self::CONTACT_STATUS_PENDING) {
@@ -234,7 +234,7 @@ class Automation implements SyncInterface
             $idsToUpdateDate = [];
 
             foreach ($collection as $item) {
-                $contact = $this->helper->getContact($item->getEmail(), $item->getWebsiteId());
+                $contact = $this->helper->getOrCreateContact($item->getEmail(), $item->getWebsiteId());
                 if (isset($contact->id) && $contact->status !== self::CONTACT_STATUS_PENDING) {
                     //add to array for update status
                     $idsToUpdateStatus[] = $item->getId();

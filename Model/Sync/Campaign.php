@@ -163,7 +163,7 @@ class Campaign implements SyncInterface
             //Only if valid client is returned
             if ($client && $this->isCampaignValid($campaign)) {
                 $campaignsToSend[$campaignId]['client'] = $client;
-                $contact = $this->helper->getContact(
+                $contact = $this->helper->getOrCreateContact(
                     $campaign->getEmail(),
                     $websiteId
                 );
