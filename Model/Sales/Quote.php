@@ -590,18 +590,18 @@ class Quote
      */
     private function updateDataFieldAndCreateAc($quote, $websiteId, $storeId)
     {
-        $this->cartInsight->send($quote, $storeId);
-
         $quoteId = $quote->getId();
         $items = $quote->getAllItems();
         $email = $quote->getCustomerEmail();
         $itemIds = $this->getQuoteItemIds($items);
         $abandonedModel = $this->abandonedFactory->create()
             ->loadByQuoteId($quoteId);
-        $contact = $this->helper->getContact($email, $websiteId);
+        $contact = $this->helper->getOrCreateContact($email, $websiteId);
         if (!$contact) {
             return false;
         }
+
+        $this->cartInsight->send($quote, $storeId);
 
         if ($contact->status === self::STATUS_PENDING) {
             $this->createAbandonedCart($abandonedModel, $quote, $itemIds, self::STATUS_PENDING);

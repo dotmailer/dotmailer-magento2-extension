@@ -99,6 +99,12 @@ class Enroller
         foreach ($quoteCollection as $batchQuoteCollection) {
             foreach ($batchQuoteCollection as $quote) {
                 $this->saver->save($quote, $store, $programId);
+
+                // Confirm that a contact has been created on EC
+                $contact = $this->helper->getOrCreateContact($quote->getCustomerEmail(), $store->getWebsiteId());
+                if (!$contact) {
+                    continue;
+                }
                 $this->cartInsight->send($quote, $storeId);
             }
         }

@@ -594,7 +594,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return $contactId;
         }
 
-        $contact = $this->getContact($email, $websiteId, $contactFromTable);
+        $contact = $this->getOrCreateContact($email, $websiteId, $contactFromTable);
         if ($contact && isset($contact->id)) {
             return $contact->id;
         }
@@ -609,7 +609,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool|object
      */
-    public function getContact($email, $websiteId, $contactFromTable = false)
+    public function getOrCreateContact($email, $websiteId, $contactFromTable = false)
     {
         if (! $this->isEnabled($websiteId)) {
             return false;

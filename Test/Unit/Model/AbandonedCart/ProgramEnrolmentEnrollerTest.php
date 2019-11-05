@@ -3,14 +3,14 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\ProgramEnrolment;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller;
-use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Interval;
-use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Saver;
-use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Rules;
-use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
-use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsight;
+use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller;
+use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Interval;
+use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Rules;
+use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Saver;
+use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
+use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -69,9 +69,9 @@ class ProgramEnrolmentEnrollerTest extends TestCase
     protected function setUp()
     {
         $this->orderCollectionFactoryMock = $this->getMockBuilder(CollectionFactory::class)
+            ->setMethods(['create'])
             ->disableOriginalConstructor()
             ->getMock();
-
 
         $this->dataHelperMock = $this->getMockBuilder(Data::class)
             ->disableOriginalConstructor()
@@ -83,9 +83,10 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $this->rules = $this->createMock(Rules::class);
         $this->cartInsight = $this->createMock(CartInsight::class);
 
-        //We need to mock an Object to behave as a Collection in order to pass the tests
+        //We need to mock an Object to behave as a Collection (of Quote objects) in order to pass the tests
         $this->objectManager = new ObjectManager($this);
-        $this->orderCollectionMock = $this->objectManager->getCollectionMock(Collection::class, [$this->orderCollectionMock]);
+        $quoteMock = $this->createMock(\Magento\Quote\Model\Quote::class);
+        $this->orderCollectionMock = $this->objectManager->getCollectionMock(Collection::class, [$quoteMock]);
 
         $this->model = new Enroller(
             $this->orderCollectionFactoryMock,
@@ -101,11 +102,11 @@ class ProgramEnrolmentEnrollerTest extends TestCase
     {
         $storeId = 1;
         $programId = "123456";
-        $updated = array(
+        $updated = [
             'from' => '2019-01-01 12:00:00',
             'to' => '2019-01-01 16:00:00',
             'date' => true
-        );
+        ];
 
         // foreach ($this->helper->getStores() as $store) expects an array, but it need only contain one mock for simplicity
         $storesArray = [
@@ -159,7 +160,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             )
             ->willReturn($this->orderCollectionMock);
 
-        $this->orderCollectionMock ->expects($this->atLeastOnce())
+        $this->orderCollectionMock->expects($this->atLeastOnce())
             ->method('getSize')
             ->willReturn(1500);
 
@@ -174,12 +175,16 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $this->saver->expects($this->atLeastOnce())
             ->method('save');
 
+        $this->dataHelperMock->expects($this->atLeastOnce())
+            ->method('getOrCreateContact')
+            ->willReturn(true);
+
         $this->cartInsight->expects($this->atLeastOnce())
             ->method('send');
 
         $this->rules
             ->method('apply')
-            ->with($this->orderCollectionMock , $storeId);
+            ->with($this->orderCollectionMock, $storeId);
 
         $this->model->process();
     }
