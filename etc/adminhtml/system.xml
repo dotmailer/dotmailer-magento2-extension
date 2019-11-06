@@ -1309,7 +1309,7 @@
                 </field>
                 <field id="tracking_profile_id" translate="label" sortOrder="50" showInStore="0" showInWebsite="0"
                        showInDefault="1">
-                    <label>Tracking Profile Id</label>
+                    <label>Web Behavior Tracking Profile Id</label>
                 </field>
             </group>
             <group id="consent" translate="label" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">
