@@ -12,11 +12,6 @@
                    name="ddg.checkout.tag"
                    template="Dotdigitalgroup_Email::email/tracking_code.phtml"
             />
-            <block ifconfig="connector_configuration/tracking/tracking_profile_id"
-                   class="Dotdigitalgroup\Email\Block\WebBehavior"
-                   name="web.behavior.tracking"
-                   template="Dotdigitalgroup_Email::email/web_behavior_tracking.phtml"
-            />
         </referenceContainer>
     </body>
 </page>

@@ -215,7 +215,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_INTEGRATION_INSIGHTS_ENABLED = 'connector_configuration/tracking/integration_insights';
     const XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED = 'connector_configuration/tracking/roi_enabled';
     const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED = 'connector_configuration/tracking/page_enabled';
-    const XML_PATH_CONNECTOR_TRACKING_PROFILE_ID = 'connector_configuration/tracking/tracking_profile_id';
 
     /**
      * CONSENT SECTION.

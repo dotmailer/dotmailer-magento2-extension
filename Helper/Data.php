@@ -2062,16 +2062,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $this->contactResource->save($contact);
     }
-
-    /**
-     * @param int $websiteId
-     * @return bool|string
-     */
-    public function getProfileId($websiteId = 0)
-    {
-        return $this->getWebsiteConfig(CONFIG::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID, $websiteId);
-    }
-
+    
     /**
      * Get the version number to append to _dmpt tracking script
      *
