@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Trial;
 
-use Dotdigitalgroup\Email\Model\Chat\Config as AccountConfig;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
@@ -12,6 +11,7 @@ use Magento\TestFramework\ObjectManager;
 
 /**
  * @magentoAppIsolation enabled
+ * @magentoDbIsolation enabled
  */
 class TrialSetupTest extends \PHPUnit\Framework\TestCase
 {
@@ -54,9 +54,6 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
     {
         // delete config items, just in case
         foreach ([
-            AccountConfig::XML_PATH_LIVECHAT_API_SPACE_ID,
-            AccountConfig::XML_PATH_LIVECHAT_API_TOKEN,
-            AccountConfig::XML_PATH_LIVECHAT_ENABLED,
             Config::XML_PATH_CONNECTOR_API_USERNAME,
             Config::XML_PATH_CONNECTOR_API_PASSWORD,
             Config::PATH_FOR_API_ENDPOINT,
@@ -115,7 +112,7 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
         $this->assertStringStartsWith($this->getTrialSetup()->getTrialSignupBaseUrl(), $signupUrl);
         $this->assertEquals('http://localhost', $signupQuery['magentohost']);
         $this->assertEquals(TrialSetup::SOURCE_CHAT, $signupQuery['source']);
-        $this->assertStringEndsWith(\Dotdigitalgroup\Email\Model\Chat\Config::MAGENTO_ROUTE, $signupQuery['callback']);
+        $this->assertStringEndsWith(Config::MAGENTO_ROUTE, $signupQuery['callback']);
     }
 
     /**

@@ -5,8 +5,12 @@ namespace Dotdigitalgroup\Email\Helper;
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Framework\Filter\Email;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * General most used helper to work with config data, saving updating and generating.
@@ -126,6 +130,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var RequestInterface
      */
     private $request;
+    /**
+     * @var EncryptorInterface
+     */
+
+    /**
+     * @var EncryptorInterface
+     */
+    private $encryptor;
+
+    /**
+     * @var ReinitableConfigInterface
+     */
+    private $reinitableConfig;
 
     /**
      * Data constructor.
@@ -144,10 +161,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param ConfigFactory $configHelperFactory
      * @param Json $serializer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @param Logger $logger
+     * @param RequestInterface $request
+     * @param EncryptorInterface $encryptor
+     * @param ReinitableConfigInterface $reinitableConfig
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -171,7 +193,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\User\Model\ResourceModel\User $userResource,
         Logger $logger,
-        RequestInterface $request
+        RequestInterface $request,
+        EncryptorInterface $encryptor,
+        ReinitableConfigInterface $reinitableConfig
     ) {
         $this->serializer       = $serializer;
         $this->adapter          = $adapter;
@@ -194,8 +218,70 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->contactResource = $contactResource;
         $this->logger = $logger;
         $this->request = $request;
+        $this->encryptor = $encryptor;
+        $this->reinitableConfig = $reinitableConfig;
 
         parent::__construct($context);
+    }
+
+    /**
+     * Save API credentials sent by microsite
+     *
+     * @param string $apiUsername
+     * @param string $apiPassword
+     * @param string|null $apiEndpoint
+     * @param $website
+     * @return $this
+     */
+    public function saveApiCredentials(string $apiUsername, string $apiPassword, string $apiEndpoint = null, $website)
+    {
+        $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_USERNAME, $apiUsername, $scopeInterface, $website->getId());
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_PASSWORD, $this->encryptor->encrypt($apiPassword), $scopeInterface, $website->getId());
+        if ($apiEndpoint) {
+            $this->resourceConfig->saveConfig(EmailConfig::PATH_FOR_API_ENDPOINT, $apiEndpoint, $scopeInterface, $website->getId());
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $apiSpaceId
+     * @param string $token
+     * @param $website
+     * @return $this
+     */
+    public function saveChatApiSpaceIdAndToken(string $apiSpaceId, string $token, $website)
+    {
+        $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_LIVECHAT_API_SPACE_ID, $apiSpaceId, $scopeInterface, $website->getId());
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_LIVECHAT_API_TOKEN, $this->encryptor->encrypt($token), $scopeInterface, $website->getId());
+        return $this;
+    }
+
+    /**
+     * Enable Engagement Cloud integration
+     *
+     * @return $this
+     */
+    public function enableEngagementCloud($website)
+    {
+        $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_ENABLED, true, $scopeInterface, $website->getId());
+        return $this;
+    }
+
+    /**
+     * Reinitialise config object
+     *
+     * @return $this
+     */
+    public function reinitialiseConfig()
+    {
+        $this->reinitableConfig->reinit();
+        return $this;
     }
 
     /**

@@ -2,9 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Controller\Ajax;
 
-use Dotdigitalgroup\Email\Model\Chat\Config;
-use Dotdigitalgroup\Email\Model\Chat\Profile\UpdateChatProfile;
-use Magento\Framework\Stdlib\Cookie\CookieReaderInterface;
+
+use Magento\Framework\App\Action\Context;
 
 class Emailcapture extends \Magento\Framework\App\Action\Action
 {
@@ -24,43 +23,29 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     private $checkoutSession;
 
     /**
-     * @var UpdateChatProfile
-     */
-    private $chatProfile;
-
-    /**
-     * @var CookieReaderInterface
-     */
-    private $cookieReader;
-
-    /**
+     * Emailcapture constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Checkout\Model\Session $session
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param UpdateChatProfile $chatProfile
-     * @param CookieReaderInterface $cookieReader
+     * @param Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Checkout\Model\Session $session,
-        \Magento\Framework\App\Action\Context $context,
-        UpdateChatProfile $chatProfile,
-        CookieReaderInterface $cookieReader
+        Context $context
     ) {
         $this->helper = $data;
         $this->quoteResource = $quoteResource;
         $this->checkoutSession = $session;
-        $this->chatProfile = $chatProfile;
-        $this->cookieReader = $cookieReader;
         parent::__construct($context);
     }
 
     /**
      * Easy email capture for Newsletter and Checkout.
-     *
-     * @return null
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|null
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {
@@ -78,11 +63,6 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);
                 }
-            }
-
-            // if a chat profile ID is present, update chat profile data
-            if ($chatProfileId = $this->cookieReader->getCookie(Config::COOKIE_CHAT_PROFILE, null)) {
-                $this->chatProfile->update($chatProfileId, $email);
             }
         }
     }

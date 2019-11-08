@@ -294,6 +294,16 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const INTERNAL_SUB_DOMAIN = 'internal';
 
     /**
+     * Chat Paths
+     */
+    const MAGENTO_ROUTE = 'connector/email/accountcallback';
+    const MAGENTO_PROFILE_CALLBACK_ROUTE = 'connector/chat/profile?isAjax=true';
+    const XML_PATH_LIVECHAT_ENABLED = 'chat_api_credentials/settings/enabled';
+    const XML_PATH_LIVECHAT_API_SPACE_ID = 'chat_api_credentials/credentials/api_space_id';
+    const XML_PATH_LIVECHAT_API_TOKEN = 'chat_api_credentials/credentials/api_token';
+
+
+    /**
      * @var \Magento\Framework\Stdlib\StringUtils
      */
     private $stringUtils;

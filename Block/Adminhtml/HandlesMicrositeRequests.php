@@ -16,7 +16,7 @@ trait HandlesMicrositeRequests
      */
     public function getLocalCallbackUrl(): string
     {
-        return $this->trialSetup->getLocalCallbackUrl();
+        return $this->getTrialSetup()->getLocalCallbackUrl();
     }
 
     /**
@@ -24,7 +24,7 @@ trait HandlesMicrositeRequests
      */
     public function getTrialSignupHostAndScheme(): string
     {
-        return $this->trialSetup->getTrialSignupHostAndScheme();
+        return $this->getTrialSetup()->getTrialSignupHostAndScheme();
     }
 
     /**

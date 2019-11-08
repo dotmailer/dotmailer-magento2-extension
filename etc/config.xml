@@ -318,14 +318,5 @@
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
         </connector_developer_settings>
-        <chat_api_credentials>
-            <credentials>
-                <api_space_id></api_space_id>
-                <api_token></api_token>
-            </credentials>
-            <settings>
-                <enabled>0</enabled>
-            </settings>
-        </chat_api_credentials>
     </default>
 </config>
