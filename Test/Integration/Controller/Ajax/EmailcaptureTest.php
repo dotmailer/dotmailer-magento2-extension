@@ -30,11 +30,6 @@ class EmailcaptureTest extends AbstractController
      */
     private $quoteResourceMock;
 
-    /**
-     * @var UpdateChatProfile
-     */
-    private $updateChatProfileMock;
-
     public function setUp()
     {
         parent::setUp();
@@ -49,11 +44,8 @@ class EmailcaptureTest extends AbstractController
 
         $this->quoteResourceMock = $this->createMock(QuoteResource::class);
 
-        $this->updateChatProfileMock = $this->createMock(UpdateChatProfile::class);
-
         $objectManager->addSharedInstance($this->quoteResourceMock, QuoteResource::class);
         $objectManager->addSharedInstance($this->sessionMock, Session::class);
-        $objectManager->addSharedInstance($this->updateChatProfileMock, UpdateChatProfile::class);
     }
 
     public function testExecuteWithNoQuote()
@@ -101,24 +93,7 @@ class EmailcaptureTest extends AbstractController
         $this->dispatch('/connector/ajax/emailcapture');
     }
 
-    public function testUpdateChatProfileCookie()
-    {
-        $profileId = 123456;
-        $email = 'chaz@kangaroo.com';
-        $_COOKIE[Config::COOKIE_CHAT_PROFILE] = $profileId;
-
-        $this->setUpForAvailableQuote();
-
-        $this->updateChatProfileMock->expects($this->once())
-            ->method('update')
-            ->with($profileId, $email);
-
-        $this->getRequest()->setParam('email', $email);
-
-        $this->dispatch('/connector/ajax/emailcapture');
-    }
-
-    private function setUpForAvailableQuote(string $customerEmail = null)
+    protected function setUpForAvailableQuote(string $customerEmail = null)
     {
         $this->sessionMock->expects($this->once())
             ->method('getQuote')

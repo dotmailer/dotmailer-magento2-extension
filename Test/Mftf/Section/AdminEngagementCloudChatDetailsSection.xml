@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Page/etc/SectionObject.xsd">
-    <section name="AdminEngagementCloudChatSettingsSection">
-        <element name="apiEnabled" type="select" selector="#chat_api_credentials_settings_enabled" />
-        <element name="save" type="button" selector="#save" />
-    </section>
-</sections>

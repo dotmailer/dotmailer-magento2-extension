@@ -6,25 +6,16 @@
             <block class="Magento\Framework\View\Element\Template"
                    name="emailCapture"
                    template="Dotdigitalgroup_Email::email/email_capture_newsletter.phtml"/>
-            <block ifconfig="chat_api_credentials/settings/enabled"
-                   class="Dotdigitalgroup\Email\Block\Chat\Virtual"
-                   name="ddg.chat.tag"
-                   template="Dotdigitalgroup_Email::chat/include.phtml">
-                <arguments>
-                    <argument name="jsLayout" xsi:type="array">
-                        <item name="components" xsi:type="array">
-                            <item name="chatData" xsi:type="array">
-                                <item name="component" xsi:type="string">Dotdigitalgroup_Email/js/view/chatData</item>
-                            </item>
-                        </item>
-                    </argument>
-                </arguments>
-            </block>
         </referenceContainer>
         <referenceContainer name="after.body.start">
             <block class="Dotdigitalgroup\Email\Block\Tracking"
                    name="ddg.checkout.tag"
                    template="Dotdigitalgroup_Email::email/tracking_code.phtml"
+            />
+            <block ifconfig="connector_configuration/tracking/tracking_profile_id"
+                   class="Dotdigitalgroup\Email\Block\WebBehavior"
+                   name="web.behavior.tracking"
+                   template="Dotdigitalgroup_Email::email/web_behavior_tracking.phtml"
             />
         </referenceContainer>
     </body>

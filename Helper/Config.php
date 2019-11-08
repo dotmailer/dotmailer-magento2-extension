@@ -215,6 +215,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_INTEGRATION_INSIGHTS_ENABLED = 'connector_configuration/tracking/integration_insights';
     const XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED = 'connector_configuration/tracking/roi_enabled';
     const XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED = 'connector_configuration/tracking/page_enabled';
+    const XML_PATH_CONNECTOR_TRACKING_PROFILE_ID = 'connector_configuration/tracking/tracking_profile_id';
 
     /**
      * CONSENT SECTION.
@@ -291,6 +292,16 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const API_CONNECTOR_TRIAL_FORM_URL = 'https://magentosignup.dotdigital.com';
     const XML_PATH_CONNECTOR_TRIAL_URL_OVERRIDE = 'connector/microsite/url';
     const INTERNAL_SUB_DOMAIN = 'internal';
+
+    /**
+     * Chat Paths
+     */
+    const MAGENTO_ROUTE = 'connector/email/accountcallback';
+    const MAGENTO_PROFILE_CALLBACK_ROUTE = 'connector/chat/profile?isAjax=true';
+    const XML_PATH_LIVECHAT_ENABLED = 'chat_api_credentials/settings/enabled';
+    const XML_PATH_LIVECHAT_API_SPACE_ID = 'chat_api_credentials/credentials/api_space_id';
+    const XML_PATH_LIVECHAT_API_TOKEN = 'chat_api_credentials/credentials/api_token';
+
 
     /**
      * @var \Magento\Framework\Stdlib\StringUtils
