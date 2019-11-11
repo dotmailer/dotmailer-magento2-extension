@@ -4,6 +4,9 @@ namespace Dotdigitalgroup\Email\Tests\Integration\Adminhtml\Developer;
 
 include __DIR__ . '/../../_files/wishlist.php';
 
+/**
+ * @magentoAppArea adminhtml
+ */
 class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
@@ -14,31 +17,21 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     /**
      * @var string
      */
-    public $uri = 'backend/dotdigitalgroup_email/run/wishlistsreset';
-
-    /**
-     * @var array
-     */
-    private $data = [];
+    protected $uri = 'backend/dotdigitalgroup_email/run/wishlistsreset';
 
     /**
      * @var string
      */
-    public $resource = 'Dotdigitalgroup_Email::config';
+    protected $resource = 'Dotdigitalgroup_Email::config';
 
-    /**
-     * @return void
-     */
     public function setUp()
     {
         parent::setUp();
 
-        $params = [
+        $this->getRequest()->setParams([
             'from' => '',
-            'to' => ''
-        ];
-        $this->getRequest()->setParams($params);
-        $this->data = $this->getWishlistData();
+            'to' => '',
+        ]);
     }
 
     /**
@@ -187,7 +180,7 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     private function createWishlistDataAndGetCollection()
     {
         $this->emptyTable();
-        $this->createEmailData($this->data);
+        $this->createEmailData($this->getWishlistData());
 
         $collection = $this->_objectManager->create($this->model)
             ->getCollection();

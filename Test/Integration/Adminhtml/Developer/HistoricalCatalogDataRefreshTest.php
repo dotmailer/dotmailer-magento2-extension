@@ -5,6 +5,11 @@ namespace Dotdigitalgroup\Email\Tests\Integration\Adminhtml\Developer;
 use Magento\Reports\Model\ResourceModel\Product\Collection;
 use Magento\TestFramework\Request;
 
+include __DIR__ . '/../../_files/products.php';
+
+/**
+ * @magentoAppArea adminhtml
+ */
 class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
@@ -29,8 +34,6 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
     {
         parent::setUp();
 
-        include __DIR__ . '/../../_files/products.php';
-        
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->uri = $this->url;
         $this->resource = 'Dotdigitalgroup_Email::config';
@@ -68,7 +71,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $data = [
             'product_id' => '1',
             'processed' => '1',
-            'created_at' => '2017-02-09',
+            'created_at' => '2017-02-09'
         ];
         $this->createEmailData($data);
 
@@ -78,7 +81,6 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
             ->getCollection();
 
         $collection->addFieldToFilter('processed', 0);
-        $this->getResponse()->getBody();
 
         $this->assertEquals(1, $collection->getSize());
     }
