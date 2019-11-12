@@ -240,15 +240,6 @@ class UpgradeData implements UpgradeDataInterface
                     'modified IS NULL OR modified = 0'
                 ]
             );
-
-            // Clear values of deprecated columns
-            $setup->getConnection()->update(
-                $catalogTable,
-                [
-                    'modified' => null,
-                    'imported' => null
-                ]
-            );
         }
     }
 }
