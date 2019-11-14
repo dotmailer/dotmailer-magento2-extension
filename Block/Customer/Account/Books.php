@@ -41,7 +41,6 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     private $contactFromTable;
 
-
     /**
      * Books constructor.
      *
@@ -341,22 +340,25 @@ class Books extends \Magento\Framework\View\Element\Template
             $formattedPreference = [];
             $formattedPreference['isPreference'] = $preference->isPreference;
             if (! $preference->isPreference) {
-                if (! isset($preference->preferences)) {
+                if ($this->hasNoPublicChildren($preference)) {
                     continue;
                 }
                 $formattedPreference['catLabel'] = $preference->publicName;
                 $formattedCatPreferences = [];
                 foreach ($preference->preferences as $catPreference) {
+                    if (!$catPreference->isPublic) {
+                        continue;
+                    }
                     $formattedCatPreference = [];
                     $formattedCatPreference['label'] = $catPreference->publicName;
-                    isset($catPreference->isOptedIn)? $formattedCatPreference['isOptedIn'] = $catPreference->isOptedIn :
+                    isset($catPreference->isOptedIn) ? $formattedCatPreference['isOptedIn'] = $catPreference->isOptedIn :
                         $formattedCatPreference['isOptedIn'] = false;
                     $formattedCatPreferences[$catPreference->id] = $formattedCatPreference;
                 }
                 $formattedPreference['catPreferences'] = $formattedCatPreferences;
             } else {
                 $formattedPreference['label'] = $preference->publicName;
-                isset($preference->isOptedIn)? $formattedPreference['isOptedIn'] = $preference->isOptedIn :
+                isset($preference->isOptedIn) ? $formattedPreference['isOptedIn'] = $preference->isOptedIn :
                     $formattedPreference['isOptedIn'] = false;
             }
             $processedPreferences[$preference->id] = $formattedPreference;
@@ -455,5 +457,22 @@ class Books extends \Magento\Framework\View\Element\Template
         }
 
         return false;
+    }
+
+    /**
+     * @param stdClass $preference
+     * @return bool
+     */
+    private function hasNoPublicChildren($preference)
+    {
+        if (!isset($preference->preferences)) {
+            return true;
+        }
+        foreach ($preference->preferences as $catPreference) {
+            if ($catPreference->isPublic) {
+                return false;
+            }
+        }
+        return true;
     }
 }
