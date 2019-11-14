@@ -4,15 +4,15 @@
 ?>
 <form id="connector-newsletter-form-validate" method="post" action="<?= $block->escapeHtml($block->getSaveUrl()) ?>">
     <?= $block->getBlockHtml('formkey') ?>
-    <legend class="legend"><span><?= $block->escapeHtml(__('General Subscription')) ?></span></legend>
     <fieldset class="fieldset">
+        <legend class="legend"><span><?= $block->escapeHtml(__('General Subscription')) ?></span></legend>
         <div class="field choice">
             <input type="checkbox" name="is_subscribed" id="subscription" value="1"
                    title="General Subscription"
                 <?php if ($block->isSubscribed()): ?> checked="checked"<?php endif; ?> class="checkbox">
             <label for="subscription" class="label">
                     <span>
-                        <?php if(strlen($block->getCustomerConsentText())) : ?>
+                        <?php if (strlen($block->getCustomerConsentText())) : ?>
                             <?= $block->escapeHtml($block->getCustomerConsentText()) ?>
                         <?php else : ?>
                             <?= $block->escapeHtml(__('General Subscription')) ?>
