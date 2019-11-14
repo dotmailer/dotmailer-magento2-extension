@@ -1274,10 +1274,9 @@
                     <label>Page Tracking</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="script_version" translate="label" sortOrder="30" showInStore="0" showInWebsite="0"
-                       showInDefault="1">
+                <field id="script_version" translate="label" sortOrder="20" type="select" showInStore="0"
+                       showInWebsite="0" showInDefault="0">
                     <label>Script version</label>
-                    <comment>This adds an optional version number to the ROI tracking script to force a reload if the script is cached.</comment>
                 </field>
                 <field id="tracking_profile_id" translate="label" sortOrder="50" showInStore="0" showInWebsite="0"
                        showInDefault="1">
