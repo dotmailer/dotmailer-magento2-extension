@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -49,6 +50,11 @@ class UrlFinder
     private $mediaConfig;
 
     /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
      * UrlFinder constructor.
      *
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType
@@ -59,6 +65,7 @@ class UrlFinder
      * @param \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory
      * @param \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory
      * @param ScopeConfigInterface $scopeConfig
+     * @param Data $helper
      */
     public function __construct(
         \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType,
@@ -68,7 +75,8 @@ class UrlFinder
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory,
         \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Data $helper
     ) {
         $this->configurableType = $configurableType;
         $this->productRepository = $productRepository;
@@ -78,6 +86,7 @@ class UrlFinder
         $this->imageBuilder = $imageBuilderFactory->create();
         $this->mediaConfig = $mediaConfigFactory->create();
         $this->scopeConfig = $scopeConfig;
+        $this->helper = $helper;
     }
 
     /**
@@ -90,8 +99,7 @@ class UrlFinder
     {
         $product = $this->getScopedProduct($product);
 
-        if (
-            $product->getVisibility() == \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE
+        if ($product->getVisibility() == \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE
             && $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
             && $parentProduct = $this->getParentProduct($product)
         ) {
@@ -146,8 +154,7 @@ class UrlFinder
      */
     private function getParentProductForNoImageSelection(Product $product)
     {
-        if (
-            $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+        if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
             && (empty($product->getSmallImage()) || $product->getSmallImage() == 'no_selection')
             && $parentProduct = $this->getParentProduct($product)
         ) {
@@ -186,7 +193,8 @@ class UrlFinder
 
     /**
      * In default-level catalog sync, the supplied Product's store ID can be 1 even though the product is not in store 1
-     * This method finds the default store of the first website the product belongs to, and uses that to get a new product.
+     * This method finds the default store of the first website the product belongs to,
+     * and uses that to get a new product.
      *
      * @param \Magento\Catalog\Model\Product $product
      *
@@ -212,7 +220,8 @@ class UrlFinder
 
     /**
      * Utility method to remove /pub from media paths.
-     * Note this inclusion of /pub in media paths during CLI or cron script execution is a longstanding Magento issue, ref https://github.com/magento/magento2/issues/8868
+     * Note this inclusion of /pub in media paths during CLI or cron script execution is a longstanding Magento issue,
+     * ref https://github.com/magento/magento2/issues/8868
      *
      * @param string $path
      *
@@ -233,9 +242,18 @@ class UrlFinder
      */
     private function getParentProduct($product)
     {
-        if ($parentId = $this->getFirstParentId($product)) {
-            return $this->productRepository->getById($parentId, false, $product->getStoreId());
+        try {
+            if ($parentId = $this->getFirstParentId($product)) {
+                return $this->productRepository->getById($parentId, false, $product->getStoreId());
+            }
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+            $this->helper->debug(
+                $e->getMessage() . ' Parent Product: ' .
+                 $parentId . ', 
+                Child Product: ' . $product->getId()
+            );
         }
+
         return null;
     }
 
@@ -254,6 +272,6 @@ class UrlFinder
             }
         }
 
-        return $parsed['scheme'].'://'.$parsed['host'].implode('/', $pathArray);
+        return $parsed['scheme'] . '://' . $parsed['host'] . implode('/', $pathArray);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog\UrlFinder;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder as UrlFinder;
 use Magento\Bundle\Model\ResourceModel\Selection;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -9,10 +10,10 @@ use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Block\Product\ImageBuilderFactory;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\TestCase;
 
 class UrlFinderTest extends TestCase
@@ -72,6 +73,11 @@ class UrlFinderTest extends TestCase
      */
     private $scopeConfigInterfaceMock;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $helperMock;
+
     protected function setUp()
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
@@ -83,6 +89,7 @@ class UrlFinderTest extends TestCase
         $this->websiteMock = $this->createMock(Website::class);
         $this->imageBuilderMock = $this->createMock(ImageBuilder::class);
         $this->mediaConfigMock = $this->createMock(Product\Media\Config::class);
+        $this->helperMock = $this->createMock(Data::class);
 
         $mediaConfigFactory = $this->getMockBuilder(Product\Media\ConfigFactory::class)
             ->disableOriginalConstructor()
@@ -110,7 +117,8 @@ class UrlFinderTest extends TestCase
             $this->storeManagerMock,
             $imageBuilderFactory,
             $mediaConfigFactory,
-            $this->scopeConfigInterfaceMock
+            $this->scopeConfigInterfaceMock,
+            $this->helperMock
         );
     }
 
@@ -426,6 +434,6 @@ class UrlFinderTest extends TestCase
 
         $returnedUrl = $this->urlFinder->getPath($path);
 
-        $this->assertEquals($expected,$returnedUrl);
+        $this->assertEquals($expected, $returnedUrl);
     }
 }
