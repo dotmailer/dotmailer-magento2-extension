@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../../../../../vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/Test/etc/testSchema.xsd">
+    <test name="CouponUrlBuilderInactiveStateTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Engagement Cloud Coupon URL Builder"/>
+            <title value="Disable the URL Builder if the Engagement Cloud account is not active"/>
+            <description value="The coupon URL builder form fields should be disabled, and warning text displayed."/>
+            <severity value="AVERAGE"/>
+            <group value="dotdigitalCoupon"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <!-- Log in and set API credentials -->
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+
+            <!-- Disable account -->
+            <actionGroup ref="SetDisableDotmailerAccount" stepKey="disableDotmailerAccount"/>
+
+            <!-- Create a cart price rule -->
+            <actionGroup ref="DotAdminCreateCartPriceRuleActionGroup" stepKey="createCartPriceRule">
+                <argument name="ruleName" value="DotSalesRule"/>
+            </actionGroup>
+        </before>
+
+        <after>
+            <!-- Delete the sales rule we created for the test -->
+            <actionGroup ref="DeleteCartPriceRuleByName" stepKey="DeleteCartPriceRuleByName">
+                <argument name="ruleName" value="{{DotSalesRule.name}}"/>
+            </actionGroup>
+
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <!-- Confirm URL builder is in a disabled state -->
+        <click selector="{{AdminCartPriceRulesSection.rowContainingText(DotSalesRule.name)}}" stepKey="goToEditRule"/>
+        <click selector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderHeader}}" stepKey="clickToExpandCouponUrlBuilder"/>
+
+        <seeElement selector="{{EngagementCloudCouponUrlBuilderSection.disabledNotice}}" stepKey="seeDisabledNotice"/>
+
+        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.codeFormat}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled1" />
+        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.codePrefix}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled2" />
+        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.codeSuffix}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled3" />
+        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.expiresAfter}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled4" />
+        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.allowResend}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled5" />
+        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.cancelSend}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled6" />
+
+    </test>
+</tests>

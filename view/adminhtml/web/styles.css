@@ -57,7 +57,10 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
 .ddg-edc-content div { text-align: center; }
 .ddg-dynamic-content {
     cursor: pointer!important;
-    background-color: #fff!important;
+    background-color: #fff !important;
+    border-color: #adadad !important;
+    color: #303030 !important;
+    opacity: .5 !important;
 }
 .ddg-tooltip{
     position:absolute;
@@ -69,4 +72,9 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
 }
 .ddg-disabled-button{
     cursor: not-allowed;
+}
+.field-has-description + .addafter {
+    display: block;
+    padding-top: 5px;
+    font-size: 1.2rem;
 }

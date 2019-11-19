@@ -40,7 +40,7 @@ class AccountcallbackTest extends AbstractController
      */
     public function testExecuteNoCode()
     {
-        $this->dispatch(\Dotdigitalgroup\Email\Model\Chat\Config::MAGENTO_ROUTE);
+        $this->dispatch(Config::MAGENTO_ROUTE);
 
         $response = $this->getResponse();
         $this->assertEquals(401, $response->getStatusCode());
@@ -54,7 +54,7 @@ class AccountcallbackTest extends AbstractController
         $this->getRequest()->setParams([
             'code' => 'wingman',
         ]);
-        $this->dispatch(\Dotdigitalgroup\Email\Model\Chat\Config::MAGENTO_ROUTE);
+        $this->dispatch(Config::MAGENTO_ROUTE);
 
         $response = $this->getResponse();
         $this->assertEquals(401, $response->getStatusCode());
@@ -89,26 +89,6 @@ class AccountcallbackTest extends AbstractController
     }
 
     /**
-     * And now with chat
-     */
-    public function testSuccessfulRequestWithChat()
-    {
-        $response = $this->sendValidRequest([
-            'apispaceid' => 'chatty',
-            'token' => 'c0nsole',
-        ]);
-
-        $this->assertEquals(201, $response->getStatusCode());
-
-        // check api space was saved, and token not empty
-        $this->assertEquals(
-            'chatty',
-            $this->helper->getWebsiteConfig(\Dotdigitalgroup\Email\Model\Chat\Config::XML_PATH_LIVECHAT_API_SPACE_ID)
-        );
-        $this->assertNotNull($this->helper->getWebsiteConfig(\Dotdigitalgroup\Email\Model\Chat\Config::XML_PATH_LIVECHAT_API_TOKEN));
-    }
-
-    /**
      * Send a valid request
      *
      * @param array $additionalParams
@@ -121,7 +101,7 @@ class AccountcallbackTest extends AbstractController
             'code' => $this->trialSetup->generateTemporaryPasscode(),
         ]);
 
-        $this->dispatch(\Dotdigitalgroup\Email\Model\Chat\Config::MAGENTO_ROUTE);
+        $this->dispatch(Config::MAGENTO_ROUTE);
         return $this->getResponse();
     }
 }

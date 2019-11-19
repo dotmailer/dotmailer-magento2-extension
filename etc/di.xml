@@ -33,6 +33,12 @@
     <type name="Magento\UrlRewrite\Controller\Adminhtml\Url\Rewrite\Save">
         <plugin name="dotmailer_url_rewrite_save_plugin" type="Dotdigitalgroup\Email\Plugin\UrlRewriteSavePlugin" sortOrder="1"/>
     </type>
+    <type name="Magento\SalesRule\Api\CouponRepositoryInterface">
+        <plugin name="coupon_plugin" type="Dotdigitalgroup\Email\Plugin\CouponPlugin"/>
+    </type>
+    <type name="Magento\SalesRule\Model\ResourceModel\Coupon\Collection">
+        <plugin name="ddg_generated_for_email_plugin" type="Dotdigitalgroup\Email\Plugin\CouponCollectionPlugin"/>
+    </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
             <argument name="prices" xsi:type="array">
@@ -85,8 +91,10 @@
     </type>
     <preference for="Magento\Config\Model\Config\Structure\SearchInterface" type="Magento\Config\Model\Config\Structure" />
     <preference for="Magento\Sales\Api\Data\OrderSearchResultInterface" type="Magento\Sales\Model\ResourceModel\Order\Collection" />
-    <preference for="Magento\SalesRule\Model\Coupon\CodegeneratorInterface" type="Dotdigitalgroup\Email\Model\SalesRule\DotmailerCouponCodeGenerator" />
+    <preference for="Magento\SalesRule\Model\Coupon\CodegeneratorInterface" type="Dotdigitalgroup\Email\Model\SalesRule\DotdigitalCouponCodeGenerator" />
     <preference for="Magento\Framework\Mail\Template\SenderResolverInterface" type="Dotdigitalgroup\Email\Model\Email\DotdigitalSenderResolver" />
+    <preference for="Dotdigitalgroup\Email\Api\CouponAttributeRepositoryInterface" type="Dotdigitalgroup\Email\Model\Coupon\CouponAttributeRepository"/>
+    <preference for="Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface" type="Dotdigitalgroup\Email\Model\Coupon\CouponAttribute"/>
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>

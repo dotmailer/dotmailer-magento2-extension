@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="engagement_cloud_coupon_url_builder" sortOrder="60" component="Dotdigitalgroup_Email/js/form/element/manage-coupon-codes">
+        <settings>
+            <collapsible>true</collapsible>
+            <label translate="true">Engagement Cloud Coupon URL Builder</label>                     <additionalClasses>
+                <class name="ddg-fieldset">true</class>
+            </additionalClasses>
+        </settings>
+        <htmlContent name="html_content">
+            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab\Coupons" name="dotdigital_sales_rule_edit_tab_coupons" as="dotdigital_sales_rule_edit_tab_coupons" template="Dotdigitalgroup_Email::tab/coupons.phtml">
+                <block class="Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab\Coupons\Form" name="dotdigital_quote_edit_tab_coupons_form"/>
+            </block>
+        </htmlContent>
+    </fieldset>
+</form>

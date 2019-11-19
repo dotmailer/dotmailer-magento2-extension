@@ -745,12 +745,13 @@
                 </field>
                 <field id="coupon_code_title" translate="label" sortOrder="60" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Coupon Codes</label>
+                    <label>Coupon Codes (Deprecated)</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
                 <field id="coupon_code_url" translate="label" sortOrder="70" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Coupon Codes URL</label>
+                    <comment><![CDATA[We recommend using the 'Engagement Cloud Coupon URL Builder' in Marketing > Promotions > Cart Price Rules.]]></comment>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Couponcode</frontend_model>
                 </field>
                 <field id="order_dynamic_content_url" translate="label" sortOrder="80" showInStore="0" showInWebsite="1"

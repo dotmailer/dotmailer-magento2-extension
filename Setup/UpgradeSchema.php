@@ -50,7 +50,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->upgradeTwoThreeSixToTwoFiveFour($setup, $context);
         $this->upgradeTwoFiveFourToThreeZeroThree($setup, $context);
         $this->upgradeThreeTwoTwo($setup, $context);
-        $this->upgradeFourOhOne($setup, $context);
+        $this->upgradeFourZeroOne($setup, $context);
+        $this->upgradeFourTwoZero($setup, $context);
 
         $setup->endSetup();
     }
@@ -591,11 +592,18 @@ class UpgradeSchema implements UpgradeSchemaInterface
         }
     }
 
-    private function upgradeFourOhOne(
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeFourZeroOne(
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
     ) {
         if (version_compare($context->getVersion(), '4.0.1', '<')) {
+
+            $tableName = $setup->getTable(Schema::EMAIL_COUPON_TABLE);
+            $this->shared->createCouponTable($setup, $tableName);
 
             $catalogTable = $setup->getTable(Schema::EMAIL_CATALOG_TABLE);
 
@@ -680,6 +688,21 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     );
                 }
             }
+        }
+    }
+
+    /**
+     *
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeFourTwoZero(
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '4.2.0', '<')) {
+            $tableName = $setup->getTable(Schema::EMAIL_COUPON_TABLE);
+            $this->shared->createCouponTable($setup, $tableName);
         }
     }
 }

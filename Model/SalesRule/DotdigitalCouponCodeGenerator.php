@@ -5,9 +5,13 @@ namespace Dotdigitalgroup\Email\Model\SalesRule;
 use Magento\Framework\Math\Random;
 use Magento\SalesRule\Helper\Coupon;
 use Magento\SalesRule\Model\Coupon\CodegeneratorInterface;
+use Magento\Framework\DataObject;
 
-class DotmailerCouponCodeGenerator implements CodegeneratorInterface
+class DotdigitalCouponCodeGenerator extends DataObject implements CodegeneratorInterface
 {
+    const SPLIT = 3;
+    const LENGTH = 9;
+
     /**
      * @var Coupon
      */
@@ -15,11 +19,14 @@ class DotmailerCouponCodeGenerator implements CodegeneratorInterface
 
     /**
      * @param Coupon $salesRuleCoupon
+     * @param array $data
      */
     public function __construct(
-        Coupon $salesRuleCoupon
+        Coupon $salesRuleCoupon,
+        array $data = []
     ) {
         $this->salesRuleCoupon = $salesRuleCoupon;
+        parent::__construct($data);
     }
 
     /**
@@ -28,22 +35,26 @@ class DotmailerCouponCodeGenerator implements CodegeneratorInterface
      */
     public function generateCode()
     {
-        $format = Coupon::COUPON_FORMAT_ALPHANUMERIC;
-        $splitChar = $this->getDelimiter();
+        $prefix = $this->getData('codePrefix') ?: 'DOT-';
+        $suffix = $this->getData('codeSuffix') ?: '';
+        $format = in_array($codeFormat = $this->getData('codeFormat'), array_keys($this->salesRuleCoupon->getFormatsList()))
+            ? $codeFormat
+            : Coupon::COUPON_FORMAT_ALPHANUMERIC;
+
         $charset = $this->salesRuleCoupon->getCharset($format);
-        $code = '';
         $charsetSize = count($charset);
-        $split = 3;
-        $length = 9;
-        for ($i = 0; $i < $length; ++$i) {
+        $splitChar = $this->getDelimiter();
+        $code = '';
+
+        for ($i = 0; $i < self::LENGTH; ++$i) {
             $char = $charset[Random::getRandomNumber(0, $charsetSize - 1)];
-            if (($split > 0) && (($i % $split) === 0) && ($i !== 0)) {
+            if ($i % self::SPLIT === 0 && $i !== 0) {
                 $char = $splitChar . $char;
             }
             $code .= $char;
         }
 
-        return 'DOT-' . $code;
+        return $prefix . $code . $suffix;
     }
 
     /**

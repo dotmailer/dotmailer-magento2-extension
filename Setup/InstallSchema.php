@@ -53,6 +53,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->createAbandonedCartTable($installer);
         $this->createConsentTable($installer);
         $this->createFailedAuth($installer);
+        $this->createCouponTable($installer);
 
         /**
          * Modify table
@@ -1639,5 +1640,15 @@ class InstallSchema implements InstallSchemaInterface
         $tableName = $installer->getTable(Schema::EMAIL_FAILED_AUTH_TABLE);
         $this->dropTableIfExists($installer, $tableName);
         $this->shared->createFailedAuthTable($installer, $tableName);
+    }
+
+    /**
+     * @param SchemaSetupInterface $installer
+     */
+    private function createCouponTable($installer)
+    {
+        $tableName = $installer->getTable(Schema::EMAIL_COUPON_TABLE);
+        $this->dropTableIfExists($installer, $tableName);
+        $this->shared->createCouponTable($installer, $tableName);
     }
 }

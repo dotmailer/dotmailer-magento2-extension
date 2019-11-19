@@ -2,11 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\SalesRule;
 
-use Dotdigitalgroup\Email\Model\SalesRule\DotmailerCouponCodeGenerator;
+use Dotdigitalgroup\Email\Model\SalesRule\DotdigitalCouponCodeGenerator;
 use Magento\SalesRule\Helper\Coupon;
 use PHPUnit\Framework\TestCase;
 
-class DotmailerCouponCodeGeneratorTest extends TestCase
+class DotdigitalCouponCodeGeneratorTest extends TestCase
 {
     /**
      * @var Coupon|\PHPUnit_Framework_MockObject_MockObject
@@ -14,7 +14,7 @@ class DotmailerCouponCodeGeneratorTest extends TestCase
     private $couponHelperMock;
 
     /**
-     * @var DotmailerCouponCodeGenerator
+     * @var DotdigitalCouponCodeGenerator
      */
     private $model;
 
@@ -27,7 +27,15 @@ class DotmailerCouponCodeGeneratorTest extends TestCase
                                        ->disableOriginalConstructor()
                                        ->getMock();
 
-        $this->model = new DotmailerCouponCodeGenerator($this->couponHelperMock);
+        $this->couponHelperMock->expects($this->any())
+            ->method('getFormatsList')
+            ->willReturn([
+                Coupon::COUPON_FORMAT_ALPHANUMERIC => __('Alphanumeric'),
+                Coupon::COUPON_FORMAT_ALPHABETICAL => __('Alphabetical'),
+                Coupon::COUPON_FORMAT_NUMERIC => __('Numeric')
+            ]);
+
+        $this->model = new DotdigitalCouponCodeGenerator($this->couponHelperMock);
     }
 
     public function testCouponCodeDelimiterRetrievedFromCouponHelper()

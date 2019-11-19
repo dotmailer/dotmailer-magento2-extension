@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="DotCouponUrl">
+        <data key="codeFormatNum">Numeric</data>
+        <data key="codePrefix">DOT</data>
+        <data key="codeSuffix">CHAZ</data>
+        <data key="expiresAfter">7</data>
+        <data key="allowResend">0</data>
+        <data key="cancelSend">0</data>
+        <data key="defaultUrlValue">/expire_days/1/code_format/alphanum/code_allow_resend/1/code_cancel_send/1/code_email/@EMAIL@</data>
+        <data key="urlValueWithNumericFormatPrefixAndSuffix">/expire_days/1/code_prefix/DOT/code_suffix/CHAZ/code_format/num/code_allow_resend/1/code_cancel_send/1/code_email/@EMAIL@</data>
+        <data key="urlValueWithExpireDays">/expire_days/7/code_prefix/DOT/code_suffix/CHAZ/code_format/num/code_allow_resend/1/code_cancel_send/1/code_email/@EMAIL@</data>
+        <data key="urlValueWithAllowResendOff">/expire_days/7/code_prefix/DOT/code_suffix/CHAZ/code_format/num/code_allow_resend/0/code_email/@EMAIL@</data>
+    </entity>
+</entities>
