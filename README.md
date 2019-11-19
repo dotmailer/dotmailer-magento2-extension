@@ -15,6 +15,14 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 4.2.0
+
+###### Bug fixes
+- We now confirm a contact exists in Engagement Cloud before sending _cartInsight_ data during the abandoned cart syncs for campaigns and program enrolment.
+- We fixed a problem where catalog sync was breaking while trying to load a non-existent parent product.
+- Private marketing preferences are now hidden from the customer, even when nested inside a category.
+- We’ve fixed a bug in the order sync that happened if the connector couldn't find the products for an order.
+
 ## 4.0.0
 
 ###### What’s new
