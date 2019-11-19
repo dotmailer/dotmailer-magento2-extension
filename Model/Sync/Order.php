@@ -408,6 +408,9 @@ class Order implements SyncInterface
     {
         $allProducts = array();
         foreach ($orders as $order) {
+            if (!isset($orders['products'])) {
+                continue;
+            }
             foreach ($order['products'] as $products) {
                 $allProducts[] = $products;
             }
