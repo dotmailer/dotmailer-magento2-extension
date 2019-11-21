@@ -334,8 +334,9 @@ class Order
                 // We store data for configurable and bundle products, to be output alongside their children
                 unset($parentProductModel, $parentLineItem);
                 $parentProductModel = $productItem->getProduct();
-                $parentLineItem = $productItem->getId();
+                $parentLineItem = $productItem;
 
+                // Custom options stored against parent order items
                 $customOptions = ($syncCustomOption) ? $this->_getOrderItemOptions($productItem) : [];
 
                 continue;
@@ -347,12 +348,21 @@ class Order
 
             if (isset($parentProductModel) &&
                 isset($parentLineItem) &&
-                $parentLineItem === $productItem->getParentItemId()) {
+                $parentLineItem->getId() === $productItem->getParentItemId()) {
                 $productModel = $parentProductModel;
                 $childProductModel = $productItem->getProduct();
             } else {
                 $productModel = $productItem->getProduct();
                 $childProductModel = null;
+            }
+
+            /**
+             * Price
+             */
+            if (isset($parentLineItem) && $parentLineItem->getProduct()->getTypeId() === 'configurable') {
+                $price = $parentLineItem->getPrice();
+            } else {
+                $price = $productItem->getPrice();
             }
 
             if ($productModel) {
@@ -395,7 +405,7 @@ class Order
                         2
                     ),
                     'price' => (float)number_format(
-                        $productItem->getPrice(),
+                        $price,
                         2,
                         '.',
                         ''
@@ -423,7 +433,7 @@ class Order
                         2
                     ),
                     'price' => (float)number_format(
-                        $productItem->getPrice(),
+                        $price,
                         2,
                         '.',
                         ''
