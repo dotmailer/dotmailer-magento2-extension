@@ -149,9 +149,6 @@ class SubscriberWithSalesExporter
                     $subscriber
                 );
             }
-            if (! isset($stores[$subscriber->getStoreId()])) {
-                $stores[$subscriber->getStoreId()] = $this->helper->storeManager->getStore($subscriber->getStoreId());
-            }
 
             $connectorSubscriber = $this->contactDataFactory->create();
             $connectorSubscriber->setMappingHash($mappedHash);
