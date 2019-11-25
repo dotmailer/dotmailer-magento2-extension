@@ -712,7 +712,7 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="external_dynamic_content_urls" translate="label" sortOrder="10" showInDefault="1"
                    showInWebsite="1" showInStore="0">
-                <label>External Dynamic Url</label>
+                <label>External Dynamic URLs</label>
                 <field id="passcode_title" translate="label" sortOrder="05" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Secure code for dynamic URLs</label>
@@ -723,10 +723,11 @@
                     <label>Passcode</label>
                     <comment><![CDATA[Recommended: Set a passcode so that basket contents and coupon codes can only be viewed if the following passcode is sent with the request.]]></comment>
                 </field>
-                <field id="abandoned_cart_title" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
+                <field id="abandoned_cart_title" translate="label comment" sortOrder="20" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Abandoned Carts</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                    <label>Abandoned Carts (Deprecated)</label>
+                    <comment><![CDATA[Use the <a href="https://support.dotdigital.com/hc/en-gb/articles/360000419160-Creating-an-abandoned-cart-email">abandoned cart block</a> functionality from EasyEditor.]]></comment>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="abandoned_cart_url" translate="label" sortOrder="30" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
@@ -743,21 +744,22 @@
                     <label>Review Contents URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Review</frontend_model>
                 </field>
-                <field id="coupon_code_title" translate="label" sortOrder="60" showInStore="0" showInWebsite="1"
+                <field id="coupon_code_title" translate="label comment" sortOrder="60" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Coupon Codes (Deprecated)</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                    <comment><![CDATA[We recommend using the 'Engagement Cloud Coupon URL Builder' in Marketing > Promotions > Cart Price Rules.]]></comment>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="coupon_code_url" translate="label" sortOrder="70" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Coupon Codes URL</label>
-                    <comment><![CDATA[We recommend using the 'Engagement Cloud Coupon URL Builder' in Marketing > Promotions > Cart Price Rules.]]></comment>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Couponcode</frontend_model>
                 </field>
-                <field id="order_dynamic_content_url" translate="label" sortOrder="80" showInStore="0" showInWebsite="1"
+                <field id="order_dynamic_content_url" translate="label comment" sortOrder="80" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Order Recommendation</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                    <label>Order Recommendation (Deprecated)</label>
+                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="related_products_url" translate="label" sortOrder="90" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
@@ -774,10 +776,11 @@
                     <label>Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Crosssell</frontend_model>
                 </field>
-                <field id="cart_recommendation_title" translate="label" sortOrder="120" showInStore="0"
+                <field id="cart_recommendation_title" translate="label comment" sortOrder="120" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Cart Recommendation</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                    <label>Cart Recommendation (Deprecated)</label>
+                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="cart_related_products_url" translate="label" sortOrder="130" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
@@ -794,10 +797,11 @@
                     <label>Crosssell Products URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Cart\Crosssell</frontend_model>
                 </field>
-                <field id="product_recommendation_title" translate="label" sortOrder="160" showInStore="0"
+                <field id="product_recommendation_title" translate="label comment" sortOrder="160" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Product Recommendation</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                    <label>Product Recommendation (Deprecated)</label>
+                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="best_sellers_url" translate="label" sortOrder="170" type="text" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Best Sellers URL</label>
@@ -807,7 +811,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Most Viewed URL</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Mostviewed</frontend_model>
-                    <comment><![CDATA[add category_id/@CATEGORY_ID@ at the end of url to filter most viewed by category]]></comment>
+                    <comment><![CDATA[Add category_id/@CATEGORY_ID@ at the end of url to filter most viewed by category]]></comment>
                 </field>
                 <field id="product_push_url" translate="label" sortOrder="190" type="text" showInStore="0"
                        showInWebsite="1" showInDefault="1">
