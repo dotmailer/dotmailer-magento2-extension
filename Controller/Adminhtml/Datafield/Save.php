@@ -22,22 +22,22 @@ class Save extends \Magento\Backend\App\AbstractAction
     protected $messageManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\DataField
      */
-    private $dataHelper;
+    private $datafieldHandler;
 
     /**
      * Save constructor.
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\DataField $datafieldHandler
      * @param \Magento\Framework\Escaper $escaper
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Model\Apiconnector\DataField $datafieldHandler,
         \Magento\Framework\Escaper $escaper,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->dataHelper     = $data;
+        $this->datafieldHandler = $datafieldHandler;
         $this->escaper = $escaper;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
@@ -46,14 +46,18 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * Execute method.
      *
-     * @return void
+     * @return null|void
      */
     public function execute()
     {
         $datafield  = $this->getRequest()->getParam('name');
 
-        if (! empty($datafield)) {
-            $response = $this->dataHelper->createDatafield(
+        if (!empty($datafield)) {
+            if (!$this->datafieldHandler->hasValidLength($datafield)) {
+                $this->messageManager->addErrorMessage(__('Please limit Data Field Name to 20 characters.'));
+                return;
+            }
+            $response = $this->datafieldHandler->createDatafield(
                 (int) $this->getRequest()->getParam('website_id'),
                 $datafield,
                 $this->getRequest()->getParam('type'),
