@@ -317,22 +317,26 @@
                 <field id="datafield_name" type="text" translate="label" sortOrder="10" showInDefault="1"
                        showInStore="0" showInWebsite="1">
                     <label>Data Field Name</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\NoSave</backend_model>
                     <comment><![CDATA[(Maximum of 20 characters)]]></comment>
                 </field>
                 <field id="datafield_type" translate="label" sortOrder="20" type="select" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>Data Field Type</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafieldtype</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\NoSave</backend_model>
                 </field>
                 <field id="datafield_default" translate="comment label" type="text" sortOrder="30" showInDefault="1"
                        showInStore="0" showInWebsite="1">
                     <label>Default Value</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\NoSave</backend_model>
                     <comment><![CDATA[When sending a campaign that uses template personalisation, a default value ensures that a value is always displayed even if a data field is blank.]]></comment>
                 </field>
                 <field id="datafield_access" translate="comment label" sortOrder="40" type="select" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>Visibility</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Visibility</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\NoSave</backend_model>
                     <comment><![CDATA[Make the field public if you want to allow your contacts to view and amend the data you hold on them in this field.]]></comment>
                 </field>
                 <field id="datafield_button" translate="button_label" sortOrder="50" showInDefault="1" showInStore="0"
@@ -446,10 +450,12 @@
                 <field id="addressbook_name" type="text" sortOrder="10" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Address Book Name</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\NoSave</backend_model>
                 </field>
                 <field id="visibility" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Visibility</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Visibility</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\NoSave</backend_model>
                 </field>
                 <field id="addressbook_button" translate="button_label" sortOrder="30" showInDefault="1" showInStore="0"
                        showInWebsite="1">
