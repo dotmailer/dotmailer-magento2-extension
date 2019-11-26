@@ -1270,7 +1270,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Brand Attribute</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Productattributes</source_model>
-                    <comment><![CDATA[Select your brand attribute. If default attribute 'manufacturer' exist than will be selected automatically.]]></comment>
+                    <comment><![CDATA[Select your brand attribute. By default, the 'Manufacturer' attribute will be used.]]></comment>
                 </field>
             </group>
             <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
