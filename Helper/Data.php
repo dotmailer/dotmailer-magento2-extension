@@ -1868,38 +1868,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Create data fields in account by type.
-     *
-     * @param int $website
-     * @param string $datafield
-     * @param string $type
-     * @param string $visibility
-     * @param int|boolean|string $default
-     * @return object
-     */
-    public function createDatafield($website, $datafield, $type, $visibility = 'Private', $default = 'String')
-    {
-        $client = $this->getWebsiteApiClient($website);
-        switch ($type) {
-            case 'Numeric':
-                $default = (int)$default;
-                break;
-            case 'Date':
-                $default = $this->datetime->date(\Zend_Date::ISO_8601, $default);
-                break;
-            case 'Boolean':
-                $default = (bool)$default;
-                break;
-            default:
-                $default = (string)$default;
-        }
-
-        $response = $client->postDataFields($datafield, $type, $visibility, $default);
-
-        return $response;
-    }
-
-    /**
      * Can show additional books?
      *
      * @param \Magento\Store\Model\Website|int $website
