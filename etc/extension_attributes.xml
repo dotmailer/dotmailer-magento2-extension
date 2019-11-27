@@ -6,4 +6,11 @@
             </join>
         </attribute>
     </extension_attributes>
+    <extension_attributes for="Magento\Catalog\Api\Data\ProductRenderInterface">
+        <attribute code="ddg_brand" type="string"/>
+        <attribute code="ddg_description" type="string"/>
+        <attribute code="ddg_sku" type="string"/>
+        <attribute code="ddg_image" type="string"/>
+        <attribute code="ddg_categories" type="string[]"/>
+    </extension_attributes>
 </config>

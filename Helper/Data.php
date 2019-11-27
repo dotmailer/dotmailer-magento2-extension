@@ -644,6 +644,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @return bool
+     */
+    public function isWebBehaviourTrackingEnabled()
+    {
+        return (bool) $this->scopeConfig->isSetFlag(Config::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID);
+    }
+
+    /**
      * Store name datafield.
      *
      * @param \Magento\Store\Model\Website $website

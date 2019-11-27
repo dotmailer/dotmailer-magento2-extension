@@ -39,6 +39,13 @@
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon\Collection">
         <plugin name="ddg_generated_for_email_plugin" type="Dotdigitalgroup\Email\Plugin\CouponCollectionPlugin"/>
     </type>
+    <type name="Magento\Catalog\Ui\DataProvider\Product\ProductRenderCollectorComposite">
+        <arguments>
+            <argument name="productProviders" xsi:type="array">
+                <item name="ddg_wbt" xsi:type="object">Dotdigitalgroup\Email\Ui\DataProvider\WebBehaviourTracking</item>
+            </argument>
+        </arguments>
+    </type>
     <virtualType name="ContactCustomPrice" type="Magento\Framework\Pricing\Price\Pool">
         <arguments>
             <argument name="prices" xsi:type="array">
