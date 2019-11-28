@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
+use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
+use Dotdigitalgroup\Email\Model\DateIntervalFactory;
+
 /**
  * Manages the Customer data as datafields for contact.
  *
@@ -79,6 +83,21 @@ class Customer extends ContactData
     private $groupResource;
 
     /**
+     * @var TimezoneInterfaceFactory
+     */
+    private $localeDateFactory;
+
+    /**
+     * @var DateTimeFactory
+     */
+    private $dateTimeFactory;
+
+    /**
+     * @var DateIntervalFactory
+     */
+    private $dateIntervalFactory;
+
+    /**
      * Customer constructor.
      *
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
@@ -95,6 +114,9 @@ class Customer extends ContactData
      * @param \Magento\Sales\Model\ResourceModel\Order $resourceOrder
      * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
+     * @param TimezoneInterfaceFactory $localeDateFactory
+     * @param DateTimeFactory $dateTimeFactory
+     * @param DateIntervalFactory $dateIntervalFactory,
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
@@ -110,13 +132,19 @@ class Customer extends ContactData
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Sales\Model\ResourceModel\Order $resourceOrder,
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
-        \Dotdigitalgroup\Email\Helper\Config $configHelper
+        \Dotdigitalgroup\Email\Helper\Config $configHelper,
+        TimezoneInterfaceFactory $localeDateFactory,
+        DateTimeFactory $dateTimeFactory,
+        DateIntervalFactory $dateIntervalFactory
     ) {
         $this->reviewCollection  = $reviewCollectionFactory;
         $this->orderCollection   = $collectionFactory;
         $this->groupFactory      = $groupFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->groupResource     = $groupResource;
+        $this->localeDateFactory = $localeDateFactory;
+        $this->dateTimeFactory = $dateTimeFactory;
+        $this->dateIntervalFactory = $dateIntervalFactory;
 
         parent::__construct(
             $storeManager,
@@ -250,7 +278,26 @@ class Customer extends ContactData
      */
     public function getDob()
     {
-        return $this->model->getDob();
+        $timezoneOffset = $this->dateTimeFactory->create()->getGmtOffset();
+
+        // For locales east of GMT i.e. +01:00 and up, return the raw date
+        if ($timezoneOffset > 0) {
+            return $this->model->getDob();
+        }
+
+        // For locales west of GMT i.e. -01:00 and below, adjust DOB by adding the current timezone offset
+        $offset = $this->dateIntervalFactory->create(
+            ['interval_spec' => 'PT' . abs($timezoneOffset) . 'S']
+        );
+
+        return $this->localeDateFactory->create()
+            ->date(
+                strtotime($this->model->getDob()),
+                null,
+                false
+            )
+            ->add($offset)
+            ->format(\Zend_Date::ISO_8601);
     }
 
     /**
