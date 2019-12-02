@@ -71,7 +71,14 @@ define([
             this.initWbt(settings.id)
                 .initIdsStorage();
 
-            if (document.getElementsByClassName('catalog-product-view').length === 0) {
+            var body = document.getElementsByTagName('body')[0];
+
+            if (body.classList.contains('catalogsearch-result-index')) {
+                var search = document.getElementById('search');
+                this.wbtTrack({
+                    'searched_term' : search.getAttribute('value')
+                });
+            } else if (!body.classList.contains('catalog-product-view')) {
                 this.wbtTrack();
             }
         }
