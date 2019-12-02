@@ -721,14 +721,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $client->postContacts($email);
         }
 
-        if (isset($response->message)) {
+        if (isset($response->status) && $response->status === 'Suppressed') {
             $contact->setEmailImported(1);
-            if ($response->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
-                $contact->setSuppressed(1);
-            }
+            $contact->setSuppressed(1);
             $this->saveContact($contact);
             return false;
         }
+        
         //save contact id
         if (isset($response->id)) {
             $contact->setContactId($response->id);
