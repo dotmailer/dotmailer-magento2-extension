@@ -1289,7 +1289,7 @@
                        showInWebsite="0" showInDefault="0">
                     <label>Script version</label>
                 </field>
-                <field id="tracking_profile_id" translate="label" sortOrder="50" showInStore="0" showInWebsite="0"
+                <field id="tracking_profile_id" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Web Behavior Tracking Profile Id</label>
                     <comment><![CDATA[Web Behavior Tracking enables you to have greater insight into how customers and visitors interact with your website.
