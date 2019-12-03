@@ -13,7 +13,7 @@ class ReadonlyFormField extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Framework\Data\Form\Element\AbstractElement $element
     ) {
         $element->setData('readonly', 1);
-        $element->setData('class', 'ddg-dynamic-content');
+        $element->addClass('ddg-dynamic-content');
         return parent::_getElementHtml($element);
     }
 }

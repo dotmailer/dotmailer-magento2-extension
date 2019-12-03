@@ -86,7 +86,7 @@ class Attribute
     }
 
     /**
-     * @param mixed $configAttributes
+     * @param array $configAttributes
      * @param mixed $attributesFromAttributeSet
      * @param \Magento\Catalog\Model\Product $productModel
      *

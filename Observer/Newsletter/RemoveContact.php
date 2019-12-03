@@ -48,7 +48,6 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
     ) {
-
         $this->contactFactory = $contactFactory;
         $this->helper = $data;
         $this->storeManager = $storeManagerInterface;
@@ -62,6 +61,8 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -70,11 +71,12 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
         $websiteId = $this->storeManager->getStore($subscriber->getStoreId())
             ->getWebsiteId();
         $apiEnabled = $this->helper->isEnabled($websiteId);
+        $isSyncEnabled = $this->helper->isSubscriberSyncEnabled($websiteId);
 
         /*
          * Remove contact.
          */
-        if ($apiEnabled) {
+        if ($apiEnabled && $isSyncEnabled) {
             try {
                 //register in queue with importer
                 $this->importerFactory->create()->registerQueue(

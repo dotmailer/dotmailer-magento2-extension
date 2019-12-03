@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
+use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 
 /**
  * Transactional data for catalog products to sync.
@@ -11,10 +12,17 @@ use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
  */
 class Product
 {
+    const TYPE_VARIANT = 'Variant';
+
     /**
      * @var string
      */
     public $id;
+
+    /**
+     * @var string
+     */
+    public $parent_id = '';
 
     /**
      * @var string
@@ -102,11 +110,6 @@ class Product
     public $visibilityFactory;
 
     /**
-     * @var \Magento\CatalogInventory\Model\Stock\ItemFactory
-     */
-    public $itemFactory;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
      */
     private $urlFinder;
@@ -122,16 +125,21 @@ class Product
     private $attributeHandler;
 
     /**
+     * @var ParentFinder
+     */
+    private $parentFinder;
+
+    /**
      * Product constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory
      * @param \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory
      * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
      * @param AttributeFactory $attributeHandler
+     * @param ParentFinder $parentFinder
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -140,15 +148,17 @@ class Product
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface,
-        AttributeFactory $attributeHandler
+        AttributeFactory $attributeHandler,
+        ParentFinder $parentFinder
     ) {
-        $this->visibilityFactory  = $visibilityFactory;
-        $this->statusFactory      = $statusFactory;
-        $this->helper             = $helper;
-        $this->storeManager       = $storeManagerInterface;
-        $this->urlFinder          = $urlFinder;
+        $this->visibilityFactory = $visibilityFactory;
+        $this->statusFactory = $statusFactory;
+        $this->helper = $helper;
+        $this->storeManager = $storeManagerInterface;
+        $this->urlFinder = $urlFinder;
         $this->stockStateInterface = $stockStateInterface;
         $this->attributeHandler = $attributeHandler;
+        $this->parentFinder = $parentFinder;
     }
 
     /**
@@ -212,14 +222,15 @@ class Product
         }
 
         $this->processProductOptions($product, $storeId);
+        $this->processParentProducts($product);
 
         unset(
-            $this->itemFactory,
             $this->visibilityFactory,
             $this->statusFactory,
             $this->helper,
             $this->storeManager,
-            $this->attributeHandler
+            $this->attributeHandler,
+            $this->parentFinder
         );
 
         return $this;
@@ -287,14 +298,13 @@ class Product
             array_flip([
                 'storeManager',
                 'helper',
-                'itemFactory',
-                'mediaConfigFactory',
                 'visibilityFactory',
                 'statusFactory',
                 'storeManager',
                 'urlFinder',
                 'stockStateInterface',
-                'attributeHandler'
+                'attributeHandler',
+                'parentFinder'
             ])
         );
     }
@@ -360,5 +370,18 @@ class Product
             '.',
             ''
         );
+    }
+
+    /**
+     * @param $product
+     */
+    private function processParentProducts($product)
+    {
+        $parentId = $this->parentFinder->getProductParentIdToCatalogSync($product);
+
+        if ($parentId) {
+            $this->parent_id = $parentId;
+            $this->type = self::TYPE_VARIANT;
+        }
     }
 }

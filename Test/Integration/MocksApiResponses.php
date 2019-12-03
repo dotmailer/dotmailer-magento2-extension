@@ -35,9 +35,13 @@ trait MocksApiResponses
      *
      * @param array $configFlags    Overridable config flags
      * @param int $scopeCode        Scope code to set values against
+     * @param string $scopeType     Scope type
      */
-    private function setApiConfigFlags(array $configFlags = [], $scopeCode = null)
-    {
+    private function setApiConfigFlags(
+        array $configFlags = [],
+        $scopeCode = null,
+        $scopeType = ScopeInterface::SCOPE_WEBSITE
+    ) {
         /** @var MutableScopeConfigInterface $mutableScopeConfig */
         $mutableScopeConfig = Bootstrap::getObjectManager()->get(MutableScopeConfigInterface::class);
         foreach ($configFlags + [
@@ -51,7 +55,7 @@ trait MocksApiResponses
                 \Magento\Sales\Model\Order::STATE_COMPLETE,
             ]),
         ] as $path => $value) {
-            $mutableScopeConfig->setValue($path, $value, ScopeInterface::SCOPE_WEBSITE, $scopeCode);
+            $mutableScopeConfig->setValue($path, $value, $scopeType, $scopeCode);
         }
     }
 

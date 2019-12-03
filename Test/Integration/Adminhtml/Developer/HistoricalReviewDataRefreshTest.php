@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Tests\Integration\Adminhtml\Developer;
 
+/**
+ * @magentoAppArea adminhtml
+ */
 class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**

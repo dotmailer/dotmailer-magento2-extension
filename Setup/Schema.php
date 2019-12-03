@@ -16,4 +16,5 @@ interface Schema
     const EMAIL_ABANDONED_CART_TABLE = 'email_abandoned_cart';
     const EMAIL_CONTACT_CONSENT_TABLE = 'email_contact_consent';
     const EMAIL_FAILED_AUTH_TABLE = 'email_failed_auth';
+    const EMAIL_COUPON_TABLE = 'email_coupon_attribute';
 }

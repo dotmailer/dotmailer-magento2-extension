@@ -2,22 +2,28 @@
 
 namespace Dotdigitalgroup\Email\Console\Command\Provider;
 
+use Dotdigitalgroup\Email\Model\Sync\AbandonedCartFactory;
 use Dotdigitalgroup\Email\Model\Sync\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Sync\CampaignFactory;
 use Dotdigitalgroup\Email\Model\Sync\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory;
+use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
-use Dotdigitalgroup\Email\Model\Sync\AbandonedCartFactory;
+use Dotdigitalgroup\Email\Model\Sync\ReviewFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory;
 use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
-use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
 
 /**
  * Provides factories for all available sync models, and exposes it's properties to show what's available
  */
 class SyncProvider
 {
+    /**
+     * @var AbandonedCartFactory
+     */
+    private $abandonedCartFactory;
+
     /**
      * @var AutomationFactory
      */
@@ -39,9 +45,24 @@ class SyncProvider
     private $contactFactory;
 
     /**
+     * @var ImporterFactory
+     */
+    private $importerFactory;
+
+    /**
+     * @var IntegrationInsightsFactory
+     */
+    private $integrationInsightsFactory;
+
+    /**
      * @var OrderFactory
      */
     private $orderFactory;
+
+    /**
+     * @var ReviewFactory
+     */
+    private $reviewfactory;
 
     /**
      * @var SubscriberFactory
@@ -54,22 +75,8 @@ class SyncProvider
     private $templateFactory;
 
     /**
-     * @var AbandonedCartFactory
-     */
-    private $abandonedCartFactory;
-
-    /**
-     * @var ImporterFactory
-     */
-    private $importerFactory;
-
-    /**
-     * @var IntegrationInsightsFactory
-     */
-    private $integrationInsightsFactory;
-
-    /**
      * SyncProvider constructor
+     * @param AbandonedCartFactory $abandonedCartFactory
      * @param AutomationFactory $automationFactory
      * @param CampaignFactory $campaignFactory
      * @param CatalogFactory $catalogFactory
@@ -77,32 +84,34 @@ class SyncProvider
      * @param OrderFactory $orderFactory
      * @param SubscriberFactory $subscriberFactory
      * @param TemplateFactory $templateFactory
-     * @param AbandonedCartFactory $abandonedCartFactory
      * @param ImporterFactory $importerFactory
      * @param IntegrationInsightsFactory $integrationInsightsFactory
+     * @param ReviewFactory $reviewFactory
      */
     public function __construct(
+        AbandonedCartFactory $abandonedCartFactory,
         AutomationFactory $automationFactory,
         CampaignFactory $campaignFactory,
         CatalogFactory $catalogFactory,
         ContactFactory $contactFactory,
-        OrderFactory $orderFactory,
-        SubscriberFactory $subscriberFactory,
-        TemplateFactory $templateFactory,
-        AbandonedCartFactory $abandonedCartFactory,
         ImporterFactory $importerFactory,
-        IntegrationInsightsFactory $integrationInsightsFactory
+        IntegrationInsightsFactory $integrationInsightsFactory,
+        OrderFactory $orderFactory,
+        ReviewFactory $reviewFactory,
+        SubscriberFactory $subscriberFactory,
+        TemplateFactory $templateFactory
     ) {
         $this->automationFactory = $automationFactory;
+        $this->abandonedCartFactory = $abandonedCartFactory;
         $this->campaignFactory = $campaignFactory;
         $this->catalogFactory = $catalogFactory;
         $this->contactFactory = $contactFactory;
-        $this->orderFactory = $orderFactory;
-        $this->subscriberFactory = $subscriberFactory;
-        $this->templateFactory = $templateFactory;
-        $this->abandonedCartFactory = $abandonedCartFactory;
         $this->importerFactory = $importerFactory;
         $this->integrationInsightsFactory = $integrationInsightsFactory;
+        $this->orderFactory = $orderFactory;
+        $this->reviewfactory = $reviewFactory;
+        $this->subscriberFactory = $subscriberFactory;
+        $this->templateFactory = $templateFactory;
     }
 
     /**

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="EngagementCloudCouponUrlBuilderSection">
+        <element name="couponUrlBuilderHeader" type="button" selector="div[data-index='engagement_cloud_coupon_url_builder']" timeout="30"/>
+        <element name="codeFormat" type="select" selector="#coupons_format"/>
+        <element name="codePrefix" type="input" selector="#coupons_prefix"/>
+        <element name="codeSuffix" type="input" selector="#coupons_suffix"/>
+        <element name="expiresAfter" type="select" selector="#coupons_expires"/>
+        <element name="allowResend" type="select" selector="#coupons_allow_resend"/>
+        <element name="cancelSend" type="select" selector="#coupons_cancel_send"/>
+        <element name="urlBuilderOutput" type="textarea" selector="#coupons_edc_url"/>
+        <element name="disabledNotice" type="text" selector="#ddg-notice_coupon-builder-disabled"/>
+    </section>
+</sections>

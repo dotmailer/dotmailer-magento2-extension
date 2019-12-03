@@ -3,10 +3,14 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
-use Dotdigitalgroup\Email\Model\Config\Json;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
-use \Magento\Framework\App\RequestInterface;
+use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\App\Config\ReinitableConfigInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Framework\Filter\Email;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * General most used helper to work with config data, saving updating and generating.
@@ -19,7 +23,6 @@ use \Magento\Framework\App\RequestInterface;
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
     const MODULE_NAME = 'Dotdigitalgroup_Email';
     const DM_FIELD_LIMIT = 250;
 
@@ -127,6 +130,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var RequestInterface
      */
     private $request;
+    /**
+     * @var EncryptorInterface
+     */
+
+    /**
+     * @var EncryptorInterface
+     */
+    private $encryptor;
+
+    /**
+     * @var ReinitableConfigInterface
+     */
+    private $reinitableConfig;
 
     /**
      * Data constructor.
@@ -145,10 +161,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param ConfigFactory $configHelperFactory
      * @param Json $serializer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @param Logger $logger
+     * @param RequestInterface $request
+     * @param EncryptorInterface $encryptor
+     * @param ReinitableConfigInterface $reinitableConfig
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -172,7 +193,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\User\Model\ResourceModel\User $userResource,
         Logger $logger,
-        RequestInterface $request
+        RequestInterface $request,
+        EncryptorInterface $encryptor,
+        ReinitableConfigInterface $reinitableConfig
     ) {
         $this->serializer       = $serializer;
         $this->adapter          = $adapter;
@@ -195,8 +218,70 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->contactResource = $contactResource;
         $this->logger = $logger;
         $this->request = $request;
+        $this->encryptor = $encryptor;
+        $this->reinitableConfig = $reinitableConfig;
 
         parent::__construct($context);
+    }
+
+    /**
+     * Save API credentials sent by microsite
+     *
+     * @param string $apiUsername
+     * @param string $apiPassword
+     * @param string|null $apiEndpoint
+     * @param $website
+     * @return $this
+     */
+    public function saveApiCredentials(string $apiUsername, string $apiPassword, string $apiEndpoint = null, $website)
+    {
+        $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_USERNAME, $apiUsername, $scopeInterface, $website->getId());
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_PASSWORD, $this->encryptor->encrypt($apiPassword), $scopeInterface, $website->getId());
+        if ($apiEndpoint) {
+            $this->resourceConfig->saveConfig(EmailConfig::PATH_FOR_API_ENDPOINT, $apiEndpoint, $scopeInterface, $website->getId());
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $apiSpaceId
+     * @param string $token
+     * @param $website
+     * @return $this
+     */
+    public function saveChatApiSpaceIdAndToken(string $apiSpaceId, string $token, $website)
+    {
+        $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_LIVECHAT_API_SPACE_ID, $apiSpaceId, $scopeInterface, $website->getId());
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_LIVECHAT_API_TOKEN, $this->encryptor->encrypt($token), $scopeInterface, $website->getId());
+        return $this;
+    }
+
+    /**
+     * Enable Engagement Cloud integration
+     *
+     * @return $this
+     */
+    public function enableEngagementCloud($website)
+    {
+        $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+
+        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_ENABLED, true, $scopeInterface, $website->getId());
+        return $this;
+    }
+
+    /**
+     * Reinitialise config object
+     *
+     * @return $this
+     */
+    public function reinitialiseConfig()
+    {
+        $this->reinitableConfig->reinit();
+        return $this;
     }
 
     /**
@@ -559,6 +644,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @return bool
+     */
+    public function isWebBehaviourTrackingEnabled()
+    {
+        return (bool) $this->scopeConfig->isSetFlag(Config::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID);
+    }
+
+    /**
      * Store name datafield.
      *
      * @param \Magento\Store\Model\Website $website
@@ -628,14 +721,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $client->postContacts($email);
         }
 
-        if (isset($response->message)) {
+        if (isset($response->status) && $response->status === 'Suppressed') {
             $contact->setEmailImported(1);
-            if ($response->message == \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_CONTACT_SUPPRESSED) {
-                $contact->setSuppressed(1);
-            }
+            $contact->setSuppressed(1);
             $this->saveContact($contact);
             return false;
         }
+        
         //save contact id
         if (isset($response->id)) {
             $contact->setContactId($response->id);
@@ -1783,38 +1875,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Create data fields in account by type.
-     *
-     * @param int $website
-     * @param string $datafield
-     * @param string $type
-     * @param string $visibility
-     * @param int|boolean|string $default
-     * @return object
-     */
-    public function createDatafield($website, $datafield, $type, $visibility = 'Private', $default = 'String')
-    {
-        $client = $this->getWebsiteApiClient($website);
-        switch ($type) {
-            case 'Numeric':
-                $default = (int)$default;
-                break;
-            case 'Date':
-                $default = $this->datetime->date(\Zend_Date::ISO_8601, $default);
-                break;
-            case 'Boolean':
-                $default = (bool)$default;
-                break;
-            default:
-                $default = (string)$default;
-        }
-
-        $response = $client->postDataFields($datafield, $type, $visibility, $default);
-
-        return $response;
-    }
-
-    /**
      * Can show additional books?
      *
      * @param \Magento\Store\Model\Website|int $website
@@ -1976,6 +2036,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function saveContact($contact)
     {
         $this->contactResource->save($contact);
+    }
+
+    /**
+     * @param int $websiteId
+     * @return bool|string
+     */
+    public function getProfileId($websiteId = 0)
+    {
+        return $this->getWebsiteConfig(CONFIG::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID, $websiteId);
     }
 
     /**

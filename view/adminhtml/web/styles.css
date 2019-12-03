@@ -1,7 +1,9 @@
 div.dotmailer-success{background:url(images/i_msg-success.png) no-repeat; padding:10px;}
 div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10px; }
 
-.ddg-rules-conditions { width: 160px; }
+.ddg-rules-conditions {
+    width: 160px;
+}
 .ddg-config-daterange-wrapper {
     width: 200px;
     margin-bottom: 2px;
@@ -11,6 +13,9 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
     margin: 0 !important;
     display: inline-block;
     font-weight:bold;
+}
+.ddg-config-heading-comment {
+    padding-left: 2.8rem;
 }
 .ddg-dashboard-table { width: 100%}
 .ddg-dashboard-table td { width: 45%}
@@ -54,10 +59,15 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
     padding-bottom: 10px;
     text-align: center;
 }
-.ddg-edc-content div { text-align: center; }
+.ddg-edc-content div {
+    text-align: center;
+}
 .ddg-dynamic-content {
     cursor: pointer!important;
-    background-color: #fff!important;
+    background-color: #fff !important;
+    border-color: #adadad !important;
+    color: #303030 !important;
+    opacity: .5 !important;
 }
 .ddg-tooltip{
     position:absolute;
@@ -69,4 +79,9 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
 }
 .ddg-disabled-button{
     cursor: not-allowed;
+}
+.field-has-description + .addafter {
+    display: block;
+    padding-top: 5px;
+    font-size: 1.2rem;
 }

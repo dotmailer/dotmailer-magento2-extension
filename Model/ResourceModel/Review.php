@@ -281,4 +281,27 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         return $votesCollection;
     }
+
+    /**
+     * Get store id from review.
+     * @param string $reviewId
+     * @return string
+     */
+    public function getStoreIdFromReview($reviewId)
+    {
+        $storeId = '0';
+
+        $collection = $this->mageReviewCollection->create()
+            ->addStoreData()
+            ->addFieldToFilter('main_table.review_id', $reviewId)
+            ->getFirstItem();
+
+        foreach ($collection->getStores() as $store) {
+            if ($store !== '0') {
+                return $store;
+            }
+        }
+
+        return $storeId;
+    }
 }

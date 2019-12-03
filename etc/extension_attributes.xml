@@ -1,0 +1,16 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
+    <extension_attributes for="Magento\SalesRule\Api\Data\CouponInterface">
+        <attribute code="generated_for_email" type="Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface">
+            <join reference_table="email_coupon_attribute" reference_field="coupon_id" join_on_field="coupon_id">
+                <field>email</field>
+            </join>
+        </attribute>
+    </extension_attributes>
+    <extension_attributes for="Magento\Catalog\Api\Data\ProductRenderInterface">
+        <attribute code="ddg_brand" type="string"/>
+        <attribute code="ddg_description" type="string"/>
+        <attribute code="ddg_sku" type="string"/>
+        <attribute code="ddg_image" type="string"/>
+        <attribute code="ddg_categories" type="string[]"/>
+    </extension_attributes>
+</config>

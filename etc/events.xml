@@ -48,7 +48,4 @@
     <event name="customer_delete_after">
         <observer name="ddg_remove_contact" instance="Dotdigitalgroup\Email\Observer\Customer\RemoveContact"/>
     </event>
-    <event name="customer_login">
-        <observer name="ddg_customer_login" instance="Dotdigitalgroup\Email\Observer\Customer\CustomerLogin" />
-    </event>
 </config>

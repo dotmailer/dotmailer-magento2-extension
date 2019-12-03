@@ -57,5 +57,8 @@
     "psr-4": {
       "Dotdigitalgroup\\Email\\": ""
     }
+  },
+  "suggest": {
+    "dotmailer/dotmailer-magento2-extension-chat": "Adds Engagement Cloud Chat to your Magento store"
   }
 }

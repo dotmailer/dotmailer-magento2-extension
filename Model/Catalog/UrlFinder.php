@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -50,43 +51,36 @@ class UrlFinder
     private $mediaConfig;
 
     /**
-     * @var Data
+     * @var ParentFinder
      */
-    private $helper;
+    private $parentFinder;
 
     /**
      * UrlFinder constructor.
-     *
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
      * @param \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection
      * @param \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory
-     * @param \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory
+     * @param Product\Media\ConfigFactory $mediaConfigFactory
      * @param ScopeConfigInterface $scopeConfig
-     * @param Data $helper
+     * @param ParentFinder $parentFinder
      */
     public function __construct(
-        \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
-        \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection,
-        \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory,
         \Magento\Catalog\Model\Product\Media\ConfigFactory $mediaConfigFactory,
         ScopeConfigInterface $scopeConfig,
-        Data $helper
+        ParentFinder $parentFinder
     ) {
-        $this->configurableType = $configurableType;
         $this->productRepository = $productRepository;
-        $this->bundleSelection = $bundleSelection;
-        $this->groupedType = $groupedType;
         $this->storeManager = $storeManager;
         $this->imageBuilder = $imageBuilderFactory->create();
         $this->mediaConfig = $mediaConfigFactory->create();
         $this->scopeConfig = $scopeConfig;
-        $this->helper = $helper;
+        $this->parentFinder = $parentFinder;
     }
 
     /**
@@ -99,9 +93,9 @@ class UrlFinder
     {
         $product = $this->getScopedProduct($product);
 
-        if ($product->getVisibility() == \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE
-            && $product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
-            && $parentProduct = $this->getParentProduct($product)
+        if ($product->getVisibility() == Product\Visibility::VISIBILITY_NOT_VISIBLE
+            && $product->getTypeId() == Product\Type::TYPE_SIMPLE
+            && $parentProduct = $this->parentFinder->getParentProduct($product)
         ) {
             return $parentProduct->getProductUrl();
         }
@@ -156,39 +150,12 @@ class UrlFinder
     {
         if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
             && (empty($product->getSmallImage()) || $product->getSmallImage() == 'no_selection')
-            && $parentProduct = $this->getParentProduct($product)
+            && $parentProduct = $this->parentFinder->getParentProduct($product)
         ) {
             return $parentProduct;
         }
 
         return $product;
-    }
-
-    /**
-     * Return Parent Id for configurable, grouped or bundled products (in that order of priority)
-     *
-     * @param \Magento\Catalog\Model\Product $product
-     *
-     * @return mixed
-     */
-    private function getFirstParentId($product)
-    {
-        $configurableProducts = $this->configurableType->getParentIdsByChild($product->getId());
-        if (isset($configurableProducts[0])) {
-            return $configurableProducts[0];
-        }
-
-        $groupedProducts = $this->groupedType->getParentIdsByChild($product->getId());
-        if (isset($groupedProducts[0])) {
-            return $groupedProducts[0];
-        }
-
-        $bundleProducts = $this->bundleSelection->getParentIdsByChild($product->getId());
-        if (isset($bundleProducts[0])) {
-            return $bundleProducts[0];
-        }
-
-        return null;
     }
 
     /**
@@ -233,28 +200,6 @@ class UrlFinder
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS
         );
         return $stripPubFromPath ? $this->removePub($path) : $path;
-    }
-
-    /**
-     * @param $product
-     * @return \Magento\Catalog\Api\Data\ProductInterface|\Magento\Catalog\Model\Product|null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    private function getParentProduct($product)
-    {
-        try {
-            if ($parentId = $this->getFirstParentId($product)) {
-                return $this->productRepository->getById($parentId, false, $product->getStoreId());
-            }
-        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-            $this->helper->debug(
-                $e->getMessage() . ' Parent Product: ' .
-                 $parentId . ', 
-                Child Product: ' . $product->getId()
-            );
-        }
-
-        return null;
     }
 
     /**
