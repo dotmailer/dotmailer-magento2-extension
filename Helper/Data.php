@@ -197,15 +197,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         EncryptorInterface $encryptor,
         ReinitableConfigInterface $reinitableConfig
     ) {
-        $this->serializer       = $serializer;
-        $this->adapter          = $adapter;
-        $this->productMetadata  = $productMetadata;
-        $this->contactFactory   = $contactFactory;
-        $this->resourceConfig   = $resourceConfig;
-        $this->storeManager     = $storeManager;
-        $this->customerFactory  = $customerFactory;
-        $this->fullModuleList   = $moduleListInterface;
-        $this->store            = $store;
+        $this->serializer = $serializer;
+        $this->adapter = $adapter;
+        $this->productMetadata = $productMetadata;
+        $this->contactFactory = $contactFactory;
+        $this->resourceConfig = $resourceConfig;
+        $this->storeManager = $storeManager;
+        $this->customerFactory = $customerFactory;
+        $this->fullModuleList = $moduleListInterface;
+        $this->store = $store;
         $this->writer = $writer;
         $this->clientFactory = $clientFactory;
         $this->configHelperFactory = $configHelperFactory;
@@ -301,7 +301,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
         $apiUsername = $this->getApiUsername($website);
         $apiPassword = $this->getApiPassword($website);
-        if (! $apiUsername || ! $apiPassword || ! $enabled) {
+        if (!$apiUsername || !$apiPassword || !$enabled) {
             return false;
         }
 
@@ -488,7 +488,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPasscode()
     {
-        $websiteId = (int) $this->request->getParam('website', false);
+        $websiteId = (int)$this->request->getParam('website', false);
 
         $scope = 'default';
         $scopeId = '0';
@@ -648,7 +648,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isWebBehaviourTrackingEnabled()
     {
-        return (bool) $this->scopeConfig->isSetFlag(Config::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID);
+        return (bool)$this->scopeConfig->isSetFlag(Config::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID);
     }
 
     /**
@@ -678,7 +678,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getContactId($email, $websiteId)
     {
-        if (! $this->isEnabled($websiteId)) {
+        if (!$this->isEnabled($websiteId)) {
             return false;
         }
 
@@ -704,7 +704,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getOrCreateContact($email, $websiteId, $contactFromTable = false)
     {
-        if (! $this->isEnabled($websiteId)) {
+        if (!$this->isEnabled($websiteId)) {
             return false;
         }
 
@@ -717,7 +717,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $client = $this->getWebsiteApiClient($websiteId);
         $response = $client->getContactByEmail($email);
-        if (! isset($response->id)) {
+        if (!isset($response->id)) {
             $response = $client->postContacts($email);
         }
 
@@ -757,7 +757,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $client = $this->getWebsiteApiClient($website);
 
         //there is a maximum of request we need to loop to get more suppressed contacts
-        for ($i=0; $i<= $limit; $i++) {
+        for ($i = 0; $i <= $limit; $i++) {
             $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect, $skip);
 
             // skip no more contacts or the api request failed
@@ -894,7 +894,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Save api endpoint into config.
      *
      * @param string $apiEndpoint
-     * @param  int $websiteId
+     * @param int $websiteId
      *
      * @return null
      */
@@ -1199,34 +1199,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $columns = $adapter->describeTable($salesTable);
 
         return $columns;
-    }
-
-    /**
-     * Is EmailCapture Enabled
-     * @param $websiteId
-     * @return mixed
-     */
-    public function isEasyEmailCaptureEnabled($websiteId)
-    {
-        return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $websiteId
-        );
-    }
-
-    /**
-     * Is email capture for newsletter enabled.
-     * @param $websiteId
-     * @return mixed
-     */
-    public function isEasyEmailCaptureForNewsletterEnabled($websiteId)
-    {
-        return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $websiteId
-        );
     }
 
     /**
@@ -1546,19 +1518,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
 
         return $limit;
-    }
-
-    /**
-     * Get url for email capture.
-     *
-     * @return string
-     */
-    public function getEmailCaptureUrl()
-    {
-        return $this->storeManager->getStore()->getUrl(
-            'connector/ajax/emailcapture',
-            ['_secure' => $this->storeManager->getStore()->isCurrentlySecure()]
-        );
     }
 
     /**
@@ -2054,6 +2013,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     private function getTrackingScriptVersionNumber()
     {
-        return (int) $this->scopeConfig->getValue(Config::XML_PATH_TRACKING_SCRIPT_VERSION);
+        return (int)$this->scopeConfig->getValue(Config::XML_PATH_TRACKING_SCRIPT_VERSION);
     }
 }
