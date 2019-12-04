@@ -51,10 +51,16 @@ class MessagePlugin
      */
     public function beforeSetBody(MessageInterface $message, $body)
     {
-        $dotTemplate = $this->templateFactory->create();
-        $templateId = $dotTemplate->loadTemplateIdFromRegistry();
-        if ($templateId && $this->shouldIntercept()) {
-            if (is_string($body) && ! $message instanceof \Zend_Mail) {
+        if ($this->shouldIntercept()) {
+            if ($body instanceof \Zend\Mime\Message && $body->getParts()) {
+                foreach ($body->getParts() as $bodyPart) {
+                    $bodyPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
+                }
+                return [$body];
+            }
+            $dotTemplate = $this->templateFactory->create();
+            $templateId = $dotTemplate->loadTemplateIdFromRegistry();
+            if ($templateId && is_string($body) && !$message instanceof \Zend_Mail) {
                 return [self::createMimeFromString($body)];
             }
         }
