@@ -1,17 +1,18 @@
 <?php
-/** @var \Magento\Framework\View\Element\Template $block */
-/** @var \Dotdigitalgroup\Email\Helper\Data $helper */
+/** @var \Dotdigitalgroup\Email\Block\EmailCapture\EmailCaptureForNewsletter $block */
 ?>
-<?php $helper = $this->helper(\Dotdigitalgroup\Email\Helper\Data::class); ?>
-<?php if ($helper->isEasyEmailCaptureForNewsletterEnabled($helper->getWebsite()->getId())) : ?>
+<?php if ($block->isEasyEmailCaptureForNewsletterEnabled() || $block->isWebBehaviourTrackingEnabled()) : ?>
     <script type="text/x-magento-init">
     {
         "*": {
             "Dotdigitalgroup_Email/js/emailCapture":{
                 "type":"newsletter",
-                "url":"<?= $block->escapeHtml($helper->getEmailCaptureUrl()); ?>"
+                "url":"<?= $block->escapeHtml($block->getEmailCaptureUrl()); ?>",
+                "enabled": "<?= $block->isEasyEmailCaptureForNewsletterEnabled(); ?>"
             }
         }
     }
+
+
     </script>
 <?php endif; ?>

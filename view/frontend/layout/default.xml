@@ -3,7 +3,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="before.body.end">
-            <block class="Magento\Framework\View\Element\Template"
+            <block class="Dotdigitalgroup\Email\Block\EmailCapture\EmailCaptureForNewsletter"
                    name="emailCapture"
                    template="Dotdigitalgroup_Email::email/email_capture_newsletter.phtml"/>
         </referenceContainer>

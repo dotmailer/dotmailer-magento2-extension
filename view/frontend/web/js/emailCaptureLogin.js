@@ -19,23 +19,15 @@ define(['jquery', 'domReady!'], function ($) {
      * @param selectors
      * @param url
      */
-    function emailCapture(selectors, url, captureEnabled) {
+    function emailCapture(selectors) {
         $(document).on('blur', selectors.join(', '), function() {
             var email = $(this).val();
             if (!email || email === previousEmail || !validateEmail(email)) {
                 return;
             }
 
-            //Identify the user
             if (typeof window.dmPt !== 'undefined') {
                 window.dmPt('identify', email);
-            }
-
-            //Check if Email Capture is Enabled
-            if (captureEnabled !== "0") {
-                $.post(url, {
-                    email: email
-                });
             }
         });
     }
@@ -44,20 +36,9 @@ define(['jquery', 'domReady!'], function ($) {
      * Exported/return email capture
      * @param {Object} config
      */
-    return function (config) {
+    return function () {
         let selectors = [];
-        switch (config.type) {
-            case 'checkout' :
-                selectors.push('input[id="customer-email"]');
-                break;
-
-            case 'newsletter' :
-                selectors.push('input[id="newsletter"]');
-                break;
-        }
-
-        if (selectors.length !== 0) {
-            emailCapture(selectors, config.url, config.enabled);
-        }
+        selectors.push('input[id="email"]');
+        emailCapture(selectors);
     };
 });

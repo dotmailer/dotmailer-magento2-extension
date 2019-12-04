@@ -1,17 +1,17 @@
 <?php
-/** @var \Magento\Framework\View\Element\Template $block */
-/** @var \Dotdigitalgroup\Email\Helper\Data $helper */
+/** @var \Dotdigitalgroup\Email\Block\EmailCapture\EmailCaptureForCheckout $block */
 ?>
-<?php $helper = $this->helper(\Dotdigitalgroup\Email\Helper\Data::class); ?>
-<?php if ($helper->isEasyEmailCaptureEnabled($helper->getWebsite()->getId())) : ?>
+<?php if ($block->isEasyEmailCaptureEnabled() || $block->isWebBehaviourTrackingEnabled()) : ?>
     <script type="text/x-magento-init">
     {
         "*": {
             "Dotdigitalgroup_Email/js/emailCapture":{
                 "type":"checkout",
-                "url":"<?= $block->escapeHtml($helper->getEmailCaptureUrl()); ?>"
+                "url":"<?= $block->escapeHtml($block->getEmailCaptureUrl()); ?>",
+                "enabled": "<?= $block->isEasyEmailCaptureEnabled() ?>"
             }
         }
     }
+
     </script>
 <?php endif; ?>
