@@ -3,17 +3,45 @@ dotdigital Engagement Cloud (formerly dotmailer) for Magento 2
  
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 
-## Description
+## Requirements
 
-Full support documentation and setup guides available [here](https://support.dotdigital.com/hc/en-gb/sections/360000722900-Engagement-Cloud-for-Magento-2)
+- PHP 7.1+
+- Magento 2.2+ (Magento 2.1 is compatible up to version 4.2.0)
 
-=======
+## Support
+
+Full support documentation and setup guides available [here](https://support.dotdigital.com/hc/en-gb/sections/360000722900-Engagement-Cloud-for-Magento-2).
+
 ## Contribution
 
 You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Report a bug: create a [GitHub issue](https://github.com/dotmailer/dotmailer-magento2-extension/issues/new) including description, repro steps, Magento and extension version numbers
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
+
+## 4.3.0
+
+###### What’s new
+- We now provide Engagement Cloud Chat via a separate Magento module. For upgrade instructions, see [here](https://gist.github.com/sta1r/f22128fc1d37e6f08076ec59cf315724).
+- Merchants can now add Engagement Cloud's Web Behavior Tracking in the connector configuration.
+- The data sent via our Web Behaviour Tracking script will now include product data where available.
+- The insight data schema for orders has changed. Configurable and bundle products no longer output as separate line items; instead, parent data is used to augment child products.
+- We've added parent_id to catalog insight data schema. 
+- We've added a new tool to improve the way you create dynamic content links for coupon codes. Coupon codes can now be resent to customers if they have not yet been redeemed. 
+- We've added the ability to run the review sync from the command line. 
+- We've removed the 'Script version' field from Engagement Cloud > Configuration > Tracking. Merchants can still set the config key, if required, via CLI. 
+- If subscribers are deleted in Magento, we will now try to update Engagement Cloud only if subscriber sync is enabled.
+- We've simplified subscriber sync by sourcing a store id from the store currently being synced, rather than from a Magento table.
+- When creating new data fields via **Engagement Cloud > Data Mapping**, we now show an error if your data field name is longer than 20 characters. 
+- We have deprecated some of our External Dynamic Content URLs. We’ve added notes on how to replace these in your campaigns.
+- Data entered into fieldsets designed to post data direct to Engagement Cloud (i.e. _dynamic datafield_ and _dynamic addressbook_) will now not save any data to the database. 
+- We made some changes following a Magento architectural review: `create()` methods have been removed from class constructors, and we’ve added a virtual type to replace an empty block class.
+- Changes to our log messages introduced in 3.4.1 have been reverted for now, in preparation for the Magento 2.3.4 patch release.
+- `email_catalog` table columns changed in 3.4.2 have been restored as deprecated columns, prior to the 2.3.4 submission.
+
+###### Bug fixes
+- We've fixed a bug affecting Engagement Cloud accounts in 'GMT minus' timezones, where customer birthdays would fall a day early.  
+- We fixed a problem with reviews being saved without a valid store id.
 
 ## 4.2.0
 
