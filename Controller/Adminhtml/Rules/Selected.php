@@ -20,7 +20,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
     private $rulesFactory;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
@@ -124,14 +124,14 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 'value="' . $selectedConditions . '"' . 'selected="selected"',
                 $this->getOptionHtml(
                     'conditions',
-                    $conditionName,
+                    $this->escaper->escapeHtml($conditionName),
                     $conditionOptions
                 )
             );
 
             $elmType = $this->ruleValue->getValueElementType($attribute);
 
-            $this->evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $valueName, $response);
+            $this->evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $this->escaper->escapeHtml($valueName), $response);
 
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')

@@ -133,7 +133,6 @@ class Save extends \Magento\Backend\App\AbstractAction
         foreach ($data as $key => $value) {
             if ($key !== 'form_key' && $key !== 'key' && $key !== 'active_tab') {
                 if ($key == 'condition') {
-                    $value = $this->preventXss($value);
                     if (is_array($value)) {
                         unset($value['__empty']);
                     }
@@ -145,18 +144,5 @@ class Save extends \Magento\Backend\App\AbstractAction
         }
 
         return $ruleModel;
-    }
-
-    /**
-     * @param $condition
-     * @return array
-     */
-    private function preventXss($condition)
-    {
-        $conditions = [];
-        foreach ($condition as $key => $value) {
-            $conditions[$this->escaper->escapeHtml($key)] = $value;
-        }
-        return $conditions;
     }
 }
