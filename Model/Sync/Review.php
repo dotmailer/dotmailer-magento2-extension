@@ -134,9 +134,11 @@ class Review implements SyncInterface
             }
         }
 
-        $message = '----------- Review sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) . ', synced = ' . $this->countReviews;
+        $message = '----------- Review sync ----------- : ' .
+            gmdate('H:i:s', microtime(true) - $this->start) .
+            ', synced = ' . $this->countReviews;
 
-        if($this->countReviews) {
+        if ($this->countReviews) {
             $this->helper->log($message);
         }
 

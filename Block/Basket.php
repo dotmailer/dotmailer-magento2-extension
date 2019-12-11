@@ -140,7 +140,9 @@ class Basket extends Recommended
 
         foreach ($quoteItems as $quoteItem) {
             //If a child product added already, we must not add it's parent.
-            if ($quoteItem->getParentItemId() == null && in_array($quoteItem->getProduct()->getId(), $parentProductIds)) {
+            if ($quoteItem->getParentItemId() === null
+                && in_array($quoteItem->getProduct()->getId(), $parentProductIds)
+            ) {
                 $itemsData[] = $this->getItemDataForParentProducts($quoteItem);
             }
         }
@@ -184,7 +186,9 @@ class Basket extends Recommended
 
     private function getItemsData($quoteItem, $_product, $_parentProduct)
     {
-        $totalPrice = (!isset($_parentProduct) ? $quoteItem->getBaseRowTotalInclTax() : $quoteItem->getParentItem()->getBaseRowTotalInclTax());
+        $totalPrice = (!isset($_parentProduct)
+            ? $quoteItem->getBaseRowTotalInclTax()
+            : $quoteItem->getParentItem()->getBaseRowTotalInclTax());
         $inStock = ($_product->isInStock())
             ? 'In Stock'
             : 'Out of stock';
@@ -194,7 +198,9 @@ class Basket extends Recommended
             false
         );
 
-        $productUrl = (isset($_parentProduct) ? $this->urlFinder->fetchFor($_parentProduct) : $this->urlFinder->fetchFor($_product));
+        $productUrl = (isset($_parentProduct)
+            ? $this->urlFinder->fetchFor($_parentProduct)
+            : $this->urlFinder->fetchFor($_product));
         $grandTotal = $this->priceHelper->currency(
             $this->getGrandTotal(),
             true,

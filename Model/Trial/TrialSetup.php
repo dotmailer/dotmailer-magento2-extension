@@ -157,8 +157,7 @@ class TrialSetup
      */
     public function setupDataFields()
     {
-        if (
-            !$this->helper->isEnabled()
+        if (!$this->helper->isEnabled()
             || !$apiModel = $this->helper->getWebsiteApiClient()
         ) {
             $this->helper->log('setupDataFields client is not enabled');
@@ -202,8 +201,7 @@ class TrialSetup
             ];
         }, self::$addressBookMap, array_keys(self::$addressBookMap));
 
-        if (
-            !$this->helper->isEnabled()
+        if (!$this->helper->isEnabled()
             || !$client = $this->helper->getWebsiteApiClient()
         ) {
             $this->helper->log('createAddressBooks client is not enabled');
@@ -244,7 +242,9 @@ class TrialSetup
     public function isCodeValid($code)
     {
         $now = $this->timezone->date()->format(\DateTime::ATOM);
-        $expiryDateString = $this->helper->getWebsiteConfig(EmailConfig::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY);
+        $expiryDateString = $this->helper->getWebsiteConfig(
+            EmailConfig::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY
+        );
         if ($now >= $expiryDateString) {
             return false;
         }
@@ -320,12 +320,13 @@ class TrialSetup
                 } else {
                     //Need to fetch addressbook id to map. Addressbook already exist.
                     $response = $client->getAddressBooks();
-                    if (!isset($response->message)) {
-                        foreach ($response as $book) {
-                            if ($book->name == $addressBookName) {
-                                $this->mapAddressBook($addressBookName, $book->id);
-                                break;
-                            }
+                    if (isset($response->message)) {
+                        continue;
+                    }
+                    foreach ($response as $book) {
+                        if ($book->name == $addressBookName) {
+                            $this->mapAddressBook($addressBookName, $book->id);
+                            break;
                         }
                     }
                 }

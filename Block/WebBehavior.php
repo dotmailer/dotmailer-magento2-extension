@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
+
 /**
  * Tracking block
  *

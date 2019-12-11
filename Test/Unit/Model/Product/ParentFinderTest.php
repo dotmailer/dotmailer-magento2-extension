@@ -11,7 +11,6 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Bundle\Model\ResourceModel\Selection;
 use PHPUnit\Framework\TestCase;
 
-
 class ParentFinderTest extends TestCase
 {
     /**

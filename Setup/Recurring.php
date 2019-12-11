@@ -73,7 +73,9 @@ class Recurring implements InstallSchemaInterface
     {
         try {
             $this->integrationInsightsFactory->create()->sync();
-        } catch (LocalizedException $e) {}
+        } catch (LocalizedException $e) {
+
+        }
     }
 
     /**

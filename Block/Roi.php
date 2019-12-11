@@ -79,4 +79,12 @@ class Roi extends \Magento\Framework\View\Element\Template
         }
         return json_encode($productNames);
     }
+
+    /**
+     * @return string
+     */
+    public function getPageTrackingUrlForSuccessPage()
+    {
+        return $this->helper->getPageTrackingUrlForSuccessPage();
+    }
 }

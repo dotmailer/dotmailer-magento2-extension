@@ -137,9 +137,11 @@ class Subscriber implements SyncInterface
         }
         //sync processed
 
-        $response['message'] .= '----------- Subscribers sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) . ', updated = ' . $this->countSubscribers;
+        $response['message'] .= '----------- Subscribers sync ----------- : ' .
+            gmdate('H:i:s', microtime(true) - $this->start) .
+            ', updated = ' . $this->countSubscribers;
 
-        if($this->countSubscribers) {
+        if ($this->countSubscribers) {
             $this->helper->log($response['message']);
         }
 
@@ -263,7 +265,8 @@ class Subscriber implements SyncInterface
 
         //Mark suppressed contacts
         if (! empty($suppressedEmails)) {
-            $result['customers'] = $this->emailContactResource->unsubscribeWithResubscriptionCheck(array_values($suppressedEmails));
+            $result['customers'] = $this->emailContactResource
+                ->unsubscribeWithResubscriptionCheck(array_values($suppressedEmails));
         }
         return $result;
     }

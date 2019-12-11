@@ -373,12 +373,15 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $contactKey = array_search($email['email'], array_column($localContacts, 'email'));
 
             // if there is no local contact, or last subscribed value, continue with unsubscribe
-            if ($contactKey === false || is_null($localContacts[$contactKey]['last_subscribed_at'])) {
+            if ($contactKey === false || $localContacts[$contactKey]['last_subscribed_at'] === null) {
                 return $email['email'];
             }
 
             // convert both timestamps to DateTime
-            $lastSubscribedMagento = new \DateTime($localContacts[$contactKey]['last_subscribed_at'], new \DateTimeZone('UTC'));
+            $lastSubscribedMagento = new \DateTime(
+                $localContacts[$contactKey]['last_subscribed_at'],
+                new \DateTimeZone('UTC')
+            );
             $removedAtEc = new \DateTime($email['removed_at'], new \DateTimeZone('UTC'));
 
             // user recently resubscribed in Magento, do not unsubscribe them
@@ -980,9 +983,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $quoteArray[$quote->getCustomerId()] = $quote->toArray(['last_quote_id']);
         }
 
-        foreach($quoteArray as $k => $v){
+        foreach ($quoteArray as $k => $v) {
             if (isset($orderArray[$k])) {
-                $orderArray[$k] = array_merge($orderArray[$k],$v);
+                $orderArray[$k]['last_quote_id'] = $v['last_quote_id'];
             }
         }
 

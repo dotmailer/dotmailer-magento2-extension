@@ -131,7 +131,14 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
             $elmType = $this->ruleValue->getValueElementType($attribute);
 
-            $this->evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $this->escaper->escapeHtml($valueName), $response);
+            $this->evaluateElmType(
+                $elmType,
+                $selectedConditions,
+                $attribute,
+                $selectedValues,
+                $this->escaper->escapeHtml($valueName),
+                $response
+            );
 
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')
@@ -151,7 +158,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      */
     private function evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $valueName, &$response)
     {
-        if ($elmType == 'select' or $selectedConditions == 'null') {
+        if ($elmType == 'select' || $selectedConditions == 'null') {
             $isEmpty = false;
 
             if ($selectedConditions == 'null') {

@@ -101,7 +101,6 @@ class UpdateCatalogBulkTest extends TestCase
         );
     }
 
-
     /**
      * @dataProvider getProductCount
      * @param $numberOfProducts
@@ -110,7 +109,7 @@ class UpdateCatalogBulkTest extends TestCase
     {
 
         $scope = 0;
-        $this->prepareTests($scope,$numberOfProducts);
+        $this->prepareTests($scope, $numberOfProducts);
 
         $this->resourceCatalogMock->expects($this->atLeastOnce())
             ->method('bulkProductImport');
@@ -128,7 +127,7 @@ class UpdateCatalogBulkTest extends TestCase
     public function testThatifWeHaveNotNewProducts($numberOfProducts)
     {
         $scope = 1;
-        $this->prepareTests($scope,$numberOfProducts);
+        $this->prepareTests($scope, $numberOfProducts);
 
         $this->resourceCatalogMock->expects($this->never())
             ->method('bulkProductImport');
@@ -147,7 +146,7 @@ class UpdateCatalogBulkTest extends TestCase
     {
         $scope = 2;
 
-        $this->prepareTests($scope,$numberOfProducts);
+        $this->prepareTests($scope, $numberOfProducts);
 
         $this->resourceCatalogMock->expects($this->atLeastOnce())
             ->method('bulkProductImport');
@@ -167,13 +166,13 @@ class UpdateCatalogBulkTest extends TestCase
      * @param $scope
      */
 
-    private function prepareTests($scope,$numberOfProducts)
+    private function prepareTests($scope, $numberOfProducts)
     {
-        $values = $this->getMinMaxValues($scope,$numberOfProducts);
+        $values = $this->getMinMaxValues($scope, $numberOfProducts);
 
         $this->bunchMock->expects($this->once())
             ->method('getProductIdsBySkuInBunch')
-            ->willReturn($this->getIdsForProductMock($values,$numberOfProducts));
+            ->willReturn($this->getIdsForProductMock($values, $numberOfProducts));
 
         $this->collectionFactoryMock->expects($this->atLeastOnce())
             ->method('create')
@@ -190,7 +189,7 @@ class UpdateCatalogBulkTest extends TestCase
         $this->collectionMock->expects($this->atLeastOnce())
             ->method('getColumnValues')
             ->with('product_id')
-            ->willReturn($this->getCatalogIds($values,$numberOfProducts));
+            ->willReturn($this->getCatalogIds($values, $numberOfProducts));
 
         $this->dateTimeMock->expects($this->atLeastOnce())
             ->method('formatDate')
@@ -201,25 +200,23 @@ class UpdateCatalogBulkTest extends TestCase
      * @param $scope
      * @return array
      */
-    private function getMinMaxValues($scope,$numberOfProducts)
+    private function getMinMaxValues($scope, $numberOfProducts)
     {
-        if ($scope == 1)
-        {
+        if ($scope == 1) {
             $values = [
                 'productMin' => 1,
                 'productMax' => 1,
                 'catalogMin' => 1,
                 'catalogMax' => 1
             ];
-        }elseif ($scope == 0)
-        {
+        } elseif ($scope == 0) {
             $values = [
                 'productMin' => 1,
                 'productMax' => $numberOfProducts,
                 'catalogMin' => [],
                 'catalogMax' => []
             ];
-        }else {
+        } else {
             $values = [
                 'productMin' => 1,
                 'productMax' => $numberOfProducts/2,
@@ -241,7 +238,7 @@ class UpdateCatalogBulkTest extends TestCase
 
         for ($i=0; $i<$numberOfProducts; $i++) {
             $bunch[] = [
-              'sku' => substr(md5(mt_rand()), 0, 8)
+              'sku' => substr(hash("sha256", random_int(1, 9)), 0, 8)
             ];
         }
         return$bunch;
@@ -253,15 +250,14 @@ class UpdateCatalogBulkTest extends TestCase
      * @param int $numberOfProducts
      * @return array
      */
-    private function getCatalogIds($value,$numberOfProducts)
+    private function getCatalogIds($value, $numberOfProducts)
     {
-        if(empty($value['catalogMin'])) {
+        if (empty($value['catalogMin'])) {
             return [];
         }
         $catalogIds = [];
-        for ($i=0; $i<$numberOfProducts; $i++)
-        {
-            $catalogIds[] = rand($value['catalogMin'],$value['catalogMax']);
+        for ($i=0; $i<$numberOfProducts; $i++) {
+            $catalogIds[] = rand($value['catalogMin'], $value['catalogMax']);
         }
         return $catalogIds;
     }
@@ -274,7 +270,7 @@ class UpdateCatalogBulkTest extends TestCase
     private function getIdsForProductMock($value, $numberOfProducts)
     {
         $productIds = [];
-        for($i=0; $i<$numberOfProducts; $i++) {
+        for ($i=0; $i<$numberOfProducts; $i++) {
             $productIds[]= (int) ($value['productMin'] === $value['productMax']) ?: $value['productMin'] + $i;
         }
         return $productIds;

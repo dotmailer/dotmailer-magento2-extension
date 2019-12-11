@@ -109,7 +109,6 @@ class BunchTest extends TestCase
         $this->productSearchResultsMock->expects($this->atLeastOnce())
             ->method('getItems')
             ->willReturn($this->getProductItems($numberOfProducts));
-
     }
 
     public function testThatWeGetIdsFromSkus()
@@ -138,7 +137,7 @@ class BunchTest extends TestCase
         $bunch = [];
         for ($i = 0; $i < $numberOfProducts; $i++) {
             $bunch[] = [
-                'sku' => substr(md5(mt_rand()), 0, 8)
+                'sku' => substr(hash("sha256", random_int(1, 9)), 0, 8)
             ];
         }
 

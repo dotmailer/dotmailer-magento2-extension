@@ -126,4 +126,3 @@ class ProgramEnrolmentIntervalTest extends TestCase
         $this->assertSame($timeWindow['to'], $toString);
     }
 }
-

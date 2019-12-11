@@ -162,7 +162,7 @@ class Edc extends \Magento\Framework\App\Action\Action
      */
     public function checkResponse()
     {
-        if(strlen($this->_view->getLayout()->getOutput()) < 10) {
+        if (strlen($this->_view->getLayout()->getOutput()) < 10) {
             $this->sendNoContentResponse();
         }
     }

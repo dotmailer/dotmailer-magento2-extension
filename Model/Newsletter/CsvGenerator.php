@@ -88,7 +88,6 @@ class CsvGenerator
         return $this;
     }
 
-
     /**
      * @param array $outputData
      * @return $this

@@ -42,7 +42,16 @@ class AdditionalTemplateMappings extends ArraySerialized
     ) {
         $this->templateFactory = $templateFactory;
         $this->helper = $helper;
-        parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data, $serializer);
+        parent::__construct(
+            $context,
+            $registry,
+            $config,
+            $cacheTypeList,
+            $resource,
+            $resourceCollection,
+            $data,
+            $serializer
+        );
     }
 
     /**
@@ -64,7 +73,6 @@ class AdditionalTemplateMappings extends ArraySerialized
 
         // get campaign IDs
         $templateCampaignIds = array_unique(array_column($values, 'campaign'));
-
 
         $templateConfigId = $this->getField();
         $scope = $this->getScope();

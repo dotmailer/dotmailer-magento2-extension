@@ -237,10 +237,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
 
-        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_USERNAME, $apiUsername, $scopeInterface, $website->getId());
-        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_PASSWORD, $this->encryptor->encrypt($apiPassword), $scopeInterface, $website->getId());
+        $this->resourceConfig->saveConfig(
+            EmailConfig::XML_PATH_CONNECTOR_API_USERNAME,
+            $apiUsername,
+            $scopeInterface,
+            $website->getId()
+        );
+        $this->resourceConfig->saveConfig(
+            EmailConfig::XML_PATH_CONNECTOR_API_PASSWORD,
+            $this->encryptor->encrypt($apiPassword),
+            $scopeInterface,
+            $website->getId()
+        );
         if ($apiEndpoint) {
-            $this->resourceConfig->saveConfig(EmailConfig::PATH_FOR_API_ENDPOINT, $apiEndpoint, $scopeInterface, $website->getId());
+            $this->resourceConfig->saveConfig(
+                EmailConfig::PATH_FOR_API_ENDPOINT,
+                $apiEndpoint,
+                $scopeInterface,
+                $website->getId()
+            );
         }
         return $this;
     }
@@ -255,8 +270,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
 
-        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_LIVECHAT_API_SPACE_ID, $apiSpaceId, $scopeInterface, $website->getId());
-        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_LIVECHAT_API_TOKEN, $this->encryptor->encrypt($token), $scopeInterface, $website->getId());
+        $this->resourceConfig->saveConfig(
+            EmailConfig::XML_PATH_LIVECHAT_API_SPACE_ID,
+            $apiSpaceId,
+            $scopeInterface,
+            $website->getId()
+        );
+        $this->resourceConfig->saveConfig(
+            EmailConfig::XML_PATH_LIVECHAT_API_TOKEN,
+            $this->encryptor->encrypt($token),
+            $scopeInterface,
+            $website->getId()
+        );
         return $this;
     }
 
@@ -269,7 +294,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
 
-        $this->resourceConfig->saveConfig(EmailConfig::XML_PATH_CONNECTOR_API_ENABLED, true, $scopeInterface, $website->getId());
+        $this->resourceConfig->saveConfig(
+            EmailConfig::XML_PATH_CONNECTOR_API_ENABLED,
+            true,
+            $scopeInterface,
+            $website->getId()
+        );
         return $this;
     }
 
@@ -727,7 +757,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $this->saveContact($contact);
             return false;
         }
-        
+
         //save contact id
         if (isset($response->id)) {
             $contact->setContactId($response->id);
@@ -764,7 +794,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if (empty($apiContacts) || isset($apiContacts->message)) {
                 break;
             }
-            $contacts = array_merge($contacts, $apiContacts);
+            foreach ($apiContacts as $apiContact) {
+                $contacts[] = $apiContact;
+            }
             $skip += 1000;
         }
 

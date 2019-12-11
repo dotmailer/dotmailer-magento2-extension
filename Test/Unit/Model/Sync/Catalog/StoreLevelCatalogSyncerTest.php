@@ -108,7 +108,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $this->webSiteInterfaceMock->expects($this->exactly(2))
             ->method('getCode')
-            ->willReturn(md5(rand()));
+            ->willReturn(hash("sha256", rand()));
 
         $result = $this->storeLevelCatalogSyncer->sync($products);
         $this->assertEquals(count($result), $expected);
@@ -156,7 +156,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $this->webSiteInterfaceMock->expects($this->at(0))
             ->method('getCode')
-            ->willReturn(md5(rand()));
+            ->willReturn(hash("sha256", rand()));
 
         $result = $this->storeLevelCatalogSyncer->sync($products);
 
@@ -229,7 +229,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $this->webSiteInterfaceMock->expects($this->never())
             ->method('getCode')
-            ->willReturn(md5(rand()));
+            ->willReturn(hash("sha256", rand()));
 
         $result = $this->storeLevelCatalogSyncer->sync($products);
         $this->assertEquals(count($result), $expected);
@@ -324,7 +324,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
         return [
           'websiteId' => rand(1, 10),
           'storeId' => rand(1, 10),
-          'code' => md5(rand())
+          'code' => hash("sha256", rand())
         ];
     }
 

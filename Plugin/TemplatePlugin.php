@@ -5,11 +5,6 @@ namespace Dotdigitalgroup\Email\Plugin;
 use Dotdigitalgroup\Email\Helper\Transactional;
 use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 
-/**
- * Class TemplatePlugin
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
- */
 class TemplatePlugin
 {
     /**

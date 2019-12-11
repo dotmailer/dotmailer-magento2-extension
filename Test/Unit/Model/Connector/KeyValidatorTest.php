@@ -43,4 +43,3 @@ class KeyValidatorTest extends TestCase
         );
     }
 }
-

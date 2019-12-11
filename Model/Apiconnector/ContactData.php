@@ -7,7 +7,6 @@ use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 
 /**
  * Manages data synced as contact.
- * @package Dotdigitalgroup\Email\Model\Apiconnector
  */
 class ContactData
 {
@@ -296,20 +295,23 @@ class ContactData
      */
     public function getCategoriesFromOrderItems($orderItems)
     {
-        $catIds = [];
+        $catIds = $categoryIds = [];
         //categories from all products
         foreach ($orderItems as $item) {
             $product = $item->getProduct();
             //sales item product may return null if product no longer exists, rather than empty object
             if ($product) {
-                $categoryIds = $product->getCategoryIds();
-                if (count($categoryIds)) {
-                    $catIds = array_unique(array_merge($catIds, $categoryIds));
-                }
+                $categoryIds[] = $product->getCategoryIds();
             }
         }
 
-        return $catIds;
+        foreach ($categoryIds as $array) {
+            foreach ($array as $key => $value) {
+                $catIds[] = $value;
+            }
+        }
+
+        return array_unique($catIds);
     }
 
     /**

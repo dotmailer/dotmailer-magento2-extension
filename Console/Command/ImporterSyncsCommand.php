@@ -49,7 +49,8 @@ class ImporterSyncsCommand extends Command
             ->addArgument(
                 'sync',
                 InputArgument::OPTIONAL,
-                sprintf('%s (%s)',
+                sprintf(
+                    '%s (%s)',
                     __('The name of the sync to run'),
                     implode('; ', $this->syncProvider->getAvailableSyncs())
                 )
@@ -81,13 +82,14 @@ class ImporterSyncsCommand extends Command
         // get the requested sync class
         /** @var SyncInterface $syncClass */
         $syncClass = $this->syncProvider->$requestedSync;
-        if (is_null($syncClass) || !$syncClass instanceof SyncInterface) {
+        if ($syncClass === null || !$syncClass instanceof SyncInterface) {
             $output->writeln('Requested sync was not recognised');
             return;
         }
 
         $start = microtime(true);
-        $output->writeln(sprintf('[%s] %s: %s',
+        $output->writeln(sprintf(
+            '[%s] %s: %s',
             date('Y-m-d H:i:s'),
             __('Started running sync'),
             get_class($syncClass)
@@ -103,7 +105,8 @@ class ImporterSyncsCommand extends Command
         // run the sync
         $syncClass->sync($fromTime);
 
-        $output->writeln(sprintf('[%s] %s %s',
+        $output->writeln(sprintf(
+            '[%s] %s %s',
             date('Y-m-d H:i:s'),
             __('Complete in'),
             round(microtime(true) - $start, 2)

@@ -76,7 +76,7 @@ You have not set a passcode which will be sent with the coupon code request.
 EOT;
         }
 
-        if(!($this->helper->isEnabled())) {
+        if (!($this->helper->isEnabled())) {
             $commentField['after_element_html'] = <<<EOT
 <small id="ddg-notice_coupon-builder-disabled">
 An active Engagement Cloud account is required to use this feature. Please enable your account <a href="{$this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_api_credentials'])}">here</a>.

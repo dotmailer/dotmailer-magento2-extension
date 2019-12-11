@@ -72,7 +72,12 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         }
 
         // save credentials and reinit cache
-        $this->helper->saveApiCredentials($params['apiusername'], $params['apipassword'], $params['apiendpoint'] ?? null, $website);
+        $this->helper->saveApiCredentials(
+            $params['apiusername'],
+            $params['apipassword'],
+            $params['apiendpoint'] ?? null,
+            $website
+        );
 
         if ($chatAccountCreated = (!empty($params['apispaceid']) && !empty($params['token']))) {
             $this->helper->saveChatApiSpaceIdAndToken($params['apispaceid'], $params['token'], $website);

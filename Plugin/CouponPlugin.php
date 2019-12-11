@@ -8,9 +8,6 @@ use Magento\SalesRule\Api\CouponRepositoryInterface;
 use Magento\SalesRule\Api\Data\CouponExtensionFactory;
 use Magento\SalesRule\Api\Data\CouponInterface;
 
-/**
- * CouponPlugin
- */
 class CouponPlugin
 {
     /**

@@ -109,7 +109,9 @@ trait MocksApiResponses
             ->getMock();
         $this->mockClient->method('setApiUsername')
             ->willReturn(new class() {
-                public function setApiPassword($password) {}
+                public function setApiPassword($password)
+                {
+                }
             });
 
         $this->mockClientFactory = $this->getMockBuilder(self::$clientFactoryClass)

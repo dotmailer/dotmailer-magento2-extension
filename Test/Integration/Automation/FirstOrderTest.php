@@ -6,10 +6,6 @@ if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory'))
     require __DIR__ . '/../_files/product_extension_interface_hacktory.php';
 }
 
-/**
- * Class FirstOrderTest
- * @package Dotdigitalgroup\Email\Test\Integration\Automation
- */
 class FirstOrderTest extends \PHPUnit\Framework\TestCase
 {
 

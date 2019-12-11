@@ -58,8 +58,7 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
-    )
-    {
+    ) {
         $this->templateFactory = $templateFactory;
         $this->storeManager = $storeManager;
         $this->templateResource = $templateResource;

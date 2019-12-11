@@ -242,7 +242,7 @@ class UrlFinderTest extends TestCase
 
         $this->scopeConfigInterfaceMock->expects($this->once())
             ->method('getValue')
-            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS)
+            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB)
             ->willReturn(1);
 
         $returnedUrl = $this->urlFinder->getPath($path);
@@ -256,7 +256,7 @@ class UrlFinderTest extends TestCase
 
         $this->scopeConfigInterfaceMock->expects($this->once())
             ->method('getValue')
-            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS)
+            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB)
             ->willReturn(0);
 
         $returnedUrl = $this->urlFinder->getPath($path);
@@ -270,7 +270,7 @@ class UrlFinderTest extends TestCase
 
         $this->scopeConfigInterfaceMock->expects($this->once())
             ->method('getValue')
-            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS)
+            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB)
             ->willReturn(1);
 
         $returnedUrl = $this->urlFinder->getPath($path);
@@ -286,7 +286,7 @@ class UrlFinderTest extends TestCase
 
         $this->scopeConfigInterfaceMock->expects($this->once())
             ->method('getValue')
-            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS)
+            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB)
             ->willReturn(1);
 
         $returnedUrl = $this->urlFinder->getPath($path);

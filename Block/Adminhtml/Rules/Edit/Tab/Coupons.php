@@ -2,10 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-/**
- * Class Coupons
- * @package Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab
- */
 class Coupons extends \Magento\Framework\View\Element\Template implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**

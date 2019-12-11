@@ -71,7 +71,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $data = [
             'product_id' => '1',
             'processed' => '1',
-            'created_at' => '2017-02-09'
+            'created_at' => '2017-02-09',
         ];
         $this->createEmailData($data);
 
@@ -81,6 +81,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
             ->getCollection();
 
         $collection->addFieldToFilter('processed', 0);
+        $this->getResponse()->getBody();
 
         $this->assertEquals(1, $collection->getSize());
     }

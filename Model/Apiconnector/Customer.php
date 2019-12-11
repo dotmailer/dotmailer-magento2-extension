@@ -585,6 +585,6 @@ class Customer extends ContactData
      */
     public function __call($method, $args)
     {
-        return call_user_func_array([$this->model, $method], $args);
+        return $this->model->$method($args);
     }
 }

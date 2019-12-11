@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Ajax;
 
-
 use Magento\Framework\App\Action\Context;
 
 class Emailcapture extends \Magento\Framework\App\Action\Action

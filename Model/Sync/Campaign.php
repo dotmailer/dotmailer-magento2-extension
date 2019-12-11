@@ -97,7 +97,6 @@ class Campaign implements SyncInterface
         $this->sendCampaigns();
     }
 
-
     /**
      * @param int $website
      * @param array $storeIds

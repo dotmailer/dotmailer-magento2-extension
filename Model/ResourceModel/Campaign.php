@@ -156,6 +156,6 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $this->getMainTable(),
                 $bind,
                 ["id in (?)" => $ids]
-        );
+            );
     }
 }
