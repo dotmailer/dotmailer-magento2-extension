@@ -116,4 +116,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
         return $collection;
     }
+
+    /**
+     * @param string $email
+     *
+     * @return Collection
+     */
+    public function getSubscriberAutomationByEmail($email)
+    {
+        $collection = $this->addFieldToFilter('email', $email)
+            ->addFieldToFilter('automation_type', Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER);
+
+        return $collection;
+    }
 }
