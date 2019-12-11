@@ -175,7 +175,7 @@ class Order
         $this->id = $orderData->getIncrementId();
         $this->email = $orderData->getCustomerEmail();
         $this->quoteId = $orderData->getQuoteId();
-        $this->storeName = $orderData->getStoreName();
+        $this->storeName = $this->storeManager->getStore($orderData->getStoreId())->getName();
         $this->purchaseDate = $orderData->getCreatedAt();
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float)number_format(
