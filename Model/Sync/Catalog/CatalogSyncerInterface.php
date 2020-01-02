@@ -8,7 +8,7 @@ interface CatalogSyncerInterface
      * Sync
      *
      * @param array $products
-     * @return int
+     * @return array
      */
     public function sync($products);
 }
