@@ -178,7 +178,7 @@ class ContactData
             }
             switch ($function) {
                 case 'getDob':
-                    $value = $this->getScopeAdjustedDob($model->getWebsiteId());
+                    $value = $this->model->getDob() ? $this->getScopeAdjustedDob($model->getWebsiteId()) : null;
                     break;
                 default:
                     $value = $this->$function();
