@@ -82,7 +82,6 @@ class Review implements SyncInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewResourceFactory
     ) {
-
         $this->coreDate               = $coreDate;
         $this->reviewCollection       = $reviewCollection;
         $this->ratingFactory          = $ratingFactory;

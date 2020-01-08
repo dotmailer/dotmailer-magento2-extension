@@ -3,14 +3,14 @@
 namespace Dotdigitalgroup\Email\Test\Integration;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory;
 use Magento\Framework\App\Config\MutableScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\TestFramework\Helper\Bootstrap;
 use ReflectionClass;
 use ReflectionParameter;
-use Dotdigitalgroup\Email\Helper\Data;
-use Magento\TestFramework\Helper\Bootstrap;
 
 trait MocksApiResponses
 {

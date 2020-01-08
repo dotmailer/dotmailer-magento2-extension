@@ -175,7 +175,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $productIds[] = $item->getProductId();
         }
 
-        if (! empty($productIds)) {
+        if (!empty($productIds)) {
             $products = $this->productCollection->create()
                 ->addAttributeToSelect('*')
                 ->addFieldToFilter('entity_id', ['in' => $productIds]);
