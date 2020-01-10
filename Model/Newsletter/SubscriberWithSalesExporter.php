@@ -159,9 +159,9 @@ class SubscriberWithSalesExporter
                 );
             }
 
-            $connectorSubscriber = $this->contactDataFactory->create();
-            $connectorSubscriber->setMappingHash($mappedHash);
-            $connectorSubscriber->setContactData($subscriber);
+            $connectorSubscriber = $this->contactDataFactory->create()
+                ->init($subscriber, $mappedHash)
+                ->setContactData();
 
             $outputData = [$subscriber->getEmail(), 'Html'];
             if ($optInType) {

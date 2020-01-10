@@ -1447,35 +1447,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get customer datafields mapped - exclude custom attributes.
-     *
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     *
-     * @return array|boolean
-     */
-    public function getWebsiteCustomerMappingDatafields($website)
-    {
-        //customer mapped data
-        $store = $website->getDefaultStore();
-        $mappedData = $this->scopeConfig->getValue(
-            'connector_data_mapping/customer_data',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store->getId()
-        );
-
-        unset($mappedData['custom_attributes'], $mappedData['abandoned_prod_name']);
-
-        //skip non mapped customer datafields
-        foreach ($mappedData as $key => $value) {
-            if (!$value) {
-                unset($mappedData[$key]);
-            }
-        }
-
-        return $mappedData;
-    }
-
-    /**
      * Get the config id by the automation type.
      *
      * @param string $automationType

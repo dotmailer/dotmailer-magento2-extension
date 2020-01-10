@@ -1653,7 +1653,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Automap Data Fields</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Automapdatafields</frontend_model>
-                    <comment><![CDATA[Create Data Fields In Connector And Map Them. Including Customer, Address And Sales Information.]]></comment>
+                    <comment><![CDATA[Map Magento data to Engagement Cloud data fields, including customer, address and sales information.]]></comment>
                 </field>
                 <field id="delete_contact" translate="label" sortOrder="30" showInStore="0" showInWebsite="1"
                        showInDefault="1">
