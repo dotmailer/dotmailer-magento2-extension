@@ -4,7 +4,7 @@
     <fieldset name="engagement_cloud_coupon_url_builder" sortOrder="60" component="Dotdigitalgroup_Email/js/form/element/manage-coupon-codes">
         <settings>
             <collapsible>true</collapsible>
-            <label translate="true">Engagement Cloud Coupon URL Builder</label>                     <additionalClasses>
+            <label translate="true">dotdigital Coupon URL Builder</label>                     <additionalClasses>
                 <class name="ddg-fieldset">true</class>
             </additionalClasses>
         </settings>

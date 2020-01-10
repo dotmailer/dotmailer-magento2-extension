@@ -9,7 +9,7 @@ class Coupons extends \Magento\Framework\View\Element\Template implements \Magen
      */
     public function getTabLabel()
     {
-        return __('Engagement Cloud Coupon URL Builder');
+        return __('dotdigital Coupon URL Builder');
     }
 
     /**
@@ -17,7 +17,7 @@ class Coupons extends \Magento\Framework\View\Element\Template implements \Magen
      */
     public function getTabTitle()
     {
-        return __('Engagement Cloud Coupon URL Builder');
+        return __('dotdigital Coupon URL Builder');
     }
 
     /**
