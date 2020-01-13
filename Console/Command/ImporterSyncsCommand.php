@@ -4,7 +4,9 @@ namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Console\Command\Provider\SyncProvider;
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
+use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
+use Magento\Framework\Exception\LocalizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +27,6 @@ class ImporterSyncsCommand extends Command
     private $state;
 
     /**
-     * ImporterSyncsCommand constructor
      * @param SyncProvider $syncProvider
      * @param State $state
      */
@@ -66,14 +67,24 @@ class ImporterSyncsCommand extends Command
     }
 
     /**
-     * Execute the data migration
+     * Run the sync command
+     *
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|void|null
+     * @throws LocalizedException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_CRONTAB);
+        try {
+            $this->state->setAreaCode(Area::AREA_CRONTAB);
+        } catch (LocalizedException $e) {
+            if ($this->state->getAreaCode() != Area::AREA_CRONTAB) {
+                $output->writeln(__(
+                    sprintf('Warning: command running in an unexpected state (%s)', $this->state->getAreaCode())
+                ));
+            }
+        }
 
         if (!$requestedSync = $input->getArgument('sync')) {
             $requestedSync = $this->askForSync($input, $output);
@@ -83,7 +94,7 @@ class ImporterSyncsCommand extends Command
         /** @var SyncInterface $syncClass */
         $syncClass = $this->syncProvider->$requestedSync;
         if ($syncClass === null || !$syncClass instanceof SyncInterface) {
-            $output->writeln('Requested sync was not recognised');
+            $output->writeln(__('Requested sync was not recognised'));
             return;
         }
 
