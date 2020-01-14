@@ -130,9 +130,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var RequestInterface
      */
     private $request;
-    /**
-     * @var EncryptorInterface
-     */
 
     /**
      * @var EncryptorInterface

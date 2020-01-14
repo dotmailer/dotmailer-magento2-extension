@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\DataFactory;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
@@ -21,6 +22,11 @@ class EnableConnectorCommand extends Command
      * @var Data
      */
     private $helper;
+
+    /**
+     * @var DataFactory
+     */
+    private $dataFactory;
 
     /**
      * @var StoreManagerInterface
@@ -48,20 +54,20 @@ class EnableConnectorCommand extends Command
     private $output;
 
     /**
-     * @param Data $helper
+     * @param DataFactory $dataFactory
      * @param StoreManagerInterface $storeManager
      * @param Config $resourceConfig
      * @param EncryptorInterface $encryptor
      * @param ReinitableConfigInterface $reinitableConfig
      */
     public function __construct(
-        Data $helper,
+        DataFactory $dataFactory,
         StoreManagerInterface $storeManager,
         Config $resourceConfig,
         EncryptorInterface $encryptor,
         ReinitableConfigInterface $reinitableConfig
     ) {
-        $this->helper = $helper;
+        $this->dataFactory = $dataFactory;
         $this->storeManager = $storeManager;
         $this->resourceConfig = $resourceConfig;
         $this->encryptor = $encryptor;
@@ -104,7 +110,7 @@ class EnableConnectorCommand extends Command
         $this->output->writeln(__('Saving your API credentials'));
 
         // get account info
-        $accountInfo = $this->helper
+        $accountInfo = $this->getEmailHelper()
             ->getWebsiteApiClient(0, $username, $password)
             ->getAccountInfo();
 
@@ -170,7 +176,7 @@ class EnableConnectorCommand extends Command
         ];
 
         // get API endpoint from info
-        if ($this->helper->getApiEndPointFromConfig(0) === null) {
+        if ($this->getEmailHelper()->getApiEndPointFromConfig(0) === null) {
             $apiEndpointKey = array_search('ApiEndpoint', array_column($accountInfo->properties, 'name'));
             $configData[EmailConfig::PATH_FOR_API_ENDPOINT] = $accountInfo->properties[$apiEndpointKey]->value;
         }
@@ -187,5 +193,14 @@ class EnableConnectorCommand extends Command
             $this->resourceConfig->saveConfig($key, $value, ScopeConfigInterface::SCOPE_TYPE_DEFAULT);
         }
         $this->reinitableConfig->reinit();
+    }
+
+    /**
+     * @return Data
+     */
+    private function getEmailHelper()
+    {
+        return $this->helper
+            ?: $this->helper = $this->dataFactory->create();
     }
 }
