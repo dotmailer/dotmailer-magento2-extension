@@ -1,14 +1,12 @@
 <?php
 /** @var \Dotdigitalgroup\Email\Block\Tracking $block */
-/** @var \Dotdigitalgroup\Email\Helper\Data $helper */
 ?>
-<?php $helper = $this->helper(\Dotdigitalgroup\Email\Helper\Data::class); ?>
 
-<?php if ($block->isPageTrackingAvailable()) : ?>
+<?php if ($block->isPageTrackingAvailable()): ?>
     <script>
         require.config({
             paths: {
-                'dmpt':  "<?= $block->escapeUrl($helper->getPageTrackingUrl()) ?>"
+                'dmpt':  "<?= $block->escapeUrl($block->getPageTrackingUrl()) ?>"
             }
         });
     </script>

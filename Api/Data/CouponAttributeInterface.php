@@ -2,9 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Api\Data;
 
-/**
- * Coupon Attribute Interface
- */
 interface CouponAttributeInterface extends \Magento\Framework\Api\ExtensionAttributesInterface
 {
     const EMAIL = 'email';

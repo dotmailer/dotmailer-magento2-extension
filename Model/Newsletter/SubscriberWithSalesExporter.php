@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Dotdigitalgroup\Email\Setup\Schema;
 use Dotdigitalgroup\Email\Model\Newsletter\CsvGeneratorFactory;
+use Magento\Framework\Filesystem\DriverInterface;
 
 class SubscriberWithSalesExporter
 {
@@ -58,6 +59,11 @@ class SubscriberWithSalesExporter
     private $contactDataFactory;
 
     /**
+     * @var DriverInterface
+     */
+    private $driver;
+
+    /**
      * SubscriberWithSalesExporter constructor.
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -68,6 +74,7 @@ class SubscriberWithSalesExporter
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ContactDataFactory $contactDataFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param CsvGeneratorFactory $csvGeneratorFactory
+     * @param DriverInterface $driver
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -78,7 +85,8 @@ class SubscriberWithSalesExporter
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Dotdigitalgroup\Email\Model\Apiconnector\ContactDataFactory $contactDataFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        CsvGeneratorFactory $csvGeneratorFactory
+        CsvGeneratorFactory $csvGeneratorFactory,
+        DriverInterface $driver
     ) {
         $this->dateTime = $dateTime;
         $this->helper           = $helper;
@@ -90,6 +98,7 @@ class SubscriberWithSalesExporter
         $this->consentResource  = $consentResource;
         $this->contactDataFactory = $contactDataFactory;
         $this->emailContactResource = $contactResource;
+        $this->driver = $driver;
     }
 
     /**
@@ -150,29 +159,26 @@ class SubscriberWithSalesExporter
                 );
             }
 
-            $connectorSubscriber = $this->contactDataFactory->create();
-            $connectorSubscriber->setMappingHash($mappedHash);
-            $connectorSubscriber->setContactData($subscriber);
-            $email = $subscriber->getEmail();
-            $outputData = [$email, 'Html'];
+            $connectorSubscriber = $this->contactDataFactory->create()
+                ->init($subscriber, $mappedHash)
+                ->setContactData();
+
+            $outputData = [$subscriber->getEmail(), 'Html'];
             if ($optInType) {
                 $outputData[] = 'Double';
             }
+            foreach ($connectorSubscriber->toCSVArray() as $item) {
+                $outputData[] = $item;
+            }
 
-            $outputData = array_merge($outputData, $connectorSubscriber->toCSVArray());
             $consentUrl = $subscriber->getConsentUrl();
             //check for any subscribe or customer consent enabled
             if ($isConsentSubscriberEnabled && $consentUrl) {
-                $consentUrl = $subscriber->getConsentUrl();
-                $consentText = $consentModel->getConsentTextForWebsite($consentUrl, $websiteId);
-                $consentData = [
-                    $consentText,
-                    $consentUrl,
-                    $this->dateTime->date(\Zend_Date::ISO_8601, $subscriber->getConsentDatetime()),
-                    $subscriber->getConsentIp(),
-                    $subscriber->getConsentUserAgent()
-                ];
-                $outputData = array_merge($outputData, $consentData);
+                $outputData[] = $consentModel->getConsentTextForWebsite($consentUrl, $websiteId);
+                $outputData[] = $consentUrl;
+                $outputData[] = $this->dateTime->date(\Zend_Date::ISO_8601, $subscriber->getConsentDatetime());
+                $outputData[] = $subscriber->getConsentIp();
+                $outputData[] = $subscriber->getConsentUserAgent();
             }
 
             $csv->outputDataToFile($outputData);
@@ -210,7 +216,7 @@ class SubscriberWithSalesExporter
     private function registerWithImporter($emailContactIds, $subscribersFile, $websiteId)
     {
         $subscriberNum = count($emailContactIds);
-        if (is_file($this->csvGeneratorFactory->create()->getFilePath($subscribersFile))) {
+        if ($this->driver->isFile($this->csvGeneratorFactory->create()->getFilePath($subscribersFile))) {
             if ($subscriberNum > 0) {
                 //register in queue with importer
                 $check = $this->importerFactory->create()

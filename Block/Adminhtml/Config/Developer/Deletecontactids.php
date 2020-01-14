@@ -25,7 +25,6 @@ class Deletecontactids extends AbstractDeveloper
      */
     protected function getButtonUrl()
     {
-       return $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/deletecontactids');
+        return $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/deletecontactids');
     }
-
 }

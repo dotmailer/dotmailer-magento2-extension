@@ -4,7 +4,7 @@
     <test name="CouponUrlBuilderInactiveStateTest">
         <annotations>
             <features value="Engagement Cloud module"/>
-            <stories value="Engagement Cloud Coupon URL Builder"/>
+            <stories value="dotdigital Coupon URL Builder"/>
             <title value="Disable the URL Builder if the Engagement Cloud account is not active"/>
             <description value="The coupon URL builder form fields should be disabled, and warning text displayed."/>
             <severity value="AVERAGE"/>

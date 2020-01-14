@@ -137,6 +137,22 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Flag individual contacts for reimport
+     *
+     * @param array $customerIds
+     * @return int
+     */
+    public function resetContacts(array $customerIds)
+    {
+        return $this->getConnection()
+            ->update(
+                $this->getTable(Schema::EMAIL_CONTACT_TABLE),
+                ['email_imported' => $this->expressionFactory->create(["expression" => 'null'])],
+                ['customer_id IN (?)' => $customerIds]
+            );
+    }
+
+    /**
      * Set all imported subscribers for reimport.
      *
      * @return int
@@ -373,12 +389,15 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $contactKey = array_search($email['email'], array_column($localContacts, 'email'));
 
             // if there is no local contact, or last subscribed value, continue with unsubscribe
-            if ($contactKey === false || is_null($localContacts[$contactKey]['last_subscribed_at'])) {
+            if ($contactKey === false || $localContacts[$contactKey]['last_subscribed_at'] === null) {
                 return $email['email'];
             }
 
             // convert both timestamps to DateTime
-            $lastSubscribedMagento = new \DateTime($localContacts[$contactKey]['last_subscribed_at'], new \DateTimeZone('UTC'));
+            $lastSubscribedMagento = new \DateTime(
+                $localContacts[$contactKey]['last_subscribed_at'],
+                new \DateTimeZone('UTC')
+            );
             $removedAtEc = new \DateTime($email['removed_at'], new \DateTimeZone('UTC'));
 
             // user recently resubscribed in Magento, do not unsubscribe them
@@ -420,9 +439,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         return $this->expressionFactory->create(
             ["expression" => "(
-                SELECT created_at FROM $salesOrder 
+                SELECT created_at FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
-                ORDER BY created_at DESC 
+                ORDER BY created_at DESC
                 LIMIT 1
             )"]
         );
@@ -439,7 +458,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ["expression" => "(
                 SELECT entity_id FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
-                ORDER BY created_at DESC 
+                ORDER BY created_at DESC
                 LIMIT 1
             )"]
         );
@@ -455,7 +474,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ["expression" => "(
                 SELECT entity_id FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
-                ORDER BY created_at ASC 
+                ORDER BY created_at ASC
                 LIMIT 1
             )"]
         );
@@ -472,7 +491,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ["expression" => "(
                 SELECT increment_id FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
-                ORDER BY created_at DESC 
+                ORDER BY created_at DESC
                 LIMIT 1
             )"]
         );
@@ -663,16 +682,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $customerCollection = $this->customerCollection->create()
             ->addAttributeToSelect('*')
             ->addNameToSelect();
-        $customerCollection = $this->addBillingJoinAttributesToCustomerCollection($customerCollection);
-        $customerCollection = $this->addShippingJoinAttributesToCustomerCollection($customerCollection);
-        $customerCollection = $customerCollection->addAttributeToFilter('entity_id', ['in' => $customerIds]);
+
+        $this->addBillingJoinAttributesToCustomerCollection($customerCollection);
+        $this->addShippingJoinAttributesToCustomerCollection($customerCollection);
+
+        $customerCollection->addAttributeToFilter('entity_id', ['in' => $customerIds]);
 
         // get the last login date from the log_customer table
         $customerCollection->getSelect()->columns([
             'last_logged_date' => $this->expressionFactory->create(
                 ["expression" => "(
-                    SELECT last_login_at 
-                    FROM  $customerLog 
+                    SELECT last_login_at
+                    FROM  $customerLog
                     WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1
                 )"]
             ),
@@ -696,8 +717,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["expression" => "(
                     SELECT created_at
                     FROM $salesOrderGrid
-                    WHERE customer_id = main_table.customer_id 
-                    ORDER BY created_at DESC 
+                    WHERE customer_id = main_table.customer_id
+                    ORDER BY created_at DESC
                     LIMIT 1
                 )"]
             ),
@@ -705,8 +726,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["expression" => "(
                     SELECT entity_id
                     FROM $salesOrderGrid
-                    WHERE customer_id = main_table.customer_id 
-                    ORDER BY created_at ASC 
+                    WHERE customer_id = main_table.customer_id
+                    ORDER BY created_at ASC
                     LIMIT 1
                 )"]
             ),
@@ -714,8 +735,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["expression" => "(
                     SELECT entity_id
                     FROM $salesOrderGrid
-                    WHERE customer_id = main_table.customer_id 
-                    ORDER BY created_at DESC 
+                    WHERE customer_id = main_table.customer_id
+                    ORDER BY created_at DESC
                     LIMIT 1
                 )"]
             ),
@@ -723,8 +744,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["expression" => "(
                     SELECT increment_id
                     FROM $salesOrderGrid
-                    WHERE customer_id = main_table.customer_id 
-                    ORDER BY created_at DESC 
+                    WHERE customer_id = main_table.customer_id
+                    ORDER BY created_at DESC
                     LIMIT 1
                 )"]
             ),
@@ -785,122 +806,114 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
-     *
-     * @return \Magento\Customer\Model\ResourceModel\Customer\Collection
      */
     private function addShippingJoinAttributesToCustomerCollection($customerCollection)
     {
-        $customerCollection = $customerCollection->joinAttribute(
+        $customerCollection->joinAttribute(
             'shipping_street',
             'customer_address/street',
             'default_shipping',
             null,
             'left'
         )
-            ->joinAttribute(
-                'shipping_city',
-                'customer_address/city',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_country_code',
-                'customer_address/country_id',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_postcode',
-                'customer_address/postcode',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_telephone',
-                'customer_address/telephone',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_region',
-                'customer_address/region',
-                'default_shipping',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'shipping_company',
-                'customer_address/company',
-                'default_shipping',
-                null,
-                'left'
-            );
-
-        return $customerCollection;
+        ->joinAttribute(
+            'shipping_city',
+            'customer_address/city',
+            'default_shipping',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'shipping_country_code',
+            'customer_address/country_id',
+            'default_shipping',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'shipping_postcode',
+            'customer_address/postcode',
+            'default_shipping',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'shipping_telephone',
+            'customer_address/telephone',
+            'default_shipping',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'shipping_region',
+            'customer_address/region',
+            'default_shipping',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'shipping_company',
+            'customer_address/company',
+            'default_shipping',
+            null,
+            'left'
+        );
     }
 
     /**
      * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
-     *
-     * @return \Magento\Customer\Model\ResourceModel\Customer\Collection
      */
     private function addBillingJoinAttributesToCustomerCollection($customerCollection)
     {
-        $customerCollection = $customerCollection->joinAttribute(
+        $customerCollection->joinAttribute(
             'billing_street',
             'customer_address/street',
             'default_billing',
             null,
             'left'
         )
-            ->joinAttribute(
-                'billing_city',
-                'customer_address/city',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_country_code',
-                'customer_address/country_id',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_postcode',
-                'customer_address/postcode',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_telephone',
-                'customer_address/telephone',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_region',
-                'customer_address/region',
-                'default_billing',
-                null,
-                'left'
-            )
-            ->joinAttribute(
-                'billing_company',
-                'customer_address/company',
-                'default_billing',
-                null,
-                'left'
-            );
-
-        return $customerCollection;
+        ->joinAttribute(
+            'billing_city',
+            'customer_address/city',
+            'default_billing',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'billing_country_code',
+            'customer_address/country_id',
+            'default_billing',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'billing_postcode',
+            'customer_address/postcode',
+            'default_billing',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'billing_telephone',
+            'customer_address/telephone',
+            'default_billing',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'billing_region',
+            'customer_address/region',
+            'default_billing',
+            null,
+            'left'
+        )
+        ->joinAttribute(
+            'billing_company',
+            'customer_address/company',
+            'default_billing',
+            null,
+            'left'
+        );
     }
 
     /**
@@ -980,9 +993,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $quoteArray[$quote->getCustomerId()] = $quote->toArray(['last_quote_id']);
         }
 
-        foreach($quoteArray as $k => $v){
+        foreach ($quoteArray as $k => $v) {
             if (isset($orderArray[$k])) {
-                $orderArray[$k] = array_merge($orderArray[$k],$v);
+                $orderArray[$k]['last_quote_id'] = $v['last_quote_id'];
             }
         }
 

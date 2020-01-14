@@ -8,7 +8,7 @@ use \Magento\Framework\Model\AbstractExtensibleModel;
 /**
  * Class CouponAttributeRepository
  */
-class CouponAttribute extends AbstractExtensibleModel implements \Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface
+class CouponAttribute extends AbstractExtensibleModel implements CouponAttributeInterface
 {
     protected function _construct()
     {

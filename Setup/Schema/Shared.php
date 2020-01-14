@@ -233,7 +233,12 @@ class Shared
     private function addKeyForConsentTable($installer, $emailContactConsentTable)
     {
         return $emailContactConsentTable->addForeignKey(
-            $installer->getFkName(Schema::EMAIL_CONTACT_CONSENT_TABLE, 'email_contact_id', Schema::EMAIL_CONTACT_TABLE, 'email_contact_id'),
+            $installer->getFkName(
+                Schema::EMAIL_CONTACT_CONSENT_TABLE,
+                'email_contact_id',
+                Schema::EMAIL_CONTACT_TABLE,
+                'email_contact_id'
+            ),
             'email_contact_id',
             $installer->getTable(Schema::EMAIL_CONTACT_TABLE),
             'email_contact_id',

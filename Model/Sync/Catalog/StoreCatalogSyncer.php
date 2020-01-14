@@ -63,7 +63,8 @@ class StoreCatalogSyncer
                 return $products;
             } else {
                 $pid = implode(",", array_keys($products));
-                $msg = "Failed to register with IMPORTER. Type(Catalog) / Scope(Bulk) / Store($storeId) / Product Ids($pid)";
+                $msg = "Failed to register with IMPORTER."
+                    . "Type(Catalog) / Scope(Bulk) / Store($storeId) / Product Ids($pid)";
                 $this->helper->log($msg);
             }
         }

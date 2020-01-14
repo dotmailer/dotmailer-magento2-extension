@@ -29,8 +29,7 @@ class Bunch
         \Magento\Framework\Api\SearchCriteriaInterface $criteria,
         \Magento\Framework\Api\Search\FilterGroup $filterGroup,
         \Magento\Framework\Api\FilterBuilder $filterBuilder
-    )
-    {
+    ) {
         $this->productRepository = $productRepository;
         $this->searchCriteria = $criteria;
         $this->filterGroup = $filterGroup;

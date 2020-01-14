@@ -6,9 +6,6 @@ use Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface;
 use Dotdigitalgroup\Email\Api\CouponAttributeRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-/**
- * Class CouponAttributeRepository
- */
 class CouponAttributeRepository implements CouponAttributeRepositoryInterface
 {
     /**

@@ -88,7 +88,9 @@ class Test
     {
         if (!preg_match('#^https://(r[0-9]+-)?api\.dotmailer\.com$#', $apiEndpoint) &&
             !preg_match('#^https://(r[0-9]+\.)?apiconnector\.com$#', $apiEndpoint)) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('The endpoint '.$apiEndpoint.' is not permitted.'));
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('The endpoint '.$apiEndpoint.' is not permitted.')
+            );
         }
 
         return true;

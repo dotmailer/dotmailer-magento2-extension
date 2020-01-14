@@ -53,7 +53,10 @@ class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
                     'options' => ['null' => 'No', '1' => 'Yes'],
                     'width' => '30',
                     'align' => 'center',
-                    'filter_condition_callback' => [$this->couponGridFiltererFactory->create(), 'filterByGeneratedByDotdigital']
+                    'filter_condition_callback' => [
+                        $this->couponGridFiltererFactory->create(),
+                        'filterByGeneratedByDotdigital'
+                    ]
                 ],
                 'expiration_date'
             )->addColumnAfter(
@@ -64,7 +67,10 @@ class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
                     'default' => '',
                     'width' => '30',
                     'align' => 'center',
-                    'filter_condition_callback' => [$this->couponGridFiltererFactory->create(), 'filterGeneratedForEmail']
+                    'filter_condition_callback' => [
+                        $this->couponGridFiltererFactory->create(),
+                        'filterGeneratedForEmail'
+                    ]
                 ],
                 'generated_by_dotdigital'
             );

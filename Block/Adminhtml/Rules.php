@@ -2,9 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
-/**
- * Class Rules.
- */
 class Rules extends \Magento\Backend\Block\Widget\Grid\Container
 {
     /**

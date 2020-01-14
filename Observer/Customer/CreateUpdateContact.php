@@ -76,8 +76,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Framework\Stdlib\DateTime $dateTime
-    )
-    {
+    ) {
         $this->wishlist = $wishlist;
         $this->contactFactory = $contactFactory;
         $this->contactResource = $contactResource;

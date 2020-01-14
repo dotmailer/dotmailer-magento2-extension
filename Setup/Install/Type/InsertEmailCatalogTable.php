@@ -52,5 +52,4 @@ class InsertEmailCatalogTable extends AbstractDataMigration implements InsertTyp
             'created_at',
         ];
     }
-
 }

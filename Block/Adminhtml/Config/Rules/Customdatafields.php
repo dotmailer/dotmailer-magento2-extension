@@ -2,6 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules;
 
+/**
+ * Class Customdatafields
+ * This custom block sets default data for the three columns in the 'Condition' fieldset.
+ * These are then overridden via AJAX, either on load (loading saved data)
+ * or when <select> elements are manipulated.
+ */
 class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
 {
 

@@ -58,8 +58,7 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
-    )
-    {
+    ) {
         $this->templateFactory = $templateFactory;
         $this->storeManager = $storeManager;
         $this->templateResource = $templateResource;
@@ -115,19 +114,43 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
                 );
             }
         } else {
-            //remove the config for core email template
-            $this->helper->deleteConfigData(
-                $dotTemplate->templateConfigMapping[$templateConfigId],
-                $scope,
-                $scopeId
-            );
-            //remove the config for dotmailer template
-            $this->helper->deleteConfigData(
-                $dotTemplate->templateConfigIdToDotmailerConfigPath[$templateConfigId],
-                $scope,
-                $scopeId
-            );
+            if (!$this->isFirstTimeMapped($dotTemplate, $templateConfigId, $scope, $scopeId) && $this->getOldValue()) {
+                //remove the config for core email template
+                $this->helper->deleteConfigData(
+                    $dotTemplate->templateConfigMapping[$templateConfigId],
+                    $scope,
+                    $scopeId
+                );
+                //remove the config for dotmailer template
+                $this->helper->deleteConfigData(
+                    $dotTemplate->templateConfigIdToDotmailerConfigPath[$templateConfigId],
+                    $scope,
+                    $scopeId
+                );
+            }
         }
         return parent::beforeSave();
+    }
+
+    /**
+     * @param $dotTemplate
+     * @param $templateConfigId
+     * @param $scope
+     * @param $scopeId
+     * @return bool
+     */
+    private function isFirstTimeMapped($dotTemplate, $templateConfigId, $scope, $scopeId)
+    {
+        $configValue =  $this->helper->getConfigValue(
+            $dotTemplate->templateConfigMapping[$templateConfigId],
+            $scope,
+            $scopeId
+        );
+
+        if (is_numeric($configValue) && !empty($configValue)) {
+            return true;
+        }
+
+        return false;
     }
 }

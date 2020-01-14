@@ -14,7 +14,8 @@ use Dotdigitalgroup\Email\Model\Importer;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\TestCase;
 
-class UpdateTest extends TestCase{
+class UpdateTest extends TestCase
+{
     /**
      * @var Update
      */
@@ -175,7 +176,6 @@ class UpdateTest extends TestCase{
         $this->quoteRepositoryMock->expects($this->never())
             ->method('get');
 
-
         $this->abandonedCartDataMock->expects($this->never())
             ->method('getPayLoad');
 
@@ -189,7 +189,6 @@ class UpdateTest extends TestCase{
         $this->storeInterfaceMock->expects($this->never())
             ->method('getId')
             ->willReturn($websiteId);
-
 
         $this->importerMock->expects($this->never())
             ->method('registerQueue');

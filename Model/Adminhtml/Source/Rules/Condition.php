@@ -37,6 +37,7 @@ class Condition
                 return $this->toOptionArray();
 
             case 'string':
+            case 'email':
                 return $this->optionsForStringType();
         }
 

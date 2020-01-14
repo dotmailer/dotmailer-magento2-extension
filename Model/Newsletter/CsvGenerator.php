@@ -3,8 +3,8 @@
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Dotdigitalgroup\Email\Helper\File;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Newsletter\Model\Subscriber;
+use Magento\Store\Api\Data\StoreInterface;
 
 class CsvGenerator
 {
@@ -53,14 +53,18 @@ class CsvGenerator
 
     /**
      * @param StoreInterface $store
-     * @param $storeName
+     * @param string $storeName
+     * @param string $websiteName
      * @return $this
      */
-    public function createHeaders($store, $storeName = '')
+    public function createHeaders($store, $storeName = '', $websiteName = '')
     {
         $this->headers = ['Email', 'EmailType'];
         if (strlen($storeName)) {
             $this->headers[] = $storeName;
+        }
+        if (strlen($websiteName)) {
+            $this->headers[] = $websiteName;
         }
         $optInType = $this->isOptInTypeDouble($store);
         if ($optInType) {
@@ -87,7 +91,6 @@ class CsvGenerator
         $this->file->outputCSV($this->filePath, $this->headers);
         return $this;
     }
-
 
     /**
      * @param array $outputData

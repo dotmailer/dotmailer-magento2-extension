@@ -53,5 +53,4 @@ class InsertEmailReviewTable extends AbstractDataMigration implements InsertType
             'customer_id',
         ];
     }
-
 }

@@ -449,5 +449,4 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     {
         return $this->registry->registry('dotmailer_current_template_id');
     }
-    
 }

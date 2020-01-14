@@ -5,11 +5,6 @@ namespace Dotdigitalgroup\Email\Plugin;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 
-/**
- * Class TransportBuilderPlugin
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
- */
 class TransportBuilderPlugin
 {
     /**

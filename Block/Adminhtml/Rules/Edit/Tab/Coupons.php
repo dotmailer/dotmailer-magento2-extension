@@ -2,10 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 
-/**
- * Class Coupons
- * @package Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab
- */
 class Coupons extends \Magento\Framework\View\Element\Template implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**
@@ -13,7 +9,7 @@ class Coupons extends \Magento\Framework\View\Element\Template implements \Magen
      */
     public function getTabLabel()
     {
-        return __('Engagement Cloud Coupon URL Builder');
+        return __('dotdigital Coupon URL Builder');
     }
 
     /**
@@ -21,7 +17,7 @@ class Coupons extends \Magento\Framework\View\Element\Template implements \Magen
      */
     public function getTabTitle()
     {
-        return __('Engagement Cloud Coupon URL Builder');
+        return __('dotdigital Coupon URL Builder');
     }
 
     /**

@@ -351,8 +351,9 @@ class Books extends \Magento\Framework\View\Element\Template
                     }
                     $formattedCatPreference = [];
                     $formattedCatPreference['label'] = $catPreference->publicName;
-                    isset($catPreference->isOptedIn) ? $formattedCatPreference['isOptedIn'] = $catPreference->isOptedIn :
-                        $formattedCatPreference['isOptedIn'] = false;
+                    $formattedCatPreference['isOptedIn'] = isset($catPreference->isOptedIn)
+                        ? $catPreference->isOptedIn
+                        : false;
                     $formattedCatPreferences[$catPreference->id] = $formattedCatPreference;
                 }
                 $formattedPreference['catPreferences'] = $formattedCatPreferences;

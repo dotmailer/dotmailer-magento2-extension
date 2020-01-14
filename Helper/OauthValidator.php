@@ -6,7 +6,6 @@ use Magento\Backend\Model\Auth;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 
-
 class OauthValidator
 {
 
@@ -35,8 +34,7 @@ class OauthValidator
         Auth $auth,
         Config $config,
         EncryptorInterface $encryptor
-    )
-    {
+    ) {
         $this->helper = $helper;
         $this->auth = $auth;
         $this->config = $config;

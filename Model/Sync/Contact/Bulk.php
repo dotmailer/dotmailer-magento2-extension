@@ -211,7 +211,7 @@ class Bulk
         //no api connection error
         if (! $curlError) {
             //api response error
-            if (isset($apiContact->message) or ! $apiContact) {
+            if (isset($apiContact->message) || ! $apiContact) {
                 $message = (isset($apiContact->message)) ? $apiContact->message : self::ERROR_UNKNOWN;
                 $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
                     ->setMessage($message);

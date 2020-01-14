@@ -60,7 +60,6 @@ class CatalogTest extends TestCase
      */
     private $scopeConfigInterfaceMock;
 
-
     protected function setUp()
     {
         $this->catalogCollectionMock = $this->createMock(CatalogCollection::Class);
@@ -97,7 +96,8 @@ class CatalogTest extends TestCase
         $countProducts = 5;
         $removeOrphanProductsResult = null;
         $unexpectedResultMessage = 'Done.';
-        $expectedResultMessage = '----------- Catalog sync ----------- : 00:00:00, Total processed = 10, Total synced = 5';
+        $expectedResultMessage = '----------- Catalog sync ----------- : ' .
+            '00:00:00, Total processed = 10, Total synced = 5';
 
         $this->getLimit();
         $productsToProcess = $this->getMockProductsToProcess();
@@ -146,7 +146,8 @@ class CatalogTest extends TestCase
         $countProducts = 0;
         $removeOrphanProductsResult = null;
         $expectedResultMessage = 'Catalog sync skipped, no products to process.';
-        $unexpectedResultMessage = '----------- Catalog sync ----------- : 00:00:00, Total processed = 10, Total synced = 10';
+        $unexpectedResultMessage = '----------- Catalog sync ----------- : ' .
+            '00:00:00, Total processed = 10, Total synced = 10';
 
         $this->getLimit();
         $productsToProcess = [];

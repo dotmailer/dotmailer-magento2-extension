@@ -14,7 +14,8 @@ class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
     {
         return <<<EOT
 <a href="{$this->getUrl('dotdigitalgroup_email/studio')}">
-    <img style="margin-bottom: 15px" src="{$this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png')}" alt="Open an Engagement Cloud account">
+    <img style="margin-bottom: 15px" src="{$this->getViewFileUrl('Dotdigitalgroup_Email::images/banner.png')}" 
+        alt="Open an Engagement Cloud account">
 </a>
 EOT;
     }

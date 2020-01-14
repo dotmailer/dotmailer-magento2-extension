@@ -2,12 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 
 /**
  * Manages data synced as contact.
- * @package Dotdigitalgroup\Email\Model\Apiconnector
  */
 class ContactData
 {
@@ -24,7 +25,7 @@ class ContactData
     /**
      * @var array
      */
-    private $mappingHash;
+    private $columns;
 
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order
@@ -141,18 +142,11 @@ class ContactData
         $this->dateIntervalFactory = $dateIntervalFactory;
     }
 
-    /**
-     * @param $storeId
-     *
-     * @return \Magento\Store\Api\Data\StoreInterface|\Magento\Store\Model\Store
-     */
-    private function getStore($storeId)
+    public function init(AbstractModel $model, array $columns)
     {
-        if (! isset($this->store)) {
-            $this->store = $this->storeManager->getStore($storeId);
-        }
-
-        return $this->store;
+        $this->model = $model;
+        $this->columns = $columns;
+        return $this;
     }
 
     /**
@@ -164,47 +158,51 @@ class ContactData
     }
 
     /**
-     * @param $model
+     * Set column data on the customer model
+     *
+     * @return $this
      */
-    public function setContactData($model)
+    public function setContactData()
     {
-        $this->model = $model;
-        $mappingHash = array_keys($this->getMappingHash());
-        foreach ($mappingHash as $key) {
-            //Call user function based on the attribute mapped.
-            $function = 'get';
-            $exploded = explode('_', $key);
-            foreach ($exploded as $one) {
-                $function .= ucfirst($one);
-            }
-            switch ($function) {
-                case 'getDob':
-                    $value = $this->getScopeAdjustedDob($model->getWebsiteId());
+        foreach (array_keys($this->getColumns()) as $key) {
+            switch ($key) {
+                case 'dob':
+                    $value = $this->model->getDob()
+                        ? $this->getScopeAdjustedDob($this->model->getWebsiteId())
+                        : null;
                     break;
+
+                case 'email_type':
+                    $value = 'Html';
+                    break;
+
                 default:
-                    $value = $this->$function();
-                    break;
+                    $function = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
+                    $value = $this->model->$function();
             }
+
             $this->contactData[$key] = $value;
         }
+
+        return $this;
     }
 
     /**
      * @return array
      */
-    public function getMappingHash()
+    public function getColumns()
     {
-        return $this->mappingHash;
+        return $this->columns;
     }
 
     /**
-     * @param mixed $mappingHash
+     * @param mixed $columns
      *
      * @return $this
      */
-    public function setMappingHash($mappingHash)
+    public function setColumns($columns)
     {
-        $this->mappingHash = $mappingHash;
+        $this->columns = $columns;
 
         return $this;
     }
@@ -296,20 +294,23 @@ class ContactData
      */
     public function getCategoriesFromOrderItems($orderItems)
     {
-        $catIds = [];
+        $catIds = $categoryIds = [];
         //categories from all products
         foreach ($orderItems as $item) {
             $product = $item->getProduct();
             //sales item product may return null if product no longer exists, rather than empty object
             if ($product) {
-                $categoryIds = $product->getCategoryIds();
-                if (count($categoryIds)) {
-                    $catIds = array_unique(array_merge($catIds, $categoryIds));
-                }
+                $categoryIds[] = $product->getCategoryIds();
             }
         }
 
-        return $catIds;
+        foreach ($categoryIds as $array) {
+            foreach ($array as $key => $value) {
+                $catIds[] = $value;
+            }
+        }
+
+        return array_unique($catIds);
     }
 
     /**
@@ -373,6 +374,14 @@ class ContactData
     {
         $id = $this->model->getProductIdForFirstBrand();
         return $this->getBrandValue($id);
+    }
+
+    /**
+     * @return AbstractModel
+     */
+    public function getModel()
+    {
+        return $this->model;
     }
 
     /**
@@ -611,5 +620,19 @@ class ContactData
             )
             ->add($offset)
             ->format(\Zend_Date::ISO_8601);
+    }
+
+    /**
+     * @param $storeId
+     *
+     * @return \Magento\Store\Api\Data\StoreInterface|\Magento\Store\Model\Store
+     */
+    private function getStore($storeId)
+    {
+        if (! isset($this->store)) {
+            $this->store = $this->storeManager->getStore($storeId);
+        }
+
+        return $this->store;
     }
 }

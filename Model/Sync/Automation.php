@@ -331,7 +331,12 @@ class Automation implements SyncInterface
                 $this->updateNewOrderDatafields($websiteId);
                 break;
             case self::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT:
-                $updated = $this->updateAbandoned->updateAbandonedCartDatafields($email, $websiteId, $this->typeId, $this->storeName);
+                $updated = $this->updateAbandoned->updateAbandonedCartDatafields(
+                    $email,
+                    $websiteId,
+                    $this->typeId,
+                    $this->storeName
+                );
                 break;
             default:
                 $this->updateDefaultDatafields($email, $websiteId);

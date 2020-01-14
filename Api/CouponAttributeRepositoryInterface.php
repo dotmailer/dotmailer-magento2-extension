@@ -4,9 +4,6 @@ namespace Dotdigitalgroup\Email\Api;
 
 use Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface;
 
-/**
- * Coupon Attribute Repository Interface
- */
 interface CouponAttributeRepositoryInterface
 {
     /**

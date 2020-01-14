@@ -147,7 +147,9 @@ class Wishlist implements SyncInterface
                     //mark connector wishlist as  imported
                     $this->setImported($this->wishlistIds);
                 }
-                $message = '----------- Wishlist bulk sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) . ', Total synced = ' . $this->countWishlists;
+                $message = '----------- Wishlist bulk sync ----------- : ' .
+                    gmdate('H:i:s', microtime(true) - $this->start) .
+                    ', Total synced = ' . $this->countWishlists;
 
                 if ($this->countWishlists) {
                     $this->helper->log($message);

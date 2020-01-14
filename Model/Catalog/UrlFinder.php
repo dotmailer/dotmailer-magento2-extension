@@ -187,8 +187,8 @@ class UrlFinder
 
     /**
      * Utility method to remove /pub from media paths.
-     * Note this inclusion of /pub in media paths during CLI or cron script execution is a longstanding Magento issue,
-     * ref https://github.com/magento/magento2/issues/8868
+     * Note this inclusion of /pub in media paths during CLI or cron script execution is a longstanding Magento issue.
+     * Ref https://github.com/magento/magento2/issues/8868
      *
      * @param string $path
      *
@@ -197,7 +197,7 @@ class UrlFinder
     public function getPath($path)
     {
         $stripPubFromPath = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB_FROM_MEDIA_PATHS
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB
         );
         return $stripPubFromPath ? $this->removePub($path) : $path;
     }

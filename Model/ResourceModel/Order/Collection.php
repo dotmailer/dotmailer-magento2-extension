@@ -2,11 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Order;
 
-/**
- * Class Collection
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**

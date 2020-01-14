@@ -130,7 +130,9 @@ class Enroller
             ->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
 
         $page = 1;
-        for ($i = 0; $i < $initialCollection->getSize(); $i += $batchSize) {
+        $collectionSize = $initialCollection->getSize();
+
+        for ($i = 0; $i < $collectionSize; $i += $batchSize) {
 
             $salesCollection = $this->orderCollection
                 ->create()

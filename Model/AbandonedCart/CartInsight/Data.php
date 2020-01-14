@@ -153,7 +153,8 @@ class Data
     }
 
     /**
-     * Get product image URL. We respect the "Configurable Product Image" setting in determining which image to retrieve.
+     * Get product image URL. We respect the "Configurable Product Image" setting in determining
+     * which image to retrieve.
      *
      * @param \Magento\Quote\Model\Quote\Item $item
      * @param \Magento\Store\Api\Data\StoreInterface $store

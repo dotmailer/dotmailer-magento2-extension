@@ -12,18 +12,6 @@ use Magento\Framework\View\Element\Template\Context;
 class EmailCapture extends \Magento\Framework\View\Element\Template
 {
     /**
-     * EmailCapture constructor.
-     * @param Context $context
-     * @param array $data
-     */
-    public function __construct(
-        Context $context,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-    }
-
-    /**
      * @return mixed
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */

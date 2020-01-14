@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-
 abstract class AbstractDeveloper extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**

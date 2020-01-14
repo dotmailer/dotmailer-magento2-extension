@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+use Dotdigitalgroup\Email\Model\Connector\DataFieldAutoMapperFactory;
+
 class Automapdatafields extends \Magento\Backend\App\AbstractAction
 {
     /**
@@ -22,109 +24,52 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     private $data;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
+     * @var DataFieldAutoMapperFactory
      */
-    private $datafield;
+    private $dataFieldAutoMapperFactory;
 
     /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
-
-    /**
-     * @var \Magento\Framework\App\Config\ReinitableConfigInterface
-     */
-    private $config;
-
-    /**
-     * Automapdatafields constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Helper\Data                        $data
-     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield          $datafield
-     * @param \Magento\Backend\App\Action\Context                       $context
-     * @param \Magento\Framework\Escaper                                $escaper
-     * @param \Magento\Framework\App\Config\ReinitableConfigInterface   $config
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param DataFieldAutoMapperFactory $dataFieldAutoMapperFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Dotdigitalgroup\Email\Model\Connector\Datafield $datafield,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Escaper $escaper,
-        \Magento\Framework\App\Config\ReinitableConfigInterface $config
+        DataFieldAutoMapperFactory $dataFieldAutoMapperFactory
     ) {
         $this->data           = $data;
-        $this->datafield      = $datafield;
         $this->messageManager = $context->getMessageManager();
-        $this->escaper        = $escaper;
-        $this->config         = $config;
+        $this->dataFieldAutoMapperFactory = $dataFieldAutoMapperFactory;
         parent::__construct($context);
     }
 
     /**
-     * Execute method.
-     *
-     * @return null
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute()
     {
-        $result = ['errors' => false, 'message' => ''];
         $website = $this->getRequest()->getParam('website', 0);
-        $client = false;
-        if ($this->data->isEnabled()) {
-            $client = $this->data->getWebsiteApiClient($website);
-        }
-        $params = [
+        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', [
             'section' => 'connector_developer_settings',
             'website' => $website
-        ];
-        $redirectUrl = $this->getUrl('adminhtml/system_config/edit', $params);
+        ]);
 
-        if (!$client) {
-            $this->messageManager->addNoticeMessage('Please enable api first.');
+        if (!$this->data->isEnabled()) {
+            $this->messageManager->addNoticeMessage('Please enable the Engagement Cloud API first.');
+            return $this->_redirect($redirectUrl);
+        }
+
+        $dataFieldAutoMapper = $this->dataFieldAutoMapperFactory->create()
+            ->run($website);
+
+        if ($errors = $dataFieldAutoMapper->getMappingErrors()) {
+            $this->messageManager
+                ->addNoticeMessage('There were some errors mapping data fields. Please check the connector log.');
         } else {
-            // get all possible datafields
-            $datafields = $this->datafield->getContactDatafields();
-            $eeFields = $this->datafield->getExtraDataFields();
-            foreach ($datafields as $key => $datafield) {
-                $response = $client->postDataFields($datafield);
-
-                //ignore existing datafields message
-                if (isset($response->message) && $response->message !=
-                    \Dotdigitalgroup\Email\Model\Apiconnector\Client::API_ERROR_DATAFIELD_EXISTS
-                ) {
-                    $result['errors'] = true;
-                    $result['message'] .= ' Datafield ' . $datafield['name'] . ' - ' . $response->message . '</br>';
-                } else {
-                    if ($website) {
-                        $scope = 'websites';
-                        $scopeId = $website;
-                    } else {
-                        $scope = 'default';
-                        $scopeId = '0';
-                    }
-
-                    //Config path depends on EE or CE
-                    $configPath = isset($eeFields[$key]) ? 'connector_data_mapping/extra_data/' :
-                        'connector_data_mapping/customer_data/';
-
-                    //map the successfully created datafield
-                    $this->data->saveConfigData(
-                        $configPath . $key,
-                        strtoupper($datafield['name']),
-                        $scope,
-                        $scopeId
-                    );
-                    $this->data->log('successfully connected : ' . $datafield['name']);
-                }
-            }
-            if ($result['errors']) {
-                $this->messageManager->addNoticeMessage($result['message']);
-            } else {
-                $this->messageManager->addSuccessMessage('All Data Fields Created And Mapped.');
-            }
-
-            //Clear config cache
-            $this->config->reinit();
+            $this->messageManager
+                ->addSuccessMessage('All data fields created and mapped to your Engagement Cloud account.');
         }
 
         $this->_redirect($redirectUrl);

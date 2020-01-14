@@ -119,11 +119,14 @@ class Catalog implements SyncInterface
             $this->catalogResourceFactory->create()
                 ->removeOrphanProducts();
 
-            return $this->catalogSyncFactory->create()->sync($products);
+            return $this->catalogSyncFactory->create()
+                ->sync($products);
 
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }
+
+        return [];
     }
 
     /**

@@ -2,10 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-/**
- * Class ContactImportQueueExport
- * @package Dotdigitalgroup\Email\Model\Apiconnector
- */
+use Magento\Framework\Filesystem\DriverInterface;
+
 class ContactImportQueueExport
 {
     /**
@@ -19,17 +17,25 @@ class ContactImportQueueExport
     public $file;
 
     /**
+     * @var DriverInterface
+     */
+    private $driver;
+
+    /**
      * ContactImportQueueExport constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Helper\File                               $file
+     * @param \Dotdigitalgroup\Email\Helper\File $file
+     * @param DriverInterface $driver
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Helper\File $file
+        \Dotdigitalgroup\Email\Helper\File $file,
+        DriverInterface $driver
     ) {
         $this->importerFactory = $importerFactory;
-        $this->file            = $file;
+        $this->file = $file;
+        $this->driver = $driver;
     }
 
     /**
@@ -48,7 +54,7 @@ class ContactImportQueueExport
         $customerIds,
         $resource
     ) {
-        if (is_file($this->file->getFilePath($customersFile))) {
+        if ($this->driver->isFile($this->file->getFilePath($customersFile))) {
             if ($customerNum > 0) {
                 //register in queue with importer
                 $this->importerFactory->create()

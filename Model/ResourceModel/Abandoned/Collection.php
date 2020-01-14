@@ -4,8 +4,7 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel\Abandoned;
 
 use \Dotdigitalgroup\Email\Model\Sync\Automation;
 
-class Collection extends
- \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
      * @var string

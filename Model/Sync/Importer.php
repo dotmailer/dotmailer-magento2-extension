@@ -477,7 +477,10 @@ class Importer implements SyncInterface
                 }
 
                 // get a time period for the last contact sync
-                $cronMinutes = filter_var($this->helper->getConfigValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT), FILTER_SANITIZE_NUMBER_INT);
+                $cronMinutes = filter_var(
+                    $this->helper->getConfigValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT),
+                    FILTER_SANITIZE_NUMBER_INT
+                );
                 $lastSyncPeriod = new \DateTime($this->dateTime->formatDate(true), new \DateTimeZone('UTC'));
                 $lastSyncPeriod->sub(new \DateInterval("PT{$cronMinutes}M"));
 

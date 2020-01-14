@@ -17,7 +17,6 @@ use Magento\TestFramework\ObjectManager;
 
 /**
  * Class OrderSyncTest
- * @package Dotdigitalgroup\Email\Controller\Customer
  * magentoAppArea cron
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -111,7 +110,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $latestQuote = $quoteCollection->getLastItem();
 
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $orderCollection */
-        $orderCollection = ObjectManager::getInstance()->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
+        $orderCollection = ObjectManager::getInstance()
+            ->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
         //$orderCollection->addFieldToFilter('quote_id', $latestQuote->getId());
         $order = $orderCollection->getFirstItem();
         $order->setQuoteId($latestQuote->getId());
@@ -157,7 +157,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 
         $this->assertEmpty($this->orderSync->guests);
     }
-    
+
     /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
@@ -166,7 +166,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     public function testCanSyncModifiedOrders()
     {
         /** @var \Magento\Sales\Model\Order $latestOrder */
-        $orderCollection = ObjectManager::getInstance()->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
+        $orderCollection = ObjectManager::getInstance()
+            ->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
         $latestOrder = $orderCollection->getFirstItem();
 
         /** @var \Dotdigitalgroup\Email\Model\Order $order */

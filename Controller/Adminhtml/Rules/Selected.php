@@ -2,6 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
+use Dotdigitalgroup\Email\Model\ExclusionRule\RuleValidator;
+
+/**
+ * Class Select
+ * If an exclusion rule has saved condition data, this is injected after the main block has rendered.
+ * This controller handles an AJAX call to update the default block values.
+ */
 class Selected extends \Magento\Backend\App\AbstractAction
 {
     /**
@@ -20,7 +27,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
      */
     private $rulesFactory;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
      */
@@ -52,6 +59,11 @@ class Selected extends \Magento\Backend\App\AbstractAction
     private $rulesResource;
 
     /**
+     * @var RuleValidator
+     */
+    private $ruleValidator;
+
+    /**
      * Selected constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules              $rulesResource
@@ -63,6 +75,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
      * @param \Magento\Framework\Json\Helper\Data                           $jsonEncoder
      * @param \Magento\Framework\App\Response\Http                          $http
      * @param \Magento\Framework\Escaper                                    $escaper
+     * @param RuleValidator $ruleValidator
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
@@ -73,7 +86,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
         \Magento\Framework\Json\Helper\Data $jsonEncoder,
         \Magento\Framework\App\Response\Http $http,
-        \Magento\Framework\Escaper $escaper
+        \Magento\Framework\Escaper $escaper,
+        RuleValidator $ruleValidator
     ) {
         $this->rulesFactory = $rulesFactory;
         $this->ruleType = $ruleType;
@@ -82,6 +96,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
         $this->jsonEncoder = $jsonEncoder;
         $this->escaper = $escaper;
         $this->rulesResource = $rulesResource;
+        $this->ruleValidator = $ruleValidator;
 
         parent::__construct($context);
         $this->http = $http;
@@ -116,22 +131,30 @@ class Selected extends \Magento\Backend\App\AbstractAction
             $condition = $conditions[$arrayKey];
             $selectedConditions = $condition['conditions'];
             $selectedValues = $condition['cvalue'];
-            $type = $this->ruleType->getInputType($attribute);
-            $conditionOptions = $this->ruleCondition->getInputTypeOptions($type);
+            $inputType = $this->ruleType->getInputType($attribute);
+            $conditionOptions = $this->ruleCondition->getInputTypeOptions($inputType);
 
             $response['condition'] = str_replace(
                 'value="' . $selectedConditions . '"',
                 'value="' . $selectedConditions . '"' . 'selected="selected"',
                 $this->getOptionHtml(
                     'conditions',
-                    $conditionName,
+                    $this->escaper->escapeHtml($conditionName),
                     $conditionOptions
                 )
             );
 
             $elmType = $this->ruleValue->getValueElementType($attribute);
 
-            $this->evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $valueName, $response);
+            $this->setValueHtml(
+                $elmType,
+                $inputType,
+                $selectedConditions,
+                $attribute,
+                $selectedValues,
+                $this->escaper->escapeHtml($valueName),
+                $response
+            );
 
             $this->http->getHeaders()->clearHeaders();
             $this->http->setHeader('Content-Type', 'application/json')
@@ -141,6 +164,7 @@ class Selected extends \Magento\Backend\App\AbstractAction
 
     /**
      * @param string $elmType
+     * @param string $inputType
      * @param string $selectedConditions
      * @param string $attribute
      * @param string $selectedValues
@@ -149,9 +173,16 @@ class Selected extends \Magento\Backend\App\AbstractAction
      *
      * @return null
      */
-    private function evaluateElmType($elmType, $selectedConditions, $attribute, $selectedValues, $valueName, &$response)
-    {
-        if ($elmType == 'select' or $selectedConditions == 'null') {
+    private function setValueHtml(
+        $elmType,
+        $inputType,
+        $selectedConditions,
+        $attribute,
+        $selectedValues,
+        $valueName,
+        &$response
+    ) {
+        if ($elmType == 'select' || $selectedConditions == 'null') {
             $isEmpty = false;
 
             if ($selectedConditions == 'null') {
@@ -167,7 +198,15 @@ class Selected extends \Magento\Backend\App\AbstractAction
             );
         } elseif ($elmType == 'text') {
             $encodedValue = $this->escaper->escapeHtml($selectedValues);
-            $html = "<input style='width:160px' title='cvalue' name='$valueName' value='$encodedValue'/>";
+            $validationType = $this->ruleValidator->setFrontEndValidation(
+                $inputType,
+                $selectedConditions
+            );
+            $html = "<input style='width:160px' title='cvalue' name='$valueName' value='$encodedValue' ";
+            if ($validationType) {
+                $html .= "data-validate=$validationType";
+            }
+            $html .= " />";
             $response['cvalue'] = $html;
         }
     }

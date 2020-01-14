@@ -24,14 +24,12 @@ class UpdateCatalogBulk
      */
     private $bunch;
 
-
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogFactory,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         \Dotdigitalgroup\Email\Model\Product\Bunch $bunch
-    )
-    {
+    ) {
         $this->catalogResource = $catalogResource;
         $this->catalogFactory = $catalogFactory;
         $this->dateTime = $dateTime;

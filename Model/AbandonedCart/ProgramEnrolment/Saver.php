@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
+use Dotdigitalgroup\Email\Model\Sync\Automation;
+
 class Saver
 {
     /**
@@ -51,8 +53,8 @@ class Saver
         try {
             $automation = $this->automationFactory->create()
                 ->setEmail($quote->getCustomerEmail())
-                ->setAutomationType(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT)
-                ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                ->setAutomationType(Automation::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT)
+                ->setEnrolmentStatus(Automation::AUTOMATION_STATUS_PENDING)
                 ->setTypeId($quote->getId())
                 ->setWebsiteId($store->getWebsiteId())
                 ->setStoreName($store->getName())

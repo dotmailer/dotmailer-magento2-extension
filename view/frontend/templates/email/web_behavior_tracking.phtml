@@ -2,5 +2,5 @@
 /** @var /Dotdigitalgroup/Email/Block/WebBehavior $block */
 ?>
 <script type="text/x-magento-init">
-    {"*": {"Dotdigitalgroup_Email/js/webBehaviorTracking": {"id": "<?= $block->getProfileId(); ?>"}}}
+    {"*": {"Dotdigitalgroup_Email/js/webBehaviorTracking": {"id": "<?= $block->escapeJs($block->getProfileId()); ?>"}}}
 </script>

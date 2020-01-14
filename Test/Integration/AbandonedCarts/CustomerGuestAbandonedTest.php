@@ -58,7 +58,9 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mockClient->method('setApiUsername')
             ->willReturn(new class() {
-                public function setApiPassword($password) {}
+                public function setApiPassword($password)
+                {
+                }
             });
         $mockClient->method('getContactByEmail')
             ->willReturn((object) [

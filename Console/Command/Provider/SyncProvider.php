@@ -13,6 +13,7 @@ use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
 use Dotdigitalgroup\Email\Model\Sync\ReviewFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory;
 use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
+use Dotdigitalgroup\Email\Model\Sync\WishlistFactory;
 
 /**
  * Provides factories for all available sync models, and exposes it's properties to show what's available
@@ -75,6 +76,11 @@ class SyncProvider
     private $templateFactory;
 
     /**
+     * @var WishlistFactory
+     */
+    private $wishlistFactory;
+
+    /**
      * SyncProvider constructor
      * @param AbandonedCartFactory $abandonedCartFactory
      * @param AutomationFactory $automationFactory
@@ -87,6 +93,7 @@ class SyncProvider
      * @param ImporterFactory $importerFactory
      * @param IntegrationInsightsFactory $integrationInsightsFactory
      * @param ReviewFactory $reviewFactory
+     * @param WishlistFactory $wishlistFactory
      */
     public function __construct(
         AbandonedCartFactory $abandonedCartFactory,
@@ -99,7 +106,8 @@ class SyncProvider
         OrderFactory $orderFactory,
         ReviewFactory $reviewFactory,
         SubscriberFactory $subscriberFactory,
-        TemplateFactory $templateFactory
+        TemplateFactory $templateFactory,
+        WishlistFactory $wishlistFactory
     ) {
         $this->automationFactory = $automationFactory;
         $this->abandonedCartFactory = $abandonedCartFactory;
@@ -112,6 +120,7 @@ class SyncProvider
         $this->reviewfactory = $reviewFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->templateFactory = $templateFactory;
+        $this->wishlistFactory = $wishlistFactory;
     }
 
     /**

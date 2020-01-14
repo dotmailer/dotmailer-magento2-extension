@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Magento\Framework\Filesystem\DriverInterface;
+
 /**
  * Creates the csv files in export folder and move to archive when it's complete.
  * Log info and debug to a custom log file connector.log
@@ -44,22 +46,30 @@ class File
     private $csv;
 
     /**
+     * @var DriverInterface
+     */
+    private $driver;
+
+    /**
      * File constructor.
      *
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource
      * @param \Magento\Framework\File\Csv $csv
+     * @param DriverInterface $driver
      *
      * @throws \Magento\Framework\Exception\FileSystemException
      */
     public function __construct(
         \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consentResource,
-        \Magento\Framework\File\Csv $csv
+        \Magento\Framework\File\Csv $csv,
+        DriverInterface $driver
     ) {
         $this->csv = $csv;
         $this->consentResource = $consentResource;
         $this->directoryList       = $directoryList;
+        $this->driver = $driver;
         $varPath                   = $directoryList->getPath('var');
         $this->outputFolder        = $varPath . DIRECTORY_SEPARATOR . 'export' . DIRECTORY_SEPARATOR . 'email';
         $this->outputArchiveFolder = $this->outputFolder . DIRECTORY_SEPARATOR . 'archive';
@@ -132,32 +142,7 @@ class File
         $destFilepath = $destFolder . DIRECTORY_SEPARATOR . $filename;
 
         // rename the file
-        rename($sourceFilepath, $destFilepath);
-    }
-
-    /**
-     * Output an array to the output file FORCING Quotes around all fields.
-     *
-     * @param string $filepath
-     * @param mixed $csv
-     *
-     * @throws \Exception
-     *
-     * @return null
-     */
-    public function outputForceQuotesCSV($filepath, $csv)
-    {
-        $fqCsv = $this->arrayToCsv($csv, chr(9), '"', true, false);
-        // Open for writing only; place the file pointer at the end of the file.
-        // If the file does not exist, attempt to create it.
-        $fp = fopen($filepath, 'a');
-
-        // for some reason passing the preset delimiter/enclosure variables results in error
-        // $this->delimiter $this->enclosure
-        if (fwrite($fp, $fqCsv) == 0) {
-            throw new \Exception('Problem writing CSV file');
-        }
-        fclose($fp);
+        $this->driver->rename($sourceFilepath, $destFilepath);
     }
 
     /**
@@ -172,9 +157,9 @@ class File
          * Open for writing only; place the file pointer at the end of the file.
          * If the file does not exist, attempt to create it.
          */
-        $handle = fopen($filepath, 'a');
+        $handle = $this->driver->fileOpen($filepath, 'a');
         fputcsv($handle, $csv, ',', '"');
-        fclose($handle);
+        $this->driver->fileClose($handle);
     }
 
     /**
@@ -186,57 +171,9 @@ class File
      */
     private function createDirectoryIfNotExists($path)
     {
-        if (!is_dir($path)) {
-            mkdir($path, 0750, true);
+        if (!$this->driver->isDirectory($path)) {
+            $this->driver->createDirectory($path, 0750);
         }
-    }
-
-    /**
-     * Convert array into the csv.
-     *
-     * @param array $fields
-     * @param string $delimiter
-     * @param string $enclosure
-     * @param bool $encloseAll
-     * @param bool $nullToMysqlNull
-     *
-     * @return string
-     */
-    private function arrayToCsv(
-        array &$fields,
-        $delimiter,
-        $enclosure,
-        $encloseAll = false,
-        $nullToMysqlNull = false
-    ) {
-        $delimiterEsc = preg_quote($delimiter, '/');
-        $enclosureEsc = preg_quote($enclosure, '/');
-
-        $output = [];
-        foreach ($fields as $field) {
-            if ($field === null && $nullToMysqlNull) {
-                $output[] = 'NULL';
-                continue;
-            }
-
-            // Enclose fields containing $delimiter, $enclosure or whitespace
-            if ($encloseAll
-                || preg_match(
-                    "/(?:$delimiterEsc|$enclosureEsc|\s)/",
-                    $field
-                )
-            ) {
-                $output[] = $enclosure . str_replace(
-                    $enclosure,
-                    $enclosure . $enclosure,
-                    $field
-                ) . $enclosure;
-            } else {
-                $output[] = $field;
-            }
-        }
-
-        return implode($delimiter, $output) . "\n";
     }
 
     /**
@@ -252,12 +189,7 @@ class File
             return sprintf("Failed to delete directory - '%s'", $path);
         }
 
-        $classFunc = [__CLASS__, __FUNCTION__];
-        return is_file($path)
-            ?
-            @unlink($path)
-            :
-            array_map($classFunc, glob($path . '/*')) == @rmdir($path);
+        return $this->driver->deleteDirectory($path);
     }
 
     /**
@@ -290,20 +222,23 @@ class File
         $lengthBefore = 500000;
         try {
             $contents = '';
-            $handle = fopen($pathLogfile, 'r');
+            $handle = $this->driver->fileOpen($pathLogfile, 'r');
             fseek($handle, -$lengthBefore, SEEK_END);
             if (!$handle) {
                 return "Log file is not readable or does not exist at this moment. File path is "
                 . $pathLogfile;
             }
 
-            if (filesize($pathLogfile) > 0) {
-                $contents = fread($handle, filesize($pathLogfile));
+            if ($this->driver->stat($pathLogfile)['size'] > 0) {
+                $contents = $this->driver->fileReadLine(
+                    $handle,
+                    $this->driver->stat($pathLogfile)['size']
+                );
                 if ($contents === false) {
                     return "Log file is not readable or does not exist at this moment. File path is "
                         . $pathLogfile;
                 }
-                fclose($handle);
+                $this->driver->fileClose($handle);
             }
             return $contents;
         } catch (\Exception $e) {
@@ -347,7 +282,7 @@ class File
     {
         $emailPath = $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
         $archivePath = $this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename;
-        return is_file($emailPath) ? $emailPath : $archivePath;
+        return $this->driver->isFile($emailPath) ? $emailPath : $archivePath;
     }
 
     /**
@@ -360,7 +295,7 @@ class File
     {
         $emailPath = $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
         $archivePath = $this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename;
-        return is_file($emailPath) ? true : (is_file($archivePath) ? true : false);
+        return $this->driver->isFile($emailPath) ? true : ($this->driver->isFile($archivePath) ? true : false);
     }
 
     /**
@@ -369,6 +304,6 @@ class File
      */
     public function isFileAlreadyArchived($filename)
     {
-       return is_file($this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename);
+        return $this->driver->isFile($this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename);
     }
 }

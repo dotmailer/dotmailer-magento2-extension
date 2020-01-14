@@ -6,7 +6,6 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\PendingContactUpdater;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 
-
 /**
  * Customer and guest Abandoned Carts.
  *
@@ -719,7 +718,7 @@ class Quote
             return;
         }
         $customerId = $quote->getCustomerId();
-        $message = ($customerId)? 'Abandoned Cart ' . $number : 'Guest Abandoned Cart ' . $number;
+        $message = ($customerId) ? 'Abandoned Cart ' . $number : 'Guest Abandoned Cart ' . $number;
         $campaign = $this->campaignFactory->create()
             ->setEmail($email)
             ->setCustomerId($customerId)
@@ -759,7 +758,6 @@ class Quote
         $guestCampaignId = $this->getLostBasketGuestCampaignId($abandonedNum, $storeId);
         $result = $this->createGuestFirstAbandonedCart($quoteCollection, $storeId, $guestCampaignId);
         $result += $this->processConfirmedGuestAbandonedCart($storeId, $guestCampaignId);
-
 
         return $result;
     }

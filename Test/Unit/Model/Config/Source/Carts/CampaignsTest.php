@@ -75,7 +75,7 @@ class CampaignsTest extends TestCase
                 'value' => '0',
                 'label' => '-- Please Select --',
             ]],
-            array_map(function($field) {
+            array_map(function ($field) {
                 return [
                     'value' => $field->id,
                     'label' => $field->name,
@@ -113,7 +113,8 @@ class CampaignsTest extends TestCase
             ->getMock();
 
         // mock getCampaigns calls depending on the number of API responses
-        for ($r = 0; $r < ceil(count($testApiResponse) / 1000); $r++) {
+        $apiResponseChunks = ceil(count($testApiResponse) / 1000);
+        for ($r = 0; $r < $apiResponseChunks; $r++) {
             $clientMock->expects($this->at($r))
                 ->method('getCampaigns')
                 ->with($r * 1000)
@@ -142,7 +143,7 @@ class CampaignsTest extends TestCase
     private function getTestApiResponse($numberOfResponses)
     {
         // example API response with > 1000 campaigns
-        return array_map(function($number) {
+        return array_map(function ($number) {
             return (object) [
                 'id' => $number,
                 'name' => 'campaign' . $number,

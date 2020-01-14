@@ -105,7 +105,10 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
      */
     public function testEcSignupUrl()
     {
-        $signupUrl = $this->getTrialSetup()->getEcSignupUrl($this->objectManager->create(RequestInterface::class), TrialSetup::SOURCE_CHAT);
+        $signupUrl = $this->getTrialSetup()->getEcSignupUrl(
+            $this->objectManager->create(RequestInterface::class),
+            TrialSetup::SOURCE_CHAT
+        );
         $signupUrlParsed = parse_url($signupUrl);
         parse_str($signupUrlParsed['query'], $signupQuery);
 

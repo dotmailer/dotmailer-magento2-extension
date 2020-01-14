@@ -76,10 +76,12 @@ You have not set a passcode which will be sent with the coupon code request.
 EOT;
         }
 
-        if(!($this->helper->isEnabled())) {
+        if (!($this->helper->isEnabled())) {
             $commentField['after_element_html'] = <<<EOT
 <small id="ddg-notice_coupon-builder-disabled">
-An active Engagement Cloud account is required to use this feature. Please enable your account <a href="{$this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_api_credentials'])}">here</a>.
+An active Engagement Cloud account is required to use this feature. 
+Please enable your account 
+<a href="{$this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_api_credentials'])}">here</a>.
 </small>
 EOT;
         }
@@ -131,7 +133,8 @@ EOT;
             'class' => 'field-has-description',
             'value' => $this->couponHelper->getDefaultFormat(),
             'onchange' => 'window.updateEdcCouponUrl()',
-            'after_element_html' => __('This allows a previously generated coupon code to be resent to the same customer. If set to no, a new coupon will be generated.'),
+            'after_element_html' => __('This allows a previously generated coupon code ' .
+                'to be resent to the same customer. If set to no, a new coupon will be generated.'),
         ]);
 
         $fieldset->addField('cancel_send', 'select', [
@@ -142,7 +145,9 @@ EOT;
             'class' => 'field-has-description',
             'value' => $this->couponHelper->getDefaultFormat(),
             'onchange' => 'window.updateEdcCouponUrl()',
-            'after_element_html' => __('Enable this to ensure the send will be cancelled if the coupon has been used. If set to no, the latest generated coupon will be displayed.'),
+            'after_element_html' => __('Enable this to ensure the send will be cancelled ' .
+                'if the coupon has been used. If set to no, the latest generated coupon ' .
+                'will be displayed.'),
         ]);
 
         $couponBaseUrl = sprintf(

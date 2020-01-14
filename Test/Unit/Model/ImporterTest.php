@@ -106,9 +106,9 @@ class ImporterTest extends TestCase
 
         $result = $this->importer->registerQueue(
             ImporterModel::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
-                $this->getData(),
+            $this->getData(),
             ImporterModel::MODE_SINGLE,
-                1
+            1
         );
 
         $this->assertTrue($result);
@@ -142,7 +142,7 @@ class ImporterTest extends TestCase
 
         $result = $this->importer->registerQueue(
             ImporterModel::IMPORT_TYPE_CART_INSIGHT_CART_PHASE,
-           '',
+            '',
             ImporterModel::MODE_SINGLE,
             1,
             'path/to/file.csv'

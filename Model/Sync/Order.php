@@ -185,7 +185,7 @@ class Order implements SyncInterface
             $this->orderResource->setImported($this->orderIds);
 
             //Mark ordered products as unprocessed to be imported again
-            $mergedProducts = $this->getAllProducts(array_merge($orders, $ordersForSingleSync));
+            $mergedProducts = $this->getAllProducts($orders + $ordersForSingleSync);
             $this->catalogResource->setUnprocessedByIds($this->bunch->getProductIdsBySkuInBunch($mergedProducts));
 
             unset($this->accounts[$account->getApiUsername()]);
@@ -406,7 +406,7 @@ class Order implements SyncInterface
      */
     private function getAllProducts($orders)
     {
-        $allProducts = array();
+        $allProducts = [];
         foreach ($orders as $order) {
             if (!isset($orders['products'])) {
                 continue;

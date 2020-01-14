@@ -44,5 +44,4 @@ class SubscriberFilterer
 
         return $collection;
     }
-
 }

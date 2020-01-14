@@ -40,11 +40,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_CHAT_SETUP = '/v2/webchat/setup';
 
     //rest error responses
-    const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. Please contact support. ERROR_APIUSAGE_EXCEEDED';
+    const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. ' .
+        'Please contact support. ERROR_APIUSAGE_EXCEEDED';
     const API_ERROR_TRANS_ALLOWANCE = 'TransactionalDataAllowanceInMegabytes';
     const API_ERROR_EMAIL_NOT_VALID = 'Email is not a valid email address. ERROR_PARAMETER_INVALID';
     const API_ERROR_FEATURENOTACTIVE = 'Error: ERROR_FEATURENOTACTIVE';
-    const API_ERROR_REPORT_NOT_FOUND = 'Import is not processed yet or completed with error. ERROR_IMPORT_REPORT_NOT_FOUND';
+    const API_ERROR_REPORT_NOT_FOUND = 'Import is not processed yet or completed with error. ' .
+        'ERROR_IMPORT_REPORT_NOT_FOUND';
     const API_ERROR_TRANS_NOT_EXISTS = 'Error: ERROR_TRANSACTIONAL_DATA_DOES_NOT_EXIST';
     const API_ERROR_DATAFIELD_EXISTS = 'Field already exists. ERROR_NON_UNIQUE_DATAFIELD';
     const API_ERROR_CONTACT_NOT_FOUND = 'Error: ERROR_CONTACT_NOT_FOUND';
@@ -54,7 +56,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const API_ERROR_CONTACT_SUPPRESSED = 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED';
     const API_ERROR_AUTHORIZATION_DENIED = 'Authorization has been denied for this request.';
     const API_ERROR_ADDRESSBOOK_NOT_FOUND = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
-    const API_ERROR_ADDRESSBOOK_DUPLICATE = 'That name is in use already, please choose another. ERROR_ADDRESSBOOK_DUPLICATE';
+    const API_ERROR_ADDRESSBOOK_DUPLICATE = 'That name is in use already, please choose another. ' .
+        'ERROR_ADDRESSBOOK_DUPLICATE';
     const REST_ACCOUNT_PREFERENCES = "/v2/preferences";
 
     /**
@@ -407,7 +410,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getCampaigns($skip = 0, $select = 1000)
     {
-        $url = sprintf('%s%s?select=%s&skip=%s',
+        $url = sprintf(
+            '%s%s?select=%s&skip=%s',
             $this->getApiEndpoint(),
             self::REST_DATA_FIELDS_CAMPAIGNS,
             $select,
@@ -714,7 +718,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CONTACTS SUPPRESSED SINCE : ' . $dateString . ' select ' . $select . ' skip : ' . $skip . '   response : ' . $response->message;
+            $message = 'GET CONTACTS SUPPRESSED SINCE : ' .
+                $dateString . ' select ' . $select . ' skip : ' . $skip .
+                '   response : ' . $response->message;
             $this->helper->debug('getContactsSuppressedSinceDate', [$message]);
         }
 

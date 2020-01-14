@@ -10,7 +10,7 @@ use Magento\Catalog\Model\Product\TypeFactory;
 use Magento\Catalog\Model\Product\VisibilityFactory;
 use Magento\Framework\App\ResourceConnection;
 use Symfony\Component\Console\Output\OutputInterface;
-use Dotdigitalgroup\Email\Setup\Install\Type\AbstractDataMigration; 
+use Dotdigitalgroup\Email\Setup\Install\Type\AbstractDataMigration;
 
 class DataMigrationHelper
 {
@@ -138,7 +138,8 @@ class DataMigrationHelper
         ]);
 
         if ($this->output) {
-            $this->output->writeln(sprintf('%s: rows affected %s',
+            $this->output->writeln(sprintf(
+                '%s: rows affected %s',
                 get_class($dataMigration),
                 $dataMigration->getRowsAffected()
             ));

@@ -82,7 +82,6 @@ class Review implements SyncInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewResourceFactory
     ) {
-
         $this->coreDate               = $coreDate;
         $this->reviewCollection       = $reviewCollection;
         $this->ratingFactory          = $ratingFactory;
@@ -134,9 +133,11 @@ class Review implements SyncInterface
             }
         }
 
-        $message = '----------- Review sync ----------- : ' . gmdate('H:i:s', microtime(true) - $this->start) . ', synced = ' . $this->countReviews;
+        $message = '----------- Review sync ----------- : ' .
+            gmdate('H:i:s', microtime(true) - $this->start) .
+            ', synced = ' . $this->countReviews;
 
-        if($this->countReviews) {
+        if ($this->countReviews) {
             $this->helper->log($message);
         }
 

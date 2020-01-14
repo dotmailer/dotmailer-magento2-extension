@@ -1,5 +1,7 @@
 <?php
 
+namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Catalog;
+
 use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\DefaultLevelCatalogSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\DefaultLevelCatalogSyncerFactory;

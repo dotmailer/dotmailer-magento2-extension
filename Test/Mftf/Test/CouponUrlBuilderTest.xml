@@ -4,7 +4,7 @@
     <test name="CouponUrlBuilderTest">
         <annotations>
             <features value="Engagement Cloud module"/>
-            <stories value="Engagement Cloud Coupon URL Builder"/>
+            <stories value="dotdigital Coupon URL Builder"/>
             <title value="Generate coupon URLs using the tool"/>
             <description value="The coupon URL builder is displayed if the API is enabled, and functions as expected."/>
             <severity value="MINOR"/>

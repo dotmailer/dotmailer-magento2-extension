@@ -19,12 +19,36 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.3.1
+
+###### What's new
+- The classes responsible for syncing contacts and their data fields have been refactored to allow better extensibility by other dotdigital modules.
+- We've added the ability to run the wishlist sync from the command line.
+- Values entered when adding conditions to exclusion rules (**Marketing > Exclusion Rules**) are now validated both before and after submission.
+- The success message displayed after subscriber sync is now more clearer. 
+- Two new commands are now available for the `dotdigital` CLI:
+    - `dotdigital:connector:enable` can configure and enable a connection to Engagement Cloud.
+    - `dotdigital:connector:automap` automaps data fields. 
+- A duplicated call to create the `email_coupon_attribute` table has been removed.
+- We've added integration test coverage for the review sync.
+- _Engagement Cloud_ has been changed to _dotdigital_ in various admin menus. 
+- In our upgrade schema script, we've removed a redundant method and added some exception handling when dropping indexes. 
+- We've made some improvements to bring our code into closer alignment with Magento coding standards.
+
+###### Bug fixes
+- Subscribers confirming their subscription, when **Configuration > Customers > Newsletter > Need to Confirm** is turned on) are now enrolled onto _New Subscriber automations_ as expected. 
+- We've amended the data synced for store name in order sync, so that it matches the store view name sent with other sync types.
+- We've prevented the date of birth (DOB) data field from syncing today's date if a Magento account holder leaves this field empty.  
+- Catalog sync now returns an empty array on failure. The previous void return was generating a warning that Magento logs as a critical error.  
+- We fixed a problem where Magento email templates became unmapped when our connector was installed.
+- Exception handling has been added to show a warning if the Magento area code has already been set to a mismatching area when running `dotdigital` CLI commands.  
+
 ## 4.3.0
 
 ###### What’s new
 - We now provide Engagement Cloud Chat via a separate Magento module. For upgrade instructions, see [here](https://gist.github.com/sta1r/f22128fc1d37e6f08076ec59cf315724).
 - Merchants can now add Engagement Cloud's Web Behavior Tracking in the connector configuration.
-- The data sent via our Web Behaviour Tracking script will now include product data where available.
+- The data sent via our Web Behaviour Tracking script will now include product data and search data where available.
 - The insight data schema for orders has changed. Configurable and bundle products no longer output as separate line items; instead, parent data is used to augment child products.
 - We've added parent_id to catalog insight data schema. 
 - We've added a new tool to improve the way you create dynamic content links for coupon codes. Coupon codes can now be resent to customers if they have not yet been redeemed. 
@@ -38,10 +62,12 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - We made some changes following a Magento architectural review: `create()` methods have been removed from class constructors, and we’ve added a virtual type to replace an empty block class.
 - Changes to our log messages introduced in 3.4.1 have been reverted for now, in preparation for the Magento 2.3.4 patch release.
 - `email_catalog` table columns changed in 3.4.2 have been restored as deprecated columns, prior to the 2.3.4 submission.
+- We've added extra logic to our SMTP MessagePlugin to set the correct encoding on pre-assembled Zend messages.
 
 ###### Bug fixes
 - We've fixed a bug affecting Engagement Cloud accounts in 'GMT minus' timezones, where customer birthdays would fall a day early.  
 - We fixed a problem with reviews being saved without a valid store id.
+- A single suppressed contact could prevent a batch of abandoned cart email sends going out; this has now been fixed.
 
 ## 4.2.0
 

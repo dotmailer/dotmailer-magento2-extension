@@ -3,7 +3,7 @@
     {
         "*": {
             "Dotdigitalgroup_Email/js/engagementCloudEmbed": {
-                "iframeSrc": "<?= $block->getAction() ?>"
+                "iframeSrc": "<?= $block->escapeUrl($block->getAction()) ?>"
             }
         }
     }
