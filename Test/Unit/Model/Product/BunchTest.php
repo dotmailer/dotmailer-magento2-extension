@@ -1,5 +1,7 @@
 <?php
 
+namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
+
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\Search\FilterGroup;

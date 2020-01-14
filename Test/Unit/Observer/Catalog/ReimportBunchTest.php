@@ -18,7 +18,7 @@ class ReimportBunchTest extends TestCase
      * @var Observer
      */
     private $observerMock;
-
+    
     /**
      * @var ReimportBunch
      */

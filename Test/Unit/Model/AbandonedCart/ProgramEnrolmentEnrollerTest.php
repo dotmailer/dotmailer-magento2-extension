@@ -98,7 +98,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         );
     }
 
-    public function testAutomation_IsSaved_IfACProgramIdSet()
+    public function testAutomationIsSavedIfACProgramIdSet()
     {
         $storeId = 1;
         $programId = "123456";

@@ -190,9 +190,11 @@ class ReviewTest extends \PHPUnit\Framework\TestCase
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $filesystem = $objectManager->create(Filesystem::class);
         $directoryList = $filesystem->getDirectoryWrite(DirectoryList::ROOT);
+        $reviewRating1 = 'dev/tests/integration/testsuite/Magento/Review/_files/customer_review_with_rating.php';
+        $reviewRating2 = '/../../../_files/customer_review_with_rating_second_website.php';
 
-        require $directoryList->getAbsolutePath().'dev/tests/integration/testsuite/Magento/Review/_files/customer_review_with_rating.php';
-        require __DIR__ . '/../../../_files/customer_review_with_rating_second_website.php';
+        require $directoryList->getAbsolutePath() . $reviewRating1;
+        require __DIR__ . $reviewRating2;
     }
 
     /**

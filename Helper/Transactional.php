@@ -17,18 +17,6 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_DDG_TRANSACTIONAL_DEBUG      = 'transactional_emails/ddg_transactional/debug';
 
     /**
-     * Transactional constructor.
-     *
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @var \Magento\Framework\Encryption\EncryptorInterface $encryptor
-     */
-    public function __construct(
-        \Magento\Framework\App\Helper\Context $context
-    ) {
-        parent::__construct($context);
-    }
-
-    /**
      * Is transactional email enabled.
      *
      * @param int $storeId

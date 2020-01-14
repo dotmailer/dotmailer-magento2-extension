@@ -17,26 +17,32 @@ class ParentFinderTest extends TestCase
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $productRepositoryMock;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $helperMock;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $configurableTypeMock;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $groupedTypeMock;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $bundleSelectionMock;
+
     /**
      * @var ParentFinder
      */
     private $parentFinder;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
@@ -50,7 +56,6 @@ class ParentFinderTest extends TestCase
         $this->groupedTypeMock = $this->createMock(Grouped::class);
         $this->bundleSelectionMock = $this->createMock(Selection::class);
         $this->productMock = $this->createMock(Product::class);
-
 
         $this->parentFinder = new ParentFinder(
             $this->productRepositoryMock,

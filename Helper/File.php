@@ -146,31 +146,6 @@ class File
     }
 
     /**
-     * Output an array to the output file FORCING Quotes around all fields.
-     *
-     * @param string $filepath
-     * @param mixed $csv
-     *
-     * @throws \Exception
-     *
-     * @return null
-     */
-    public function outputForceQuotesCSV($filepath, $csv)
-    {
-        $fqCsv = $this->arrayToCsv($csv, chr(9), '"', true, false);
-        // Open for writing only; place the file pointer at the end of the file.
-        // If the file does not exist, attempt to create it.
-        $fp = $this->driver->fileOpen($filepath, 'a');
-
-        // for some reason passing the preset delimiter/enclosure variables results in error
-        // $this->delimiter $this->enclosure
-        if ($this->driver->fileWrite($fp, $fqCsv) == 0) {
-            throw new \Exception('Problem writing CSV file');
-        }
-        $this->driver->fileClose($fp);
-    }
-
-    /**
      * @param string $filepath
      * @param array $csv
      *
@@ -197,56 +172,8 @@ class File
     private function createDirectoryIfNotExists($path)
     {
         if (!$this->driver->isDirectory($path)) {
-            $this->driver->createDirectory($path, 0750, true);
+            $this->driver->createDirectory($path, 0750);
         }
-    }
-
-    /**
-     * Convert array into the csv.
-     *
-     * @param array $fields
-     * @param string $delimiter
-     * @param string $enclosure
-     * @param bool $encloseAll
-     * @param bool $nullToMysqlNull
-     *
-     * @return string
-     */
-    private function arrayToCsv(
-        array &$fields,
-        $delimiter,
-        $enclosure,
-        $encloseAll = false,
-        $nullToMysqlNull = false
-    ) {
-        $delimiterEsc = preg_quote($delimiter, '/');
-        $enclosureEsc = preg_quote($enclosure, '/');
-
-        $output = [];
-        foreach ($fields as $field) {
-            if ($field === null && $nullToMysqlNull) {
-                $output[] = 'NULL';
-                continue;
-            }
-
-            // Enclose fields containing $delimiter, $enclosure or whitespace
-            if ($encloseAll
-                || preg_match(
-                    "/(?:$delimiterEsc|$enclosureEsc|\s)/",
-                    $field
-                )
-            ) {
-                $output[] = $enclosure . str_replace(
-                    $enclosure,
-                    $enclosure . $enclosure,
-                    $field
-                ) . $enclosure;
-            } else {
-                $output[] = $field;
-            }
-        }
-
-        return implode($delimiter, $output) . "\n";
     }
 
     /**
@@ -302,8 +229,11 @@ class File
                 . $pathLogfile;
             }
 
-            if (filesize($pathLogfile) > 0) {
-                $contents = fread($handle, filesize($pathLogfile));
+            if ($this->driver->stat($pathLogfile)['size'] > 0) {
+                $contents = $this->driver->fileReadLine(
+                    $handle,
+                    $this->driver->stat($pathLogfile)['size']
+                );
                 if ($contents === false) {
                     return "Log file is not readable or does not exist at this moment. File path is "
                         . $pathLogfile;

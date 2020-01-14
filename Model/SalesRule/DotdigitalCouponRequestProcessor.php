@@ -104,7 +104,7 @@ class DotdigitalCouponRequestProcessor
      */
     public function processCouponRequest(array $params)
     {
-        if (!is_null($this->couponGeneratorStatus)) {
+        if ($this->couponGeneratorStatus !== null) {
             throw new \ErrorException('Already processed');
         }
 

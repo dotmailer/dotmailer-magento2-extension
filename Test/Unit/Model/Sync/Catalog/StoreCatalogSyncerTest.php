@@ -1,5 +1,7 @@
 <?php
 
+namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Catalog;
+
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ImporterFactory;

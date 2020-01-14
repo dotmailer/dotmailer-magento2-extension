@@ -37,7 +37,10 @@ class DotdigitalCouponCodeGenerator extends DataObject implements CodegeneratorI
     {
         $prefix = $this->getData('codePrefix') ?: 'DOT-';
         $suffix = $this->getData('codeSuffix') ?: '';
-        $format = in_array($codeFormat = $this->getData('codeFormat'), array_keys($this->salesRuleCoupon->getFormatsList()))
+        $format = in_array(
+            $codeFormat = $this->getData('codeFormat'),
+            array_keys($this->salesRuleCoupon->getFormatsList())
+        )
             ? $codeFormat
             : Coupon::COUPON_FORMAT_ALPHANUMERIC;
 

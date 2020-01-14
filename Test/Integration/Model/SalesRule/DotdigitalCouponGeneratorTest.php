@@ -175,7 +175,10 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
         $secondCouponGenerator = ObjectManager::getInstance()->create(DotdigitalCouponRequestProcessor::class)
             ->processCouponRequest($params);
 
-        $this->assertEquals(DotdigitalCouponRequestProcessor::STATUS_REGENERATED, $secondCouponGenerator->getCouponGeneratorStatus());
+        $this->assertEquals(
+            DotdigitalCouponRequestProcessor::STATUS_REGENERATED,
+            $secondCouponGenerator->getCouponGeneratorStatus()
+        );
         $this->assertNotEquals($firstCode, $secondCouponGenerator->getCouponCode());
     }
 
@@ -195,7 +198,10 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
         $secondCouponGenerator = ObjectManager::getInstance()->create(DotdigitalCouponRequestProcessor::class)
             ->processCouponRequest($params);
 
-        $this->assertEquals(DotdigitalCouponRequestProcessor::STATUS_USED_EXPIRED, $secondCouponGenerator->getCouponGeneratorStatus());
+        $this->assertEquals(
+            DotdigitalCouponRequestProcessor::STATUS_USED_EXPIRED,
+            $secondCouponGenerator->getCouponGeneratorStatus()
+        );
     }
 
     public function testRegeneratedIfAllowResendFalseAndCancelSendTrue()
@@ -214,7 +220,10 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
         $secondCouponGenerator = ObjectManager::getInstance()->create(DotdigitalCouponRequestProcessor::class)
             ->processCouponRequest($params);
 
-        $this->assertEquals(DotdigitalCouponRequestProcessor::STATUS_REGENERATED, $secondCouponGenerator->getCouponGeneratorStatus());
+        $this->assertEquals(
+            DotdigitalCouponRequestProcessor::STATUS_REGENERATED,
+            $secondCouponGenerator->getCouponGeneratorStatus()
+        );
     }
 
     public function testCancelSendAfterSalesRuleEndDate()
@@ -235,7 +244,10 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
         $secondCouponGenerator = ObjectManager::getInstance()->create(DotdigitalCouponRequestProcessor::class)
             ->processCouponRequest($params);
 
-        $this->assertEquals(DotdigitalCouponRequestProcessor::STATUS_USED_EXPIRED, $secondCouponGenerator->getCouponGeneratorStatus());
+        $this->assertEquals(
+            DotdigitalCouponRequestProcessor::STATUS_USED_EXPIRED,
+            $secondCouponGenerator->getCouponGeneratorStatus()
+        );
     }
 
     public function testNoCouponGeneratedIfRuleExpired()
@@ -250,7 +262,10 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
         ];
 
         $this->couponRequestProcessor->processCouponRequest($params);
-        $this->assertEquals(DotdigitalCouponRequestProcessor::STATUS_USED_EXPIRED, $this->couponRequestProcessor->getCouponGeneratorStatus());
+        $this->assertEquals(
+            DotdigitalCouponRequestProcessor::STATUS_USED_EXPIRED,
+            $this->couponRequestProcessor->getCouponGeneratorStatus()
+        );
     }
 
     /**
