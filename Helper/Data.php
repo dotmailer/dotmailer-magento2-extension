@@ -1508,7 +1508,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $websiteId
      *
-     * @return boolean|string
+     * @return int
      */
     public function getApiResponseTimeLimit($websiteId = 0)
     {
@@ -1517,7 +1517,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DEBUG_API_REQUEST_LIMIT
         );
 
-        return $limit;
+        return (int) $limit;
     }
 
     /**

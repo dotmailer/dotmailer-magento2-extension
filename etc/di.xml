@@ -91,7 +91,7 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="import_data" xsi:type="object">Dotdigitalgroup\Email\Console\Command\ImportDataCommand</item>
+                <item name="import_data" xsi:type="object">Dotdigitalgroup\Email\Console\Command\MigrateDataCommand</item>
                 <item name="importer_syncs" xsi:type="object">Dotdigitalgroup\Email\Console\Command\ImporterSyncsCommand</item>
                 <item name="enable_connector" xsi:type="object">Dotdigitalgroup\Email\Console\Command\EnableConnectorCommand</item>
                 <item name="automap_datafields" xsi:type="object">Dotdigitalgroup\Email\Console\Command\AutoMapDataFieldsCommand</item>

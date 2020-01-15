@@ -8,7 +8,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\Filesystem\DriverInterface;
 
 /**
- * Rest class to make cURL requests.
+ * Rest class to no longer make cURL requests.
  */
 class Rest
 {
@@ -35,17 +35,22 @@ class Rest
     /**
      * @var string
      */
-    private $verb;
+    private $verb = 'GET';
 
     /**
-     * @var string|null
+     * @var array
      */
     private $requestBody;
 
     /**
+     * @var string
+     */
+    private $requestFile;
+
+    /**
      * @var int
      */
-    private $requestLength;
+    private $requestLength = 0;
 
     /**
      * @var string
@@ -60,7 +65,7 @@ class Rest
     /**
      * @var string
      */
-    private $acceptType;
+    private $acceptType = 'application/json';
 
     /**
      * @var mixed
@@ -80,12 +85,22 @@ class Rest
     /**
      * @var string
      */
-    private $curlError;
+    private $requestError;
+
+    /**
+     * @var string
+     */
+    private $encType;
 
     /**
      * @var Logger
      */
     private $logger;
+
+    /**
+     * @var RequestFactory
+     */
+    private $requestFactory;
 
     /**
      * @var DriverInterface
@@ -103,112 +118,30 @@ class Rest
      * @return null
      */
     public function __construct(
+        RequestFactory $requestFactory,
         Data $data,
         Logger $logger,
         File $fileHelper,
         DriverInterface $driver,
         $website = 0
     ) {
+        $this->requestFactory = $requestFactory;
         $this->helper        = $data;
-        $this->url           = null;
-        $this->verb          = 'GET';
-        $this->requestBody   = null;
-        $this->requestLength = 0;
         $this->apiUsername   = (string)$this->helper->getApiUsername($website);
         $this->apiPassword   = (string)$this->helper->getApiPassword($website);
-        $this->acceptType    = 'application/json';
-        $this->responseBody  = null;
-        $this->responseInfo  = null;
         $this->logger = $logger;
         $this->fileHelper = $fileHelper;
         $this->driver = $driver;
-
-        if ($this->requestBody !== null) {
-            $this->buildPostBody();
-        }
     }
 
     /**
-     * @param mixed $json
-     *
-     * @return string
-     *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @param string $filePath
+     * @return $this
      */
-    private function prettyPrint($json)
+    public function setFileUpload(string $filePath)
     {
-        $result = '';
-        $level = 0;
-        $prevChar = '';
-        $inQuotes = false;
-        $endsLineLevel = null;
-        $jsonLength = strlen($json);
-
-        for ($i = 0; $i < $jsonLength; ++$i) {
-            $char = $json[$i];
-            $newLIneLevel = null;
-            $post = '';
-            if ($endsLineLevel !== null) {
-                $newLIneLevel = $endsLineLevel;
-                $endsLineLevel = null;
-            }
-            if ($char === '"' && $prevChar != '\\') {
-                $inQuotes = !$inQuotes;
-            } elseif (!$inQuotes) {
-                switch ($char) {
-                    case '}':
-                    case ']':
-                        $level--;
-                        $endsLineLevel = null;
-                        $newLIneLevel = $level;
-                        break;
-
-                    case '{':
-                    case '[':
-                        $level++;
-                        break;
-                    case ',':
-                        $endsLineLevel = $level;
-                        break;
-
-                    case ':':
-                        $post = ' ';
-                        break;
-
-                    case ' ':
-                    case "\t":
-                    case "\n":
-                    case "\r":
-                        $char = '';
-                        $endsLineLevel = $newLIneLevel;
-                        $newLIneLevel = null;
-                        break;
-                }
-            }
-            if ($newLIneLevel !== null) {
-                $result .= "\n" . str_repeat("\t", $newLIneLevel);
-            }
-            $result .= $char . $post;
-            $prevChar = $char;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns the object as JSON.
-     *
-     * @param bool $pretty
-     *
-     * @return string
-     */
-    public function toJSON($pretty = false)
-    {
-        if (!$pretty) {
-            return json_encode($this->expose());
-        } else {
-            return $this->prettyPrint(json_encode($this->expose()));
-        }
+        $this->requestFile = $filePath;
+        return $this;
     }
 
     /**
@@ -235,6 +168,7 @@ class Rest
         $this->verb          = 'GET';
         $this->responseBody  = null;
         $this->responseInfo  = null;
+        $this->requestFile = [];
 
         return $this;
     }
@@ -249,68 +183,68 @@ class Rest
         // clear any recent error response message
         $this->responseMessage = null;
 
-        $ch = curl_init();
-        $this->setAuth($ch);
+        // get request
+        $request = $this->requestFactory->create()
+            ->prepare(
+                $this->url,
+                $this->verb,
+                $this->apiUsername,
+                $this->apiPassword,
+                $this->encType
+            );
+
+        // add files, if required
+        if (!empty($this->requestFile)) {
+            $request->addFile($this->requestFile);
+        }
+
         try {
-            switch (strtoupper($this->verb)) {
-                case 'GET':
-                    $this->executeGet($ch);
-                    break;
-                case 'POST':
-                    $this->executePost($ch);
-                    break;
-                case 'PUT':
-                    $this->executePut($ch);
-                    break;
-                case 'DELETE':
-                    $this->executeDelete($ch);
-                    break;
-                default:
-                    throw new \InvalidArgumentException(
-                        'Current verb (' . $this->verb
-                        . ') is an invalid REST verb.'
-                    );
+            $response = $request->send($this->requestBody);
+
+            if ($response->getStatusCode() >= 400) {
+                $this->requestError = $response->getReasonPhrase();
             }
-        } catch (\InvalidArgumentException $e) {
-            curl_close($ch);
-            throw $e;
+
+            $this->responseBody = $this->isNotJson
+                ? $response->getBody()
+                : json_decode($response->getBody());
+
+            $this->addClientLog('EC API response', [
+                'status' => $response->getStatusCode(),
+                'phrase' => $response->getReasonPhrase(),
+            ], Logger::DEBUG);
+
         } catch (\Exception $e) {
-            curl_close($ch);
-            throw $e;
+            $this->requestError = $e->getMessage();
         }
 
         /*
          * check and debug api request total time
          */
-        $this->processDebugApi();
+        if ($this->helper->isDebugEnabled()) {
+            $this->processDebugApi($request);
+        }
 
-        $response = $this->responseBody;
-        $this->responseMessage = $response->message ?? null;
+        $this->responseMessage = $this->responseBody->message ?? null;
 
-        return $response;
+        return $this->responseBody;
     }
 
     /**
-     * @return void
+     * @param Request $request
      */
-    private function processDebugApi()
+    private function processDebugApi(Request $request)
     {
-        if ($this->helper->isDebugEnabled()) {
-            $info = $this->getResponseInfo();
-            //the response info data is set
-            if (isset($info['url']) && isset($info['total_time'])) {
-                $url = $info['url'];
-                $time = $info['total_time'];
-                $totalTime = sprintf(' time : %g sec', $time);
-                $check = $this->helper->getApiResponseTimeLimit();
-                $limit = ($check) ? $check : '2';
-                $message = $this->verb . ', ' . $url . $totalTime;
-                //check for slow queries
-                if ($time > $limit) {
-                    //log the slow queries
-                    $this->helper->log($message);
-                }
-            }
+        $url = $request->getUri();
+        $time = $request->getRequestTime();
+        $totalTime = sprintf(' time : %g sec', $time);
+        $limit = $this->helper->getApiResponseTimeLimit() ?: 2;
+        $message = $this->verb . ', ' . $url . $totalTime;
+
+        // check for slow queries
+        if ($time > $limit) {
+            // log the slow queries
+            $this->helper->log($message);
         }
     }
 
@@ -323,165 +257,9 @@ class Rest
      */
     public function buildPostBody($data = null)
     {
-        $this->requestBody = json_encode($data);
+        $this->requestBody = $data;
 
         return $this;
-    }
-
-    /**
-     * Execute curl get request.
-     *
-     * @param mixed $ch
-     *
-     * @return null
-     */
-    private function executeGet($ch)
-    {
-        $this->doExecute($ch);
-    }
-
-    /**
-     * Execute post request.
-     *
-     * @param mixed $ch
-     *
-     * @return null
-     */
-    private function executePost($ch)
-    {
-        if (!is_string($this->requestBody)) {
-            $this->buildPostBody();
-        }
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $this->requestBody);
-        curl_setopt($ch, CURLOPT_POST, true);
-
-        $this->doExecute($ch);
-    }
-
-    /**
-     * Post from the file.
-     *
-     * @param mixed $filename
-     *
-     * @return null
-     */
-    public function buildPostBodyFromFile($filename)
-    {
-        $this->requestBody = [
-            'file' => '@' . $filename,
-        ];
-    }
-
-    /**
-     * Execute put.
-     *
-     * @param mixed $ch
-     *
-     * @return null
-     */
-    private function executePut($ch)
-    {
-        if (!is_string($this->requestBody)) {
-            $this->buildPostBody();
-        }
-
-        $this->requestLength = strlen($this->requestBody);
-        $fh = $this->driver->fileOpen('php://memory', 'rw');
-        $this->driver->fileWrite($fh, $this->requestBody);
-        rewind($fh);
-
-        curl_setopt($ch, CURLOPT_INFILE, $fh);
-        curl_setopt($ch, CURLOPT_INFILESIZE, $this->requestLength);
-        curl_setopt($ch, CURLOPT_PUT, true);
-
-        $this->doExecute($ch);
-
-        $this->driver->fileClose($fh);
-    }
-
-    /**
-     * Execute delete.
-     *
-     * @param mixed $ch
-     *
-     * @return null
-     */
-    private function executeDelete($ch)
-    {
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        $this->doExecute($ch);
-    }
-
-    /**
-     * Execute request.
-     *
-     * @param mixed $ch
-     *
-     * @return null
-     */
-    private function doExecute(&$ch)
-    {
-        $this->setCurlOpts($ch);
-
-        if ($this->isNotJson) {
-            $this->responseBody = curl_exec($ch);
-        } else {
-            $this->responseBody = json_decode(curl_exec($ch));
-        }
-
-        $this->responseInfo = curl_getinfo($ch);
-
-        //if curl error found
-        if (curl_errno($ch)) {
-            //save the error
-            $this->curlError = curl_error($ch);
-        }
-
-        curl_close($ch);
-    }
-
-    /**
-     * Curl options.
-     *
-     * @param mixed $ch
-     *
-     * @return null
-     */
-    private function setCurlOpts(&$ch)
-    {
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt(
-            $ch,
-            CURLOPT_HTTPHEADER,
-            [
-                'Accept: ' . $this->acceptType,
-                'Content-Type: application/json',
-            ]
-        );
-    }
-
-    /**
-     * Basic auth.
-     *
-     * @param mixed $ch
-     *
-     * @return null
-     */
-    private function setAuth(&$ch)
-    {
-        if ($this->apiUsername !== null && $this->apiPassword !== null) {
-            curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
-            curl_setopt(
-                $ch,
-                CURLOPT_USERPWD,
-                $this->apiUsername . ':' . $this->apiPassword
-            );
-        }
     }
 
     /**
@@ -504,6 +282,16 @@ class Rest
     public function setAcceptType($acceptType)
     {
         $this->acceptType = $acceptType;
+    }
+
+    /**
+     * @param string $encType
+     * @return $this
+     */
+    public function setEncType(string $encType)
+    {
+        $this->encType = $encType;
+        return $this;
     }
 
     /**
@@ -623,20 +411,20 @@ class Rest
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getCurlError()
+    public function getRequestError()
     {
-        //if curl error
-        if (!empty($this->curlError)) {
-            //log curl error
-            $message = 'CURL ERROR ' . $this->curlError;
+        //if request error
+        if (!empty($this->requestError)) {
+            //log request error
+            $message = 'REQUEST ERROR ' . $this->requestError;
             $this->helper->log($message);
 
-            return $this->curlError;
+            return $this->requestError;
         }
 
-        return false;
+        return null;
     }
 
     /**
