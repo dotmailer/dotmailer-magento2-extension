@@ -103,11 +103,11 @@ class EnableConnectorCommand extends Command
         $password = $input->getOption('password');
 
         if (!$username || !$password) {
-            $output->writeln(__('You must specify your API username and password'));
+            $output->writeln(__('You must specify your API username and password')->getText());
             return;
         }
 
-        $this->output->writeln(__('Saving your API credentials'));
+        $this->output->writeln(__('Saving your API credentials')->getText());
 
         // get account info
         $accountInfo = $this->getEmailHelper()
@@ -115,7 +115,7 @@ class EnableConnectorCommand extends Command
             ->getAccountInfo();
 
         if (!$accountInfo || isset($accountInfo->message)) {
-            $this->output->writeln(__('There was a problem connecting to the API: ' . $accountInfo->message));
+            $this->output->writeln(__('There was a problem connecting to the API: ' . $accountInfo->message)->getText());
             return;
         }
 
@@ -142,12 +142,12 @@ class EnableConnectorCommand extends Command
                 EmailConfig::XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED => 1,
                 EmailConfig::XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED => 1,
             ]);
-            $this->output->writeln(__('Enabled syncs'));
+            $this->output->writeln(__('Enabled syncs')->getText());
         }
 
         if ((bool) $input->getOption('remove-ip-restriction')) {
             $this->saveConfig([EmailConfig::XML_PATH_CONNECTOR_IP_RESTRICTION_ADDRESSES => null]);
-            $this->output->writeln(__('Removed IP restriction'));
+            $this->output->writeln(__('Removed IP restriction')->getText());
         }
 
         if ((bool) $input->getOption('enable-email-capture')) {
@@ -155,10 +155,10 @@ class EnableConnectorCommand extends Command
                 EmailConfig::XML_PATH_CONNECTOR_EMAIL_CAPTURE => 1,
                 EmailConfig::XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER => 1,
             ]);
-            $this->output->writeln(__('Enabled email capture'));
+            $this->output->writeln(__('Enabled email capture')->getText());
         }
 
-        $this->output->writeln(__('Dotdigital connector has been enabled'));
+        $this->output->writeln(__('Dotdigital connector has been enabled')->getText());
     }
 
     /**
