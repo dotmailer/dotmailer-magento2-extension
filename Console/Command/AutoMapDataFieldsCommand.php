@@ -42,16 +42,16 @@ class AutoMapDataFieldsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln(__('Auto-mapping data fields'));
+        $output->writeln(__('Auto-mapping data fields')->getText());
 
         /** @var DataFieldAutoMapper $dataFieldMapper */
         $dataFieldMapper = $this->dataFieldAutoMapperFactory->create()
             ->run();
 
         if (!empty($dataFieldMapper->getMappingErrors())) {
-            $output->writeln(__('There was a problem mapping data fields. Please check the connector log.'));
+            $output->writeln(__('There was a problem mapping data fields. Please check the connector log.')->getText());
         } else {
-            $output->writeln(__('Data fields have been mapped.'));
+            $output->writeln(__('Data fields have been mapped.')->getText());
         }
     }
 }

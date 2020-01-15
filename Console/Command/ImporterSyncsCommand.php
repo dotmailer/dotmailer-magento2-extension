@@ -82,7 +82,7 @@ class ImporterSyncsCommand extends Command
             if ($this->state->getAreaCode() != Area::AREA_CRONTAB) {
                 $output->writeln(__(
                     sprintf('Warning: command running in an unexpected state (%s)', $this->state->getAreaCode())
-                ));
+                )->getText());
             }
         }
 
@@ -94,7 +94,7 @@ class ImporterSyncsCommand extends Command
         /** @var SyncInterface $syncClass */
         $syncClass = $this->syncProvider->$requestedSync;
         if ($syncClass === null || !$syncClass instanceof SyncInterface) {
-            $output->writeln(__('Requested sync was not recognised'));
+            $output->writeln(__('Requested sync was not recognised')->getText());
             return;
         }
 
@@ -102,7 +102,7 @@ class ImporterSyncsCommand extends Command
         $output->writeln(sprintf(
             '[%s] %s: %s',
             date('Y-m-d H:i:s'),
-            __('Started running sync'),
+            __('Started running sync')->getText(),
             get_class($syncClass)
         ));
 
@@ -119,7 +119,7 @@ class ImporterSyncsCommand extends Command
         $output->writeln(sprintf(
             '[%s] %s %s',
             date('Y-m-d H:i:s'),
-            __('Complete in'),
+            __('Complete in')->getText(),
             round(microtime(true) - $start, 2)
         ));
     }
@@ -136,7 +136,7 @@ class ImporterSyncsCommand extends Command
             __('Please select an Engagement Cloud sync to run')->getText(),
             array_values($this->syncProvider->getAvailableSyncs())
         );
-        $syncQuestion->setErrorMessage(__('Please select a sync'));
+        $syncQuestion->setErrorMessage(__('Please select a sync')->getText());
         return $helper->ask($input, $output, $syncQuestion);
     }
 }
