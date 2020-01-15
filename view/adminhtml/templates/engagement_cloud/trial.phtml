@@ -3,11 +3,11 @@
     {
         "*": {
             "Dotdigitalgroup_Email/js/engagementCloudEmbed": {
-                "iframeSrc": "<?= $block->escapeUrl($block->getAction()) ?>"
+                "iframeSrc": "<?= $block->getAction() ?>"
             },
             "Dotdigitalgroup_Email/js/engagementCloudTrial": {
-                "callback": "<?= $block->escapeUrl($block->getLocalCallbackUrl()) ?>",
-                "micrositeUrl": "<?= $block->escapeUrl($block->getTrialSignupHostAndScheme()) ?>"
+                "callback": "<?= $block->getLocalCallbackUrl() ?>",
+                "micrositeUrl": "<?= $block->getTrialSignupHostAndScheme() ?>"
             }
         }
     }
