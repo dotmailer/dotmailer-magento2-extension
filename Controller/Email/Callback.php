@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-use Dotdigitalgroup\Email\Model\Apiconnector\RequestFactory;
-
 class Callback extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -52,11 +50,6 @@ class Callback extends \Magento\Framework\App\Action\Action
     private $encryptor;
 
     /**
-     * @var RequestFactory
-     */
-    private $requestFactory;
-
-    /**
      * Callback constructor.
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @param \Magento\Backend\Helper\Data $backendData
@@ -68,7 +61,6 @@ class Callback extends \Magento\Framework\App\Action\Action
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
-     * @param RequestFactory $requestFactory
      */
     public function __construct(
         \Magento\User\Model\ResourceModel\User $userResource,
@@ -80,8 +72,7 @@ class Callback extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
-        RequestFactory $requestFactory
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
         $this->adminHelper      = $backendData;
         $this->config           = $config;
@@ -92,7 +83,6 @@ class Callback extends \Magento\Framework\App\Action\Action
         $this->helper           = $helper;
         $this->resultPageFactory = $resultPageFactory;
         $this->encryptor = $encryptor;
-        $this->requestFactory = $requestFactory;
 
         parent::__construct($context);
     }
@@ -122,30 +112,35 @@ class Callback extends \Magento\Framework\App\Action\Action
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB, true);
             $redirectUri .= 'connector/email/callback';
 
+            $data = 'client_id=' . $clientId .
+                '&client_secret=' . $clientSecret .
+                '&redirect_uri=' . $redirectUri .
+                '&grant_type=authorization_code' .
+                '&code=' . $code;
+
             //callback url
             $url = $this->config->getTokenUrl();
 
-            $response = $this->requestFactory->create()
-                ->prepare($url, 'POST')
-                ->setEncType('application/x-www-form-urlencoded')
-                ->send([
-                    'client_id' => $clientId,
-                    'client_secret' => $clientSecret,
-                    'redirect_uri' => $redirectUri,
-                    'grant_type' => 'authorization_code',
-                    'code' => $code,
-                ]);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
-            $oauthResponse = json_decode($response->getBody());
+            $response = json_decode(curl_exec($ch));
 
-            if ($oauthResponse === false) {
-                $this->helper->error('OAUTH error ' . $response->getReasonPhrase());
-            } elseif (isset($oauthResponse->error)) {
-                $this->helper->error('OAUTH failed ' . $oauthResponse->error, []);
-            } elseif (isset($oauthResponse->refresh_token)) {
+            if ($response === false) {
+                $this->helper->error('Error Number: ' . curl_errno($ch), []);
+            }
+            if (isset($response->error)) {
+                $this->helper->error('OAUTH failed ' . $response->error, []);
+            } elseif (isset($response->refresh_token)) {
                 //save the refresh token to the admin user
                 $adminUser->setRefreshToken(
-                    $this->encryptor->encrypt($oauthResponse->refresh_token)
+                    $this->encryptor->encrypt($response->refresh_token)
                 );
 
                 $this->userResource->save($adminUser);

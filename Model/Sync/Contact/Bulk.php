@@ -186,7 +186,7 @@ class Bulk
     public function _checkCurlError($item)
     {
         //if curl error 28
-        $curlError = $this->client->getRequestError();
+        $curlError = $this->client->getCurlError();
         if ($curlError) {
             $item->setMessage($curlError)
                 ->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED);

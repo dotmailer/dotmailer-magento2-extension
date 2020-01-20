@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install;
 
-use Dotdigitalgroup\Email\Setup\Schema;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\Math\Random;
 use Magento\Sales\Model\Order\Config;
@@ -94,9 +93,8 @@ class DataMigrationHelper
 
     /**
      * Run all install methods
-     * @param bool $truncateImporterTable
      */
-    public function run(bool $truncateImporterTable = false)
+    public function run()
     {
         // truncate any tables which are about to be updated
         $this->emptyTables();
@@ -106,11 +104,6 @@ class DataMigrationHelper
             /** @var AbstractDataMigration $dataMigration */
             $dataMigration->execute();
             $this->logActions($dataMigration);
-        }
-
-        if ($truncateImporterTable) {
-            $this->truncateEmailImporter();
-            $this->output->writeln('Truncated email_importer table');
         }
 
         /**
@@ -154,16 +147,7 @@ class DataMigrationHelper
     }
 
     /**
-     * Truncate the email importer table
-     */
-    private function truncateEmailImporter()
-    {
-        $this->resourceConnection->getConnection()
-            ->query('TRUNCATE ' . $this->resourceConnection->getTableName(Schema::EMAIL_IMPORTER_TABLE));
-    }
-
-    /**
-     * Empty relevant tables before running
+     * Truncate relevant tables before running
      */
     private function emptyTables()
     {

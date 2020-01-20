@@ -87,15 +87,15 @@ class OauthValidator
      *
      * @param string $refreshToken
      *
-     * @return array
+     * @return string
      */
     private function buildUrlParams($refreshToken)
     {
-        return [
+        return http_build_query([
             'client_id' => $this->helper->getWebsiteConfig(Config::XML_PATH_CONNECTOR_CLIENT_ID),
             'client_secret' => $this->helper->getWebsiteConfig(Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID),
             'refresh_token' => $refreshToken,
             'grant_type' => 'refresh_token',
-        ];
+        ]);
     }
 }

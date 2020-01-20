@@ -5,10 +5,9 @@ namespace Dotdigitalgroup\Email\Console\Command;
 use Dotdigitalgroup\Email\Setup\Install\DataMigrationHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrateDataCommand extends Command
+class ImportDataCommand extends Command
 {
     /**
      * @var DataMigrationHelper
@@ -31,8 +30,7 @@ class MigrateDataCommand extends Command
     protected function configure()
     {
         $this->setName('dotdigital:migrate')
-            ->setDescription('Migrate data into email_ tables to sync with Engagement Cloud')
-            ->addOption('truncate-importer', null, InputOption::VALUE_OPTIONAL, 'Truncate the email_importer table');
+            ->setDescription('Migrate data into email_ tables to sync with Engagement Cloud');
 
         parent::configure();
     }
@@ -48,7 +46,7 @@ class MigrateDataCommand extends Command
         $start = microtime(true);
         $output->writeln(__('Starting data import')->getText());
 
-        $this->migrateData->setOutputInterface($output)->run((bool) $input->getOption('truncate-importer'));
+        $this->migrateData->setOutputInterface($output)->run();
 
         $output->writeln(__(sprintf('Import complete in %s', round(microtime(true) - $start, 2)))->getText());
     }

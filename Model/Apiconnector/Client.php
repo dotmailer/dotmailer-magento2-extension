@@ -169,10 +169,39 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function postAddressBookContactsImport($filename, $addressBookId)
     {
-        $result = $this->setUrl($this->getApiEndpoint() . "/v2/address-books/{$addressBookId}/contacts/import")
-            ->setVerb('POST')
-            ->setFileUpload($this->fileHelper->getFilePathWithFallback($filename))
-            ->execute();
+        $url = $this->getApiEndpoint() . "/v2/address-books/{$addressBookId}/contacts/import";
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt(
+            $ch,
+            CURLOPT_USERPWD,
+            $this->getApiUsername() . ':' . $this->getApiPassword()
+        );
+
+        //case the deprecation of @filename for uploading
+        if (function_exists('curl_file_create')) {
+            $args['file']
+                = curl_file_create(
+                    $this->fileHelper->getFilePathWithFallback($filename),
+                    'text/csv'
+                );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
+        } else {
+            //standard use of curl file
+            curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                'file' => '@' . $this->fileHelper->getFilePathWithFallback($filename),
+            ]);
+        }
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: multipart/form-data',
+            ]);
+        // send contacts to address book
+        $result = curl_exec($ch);
+        $result = json_decode($result);
 
         if (isset($result->message)) {
             $message = 'postAddressBookContactsImport' . $addressBookId . ' file : ' . $filename
@@ -1376,14 +1405,19 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getAccessToken($url, $params)
     {
-        $response = $this->setUrl($url)
-            ->setVerb('POST')
-            ->buildPostBody($params)
-            ->setEncType('application/x-www-form-urlencoded')
-            ->execute();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
-        if (!$response) {
-            $this->helper->error('OAUTH error: ' . $this->getRequestError());
+        $response = json_decode(curl_exec($ch));
+
+        if ($response === false) {
+            $this->helper->error('Error Number: ' . curl_errno($ch), []);
         } elseif (isset($response->error)) {
             $this->helper->error('OAUTH failed. Error - ' . $response->error, []);
             if (isset($response->error_description)) {
