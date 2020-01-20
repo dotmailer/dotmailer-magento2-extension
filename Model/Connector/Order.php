@@ -330,6 +330,9 @@ class Order
     private function processOrderItems($orderData, $syncCustomOption)
     {
         foreach ($orderData->getAllItems() as $productItem) {
+            if ($productItem->getProduct() === null) {
+                continue;
+            }
             if (in_array($productItem->getProduct()->getTypeId(), ['configurable', 'bundle'])) {
                 // We store data for configurable and bundle products, to be output alongside their children
                 unset($parentProductModel, $parentLineItem);
