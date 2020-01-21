@@ -930,7 +930,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function saveApiEndpoint($apiEndpoint, $websiteId)
     {
         if ($websiteId > 0) {
-            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
         } else {
             $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
         }
