@@ -175,22 +175,22 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Get imports marked as importing.
+     * Get imports marked as importing for one or more websites.
      *
-     * @param int $limit
+     * @param array $websiteIds
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection|bool
      */
-    public function _getImportingItems($limit)
+    public function _getImportingItems($websiteIds)
     {
         return $this->importerCollection->create()
-            ->getItemsWithImportingStatus($limit);
+            ->getItemsWithImportingStatus($websiteIds);
     }
 
     /**
      * Get the imports by type.
      *
-     * @param string $importType
+     * @param string|array $importType
      * @param string $importMode
      * @param int $limit
      * @param array $websiteIds

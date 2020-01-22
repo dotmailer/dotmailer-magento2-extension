@@ -1,16 +1,17 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Sync\Contact;
+namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact;
 
+use Dotdigitalgroup\Email\Model\Apiconnector\Customer;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
-use Dotdigitalgroup\Email\Model\Apiconnector\EngagementCloudAddressBookApiFactory;
-use Dotdigitalgroup\Email\Model\Apiconnector\Customer;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
 
 /**
  * Handle update data for importer.
  */
-class Update extends Bulk
+class Update extends AbstractItemSyncer
 {
     const ERROR_CONTACT_ALREADY_SUBSCRIBED = 'Contact is already subscribed';
 
@@ -20,52 +21,50 @@ class Update extends Bulk
     public $contactResource;
 
     /**
-     * @var EngagementCloudAddressBookApiFactory
-     */
-    private $engagementCloudAddressBookApiFactory;
-
-    /**
      * @var Customer
      */
     private $apiConnectorCustomer;
 
     /**
-     * Update constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
-     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
-     * @param Contact $contactResource
-     * @param EngagementCloudAddressBookApiFactory $engagementCloudAddressBookApiFactory
-     * @param Customer $apiConnectorCustomer
+     * @var SingleItemPostProcessorFactory
      */
-    public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
-        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Magento\Framework\Stdlib\DateTime $dateTime,
-        Contact $contactResource,
-        EngagementCloudAddressBookApiFactory $engagementCloudAddressBookApiFactory,
-        Customer $apiConnectorCustomer
-    ) {
-        $this->contactResource = $contactResource;
-        $this->engagementCloudAddressBookApiFactory = $engagementCloudAddressBookApiFactory;
-        $this->apiConnectorCustomer = $apiConnectorCustomer;
-
-        parent::__construct($helper, $fileHelper, $importerResource, $serializer, $contactFactory, $dateTime);
-    }
+    protected $postProcessor;
 
     /**
      * Keep the suppressed contact ids that needs to update.
      *
      * @var array
      */
-    public $suppressedContactIds;
+    private $suppressedContactIds;
+
+    /**
+     * Update constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
+     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
+     * @param Contact $contactResource
+     * @param Customer $apiConnectorCustomer
+     * @param SingleItemPostProcessorFactory $postProcessor
+     * @param array $data
+     */
+    public function __construct(
+        \Dotdigitalgroup\Email\Helper\Data $helper,
+        \Dotdigitalgroup\Email\Helper\File $fileHelper,
+        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
+        Contact $contactResource,
+        Customer $apiConnectorCustomer,
+        SingleItemPostProcessorFactory $postProcessor,
+        array $data = []
+    ) {
+        $this->contactResource = $contactResource;
+        $this->apiConnectorCustomer = $apiConnectorCustomer;
+        $this->postProcessor = $postProcessor;
+
+        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $data);
+    }
 
     /**
      * Sync.
@@ -76,22 +75,23 @@ class Update extends Bulk
      */
     public function sync($collection)
     {
-        foreach ($collection as $item) {
-            $websiteId = $item->getWebsiteId();
-            if ($this->helper->isEnabled($websiteId)) {
-                $this->client = $this->engagementCloudAddressBookApiFactory->create()
-                    ->setRequiredDataForClient($websiteId);
-                $importData = $this->serializer->unserialize($item->getImportData());
+        $this->client = $this->getClient();
 
-                if ($this->client) {
-                    $this->syncItem($item, $importData, $websiteId);
-                }
-            }
+        foreach ($collection as $item) {
+            $this->process($item);
         }
         //update suppress status for contact ids
         if (!empty($this->suppressedContactIds)) {
             $this->contactResource->setContactSuppressedForContactIds($this->suppressedContactIds);
         }
+    }
+
+    protected function process($item)
+    {
+        $websiteId = $item->getWebsiteId();
+        $importData = $this->serializer->unserialize($item->getImportData());
+
+        $this->syncItem($item, $importData, $websiteId);
     }
 
     /**
@@ -101,7 +101,7 @@ class Update extends Bulk
      *
      * @return null
      */
-    public function syncItem($item, $importData, $websiteId)
+    private function syncItem($item, $importData, $websiteId)
     {
         $apiMessage = $result = null;
 
@@ -124,7 +124,8 @@ class Update extends Bulk
         }
 
         if ($result) {
-            $this->handleSingleItemAfterSync($item, $result, $apiMessage);
+            $this->postProcessor->create(['data' => ['client' => $this->client]])
+                ->handleItemAfterSync($item, $result, $apiMessage);
         }
     }
 
@@ -186,7 +187,6 @@ class Update extends Bulk
             return ($subscribersAddressBook) ?
                 $this->client->postAddressBookContactResubscribe($subscribersAddressBook, $email) :
                 $this->client->postContactsResubscribe($this->client->getContactByEmail($email));
-
         }
 
         return $apiContact;
