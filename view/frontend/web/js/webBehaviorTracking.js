@@ -43,7 +43,7 @@ define([
                 product_brand: productData.extension_attributes.ddg_brand || '',
                 product_categories: (productData.extension_attributes.ddg_categories || []).join(','),
                 product_image_path: productData.extension_attributes.ddg_image || '',
-                product_description: productData.extension_attributes.ddg_description
+                product_description: productData.extension_attributes.ddg_description || ''
             };
 
             this.wbtTrack(trackingData);

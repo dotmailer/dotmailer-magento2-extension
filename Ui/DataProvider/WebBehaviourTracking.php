@@ -78,9 +78,11 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
             $extensionAttributes = $this->productRenderExtensionFactory->create();
         }
 
-        $extensionAttributes->setDdgSku($product->getSku())
-            ->setDdgDescription(strip_tags($product->getCustomAttribute('description')->getValue()));
+        $extensionAttributes->setDdgSku($product->getSku());
 
+        if ($productDescription = $product->getCustomAttribute('description')) {
+            $extensionAttributes->setDdgDescription(strip_tags($productDescription->getValue()));
+        }
         if ($image = $this->getProductImage($product)) {
             $extensionAttributes->setDdgImage($image);
         }
