@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
@@ -11,11 +10,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      * @var string
      */
     protected $_idFieldName = 'id';
-
-    /**
-     * @var TimezoneInterface
-     */
-    private $timezone;
 
     /**
      * @var DateIntervalFactory
@@ -42,7 +36,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
-     * @param TimezoneInterface $timezone
      * @param DateIntervalFactory $dateIntervalFactory
      * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
      * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null $resource
@@ -52,12 +45,10 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
         \Magento\Framework\Event\ManagerInterface $eventManager,
-        TimezoneInterface $timezone,
         DateIntervalFactory $dateIntervalFactory,
         \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
         \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
     ) {
-        $this->timezone = $timezone;
         $this->dateIntervalFactory = $dateIntervalFactory;
         parent::__construct(
             $entityFactory,
@@ -141,8 +132,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 $interval = $this->dateIntervalFactory->create(
                     ['interval_spec' => 'PT1H']
                 );
-                $fromDate = $this->timezone->date()
-                    ->sub($interval);
+                $fromDate = new \DateTime('now', new \DateTimezone('UTC'));
+                $fromDate->sub($interval);
 
                 $this->addFieldToFilter(
                     'created_at',
