@@ -19,6 +19,18 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.3.3
+
+###### What’s new
+- We've increased the sync limits for bulk imports into Engagement Cloud. The importer sync now imports up to 100 bulk items on each execution (25 of which can be for contacts), plus up to 100 single items.
+- Additional data about the Magento installation is now sent to our sign up microsite when merchants register for Engagement Cloud Chat.  
+- When fetching a scoped date of birth, we now use store ID instead of website ID, in line with Magento core. 
+
+###### Bug fixes
+- Merchants upgrading from 4.2.0 to 4.3.x now have an `email_coupon_attribute` table created as expected.
+- We've fixed a bug in the Web Behavior Tracking script, triggered by empty product descriptions. 
+- We've fixed an error when fetching the API endpoint for a given store scope.
+
 # 4.3.2
 
 ###### Bug fixes
