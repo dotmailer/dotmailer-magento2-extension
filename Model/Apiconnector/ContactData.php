@@ -168,7 +168,7 @@ class ContactData
             switch ($key) {
                 case 'dob':
                     $value = $this->model->getDob()
-                        ? $this->getScopeAdjustedDob($this->model->getWebsiteId())
+                        ? $this->getScopeAdjustedDob($this->model->getStoreId())
                         : null;
                     break;
 
@@ -588,14 +588,14 @@ class ContactData
     }
 
     /**
-     * @param string $websiteId
+     * @param string $storeId
      * @return string
      */
-    private function getScopeAdjustedDob($websiteId)
+    private function getScopeAdjustedDob($storeId)
     {
         $scopedDob = $this->localeDateFactory->create()
             ->scopeDate(
-                $websiteId,
+                $storeId,
                 strtotime($this->model->getDob()),
                 true
             );

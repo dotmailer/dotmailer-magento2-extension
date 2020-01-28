@@ -1355,6 +1355,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ->setVerb('GET');
 
         $response = $this->execute();
+        $this->isNotJson = false;
 
         //if string is JSON than there is a error message
         if (json_decode($response)) {
@@ -1621,6 +1622,32 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         if ($response) {
             $this->helper->log('Initialised for chat');
             return $response;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Resubscribes a previously unsubscribed contact to a given address book
+     *
+     * @param int $addressBookId
+     * @param string $email
+     *
+     * @return mixed
+     */
+    public function postAddressBookContactResubscribe($addressBookId, $email)
+    {
+        $contact = ['unsubscribedContact' => ['email' => $email]];
+        $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS . $addressBookId
+            . '/contacts/resubscribe';
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($contact);
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error resubscribing address book contact');
         }
 
         return $response;
