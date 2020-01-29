@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Model\Sync\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Sync\CampaignFactory;
 use Dotdigitalgroup\Email\Model\Sync\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory;
+use Dotdigitalgroup\Email\Model\Customer\GuestFactory;
 use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
@@ -44,6 +45,11 @@ class SyncProvider
      * @var ContactFactory
      */
     private $contactFactory;
+
+    /**
+     * @var GuestFactory
+     */
+    private $guestFactory;
 
     /**
      * @var ImporterFactory
@@ -87,6 +93,7 @@ class SyncProvider
      * @param CampaignFactory $campaignFactory
      * @param CatalogFactory $catalogFactory
      * @param ContactFactory $contactFactory
+     * @param GuestFactory $guestFactory
      * @param OrderFactory $orderFactory
      * @param SubscriberFactory $subscriberFactory
      * @param TemplateFactory $templateFactory
@@ -101,6 +108,7 @@ class SyncProvider
         CampaignFactory $campaignFactory,
         CatalogFactory $catalogFactory,
         ContactFactory $contactFactory,
+        GuestFactory $guestFactory,
         ImporterFactory $importerFactory,
         IntegrationInsightsFactory $integrationInsightsFactory,
         OrderFactory $orderFactory,
@@ -114,6 +122,7 @@ class SyncProvider
         $this->campaignFactory = $campaignFactory;
         $this->catalogFactory = $catalogFactory;
         $this->contactFactory = $contactFactory;
+        $this->guestFactory = $guestFactory;
         $this->importerFactory = $importerFactory;
         $this->integrationInsightsFactory = $integrationInsightsFactory;
         $this->orderFactory = $orderFactory;
