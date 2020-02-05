@@ -145,15 +145,7 @@ class Contact implements SyncInterface
      */
     public function exportCustomersForWebsite(WebsiteInterface $website)
     {
-        //admin sync limit of batch size for contacts
-        $syncLimit = $this->helper->getSyncLimit($website);
-
-        $contacts = $this->contactCollectionFactory->create()
-            ->getContactsToImportByWebsite(
-                $website->getId(),
-                $syncLimit,
-                $this->helper->isOnlySubscribersForContactSync($website->getId())
-            );
+        $contacts = $this->getContacts($website);
 
         // no contacts found
         if ($contacts->getSize() === 0) {
@@ -168,8 +160,7 @@ class Contact implements SyncInterface
 
         // get customer IDs, custom attributes and generate export data columns
         $customerIds = $contacts->getColumnValues('customer_id');
-        $customAttributes = $this->helper->getCustomAttributes($website);
-        $columns = $this->getContactExportColumns($website, $customAttributes);
+        $columns = $this->getContactExportColumns($website);
 
         //customer collection
         $customerCollection = $this->contactResource->buildCustomerCollection($customerIds);
@@ -204,6 +195,21 @@ class Contact implements SyncInterface
     }
 
     /**
+     * @param WebsiteInterface $website
+     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
+     */
+    public function getContacts(WebsiteInterface $website)
+    {
+        $syncLimit = $this->helper->getSyncLimit($website);
+        return $this->contactCollectionFactory->create()
+            ->getContactsToImportByWebsite(
+                $website->getId(),
+                $syncLimit,
+                $this->helper->isOnlySubscribersForContactSync($website->getId())
+            );
+    }
+
+    /**
      * @param array $additionalCustomerData
      * @return $this
      */
@@ -217,14 +223,15 @@ class Contact implements SyncInterface
      * Get fields to be exported
      *
      * @param WebsiteInterface $website
-     * @param array $customAttributes
      * @return array
      */
-    private function getContactExportColumns(WebsiteInterface $website, array $customAttributes = [])
+    public function getContactExportColumns(WebsiteInterface $website)
     {
         $customerDataFields = $this->customerDataFieldProviderFactory
             ->create(['data' => ['website' => $website]])
             ->getCustomerDataFields();
+
+        $customAttributes = $this->helper->getCustomAttributes($website);
 
         return self::$emailFields
             + $customerDataFields

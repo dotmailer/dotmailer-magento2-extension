@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigitalgroup\Email\Model\Apiconnector\CustomerDataFieldProvider;
+use Dotdigitalgroup\Email\Model\Apiconnector\CustomerDataFieldProviderFactory;
+
 if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory')) {
     require __DIR__ . '/../_files/product_extension_interface_hacktory.php';
 }
@@ -58,8 +61,15 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
         $helper->method('getWebsites')->willReturn([$store->getWebsite()]);
         $helper->method('getApiUsername')->willReturn('apiuser-dummy@apiconnector.com');
         $helper->method('getApiPassword')->willReturn('dummypass');
-        $helper->method('getWebsiteCustomerMappingDatafields')->willReturn($this->getHashedDataFields());
         $helper->method('getCustomAttributes')->willReturn([]);
+
+        $customerDataFieldProviderMock = $this->createMock(CustomerDataFieldProvider::class);
+        $customerDataFieldProviderFactoryMock = $this->createMock(CustomerDataFieldProviderFactory::class);
+        $customerDataFieldProviderFactoryMock->method('create')
+            ->willReturn($customerDataFieldProviderMock);
+
+        $customerDataFieldProviderMock->method('getCustomerDataFields')
+            ->willReturn($this->getHashedDataFields());
 
         $apiconnectorContact = new \Dotdigitalgroup\Email\Model\Apiconnector\Contact(
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory::class),
@@ -67,7 +77,8 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
             $helper,
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class),
             $this->objectManager->create(\Dotdigitalgroup\Email\Model\Apiconnector\ContactImportQueueExport::class),
-            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class)
+            $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class),
+            $customerDataFieldProviderFactoryMock
         );
 
         return $apiconnectorContact->sync();
