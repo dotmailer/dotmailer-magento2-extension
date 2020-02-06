@@ -39,6 +39,9 @@
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon\Collection">
         <plugin name="ddg_generated_for_email_plugin" type="Dotdigitalgroup\Email\Plugin\CouponCollectionPlugin"/>
     </type>
+    <type name="Magento\SalesRule\Model\Utility">
+        <plugin name="ddg_coupon_expired_plugin" type="Dotdigitalgroup\Email\Plugin\CouponExpiredPlugin"/>
+    </type>
     <type name="Magento\Catalog\Ui\DataProvider\Product\ProductRenderCollectorComposite">
         <arguments>
             <argument name="productProviders" xsi:type="array">

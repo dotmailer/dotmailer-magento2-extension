@@ -19,17 +19,18 @@ define([
             let obj = this;
 
             async.async('#ddg-sales-rule-form-tab-coupons', document.getElementById('container'), function (node) {
-                var useAutoGeneration = uiRegistry.get(
-                    'sales_rule_form.sales_rule_form.rule_information.use_auto_generation'
-                );
+                uiRegistry
+                    .get('sales_rule_form.sales_rule_form.rule_information.use_auto_generation')
+                    .on('checked', function () {
+                        obj.enableDisableFields();
+                    });
 
-                useAutoGeneration.on('checked', function () {
-                    obj.enableDisableFields();
-                });
                 this.enableDisableFields();
             }.bind(this));
+
             // bind to window
-                window.updateEdcCouponUrl = this.updateEdcCouponUrl;
+            window.updateEdcCouponUrl = this.updateEdcCouponUrl;
+
             return this;
         },
 
@@ -40,6 +41,12 @@ define([
             var allowResend = parseInt(document.getElementById('coupons_allow_resend').getValue());
             var cancelSendField = document.getElementById('coupons_cancel_send');
             var couponUrl = inputCouponUrl.getAttribute('data-baseurl') + '/';
+            var expiresAfter = document.getElementById('coupons_expires_after');
+            var expireDays = expiresAfter.getValue();
+
+            if (!parseInt(expireDays) || parseInt(expireDays) < 1) {
+                expiresAfter.value = '';
+            }
 
             if (allowResend === 0 && ddgEnabled) {
                 cancelSendField.setAttribute('disabled', 'disabled');
@@ -47,12 +54,13 @@ define([
                 cancelSendField.removeAttribute('disabled');
             }
 
-            ['prefix', 'suffix', 'format', 'allow_resend', 'cancel_send'].forEach(function (field) {
-                var inputField = document.getElementById('coupons_' + field);
-                if (!!inputField.getValue() && !inputField.hasAttribute('disabled')) {
-                    couponAttributes.push('code_' + field + '/' + inputField.getValue());
-                }
-            });
+            ['prefix', 'suffix', 'format', 'allow_resend', 'cancel_send', 'expires_after']
+                .forEach(function (field) {
+                    var inputField = document.getElementById('coupons_' + field);
+                    if (!!inputField.getValue() && !inputField.hasAttribute('disabled')) {
+                        couponAttributes.push('code_' + field + '/' + inputField.getValue());
+                    }
+                });
 
             couponAttributes.push(inputCouponUrl.getAttribute('data-email-merge-field'));
             inputCouponUrl.setValue(couponUrl += couponAttributes.join('/'));
@@ -67,25 +75,23 @@ define([
         enableDisableFields: function () {
             var ddgEnabled = document.getElementById('coupons_ddg_enabled').getValue();
             var isExistingRule = !!document.querySelector('#coupons_ddg_rule_id').getValue();
+            var disableAuto;
             var isUseAutoGenerationChecked = uiRegistry
                 .get('sales_rule_form.sales_rule_form.rule_information.use_auto_generation')
                 .checked();
-            var disableAuto;
-
-            /**
-             * \Magento\Rule\Model\AbstractModel::COUPON_TYPE_AUTO
-             */
 
             if (isExistingRule) {
                 this.updateEdcCouponUrl();
             }
 
             disableAuto = (isUseAutoGenerationChecked && isExistingRule && ddgEnabled);
-            this.disableAllFields(!disableAuto);
+            this.disableFields(!disableAuto);
         },
 
-        disableAllFields : function(toDisable) {
-            var selector = '#ddg-sales-rule-form-tab-coupons input, #ddg-sales-rule-form-tab-coupons select, #ddg-sales-rule-form-tab-coupons textarea';
+        disableFields : function(toDisable) {
+            var selector = '#ddg-sales-rule-form-tab-coupons input,' +
+                '#ddg-sales-rule-form-tab-coupons select,' +
+                '#ddg-sales-rule-form-tab-coupons textarea';
 
             _.each(
                 document.querySelectorAll(selector),
@@ -94,6 +100,9 @@ define([
                 }
             );
 
+            if (uiRegistry.get('sales_rule_form.sales_rule_form.rule_information.to_date').value() !== '') {
+                document.querySelector('#ddg-sales-rule-form-tab-coupons #coupons_expires_after').disabled = true;
+            }
         }
     });
 });

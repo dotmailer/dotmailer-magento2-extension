@@ -52,6 +52,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->upgradeThreeTwoTwo($setup, $context);
         $this->upgradeFourZeroOne($setup, $context);
         $this->upgradeFourThreeZero($setup, $context, $connection);
+        $this->upgradeFourThreeFourPartTwo($setup, $context, $connection);
 
         $setup->endSetup();
     }
@@ -508,6 +509,23 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $tableName = $setup->getTable(Schema::EMAIL_COUPON_TABLE);
             if (!$connection->isTableExists($tableName)) {
                 $this->shared->createCouponTable($setup, $tableName);
+            }
+        }
+    }
+
+    private function upgradeFourThreeFourPartTwo(
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context,
+        AdapterInterface $connection
+    ) {
+        if (version_compare($context->getVersion(), '4.3.4', '<')) {
+            $couponTable = $setup->getTable(Schema::EMAIL_COUPON_TABLE);
+            if (!$connection->tableColumnExists($couponTable, 'expires_at')) {
+                $setup->getConnection()->addColumn($couponTable, 'expires_at', [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                    'nullable' => true,
+                    'comment' => 'Coupon expiration date',
+                ]);
             }
         }
     }

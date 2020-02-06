@@ -21,8 +21,6 @@ class CouponPlugin
     private $couponExtensionFactory;
 
     /**
-     * CouponPlugin constructor
-     *
      * @param CouponAttributeRepositoryInterface $couponAttributeRepository
      * @param CouponExtensionFactory $couponExtensionFactory
      */
@@ -50,10 +48,10 @@ class CouponPlugin
             return $entity;
         }
 
-        $extensionAttributes = $entity->getExtensionAttributes();
-        $extensionAttributes = $extensionAttributes ? $extensionAttributes : $this->couponExtensionFactory->create();
+        $extensionAttributes = $entity->getExtensionAttributes()
+            ?: $this->couponExtensionFactory->create();
 
-        $extensionAttributes->setGeneratedForEmail($couponAttribute);
+        $extensionAttributes->setDdgExtensionAttributes($couponAttribute);
         $entity->setExtensionAttributes($extensionAttributes);
 
         return $entity;
@@ -69,8 +67,8 @@ class CouponPlugin
         CouponInterface $coupon
     ) {
         $extensionAttributes = $coupon->getExtensionAttributes();
-        if ($extensionAttributes && $generatedForEmail = $extensionAttributes->getGeneratedForEmail()) {
-            $this->couponAttributeRepository->save($generatedForEmail);
+        if ($extensionAttributes && $ddgExtensionAttributes = $extensionAttributes->getDdgExtensionAttributes()) {
+            $this->couponAttributeRepository->save($ddgExtensionAttributes);
         }
 
         return $coupon;

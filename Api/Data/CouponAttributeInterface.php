@@ -4,22 +4,29 @@ namespace Dotdigitalgroup\Email\Api\Data;
 
 interface CouponAttributeInterface extends \Magento\Framework\Api\ExtensionAttributesInterface
 {
-    const EMAIL = 'email';
-
     const COUPON_ID = 'coupon_id';
+    const EMAIL = 'email';
+    const EXPIRES_AT = 'expires_at';
 
     /**
-     * Return value.
-     *
      * @return string|null
      */
     public function getEmail();
 
     /**
-     * Set value.
-     *
-     * @param string|null $value
+     * @param string|null $email
      * @return $this
      */
     public function setEmail($email);
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getExpiresAt();
+
+    /**
+     * @param string $expiresAt
+     * @return $this
+     */
+    public function setExpiresAt(string $expiresAt);
 }
