@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AutoMapDataFieldsTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Configure data mapping"/>
+            <title value="Test automatic mapping of data fields"/>
+            <description value="The dotdigital:automap CLI command will automatically map Magento data fields to Engagement Cloud data fields."/>
+            <severity value="MAJOR"/>
+            <group value="AM/106077-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+            <actionGroup ref="ResetDataFields" stepKey="resetDataFieldsBefore"/>
+        </before>
+
+        <after>
+            <actionGroup ref="ResetDataFields" stepKey="resetDataFieldsAfter"/>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <comment userInput="Running dotdigital:connector:automap CLI command" stepKey="autoMapCliCommandComment"/>
+        <magentoCLI command="dotdigital:connector:automap" stepKey="autoMapCliCommand"/>
+
+        <comment userInput="Checking data mapping" stepKey="checkingDataMappingComment"/>
+        <amOnPage url="{{AdminDotdigitalDataMappingPage.url}}" stepKey="amOnDotdigitalDataMappingPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerTitle}}" userInput="TITLE" stepKey="seeCustomerTitleIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerId}}" userInput="CUSTOMER_ID" stepKey="seeCustomerIdIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerFirstname}}" userInput="FIRSTNAME" stepKey="seeCustomerFirstnameIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerLastname}}" userInput="LASTNAME" stepKey="seeCustomerLastnameIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerDob}}" userInput="DOB" stepKey="seeCustomerDobIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerGender}}" userInput="GENDER" stepKey="seeCustomerGenderIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerCreatedAt}}" userInput="ACCOUNT_CREATED_DATE" stepKey="seeCustomerCreatedAtIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerLastLoggedInDate}}" userInput="LAST_LOGGEDIN_DATE" stepKey="seeCustomerLastLoggedInDateIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerGroup}}" userInput="CUSTOMER_GROUP" stepKey="seeCustomerGroupIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerReviewCount}}" userInput="REVIEW_COUNT" stepKey="seeCustomerReviewCountIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerLastReviewDate}}" userInput="LAST_REVIEW_DATE" stepKey="seeCustomerLastReviewDateIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerSubscriberStatus}}" userInput="SUBSCRIBER_STATUS" stepKey="seeCustomerSubscriberStatusIsSet"/>
+
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingLine1}}" userInput="BILLING_ADDRESS_1" stepKey="seeAddressBillingLine1IsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingLine2}}" userInput="BILLING_ADDRESS_2" stepKey="seeAddressBillingLine2IsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingCity}}" userInput="BILLING_CITY" stepKey="seeAddressBillingCityIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingState}}" userInput="BILLING_STATE" stepKey="seeAddressBillingStateIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingCountry}}" userInput="BILLING_COUNTRY" stepKey="seeAddressBillingCountryIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingPostcode}}" userInput="BILLING_POSTCODE" stepKey="seeAddressBillingPostcodeIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingTelephone}}" userInput="BILLING_TELEPHONE" stepKey="seeAddressBillingTelephoneIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingCompany}}" userInput="BILLING_COMPANY" stepKey="seeAddressBillingCompanyIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryLine1}}" userInput="DELIVERY_ADDRESS_1" stepKey="seeAddressDeliveryLine1IsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryLine2}}" userInput="DELIVERY_ADDRESS_2" stepKey="seeAddressDeliveryLine2IsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCity}}" userInput="DELIVERY_CITY" stepKey="seeAddressDeliveryCityIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryState}}" userInput="DELIVERY_STATE" stepKey="seeAddressDeliveryStateIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCountry}}" userInput="DELIVERY_COUNTRY" stepKey="seeAddressDeliveryCountryIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryPostcode}}" userInput="DELIVERY_POSTCODE" stepKey="seeAddressDeliveryPostcodeIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryTelephone}}" userInput="DELIVERY_TELEPHONE" stepKey="seeAddressDeliveryTelephoneIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCompany}}" userInput="DELIVERY_COMPANY" stepKey="seeAddressDeliveryCompanyIsSet"/>
+
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesNumberOfOrders}}" userInput="NUMBER_OF_ORDERS" stepKey="seeSalesNumberOfOrdersIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesAverageOrderValue}}" userInput="AVERAGE_ORDER_VALUE" stepKey="seeSalesAverageOrderValueIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesTotalSpend}}" userInput="TOTAL_SPEND" stepKey="seeSalesTotalSpendIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastOrderDate}}" userInput="LAST_ORDER_DATE" stepKey="seeSalesLastOrderDateIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastIncrementId}}" userInput="LAST_INCREMENT_ID" stepKey="seeSalesLastIncrementIdIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesTotalRefund}}" userInput="TOTAL_REFUND" stepKey="seeSalesTotalRefundIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostPurCategory}}" userInput="MOST_PUR_CATEGORY" stepKey="seeSalesMostPurCategoryIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostPurBrand}}" userInput="MOST_PUR_BRAND" stepKey="seeSalesMostPurBrandIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostFrequentDayOfPurchase}}" userInput="MOST_FREQ_PUR_DAY" stepKey="seeSalesMostFrequentDayOfPurchaseIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostFrequentMonthOfPurchase}}" userInput="MOST_FREQ_PUR_MON" stepKey="seeSalesMostFrequentMonthOfPurchaseIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesFirstCategoryPur}}" userInput="FIRST_CATEGORY_PUR" stepKey="seeSalesFirstCategoryPurIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastCategoryPur}}" userInput="LAST_CATEGORY_PUR" stepKey="seeSalesLastCategoryPurIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesFirstBrandPur}}" userInput="FIRST_BRAND_PUR" stepKey="seeSalesFirstBrandPurIsSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastBrandPur}}" userInput="LAST_BRAND_PUR" stepKey="seeSalesLastBrandPurIsSet"/>
+
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.systemWebsiteName}}" userInput="WEBSITE_NAME" stepKey="setSystemWebsiteName"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.systemStoreName}}" userInput="STORE_NAME" stepKey="setSystemStoreName"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.systemLastOrderId}}" userInput="LAST_ORDER_ID" stepKey="setSystemLastOrderId"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.systemLastQuoteId}}" userInput="LAST_QUOTE_ID" stepKey="setSystemLastQuoteId"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.systemAbandonedProductName}}" userInput="ABANDONED_PROD_NAME" stepKey="setSystemAbandonedProductName"/>
+    </test>
+</tests>
+
+
+
+
+

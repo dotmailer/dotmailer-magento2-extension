@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminDotdigitalDataMappingSection">
+        <element name="customerTitle" type="select" selector="#connector_data_mapping_customer_data_title" />
+        <element name="customerId" type="select" selector="#connector_data_mapping_customer_data_customer_id" />
+        <element name="customerFirstname" type="select" selector="#connector_data_mapping_customer_data_firstname" />
+        <element name="customerLastname" type="select" selector="#connector_data_mapping_customer_data_lastname" />
+        <element name="customerDob" type="select" selector="#connector_data_mapping_customer_data_dob" />
+        <element name="customerGender" type="select" selector="#connector_data_mapping_customer_data_gender" />
+        <element name="customerCreatedAt" type="select" selector="#connector_data_mapping_customer_data_created_at" />
+        <element name="customerLastLoggedInDate" type="select" selector="#connector_data_mapping_customer_data_last_logged_date" />
+        <element name="customerGroup" type="select" selector="#connector_data_mapping_customer_data_customer_group" />
+        <element name="customerReviewCount" type="select" selector="#connector_data_mapping_customer_data_review_count" />
+        <element name="customerLastReviewDate" type="select" selector="#connector_data_mapping_customer_data_last_review_date" />
+        <element name="customerSubscriberStatus" type="select" selector="#connector_data_mapping_customer_data_subscriber_status" />
+
+        <element name="addressBillingLine1" type="select" selector="#connector_data_mapping_customer_data_billing_address_1" />
+        <element name="addressBillingLine2" type="select" selector="#connector_data_mapping_customer_data_billing_address_2" />
+        <element name="addressBillingCity" type="select" selector="#connector_data_mapping_customer_data_billing_city" />
+        <element name="addressBillingState" type="select" selector="#connector_data_mapping_customer_data_billing_state" />
+        <element name="addressBillingCountry" type="select" selector="#connector_data_mapping_customer_data_billing_country" />
+        <element name="addressBillingPostcode" type="select" selector="#connector_data_mapping_customer_data_billing_postcode" />
+        <element name="addressBillingTelephone" type="select" selector="#connector_data_mapping_customer_data_billing_telephone" />
+        <element name="addressBillingCompany" type="select" selector="#connector_data_mapping_customer_data_billing_company" />
+        <element name="addressDeliveryLine1" type="select" selector="#connector_data_mapping_customer_data_delivery_address_1" />
+        <element name="addressDeliveryLine2" type="select" selector="#connector_data_mapping_customer_data_delivery_address_2" />
+        <element name="addressDeliveryCity" type="select" selector="#connector_data_mapping_customer_data_delivery_city" />
+        <element name="addressDeliveryState" type="select" selector="#connector_data_mapping_customer_data_delivery_state" />
+        <element name="addressDeliveryCountry" type="select" selector="#connector_data_mapping_customer_data_delivery_country" />
+        <element name="addressDeliveryPostcode" type="select" selector="#connector_data_mapping_customer_data_delivery_postcode" />
+        <element name="addressDeliveryTelephone" type="select" selector="#connector_data_mapping_customer_data_delivery_telephone" />
+        <element name="addressDeliveryCompany" type="select" selector="#connector_data_mapping_customer_data_delivery_company" />
+
+        <element name="salesNumberOfOrders" type="select" selector="#connector_data_mapping_customer_data_number_of_orders" />
+        <element name="salesAverageOrderValue" type="select" selector="#connector_data_mapping_customer_data_average_order_value" />
+        <element name="salesTotalSpend" type="select" selector="#connector_data_mapping_customer_data_total_spend" />
+        <element name="salesLastOrderDate" type="select" selector="#connector_data_mapping_customer_data_last_order_date" />
+        <element name="salesLastIncrementId" type="select" selector="#connector_data_mapping_customer_data_last_increment_id" />
+        <element name="salesTotalRefund" type="select" selector="#connector_data_mapping_customer_data_total_refund" />
+        <element name="salesMostPurCategory" type="select" selector="#connector_data_mapping_customer_data_most_pur_category" />
+        <element name="salesMostPurBrand" type="select" selector="#connector_data_mapping_customer_data_most_pur_brand" />
+        <element name="salesMostFrequentDayOfPurchase" type="select" selector="#connector_data_mapping_customer_data_most_freq_pur_day" />
+        <element name="salesMostFrequentMonthOfPurchase" type="select" selector="#connector_data_mapping_customer_data_most_freq_pur_mon" />
+        <element name="salesFirstCategoryPur" type="select" selector="#connector_data_mapping_customer_data_first_category_pur" />
+        <element name="salesLastCategoryPur" type="select" selector="#connector_data_mapping_customer_data_last_category_pur" />
+        <element name="salesFirstBrandPur" type="select" selector="#connector_data_mapping_customer_data_first_brand_pur" />
+        <element name="salesLastBrandPur" type="select" selector="#connector_data_mapping_customer_data_last_brand_pur" />
+
+        <element name="systemWebsiteName" type="select" selector="#connector_data_mapping_customer_data_website_name" />
+        <element name="systemStoreName" type="select" selector="#connector_data_mapping_customer_data_store_name" />
+        <element name="systemLastOrderId" type="select" selector="#connector_data_mapping_customer_data_last_order_id" />
+        <element name="systemLastQuoteId" type="select" selector="#connector_data_mapping_customer_data_last_quote_id" />
+        <element name="systemAbandonedProductName" type="select" selector="#connector_data_mapping_customer_data_abandoned_prod_name" />
+
+        <element name="save" type="button" selector="#save" />
+    </section>
+</sections>

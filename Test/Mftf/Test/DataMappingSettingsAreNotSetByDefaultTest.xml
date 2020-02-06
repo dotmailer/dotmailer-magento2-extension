@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="DataMappingSettingsAreNotSetByDefaultTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Configure data mapping"/>
+            <title value="Confirm that data mapping settings are not set by default"/>
+            <description value="Data Mapping settings in the dotdigital > Data Mapping tab should be empty by default."/>
+            <severity value="MAJOR"/>
+            <group value="AM/106077-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotdigitalDataMappingPage.url}}" stepKey="amOnDotdigitalDataMappingPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerTitle}}" userInput="-- Please Select --" stepKey="seeCustomerTitleIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerId}}" userInput="-- Please Select --" stepKey="seeCustomerIdIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerFirstname}}" userInput="-- Please Select --" stepKey="seeCustomerFirstnameIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerLastname}}" userInput="-- Please Select --" stepKey="seeCustomerLastnameIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerDob}}" userInput="-- Please Select --" stepKey="seeCustomerDobIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerGender}}" userInput="-- Please Select --" stepKey="seeCustomerGenderIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerCreatedAt}}" userInput="-- Please Select --" stepKey="seeCustomerCreatedAtIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerLastLoggedInDate}}" userInput="-- Please Select --" stepKey="seeCustomerLastLoggedInDateIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerGroup}}" userInput="-- Please Select --" stepKey="seeCustomerGroupIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerReviewCount}}" userInput="-- Please Select --" stepKey="seeCustomerReviewCountIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerLastReviewDate}}" userInput="-- Please Select --" stepKey="seeCustomerLastReviewDateIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.customerSubscriberStatus}}" userInput="-- Please Select --" stepKey="seeCustomerSubscriberStatusIsNotSet"/>
+
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingLine1}}" userInput="-- Please Select --" stepKey="seeAddressBillingLine1IsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingLine2}}" userInput="-- Please Select --" stepKey="seeAddressBillingLine2IsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingCity}}" userInput="-- Please Select --" stepKey="seeAddressBillingCityIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingState}}" userInput="-- Please Select --" stepKey="seeAddressBillingStateIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingCountry}}" userInput="-- Please Select --" stepKey="seeAddressBillingCountryIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingPostcode}}" userInput="-- Please Select --" stepKey="seeAddressBillingPostcodeIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingTelephone}}" userInput="-- Please Select --" stepKey="seeAddressBillingTelephoneIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressBillingCompany}}" userInput="-- Please Select --" stepKey="seeAddressBillingCompanyIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryLine1}}" userInput="-- Please Select --" stepKey="seeAddressDeliveryLine1IsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryLine2}}" userInput="-- Please Select --" stepKey="seeAddressDeliveryLine2IsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCity}}" userInput="-- Please Select --" stepKey="seeAddressDeliveryCityIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryState}}" userInput="-- Please Select --" stepKey="seeAddressDeliveryStateIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCountry}}" userInput="-- Please Select --" stepKey="seeAddressDeliveryCountryIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryPostcode}}" userInput="-- Please Select --" stepKey="seeAddressDeliveryPostcodeIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryTelephone}}" userInput="-- Please Select --" stepKey="seeAddressDeliveryTelephoneIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCompany}}" userInput="-- Please Select --" stepKey="seeAddressDeliveryCompanyIsNotSet"/>
+
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesNumberOfOrders}}" userInput="-- Please Select --" stepKey="seeSalesNumberOfOrdersIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesAverageOrderValue}}" userInput="-- Please Select --" stepKey="seeSalesAverageOrderValueIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesTotalSpend}}" userInput="-- Please Select --" stepKey="seeSalesTotalSpendIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastOrderDate}}" userInput="-- Please Select --" stepKey="seeSalesLastOrderDateIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastIncrementId}}" userInput="-- Please Select --" stepKey="seeSalesLastIncrementIdIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesTotalRefund}}" userInput="-- Please Select --" stepKey="seeSalesTotalRefundIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostPurCategory}}" userInput="-- Please Select --" stepKey="seeSalesMostPurCategoryIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostPurBrand}}" userInput="-- Please Select --" stepKey="seeSalesMostPurBrandIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostFrequentDayOfPurchase}}" userInput="-- Please Select --" stepKey="seeSalesMostFrequentDayOfPurchaseIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostFrequentMonthOfPurchase}}" userInput="-- Please Select --" stepKey="seeSalesMostFrequentMonthOfPurchaseIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesFirstCategoryPur}}" userInput="-- Please Select --" stepKey="seeSalesFirstCategoryPurIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastCategoryPur}}" userInput="-- Please Select --" stepKey="seeSalesLastCategoryPurIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesFirstBrandPur}}" userInput="-- Please Select --" stepKey="seeSalesFirstBrandPurIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastBrandPur}}" userInput="-- Please Select --" stepKey="seeSalesLastBrandPurIsNotSet"/>
+    </test>
+
+</tests>

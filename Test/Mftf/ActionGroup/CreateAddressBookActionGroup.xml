@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="CreateAddressBook">
+        <arguments>
+            <argument name="addressBookName" defaultValue="Magento" type="string"/>
+        </arguments>
+        <fillField selector="{{AdminDotdigitalSyncSettingsSection.addressBookName}}" userInput="{{addressBookName}}" stepKey="setAddressBookName"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addressBookVisibility}}" userInput="Private" stepKey="setAddressBookVisibility"/>
+        <click selector="{{AdminDotdigitalSyncSettingsSection.createNewAddressBook}}" stepKey="clickCreateNewAddressBookButton" />
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <see userInput="Address book successfully created." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+    </actionGroup>
+</actionGroups>

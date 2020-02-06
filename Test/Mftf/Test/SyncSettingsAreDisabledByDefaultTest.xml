@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="DataMappingSettingsAreNotSetByDefaultTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Configure sync settings"/>
+            <title value="Confirm that sync settings are disabled by default"/>
+            <description value="Sync settings in the dotdigital > Sync Settings tab should be disabled by default."/>
+            <severity value="MAJOR"/>
+            <group value="AM/106077-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncSettingsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.customerEnabled}}" userInput="No" stepKey="seeCustomerEnabledIsNo"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.guestEnabled}}" userInput="No" stepKey="seeGuestEnabledIsNo"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.subscriberEnabled}}" userInput="No" stepKey="seeSubscriberEnabledIsNo"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.orderEnabled}}" userInput="No" stepKey="seeOrderEnabledIsNo"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.wishlistEnabled}}" userInput="No" stepKey="seeWishlistEnabledIsNo"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.reviewEnabled}}" userInput="No" stepKey="seeReviewEnabledIsNo"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.catalogEnabled}}" userInput="No" stepKey="seeCatalogEnabledIsNo"/>
+    </test>
+</tests>

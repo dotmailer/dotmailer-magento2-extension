@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AddressBooksCreateAndMapTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Configure address books"/>
+            <title value="Create and map address books"/>
+            <description value="Use the Create Address Books panel to create address books in Engagement Cloud, and then map them to Magento user types."/>
+            <severity value="MAJOR"/>
+            <group value="AM/106077-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+        </before>
+
+        <after>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncSettingsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <conditionalClick stepKey="expandCreateAddressBookTab" selector="{{AdminDotdigitalSyncSettingsSection.createAddressBookFieldsetToggle}}" dependentSelector="{{AdminDotdigitalSyncSettingsSection.createAddressBookFieldset}}" visible="false"/>
+
+        <comment userInput="Creating address books" stepKey="creatingAddressBooksComment"/>
+        <actionGroup ref="CreateAddressBook" stepKey="createCustomersAddressBook">
+            <argument name="addressBookName" value="Magento_Customers"/>
+        </actionGroup>
+        <actionGroup ref="CreateAddressBook" stepKey="createSubscribersAddressBook">
+            <argument name="addressBookName" value="Magento_Subscribers"/>
+        </actionGroup>
+        <actionGroup ref="CreateAddressBook" stepKey="createGuestsAddressBook">
+            <argument name="addressBookName" value="Magento_Guests"/>
+        </actionGroup>
+
+        <comment userInput="Mapping address books" stepKey="mappingAddressBooksComment"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addCustomersTo}}" userInput="Magento_Customers" stepKey="setCustomersAddressBook"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addSubscribersTo}}" userInput="Magento_Subscribers" stepKey="setSubscribersAddressBook"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addGuestsTo}}" userInput="Magento_Guests" stepKey="setGuestsAddressBook"/>
+
+        <click selector="{{AdminDotdigitalSyncSettingsSection.save}}" stepKey="saveConfig" />
+        <waitForPageLoad stepKey="waitForPageLoad1"/>
+    </test>
+</tests>

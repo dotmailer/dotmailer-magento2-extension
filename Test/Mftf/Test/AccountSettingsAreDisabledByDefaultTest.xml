@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AccountSettingsAreDisabledByDefaultTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Configure account settings"/>
+            <title value="Confirm that API settings are disabled by default"/>
+            <description value="Account settings in the dotdigital > Settings tab should be disabled by default."/>
+            <severity value="MAJOR"/>
+            <group value="AM/106077-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="amOnDotdigitalAccountsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Confirm the Enabled select box is set to No -->
+        <seeOptionIsSelected selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="No" stepKey="assertAccountEnabledEqualsNo"/>
+    </test>
+
+</tests>
