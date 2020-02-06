@@ -177,8 +177,10 @@ class ContactData
                     break;
 
                 default:
-                    $function = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
-                    $value = $this->model->$function();
+                    $method = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
+                    $value = method_exists($this, $method)
+                        ? $this->$method()
+                        : $this->model->$method();
             }
 
             $this->contactData[$key] = $value;

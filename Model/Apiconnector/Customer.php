@@ -571,14 +571,4 @@ class Customer extends ContactData
     {
         return $this->model->getShippingCompany();
     }
-
-    /**
-     * @param string $method
-     * @param array $args
-     * @return mixed
-     */
-    public function __call($method, $args)
-    {
-        return $this->model->$method($args);
-    }
 }
