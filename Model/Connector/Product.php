@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
 
 /**
  * Transactional data for catalog products to sync.
@@ -53,6 +54,11 @@ class Product
      * @var float
      */
     public $specialPrice = 0;
+
+    /**
+     * @var array
+     */
+    public $tierPrices = [];
 
     /**
      * @var array
@@ -130,6 +136,11 @@ class Product
     private $parentFinder;
 
     /**
+     * @var TierPriceFinderInterface
+     */
+    private $tierPriceFinder;
+
+    /**
      * Product constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -140,6 +151,7 @@ class Product
      * @param \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
      * @param AttributeFactory $attributeHandler
      * @param ParentFinder $parentFinder
+     * @param TierPriceFinderInterface $tierPriceFinder
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -149,7 +161,8 @@ class Product
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface,
         AttributeFactory $attributeHandler,
-        ParentFinder $parentFinder
+        ParentFinder $parentFinder,
+        TierPriceFinderInterface $tierPriceFinder
     ) {
         $this->visibilityFactory = $visibilityFactory;
         $this->statusFactory = $statusFactory;
@@ -159,15 +172,16 @@ class Product
         $this->stockStateInterface = $stockStateInterface;
         $this->attributeHandler = $attributeHandler;
         $this->parentFinder = $parentFinder;
+        $this->tierPriceFinder = $tierPriceFinder;
     }
 
     /**
-     * Set the product data.
-     *
-     * @param \Magento\Catalog\Model\Product $product
-     * @param string $storeId
-     *
+     * Set the product data
+     * @param $product
+     * @param $storeId
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function setProduct($product, $storeId)
     {
@@ -230,7 +244,8 @@ class Product
             $this->helper,
             $this->storeManager,
             $this->attributeHandler,
-            $this->parentFinder
+            $this->parentFinder,
+            $this->tierPriceFinder
         );
 
         return $this;
@@ -304,7 +319,8 @@ class Product
                 'urlFinder',
                 'stockStateInterface',
                 'attributeHandler',
-                'parentFinder'
+                'parentFinder',
+                'tierPriceFinder'
             ])
         );
     }
@@ -347,6 +363,7 @@ class Product
             $this->specialPrice = $product->getSpecialPrice();
         }
         $this->formatPriceValues();
+        $this->tierPrices = $this->tierPriceFinder->getTierPrices($product);
     }
 
     /**
@@ -354,7 +371,6 @@ class Product
      *
      * @return null
      */
-
     private function formatPriceValues()
     {
         $this->price = (float)number_format(
