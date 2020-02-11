@@ -2,10 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use Dotdigitalgroup\Email\Model\DateIntervalFactory;
+use Dotdigitalgroup\Email\Logger\Logger;
 
 /**
  * Manages data synced as contact.
@@ -73,11 +73,6 @@ class ContactData
     private $storeManager;
 
     /**
-     * @var \Magento\Store\Model\Store
-     */
-    private $store;
-
-    /**
      * @var array
      */
     private $brandValue = [];
@@ -103,6 +98,11 @@ class ContactData
     private $dateIntervalFactory;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * ContactData constructor.
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
@@ -115,6 +115,7 @@ class ContactData
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
      * @param TimezoneInterfaceFactory $localeDateFactory
      * @param DateIntervalFactory $dateIntervalFactory
+     * @param Logger $logger
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -127,7 +128,8 @@ class ContactData
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         TimezoneInterfaceFactory $localeDateFactory,
-        DateIntervalFactory $dateIntervalFactory
+        DateIntervalFactory $dateIntervalFactory,
+        Logger $logger
     ) {
         $this->storeManager = $storeManager;
         $this->orderFactory = $orderFactory;
@@ -140,6 +142,7 @@ class ContactData
         $this->eavConfigFactory = $eavConfigFactory;
         $this->localeDateFactory = $localeDateFactory;
         $this->dateIntervalFactory = $dateIntervalFactory;
+        $this->logger = $logger;
     }
 
     public function init(AbstractModel $model, array $columns)
@@ -177,8 +180,10 @@ class ContactData
                     break;
 
                 default:
-                    $function = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
-                    $value = $this->model->$function();
+                    $method = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
+                    $value = method_exists($this, $method)
+                        ? $this->$method()
+                        : $this->model->$method();
             }
 
             $this->contactData[$key] = $value;
@@ -223,10 +228,8 @@ class ContactData
      */
     public function getWebsiteName()
     {
-        $store = $this->getStore($this->model->getStoreId());
-        $website = $store->getWebsite(
-            $store->getWebsiteId()
-        );
+        $website = $this->storeManager->getWebsite($this->model->getWebsiteId());
+
         if ($website) {
             return $website->getName();
         }
@@ -239,10 +242,14 @@ class ContactData
      */
     public function getStoreName()
     {
-        $store = $this->getStore($this->model->getStoreId());
-
-        if ($store) {
+        try {
+            $store = $this->storeManager->getStore($this->model->getStoreId());
             return $store->getName();
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+            $this->logger->debug(
+                'Requested store is not found. Store id: ' . $this->model->getStoreId(),
+                [(string) $e]
+            );
         }
 
         return '';
@@ -260,8 +267,8 @@ class ContactData
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
                 $this->model->getWebsiteId()
             );
-            $storeId = $this->model->getStoreId();
-            $brandValue = $this->getAttributeValue($id, $attributeCode, $storeId);
+
+            $brandValue = $this->getAttributeValue($id, $attributeCode, $this->model->getStoreId());
 
             if (is_array($brandValue)) {
                 $this->brandValue[$id] = implode(',', $brandValue);
@@ -402,10 +409,9 @@ class ContactData
     public function getMostPurBrand()
     {
         $productId = $this->model->getProductIdForMostSoldProduct();
-        $store = $this->getStore($this->model->getStoreId());
         $attributeCode = $this->configHelper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
-            $store->getWebsiteId()
+            $this->model->getWebsiteId()
         );
 
         //if the id and attribute found
@@ -620,19 +626,5 @@ class ContactData
             )
             ->add($offset)
             ->format(\Zend_Date::ISO_8601);
-    }
-
-    /**
-     * @param $storeId
-     *
-     * @return \Magento\Store\Api\Data\StoreInterface|\Magento\Store\Model\Store
-     */
-    private function getStore($storeId)
-    {
-        if (! isset($this->store)) {
-            $this->store = $this->storeManager->getStore($storeId);
-        }
-
-        return $this->store;
     }
 }

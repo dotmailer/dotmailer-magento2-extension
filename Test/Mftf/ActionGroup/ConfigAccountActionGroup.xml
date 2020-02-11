@@ -2,24 +2,9 @@
 
 <actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
-    <actionGroup name="SetDotmailerAccountData">
-        <arguments>
-            <argument name="ecApiUser" defaultValue="{{_CREDS.ec_api_user}}"/>
-            <argument name="ecApiPassword" defaultValue="{{_CREDS.ec_api_password}}"/>
-        </arguments>
-        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPage"/>
-        <comment userInput="Setting API credentials in Engagement Cloud account settings" stepKey="apiCredentialsEnteredComment"/>
-        <waitForPageLoad stepKey="waitForPageLoad"/>
-        <conditionalClick stepKey="expandAccountsTab" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
-        <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="Yes" stepKey="setEnabled"/>
-        <fillField selector="{{AdminDotmailerAccountsSection.accountsUsernameField}}" userInput="{{ecApiUser}}" stepKey="setApiUserName"/>
-        <fillField selector="{{AdminDotmailerAccountsSection.accountsPasswordField}}" userInput="{{ecApiPassword}}" stepKey="setApiPassword"/>
-        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig" />
-        <waitForPageLoad stepKey="waitForPageLoad1"/>
-    </actionGroup>
-
     <actionGroup name="ResetDotmailerAccountData">
         <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPageReset"/>
+        <comment userInput="Resetting API credentials in dotdigital account settings" stepKey="apiCredentialsEnteredComment"/>
         <waitForPageLoad stepKey="waitForPageLoadReset"/>
         <conditionalClick stepKey="expandAccountsTabReset" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
         <clearField selector="{{AdminDotmailerAccountsSection.accountsUsernameField}}" stepKey="setApiUserNameReset"/>

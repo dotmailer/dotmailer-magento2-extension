@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {

@@ -38,13 +38,13 @@ class StoreCatalogSyncer
 
     /**
      * Sync by store
-     *
-     * @param array $productsToProcess
-     * @param string $storeId
-     * @param string $websiteId
-     * @param string $importType
-     *
+     * @param $productsToProcess
+     * @param $storeId
+     * @param $websiteId
+     * @param $importType
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function syncByStore($productsToProcess, $storeId, $websiteId, $importType)
     {

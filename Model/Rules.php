@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
-use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Quote\Model\ResourceModel\Quote\Collection as QuoteCollection;
 
@@ -84,7 +84,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     private $config;
 
     /**
-     * @var Json
+     * @var SerializerInterface
      */
     private $serializer;
 
@@ -95,7 +95,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
      * @param Adminhtml\Source\Rules\Type $rulesType
      * @param \Magento\Eav\Model\Config $config
-     * @param Json $serializer
+     * @param SerializerInterface $serializer
      * @param ResourceModel\Rules $rulesResource
      * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
@@ -107,7 +107,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $rulesType,
         \Magento\Eav\Model\Config $config,
-        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
+        SerializerInterface $serializer,
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
@@ -241,7 +241,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         if (empty($emailRules)) {
             return $collection;
         }
-        $condition = $this->serializer->unserialize($emailRules->getConditions());
+        try {
+            $condition = $this->serializer->unserialize($emailRules->getConditions());
+        } catch (\InvalidArgumentException $e) {
+            return $collection;
+        }
+
         if (empty($condition)) {
             return $collection;
         }

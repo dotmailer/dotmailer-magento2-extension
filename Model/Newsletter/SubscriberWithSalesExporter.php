@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Dotdigitalgroup\Email\Model\Newsletter\CsvGeneratorFactory;
 use Magento\Framework\Filesystem\DriverInterface;
 

@@ -6,33 +6,35 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use \Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\Serialize\SerializerInterface;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Dotdigitalgroup\Email\Setup\Schema\Shared;
 
 /**
  * @codeCoverageIgnore
  */
 class UpgradeSchema implements UpgradeSchemaInterface
 {
-
     /**
-     * @var \Dotdigitalgroup\Email\Model\Config\Json
+     * @var SerializerInterface
      */
     public $json;
 
     /**
-     * @var Schema\Shared
+     * @var Shared
      */
     private $shared;
 
     /**
      * UpgradeSchema constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Config\Json $json
-     * @param Schema\Shared $shared
+     * @param SerializerInterface $json
+     * @param Shared $shared
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Config\Json $json,
-        Schema\Shared $shared
+        SerializerInterface $json,
+        Shared $shared
     ) {
         $this->shared = $shared;
         $this->json = $json;
@@ -46,12 +48,13 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $setup->startSetup();
         $connection = $setup->getConnection();
 
-        $this->upgradeOneOneZeoToTwoTwoOne($setup, $context, $connection);
+        $this->upgradeOneOneZeroToTwoTwoOne($setup, $context, $connection);
         $this->upgradeTwoThreeSixToTwoFiveFour($setup, $context);
         $this->upgradeTwoFiveFourToThreeZeroThree($setup, $context);
         $this->upgradeThreeTwoTwo($setup, $context);
         $this->upgradeFourZeroOne($setup, $context);
         $this->upgradeFourThreeZero($setup, $context, $connection);
+        $this->upgradeFourThreeFourPartTwo($setup, $context, $connection);
 
         $setup->endSetup();
     }
@@ -118,126 +121,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $setup->getIdxName($campaignTable, ['send_status']),
             ['send_status']
         );
-    }
-
-    /**
-     * @param SchemaSetupInterface $setup
-     * @param AdapterInterface $connection
-     *
-     * @return null
-     */
-    private function convertDataForConfig(SchemaSetupInterface $setup, $connection)
-    {
-        $configTable = $setup->getTable('core_config_data');
-        //customer and order custom attributes from config
-        $select = $connection->select()->from(
-            $configTable
-        )->where(
-            'path IN (?)',
-            [
-                'connector_automation/order_status_automation/program',
-                'connector_data_mapping/customer_data/custom_attributes'
-            ]
-        );
-        $rows = $setup->getConnection()->fetchAssoc($select);
-
-        $serializedRows = array_filter($rows, function ($row) {
-            return $this->isSerialized($row['value']);
-        });
-
-        foreach ($serializedRows as $id => $serializedRow) {
-            $convertedValue = $this->json->serialize($this->unserialize($serializedRow['value']));
-            $bind = ['value' => $convertedValue];
-            $where = [$connection->quoteIdentifier('config_id') . '=?' => $id];
-            $connection->update($configTable, $bind, $where);
-        }
-    }
-
-    /**
-     * @param SchemaSetupInterface $setup
-     * @param AdapterInterface $connection
-     *
-     * @return null
-     */
-    private function convertDataForRules(SchemaSetupInterface $setup, $connection)
-    {
-        $rulesTable = $setup->getTable(Schema::EMAIL_RULES_TABLE);
-        //rules data
-        $select = $connection->select()->from($rulesTable);
-        $rows = $setup->getConnection()->fetchAssoc($select);
-
-        $serializedRows = array_filter($rows, function ($row) {
-            return $this->isSerialized($row['conditions']);
-        });
-
-        foreach ($serializedRows as $id => $serializedRow) {
-            $convertedValue = $this->json->serialize($this->unserialize($serializedRow['conditions']));
-            $bind = ['conditions' => $convertedValue];
-            $where = [$connection->quoteIdentifier('id') . '=?' => $id];
-            $connection->update($rulesTable, $bind, $where);
-        }
-    }
-
-    /**
-     * @param SchemaSetupInterface $setup
-     * @param AdapterInterface $connection
-     *
-     * @return null
-     */
-    private function convertDataForImporter(SchemaSetupInterface $setup, $connection)
-    {
-        $importerTable = $setup->getTable(Schema::EMAIL_IMPORTER_TABLE);
-        //imports that are not imported and has TD data
-        $select = $connection->select()
-            ->from($importerTable)
-            ->where('import_status =?', 0)
-            ->where('import_type IN (?)', ['Catalog_Default', 'Orders' ])
-        ;
-        $rows = $setup->getConnection()->fetchAssoc($select);
-
-        $serializedRows = array_filter($rows, function ($row) {
-            return $this->isSerialized($row['import_data']);
-        });
-
-        foreach ($serializedRows as $id => $serializedRow) {
-            $convertedValue = $this->json->serialize($this->unserialize($serializedRow['import_data']));
-            $bind = ['import_data' => $convertedValue];
-            $where = [$connection->quoteIdentifier('id') . '=?' => $id];
-            $connection->update($importerTable, $bind, $where);
-        }
-    }
-
-    /**
-     * Check if value is a serialized string
-     *
-     * @param string $value
-     * @return boolean
-     */
-    private function isSerialized($value)
-    {
-        return (boolean) preg_match('/^((s|i|d|b|a|O|C):|N;)/', $value);
-    }
-
-    /**
-     * @param string $string
-     * @return mixed
-     */
-    private function unserialize($string)
-    {
-        if (false === $string || null === $string || '' === $string) {
-            throw new \InvalidArgumentException('Unable to unserialize value.');
-        }
-        set_error_handler(
-            function () {
-                restore_error_handler();
-                throw new \InvalidArgumentException('Unable to unserialize value, string is corrupted.');
-            },
-            E_NOTICE
-        );
-        $result = unserialize($string, ['allowed_classes' => false]);
-        restore_error_handler();
-
-        return $result;
     }
 
     /**
@@ -316,7 +199,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
      * @param SchemaSetupInterface $setup
      * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
      */
-    private function convertDataAndAddIndexes(SchemaSetupInterface $setup, $connection)
+    private function changeColumnAndAddIndexes(SchemaSetupInterface $setup, $connection)
     {
         //modify the condition column name for the email_rules table - reserved name for mysql
         $rulesTable = $setup->getTable(Schema::EMAIL_RULES_TABLE);
@@ -333,18 +216,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
         }
-        /**
-         * Core config data.
-         */
-        $this->convertDataForConfig($setup, $connection);
-        /**
-         * Importer data.
-         */
-        $this->convertDataForImporter($setup, $connection);
-        /**
-         * Rules conditions.
-         */
-        $this->convertDataForRules($setup, $connection);
         /**
          * Index foreign key for email catalog.
          */
@@ -411,7 +282,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
      * @param ModuleContextInterface $context
      * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
      */
-    private function upgradeOneOneZeoToTwoTwoOne(
+    private function upgradeOneOneZeroToTwoTwoOne(
         SchemaSetupInterface $setup,
         ModuleContextInterface $context,
         $connection
@@ -426,10 +297,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '2.1.0', '<')) {
             $this->addColumnToCouponTable($setup, $connection);
         }
-
-        //replace serialize with json_encode
         if (version_compare($context->getVersion(), '2.2.1', '<')) {
-            $this->convertDataAndAddIndexes($setup, $connection);
+            $this->changeColumnAndAddIndexes($setup, $connection);
         }
     }
 
@@ -642,6 +511,23 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $tableName = $setup->getTable(Schema::EMAIL_COUPON_TABLE);
             if (!$connection->isTableExists($tableName)) {
                 $this->shared->createCouponTable($setup, $tableName);
+            }
+        }
+    }
+
+    private function upgradeFourThreeFourPartTwo(
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context,
+        AdapterInterface $connection
+    ) {
+        if (version_compare($context->getVersion(), '4.3.4', '<')) {
+            $couponTable = $setup->getTable(Schema::EMAIL_COUPON_TABLE);
+            if (!$connection->tableColumnExists($couponTable, 'expires_at')) {
+                $setup->getConnection()->addColumn($couponTable, 'expires_at', [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                    'nullable' => true,
+                    'comment' => 'Coupon expiration date',
+                ]);
             }
         }
     }

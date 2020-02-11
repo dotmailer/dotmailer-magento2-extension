@@ -6,6 +6,8 @@ use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\DB\Ddl\Table;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Dotdigitalgroup\Email\Setup\Schema\Shared;
 
 /**
  * @codeCoverageIgnore
@@ -13,17 +15,17 @@ use Magento\Framework\DB\Ddl\Table;
 class InstallSchema implements InstallSchemaInterface
 {
     /**
-     * @var Schema\Shared
+     * @var Shared
      */
     private $shared;
 
     /**
      * InstallSchema constructor.
      *
-     * @param Schema\Shared $shared
+     * @param Shared $shared
      */
     public function __construct(
-        Schema\Shared $shared
+        Shared $shared
     ) {
         $this->shared = $shared;
     }

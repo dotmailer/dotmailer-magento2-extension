@@ -3,12 +3,12 @@
 namespace Dotdigitalgroup\Email\Model\Config\Backend;
 
 use Magento\Framework\App\ObjectManager;
-use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\Serialize\SerializerInterface;
 
 class Serialized extends \Magento\Framework\App\Config\Value
 {
     /**
-     * @var Json
+     * @var SerializerInterface
      */
     private $serializer;
 
@@ -22,7 +22,7 @@ class Serialized extends \Magento\Framework\App\Config\Value
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
-     * @param Json|null $serializer
+     * @param SerializerInterface|null $serializer
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -32,9 +32,9 @@ class Serialized extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
-        Json $serializer = null
+        SerializerInterface $serializer = null
     ) {
-        $this->serializer = $serializer ?: ObjectManager::getInstance()->get(Json::class);
+        $this->serializer = $serializer ?: ObjectManager::getInstance()->get(SerializerInterface::class);
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
 

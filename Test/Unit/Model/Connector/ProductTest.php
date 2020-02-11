@@ -2,12 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 
+use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Connector\Product;
 use Dotdigitalgroup\Email\Model\Product\Attribute;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Dotdigitalgroup\Email\Model\Connector\TierPriceFinder;
 use Magento\Bundle\Model\Product\Type;
 use Magento\Bundle\Model\ResourceModel\Option\Collection as OptionCollection;
 use Magento\Bundle\Pricing\Price\BundleRegularPrice;
@@ -155,6 +157,11 @@ class ProductTest extends TestCase
      */
     private $parentMock;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $tierPriceFinderMock;
+
     protected function setUp()
     {
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
@@ -178,10 +185,10 @@ class ProductTest extends TestCase
         $this->attributeFactoryMock = $this->createMock(AttributeFactory::class);
         $this->parentFinderMock = $this->createMock(ParentFinder::class);
         $this->parentMock = $this->createMock(\Magento\Catalog\Model\Product::class);
+        $this->tierPriceFinderMock = $this->createMock(TierPriceFinderInterface::class);
         $this->visibility = new Visibility(
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
-
         $this->product = new Product(
             $this->storeManagerMock,
             $this->helperMock,
@@ -190,7 +197,8 @@ class ProductTest extends TestCase
             $this->urlFinderMock,
             $this->stockStateMock,
             $this->attributeFactoryMock,
-            $this->parentFinderMock
+            $this->parentFinderMock,
+            $this->tierPriceFinderMock
         );
 
         $status = 1;

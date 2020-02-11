@@ -3,10 +3,10 @@
 namespace Dotdigitalgroup\Email\Model\SalesRule;
 
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttribute;
+use Dotdigitalgroup\Email\Model\DateTimeFactory;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\SalesRule\Model\Coupon\CodegeneratorInterface;
 use Magento\SalesRule\Model\Rule as RuleModel;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeFactory;
 use Magento\SalesRule\Api\Data\CouponExtensionFactory;
 use Magento\SalesRule\Api\CouponRepositoryInterface;
@@ -24,9 +24,9 @@ class DotdigitalCouponGenerator
     private $dateTime;
 
     /**
-     * @var TimezoneInterface
+     * @var DateTimeFactory
      */
-    private $localeDate;
+    private $dateTimeFactory;
 
     /**
      * @var CouponExtensionFactory
@@ -46,7 +46,7 @@ class DotdigitalCouponGenerator
     /**
      * @param CodegeneratorInterface $couponCodeGenerator
      * @param DateTime $dateTime
-     * @param TimezoneInterface $timezoneInterface
+     * @param DateTimeFactory $dateTimeFactory
      * @param CouponAttributeFactory $couponAttributeFactory
      * @param CouponExtensionFactory $couponExtensionFactory
      * @param CouponRepositoryInterface $couponRepository
@@ -54,14 +54,14 @@ class DotdigitalCouponGenerator
     public function __construct(
         CodegeneratorInterface $couponCodeGenerator,
         DateTime $dateTime,
-        TimezoneInterface $timezoneInterface,
+        DateTimeFactory $dateTimeFactory,
         CouponAttributeFactory $couponAttributeFactory,
         CouponExtensionFactory $couponExtensionFactory,
         CouponRepositoryInterface $couponRepository
     ) {
         $this->couponCodeGenerator = $couponCodeGenerator;
         $this->dateTime = $dateTime;
-        $this->localeDate = $timezoneInterface;
+        $this->dateTimeFactory = $dateTimeFactory;
         $this->couponAttributeFactory = $couponAttributeFactory;
         $this->couponExtensionFactory = $couponExtensionFactory;
         $this->couponRepository = $couponRepository;
@@ -75,6 +75,7 @@ class DotdigitalCouponGenerator
      * @param string|null $codePrefix
      * @param string|null $codeSuffix
      * @param string|null $emailAddress
+     * @param int|null $expireDays
      *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -84,7 +85,8 @@ class DotdigitalCouponGenerator
         string $codeFormat = null,
         string $codePrefix = null,
         string $codeSuffix = null,
-        string $emailAddress = null
+        string $emailAddress = null,
+        int $expireDays = null
     ) {
         // set format/prefix/suffix to code generator
         $this->couponCodeGenerator->setData([
@@ -103,15 +105,25 @@ class DotdigitalCouponGenerator
             ->setCreatedAt($this->dateTime->formatDate(true))
             ->setGeneratedByDotmailer(1);
 
+        /** @var CouponAttribute $dotCouponAttribute */
+        $dotCouponAttribute = $this->couponAttributeFactory->create()
+            ->setCouponId($coupon->getId());
+        $couponExtension = $this->couponExtensionFactory->create();
+        $extensionAttributesUpdated = false;
+
         if ($emailAddress) {
-            /** @var CouponAttribute $dotCouponAttribute */
-            $dotCouponAttribute = $this->couponAttributeFactory->create()
-                ->setCouponId($coupon->getId())
-                ->setEmail($emailAddress);
+            $dotCouponAttribute->setEmail($emailAddress);
+            $couponExtension->setDdgExtensionAttributes($dotCouponAttribute);
+            $extensionAttributesUpdated = true;
+        }
+        if ($expireDays && $expireDays > 0) {
+            $expiresAt = $this->dateTimeFactory->create()->getUtcDate();
+            $expiresAt->modify(sprintf('+%s day', $expireDays));
+            $dotCouponAttribute->setExpiresAt($expiresAt->format('Y-m-d H:i:s'));
+            $extensionAttributesUpdated = true;
+        }
 
-            $couponExtension = $this->couponExtensionFactory->create()
-                ->setGeneratedForEmail($dotCouponAttribute);
-
+        if ($extensionAttributesUpdated) {
             $coupon->setExtensionAttributes($couponExtension);
         }
 

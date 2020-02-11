@@ -24,7 +24,7 @@ abstract class AbstractItemSyncer extends DataObject
     protected $fileHelper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Config\Json
+     * @var \Magento\Framework\Serialize\SerializerInterface
      */
     protected $serializer;
 
@@ -47,7 +47,7 @@ abstract class AbstractItemSyncer extends DataObject
      * AbstractItemSyncer constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param \Dotdigitalgroup\Email\Model\Sync\Importer\Type\ItemPostProcessorInterfaceFactory $postProcessor
      * @param array $data
@@ -55,7 +55,7 @@ abstract class AbstractItemSyncer extends DataObject
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         array $data = []
     ) {

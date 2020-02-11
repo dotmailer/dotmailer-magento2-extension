@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -584,6 +584,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $contactCollection = $this->contactCollectionFactory->create()
             ->addFieldToSelect([
                 'email',
+                'website_id',
                 'store_id',
                 'subscriber_status'
             ]);

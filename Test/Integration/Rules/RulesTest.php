@@ -6,7 +6,7 @@ if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory'))
     require __DIR__ . '/../_files/product_extension_interface_hacktory.php';
 }
 
-use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\Serialize\SerializerInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Rules as RulesResource;
 use Dotdigitalgroup\Email\Model\Rules;
 use Magento\Catalog\Model\Product;
@@ -234,7 +234,7 @@ class RulesTest extends \PHPUnit\Framework\TestCase
      */
     private function getConditionsFromRule(Rules $rule)
     {
-        $serializer = ObjectManager::getInstance()->create(Json::class);
+        $serializer = ObjectManager::getInstance()->create(SerializerInterface::class);
         $conditions = $rule->getData('conditions') ? $rule->getData('conditions') : [];
         if (is_string($conditions)) {
             $conditions = $serializer->unserialize($conditions);

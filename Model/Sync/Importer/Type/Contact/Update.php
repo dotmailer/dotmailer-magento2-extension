@@ -14,6 +14,9 @@ use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactor
 class Update extends AbstractItemSyncer
 {
     const ERROR_CONTACT_ALREADY_SUBSCRIBED = 'Contact is already subscribed';
+    const ERROR_CONTACT_CHALLENGED = 'Contact must confirm resubscription via automated resubscribe email';
+    const ERROR_CONTACT_CANNOT_BE_UNSUPPRESSED = 'Contact cannot be unsuppressed';
+    const ERROR_FEATURE_NOT_AVAILABLE = 'This feature is not available in the version of the API you are using';
 
     /**
      * @var Contact
@@ -42,7 +45,7 @@ class Update extends AbstractItemSyncer
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param Contact $contactResource
      * @param Customer $apiConnectorCustomer
@@ -52,7 +55,7 @@ class Update extends AbstractItemSyncer
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         Contact $contactResource,
         Customer $apiConnectorCustomer,
@@ -112,10 +115,7 @@ class Update extends AbstractItemSyncer
 
             case Importer::MODE_SUBSCRIBER_RESUBSCRIBED:
                 $result = $this->syncItemSubscriberResubscribedMode($importData, $websiteId);
-                if (($result->status ?? null) == 'Subscribed') {
-                    // the contact is already subscribed in EC and cannot be resubscribed
-                    $apiMessage = self::ERROR_CONTACT_ALREADY_SUBSCRIBED;
-                }
+                $apiMessage = $this->handleResubscribeResponseStatus($result);
                 break;
 
             case Importer::MODE_SUBSCRIBER_UPDATE:
@@ -223,5 +223,29 @@ class Update extends AbstractItemSyncer
             $this->suppressedContactIds[] = $id;
         }
         return $result;
+    }
+
+    /**
+     * @param $response
+     * @return string|null
+     */
+    private function handleResubscribeResponseStatus($response)
+    {
+        if (!$response->status) {
+            return null;
+        }
+
+        switch ($response->status) {
+            case 'Subscribed':
+                return self::ERROR_CONTACT_ALREADY_SUBSCRIBED;
+            case 'ContactChallenged':
+                return self::ERROR_CONTACT_CHALLENGED;
+            case 'ContactCannotBeUnsuppressed':
+                return self::ERROR_CONTACT_CANNOT_BE_UNSUPPRESSED;
+            case 'NotAvailableInThisVersion':
+                return self::ERROR_FEATURE_NOT_AVAILABLE;
+            default:
+                return null;
+        }
     }
 }

@@ -70,7 +70,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             $enableFields = false;
             $commentField['after_element_html'] = <<<EOT
 <small>
-You have not set a passcode which will be sent with the coupon code request. 
+You have not set a passcode which will be sent with the coupon code request.
 <a href="{$this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_dynamic_content'])}">Set one here</a>.
 </small>
 EOT;
@@ -79,8 +79,8 @@ EOT;
         if (!($this->helper->isEnabled())) {
             $commentField['after_element_html'] = <<<EOT
 <small id="ddg-notice_coupon-builder-disabled">
-An active Engagement Cloud account is required to use this feature. 
-Please enable your account 
+An active Engagement Cloud account is required to use this feature.
+Please enable your account
 <a href="{$this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_api_credentials'])}">here</a>.
 </small>
 EOT;
@@ -122,6 +122,14 @@ EOT;
             'label' => __('Code Suffix'),
             'title' => __('Code Suffix'),
             'value' => $this->couponHelper->getDefaultSuffix(),
+            'onkeyup' => 'window.updateEdcCouponUrl()',
+        ]);
+
+        $fieldset->addField('expires_after', 'text', [
+            'name' => 'expires_after',
+            'label' => __('Expires After (days)'),
+            'title' => __('Expires After (days)'),
+            'value' => '',
             'onkeyup' => 'window.updateEdcCouponUrl()',
         ]);
 

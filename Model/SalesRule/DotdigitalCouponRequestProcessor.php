@@ -145,12 +145,15 @@ class DotdigitalCouponRequestProcessor
             }
         }
 
+        $expireDays = $params['code_expires_after'] ?? null;
+
         $this->couponCode = $this->dotdigitalCouponGenerator->generateCoupon(
             $rule,
             $params['code_format'] ?? null,
             $params['code_prefix'] ?? null,
             $params['code_suffix'] ?? null,
-            $email
+            $email,
+            $expireDays ? (int) $expireDays : null
         );
 
         return $this;

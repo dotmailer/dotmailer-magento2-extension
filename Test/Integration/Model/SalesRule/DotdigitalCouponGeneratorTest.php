@@ -5,8 +5,10 @@ namespace Dotdigitalgroup\Email\Model\SalesRule;
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollection;
 use Dotdigitalgroup\Email\Test\Integration\LoadsSaleRule;
 use Dotdigitalgroup\Email\Test\Integration\RedeemsCoupons;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\SalesRule\Helper\Coupon;
+use Magento\SalesRule\Model\CouponRepository;
 use Magento\SalesRule\Model\ResourceModel\Coupon\Collection as CouponCollection;
 use Magento\TestFramework\ObjectManager;
 
@@ -266,6 +268,37 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
             DotdigitalCouponRequestProcessor::STATUS_USED_EXPIRED,
             $this->couponRequestProcessor->getCouponGeneratorStatus()
         );
+    }
+
+    public function testExpiryDateAddedToCoupon()
+    {
+        $params = [
+            'id' => 1,
+            'code_email' => 'chaz@kangaroo.com',
+            'code_allow_resend' => 1,
+            'code_cancel_send' => 1,
+            'code_expires_after' => 7,
+        ];
+
+        $code = $this->couponRequestProcessor
+            ->processCouponRequest($params)
+            ->getCouponCode();
+
+        /** @var CouponRepository $couponRepo */
+        $couponRepo = ObjectManager::getInstance()->create(CouponRepository::class);
+        $searchCriteria = ObjectManager::getInstance()->create(SearchCriteriaBuilder::class)
+            ->addFilter('code', $code)
+            ->create();
+
+        $couponResult = $couponRepo->getList($searchCriteria)->getItems();
+        $coupon = reset($couponResult);
+
+        $expiresAt = $coupon->getExtensionAttributes()
+            ->getDdgExtensionAttributes()
+            ->getExpiresAt();
+
+        $this->assertNotEmpty($expiresAt);
+        $this->assertEquals(7, (new \DateTime('now', new \DateTimeZone('UTC')))->diff($expiresAt)->days);
     }
 
     /**

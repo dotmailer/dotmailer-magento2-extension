@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="ResetDataFields">
+        <amOnPage url="{{AdminDotdigitalDataMappingPage.url}}" stepKey="amOnDotdigitalDataMappingPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <comment userInput="Resetting data fields" stepKey="resettingDataMappingComment"/>
+
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerTitle}}" userInput="-- Please Select --" stepKey="setCustomerTitleIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerId}}" userInput="-- Please Select --" stepKey="setCustomerIdIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerFirstname}}" userInput="-- Please Select --" stepKey="setCustomerFirstnameIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerLastname}}" userInput="-- Please Select --" stepKey="setCustomerLastnameIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerDob}}" userInput="-- Please Select --" stepKey="setCustomerDobIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerGender}}" userInput="-- Please Select --" stepKey="setCustomerGenderIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerCreatedAt}}" userInput="-- Please Select --" stepKey="setCustomerCreatedAtIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerLastLoggedInDate}}" userInput="-- Please Select --" stepKey="setCustomerLastLoggedInDateIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerGroup}}" userInput="-- Please Select --" stepKey="setCustomerGroupIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerReviewCount}}" userInput="-- Please Select --" stepKey="setCustomerReviewCountIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerLastReviewDate}}" userInput="-- Please Select --" stepKey="setCustomerLastReviewDateIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerSubscriberStatus}}" userInput="-- Please Select --" stepKey="setCustomerSubscriberStatusIsNotSet"/>
+
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressBillingLine1}}" userInput="-- Please Select --" stepKey="setAddressBillingLine1IsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressBillingLine2}}" userInput="-- Please Select --" stepKey="setAddressBillingLine2IsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressBillingCity}}" userInput="-- Please Select --" stepKey="setAddressBillingCityIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressBillingState}}" userInput="-- Please Select --" stepKey="setAddressBillingStateIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressBillingCountry}}" userInput="-- Please Select --" stepKey="setAddressBillingCountryIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressBillingPostcode}}" userInput="-- Please Select --" stepKey="setAddressBillingPostcodeIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressBillingTelephone}}" userInput="-- Please Select --" stepKey="setAddressBillingTelephoneIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressBillingCompany}}" userInput="-- Please Select --" stepKey="setAddressBillingCompanyIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressDeliveryLine1}}" userInput="-- Please Select --" stepKey="setAddressDeliveryLine1IsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressDeliveryLine2}}" userInput="-- Please Select --" stepKey="setAddressDeliveryLine2IsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCity}}" userInput="-- Please Select --" stepKey="setAddressDeliveryCityIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressDeliveryState}}" userInput="-- Please Select --" stepKey="setAddressDeliveryStateIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCountry}}" userInput="-- Please Select --" stepKey="setAddressDeliveryCountryIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressDeliveryPostcode}}" userInput="-- Please Select --" stepKey="setAddressDeliveryPostcodeIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressDeliveryTelephone}}" userInput="-- Please Select --" stepKey="setAddressDeliveryTelephoneIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.addressDeliveryCompany}}" userInput="-- Please Select --" stepKey="setAddressDeliveryCompanyIsNotSet"/>
+
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesNumberOfOrders}}" userInput="-- Please Select --" stepKey="setSalesNumberOfOrdersIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesAverageOrderValue}}" userInput="-- Please Select --" stepKey="setSalesAverageOrderValueIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesTotalSpend}}" userInput="-- Please Select --" stepKey="setSalesTotalSpendIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesLastOrderDate}}" userInput="-- Please Select --" stepKey="setSalesLastOrderDateIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesLastIncrementId}}" userInput="-- Please Select --" stepKey="setSalesLastIncrementIdIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesTotalRefund}}" userInput="-- Please Select --" stepKey="setSalesTotalRefundIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesMostPurCategory}}" userInput="-- Please Select --" stepKey="setSalesMostPurCategoryIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesMostPurBrand}}" userInput="-- Please Select --" stepKey="setSalesMostPurBrandIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesMostFrequentDayOfPurchase}}" userInput="-- Please Select --" stepKey="setSalesMostFrequentDayOfPurchaseIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesMostFrequentMonthOfPurchase}}" userInput="-- Please Select --" stepKey="setSalesMostFrequentMonthOfPurchaseIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesFirstCategoryPur}}" userInput="-- Please Select --" stepKey="setSalesFirstCategoryPurIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesLastCategoryPur}}" userInput="-- Please Select --" stepKey="setSalesLastCategoryPurIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesFirstBrandPur}}" userInput="-- Please Select --" stepKey="setSalesFirstBrandPurIsNotSet"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.salesLastBrandPur}}" userInput="-- Please Select --" stepKey="setSalesLastBrandPurIsNotSet"/>
+
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.systemWebsiteName}}" userInput="-- Please Select --" stepKey="setSystemWebsiteName"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.systemStoreName}}" userInput="-- Please Select --" stepKey="setSystemStoreName"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.systemLastOrderId}}" userInput="-- Please Select --" stepKey="setSystemLastOrderId"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.systemLastQuoteId}}" userInput="-- Please Select --" stepKey="setSystemLastQuoteId"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.systemAbandonedProductName}}" userInput="-- Please Select --" stepKey="setSystemAbandonedProductName"/>
+
+        <click selector="{{AdminDotdigitalDataMappingSection.save}}" stepKey="saveConfig" />
+        <waitForPageLoad stepKey="waitForPageLoad1"/>
+    </actionGroup>
+</actionGroups>

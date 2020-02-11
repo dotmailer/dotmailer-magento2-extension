@@ -15,6 +15,7 @@ use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\User\Model\ResourceModel\User;
 use Magento\User\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 /**
  * @codeCoverageIgnore

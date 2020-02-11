@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)

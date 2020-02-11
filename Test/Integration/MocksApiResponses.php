@@ -30,6 +30,11 @@ trait MocksApiResponses
     private $mockClientFactory;
 
     /**
+     * @var MutableScopeConfigInterface
+     */
+    private $mutableScopeConfig;
+
+    /**
      * The magentoConfigFixture annotation cannot set config at website level
      * Recommend never using docblock annotations in PHP for this, and many other, reasons
      *
@@ -42,8 +47,6 @@ trait MocksApiResponses
         $scopeCode = null,
         $scopeType = ScopeInterface::SCOPE_WEBSITE
     ) {
-        /** @var MutableScopeConfigInterface $mutableScopeConfig */
-        $mutableScopeConfig = Bootstrap::getObjectManager()->get(MutableScopeConfigInterface::class);
         foreach ($configFlags + [
             Config::XML_PATH_CONNECTOR_API_ENABLED => 1,
             Config::XML_PATH_CONNECTOR_API_USERNAME => 'test',
@@ -55,8 +58,17 @@ trait MocksApiResponses
                 \Magento\Sales\Model\Order::STATE_COMPLETE,
             ]),
         ] as $path => $value) {
-            $mutableScopeConfig->setValue($path, $value, $scopeType, $scopeCode);
+            $this->getMutableScopeConfig()->setValue($path, $value, $scopeType, $scopeCode);
         }
+    }
+
+    /**
+     * @return MutableScopeConfigInterface
+     */
+    private function getMutableScopeConfig()
+    {
+        return $this->mutableScopeConfig
+            ?: $this->mutableScopeConfig = Bootstrap::getObjectManager()->get(MutableScopeConfigInterface::class);
     }
 
     /**

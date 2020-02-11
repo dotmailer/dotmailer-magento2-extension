@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminDotdigitalSyncSettingsSection">
+        <element name="addCustomersTo" type="select" selector="#sync_settings_addressbook_customers"/>
+        <element name="addSubscribersTo" type="select" selector="#sync_settings_addressbook_subscribers"/>
+        <element name="addGuestsTo" type="select" selector="#sync_settings_addressbook_guests"/>
+
+        <element name="customerEnabled" type="select" selector="#sync_settings_sync_customer_enabled" />
+        <element name="guestEnabled" type="select" selector="#sync_settings_sync_guest_enabled" />
+        <element name="subscriberEnabled" type="select" selector="#sync_settings_sync_subscriber_enabled" />
+        <element name="orderEnabled" type="select" selector="#sync_settings_sync_order_enabled" />
+        <element name="wishlistEnabled" type="select" selector="#sync_settings_sync_wishlist_enabled" />
+        <element name="reviewEnabled" type="select" selector="#sync_settings_sync_review_enabled" />
+        <element name="catalogEnabled" type="select" selector="#sync_settings_sync_catalog_enabled" />
+
+        <element name="createAddressBookFieldsetToggle" type="button" selector="#sync_settings_dynamic_addressbook-head"/>
+        <element name="createAddressBookFieldset" type="button" selector="#sync_settings_dynamic_addressbook"/>
+        <element name="addressBookName" type="input" selector="#sync_settings_dynamic_addressbook_addressbook_name"/>
+        <element name="addressBookVisibility" type="select" selector="#sync_settings_dynamic_addressbook_visibility"/>
+        <element name="createNewAddressBook" type="button" selector="#sync_settings_dynamic_addressbook_addressbook_button"/>
+
+        <element name="save" type="button" selector="#save" />
+    </section>
+</sections>

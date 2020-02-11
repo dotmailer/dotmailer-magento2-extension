@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
 class InsertEmailOrderTable extends AbstractDataMigration implements InsertTypeInterface

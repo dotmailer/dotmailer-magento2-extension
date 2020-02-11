@@ -39,6 +39,9 @@
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon\Collection">
         <plugin name="ddg_generated_for_email_plugin" type="Dotdigitalgroup\Email\Plugin\CouponCollectionPlugin"/>
     </type>
+    <type name="Magento\SalesRule\Model\Utility">
+        <plugin name="ddg_coupon_expired_plugin" type="Dotdigitalgroup\Email\Plugin\CouponExpiredPlugin"/>
+    </type>
     <type name="Magento\Catalog\Ui\DataProvider\Product\ProductRenderCollectorComposite">
         <arguments>
             <argument name="productProviders" xsi:type="array">
@@ -104,6 +107,7 @@
     <preference for="Magento\Framework\Mail\Template\SenderResolverInterface" type="Dotdigitalgroup\Email\Model\Email\DotdigitalSenderResolver" />
     <preference for="Dotdigitalgroup\Email\Api\CouponAttributeRepositoryInterface" type="Dotdigitalgroup\Email\Model\Coupon\CouponAttributeRepository"/>
     <preference for="Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface" type="Dotdigitalgroup\Email\Model\Coupon\CouponAttribute"/>
+    <preference for="Dotdigitalgroup\Email\Api\TierPriceFinderInterface" type="Dotdigitalgroup\Email\Model\Product\TierPriceFinder" />
     <preference for="Magento\Framework\Filesystem\DriverInterface" type="Magento\Framework\Filesystem\Driver\File" />
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
         <arguments>
