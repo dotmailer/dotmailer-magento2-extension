@@ -6,7 +6,8 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use \Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\Serialize\SerializerInterface;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Dotdigitalgroup\Email\Setup\Schema\Shared;
 
@@ -16,7 +17,7 @@ use Dotdigitalgroup\Email\Setup\Schema\Shared;
 class UpgradeSchema implements UpgradeSchemaInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\Config\Json
+     * @var SerializerInterface
      */
     public $json;
 
@@ -28,11 +29,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
     /**
      * UpgradeSchema constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Config\Json $json
+     * @param SerializerInterface $json
      * @param Shared $shared
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Config\Json $json,
+        SerializerInterface $json,
         Shared $shared
     ) {
         $this->shared = $shared;

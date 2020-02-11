@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
@@ -87,7 +87,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $datetime;
 
     /**
-     * @var Json
+     * @var SerializerInterface
      */
     public $serializer;
 
@@ -156,7 +156,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param ConfigFactory $configHelperFactory
-     * @param Json $serializer
+     * @param SerializerInterface $serializer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
@@ -182,7 +182,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Config\Storage\Writer $writer,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
-        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
+        SerializerInterface $serializer,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
