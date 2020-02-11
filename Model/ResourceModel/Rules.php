@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Cron\Collection;
 use Dotdigitalgroup\Email\Model\Config\Json;
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {

@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Setup\Schema;
 
 use \Magento\Framework\Setup\SchemaSetupInterface;
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class Shared
 {

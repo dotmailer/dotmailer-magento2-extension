@@ -7,20 +7,21 @@ use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use \Magento\Framework\DB\Adapter\AdapterInterface;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Dotdigitalgroup\Email\Setup\Schema\Shared;
 
 /**
  * @codeCoverageIgnore
  */
 class UpgradeSchema implements UpgradeSchemaInterface
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Model\Config\Json
      */
     public $json;
 
     /**
-     * @var Schema\Shared
+     * @var Shared
      */
     private $shared;
 
@@ -28,11 +29,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
      * UpgradeSchema constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\Config\Json $json
-     * @param Schema\Shared $shared
+     * @param Shared $shared
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Config\Json $json,
-        Schema\Shared $shared
+        Shared $shared
     ) {
         $this->shared = $shared;
         $this->json = $json;
