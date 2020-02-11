@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use Dotdigitalgroup\Email\Model\DateIntervalFactory;
+use Dotdigitalgroup\Email\Logger\Logger;
 
 /**
  * Manages the Customer data as datafields for contact.
@@ -32,9 +33,9 @@ class Customer extends ContactData
     public $columns;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Logger
      */
-    public $helper;
+    public $logger;
 
     /**
      * @var \Magento\Customer\Model\GroupFactory
@@ -100,6 +101,7 @@ class Customer extends ContactData
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
      * @param TimezoneInterfaceFactory $localeDateFactory
      * @param DateIntervalFactory $dateIntervalFactory
+     * @param Logger $logger
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
@@ -117,7 +119,8 @@ class Customer extends ContactData
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         TimezoneInterfaceFactory $localeDateFactory,
-        DateIntervalFactory $dateIntervalFactory
+        DateIntervalFactory $dateIntervalFactory,
+        Logger $logger
     ) {
         $this->reviewCollection  = $reviewCollectionFactory;
         $this->orderCollection   = $collectionFactory;
@@ -136,7 +139,8 @@ class Customer extends ContactData
             $eavConfigFactory,
             $configHelper,
             $localeDateFactory,
-            $dateIntervalFactory
+            $dateIntervalFactory,
+            $logger
         );
     }
 
