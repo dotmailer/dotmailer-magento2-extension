@@ -748,7 +748,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $client->postContacts($email);
         }
 
-        if (isset($response->status) && $response->status === 'Suppressed') {
+        if (isset($response->status) && $response->status !== 'Subscribed') {
             $contact->setEmailImported(1);
             $contact->setSuppressed(1);
             $this->saveContact($contact);
