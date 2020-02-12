@@ -35,6 +35,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 ###### Fixes
 - We fixed a regression introduced in 4.3.1, which stopped some data fields from being captured when syncing customers, subscribers and guests.
 - Deleting customers in the Magento admin was triggering two `Contact_Delete` rows in the importer table. This has been fixed.
+- A single unsubscribed, hard bounced, or otherwise rejected contact could prevent a batch of campaign sends going out; this has been fixed.
 
 # 4.3.3
 
