@@ -24,7 +24,7 @@ use Magento\Store\Model\ScopeInterface;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Dotdigitalgroup_Email';
-    const DM_FIELD_LIMIT = 250;
+    const DM_FIELD_LIMIT = 1000;
 
     /**
      * @var \Magento\Config\Model\ResourceModel\Config
