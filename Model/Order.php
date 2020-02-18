@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model;
 
 class Order extends \Magento\Framework\Model\AbstractModel
 {
-    const EMAIL_ORDER_NOT_IMPORTED = null;
+    const EMAIL_ORDER_NOT_IMPORTED = 0;
 
     /**
      * @var \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory
@@ -40,7 +40,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
-    
+
         $this->salesCollection = $salesCollection;
 
         parent::__construct(

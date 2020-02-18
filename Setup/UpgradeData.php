@@ -131,6 +131,7 @@ class UpgradeData implements UpgradeDataInterface
         }
 
         $this->upgradeFourOhOne($setup, $context);
+        $this->upgradeFourThreeFive($setup, $context);
 
         $installer->endSetup();
     }
@@ -239,6 +240,73 @@ class UpgradeData implements UpgradeDataInterface
                 [
                     'imported' => 1,
                     'modified IS NULL OR modified = 0'
+                ]
+            );
+        }
+    }
+
+    /**
+     * Changes Imported values from null to zero
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeFourThreeFive(
+        ModuleDataSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '4.3.5', '<')) {
+            $orderTable = $setup->getTable(Schema::EMAIL_ORDER_TABLE);
+            $contactTable = $setup->getTable(Schema::EMAIL_CONTACT_TABLE);
+            $reviewTable = $setup->getTable(Schema::EMAIL_REVIEW_TABLE);
+            $wishlistTable = $setup->getTable(Schema::EMAIL_WISHLIST_TABLE);
+
+            $setup->getConnection()->update(
+                $orderTable,
+                [
+                    'email_imported' => 0
+                ],
+                [
+                    'email_imported IS NULL'
+                ]
+            );
+
+            $setup->getConnection()->update(
+                $contactTable,
+                [
+                    'email_imported' => 0
+                ],
+                [
+                    'email_imported IS NULL'
+                ]
+            );
+
+            $setup->getConnection()->update(
+                $contactTable,
+                [
+                    'subscriber_imported' => 0
+                ],
+                [
+                    'subscriber_imported IS NULL'
+                ]
+            );
+
+            $setup->getConnection()->update(
+                $reviewTable,
+                [
+                    'review_imported' => 0
+                ],
+                [
+                    'review_imported IS NULL'
+                ]
+            );
+
+            $setup->getConnection()->update(
+                $wishlistTable,
+                [
+                    'wishlist_imported' => 0
+                ],
+                [
+                    'wishlist_imported IS NULL'
                 ]
             );
         }

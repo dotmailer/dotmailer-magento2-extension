@@ -124,13 +124,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function resetAllContacts()
     {
         $conn = $this->getConnection();
+        $where = ['email_imported' => 1];
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
-            ['email_imported' => $this->expressionFactory->create(["expression" => 'null'])],
-            $conn->quoteInto(
-                'email_imported is ?',
-                $this->expressionFactory->create(["expression" => 'not null'])
-            )
+            ['email_imported' => 0],
+            $where
         );
 
         return $num;
@@ -147,7 +145,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         return $this->getConnection()
             ->update(
                 $this->getTable(Schema::EMAIL_CONTACT_TABLE),
-                ['email_imported' => $this->expressionFactory->create(["expression" => 'null'])],
+                ['email_imported' => 0],
                 ['customer_id IN (?)' => $customerIds]
             );
     }
@@ -164,11 +162,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
-            ['subscriber_imported' => $this->expressionFactory->create(["expression" => 'null'])],
-            $conn->quoteInto(
-                'subscriber_imported is ?',
-                $this->expressionFactory->create(["expression" => 'not null'])
-            )
+            ['subscriber_imported' => 0],
+            ['subscriber_imported' => 1]
         );
 
         return $num;
@@ -968,7 +963,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->getConnection()->update(
             $this->getMainTable(),
-            ['email_imported' => $this->expressionFactory->create(["expression" => 'null'])],
+            ['email_imported' => 0],
             ["customer_id IN (?)" => $customerIds]
         );
     }

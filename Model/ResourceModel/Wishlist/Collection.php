@@ -61,7 +61,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function getWishlistToImportByWebsite(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
     {
-        $collection = $this->addFieldToFilter('wishlist_imported', ['null' => true])
+        $collection = $this->addFieldToFilter('wishlist_imported', 0)
             ->addFieldToFilter(
                 'store_id',
                 ['in' => $website->getStoreIds()]
@@ -83,7 +83,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         \Magento\Store\Api\Data\WebsiteInterface $website,
         $limit = 100
     ) {
-    
+
         $collection = $this->addFieldToFilter('wishlist_modified', 1)
             ->addFieldToFilter(
                 'store_id',

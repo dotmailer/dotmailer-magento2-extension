@@ -160,7 +160,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
             ->setOrderStatus($status);
 
         if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
-            $emailOrder->setEmailImported(null);
+            $emailOrder->setEmailImported(0);
         }
 
         $isEnabled = $this->helper->isStoreEnabled($store->getId());

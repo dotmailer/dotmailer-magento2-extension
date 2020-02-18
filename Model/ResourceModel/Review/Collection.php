@@ -32,7 +32,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function getReviewsToExportByWebsite(\Magento\Store\Model\Website $website, $limit = 100)
     {
-        return $this->addFieldToFilter('review_imported', ['null' => 'true'])
+        return $this->addFieldToFilter('review_imported', 0)
             ->addFieldToFilter(
                 'store_id',
                 ['in' => $website->getStoreIds()]

@@ -142,7 +142,8 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             $reviewModel = $this->reviewFactory->create();
             $reviewModel->setReviewId($review->getReviewId())
                 ->setCustomerId($review->getCustomerId())
-                ->setStoreId($storeId);
+                ->setStoreId($storeId)
+                ->setReviewImported(0);
             $this->reviewResource->save($reviewModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
