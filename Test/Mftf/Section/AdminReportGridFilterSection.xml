@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+
+    <section name="AdminFilterOptionsSection">
+        <element name="filters" type="button" selector="button[data-action='grid-filter-expand']"/>
+        <element name="clearAll" type="button" selector=".admin__data-grid-header .admin__data-grid-filters-current._show .action-clear" timeout="30"/>
+        <element name="enabledFilters" type="textarea" selector=".admin__data-grid-header .admin__data-grid-filters-current._show"/>
+        <element name="basicSearchFilter" type="textarea" selector=".admin__control-text.data-grid-search-control"/>
+        <element name="basicSearchFilterButton" type="button" selector=".data-grid-search-control-wrap button.action-submit"/>
+        <element name="viewDropdown" type="button" selector=".admin__data-grid-action-bookmarks button.admin__action-dropdown"/>
+        <element name="viewBookmark" type="button" selector="//div[contains(@class, 'admin__data-grid-action-bookmarks')]/ul/li/div/a[text() = '{{label}}']" parameterized="true" timeout="30"/>
+        <element name="columnsDropdown" type="button" selector=".admin__data-grid-action-columns button.admin__action-dropdown"/>
+        <element name="viewColumnOption" type="checkbox" selector="//div[contains(@class, '_active')]//div[contains(@class, 'admin__data-grid-action-columns-menu')]//div[@class='admin__field-option']//label[text()='{{col}}']/preceding-sibling::input" parameterized="true"/>
+        <element name="resetGridColumns" type="button" selector="//div[contains(@class, '_active')]//div[contains(@class, 'admin__data-grid-action-columns-menu')]//button[text()='Reset']"/>
+        <element name="clearFilters" type="button" selector=".admin__data-grid-header button[data-action='grid-filter-reset']" timeout="30"/>
+        <element name="applyFilters" type="button" selector="button[data-action='grid-filter-apply']" timeout="30"/>
+        <element name="cancelFilters" type="button" selector="button[data-action='grid-filter-cancel']"/>
+    </section>
+
+    <section name="AdminDotdigitalReportColumnsSection">
+        <element name="columnHeader" type="button" selector="//div[@data-role='grid-wrapper']//table[contains(@class, 'data-grid')]/thead/tr/th[contains(@class, 'data-grid-th')]/span[text() = '{{label}}']" parameterized="true" timeout="30"/>
+        <element name="columnHeaderAsc" type="button" selector="//div[@data-role='grid-wrapper']//table[contains(@class, 'data-grid')]/thead/tr/th[contains(@class, 'data-grid-th _sortable _draggable _ascend')]/span[text() = '{{label}}']" parameterized="true" timeout="30"/>
+        <element name="columnHeaderDesc" type="button" selector="//div[@data-role='grid-wrapper']//table[contains(@class, 'data-grid')]/thead/tr/th[contains(@class, 'data-grid-th _sortable _draggable _descend')]/span[text() = '{{label}}']" parameterized="true" timeout="30"/>
+    </section>
+
+    <section name="AdminImporterFilterFieldsSection">
+        <element name="importIdFilter" type="input" selector="input.admin__control-text[name='import_id']"/>
+        <element name="importTypeFilter" type="input" selector="input.admin__control-text[name='import_type']"/>
+        <element name="importModeFilter" type="select" selector="select.admin__control-select[name='import_mode']"/>
+        <element name="importStatusFilter" type="select" selector="select.admin__control-select[name='import_status']"/>
+        <element name="messageFilter" type="input" selector="input.admin__control-text[name='message']"/>
+        <element name="websiteFilter" type="select" selector="select.admin__control-select[name='website_id']"/>
+    </section>
+
+    <section name="AdminAutomationFilterFieldsSection">
+        <element name="automationEmailFilter" type="input" selector="input.admin__control-text[name='email']"/>
+        <element name="automationProgramIdFilter" type="input" selector="input.admin__control-text[name='program_id']"/>
+        <element name="automationTypeFilter" type="input" selector="input.admin__control-text[name='automation_type']"/>
+        <element name="automationEnrolmentStatusFilter" type="select" selector="select.admin__control-select[name='enrolment_status']"/>
+        <element name="automationWebsiteFilter" type="select" selector="select.admin__control-select[name='website_id']"/>
+        <element name="automationMessageFilter" type="input" selector="input.admin__control-text[name='message']"/>
+        <element name="automationStoreNameFilter" type="input" selector="input.admin__control-text[name='store_name']"/>
+    </section>
+
+    <section name="AdminCampaignFilterFieldsSection">
+        <element name="campaignEmailFilter" type="input" selector="input.admin__control-text[name='email']"/>
+        <element name="campaignId" type="input" selector="input.admin__control-text[name='campaign_id']"/>
+        <element name="campaignCustomerIdFilter" type="input" selector="input.admin__control-text[name='customer_id']"/>
+        <element name="campaignOrderIncrementId" type="input" selector="input.admin__control-text[name='order_increment_id']"/>
+        <element name="campaignQuoteId" type="input" selector="input.admin__control-text[name='quote_id']"/>
+        <element name="campaignEventName" type="input" selector="input.admin__control-text[name='event_name']"/>
+        <element name="campaignMessage" type="input" selector="input.admin__control-text[name='quote_id']"/>
+        <element name="campaignCheckoutMethod" type="input" selector="input.admin__control-text[name='checkout_method']"/>
+        <element name="campaignSendId" type="input" selector="input.admin__control-text[name='send_id']"/>
+        <element name="campaignSendStatus" type="select" selector="select.admin__control-select[name='send_status']"/>
+        <element name="campaignStoreId" type="input" selector="input.admin__control-text[name='store_id']"/>
+    </section>
+</sections>

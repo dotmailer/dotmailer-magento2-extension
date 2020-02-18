@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="ClearAndNavigateFilterFields">
+        <annotations>
+            <description>Filters the Admin Importer Status</description>
+        </annotations>
+
+        <conditionalClick selector="{{AdminFilterOptionsSection.clearFilters}}" dependentSelector="{{AdminFilterOptionsSection.clearFilters}}" visible="true" stepKey="clickClearFilters2"/>
+        <click selector="{{AdminFilterOptionsSection.filters}}" stepKey="openFilters"/>
+    </actionGroup>
+
+    <actionGroup name="FilterImporter">
+        <annotations>
+            <description>Filters the Admin Importer Status</description>
+        </annotations>
+
+        <conditionalClick selector="{{AdminFilterOptionsSection.clearFilters}}" dependentSelector="{{AdminFilterOptionsSection.clearFilters}}" visible="true" stepKey="clickClearFilters"/>
+        <click selector="{{AdminFilterOptionsSection.filters}}" stepKey="openFilters2"/>
+
+        <fillField selector="{{AdminImporterFilterFieldsSection.importTypeFilter}}" userInput="Bulk" stepKey="fillImportTypeFilter"/>
+        <click selector="{{AdminFilterOptionsSection.applyFilters}}" stepKey="clickApplyFilters"/>
+        <seeElement selector="ul.admin__current-filters-list" stepKey="seeFilterList"/>
+    </actionGroup>
+
+    <actionGroup name="FilterAutomation">
+        <annotations>
+            <description>Filters the Admin Automation Status</description>
+        </annotations>
+
+        <conditionalClick selector="{{AdminFilterOptionsSection.clearFilters}}" dependentSelector="{{AdminFilterOptionsSection.clearFilters}}" visible="true" stepKey="clickClearFilters"/>
+        <click selector="{{AdminFilterOptionsSection.filters}}" stepKey="openFilters2"/>
+
+        <fillField selector="{{AdminAutomationFilterFieldsSection.automationEmailFilter}}" userInput="chaz@emailsim.io" stepKey="fillEmailFilter"/>
+        <click selector="{{AdminFilterOptionsSection.applyFilters}}" stepKey="clickApplyFilters"/>
+        <seeElement selector="ul.admin__current-filters-list" stepKey="seeFilterList"/>
+    </actionGroup>
+
+    <actionGroup name="FilterCampaign">
+        <annotations>
+            <description>Filters the Admin Campaign Status</description>
+        </annotations>
+
+        <conditionalClick selector="{{AdminFilterOptionsSection.clearFilters}}" dependentSelector="{{AdminFilterOptionsSection.clearFilters}}" visible="true" stepKey="clickClearFilters"/>
+        <click selector="{{AdminFilterOptionsSection.filters}}" stepKey="openFilters2"/>
+
+        <fillField selector="{{AdminCampaignFilterFieldsSection.campaignEmailFilter}}" userInput="chaz@emailsim.io" stepKey="fillEmailFilter"/>
+        <click selector="{{AdminFilterOptionsSection.applyFilters}}" stepKey="clickApplyFilters"/>
+        <seeElement selector="ul.admin__current-filters-list" stepKey="seeFilterList"/>
+    </actionGroup>
+</actionGroups>

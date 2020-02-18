@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="CampaignReportPageTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital report grids"/>
+            <title value="Test Campaign Status Grid"/>
+            <description value="The dotdigital Campaign report can be viewed, filtered and sorted."/>
+            <severity value="MAJOR"/>
+            <group value="FS/106771-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminCampaignReportPage.url}}" stepKey="amOnCampaignReportPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Confirm That Columns Exist -->
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Campaign Id')}}" stepKey="seeCampaignId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="seeEmail"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Customer Id')}}" stepKey="seeCustomerId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Order Increment Id')}}" stepKey="seeOrderIncrementId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Quote Id')}}" stepKey="seeQuoteId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Event Name')}}" stepKey="seeEventName"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Message')}}" stepKey="seeMessage"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Checkout Method')}}" stepKey="seeCheckoutMethod"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Send At')}}" stepKey="seeSendAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Send Id')}}" stepKey="seeSendId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Send Status')}}" stepKey="seeSendStatus"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Store Id')}}" stepKey="seeStoreId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created At')}}" stepKey="seeCreatedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated At')}}" stepKey="seeUpdatedAt"/>
+
+        <!-- Sorting -->
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="clickAutomationEmailToSortAsc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Email')}}" stepKey="checkIfEmailAsc"/>
+
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="clickAutomationEmailToSortDesc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Email')}}" stepKey="checkIfEmailDesc"/>
+
+        <!-- Filtering -->
+        <actionGroup ref="FilterCampaign" stepKey="validateFilters"/>
+        <!--   Indicates that filter is on     -->
+        <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
+
+
+        <actionGroup ref="ClearAndNavigateFilterFields" stepKey="validateFilterFields"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignEmailFilter}}" stepKey="seeEmailFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignId}}" stepKey="seeCampaignIdFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignCustomerIdFilter}}" stepKey="seeCustomerFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignOrderIncrementId}}" stepKey="seeOrderIncrementIdFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignQuoteId}}" stepKey="seeQuoteIdFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignEventName}}" stepKey="seeEventNameFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignMessage}}" stepKey="seeMessageFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignCheckoutMethod}}" stepKey="seeCheckoutMethodFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignSendId}}" stepKey="seeSendIdFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignSendStatus}}" stepKey="seeSendStatusFilter"/>
+        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignStoreId}}" stepKey="seeStoreIdFilter"/>
+
+    </test>
+</tests>
