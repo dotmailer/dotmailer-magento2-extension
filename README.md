@@ -19,6 +19,11 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.3.5
+
+###### Fixes
+- We fixed an issue whereby redeeming EDC coupon codes generated in versions prior to 4.3.0, in version 4.3.4, caused a fatal error. 
+
 # 4.3.4
 
 ###### What's new

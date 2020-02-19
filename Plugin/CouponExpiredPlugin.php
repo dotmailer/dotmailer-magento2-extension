@@ -75,14 +75,13 @@ class CouponExpiredPlugin
                 return $result;
             }
 
-            $expiresAt = $coupon->getExtensionAttributes()
-                ->getDdgExtensionAttributes()
-                ->getExpiresAt();
-
-            if ($expiresAt && $this->timezone->date($expiresAt) < $this->timezone->date()) {
-                // individual coupon has expired
-                $rule->setIsValidForAddress($address, false);
-                return false;
+            if ($ddgExtensionAttributes = $coupon->getExtensionAttributes()->getDdgExtensionAttributes()) {
+                $expiresAt = $ddgExtensionAttributes->getExpiresAt();
+                if ($expiresAt && $this->timezone->date($expiresAt) < $this->timezone->date()) {
+                    // individual coupon has expired
+                    $rule->setIsValidForAddress($address, false);
+                    return false;
+                }
             }
         }
 
