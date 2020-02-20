@@ -7,13 +7,14 @@ class KeyValidator
     const ENGAGEMENT_CLOUD_PERMISSIBLE_KEY_PATTERN = '/[^A-Za-z0-9-_]/';
 
     /**
-     * @param array $label
+     * @param string $label
      * @param string $replaceSpaceWith
+     * @param string $replaceCharactersWith
      * @param string $suffix
      *
      * @return string
      */
-    public function cleanLabel($label, $replaceSpaceWith, $suffix)
+    public function cleanLabel($label, $replaceSpaceWith = '_', $replaceCharactersWith = '', $suffix = null)
     {
         $label = str_replace(
             ' ',
@@ -21,7 +22,7 @@ class KeyValidator
             $label
         );
         if ($this->hasInvalidPatternForInsightDataKey($label)) {
-            $label = $this->stripInvalidCharactersAndIdentify($label, $replaceSpaceWith, $suffix);
+            $label = $this->stripInvalidCharactersAndIdentify($label, $replaceCharactersWith, $suffix);
         }
         return $label;
     }

@@ -600,6 +600,7 @@ class Order
                 $label = $this->validator->cleanLabel(
                     $orderItemOption['label'],
                     '-',
+                    '-',
                     $orderItemOption['option_id']
                 );
                 if (empty($label)) {
