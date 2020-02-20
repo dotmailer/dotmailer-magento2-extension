@@ -547,6 +547,19 @@ class UpgradeSchema implements UpgradeSchemaInterface
         ModuleContextInterface $context
     ) {
         if (version_compare($context->getVersion(), '4.3.5', '<')) {
+
+            /* Update coupon_id column name */
+            $couponTable = $setup->getTable(Schema::EMAIL_COUPON_TABLE);
+            if (!$connection->tableColumnExists($couponTable, 'salesrule_coupon_id')) {
+                $setup->getConnection()->changeColumn($couponTable, 'coupon_id', 'salesrule_coupon_id', [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                    'nullable' => false,
+                    'unsigned' => true,
+                    'comment' => 'Coupon ID',
+                ]);
+            }
+
+            /* Change nullable columns to 1/0 */
             $emailWishlistTable = $setup->getTable(Schema::EMAIL_WISHLIST_TABLE);
             $emailOrderTable = $setup->getTable(Schema::EMAIL_ORDER_TABLE);
             $emailContactTable = $setup->getTable(Schema::EMAIL_CONTACT_TABLE);
