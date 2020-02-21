@@ -71,9 +71,10 @@ class ImporterQueueManager
     /**
      * Set importing priority for bulk imports.
      *
+     * @param array $additionalImportTypes
      * @return null
      */
-    public function getBulkQueue()
+    public function getBulkQueue(array $additionalImportTypes = [])
     {
         $defaultBulk = [
             'model' => '',
@@ -106,10 +107,14 @@ class ImporterQueueManager
             ImporterModel::IMPORT_TYPE_WISHLIST,
         ];
 
+        foreach ($additionalImportTypes as $type) {
+            $other['type'][] = $type;
+        }
+
         return [
             $contact,
             $order,
-            $other,
+            $other
         ];
     }
 
