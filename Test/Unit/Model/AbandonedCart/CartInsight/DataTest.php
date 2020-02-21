@@ -2,13 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\CartInsight;
 
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsightData;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order\Item;
 use Magento\Store\Model\Store;
@@ -42,11 +42,6 @@ class UpdateAbandonedCartFieldsTest extends TestCase
      * @var StoreManagerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $storeManagerInterfaceMock;
-
-    /**
-     * @var ScopeConfigInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $scopeConfigInterfaceMock;
 
     /**
      * @var DateTime|\PHPUnit_Framework_MockObject_MockObject
@@ -88,6 +83,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
      */
     private $urlFinderMock;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $imageFinderMock;
+
     protected function setUp()
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -98,17 +98,17 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->storeMock = $this->createMock(Store::class);
         $this->quoteMock = $this->createMock(Quote::class);
         $this->itemMock = $this->createMock(Item::class);
-        $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
         $this->dateTimeMock = $this->createMock(DateTime::class);
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
+        $this->imageFinderMock = $this->createMock(ImageFinder::class);
 
         $this->class = new CartInsightData(
             $this->storeManagerInterfaceMock,
             $this->productRepositoryMock,
-            $this->scopeConfigInterfaceMock,
             $this->helperMock,
             $this->dateTimeMock,
-            $this->urlFinderMock
+            $this->urlFinderMock,
+            $this->imageFinderMock
         );
     }
 
@@ -200,21 +200,6 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('getProduct')
             ->willReturn($this->productMock);
 
-        $this->productMock->expects($this->atLeastOnce())
-            ->method('__call')
-            ->withConsecutive(
-                $this->equalTo('getThumbnail'),
-                $this->equalTo('getThumbnail'),
-                $this->equalTo('getThumbnail'),
-                $this->equalTo('getThumbnail')
-            )
-            ->willReturnOnConsecutiveCalls(
-                '/image.jpg',
-                '/image.jpg',
-                '/image.jpg',
-                '/image.jpg'
-            );
-
         $this->productRepositoryMock->expects($this->once())
             ->method('getById')
             ->willReturn($this->productMock);
@@ -286,11 +271,6 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('getStore')
             ->with($this->storeId)
             ->willReturn($this->storeMock);
-
-        $this->storeMock->expects($this->once())
-            ->method('getBaseUrl')
-            ->with(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA, true)
-            ->willReturn('https://magentostore.com/');
 
         $this->storeMock->expects($this->once())
             ->method('getWebsiteId')
