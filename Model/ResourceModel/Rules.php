@@ -44,7 +44,9 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     protected function _afterLoad(\Magento\Framework\Model\AbstractModel $object)
     {
-        $object->setCondition($this->serializer->unserialize($object->getConditions()));
+        if (!empty($object->getConditions())) {
+            $object->setCondition($this->serializer->unserialize($object->getConditions()));
+        }
 
         return parent::_afterLoad($object);
     }
