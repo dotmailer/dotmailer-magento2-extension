@@ -51,6 +51,7 @@ class Type
             case 'country_id':
             case 'region_id':
             case 'customer_group_id':
+            case 'attribute_set_id':
                 return 'select';
 
             default:

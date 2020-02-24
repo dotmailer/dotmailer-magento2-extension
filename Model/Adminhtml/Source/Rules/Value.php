@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
+use Magento\Eav\Api\AttributeSetRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+
 class Value
 {
     /**
@@ -40,6 +43,16 @@ class Value
     private $sourceGroup;
 
     /**
+     * @var AttributeSetRepositoryInterface
+     */
+    private $attributeSetRepository;
+
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
+
+    /**
      * Value constructor.
      *
      * @param \Magento\Eav\Model\ConfigFactory $configFactory
@@ -49,6 +62,8 @@ class Value
      * @param \Magento\Shipping\Model\Config\Source\Allmethods $allShippingMethods
      * @param \Magento\Payment\Model\Config\Source\Allmethods $allPaymentMethods
      * @param \Magento\Customer\Model\Config\Source\Group $group
+     * @param AttributeSetRepositoryInterface $attributeSetRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         \Magento\Eav\Model\ConfigFactory $configFactory,
@@ -57,7 +72,9 @@ class Value
         \Magento\Directory\Model\Config\Source\Allregion $allregion,
         \Magento\Shipping\Model\Config\Source\Allmethods $allShippingMethods,
         \Magento\Payment\Model\Config\Source\Allmethods $allPaymentMethods,
-        \Magento\Customer\Model\Config\Source\Group $group
+        \Magento\Customer\Model\Config\Source\Group $group,
+        AttributeSetRepositoryInterface $attributeSetRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
         $this->configFactory      = $configFactory->create();
         $this->yesno              = $yesno;
@@ -66,6 +83,8 @@ class Value
         $this->allShippingMethods = $allShippingMethods;
         $this->allPaymentMethods  = $allPaymentMethods;
         $this->sourceGroup              = $group;
+        $this->attributeSetRepository = $attributeSetRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
@@ -83,6 +102,7 @@ class Value
             case 'country_id':
             case 'region_id':
             case 'customer_group_id':
+            case 'attribute_set_id':
                 return 'select';
             default:
                 $attribute
@@ -135,6 +155,18 @@ class Value
 
             case 'customer_group_id':
                 $options = $this->sourceGroup->toOptionArray();
+                break;
+
+            case 'attribute_set_id':
+                $attributeSetList = $this->attributeSetRepository->getList(
+                    $this->searchCriteriaBuilder->addFilter('attribute_set_id', null, 'neq')->create()
+                );
+                foreach ($attributeSetList->getItems() as $attributeSet) {
+                    $options[] = [
+                        "value" => $attributeSet->getAttributeSetId(),
+                        "label" => $attributeSet->getAttributeSetName()
+                    ];
+                }
                 break;
 
             default:
