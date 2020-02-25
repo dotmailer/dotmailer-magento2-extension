@@ -69,7 +69,7 @@ class SyncProvider
     /**
      * @var ReviewFactory
      */
-    private $reviewfactory;
+    private $reviewFactory;
 
     /**
      * @var SubscriberFactory
@@ -125,7 +125,7 @@ class SyncProvider
         $this->importerFactory = $importerFactory;
         $this->integrationInsightsFactory = $integrationInsightsFactory;
         $this->orderFactory = $orderFactory;
-        $this->reviewfactory = $reviewFactory;
+        $this->reviewFactory = $reviewFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->templateFactory = $templateFactory;
         $this->wishlistFactory = $wishlistFactory;
