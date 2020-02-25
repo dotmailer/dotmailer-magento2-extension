@@ -36,6 +36,10 @@ require(['jquery', 'domReady!'], function ($) {
                     '#row_connector_developer_settings_sync_settings_reset_catalog'
                 ];
 
+            if ($('#row_connector_developer_settings_sync_settings_reset_quotes').length) {
+                elmToChange.push('#row_connector_developer_settings_sync_settings_reset_quotes');
+            }
+
             $.each(elmToChange, function (k, v) {
                 var button = $(v).find('button'),
                     str = button.attr('onclick'),

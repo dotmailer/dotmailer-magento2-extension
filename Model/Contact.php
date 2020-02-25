@@ -5,8 +5,8 @@ namespace Dotdigitalgroup\Email\Model;
 class Contact extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_CONTACT_IMPORTED = 1;
-    const EMAIL_CONTACT_NOT_IMPORTED = null;
-    const EMAIL_SUBSCRIBER_NOT_IMPORTED = null;
+    const EMAIL_CONTACT_NOT_IMPORTED = 0;
+    const EMAIL_SUBSCRIBER_NOT_IMPORTED = 0;
 
     /**
      * Constructor.

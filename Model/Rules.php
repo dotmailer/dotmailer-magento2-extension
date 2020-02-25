@@ -522,6 +522,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     {
         $product = $item->getProduct();
         $attributes = $this->getAttributesArrayFromLoadedProduct($product);
+        $attributes[] = 'attribute_set_id';
 
         foreach ($this->productAttribute as $productAttribute) {
             $attribute = $productAttribute['attribute'];

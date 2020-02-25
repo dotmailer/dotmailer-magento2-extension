@@ -50,11 +50,7 @@ class ImporterSyncsCommand extends Command
             ->addArgument(
                 'sync',
                 InputArgument::OPTIONAL,
-                sprintf(
-                    '%s (%s)',
-                    __('The name of the sync to run'),
-                    implode('; ', $this->syncProvider->getAvailableSyncs())
-                )
+                __('The name of the sync to run')
             )
             ->addOption(
                 'from',
@@ -134,7 +130,7 @@ class ImporterSyncsCommand extends Command
         $helper = $this->getHelper('question');
         $syncQuestion = new ChoiceQuestion(
             __('Please select an Engagement Cloud sync to run')->getText(),
-            array_values($this->syncProvider->getAvailableSyncs())
+            array_column($this->syncProvider->getAvailableSyncs(), 'title')
         );
         $syncQuestion->setErrorMessage(__('Please select a sync')->getText());
         return $helper->ask($input, $output, $syncQuestion);

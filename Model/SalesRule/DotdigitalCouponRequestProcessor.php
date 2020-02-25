@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollection;
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollectionFactory;
 use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Model\DateTimeFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\SalesRule\Model\ResourceModel\Rule;
 use Magento\SalesRule\Model\Rule as RuleModel;
@@ -147,14 +148,18 @@ class DotdigitalCouponRequestProcessor
 
         $expireDays = $params['code_expires_after'] ?? null;
 
-        $this->couponCode = $this->dotdigitalCouponGenerator->generateCoupon(
-            $rule,
-            $params['code_format'] ?? null,
-            $params['code_prefix'] ?? null,
-            $params['code_suffix'] ?? null,
-            $email,
-            $expireDays ? (int) $expireDays : null
-        );
+        try {
+            $this->couponCode = $this->dotdigitalCouponGenerator->generateCoupon(
+                $rule,
+                $params['code_format'] ?? null,
+                $params['code_prefix'] ?? null,
+                $params['code_suffix'] ?? null,
+                $email,
+                $expireDays ? (int) $expireDays : null
+            );
+        } catch (LocalizedException $e) {
+            throw new \ErrorException('Coupon cannot be created for the rule specified');
+        }
 
         return $this;
     }

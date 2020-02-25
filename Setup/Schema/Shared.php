@@ -409,7 +409,7 @@ class Shared
     {
         return $table->addForeignKey(
             $installer->getFkName(
-                Schema::EMAIL_COUPON_TABLE,
+                $installer->getTable(Schema::EMAIL_COUPON_TABLE),
                 'coupon_id',
                 'salesrule_coupon',
                 'coupon_id'

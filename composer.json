@@ -2,16 +2,12 @@
   "name": "dotmailer/dotmailer-magento2-extension",
   "description": "dotmailer integration for magento 2",
   "type": "magento2-module",
-  "version": "4.3.5",
+  "version": "4.3.6",
   "license": "MIT",
   "repositories": [
     {
       "type": "composer",
       "url": "https://repo.magento.com/"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/magento/marketplace-eqp"
     }
   ],
   "require": {
@@ -46,11 +42,6 @@
     "magento/module-bundle": "100.*",
     "magento/module-grouped-product": "100.*",
     "magento/module-url-rewrite": ">=100 <102"
-  },
-  "require-dev": {
-    "phpmd/phpmd": "@stable",
-    "magento/marketplace-eqp": "dev-master",
-    "squizlabs/php_codesniffer": "@stable"
   },
   "autoload": {
     "files": [ "registration.php" ],

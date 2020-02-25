@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AutomationReportPageTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital report grids"/>
+            <title value="Test Automation Status Grid"/>
+            <description value="The dotdigital Automation report can be viewed, filtered and sorted."/>
+            <severity value="MAJOR"/>
+            <group value="FS/106771-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminAutomationReportPage.url}}" stepKey="amOnAutomationReportPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Confirm That Columns Exist -->
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="seeEmail"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Program Id')}}" stepKey="seeProgramId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Automation Type')}}" stepKey="seeAutomationType"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Enrolment Status')}}" stepKey="seeEnrolmentStatus"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Website')}}" stepKey="seeWebsite"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Message')}}" stepKey="seeMessage"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Store Name')}}" stepKey="seeStoreName"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created At')}}" stepKey="seeCreatedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated At')}}" stepKey="seeUpdatedAt"/>
+
+        <!-- Sorting -->
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="clickAutomationEmailToSortAsc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Email')}}" stepKey="checkIfEmailAsc"/>
+
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="clickAutomationEmailToSortDesc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Email')}}" stepKey="checkIfEmailDesc"/>
+
+        <!-- Filtering -->
+        <actionGroup ref="FilterAutomation" stepKey="validateFilters"/>
+        <!--   Indicates that filter is on     -->
+        <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
+
+
+        <actionGroup ref="ClearAndNavigateFilterFields" stepKey="validateFilterFields"/>
+        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationEmailFilter}}" stepKey="seeEmailFilter"/>
+        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationProgramIdFilter}}" stepKey="seeProgramIdFilter"/>
+        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationTypeFilter}}" stepKey="seeTypeFilter"/>
+        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationEnrolmentStatusFilter}}" stepKey="seeEnrolmentStatusFilter"/>
+        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationWebsiteFilter}}" stepKey="seeWebsiteFilter"/>
+        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationMessageFilter}}" stepKey="seeMessageFilter"/>
+        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationStoreNameFilter}}" stepKey="seeStoreNameFilter"/>
+
+    </test>
+</tests>

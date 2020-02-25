@@ -140,7 +140,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             // only for subscribers
             if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED) {
                 //Set contact as subscribed
-                $contactEmail->setSubscriberImported(null)
+                $contactEmail->setSubscriberImported(0)
                     ->setIsSubscriber('1');
 
                 //Subscriber subscribed when it is suppressed in table then re-subscribe

@@ -33,7 +33,7 @@ class CouponAttributeCollection extends AbstractCollection
             ->addFieldToFilter('salesrule_coupon.rule_id', $ruleId)
             ->join(
                 ['salesrule_coupon' => $this->getTable('salesrule_coupon')],
-                'salesrule_coupon.coupon_id = main_table.coupon_id'
+                'salesrule_coupon.coupon_id = main_table.salesrule_coupon_id'
             )
             ->load();
     }

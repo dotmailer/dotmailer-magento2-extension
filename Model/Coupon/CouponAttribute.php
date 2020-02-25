@@ -61,7 +61,7 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
      */
     public function getCouponId()
     {
-        return $this->getData(self::COUPON_ID);
+        return $this->getData(self::SALESRULE_COUPON_ID);
     }
 
     /**
@@ -69,7 +69,7 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
      */
     public function setCouponId($coupon_id)
     {
-        return $this->setData(self::COUPON_ID, $coupon_id);
+        return $this->setData(self::SALESRULE_COUPON_ID, $coupon_id);
     }
 
     /**

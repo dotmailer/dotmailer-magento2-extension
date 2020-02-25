@@ -138,7 +138,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $collection = $this->addFieldToFilter('store_id', ['in' => $storeIds])
             ->addFieldToFilter('order_status', ['in' => $orderStatuses])
-            ->addFieldToFilter('email_imported', ['null' => true]);
+            ->addFieldToFilter('email_imported', 0);
 
         $collection->getSelect()->limit($limit);
 
