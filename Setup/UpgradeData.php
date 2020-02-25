@@ -131,7 +131,7 @@ class UpgradeData implements UpgradeDataInterface
         }
 
         $this->upgradeFourOhOne($setup, $context);
-        $this->upgradeFourThreeFive($setup, $context);
+        $this->upgradeFourThreeSix($setup, $context);
 
         $installer->endSetup();
     }
@@ -250,11 +250,11 @@ class UpgradeData implements UpgradeDataInterface
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
      */
-    private function upgradeFourThreeFive(
+    private function upgradeFourThreeSix(
         ModuleDataSetupInterface $setup,
         ModuleContextInterface $context
     ) {
-        if (version_compare($context->getVersion(), '4.3.5', '<')) {
+        if (version_compare($context->getVersion(), '4.3.6', '<')) {
             $orderTable = $setup->getTable(Schema::EMAIL_ORDER_TABLE);
             $contactTable = $setup->getTable(Schema::EMAIL_CONTACT_TABLE);
             $reviewTable = $setup->getTable(Schema::EMAIL_REVIEW_TABLE);

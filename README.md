@@ -19,6 +19,21 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.3.6
+
+###### What's new
+- We've made a handful of changes to support our forthcoming B2B module. These are architectural changes that facilitate the creation of plugin code, and have not added new functionality. 
+- Codes for campaign tracking and ROI tracking applied to the **Get basket** link in the abandoned cart EDC are now preserved and applied at their destination.
+- We've added MFTF tests to test our dashboard and various report layouts.
+
+###### Fixes
+- Exclusion rules can now have conditions relating to product attribute sets.
+- The imported / not imported filter on some of our report grids now functions as expected. 
+- We fixed a regression introduced in 4.3.4 that prevented new exclusion rules being saved.
+- We now limit product short descriptions to 1000 characters as opposed to 250.
+- We've resolved an issue with filtering the _Manage Coupon Codes_ grid of a cart price rule.
+- The key name for the creation date timestamp in the CartInsight schema is being changed, to fix the cart age metric in **My Store > Abandoned carts**.
+
 # 4.3.5
 
 ###### Fixes

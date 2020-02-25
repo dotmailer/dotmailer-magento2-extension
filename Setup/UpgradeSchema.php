@@ -54,7 +54,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->upgradeFourZeroOne($setup, $context);
         $this->upgradeFourThreeZero($setup, $context, $connection);
         $this->upgradeFourThreeFour($setup, $context, $connection);
-        $this->upgradeFourThreeFive($setup, $connection, $context);
+        $this->upgradeFourThreeSix($setup, $connection, $context);
 
         $setup->endSetup();
     }
@@ -541,12 +541,12 @@ class UpgradeSchema implements UpgradeSchemaInterface
      * @param AdapterInterface $connection
      * @param ModuleContextInterface $context
      */
-    private function upgradeFourThreeFive(
+    private function upgradeFourThreeSix(
         SchemaSetupInterface $setup,
         AdapterInterface $connection,
         ModuleContextInterface $context
     ) {
-        if (version_compare($context->getVersion(), '4.3.5', '<')) {
+        if (version_compare($context->getVersion(), '4.3.6', '<')) {
 
             /* Update coupon_id column name */
             $couponTable = $setup->getTable(Schema::EMAIL_COUPON_TABLE);
