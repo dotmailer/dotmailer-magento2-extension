@@ -2,9 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Data\Form\Element;
 
-use Magento\Framework\Data\Form\Element\Text;
+use Magento\Framework\Data\Form\Element\Textarea;
 
-class CouponUrlText extends Text
+class CouponUrlText extends Textarea
 {
     /**
      * @return array|string[]

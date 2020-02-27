@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
+use Dotdigitalgroup\Email\Helper\Config;
+
 class Getbasket extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -29,6 +31,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     private $customerSessionFactory;
 
+    private $params = [];
+
     /**
      * Getbasket constructor.
      *
@@ -54,15 +58,13 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Wishlist page to display the user items with specific email.
-     *
-     * @return null
      */
     public function execute()
     {
         $quoteId = $this->getRequest()->getParam('quote_id');
         //no quote id redirect to base url
         if (!$quoteId) {
-            return $this->_redirect('');
+            return $this->_redirect($this->getRedirectWithParams(''));
         }
 
         /** @var \Magento\Quote\Model\Quote $quoteModel */
@@ -72,7 +74,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
         //no quote id redirect to base url
         if (! $quoteModel->getId()) {
-            return $this->_redirect('');
+            return $this->_redirect($this->getRedirectWithParams(''));
         }
 
         //set quoteModel to _quote property for later use
@@ -94,9 +96,9 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     {
         /** @var \Magento\Customer\Model\Session $customerSession */
         $customerSession = $this->customerSessionFactory->create();
-        $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL
-        );
+        $configCartUrl = $this->quote->getStore()
+            ->getWebsite()
+            ->getConfig(Config::XML_PATH_CONNECTOR_CONTENT_CART_URL);
 
         //if customer is logged in then redirect to cart
         if ($customerSession->isLoggedIn()
@@ -119,7 +121,9 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                 );
             }
 
-            $this->_redirect($url);
+            $this->_redirect(
+                $this->getRedirectWithParams($url)
+            );
         } else {
             if ($configCartUrl) {
                 $cartUrl = $configCartUrl;
@@ -128,20 +132,23 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             }
             //set before auth url. customer will be redirected to cart after successful login
             $customerSession->setBeforeAuthUrl(
-                $this->quote->getStore()->getUrl($cartUrl)
+                $this->getRedirectWithParams($this->quote->getStore()->getUrl($cartUrl))
             );
 
             //send customer to login page
-            $configLoginUrl = $this->quote->getStore()->getWebsite()
-                ->getConfig(
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LOGIN_URL
-                );
+            $configLoginUrl = $this->quote->getStore()
+                ->getWebsite()
+                ->getConfig(Config::XML_PATH_CONNECTOR_CONTENT_LOGIN_URL);
+
             if ($configLoginUrl) {
                 $loginUrl = $configLoginUrl;
             } else {
                 $loginUrl = 'customer/account/login';
             }
-            $this->_redirect($this->quote->getStore()->getUrl($loginUrl));
+
+            $this->_redirect(
+                $this->getRedirectWithParams($this->quote->getStore()->getUrl($loginUrl))
+            );
         }
     }
 
@@ -182,15 +189,62 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     private function handleGuestBasket()
     {
-        $configCartUrl = $this->quote->getStore()->getWebsite()->getConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_CART_URL
-        );
+        $configCartUrl = $this->quote->getStore()
+            ->getWebsite()
+            ->getConfig(Config::XML_PATH_CONNECTOR_CONTENT_CART_URL);
 
         if ($configCartUrl) {
             $url = $configCartUrl;
         } else {
             $url = 'checkout/cart';
         }
-        $this->_redirect($this->quote->getStore()->getUrl($url));
+
+        $this->_redirect(
+            $this->getRedirectWithParams($this->quote->getStore()->getUrl($url))
+        );
+    }
+
+    /**
+     * Get the URL to redirect, maintaining any query string parameters passed
+     *
+     * @param string $path
+     * @return string
+     */
+    private function getRedirectWithParams(string $path)
+    {
+        // params already processed, proceed
+        if (!empty($this->params)) {
+            return $path;
+        }
+
+        // get any params without quote_id
+        $params = array_diff_key($this->getRequest()->getParams(), ['quote_id' => null]);
+        if (empty($params)) {
+            return $path;
+        }
+
+        $this->params = $params;
+
+        // dm_i params are exceptional because they cannot be altered in the process of encoding
+        $dm_i = null;
+        if (isset($params['dm_i'])) {
+            $dm_i = $params['dm_i'];
+            unset($params['dm_i']);
+        }
+
+        $redirectWithParams = sprintf(
+            '%s%s%s',
+            $path,
+            strpos($path, '?') !== false ? '&' : '?',
+            http_build_query($params, null, "&", PHP_QUERY_RFC3986)
+        );
+
+        if ($dm_i) {
+            return $redirectWithParams .
+                ($params ? '&' : '') .
+                'dm_i=' . $dm_i;
+        }
+
+        return $redirectWithParams;
     }
 }

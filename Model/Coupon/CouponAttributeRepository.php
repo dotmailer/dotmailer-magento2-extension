@@ -9,7 +9,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 class CouponAttributeRepository implements CouponAttributeRepositoryInterface
 {
     /**
-     * @var $couponAttributeFactory
+     * @var CouponAttributeFactory
      */
     private $couponAttributeFactory;
 
@@ -29,7 +29,7 @@ class CouponAttributeRepository implements CouponAttributeRepositoryInterface
     public function getById($id)
     {
         $couponAttribute = $this->couponAttributeFactory->create();
-        $couponAttribute->getResource()->load($couponAttribute, $id, 'coupon_id');
+        $couponAttribute->getResource()->load($couponAttribute, $id, CouponAttributeInterface::SALESRULE_COUPON_ID);
         if (! $couponAttribute->getId()) {
             throw new NoSuchEntityException(__('Unable to find coupon attribute with ID "%1"', $id));
         }

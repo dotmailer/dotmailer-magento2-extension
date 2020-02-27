@@ -69,7 +69,7 @@ class SyncProvider
     /**
      * @var ReviewFactory
      */
-    private $reviewfactory;
+    private $reviewFactory;
 
     /**
      * @var SubscriberFactory
@@ -87,7 +87,6 @@ class SyncProvider
     private $wishlistFactory;
 
     /**
-     * SyncProvider constructor
      * @param AbandonedCartFactory $abandonedCartFactory
      * @param AutomationFactory $automationFactory
      * @param CampaignFactory $campaignFactory
@@ -126,23 +125,29 @@ class SyncProvider
         $this->importerFactory = $importerFactory;
         $this->integrationInsightsFactory = $integrationInsightsFactory;
         $this->orderFactory = $orderFactory;
-        $this->reviewfactory = $reviewFactory;
+        $this->reviewFactory = $reviewFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->templateFactory = $templateFactory;
         $this->wishlistFactory = $wishlistFactory;
     }
 
     /**
-     * Get names of available sync objects
-     * @param bool $concreteName    Get the concrete class name (not it's factory)
+     * Get available sync factories
+     *
+     * @param array $additionalSyncs
      * @return array
      */
-    public function getAvailableSyncs($concreteName = true)
+    public function getAvailableSyncs(array $additionalSyncs = [])
     {
-        return array_map(function ($class) use ($concreteName) {
+        static $availableSyncs;
+
+        return $availableSyncs ?: $availableSyncs = array_map(function ($class) {
             $classBasename = substr(get_class($class), strrpos(get_class($class), '\\') + 1);
-            return $concreteName ? str_replace('Factory', '', $classBasename) : $classBasename;
-        }, get_object_vars($this));
+            return [
+                'title' => str_replace('Factory', '', $classBasename),
+                'factory' => $class,
+            ];
+        }, get_object_vars($this) + $additionalSyncs);
     }
 
     /**
@@ -152,11 +157,11 @@ class SyncProvider
      */
     public function __get($name)
     {
-        $name .= 'Factory';
-        $availableSyncs = $this->getAvailableSyncs(false);
+        $name = lcfirst($name) . 'Factory';
+        $availableSyncs = $this->getAvailableSyncs();
 
-        if (in_array($name, $availableSyncs)) {
-            return $this->{array_search($name, $availableSyncs)}->create();
+        if (isset($availableSyncs[$name])) {
+            return $availableSyncs[$name]['factory']->create();
         }
         return null;
     }

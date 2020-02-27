@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Review\Model\ResourceModel\Rating\Option;
 
 class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
@@ -112,17 +112,14 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $where = [
                 'created_at >= ?' => $from . ' 00:00:00',
                 'created_at <= ?' => $to . ' 23:59:59',
-                'review_imported is ?' => new \Zend_Db_Expr('not null')
+                'review_imported' => 1
             ];
         } else {
-            $where = $conn->quoteInto(
-                'review_imported is ?',
-                new \Zend_Db_Expr('not null')
-            );
+            $where = ['review_imported' => 1];
         }
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_REVIEW_TABLE),
-            ['review_imported' => new \Zend_Db_Expr('null')],
+            ['review_imported' => 0],
             $where
         );
 

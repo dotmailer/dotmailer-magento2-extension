@@ -45,7 +45,7 @@ class Update extends AbstractItemSyncer
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param Contact $contactResource
      * @param Customer $apiConnectorCustomer
@@ -55,7 +55,7 @@ class Update extends AbstractItemSyncer
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         Contact $contactResource,
         Customer $apiConnectorCustomer,

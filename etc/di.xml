@@ -107,6 +107,7 @@
     <preference for="Magento\Framework\Mail\Template\SenderResolverInterface" type="Dotdigitalgroup\Email\Model\Email\DotdigitalSenderResolver" />
     <preference for="Dotdigitalgroup\Email\Api\CouponAttributeRepositoryInterface" type="Dotdigitalgroup\Email\Model\Coupon\CouponAttributeRepository"/>
     <preference for="Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface" type="Dotdigitalgroup\Email\Model\Coupon\CouponAttribute"/>
+    <preference for="Dotdigitalgroup\Email\Api\TierPriceFinderInterface" type="Dotdigitalgroup\Email\Model\Product\TierPriceFinder" />
     <preference for="Magento\Framework\Filesystem\DriverInterface" type="Magento\Framework\Filesystem\Driver\File" />
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
         <arguments>

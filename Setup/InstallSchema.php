@@ -6,6 +6,8 @@ use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\DB\Ddl\Table;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Dotdigitalgroup\Email\Setup\Schema\Shared;
 
 /**
  * @codeCoverageIgnore
@@ -13,17 +15,17 @@ use Magento\Framework\DB\Ddl\Table;
 class InstallSchema implements InstallSchemaInterface
 {
     /**
-     * @var Schema\Shared
+     * @var Shared
      */
     private $shared;
 
     /**
      * InstallSchema constructor.
      *
-     * @param Schema\Shared $shared
+     * @param Shared $shared
      */
     public function __construct(
-        Schema\Shared $shared
+        Shared $shared
     ) {
         $this->shared = $shared;
     }
@@ -172,15 +174,15 @@ class InstallSchema implements InstallSchemaInterface
                 'email_imported',
                 \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                 null,
-                ['unsigned' => true, 'nullable' => true],
+                ['unsigned' => true, 'nullable' => false],
                 'Is Imported'
             )
             ->addColumn(
                 'subscriber_imported',
                 \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                 null,
-                ['unsigned' => true, 'nullable' => true],
-                'Subscriber Imported'
+                ['unsigned' => true, 'nullable' => false],
+                'Is Subscriber Imported'
             )
             ->addColumn(
                 'suppressed',
@@ -349,7 +351,7 @@ class InstallSchema implements InstallSchemaInterface
             'email_imported',
             \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
             null,
-            ['unsigned' => true, 'nullable' => true],
+            ['unsigned' => true, 'nullable' => false],
             'Is Order Imported'
         )
         ->addColumn(
@@ -736,7 +738,7 @@ class InstallSchema implements InstallSchemaInterface
             'review_imported',
             \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
             null,
-            ['unsigned' => true, 'nullable' => true],
+            ['unsigned' => true, 'nullable' => false],
             'Review Imported'
         )
         ->addColumn(
@@ -888,7 +890,7 @@ class InstallSchema implements InstallSchemaInterface
             'wishlist_imported',
             \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
             null,
-            ['unsigned' => true, 'nullable' => true],
+            ['unsigned' => true, 'nullable' => false],
             'Wishlist Imported'
         )
         ->addColumn(

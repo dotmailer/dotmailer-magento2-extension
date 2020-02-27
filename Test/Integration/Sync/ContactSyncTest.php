@@ -158,7 +158,7 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
             ->setWebsiteId($customer->getWebsiteId())
             ->setStoreId($customer->getStoreId())
             ->setEmail($customer->getEmail())
-            ->setEmailImported(null);
+            ->setEmailImported(0);
 
         $emailContact->save();
     }

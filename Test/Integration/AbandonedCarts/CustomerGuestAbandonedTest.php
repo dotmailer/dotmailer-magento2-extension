@@ -65,7 +65,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         $mockClient->method('getContactByEmail')
             ->willReturn((object) [
                 'id' => 1234566,
-                'status' => Quote::STATUS_CONFIRMED,
+                'status' => "Subscribed",
             ]);
 
         $clientFactoryClass = 'Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory';

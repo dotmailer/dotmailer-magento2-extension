@@ -61,7 +61,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
-        $form->setHtmlIdPrefix('coupons_');
+        $form->setHtmlIdPrefix('ddg_coupons_');
         $fieldset = $form->addFieldset('information_fieldset', []);
         $fieldset->addType('coupon-url', CouponUrlText::class);
         $fieldset->addClass('ignore-validate');
@@ -90,12 +90,12 @@ EOT;
             $fieldset->addField('ddg_comment_field', 'note', $commentField);
         }
 
-        $fieldset->addField('ddg_rule_id', 'hidden', [
+        $fieldset->addField('rule_id', 'hidden', [
             'name' => 'ddg_rule_id',
             'value' => $ruleId,
         ]);
 
-        $fieldset->addField('ddg_enabled', 'hidden', [
+        $fieldset->addField('enabled', 'hidden', [
             'name' => 'ddg_enabled',
             'value' => $enableFields,
         ]);

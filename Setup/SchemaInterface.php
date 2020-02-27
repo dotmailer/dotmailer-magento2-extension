@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Setup;
 
-interface Schema
+interface SchemaInterface
 {
     const EMAIL_CONTACT_TABLE = 'email_contact';
     const EMAIL_ORDER_TABLE = 'email_order';

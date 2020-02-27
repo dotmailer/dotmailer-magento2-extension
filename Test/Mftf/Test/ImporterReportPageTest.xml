@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="ImporterReportPageTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital report grids"/>
+            <title value="Test Importer Status Grid"/>
+            <description value="The dotdigital Import report can be viewed, filtered and sorted."/>
+            <severity value="MAJOR"/>
+            <group value="FS/106771-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminImporterReportPage.url}}" stepKey="amOnImportReportPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Confirm That Columns Exist -->
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Id')}}" stepKey="seeImportId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Mode')}}" stepKey="seeImportMode"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Status')}}" stepKey="seeImportStatus"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Message')}}" stepKey="seeMessage"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Started At')}}" stepKey="seeStartedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Finished At')}}" stepKey="seeFinishedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Website')}}" stepKey="seeWebsite"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created Date')}}" stepKey="seeCreatedDate"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated Date')}}" stepKey="seeUpdatedDate"/>
+
+        <!-- Sorting -->
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Type')}}" stepKey="clickImportIdHeaderToSortAsc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Import Type')}}" stepKey="checkIfImportAsc"/>
+
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Type')}}" stepKey="clickImportIdHeaderToSortDesc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Import Type')}}" stepKey="checkIfImportDesc"/>
+
+        <!-- Filtering -->
+        <actionGroup ref="FilterImporter" stepKey="validateFilters"/>
+        <!--   Indicates that filter is on     -->
+        <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
+
+
+        <actionGroup ref="ClearAndNavigateFilterFields" stepKey="validateFilterFields"/>
+        <seeElement selector="{{AdminImporterFilterFieldsSection.importIdFilter}}" stepKey="seeImportIdFilter"/>
+        <seeElement selector="{{AdminImporterFilterFieldsSection.importTypeFilter}}" stepKey="seeImportTypeFilter"/>
+        <seeElement selector="{{AdminImporterFilterFieldsSection.importModeFilter}}" stepKey="seeImportModeFilter"/>
+        <seeElement selector="{{AdminImporterFilterFieldsSection.importStatusFilter}}" stepKey="seeImportStatusFilter"/>
+        <seeElement selector="{{AdminImporterFilterFieldsSection.messageFilter}}" stepKey="seeMessageFilter"/>
+        <seeElement selector="{{AdminImporterFilterFieldsSection.websiteFilter}}" stepKey="seeWebsiteFilter"/>
+
+    </test>
+</tests>

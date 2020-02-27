@@ -20,11 +20,6 @@ class Data
     private $productRepository;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    private $scopeConfig;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -40,29 +35,33 @@ class Data
     private $urlFinder;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Product\ImageFinder
+     */
+    private $imageFinder;
+
+    /**
      * Data constructor.
-     *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
-        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder
     ) {
         $this->storeManager = $storeManager;
         $this->productRepository = $productRepository;
-        $this->scopeConfig = $scopeConfig;
         $this->helper = $helper;
         $this->dateTime = $dateTime;
         $this->urlFinder = $urlFinder;
+        $this->imageFinder = $imageFinder;
     }
 
     /**
@@ -115,7 +114,7 @@ class Data
             $discountTotal += $item->getDiscountAmount();
             $product = $this->productRepository->getById($item->getProduct()->getId(), false, $store->getId());
 
-            $mediaPath = $this->getProductImageUrl($item, $store);
+            $mediaPath = $this->imageFinder->getProductImageUrl($item, $store);
 
             $lineItems[] = [
                 'sku' => $item->getSku(),
@@ -150,46 +149,5 @@ class Data
             self::CONNECTOR_BASKET_PATH,
             ['quote_id' => $quoteId]
         );
-    }
-
-    /**
-     * Get product image URL. We respect the "Configurable Product Image" setting in determining
-     * which image to retrieve.
-     *
-     * @param \Magento\Quote\Model\Quote\Item $item
-     * @param \Magento\Store\Api\Data\StoreInterface $store
-     *
-     * @return string
-     *
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    private function getProductImageUrl($item, $store)
-    {
-        $url = "";
-        $base = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA, true) . 'catalog/product';
-
-        $configurableProductImage = $this->scopeConfig->getValue(
-            'checkout/cart/configurable_product_image',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store->getId()
-        );
-
-        if ($configurableProductImage === "itself") {
-
-            // Use item SKU to retrieve properties of configurable products
-            $id = $item->getProduct()->getIdBySku($item->getSku());
-            $product = $this->productRepository->getById($id);
-
-            if ($product->getThumbnail() !== "no_selection") {
-                return $base . $product->getThumbnail();
-            }
-        }
-
-        // Parent thumbnail
-        if ($item->getProduct()->getThumbnail() !== "no_selection") {
-            $url = $base . $item->getProduct()->getThumbnail();
-        }
-
-        return $url;
     }
 }

@@ -19,7 +19,7 @@ class Bulk extends AbstractItemSyncer
      * Bulk constructor.
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Dotdigitalgroup\Email\Model\Config\Json $serializer
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param BulkItemPostProcessorFactory $postProcessor
      * @param array $data
@@ -27,7 +27,7 @@ class Bulk extends AbstractItemSyncer
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\Config\Json $serializer,
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         BulkItemPostProcessorFactory $postProcessor,
         array $data = []

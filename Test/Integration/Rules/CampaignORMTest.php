@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection as CampaignCollection;
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\App\ResourceConnection;
 use Magento\TestFramework\ObjectManager;
 

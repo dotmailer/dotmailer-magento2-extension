@@ -37,12 +37,11 @@ class Exporter
     }
 
     /**
-     * Export catalog.
-     *
-     * @param string $storeId
-     * @param array $productsToProcess
-     *
+     * @param $storeId
+     * @param $productsToProcess
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function exportCatalog($storeId, $productsToProcess)
     {

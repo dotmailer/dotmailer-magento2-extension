@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
-use Dotdigitalgroup\Email\Setup\Schema;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -32,18 +32,15 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $where = [
                 'created_at >= ?' => $from . ' 00:00:00',
                 'created_at <= ?' => $to . ' 23:59:59',
-                'email_imported is ?' => new \Zend_Db_Expr('not null')
+                'email_imported' => 1
             ];
         } else {
-            $where = $conn->quoteInto(
-                'email_imported is ?',
-                new \Zend_Db_Expr('not null')
-            );
+            $where = ['email_imported' => 1];
         }
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_ORDER_TABLE),
             [
-                'email_imported' => new \Zend_Db_Expr('null'),
+                'email_imported' => 0,
                 'modified' => new \Zend_Db_Expr('null'),
             ],
             $where
@@ -70,7 +67,7 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $tableName,
             [
                 'modified' => new \Zend_Db_Expr('null'),
-                'email_imported' => '1',
+                'email_imported' => 1,
                 'updated_at' => gmdate('Y-m-d H:i:s')
             ],
             ["order_id IN (?)" => $ids]

@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Test\Integration\Model\Sync\Review;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\Serialize\SerializerInterface;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Review;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
@@ -49,7 +49,7 @@ class ReviewTest extends \PHPUnit\Framework\TestCase
     private $mageReviewCollection;
 
     /**
-     * @var Json
+     * @var SerializerInterface
      */
     private $serializer;
 
@@ -104,7 +104,7 @@ class ReviewTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->serializer = $this->objectManager->create(
-            \Dotdigitalgroup\Email\Model\Config\Json::class
+            SerializerInterface::class
         );
 
         $this->customerFactory = $this->objectManager->get('\Magento\Customer\Model\CustomerFactory')->create();

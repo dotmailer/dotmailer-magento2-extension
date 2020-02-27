@@ -98,7 +98,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         $this->helper = $data;
         $this->storeManager = $storeManagerInterface;
         $this->registry = $registry;
-        $this->importerFactory = $importerFactory->create();
+        $this->importerFactory = $importerFactory;
         $this->dateTime = $dateTime;
     }
 
@@ -140,12 +140,12 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             // only for subscribers
             if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED) {
                 //Set contact as subscribed
-                $contactEmail->setSubscriberImported(null)
+                $contactEmail->setSubscriberImported(0)
                     ->setIsSubscriber('1');
 
                 //Subscriber subscribed when it is suppressed in table then re-subscribe
                 if ($contactEmail->getSuppressed()) {
-                    $this->importerFactory->registerQueue(
+                    $this->importerFactory->create()->registerQueue(
                         \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
                         ['email' => $email],
                         \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
@@ -176,7 +176,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 }
 
                 //Add subscriber update to importer queue
-                $this->importerFactory->registerQueue(
+                $this->importerFactory->create()->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
                     ['email' => $email, 'id' => $contactEmail->getId()],
                     \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,

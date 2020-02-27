@@ -1,6 +1,6 @@
 <?php
 
-use Dotdigitalgroup\Email\Model\Config\Json;
+use Magento\Framework\Serialize\Serializer\Json;
 
 $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 

@@ -36,12 +36,12 @@ define([
 
         updateEdcCouponUrl: function () {
             var couponAttributes = [];
-            var ddgEnabled = document.getElementById('coupons_ddg_enabled').getValue();
-            var inputCouponUrl = document.getElementById('coupons_edc_url');
-            var allowResend = parseInt(document.getElementById('coupons_allow_resend').getValue());
-            var cancelSendField = document.getElementById('coupons_cancel_send');
+            var ddgEnabled = document.getElementById('ddg_coupons_enabled').getValue();
+            var inputCouponUrl = document.getElementById('ddg_coupons_edc_url');
+            var allowResend = parseInt(document.getElementById('ddg_coupons_allow_resend').getValue());
+            var cancelSendField = document.getElementById('ddg_coupons_cancel_send');
             var couponUrl = inputCouponUrl.getAttribute('data-baseurl') + '/';
-            var expiresAfter = document.getElementById('coupons_expires_after');
+            var expiresAfter = document.getElementById('ddg_coupons_expires_after');
             var expireDays = expiresAfter.getValue();
 
             if (!parseInt(expireDays) || parseInt(expireDays) < 1) {
@@ -56,14 +56,14 @@ define([
 
             ['prefix', 'suffix', 'format', 'allow_resend', 'cancel_send', 'expires_after']
                 .forEach(function (field) {
-                    var inputField = document.getElementById('coupons_' + field);
+                    var inputField = document.getElementById('ddg_coupons_' + field);
                     if (!!inputField.getValue() && !inputField.hasAttribute('disabled')) {
                         couponAttributes.push('code_' + field + '/' + inputField.getValue());
                     }
                 });
 
             couponAttributes.push(inputCouponUrl.getAttribute('data-email-merge-field'));
-            inputCouponUrl.setValue(couponUrl += couponAttributes.join('/'));
+            inputCouponUrl.setValue(couponUrl + couponAttributes.join('/'));
         },
 
         /*eslint-enable no-unused-vars*/
@@ -73,8 +73,8 @@ define([
          * Enable/disable fields on Coupons tab
          */
         enableDisableFields: function () {
-            var ddgEnabled = document.getElementById('coupons_ddg_enabled').getValue();
-            var isExistingRule = !!document.querySelector('#coupons_ddg_rule_id').getValue();
+            var ddgEnabled = document.getElementById('ddg_coupons_enabled').getValue();
+            var isExistingRule = !!document.querySelector('#ddg_coupons_rule_id').getValue();
             var disableAuto;
             var isUseAutoGenerationChecked = uiRegistry
                 .get('sales_rule_form.sales_rule_form.rule_information.use_auto_generation')
@@ -101,7 +101,7 @@ define([
             );
 
             if (uiRegistry.get('sales_rule_form.sales_rule_form.rule_information.to_date').value() !== '') {
-                document.querySelector('#ddg-sales-rule-form-tab-coupons #coupons_expires_after').disabled = true;
+                document.querySelector('#ddg-sales-rule-form-tab-coupons #ddg_coupons_expires_after').disabled = true;
             }
         }
     });

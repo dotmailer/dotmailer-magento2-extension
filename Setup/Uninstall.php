@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Setup;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UninstallInterface;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class Uninstall implements UninstallInterface
 {

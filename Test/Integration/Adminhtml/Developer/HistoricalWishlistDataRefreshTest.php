@@ -184,7 +184,7 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
 
         $collection = $this->_objectManager->create($this->model)
             ->getCollection();
-        $collection->addFieldToFilter('wishlist_imported', ['null' => true]);
+        $collection->addFieldToFilter('wishlist_imported', 0);
         return $collection;
     }
 }

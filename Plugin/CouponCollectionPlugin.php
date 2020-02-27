@@ -17,7 +17,7 @@ class CouponCollectionPlugin
         $collection->getSelect()
             ->joinLeft(
                 ['eca' => $collection->getTable('email_coupon_attribute')],
-                'eca.coupon_id = main_table.coupon_id'
+                'eca.salesrule_coupon_id = main_table.coupon_id'
             );
 
         return $collection;
