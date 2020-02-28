@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="ExclusionRuleReviewTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test exclusion rules"/>
+            <title value="Test review exclusion rules"/>
+            <description value="An exclusion rule for reviews can be created with conditions."/>
+            <severity value="MAJOR"/>
+            <group value="AM/109294-mftf"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+
+        <!-- Create an exclusion rule for reviews -->
+        <actionGroup ref="CreateExclusionRule" stepKey="createExclusionRule">
+            <argument name="ruleType" value="Review Email Exclusion Rule"/>
+        </actionGroup>
+
+        <!-- Edit the exclusion rule -->
+        <actionGroup ref="EditExclusionRuleByName" stepKey="EditExclusionRule">
+            <argument name="ruleName" value="{{DotExclusionRule.ruleName}}"/>
+        </actionGroup>
+
+        <!-- Delete the exclusion rule -->
+        <actionGroup ref="DeleteExclusionRuleByName" stepKey="DeleteExclusionRule">
+            <argument name="ruleName" value="{{DotExclusionRule.ruleName}}"/>
+        </actionGroup>
+
+    </test>
+</tests>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="ExclusionRulesSection">
+        <element name="add" type="button" selector="#add"/>
+        <element name="showFilters" type="button" selector="button[data-action='grid-filter-expand']"/>
+        <element name="filterByNameInput" type="input" selector="input[name='name']"/>
+        <element name="applyFilterButton" type="button" selector="button[data-action='grid-filter-apply']" timeout="30"/>
+        <element name="rowByIndex" type="text" selector="tr.data-row:nth-of-type({{var1}}) .action-menu-item" parameterized="true" timeout="30"/>
+        <element name="selectRowByIndex" type="checkbox" selector="tr.data-row:nth-of-type({{var1}}) input[data-action='select-row']" parameterized="true" timeout="30"/>
+        <element name="actionMenu" type="button" selector="button.action-select" timeout="30"/>
+        <element name="deleteBtn" type="button" selector="//div[@class='action-menu-items']//*[text()='Delete']" timeout="30"/>
+
+        <element name="ruleName" type="input" selector="#rule_name"/>
+        <element name="ruleType" type="select" selector="#rule_type"/>
+        <element name="status" type="select" selector="#rule_status"/>
+        <element name="websites" type="multiselect" selector="#rule_website_ids"/>
+
+        <element name="ruleCombination" type="select" selector="#rule_combination" />
+
+        <element name="conditionAttribute1" type="select" selector="#condition tbody tr:nth-of-type(1) select[title='attribute']" timeout="30" />
+        <element name="conditionOperator1" type="select" selector="#condition tbody tr:nth-of-type(1) select[title='conditions']" timeout="30" />
+        <element name="conditionValue1" type="input" selector="#condition tbody tr:nth-of-type(1) input[title='cvalue']" />
+
+        <element name="conditionAttribute2" type="select" selector="#condition tbody tr:nth-of-type(2) select[title='attribute']" timeout="30" />
+        <element name="conditionOperator2" type="select" selector="#condition tbody tr:nth-of-type(2) select[title='conditions']" timeout="30" />
+        <element name="conditionValue2" type="input" selector="#condition tbody tr:nth-of-type(2) input[title='cvalue']" />
+
+        <element name="conditionsTab" type="button" selector="#ddg_rules_tabs_conditions_section" timeout="30"/>
+        <element name="addNewCondition" type="button" selector=".action-add" timeout="30"/>
+        <element name="deleteCondition" type="button" selector="#condition tbody tr:nth-of-type(1) .action-delete" timeout="30"/>
+        <element name="delete" type="button" selector="#delete" timeout="30"/>
+        <element name="modalAcceptButton" type="button" selector="button.action-accept" timeout="30"/>
+        <element name="save" type="button" selector="#save" timeout="30"/>
+    </section>
+</sections>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="DotExclusionRule">
+        <data key="ruleName" unique="suffix">DotdigitalExclusionRule</data>
+        <data key="code" unique="suffix">DotdigitalExclusionRule</data>
+        <data key="status">Active</data>
+        <data key="websites">Main Website</data>
+        <data key="combination">ALL</data>
+        <data key="attribute1">Email</data>
+        <data key="operator1">contains</data>
+        <data key="value1">emailsim.io</data>
+        <data key="attribute2">Total Qty</data>
+        <data key="operator2">is</data>
+        <data key="value2">5</data>
+    </entity>
+</entities>
