@@ -54,7 +54,9 @@ class MessagePlugin
         if ($this->shouldIntercept()) {
             if ($body instanceof \Zend\Mime\Message && $body->getParts()) {
                 foreach ($body->getParts() as $bodyPart) {
-                    $bodyPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
+                    if ($bodyPart instanceof Part) {
+                        $bodyPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
+                    }
                 }
                 return [$body];
             }
