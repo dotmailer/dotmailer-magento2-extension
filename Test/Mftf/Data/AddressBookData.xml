@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="AddressBooks">
+        <data key="subscriberAddressBookName" unique="suffix">Magento_Subscribers</data>
+        <data key="customerAddressBookName" unique="suffix">Magento_Customers</data>
+        <data key="guestAddressBookName" unique="suffix">Magento_Guests</data>
+    </entity>
+</entities>
