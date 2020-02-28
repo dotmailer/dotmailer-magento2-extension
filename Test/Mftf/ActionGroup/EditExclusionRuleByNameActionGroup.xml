@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="EditExclusionRuleByName">
+        <arguments>
+            <argument name="ruleName" type="string"/>
+        </arguments>
+
+        <click selector="{{ExclusionRulesSection.showFilters}}" stepKey="showFilters"/>
+        <fillField selector="{{ExclusionRulesSection.filterByNameInput}}" userInput="{{ruleName}}" stepKey="filterByName"/>
+        <click selector="{{ExclusionRulesSection.applyFilterButton}}" stepKey="applyFilter"/>
+        <click selector="{{ExclusionRulesSection.rowByIndex('1')}}" stepKey="goToEditRulePage"/>
+        <waitForPageLoad stepKey="waitForEditPage"/>
+
+        <!-- Open Conditions tab -->
+        <click selector="{{ExclusionRulesSection.conditionsTab}}" stepKey="clickConditionsTab"/>
+
+        <!-- Remove the first condition -->
+        <click selector="{{ExclusionRulesSection.deleteCondition}}" stepKey="deleteFirstCondition"/>
+
+        <click selector="{{ExclusionRulesSection.save}}" stepKey="clickSaveExclusionRule" />
+        <waitForPageLoad stepKey="waitForSave"/>
+    </actionGroup>
+</actionGroups>

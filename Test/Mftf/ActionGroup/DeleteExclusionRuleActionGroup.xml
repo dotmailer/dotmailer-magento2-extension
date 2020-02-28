@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="DeleteExclusionRuleByName">
+        <arguments>
+            <argument name="ruleName" type="string"/>
+        </arguments>
+
+        <click selector="{{ExclusionRulesSection.showFilters}}" stepKey="showFilters"/>
+        <fillField selector="{{ExclusionRulesSection.filterByNameInput}}" userInput="{{ruleName}}" stepKey="filterByName"/>
+        <click selector="{{ExclusionRulesSection.applyFilterButton}}" stepKey="applyFilter"/>
+        <checkOption selector="{{ExclusionRulesSection.selectRowByIndex('1')}}" stepKey="selectRule"/>
+        <click selector="{{ExclusionRulesSection.actionMenu}}" stepKey="clickActionMenu"/>
+        <click selector="{{ExclusionRulesSection.deleteBtn}}" stepKey="clickDelete"/>
+        <click selector="{{ExclusionRulesSection.modalAcceptButton}}" stepKey="confirmDelete"/>
+        <waitForPageLoad stepKey="waitForDelete"/>
+    </actionGroup>
+</actionGroups>
