@@ -32,7 +32,6 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - We fixed a regression introduced in 4.3.4 that prevented new exclusion rules being saved.
 - We now limit product short descriptions to 1000 characters as opposed to 250.
 - We've resolved an issue with filtering the _Manage Coupon Codes_ grid of a cart price rule.
-- The key name for the creation date timestamp in the CartInsight schema is being changed, to fix the cart age metric in **My Store > Abandoned carts**.
 
 # 4.3.5
 
