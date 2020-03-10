@@ -42,6 +42,9 @@
     <type name="Magento\SalesRule\Model\Utility">
         <plugin name="ddg_coupon_expired_plugin" type="Dotdigitalgroup\Email\Plugin\CouponExpiredPlugin"/>
     </type>
+    <type name="Magento\CatalogInventory\Api\StockRegistryInterface">
+        <plugin name="ddg_stock_update_plugin" type="Dotdigitalgroup\Email\Plugin\StockUpdatePlugin"/>
+    </type>
     <type name="Magento\Catalog\Ui\DataProvider\Product\ProductRenderCollectorComposite">
         <arguments>
             <argument name="productProviders" xsi:type="array">
