@@ -1,26 +1,24 @@
 <?php
-/** @var \Dotdigitalgroup\Email\Block\Coupon $block */
-// @codingStandardsIgnoreFile
+/**
+ * @var \Dotdigitalgroup\Email\Block\Coupon $block
+ */
 ?>
 <?php $coupon = $block->generateCoupon(); ?>
 <?php if ($coupon) : ?>
     <?php $style = $block->getStyle(); ?>
-    <style>
-        .edc-coupon{
-            color: <?= $block->escapeHtml($block->getCouponColor());?>;
-            font-size: <?= $block->escapeHtml($block->getFontSize());?>;
-        <?php if (in_array('bold', $style)) : ?>
-            font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $style)) : ?>
-            font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $style)) : ?>
-            text-decoration: underline;
-        <?php endif; ?>
-            font-family: <?= $block->getHtmlFontFamily();?>;
-            background-color: <?= $block->escapeHtml($block->getBackgroundColor());?>;
-        }
-    </style>
-    <div class="edc-coupon">
+    <div class="edc-coupon" style="
+        color: <?= $block->escapeHtml($block->getCouponColor());?>;
+        font-size: <?= $block->escapeHtml($block->getFontSize());?>;
+    <?php if (in_array('bold', $style)) : ?>
+        font-weight: bold;
+    <?php endif; ?><?php if (in_array('italic', $style)) : ?>
+        font-style: italic;
+    <?php endif; ?><?php if (in_array('underline', $style)) : ?>
+        text-decoration: underline;
+    <?php endif; ?>
+        font-family: <?= $block->getHtmlFontFamily();?>;
+        background-color: <?= $block->escapeHtml($block->getBackgroundColor());?>;
+    ">
         <?= $block->escapeHtml($coupon); ?>
     </div>
 <?php endif;
