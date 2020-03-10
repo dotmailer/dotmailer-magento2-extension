@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
+use Dotdigitalgroup\Email\Api\StockFinderInterface;
 
 /**
  * Transactional data for catalog products to sync.
@@ -121,11 +122,6 @@ class Product
     private $urlFinder;
 
     /**
-     * @var \Magento\CatalogInventory\Api\StockStateInterface
-     */
-    private $stockStateInterface;
-
-    /**
      * @var AttributeFactory $attributeHandler
      */
     private $attributeHandler;
@@ -141,17 +137,21 @@ class Product
     private $tierPriceFinder;
 
     /**
+     * @var StockFinderInterface
+     */
+    private $stockFinderInterface;
+
+    /**
      * Product constructor.
-     *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory
      * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
-     * @param \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
      * @param AttributeFactory $attributeHandler
      * @param ParentFinder $parentFinder
      * @param TierPriceFinderInterface $tierPriceFinder
+     * @param StockFinderInterface $stockFinderInterface
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -159,20 +159,20 @@ class Product
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
-        \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface,
         AttributeFactory $attributeHandler,
         ParentFinder $parentFinder,
-        TierPriceFinderInterface $tierPriceFinder
+        TierPriceFinderInterface $tierPriceFinder,
+        StockFinderInterface $stockFinderInterface
     ) {
         $this->visibilityFactory = $visibilityFactory;
         $this->statusFactory = $statusFactory;
         $this->helper = $helper;
         $this->storeManager = $storeManagerInterface;
         $this->urlFinder = $urlFinder;
-        $this->stockStateInterface = $stockStateInterface;
         $this->attributeHandler = $attributeHandler;
         $this->parentFinder = $parentFinder;
         $this->tierPriceFinder = $tierPriceFinder;
+        $this->stockFinderInterface = $stockFinderInterface;
     }
 
     /**
@@ -204,7 +204,7 @@ class Product
 
         $this->imagePath = $this->urlFinder->getProductSmallImageUrl($product);
 
-        $this->stock = (float)number_format($this->getStockQty($product), 2, '.', '');
+        $this->stock = (float)number_format($this->stockFinderInterface->getStockQty($product), 2, '.', '');
 
         //limit short description
         $this->shortDescription = mb_substr(
@@ -245,20 +245,11 @@ class Product
             $this->storeManager,
             $this->attributeHandler,
             $this->parentFinder,
-            $this->tierPriceFinder
+            $this->tierPriceFinder,
+            $this->stockFinderInterface
         );
 
         return $this;
-    }
-
-    /**
-     * @param \Magento\Catalog\Model\Product $product
-     * This function calculates the stock Quantity for each Product.
-     * @return float
-     */
-    private function getStockQty($product)
-    {
-        return $this->stockStateInterface->getStockQty($product->getId(), $product->getStore()->getWebsiteId());
     }
 
     /**
@@ -317,7 +308,7 @@ class Product
                 'statusFactory',
                 'storeManager',
                 'urlFinder',
-                'stockStateInterface',
+                'stockFinderInterface',
                 'attributeHandler',
                 'parentFinder',
                 'tierPriceFinder'

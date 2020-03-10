@@ -28,6 +28,6 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $productModel = $observer->getEvent()->getDataObject();
-        $this->updater->execute($productModel->getId());
+        $this->updater->execute($productModel);
     }
 }

@@ -47,10 +47,6 @@ class ReimportProductTest extends TestCase
             ->method('getDataObject')
             ->willReturn($this->observerMock);
 
-        $this->observerMock->expects($this->once())
-            ->method('getId')
-            ->willReturn($this->observerMock);
-
         $this->updaterMock->expects($this->once())
             ->method('execute')
             ->with($this->observerMock);

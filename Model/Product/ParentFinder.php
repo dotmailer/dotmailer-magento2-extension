@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Product;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 
 class ParentFinder
@@ -67,7 +68,7 @@ class ParentFinder
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
             $this->helper->debug(
                 $e->getMessage() . ' Parent Product: ' .
-                $parentId . ', 
+                $parentId . ',
                 Child Product: ' . $product->getId()
             );
         }
@@ -88,6 +89,30 @@ class ParentFinder
         }
 
         return null;
+    }
+
+    /**
+     * @param array $products
+     * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getConfigurableParentsFromBunchOfProducts($products)
+    {
+        $configurableParents = [];
+
+        foreach ($products as $product) {
+            if (is_array($product) && isset($product['sku'])) {
+                $product = $this->productRepository->get($product['sku']);
+            }
+            if ($product instanceof Product) {
+                $parentProduct = $this->getParentProduct($product);
+                if (isset($parentProduct) && $parentProduct->getTypeId() === 'configurable') {
+                    $configurableParents[] = $parentProduct->getData();
+                }
+            }
+        }
+
+        return array_unique($configurableParents, SORT_REGULAR);
     }
 
     /**
