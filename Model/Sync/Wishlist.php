@@ -77,8 +77,12 @@ class Wishlist implements SyncInterface
     private $datetime;
 
     /**
+     * @var \Magento\Store\Model\App\EmulationFactory
+     */
+    private $emulationFactory;
+
+    /**
      * Wishlist constructor.
-     *
      * @param \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection
      * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory
@@ -88,6 +92,7 @@ class Wishlist implements SyncInterface
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $datetime
+     * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
@@ -98,7 +103,8 @@ class Wishlist implements SyncInterface
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Stdlib\DateTime\DateTime $datetime
+        \Magento\Framework\Stdlib\DateTime\DateTime $datetime,
+        \Magento\Store\Model\App\EmulationFactory $emulationFactory
     ) {
         $this->itemCollection     = $itemCollection;
         $this->wishlistCollection = $wishlistCollection;
@@ -109,6 +115,7 @@ class Wishlist implements SyncInterface
         $this->customerFactory    = $customerFactory;
         $this->helper             = $helper;
         $this->datetime           = $datetime;
+        $this->emulationFactory   = $emulationFactory;
     }
 
     /**
@@ -196,6 +203,9 @@ class Wishlist implements SyncInterface
                                   ->setCustomerId($wishlist->getCustomerId())
                                   ->setEmail($wishlist->getEmail());
 
+                $appEmulation = $this->emulationFactory->create();
+                $appEmulation->startEnvironmentEmulation($wishlist->getStoreId());
+
                 $wishListItemCollection = $this->itemCollection->create()
                                                                ->addWishlistFilter($wishlist);
 
@@ -218,6 +228,7 @@ class Wishlist implements SyncInterface
                     //set wishlists for later use
                     $this->wishlists[$website->getId()][] = $connectorWishlist->expose();
                 }
+                $appEmulation->stopEnvironmentEmulation();
             }
         }
     }

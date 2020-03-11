@@ -24,20 +24,27 @@ class UpdateCatalogBulk
      */
     private $bunch;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Model\Product\ParentFinder
+     */
+    private $parentFinder;
+
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogFactory,
         \Magento\Framework\Stdlib\DateTime $dateTime,
-        \Dotdigitalgroup\Email\Model\Product\Bunch $bunch
+        \Dotdigitalgroup\Email\Model\Product\Bunch $bunch,
+        \Dotdigitalgroup\Email\Model\Product\ParentFinder $parentFinder
     ) {
         $this->catalogResource = $catalogResource;
         $this->catalogFactory = $catalogFactory;
         $this->dateTime = $dateTime;
         $this->bunch = $bunch;
+        $this->parentFinder = $parentFinder;
     }
 
     /**
-     * @param array $bunch
+     * @param $bunch
      */
     public function execute($bunch)
     {
@@ -52,10 +59,16 @@ class UpdateCatalogBulk
     /**
      * Process creates or updates a catalog with products
      * @param $bunch
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function processBatch($bunch)
     {
-        $productIds = $this->bunch->getProductIdsBySkuInBunch($bunch);
+        $mergedWithConfigurableParents = array_merge(
+            $bunch,
+            $this->parentFinder->getConfigurableParentsFromBunchOfProducts($bunch)
+        );
+
+        $productIds = $this->bunch->getProductIdsBySkuInBunch($mergedWithConfigurableParents);
         $existingProductIds = $this->getExistingProductIds($productIds);
 
         $newEntryIds = array_diff($productIds, $existingProductIds);
@@ -80,6 +93,7 @@ class UpdateCatalogBulk
 
     /**
      * Returns all product Id's that belongs to Catalog Collection
+     * @param $productIds
      * @return array
      */
     private function getExistingProductIds($productIds)
@@ -88,7 +102,6 @@ class UpdateCatalogBulk
             ->addFieldToFilter('product_id', ['in' => $productIds])
             ->addFieldToSelect(['product_id']);
 
-        $catalogIds = $connectorCollection->getColumnValues('product_id');
-        return $catalogIds;
+        return $connectorCollection->getColumnValues('product_id');
     }
 }

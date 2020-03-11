@@ -31,6 +31,7 @@
                 <argument name="ruleName" value="{{DotSalesRule.name}}"/>
             </actionGroup>
 
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="logout" stepKey="logout"/>
         </after>
 
@@ -51,7 +52,7 @@
         <assertContains message="The URL value does not match the expected value after code format, code prefix and code suffix are modified." stepKey="assertContains2" actual="$grabUrlValueWithFormatPrefixSuffixUpdated" expected="'{{DotCouponUrl.urlValueWithNumericFormatPrefixAndSuffix}}'" />
 
         <!-- Set option for Expires After and re-verify -->
-        <selectOption selector="{{EngagementCloudCouponUrlBuilderSection.expiresAfter}}" userInput="{{DotCouponUrl.expiresAfter}}" stepKey="setExpiresAfter"/>
+        <fillField selector="{{EngagementCloudCouponUrlBuilderSection.expiresAfter}}" userInput="{{DotCouponUrl.expiresAfter}}" stepKey="setExpiresAfter"/>
 
         <grabValueFrom selector="{{EngagementCloudCouponUrlBuilderSection.urlBuilderOutput}}" stepKey="grabUrlValueWithExpiresAfterUpdated"/>
         <assertContains message="The URL value does not match the expected value after expires after is modified." stepKey="assertContains3" actual="$grabUrlValueWithExpiresAfterUpdated" expected="'{{DotCouponUrl.urlValueWithExpireDays}}'" />

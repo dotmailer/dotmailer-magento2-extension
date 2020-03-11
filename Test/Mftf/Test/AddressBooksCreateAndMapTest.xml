@@ -29,19 +29,19 @@
 
         <comment userInput="Creating address books" stepKey="creatingAddressBooksComment"/>
         <actionGroup ref="CreateAddressBook" stepKey="createCustomersAddressBook">
-            <argument name="addressBookName" value="Magento_Customers"/>
+            <argument name="addressBookName" value="{{AddressBooks.customerAddressBookName}}"/>
         </actionGroup>
         <actionGroup ref="CreateAddressBook" stepKey="createSubscribersAddressBook">
-            <argument name="addressBookName" value="Magento_Subscribers"/>
+            <argument name="addressBookName" value="{{AddressBooks.subscriberAddressBookName}}"/>
         </actionGroup>
         <actionGroup ref="CreateAddressBook" stepKey="createGuestsAddressBook">
-            <argument name="addressBookName" value="Magento_Guests"/>
+            <argument name="addressBookName" value="{{AddressBooks.guestAddressBookName}}"/>
         </actionGroup>
 
         <comment userInput="Mapping address books" stepKey="mappingAddressBooksComment"/>
-        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addCustomersTo}}" userInput="Magento_Customers" stepKey="setCustomersAddressBook"/>
-        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addSubscribersTo}}" userInput="Magento_Subscribers" stepKey="setSubscribersAddressBook"/>
-        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addGuestsTo}}" userInput="Magento_Guests" stepKey="setGuestsAddressBook"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addCustomersTo}}" userInput="{{AddressBooks.customerAddressBookName}}" stepKey="setCustomersAddressBook"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addSubscribersTo}}" userInput="{{AddressBooks.subscriberAddressBookName}}" stepKey="setSubscribersAddressBook"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addGuestsTo}}" userInput="{{AddressBooks.guestAddressBookName}}" stepKey="setGuestsAddressBook"/>
 
         <click selector="{{AdminDotdigitalSyncSettingsSection.save}}" stepKey="saveConfig" />
         <waitForPageLoad stepKey="waitForPageLoad1"/>

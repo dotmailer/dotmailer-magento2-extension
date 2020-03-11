@@ -67,10 +67,9 @@ class SingleItemPostProcessor extends DataObject implements ItemPostProcessorInt
         }
 
         //api response error
-        if (isset($result->message) || ! $result) {
-            $message = (isset($result->message)) ? $result->message : ItemPostProcessorInterface::ERROR_UNKNOWN;
+        if (isset($result->message) && !isset($result->id)) {
             $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
-                ->setMessage($message);
+                ->setMessage($result->message);
         } else {
             $dateTime = $this->dateTime->formatDate(true);
             $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTED)

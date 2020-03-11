@@ -9,7 +9,8 @@ use Dotdigitalgroup\Email\Model\Connector\Product;
 use Dotdigitalgroup\Email\Model\Product\Attribute;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
-use Dotdigitalgroup\Email\Model\Connector\TierPriceFinder;
+use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
+use Dotdigitalgroup\Email\Api\StockFinderInterface;
 use Magento\Bundle\Model\Product\Type;
 use Magento\Bundle\Model\ResourceModel\Option\Collection as OptionCollection;
 use Magento\Bundle\Pricing\Price\BundleRegularPrice;
@@ -162,6 +163,11 @@ class ProductTest extends TestCase
      */
     private $tierPriceFinderMock;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $stockFinderInterfaceMock;
+
     protected function setUp()
     {
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
@@ -180,12 +186,12 @@ class ProductTest extends TestCase
         $this->optionCollectionMock = $this->createMock(OptionCollection::class);
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
         $this->storeMock = $this->createMock(Store::class);
-        $this->stockStateMock = $this->createMock(StockStateInterface::class);
         $this->attributeMock = $this->createMock(Attribute::class);
         $this->attributeFactoryMock = $this->createMock(AttributeFactory::class);
         $this->parentFinderMock = $this->createMock(ParentFinder::class);
         $this->parentMock = $this->createMock(\Magento\Catalog\Model\Product::class);
         $this->tierPriceFinderMock = $this->createMock(TierPriceFinderInterface::class);
+        $this->stockFinderInterfaceMock = $this->createMock(StockFinderInterface::class);
         $this->visibility = new Visibility(
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
@@ -195,10 +201,10 @@ class ProductTest extends TestCase
             $this->statusFactoryMock,
             $this->visibilityFactoryMock,
             $this->urlFinderMock,
-            $this->stockStateMock,
             $this->attributeFactoryMock,
             $this->parentFinderMock,
-            $this->tierPriceFinderMock
+            $this->tierPriceFinderMock,
+            $this->stockFinderInterfaceMock
         );
 
         $status = 1;
@@ -238,12 +244,8 @@ class ProductTest extends TestCase
             ->method('getWebsiteIds')
             ->willReturn($websiteIds);
 
-        $this->stockStateMock->expects($this->atLeastOnce())
+        $this->stockFinderInterfaceMock->expects($this->atLeastOnce())
             ->method('getStockQty');
-
-        $this->mageProductMock->expects($this->atLeastOnce())
-            ->method('getStore')
-            ->willReturn($this->storeMock);
 
         $this->storeManagerMock->expects($this->atLeastOnce())
             ->method('getStore')

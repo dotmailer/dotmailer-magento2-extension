@@ -100,6 +100,11 @@ class Order implements SyncInterface
     private $bunch;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk
+     */
+    private $bulkUpdate;
+
+    /**
      * Order constructor.
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
@@ -110,8 +115,8 @@ class Order implements SyncInterface
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
-     *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
+     * @param \Dotdigitalgroup\Email\Model\Product\Bunch $bunch
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -124,7 +129,8 @@ class Order implements SyncInterface
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\Product\Bunch $bunch
+        \Dotdigitalgroup\Email\Model\Product\Bunch $bunch,
+        \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk $bulkUpdate
     ) {
         $this->importerFactory       = $importerFactory;
         $this->orderFactory          = $orderFactory;
@@ -137,6 +143,7 @@ class Order implements SyncInterface
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->catalogResource = $catalogResource;
         $this->bunch = $bunch;
+        $this->bulkUpdate = $bulkUpdate;
     }
 
     /**
@@ -186,7 +193,7 @@ class Order implements SyncInterface
 
             //Mark ordered products as unprocessed to be imported again
             $mergedProducts = $this->getAllProducts($orders + $ordersForSingleSync);
-            $this->catalogResource->setUnprocessedByIds($this->bunch->getProductIdsBySkuInBunch($mergedProducts));
+            $this->bulkUpdate->execute($mergedProducts);
 
             unset($this->accounts[$account->getApiUsername()]);
         }
@@ -408,7 +415,7 @@ class Order implements SyncInterface
     {
         $allProducts = [];
         foreach ($orders as $order) {
-            if (!isset($orders['products'])) {
+            if (!isset($order['products'])) {
                 continue;
             }
             foreach ($order['products'] as $products) {

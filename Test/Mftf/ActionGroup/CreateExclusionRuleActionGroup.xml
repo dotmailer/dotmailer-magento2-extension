@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="CreateExclusionRule">
+        <arguments>
+            <argument name="ruleType" type="string"/>
+        </arguments>
+
+        <amOnPage url="{{ExclusionRulesPage.url}}" stepKey="amOnExclusionRulesListPage"/>
+        <waitForPageLoad stepKey="waitForRulesList"/>
+        <click selector="{{ExclusionRulesSection.add}}" stepKey="clickAddNewRule"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <fillField selector="{{ExclusionRulesSection.ruleName}}" userInput="{{DotExclusionRule.ruleName}}" stepKey="setRuleName"/>
+        <selectOption selector="{{ExclusionRulesSection.ruleType}}" userInput="{{ruleType}}" stepKey="setRuleType"/>
+        <selectOption selector="{{ExclusionRulesSection.status}}" userInput="{{DotExclusionRule.status}}" stepKey="setRuleStatus"/>
+        <selectOption selector="{{ExclusionRulesSection.websites}}" parameterArray="[{{DotExclusionRule.websites}}]" stepKey="selectRuleWebsites"/>
+
+        <!-- Open Conditions tab -->
+        <click selector="{{ExclusionRulesSection.conditionsTab}}" stepKey="clickConditionsTab"/>
+        <selectOption selector="{{ExclusionRulesSection.ruleCombination}}" userInput="{{DotExclusionRule.combination}}" stepKey="selectConditionsCombination"/>
+
+        <!-- Set first condition -->
+        <click selector="{{ExclusionRulesSection.addNewCondition}}" stepKey="addFirstCondition"/>
+
+        <selectOption selector="{{ExclusionRulesSection.conditionAttribute1}}" userInput="{{DotExclusionRule.attribute1}}" stepKey="selectConditionAttribute1"/>
+        <selectOption selector="{{ExclusionRulesSection.conditionOperator1}}" userInput="{{DotExclusionRule.operator1}}" stepKey="selectConditionOperator1"/>
+        <fillField selector="{{ExclusionRulesSection.conditionValue1}}" userInput="{{DotExclusionRule.value1}}" stepKey="selectConditionValue1"/>
+
+        <!-- Set second condition -->
+        <click selector="{{ExclusionRulesSection.addNewCondition}}" stepKey="addSecondCondition"/>
+        <waitForAjaxLoad stepKey="waitForRow2"/>
+
+        <selectOption selector="{{ExclusionRulesSection.conditionAttribute2}}" userInput="{{DotExclusionRule.attribute2}}" stepKey="selectConditionAttribute2"/>
+        <selectOption selector="{{ExclusionRulesSection.conditionOperator2}}" userInput="{{DotExclusionRule.operator2}}" stepKey="selectConditionOperator2"/>
+        <fillField selector="{{ExclusionRulesSection.conditionValue2}}" userInput="{{DotExclusionRule.value2}}" stepKey="selectConditionValue2"/>
+
+        <click selector="{{ExclusionRulesSection.save}}" stepKey="clickSaveExclusionRule" />
+        <waitForPageLoad stepKey="waitForSave"/>
+
+    </actionGroup>
+</actionGroups>
