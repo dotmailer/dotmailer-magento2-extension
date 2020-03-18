@@ -317,6 +317,9 @@
                 <catalog>*/15 * * * *</catalog>
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
+            <system_alerts>
+                <enabled>1</enabled>
+            </system_alerts>
         </connector_developer_settings>
     </default>
 </config>

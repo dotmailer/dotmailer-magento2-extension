@@ -1830,6 +1830,14 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                 </field>
             </group>
+            <group id="system_alerts" translate="label" sortOrder="80" showInDefault="1" showInWebsite="0"
+                   showInStore="0">
+                <label>System Alerts</label>
+                <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="0">
+                    <label>Enable System Messages</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
         </section>
     </system>
 </config>
