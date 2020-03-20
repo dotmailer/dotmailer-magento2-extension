@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Mail;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Mail\SmtpTransportZend1;
 use Dotdigitalgroup\Email\Model\Mail\ZendMailTransportSmtp1Factory;
 use Zend_Mail;
@@ -26,10 +27,17 @@ class SmtpTransportZend1Test extends \PHPUnit\Framework\TestCase
     private $smtpTransportZend1;
 
     /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
+    /**
      * Prepare data
      */
     protected function setUp()
     {
+        $this->loggerMock = $this->createMock(Logger::class);
+
         $this->transactionalEmailSettings = $this->getMockBuilder(
             Transactional::class
         )->disableOriginalConstructor(
@@ -42,7 +50,8 @@ class SmtpTransportZend1Test extends \PHPUnit\Framework\TestCase
 
         $this->smtpTransportZend1 = new SmtpTransportZend1(
             $this->transactionalEmailSettings,
-            $this->zendMailTransportSmtp1Factory
+            $this->zendMailTransportSmtp1Factory,
+            $this->loggerMock
         );
     }
 

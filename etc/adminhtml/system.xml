@@ -1035,10 +1035,10 @@
                     <label>Send Mode</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Mode</source_model>
                 </field>
-                <field id="host" translate="label" sortOrder="30" type="text" showInStore="1" showInWebsite="1"
+                <field id="host" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1"
                        showInDefault="1">
                     <label>Host</label>
-                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\TextValueTrimmer</backend_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Region</source_model>
                 </field>
                 <field id="username" translate="label" sortOrder="40" type="text" showInStore="1" showInWebsite="1"
                        showInDefault="1">

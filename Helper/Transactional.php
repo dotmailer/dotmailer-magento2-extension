@@ -38,13 +38,22 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $storeId
      *
      * @return boolean|string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getSmtpHost($storeId)
     {
-        return $this->scopeConfig->getValue(
+        $regionId = $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_HOST,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
+        );
+
+        if ($regionId) {
+            return 'r' . $regionId . '-smtp.dotdigital.com';
+        }
+
+        throw new \Magento\Framework\Exception\LocalizedException(
+            __('Dotdigital smtp host region is not defined')
         );
     }
 
@@ -140,22 +149,28 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $storeId
      *
      * @return SmtpOptions
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getSmtpOptions($storeId)
     {
-        return new SmtpOptions(
-            [
-                'host' => $this->getSmtpHost($storeId),
+        try {
+            $host = $this->getSmtpHost($storeId);
+
+            return new SmtpOptions(
+                [
+                'host' => $host,
                 'port' => $this->getSmtpPort($storeId),
                 'connection_class' => 'login',
-                'connection_config' =>
-                [
+                'connection_config' => [
                     'username' => $this->getSmtpUsername($storeId),
                     'password' => $this->getSmtpPassword($storeId),
                     'ssl' => 'tls'
                 ]
-            ]
-        );
+                ]
+            );
+        } catch (\Exception $e) {
+            $this->_logger->debug((string) $e);
+        }
     }
 
     /**
