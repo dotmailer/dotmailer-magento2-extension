@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
 use Dotdigitalgroup\Email\Model\Email\Template;
-use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
+use Dotdigitalgroup\Email\Model\Email\TemplateService;
 use Dotdigitalgroup\Email\Plugin\MessagePlugin;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Registry;
@@ -28,11 +28,6 @@ class MessagePluginTest extends TestCase
     private $templateModelMock;
 
     /**
-     * @var TemplateFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $templateFactoryMock;
-
-    /**
      * @var MessagePlugin
      */
     private $plugin;
@@ -53,21 +48,27 @@ class MessagePluginTest extends TestCase
     private $mimePartMock;
 
     /**
+     * @var TemplateService|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $templateServiceMock;
+
+    /**
      * @return void
      */
     protected function setUp()
     {
-        $this->messageMock               = $this->createMock(MessageInterface::class);
+        $this->messageMock = $this->createMock(MessageInterface::class);
         $this->mimeMessageMock = $this->createMock(\Zend\Mime\Message::class);
         $this->mimePartMock = $this->createMock(\Zend\Mime\Part::class);
-        $this->registryMock              = $this->createMock(Registry::class);
-        $this->transactionalHelperMock   = $this->createMock(Transactional::class);
+        $this->registryMock = $this->createMock(Registry::class);
+        $this->transactionalHelperMock = $this->createMock(Transactional::class);
         $this->templateModelMock = $this->createMock(Template::class);
-        $this->templateFactoryMock = $this->createMock(TemplateFactory::class);
-        $this->plugin                    = new MessagePlugin(
+        $this->templateServiceMock = $this->createMock(TemplateService::class);
+
+        $this->plugin = new MessagePlugin(
             $this->registryMock,
             $this->transactionalHelperMock,
-            $this->templateFactoryMock
+            $this->templateServiceMock
         );
     }
 
@@ -76,7 +77,7 @@ class MessagePluginTest extends TestCase
         $storeId = 1;
         $templateId = null;
 
-        $this->mockLoadTemplateIdFromRegistry($templateId);
+        $this->mockTemplateService($templateId);
         $this->mockRegistry($storeId);
         $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
 
@@ -103,7 +104,7 @@ class MessagePluginTest extends TestCase
         $templateId = 'Test Chaz_176887';
         $body = '<html><body>My message</body></html>';
 
-        $this->mockLoadTemplateIdFromRegistry($templateId);
+        $this->mockTemplateService($templateId);
         $this->mockRegistry($storeId);
         $this->mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, true);
 
@@ -147,14 +148,10 @@ class MessagePluginTest extends TestCase
             ->willReturn($value);
     }
 
-    private function mockLoadTemplateIdFromRegistry($templateId)
+    private function mockTemplateService($templateId)
     {
-        $this->templateFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($this->templateModelMock);
-
-        $this->templateModelMock->expects($this->once())
-            ->method('loadTemplateIdFromRegistry')
+        $this->templateServiceMock->expects($this->once())
+            ->method('getTemplateId')
             ->willReturn($templateId);
     }
 }
