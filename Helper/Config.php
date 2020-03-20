@@ -402,6 +402,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
         $website = $this->storeManager->getWebsite($website);
         $apiEndpoint = $this->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website);
+
+        $apiEndpoint = isset($apiEndpoint) ? $apiEndpoint : 'https://r1-app.dotdigital.com';
+
         $appSubDomain = substr_compare(
             $apiEndpoint,
             self::INTERNAL_SUB_DOMAIN,
@@ -412,10 +415,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
         //replace the api with the app prefix from the domain name
         return $this->regionAwarePortalUrl = str_replace(
-            ['api', 'dotmailer'],
-            [$appSubDomain, 'dotdigital'],
-            $apiEndpoint
-        ) . '/';
+                ['api', 'dotmailer'],
+                [$appSubDomain, 'dotdigital'],
+                $apiEndpoint
+            ) . '/';
     }
 
     /**
