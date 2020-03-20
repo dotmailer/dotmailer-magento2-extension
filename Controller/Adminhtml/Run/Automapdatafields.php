@@ -61,8 +61,15 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
             return $this->_redirect($redirectUrl);
         }
 
-        $dataFieldAutoMapper = $this->dataFieldAutoMapperFactory->create()
-            ->run($website);
+        try {
+            $dataFieldAutoMapper = $this->dataFieldAutoMapperFactory->create()
+                ->run($website);
+        } catch (\Exception $e) {
+            $this->messageManager
+                ->addNoticeMessage('Dotdigital connector API endpoint cannot be empty.');
+
+            return $this->_redirect($redirectUrl);
+        }
 
         if ($errors = $dataFieldAutoMapper->getMappingErrors()) {
             $this->messageManager
